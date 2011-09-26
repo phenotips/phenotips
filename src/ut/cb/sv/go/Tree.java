@@ -234,4 +234,18 @@ public class Tree
         crt.discover();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder str = new StringBuilder();
+        for (String s : this.identifierToNode.keySet()) {
+            str.append(s).append(" : ").append(this.identifierToNode.get(s)).append('\n');
+        }
+        return str.toString();
+    }
+
 }

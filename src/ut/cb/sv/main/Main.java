@@ -18,6 +18,7 @@ import ut.cb.sv.db.feature.Feature;
 import ut.cb.sv.db.feature.LabelFeature;
 import ut.cb.sv.db.load.DBLoader;
 import ut.cb.sv.db.load.DBLoaderFactory;
+import ut.cb.sv.go.GeneOntologyWrapper;
 
 public class Main
 {
@@ -160,7 +161,10 @@ public class Main
             } catch (Exception ex) {
                 failWithMessage("Failed to initialize database loading process: " + ex.getMessage());
             }
-            Database data = dbLoader.load(databaseFile, nbOfEntries);
+            Database data = null;
+            for (String dbFile : databaseFile.split(",")) {
+                data = dbLoader.load(dbFile, nbOfEntries);
+            }
             if (data == null) {
                 failWithMessage("Failed to load database");
             }

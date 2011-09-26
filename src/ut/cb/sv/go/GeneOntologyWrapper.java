@@ -17,11 +17,19 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class GeneOntologyWrapper
 {
+    public static final String DEFAULT_MAP_FILE = getResourceFilePath("MAPPING_GO_Genome_location");
+
+    public static final String TMP_GO_TREE_FILE = getResourceFilePath("TEMP_GO_tree.xml");
 
     public static final String NAME_EXTRA_GENES = "Miscellaneous transcripts";
 
     public static final String LOCATION_OF_GO_XML_FILE = "http://archive."
         + "geneontology.org/latest-termdb/go_daily-termdb.obo-xml.gz";
+
+    public static GOTree makeTree() throws Exception
+    {
+        return makeTree(DEFAULT_MAP_FILE);
+    }
 
     /**
      * Makes and returns a tree using GO terms.
@@ -30,11 +38,8 @@ public class GeneOntologyWrapper
      */
     public static GOTree makeTree(String mapFile) throws Exception
     {
-
-        String sep = File.separator;
         // The location of the temporary XML file
-        String locationOfFile = (new File("")).getAbsolutePath() + sep + "src" + sep + "TEMP_GO_tree.xml";
-        File file = new File(locationOfFile);
+        File file = new File(TMP_GO_TREE_FILE);
         file.createNewFile();
         file.deleteOnExit();
 
@@ -52,7 +57,7 @@ public class GeneOntologyWrapper
 
         GOTree tree = new GOTree(mapFile);
 
-        Handler handler = new Handler(tree, locationOfFile);
+        Handler handler = new Handler(tree, TMP_GO_TREE_FILE);
 
         // Parse through the file, and get the xtree to be made and return it.
         parseXMLFile(true, handler);
@@ -224,4 +229,8 @@ public class GeneOntologyWrapper
         parser.parse(new File(handler.locationOfFile), handler);
     }
 
+    private static String getResourceFilePath(String name)
+    {
+        return (new File("")).getAbsolutePath() + File.separator + "res" + File.separator + name;
+    }
 }

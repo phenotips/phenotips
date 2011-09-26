@@ -16,6 +16,9 @@ import ut.cb.sv.db.feature.FeatureSet;
  */
 public class Database extends LinkedList<DatabaseEntry>
 {
+    /** Separator for multiple source files */
+    public static final String SOURCE_SEPARATOR = " | ";
+
     /** The name of the database */
     String name = "";
 
@@ -43,22 +46,27 @@ public class Database extends LinkedList<DatabaseEntry>
 
     public void setIdentity(String source)
     {
-        this.source = source;
+        this.source = join(this.source, source);
         File sourceFile = new File(source);
         this.source = sourceFile.getAbsolutePath();
         String name = sourceFile.getName();
         int extensionStart = name.lastIndexOf('.');
         if (extensionStart <= 0) {
-            this.name = name;
+            this.name = join(this.name, name);
         } else {
-            this.name = name.substring(0, extensionStart);
+            this.name = join(this.name, name.substring(0, extensionStart));
         }
     }
 
     public void setIdentity(String source, String name)
     {
-        this.source = new File(source).getAbsolutePath();
-        this.name = name;
+        this.source = join(this.source, source);
+        this.name = join(this.name, name);
+    }
+
+    private String join(String crt, String _new)
+    {
+        return ("".equals(crt) ? "" : crt + ("".equals(_new) ? "" : SOURCE_SEPARATOR)) + _new;
     }
 
     /**

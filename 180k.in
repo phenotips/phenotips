@@ -12,6 +12,6 @@
 /aberrations/submission/regions/aberration/INHERITANCE[@value] INHERITANCE Categorical:Not_tested|Maternal|De_novo|Paternal
 ##/aberrations/submission/regions/aberration/INHERITANCE_COVERAGE[@value] INHERITANCE_COVERAGE Numeric
 ##/aberrations/submission/regions/aberration/P_VALUE[@value] P_VALUE Numeric
-##/aberrations/submission/regions/aberration/ISCN[@value] ISCN
+/aberrations/submission/regions/aberration/ISCN[@value] ISCN
 entryEndXPath:/aberrations/submission/regions/aberration
-Accept: /aberrations/submission[@SAMPLE_ID]=ANON[0-9]+
+Accept: /aberrations/submission[@SAMPLE_ID]=(ANON|R)[0-9]+
