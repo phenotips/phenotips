@@ -2,6 +2,7 @@ package ut.cb.sv.go;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -232,6 +233,33 @@ public class Tree
 
         // say that this node has been discovered.
         crt.discover();
+    }
+
+    public Node get(String identifier)
+    {
+        return this.identifierToNode.get(identifier);
+    }
+
+    public Set<Node> getNodeAndAncestors(String identifier)
+    {
+        Set<Node> result = new LinkedHashSet<Node>();
+        Node node = this.identifierToNode.get(identifier);
+        while (node != null && !node.equals(this.fakeRoot)) {
+            result.add(node);
+            node = node.getParent();
+        }
+        return result;
+    }
+
+    public Set<String> getNodeAndAncestorsIds(String identifier)
+    {
+        Set<String> result = new LinkedHashSet<String>();
+        Node node = this.identifierToNode.get(identifier);
+        while (node != null && !node.equals(this.fakeRoot)) {
+            result.add(node.getIdentifier());
+            node = node.getParent();
+        }
+        return result;
     }
 
     /*

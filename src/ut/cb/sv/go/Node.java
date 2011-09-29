@@ -14,6 +14,8 @@ public class Node implements Comparable<Node>
      */
     private TreeSet<Node> children;
 
+    private Node parent;
+
     /**
      * Identifier of this node. (Acts as some kind of key)
      */
@@ -236,7 +238,7 @@ public class Node implements Comparable<Node>
     {
 
         this.children.add(child);
-        // child.addParent(this);
+        child.setParent(this);
     }
 
     /**
@@ -244,11 +246,23 @@ public class Node implements Comparable<Node>
      * 
      * @param child
      */
-    private void removeChild(Node child)
+    protected void removeChild(Node child)
     {
         if (child != null) {
             this.children.remove(child);
+            child.setParent(null);
         }
+
+    }
+
+    protected void setParent(Node parent)
+    {
+        this.parent = parent;
+    }
+
+    public Node getParent()
+    {
+        return this.parent;
     }
 
     /**
