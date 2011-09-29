@@ -33,6 +33,8 @@ public class XMLDBLoader extends AbstractDBLoader
 
         private StringBuffer crtCharData = new StringBuffer();
 
+        private String prevChrData = "";
+
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
         {
@@ -138,6 +140,9 @@ public class XMLDBLoader extends AbstractDBLoader
 
         protected void cleanupTmpData()
         {
+            if (!"".equals(this.crtCharData.toString())) {
+                this.prevChrData = this.crtElementFeatureName + this.crtCharData.toString();
+            }
             this.crtElementFeatureName = null;
             this.crtCharData.delete(0, this.crtCharData.length());
         }
@@ -170,20 +175,35 @@ public class XMLDBLoader extends AbstractDBLoader
     {
         // get a factory
         SAXParserFactory spf = SAXParserFactory.newInstance();
+        XMLDBSAXParser parser = new XMLDBSAXParser();
         try {
 
             // get a new instance of parser
             SAXParser sp = spf.newSAXParser();
 
             // parse the file and also register this class for call backs
-            sp.parse(filename, new XMLDBSAXParser());
+            sp.parse(filename, parser);
 
         } catch (SAXException se) {
+            System.err.println(parser.getCrtXPath());
+            System.err.println(parser.prevChrData);
+            System.err.println(this.getDatabase().size());
             se.printStackTrace();
         } catch (ParserConfigurationException pce) {
+            System.err.println(parser.getCrtXPath());
+            System.err.println(parser.prevChrData);
+            System.err.println(this.getDatabase().size());
             pce.printStackTrace();
         } catch (IOException ie) {
+            System.err.println(parser.getCrtXPath());
+            System.err.println(parser.prevChrData);
+            System.err.println(this.getDatabase().size());
             ie.printStackTrace();
+        } catch (Exception e) {
+            System.err.println(parser.getCrtXPath());
+            System.err.println(parser.prevChrData);
+            System.err.println(this.getDatabase().size());
+            e.printStackTrace();
         }
     }
 }
