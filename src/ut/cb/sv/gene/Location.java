@@ -4,7 +4,7 @@ public class Location
 {
     public static final String INPUT_SEPARATOR = "\t";
 
-    private String chr = "";
+    private Chromosome chr = Chromosome.UNKNOWN;
 
     private int start = -1;
 
@@ -44,10 +44,10 @@ public class Location
     {
         int chromosomeMetaSeparatorPosition = chr.indexOf('_');
         if (chromosomeMetaSeparatorPosition >= 0) {
-            this.chr = chr.substring(0, chromosomeMetaSeparatorPosition);
+            this.chr = Chromosome.getValue(chr.substring(0, chromosomeMetaSeparatorPosition));
             this.meta = chr.substring(chromosomeMetaSeparatorPosition + 1);
         } else {
-            this.chr = chr;
+            this.chr = Chromosome.getValue(chr);
         }
     }
 
@@ -86,7 +86,7 @@ public class Location
     /**
      * @return the chr
      */
-    public String getChr()
+    public Chromosome getChr()
     {
         return this.chr;
     }

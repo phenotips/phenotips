@@ -13,47 +13,15 @@ public class RelativeLocationMap<V extends Location> extends
 {
     public enum RelativePosition
     {
-        BEFORE(false),
-        START(true),
-        IN(true),
-        END(true, START),
-        AFTER(false, BEFORE),
-        OUT(false, IN);
-
-        private RelativePosition opposite = null;
-
-        private boolean inside;
-
-        RelativePosition(boolean inside)
-        {
-        }
-
-        RelativePosition(boolean inside, RelativePosition op)
-        {
-            this.opposite = op;
-            if (op != null) {
-                op.opposite = this;
-            }
-        }
+        BEFORE,
+        START,
+        IN,
+        END,
+        AFTER;
 
         public static RelativePosition getDefault()
         {
             return IN;
-        }
-
-        public RelativePosition getOpposite()
-        {
-            return this.opposite;
-        }
-
-        public boolean isInside()
-        {
-            return this.inside;
-        }
-
-        public boolean isOutside()
-        {
-            return !this.inside;
         }
     }
 
@@ -103,6 +71,14 @@ public class RelativeLocationMap<V extends Location> extends
             this.put(key, new SetMap<RelativePosition, V>());
         }
         this.get(key).clear();
+    }
+
+    public void reset(Integer key, RelativePosition relPos)
+    {
+        if (this.get(key) == null) {
+            this.put(key, new SetMap<RelativePosition, V>());
+        }
+        this.get(key).reset(relPos);
     }
 
     public SetMap<RelativePosition, V> safeGet(Integer key)

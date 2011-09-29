@@ -1,7 +1,7 @@
 package ut.cb.sv.gene;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -13,27 +13,26 @@ import ut.cb.util.maps.SetMap;
 
 public class LocationIndex
 {
-    Map<String, RelativeLocationMap<GeneLocation>> index = new HashMap<String, RelativeLocationMap<GeneLocation>>();
+    Map<Chromosome, RelativeLocationMap<GeneLocation>> index =
+        new HashMap<Chromosome, RelativeLocationMap<GeneLocation>>();
 
     protected LocationIndex(GeneFunctionData g)
     {
         // Memorize and sort all location bounds
-        SetMap<String, Integer> bounds = new SetMap<String, Integer>();
+        SetMap<Chromosome, Integer> bounds = new SetMap<Chromosome, Integer>();
         for (GeneLocation geneLoc : g.keySet()) {
             bounds.addTo(geneLoc.getChr(), geneLoc.getStart());
             bounds.addTo(geneLoc.getChr(), geneLoc.getEnd());
         }
-        for (String chr : bounds.keySet()) {
-            int sortedBounds[] = new int[bounds.get(chr).size()], j = 0;
-            for (int i : bounds.get(chr)) {
-                sortedBounds[j++] = i;
-            }
-            Arrays.sort(sortedBounds);
+        for (Chromosome chr : bounds.keySet()) {
+            ArrayList<Integer> sortedBounds = new ArrayList<Integer>(bounds.size());
+            sortedBounds.addAll(bounds.get(chr));
+            Collections.sort(sortedBounds);
             RelativeLocationMap<GeneLocation> map = new RelativeLocationMap<GeneLocation>();
             this.index.put(chr, map);
             // just making sure the numbers appear in the right order...
             for (Integer i : sortedBounds) {
-                map.addTo(i, (GeneLocation) null);
+                map.reset(i);
             }
         }
 
@@ -45,7 +44,7 @@ public class LocationIndex
         }
 
         // Update the index by adding genes to the lists of the positions that fall inside their bounds
-        for (String chr : this.index.keySet()) {
+        for (Chromosome chr : this.index.keySet()) {
             RelativeLocationMap<GeneLocation> chrIndex = this.index.get(chr);
             Set<GeneLocation> current = new HashSet<GeneLocation>();
             for (Integer key : chrIndex.keySet()) {
@@ -62,7 +61,7 @@ public class LocationIndex
         return getOverlappingGenes(l.getChr(), l.getStart(), l.getEnd());
     }
 
-    public Set<GeneLocation> getOverlappingGenes(String chr, int start, int end)
+    public Set<GeneLocation> getOverlappingGenes(Chromosome chr, int start, int end)
     {
         Set<GeneLocation> result = new LinkedHashSet<GeneLocation>();
         RelativeLocationMap<GeneLocation> chrIndex = this.index.get(chr);
@@ -72,37 +71,27 @@ public class LocationIndex
 
         ArrayList<Integer> positions = new ArrayList<Integer>();
         positions.addAll(chrIndex.keySet());
-        int from = getClosestOverlappingPosition(positions, start, RelativePosition.START);
-        int to = getClosestOverlappingPosition(positions, end, RelativePosition.END);
-        if (from != to) {
-            for (int i = from; i <= to; ++i) {
-                result.addAll(chrIndex.getAll(positions.get(i)));
-            }
+        Collections.sort(positions);
+        int from = Collections.binarySearch(positions, start);
+        int to = Collections.binarySearch(positions, end);
+
+        if (from < 0) {
+            // start with the index immediately after the insertion point
+            from = -(from + 1);
+        }
+        if (to < 0) {
+            // stop at the index immediately before the insertion point
+            to = -(to + 1) - 1;
+        }
+        for (int i = from; i <= to; ++i) {
+            result.addAll(chrIndex.getAll(positions.get(i)));
+        }
+
+        if (from > to && from > 0 && from < positions.size()) {
+            // both fall between two indexed bounds;
+            result.addAll(chrIndex.get(positions.get(from - 1), RelativePosition.IN));
+            result.addAll(chrIndex.get(positions.get(from), RelativePosition.IN));
         }
         return result;
-    }
-
-    protected int getClosestOverlappingPosition(ArrayList<Integer> positions, int position,
-        RelativePosition relPos)
-    {
-        int start = 0, idx = positions.size() / 2, end = positions.size(), tmp;
-        do {
-            if (positions.get(idx) == position) {
-                start = end = idx;
-            } else if (positions.get(idx) > position) {
-                tmp = idx;
-                idx = (start + idx) / 2;
-                end = tmp;
-            } else {
-                tmp = idx;
-                idx = (end + idx) / 2;
-                start = tmp;
-            }
-        } while (end - start > 1);
-
-        if (start == end) {
-            return start;
-        }
-        return relPos == RelativePosition.START ? end : start;
     }
 }

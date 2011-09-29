@@ -67,7 +67,7 @@ public class DatabaseEntry
      * @param name the feature's name
      * @return the value for that feature
      */
-    protected Object get(String name)
+    public Object get(String name)
     {
         return this.features.get(name);
     }
