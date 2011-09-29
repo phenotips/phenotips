@@ -111,6 +111,11 @@ public class Database extends LinkedList<DatabaseEntry>
         return this.featureSet.getFeature(name);
     }
 
+    public boolean hasFeature(String name)
+    {
+        return this.getFeature(name) != null;
+    }
+
     /**
      * Wrapper function for {@link FeatureSet#getLabel()}. Retrieves the feature which is the classification label of
      * the objects in the database

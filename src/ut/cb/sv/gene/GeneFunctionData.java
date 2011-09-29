@@ -16,6 +16,15 @@ import ut.cb.util.maps.SetMap;
 
 public class GeneFunctionData extends SetMap<GeneLocation, String>
 {
+
+    public static final String CHROMOSOME_MARKER = "CHR";
+
+    public static final String STRETCHSTART_MARKER = "START";
+
+    public static final String STRETCHEND_MARKER = "STOP";
+
+    public static final String GO_FUNCTIONS_MARKER = "GO_functions";
+
     GOTree goTree;
 
     LocationIndex index;
@@ -101,25 +110,33 @@ public class GeneFunctionData extends SetMap<GeneLocation, String>
 
     public void addGOInfoToDatabase(Database data)
     {
-        Feature goFunctionsInfo = new Feature("GO_functions");
+        if (!data.hasFeature(CHROMOSOME_MARKER) ||
+            !data.hasFeature(STRETCHSTART_MARKER) ||
+            !data.hasFeature(STRETCHEND_MARKER)) {
+            System.err
+                .println("Cannot load GO funtions into database." +
+                " Database entries do not have all the features necessary for defining genomic locations");
+            return;
+        }
+        Feature goFunctionsInfo = new Feature(GO_FUNCTIONS_MARKER);
         data.addFeature(goFunctionsInfo);
         for (DatabaseEntry entry : data) {
             try {
                 entry.addFeature(goFunctionsInfo, getGOFunctionsOfOverlappingGenes(
-                    Chromosome.getValue((String) entry.get("CHR")),
-                    (Integer) entry.get("START"),
-                    (Integer) entry.get("STOP")));
+                    Chromosome.getValue((String) entry.get(CHROMOSOME_MARKER)),
+                    (Integer) entry.get(STRETCHSTART_MARKER),
+                    (Integer) entry.get(STRETCHEND_MARKER)));
             } catch (Exception ex) {
                 System.err.println(ex.getClass().getName() + " " + ex.getMessage()
                     + ". Cannot load GO functions for:\n"
                     + entry.toString());
-                System.err.println(Chromosome.getValue((String) entry.get("CHR")));
-                System.err.println(entry.get("START"));
-                System.err.println(entry.get("STOP"));
+                System.err.println(Chromosome.getValue((String) entry.get(CHROMOSOME_MARKER)));
+                System.err.println(entry.get(STRETCHSTART_MARKER));
+                System.err.println(entry.get(STRETCHEND_MARKER));
                 System.err.println(getOverlappingGenes(
-                    Chromosome.getValue((String) entry.get("CHR")),
-                    (Integer) entry.get("START"),
-                    (Integer) entry.get("STOP")));
+                    Chromosome.getValue((String) entry.get(CHROMOSOME_MARKER)),
+                    (Integer) entry.get(STRETCHSTART_MARKER),
+                    (Integer) entry.get(STRETCHEND_MARKER)));
                 System.exit(0);
 
             }

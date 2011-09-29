@@ -188,7 +188,7 @@ public class Tree
      */
     public void propagateUp()
     {
-        System.out.println("Propagating up the locations in this tree.");
+        // System.out.println("Propagating up the locations in this tree.");
         // send to recursive function.
         setLocations(this.fakeRoot);
     }
