@@ -225,7 +225,7 @@ public String generateInput(String name, String label, boolean suggested)
         put("0002368", "Psychiatric disorders");
         put("_other", null);
       }});
-      put ("Behavioral", new LinkedHashMap<String, Object>(){{
+      put ("Neurological", new LinkedHashMap<String, Object>(){{
         put("0001290", "Hypotonia");
         put("0002197", "Seizures");
         put("0001251", "Ataxia");
