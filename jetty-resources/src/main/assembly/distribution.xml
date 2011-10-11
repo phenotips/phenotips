@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+  <id>distribution</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <dependencySets>
+    <dependencySet>
+      <!-- Remove versions so that the shell script used to start Jetty can always refer to start.jar -->
+      <outputFileNameMapping>start.jar</outputFileNameMapping>
+      <outputDirectory>/jetty</outputDirectory>
+      <includes>
+        <include>org.eclipse.jetty:jetty-start</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <!-- JSP-related jars must go in jetty/lib/jsp-2.1 -->
+      <outputDirectory>/jetty/lib/jsp-2.1</outputDirectory>
+      <includes>
+        <include>*:*jsp*</include>
+        <include>*:ecj*</include>
+        <include>*:el-api*</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>/jetty/lib</outputDirectory>
+      <excludes>
+        <exclude>org.eclipse.jetty:jetty-start</exclude>
+        <exclude>*:*jsp*</exclude>
+        <exclude>*:ecj*</exclude>
+        <exclude>*:el-api*</exclude>
+      </excludes>
+    </dependencySet>
+  </dependencySets>
+  <fileSets>
+    <!-- Copy shell scripts and set execute permissions -->
+    <fileSet>
+      <directory>${basedir}/src/main/resources</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>**/*.sh</include>
+        <include>**/*.bat</include>
+      </includes>
+      <fileMode>755</fileMode>
+    </fileSet>
+    <!-- Copy non shell scripts -->
+    <fileSet>
+      <directory>${basedir}/src/main/resources</directory>
+      <outputDirectory>/</outputDirectory>
+      <excludes>
+        <exclude>**/*.sh</exclude>
+        <exclude>**/*.bat</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
+</assembly>

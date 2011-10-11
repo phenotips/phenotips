@@ -1,0 +1,176 @@
+body {
+  background-color: #FFF;
+  color: #333;
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 87%;
+  margin: 0;
+  padding: 8px;
+}
+
+h1 {
+  color: #999;
+  font-weight: normal;
+  text-transform: lowercase;
+  font-variant: small-caps;
+  text-shadow: 0px 0px 6px #e5e5e5;
+  padding: 0.2em 0;
+  margin: 0.2em 0 0.8em;
+  border-bottom: 2px solid #000;
+}
+
+h1.header {
+  border-bottom-color: #e82;
+  background-color: #333;
+  color: #ccc;
+  padding: 8px;
+  margin: -8px -8px .8em;
+  text-shadow: 0 0 6px #fff;
+}
+
+.emphasize {
+  color: #000;
+  border-bottom: 0 none;
+}
+h1.header .emphasize {
+  color: #FFF;
+}
+a, a:link, a:visited, a:link:visited {
+  color: #000;
+  text-decoration: none;
+  font-weight: bold;
+}
+a:hover, a:link:hover, a:visited:hover {
+  background-color: #FFB;
+}
+h1 a, h1 a:link, h1 a:visited, h1 a:link:visited {
+  color: inherit;
+  font-weight: inherit;
+  background-color: transparent !important;
+}
+.invisible {
+  display: none;
+}
+.twothird-width {
+  width: 67%;
+}
+.half-width {
+  width: 48.5%;
+  margin-right: 1%;
+  float: left;
+}
+.third-width {
+  width: 32%;
+  float: left;
+  margin-right: 1%;
+}
+.col-3 {
+  -moz-column-count: 3;
+  -webkit-column-count: 3;
+  column-count: 3;
+}
+.param-name {
+  color: #777;
+  font-style: italic;
+  font-size: 120%;
+}
+.clinical-info {
+  margin-top: 3em;
+}
+.clinical-info .accepted-suggestion .key,
+.clinical-info .accepted-suggestion .sep {
+  display: none;
+}
+.subsection {
+  margin-left: 1em;
+}
+.clear {
+  float: none;
+  clear: both;
+}
+label.section {
+  display: block;
+  clear: both;
+  margin: .3em 0;
+}
+form dt {
+  clear: both;
+}
+form dd {
+  margin: 0;
+}
+fieldset {
+  border: 0 none;
+  padding: 0;
+  margin: .5em 0;
+  float: none;
+  clear: both;
+}
+legend {
+  color: #000;
+  font-weight: bold;
+  font-size: 140%;
+  padding: 0;
+  margin: .5em 0 0.2em;
+}
+fieldset fieldset legend {
+  font-size: 120%;
+}
+label {
+  font-weight: normal;
+  color: #000;
+}
+.hint {
+  color: #777;
+  font-size: 70%;
+  padding: 0;
+  margin: 0;
+}
+input[type=text] {
+  width: 100%;
+  border: 1px solid #ddd;
+}
+input[type=text]:focus {
+  border-color: #e82;
+}
+input[type=submit],
+input[type=button],
+button {
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #777;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  box-shadow: 0 0 6px #ddd;
+}
+.accepted-suggestions {
+  margin: 0 0 1em;
+  list-style-type: none;
+  padding: 0;
+  font-size: 87%;
+}
+
+.accepted-suggestions li {
+  padding: 2px;
+}
+.accepted-suggestions li .key {
+  font-size: 87%;
+  color: #777;
+}
+.accepted-suggestions li .delete-tool {
+  display: none;
+  color: #a00;
+  line-height: 1em;
+  font-size: 100%;
+  margin: 0 0.5em;
+  cursor: pointer;
+}
+.accepted-suggestions li:hover {
+  background: #FFB;
+}
+.accepted-suggestions li:hover .delete-tool {
+  display: inline;
+}
+.suggestItems .suggestValue {
+  color: #000;
+}

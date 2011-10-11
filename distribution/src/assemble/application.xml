@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+  <id>distribution</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>true</includeBaseDirectory>
+  <dependencySets>
+    <!-- "suggest" webapp. -->
+    <dependencySet>
+      <includes>
+        <include>edu.toronto.cs:medical-ontology-terms-hpo-search</include>
+      </includes>
+      <outputDirectory>webapps/search</outputDirectory>
+      <unpack>true</unpack>
+    </dependencySet>
+    <!-- "solr" webapp. -->
+    <dependencySet>
+      <includes>
+        <include>org.apache.solr:solr</include>
+      </includes>
+      <outputDirectory>webapps/solr</outputDirectory>
+      <unpack>true</unpack>
+    </dependencySet>
+    <!-- Solr configuration. -->
+    <dependencySet>
+      <includes>
+        <include>edu.toronto.cs:medical-ontology-terms-configuration</include>
+      </includes>
+      <outputDirectory>solrconfig/</outputDirectory>
+      <unpack>true</unpack>
+    </dependencySet>
+    <!-- Unpack Jetty files -->
+    <dependencySet>
+      <includes>
+        <include>edu.toronto.cs:medical-ontology-terms-jetty-resources</include>
+      </includes>
+      <outputDirectory>/</outputDirectory>
+      <unpack>true</unpack>
+    </dependencySet>
+  </dependencySets>
+</assembly>
