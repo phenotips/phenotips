@@ -22,8 +22,7 @@
 <form action="demo.jsp" method="post">
   <label for="phenotype__suggestions">Phenotype</label>
   <p class="hint">Enter a free text and choose among the suggesteded ontology terms.</p>
-  <input type="text" id="phenotype__suggestions" name="phenotype" class="suggested multi suggest-hpo" value="" 
-size="16"/>
+  <input type="text" id="phenotype__suggestions" name="phenotype" class="suggested multi suggest-hpo" value="" size="16"/>
   <div><input type="submit" value="Submit"/></div>
 </form>
 

@@ -17,6 +17,8 @@ div.suggestItems {
   background: white;
   z-index: 100013;
   text-align:left;
+  -moz-box-shadow: 0 4px 8px #777;
+  box-shadow: 0 4px 8px #777;
 }
 
 div.suggestItems ul {

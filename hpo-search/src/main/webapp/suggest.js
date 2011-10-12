@@ -60,7 +60,7 @@ var MS = (function(MS){
     displayValue: false,
     // Display value prefix text
     displayValueText: "Value :",
-    // How to align the suggestion list when its with is different than the input field width
+    // How to align the suggestion list when its width is different from the input field width
     align: "left",
     // When there are several suggest sources, should the widget displays only one, unified, "loading" indicator for all requests undergoing,
     // Or should it displays one loading indicator per request next to the corresponding source.

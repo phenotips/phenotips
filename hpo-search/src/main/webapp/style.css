@@ -162,7 +162,7 @@ button {
   color: #a00;
   line-height: 1em;
   font-size: 100%;
-  margin: 0 0.5em;
+  margin: 0 0 0 0.5em;
   cursor: pointer;
 }
 .accepted-suggestions li:hover {
@@ -170,6 +170,7 @@ button {
 }
 .accepted-suggestions li:hover .delete-tool {
   display: inline;
+  float: right;
 }
 .suggestItems .suggestValue {
   color: #000;
