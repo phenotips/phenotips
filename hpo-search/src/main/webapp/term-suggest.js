@@ -6,6 +6,7 @@ document.observe('dom:loaded', function() {
             script: "/solr/select?start=0&rows=15&debugQuery=on&",
             queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
                            'name' : { 'stub': true, 'boost': 50 },
+                           'synonym' : { 'stub': true, 'boost': 50 },
                            'text' : { 'stub': true, 'default': true },
                            'phonetic' : {'boost': 0.1 },
                            'id' : {'activationRegex' : 'HP:[0-9]+', 'stub': true, 'boost' : 50}
