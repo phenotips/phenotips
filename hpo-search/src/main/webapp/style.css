@@ -48,7 +48,7 @@ h1 a, h1 a:link, h1 a:visited, h1 a:link:visited {
   background-color: transparent !important;
 }
 .invisible {
-  display: none;
+  display: none !important;
 }
 .twothird-width {
   width: 67%;
@@ -159,20 +159,24 @@ button {
   font-size: 87%;
   color: #777;
 }
-.accepted-suggestions li .delete-tool {
+.accepted-suggestions li .delete-tool,
+.clear-tool {
   display: none;
   color: #a00;
   line-height: 1em;
-  font-size: 100%;
   margin: 0 0 0 0.5em;
   cursor: pointer;
+  float: right;
+}
+.clear-tool {
+  font-size: 87%;
+  display: block;
 }
 .accepted-suggestions li:hover {
   background: #FFB;
 }
 .accepted-suggestions li:hover .delete-tool {
   display: inline;
-  float: right;
 }
 .accepted-suggestions li .tooltip {
   display: none;
