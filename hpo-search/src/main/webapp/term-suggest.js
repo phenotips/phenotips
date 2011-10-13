@@ -21,9 +21,35 @@ document.observe('dom:loaded', function() {
             fadeOnClear : false
         }
     };
+    var pickerSpecialClassOptions = {
+      'defaultPicker' : {},
+      'generateCheckboxes' : {
+                  'showKey' : false,
+                  'showTooltip' : false,
+                  'showDeleteTool' : false,
+                  'enableSort' : false,
+                  'showClearTool' : false,
+                  'inputType': 'checkbox',
+                  'listInsertionEltSelector' : '.label-other-phenotype',
+                  'listInsertionPosition' : 'before'
+                },
+      'fullFormCheck' : {
+                  'showKey' : false,
+                  'showTooltip' : false,
+                  'showDeleteTool' : false,
+                  'enableSort' : false,
+                  'showClearTool' : false,
+                  'inputType': 'checkbox',
+                  'acceptAddItem' : function (key, value, info) {
+                     //alert('Preparing ' + key);
+                     return true;
+                  }
+                }
+    }
     if (typeof(MS.widgets.Suggest) != "undefined") {
       var keys = Object.keys(suggestionsMapping);
-      for (var i=0;i<keys.length;i++) {
+      var specialClasses = Object.keys(pickerSpecialClassOptions);
+      for (var i = 0; i < keys.length; i++) {
         var selector = 'input.suggest-' + keys[i];
         $$(selector).each(function(item) {
           if (!item.hasClassName('initialized')) {
@@ -35,7 +61,14 @@ document.observe('dom:loaded', function() {
             // Create the Suggest.
             var suggest = new MS.widgets.Suggest(item, options);
             if (item.hasClassName('multi') && typeof(MS.widgets.SuggestPicker) != "undefined") {
-              var suggestPicker = new MS.widgets.SuggestPicker(item, suggest);
+              var multiSuggestOptions = {};
+              for (var j = 0; j < specialClasses.length; j++) {
+                if (item.hasClassName(specialClasses[j])) {
+                  multiSuggestOptions = pickerSpecialClassOptions[specialClasses[j]];
+                  break;
+                }
+              }
+              var suggestPicker = new MS.widgets.SuggestPicker(item, suggest, multiSuggestOptions);
             }
             item.addClassName('initialized');
           }

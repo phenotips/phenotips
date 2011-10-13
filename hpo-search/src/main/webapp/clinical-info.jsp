@@ -80,6 +80,13 @@ if (submitted) {%>
 
 <fieldset class="clinical-info">
   <legend>Clinical Information</legend>
+
+  <fieldset class="group-other">
+    <legend class="section">Quick phenotype search</legend>
+    <label for="quick-phenotype-search">Enter a free text and choose among suggested ontology terms</label>
+    <input type='text' name='phenotype' class='suggested multi suggest-hpo fullFormCheck' value='' size='16' id='quick-phenotype-search'/>
+  </fieldset>
+
   <div class="col-3">
 <%!
 public boolean isHPId(String id)
@@ -145,11 +152,11 @@ public String generateInput(String name, String label, boolean suggested)
   } else {
     displayedLabel += ":";
   }
-  result = "<label for='" + id + "'>" + displayedLabel + "</label>";
+  result = "<label for='" + id + "'" + (suggested ? " class='label-other-" + name + "'" : "") + ">" + displayedLabel + "</label>";
   if (suggested) {
     result +="<p class='hint'>(enter a free text and choose among suggested ontology terms)</p>";
   }
-  result +="<input type='text' name='" + name + "'" +(suggested ?"' class='suggested multi suggest-hpo'" : "") + " value='' size='16' id='" + id + "'/>";
+  result +="<input type='text' name='" + name + "'" +(suggested ? "' class='suggested multi suggest-hpo generateCheckboxes'" : "") + " value='' size='16' id='" + id + "'/>";
   return result;
 }
 %>
@@ -213,8 +220,8 @@ public String generateInput(String name, String label, boolean suggested)
           put("0010864", "Severe");
         }});
         put("0001328", "Learning disability");
-        put("_i_iqdq", "List IQ/DQ if known");
         put("_other", null);
+        put("_i_iqdq", "List IQ/DQ if known");
       }});
       put ("Behavioral", new LinkedHashMap<String, Object>(){{
         put("0007018", "ADHD");
