@@ -49,10 +49,16 @@ var MS = (function (MS) {
   },
 
   ensureVisible : function (element) {
-    if (element.viewportOffset().top > document.viewport.getDimensions().height) {
-      if (element.viewportOffset().top - this.input.viewportOffset().top < document.viewport.getDimensions().height) {
-        this.input.scrollTo();
-      } else {
+    if (element.viewportOffset().top > this.input.viewportOffset().top) { 
+      if (element.viewportOffset().top > document.viewport.getHeight()) {
+        if (element.viewportOffset().top - this.input.viewportOffset().top < document.viewport.getHeight()) {
+          this.input.scrollTo();
+        } else {
+          element.scrollTo();
+        }
+      }
+    } else {
+      if (element.viewportOffset().top < document.viewport.getScrollOffsets().top) {
         element.scrollTo();
       }
     }
