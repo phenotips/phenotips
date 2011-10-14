@@ -42,10 +42,20 @@ var MS = (function (MS) {
     if (input) {
       input.checked = true;
       Event.fire(input, 'suggest:change');
-      input.scrollTo();
+      this.ensureVisible(input);
       return false;
     }
     return true;
+  },
+
+  ensureVisible : function (element) {
+    if (element.viewportOffset().top > document.viewport.getDimensions().height) {
+      if (element.viewportOffset().top - this.input.viewportOffset().top < document.viewport.getDimensions().height) {
+        this.input.scrollTo();
+      } else {
+        element.scrollTo();
+      }
+    }
   },
 
   acceptSuggestion : function(obj) {
