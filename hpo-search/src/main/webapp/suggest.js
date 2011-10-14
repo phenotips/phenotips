@@ -363,13 +363,21 @@ var MS = (function(MS){
           var info = new Element("dl");
           for (var section in this.options.resultInfo) {
             var sectionExists = false;
-            Element.select(results[i], this.options.resultInfo[section]).each(function(item) {
-              if (!sectionExists) {
-                info.insert({"bottom" : new Element("dt").update(section)});
-                sectionExists = true;
-              }
-              info.insert({"bottom" : new Element("dd").update(item.firstChild.nodeValue)});
-            });
+            var selector = this.options.resultInfo[section].selector;
+            var processingFunction = this.options.resultInfo[section].processor;
+            if (selector) {
+              Element.select(results[i], selector).each(function(item) {
+                if (!sectionExists) {
+                  info.insert({"bottom" : new Element("dt").update(section)});
+                  sectionExists = true;
+                }
+                var text = item.firstChild.nodeValue;
+                if (typeof (processingFunction) == "function") {
+                  text = processingFunction(text);
+                }
+                info.insert({"bottom" : new Element("dd").update(text)});
+              });
+            }
           }
           if (!info.hasChildNodes()) {
             info = '';
