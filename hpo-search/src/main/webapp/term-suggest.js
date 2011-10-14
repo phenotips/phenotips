@@ -1,6 +1,20 @@
 document.observe('dom:loaded', function() {
     // hpo: namespace:medical_genetics
     // go : namespace:
+    var highlightChecked = function(element) {
+      if (element.checked) {
+        element.up('label').addClassName('selected');
+      } else {
+        element.up('label').removeClassName('selected');
+      }
+    };
+    var enableHighlightChecked = function(element) {
+      highlightChecked(element);
+      ['change', 'suggest:change'].each(function(eventName) {
+        element.observe(eventName, highlightChecked.bind(element,element));
+      });
+    };
+    $$('label input[type=checkbox]').each(enableHighlightChecked);
     var suggestionsMapping = {
         "hpo" : {
             script: "/solr/select?start=0&rows=15&debugQuery=on&",
@@ -17,7 +31,13 @@ document.observe('dom:loaded', function() {
             resultsParameter : "doc",
             resultId : "str[name=id]",
             resultValue : "str[name=name]",
-            resultInfo : {"Definition" : "str[name=def]", "Synonyms" : "arr[name=synonym] str"},
+            resultInfo : {
+                           "Definition" : "str[name=def]",
+                           "Synonyms"   : "arr[name=synonym] str",
+                           "Is a"       : "arr[name=is_a] str"
+                         },
+            enableHierarchy: true,
+            resultParent : "arr[name=is_a] str",
             fadeOnClear : false
         }
     };
@@ -31,19 +51,17 @@ document.observe('dom:loaded', function() {
                   'showClearTool' : false,
                   'inputType': 'checkbox',
                   'listInsertionEltSelector' : '.label-other-phenotype',
-                  'listInsertionPosition' : 'before'
+                  'listInsertionPosition' : 'before',
+                  'onItemAdded' : enableHighlightChecked
                 },
-      'fullFormCheck' : {
+      'quickSearch' : {
                   'showKey' : false,
                   'showTooltip' : false,
                   'showDeleteTool' : false,
                   'enableSort' : false,
                   'showClearTool' : false,
                   'inputType': 'checkbox',
-                  'acceptAddItem' : function (key, value, info) {
-                     //alert('Preparing ' + key);
-                     return true;
-                  }
+                  'onItemAdded' : enableHighlightChecked
                 }
     }
     if (typeof(MS.widgets.Suggest) != "undefined") {

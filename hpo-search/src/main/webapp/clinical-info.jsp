@@ -84,7 +84,7 @@ if (submitted) {%>
   <fieldset class="group-other">
     <legend class="section">Quick phenotype search</legend>
     <label for="quick-phenotype-search">Enter a free text and choose among suggested ontology terms</label>
-    <input type='text' name='phenotype' class='suggested multi suggest-hpo fullFormCheck' value='' size='16' id='quick-phenotype-search'/>
+    <input type='text' name='phenotype' class='suggested multi suggest-hpo quickSearch' value='' size='16' id='quick-phenotype-search'/>
   </fieldset>
 
   <div class="col-3">

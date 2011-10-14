@@ -32,12 +32,19 @@ var MS = (function (MS) {
       this.clearTool.observe('click', this.clearAcceptedList.bindAsEventListener(this));
       this.list.insert({'after': this.clearTool});
     }
-    if (typeof(this.options.acceptAddItem) == "function") {
-      this.acceptAddItem = this.options.acceptAddItem;
+    if (typeof(this.options.onItemAdded) == "function") {
+      this.onItemAdded = this.options.onItemAdded;
     }
   },
 
   acceptAddItem : function (key, value, info) {
+    var input = $(this.getInputId(key));
+    if (input) {
+      input.checked = true;
+      Event.fire(input, 'suggest:change');
+      input.scrollTo();
+      return false;
+    }
     return true;
   },
 
@@ -53,10 +60,11 @@ var MS = (function (MS) {
     if (!key) {
       return;
     }
+    var id = this.getInputId(key);
     var listItem = new Element("li");
-    var displayedValue = new Element("label", {"class": "accepted-suggestion"});
+    var displayedValue = new Element("label", {"class": "accepted-suggestion", "for" : id});
     // insert input
-    var inputOptions = {"type" : this.options.inputType, "name" : this.inputName, "value" : key};
+    var inputOptions = {"type" : this.options.inputType, "name" : this.inputName, "id" : id, "value" : key};
     if (this.options.inputType == 'checkbox') {
       inputOptions.checked = 'checked';
     }
@@ -81,6 +89,10 @@ var MS = (function (MS) {
     }
     this.list.appendChild(listItem);
     this.updateListTools();
+    this.onItemAdded($(id))
+  },
+
+  onItemAdded : function (element) {
   },
 
   removeItem : function(event) {
@@ -106,6 +118,10 @@ var MS = (function (MS) {
     if (this.options.enableSort && this.list.select('li .accepted-suggestion').length > 0 && typeof(Sortable) != "undefined") {
       Sortable.create(this.list);
     }
+  },
+
+  getInputId : function(key) {
+    return this.inputName + "_" + key;
   }
 });
   return MS;
