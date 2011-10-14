@@ -224,7 +224,7 @@ public String generateInput(String name, String label, boolean suggested)
         put("_i_iqdq", "List IQ/DQ if known");
       }});
       put ("Behavioral", new LinkedHashMap<String, Object>(){{
-        put("0007018", "ADHD");
+        put("0007018", "Attention deficit hyperactivity disorder");
         put("0000717", "Autism");
         put("0000729", "Pervasive developmental delay");
         put("0010865", "Oppositional defiant disorder");
