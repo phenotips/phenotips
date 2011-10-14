@@ -150,4 +150,8 @@ label.selected {
   color: #000;
   background-color: #FFB;
   font-weight: bold;
+  display: inline-block;
+  width: 100%;
+  border-left: 4px solid #333;
+  margin-left: -4px;
 }

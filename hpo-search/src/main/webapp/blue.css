@@ -11,3 +11,7 @@ input[type="submit"], input[type="button"], button {
 .suggestItems .suggestValue {
   color: #369;
 }
+label.selected {
+  background-color: #ddf;
+  border-color: #369;
+}
