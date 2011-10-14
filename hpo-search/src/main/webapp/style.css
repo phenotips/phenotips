@@ -4,7 +4,7 @@ body {
   font-family: Verdana, Arial, sans-serif;
   font-size: 87%;
   margin: 0;
-  padding: 8px;
+  padding: 8px 20px;
 }
 
 h1 {
@@ -22,8 +22,8 @@ h1.header {
   border-bottom-color: #e82;
   background-color: #333;
   color: #ccc;
-  padding: 8px;
-  margin: -8px -8px .8em;
+  padding: 8px 20px;
+  margin: -8px -20px .8em;
   text-shadow: 0 0 6px #fff;
 }
 
@@ -143,65 +143,11 @@ button {
   border-radius: 4px;
   box-shadow: 0 0 6px #ddd;
 }
-.accepted-suggestions {
-  margin: 0 0 1em;
-  list-style-type: none;
-  padding: 0;
-  font-size: 87%;
-}
-
-.accepted-suggestions li {
-  position: relative;
-  padding: .05em 2px;
-  line-height: 1.3em;
-}
-.accepted-suggestions li .key {
-  font-size: 87%;
-  color: #777;
-}
-.accepted-suggestions li .delete-tool,
-.clear-tool {
-  display: none;
-  color: #a00;
-  line-height: 1em;
-  margin: 0 0 0 0.5em;
-  cursor: pointer;
-  float: right;
-}
-.clear-tool {
-  font-size: 87%;
-  display: block;
-}
-.accepted-suggestions li:hover {
-  background: #FFB;
-}
-.accepted-suggestions li:hover .delete-tool {
-  display: inline;
-}
-.accepted-suggestions li .tooltip {
-  display: none;
-  position: absolute;
-  top: 1.35em;
-  left: 12.5%;
-  width: 75%;
-  border: 0 none;
-  background: #fff;
-  padding: 4px 8px;
-  -moz-border-radius: 0 12px 12px 12px;
-  -webkit-border-radius: 0 12px 12px 12px;
-  border-radius: 0 12px 12px 12px;
-  -moz-box-shadow: 0 0 6px #777;
-  box-shadow: 0 0 6px #777;
-  z-index: 20;
-}
-.accepted-suggestions li:hover .tooltip {
-  display: block;
-}
-.accepted-suggestions li .tooltip dt{
-  color: #000;
-  font-style: italic;
-  margin: .4em 0 0.2em;
-}
 .suggestItems .suggestValue {
   color: #000;
+}
+label.selected {
+  color: #000;
+  background-color: #FFB;
+  font-weight: bold;
 }

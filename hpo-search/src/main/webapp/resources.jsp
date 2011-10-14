@@ -1,7 +1,7 @@
-<link rel="stylesheet" type="text/css" href="suggest.css">
 <link rel="stylesheet" type="text/css" href="style.css">
 <link rel="stylesheet" type="text/css" href="blue.css">
 <link rel="stylesheet" type="text/css" href="suggest.css">
+<link rel="stylesheet" type="text/css" href="multi-suggest.css">
 <link rel="icon" href="favicon.ico" type="image/ico"></link>
 <link rel="shortcut icon" href="favicon.ico" type="image/ico"></link>
 <script type="text/javascript" src="prototype.js"></script>
