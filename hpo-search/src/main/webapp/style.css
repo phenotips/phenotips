@@ -76,9 +76,11 @@ h1 a, h1 a:link, h1 a:visited, h1 a:link:visited {
 .clinical-info {
   margin-top: 3em;
 }
-.clinical-info .accepted-suggestion .key,
-.clinical-info .accepted-suggestion .sep {
-  display: none;
+.patient-info fieldset {
+  backgroud: transparent !important;
+  background-image: none !important;
+  border: 0 none !important;
+  margin: 0 !important;
 }
 .subsection {
   margin-left: 1em;
@@ -105,6 +107,39 @@ fieldset {
   float: none;
   clear: both;
 }
+fieldset fieldset {
+  background-image: linear-gradient(bottom, #FFFFFF 0%, #F7F7F7 64%);
+  background-image: -o-linear-gradient(bottom, #FFFFFF 0%, #F7F7F7 64%);
+  background-image: -moz-linear-gradient(bottom, #FFFFFF 0%, #F7F7F7 64%);
+  background-image: -webkit-linear-gradient(bottom, #FFFFFF 0%, #F7F7F7 64%);
+  background-image: -ms-linear-gradient(bottom, #FFFFFF 0%, #F7F7F7 64%);
+  background-image: -webkit-gradient(
+	linear,
+	left bottom,
+	left top,
+	color-stop(0, #FFF),
+	color-stop(0.64, #F7F7F7))
+  );
+  padding: 0 12px;
+  margin: 1.5em 0.5em .5em 0;
+  border-left: 1px solid #333;
+  border-top: 1px solid #333;
+}
+fieldset fieldset.group-other {
+  background-image: linear-gradient(bottom, #FFFFFF 0%, #FFB 64%);
+  background-image: -o-linear-gradient(bottom, #FFFFFF 0%, #FFB 64%);
+  background-image: -moz-linear-gradient(bottom, #FFFFFF 0%, #FFB 64%);
+  background-image: -webkit-linear-gradient(bottom, #FFFFFF 0%, #FFB 64%);
+  background-image: -ms-linear-gradient(bottom, #FFFFFF 0%, #FFB 64%);
+  background-image: -webkit-gradient(
+	linear,
+	left bottom,
+	left top,
+	color-stop(0, #FFF),
+	color-stop(0.64, #FFB))
+  );
+  border-color: #777;
+}
 legend {
   color: #000;
   font-weight: bold;
@@ -114,6 +149,16 @@ legend {
 }
 fieldset fieldset legend {
   font-size: 120%;
+  background-color: #F7F7F7;
+  margin: 0 -13px;
+  padding: 4px 12px 0;
+  border-top: 1px solid #333;
+  border-left: 1px solid #333;
+  border-right: .3px solid #333;
+}
+fieldset fieldset.group-other legend {
+  background-color: #FFB;
+  border-color: #777;
 }
 label {
   font-weight: normal;

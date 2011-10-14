@@ -8,6 +8,26 @@ a, a:link, a:visited, a:link:visited {
 input[type="submit"], input[type="button"], button {
     background-color: #369;
 }
+fieldset fieldset {
+  background-image: linear-gradient(bottom, #FFFFFF 0%, #F4F4FF 64%);
+  background-image: -o-linear-gradient(bottom, #FFFFFF 0%, #F4F4FF 64%);
+  background-image: -moz-linear-gradient(bottom, #FFFFFF 0%, #F4F4FF 64%);
+  background-image: -webkit-linear-gradient(bottom, #FFFFFF 0%, #F4F4FF 64%);
+  background-image: -ms-linear-gradient(bottom, #FFFFFF 0%, #F4F4FF 64%);
+  background-image: -webkit-gradient(
+	linear,
+	left bottom,
+	left top,
+	color-stop(0, #FFF),
+	color-stop(0.64, #F4F4FF))
+  );
+  border-color: #369;
+}
+fieldset fieldset legend {
+  background: #F4F4FF;
+  border-color: #369;
+}
+
 .suggestItems .suggestValue {
   color: #369;
 }
