@@ -163,6 +163,8 @@ fieldset fieldset.group-other legend {
 label {
   font-weight: normal;
   color: #000;
+  display: inline-block;
+  width: 100%;
 }
 .hint {
   color: #777;
@@ -195,8 +197,6 @@ label.selected {
   color: #000;
   background-color: #FFB;
   font-weight: bold;
-  display: inline-block;
-  width: 100%;
   border-left: 4px solid #333;
   margin-left: -4px;
 }

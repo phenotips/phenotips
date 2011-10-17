@@ -50,7 +50,7 @@ document.observe('dom:loaded', function() {
       'generateCheckboxes' : {
                   'showKey' : false,
                   'showTooltip' : false,
-                  'showDeleteTool' : false,
+                  'showDeleteTool' : true,
                   'enableSort' : false,
                   'showClearTool' : false,
                   'inputType': 'checkbox',
@@ -61,7 +61,7 @@ document.observe('dom:loaded', function() {
       'quickSearch' : {
                   'showKey' : false,
                   'showTooltip' : false,
-                  'showDeleteTool' : false,
+                  'showDeleteTool' : true,
                   'enableSort' : false,
                   'showClearTool' : false,
                   'inputType': 'checkbox',

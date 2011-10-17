@@ -6,8 +6,10 @@
 
 .accepted-suggestions li {
   position: relative;
-  padding: .05em 0;
   line-height: 1.3em;
+}
+.accepted-suggestion {
+  padding: .05em 0;
 }
 .accepted-suggestions li .key {
   font-size: 87%;
@@ -30,6 +32,9 @@
   background: #FFB;
 }
 .accepted-suggestions li:hover .delete-tool {
+  position: absolute;
+  top: .4em;
+  right: 0;
   display: inline;
 }
 .accepted-suggestions li .tooltip {
