@@ -360,11 +360,11 @@ var MS = (function(MS){
 
       // traverse xml
       //
-      var results = xml.getElementsByTagName(source.resultsParameter || this.options.resultsParameter);
+      var results = xml.getElementsByTagName((source && source.resultsParameter) || this.options.resultsParameter);
 
       var _getExpandCollapseTriggerSymbol = function(isCollapsed) {
-        if (isCollapsed) return "+";
-        return "-";
+        if (isCollapsed) return "&#x25B8;";
+        return "&#x25BE;";
       }
 
       for (var i = 0; i < results.length; i++) {
@@ -389,18 +389,22 @@ var MS = (function(MS){
               }
               var url= (sOptions.script || this.options.script) + (sOptions.varname || this.options.varname) + '=' + encodeURIComponent(query);
               var trigger = new Element("a", {'class' : 'expand-tool'}).update(_getExpandCollapseTriggerSymbol(sectionState == 'collapsed'));
+              trigger._url = url;
+              trigger._processingFunction = processingFunction;
               info.insert({"bottom" : new Element("dt", {'class' : sectionState}).insert({'top' : trigger}).insert({'bottom' : section})});
               info.insert({"bottom" : new Element("dd", {'class' : 'expandable'})});
-              trigger.observe('click', function() {
-                var parent = trigger.up();
+              trigger.observe('click', function(event) {
+                event.stop();
+                var trigger = event.element();
+                var parent = trigger.up('dt');
                 var target = parent.next('dd.expandable');
                 if (parent.hasClassName('collapsed') && !target.hasChildNodes()) {
-                  var ajx = new Ajax.Request(url, {
+                  var ajx = new Ajax.Request(trigger._url, {
                           method: 'get',
                           requestHeaders: {'Accept' : "application/xml"},
                           onSuccess: function(response) {
-                             //target.update(processingFunction.call(this, response, {}));
-                             target.update(response.responseText);
+                             target.update(trigger._processingFunction.call(this, response, {}));
+                             //target.update(response.responseText);
                           }.bind(this),
                           onFailure: function (response) {
                             alert("Failed to retrieve suggestions : " + respose.statusText);
@@ -418,7 +422,8 @@ var MS = (function(MS){
                   info.insert({"bottom" : new Element("dt", {'class' : sectionState}).insert({'top' : trigger}).insert({'bottom' : section})});
                   sectionContents = new Element("dd", {'class' : 'expandable'});
                   info.insert({"bottom" : sectionContents});
-                  trigger.observe('click', function() {
+                  trigger.observe('click', function(event) {
+                    event.stop();
                     trigger.up().toggleClassName('collapsed');
                     trigger.update(_getExpandCollapseTriggerSymbol(trigger.up().hasClassName('collapsed')));
                   }.bindAsEventListener(this));

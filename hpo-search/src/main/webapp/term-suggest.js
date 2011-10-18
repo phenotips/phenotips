@@ -46,7 +46,7 @@ document.observe('dom:loaded', function() {
                                                                  'is_a' : { 'stub': true}
                                                }),
                                               "processor" : function (response) {
-                                                              this.getSuggestionList(response);
+                                                              return this.getSuggestionList(response);
                                                             }
                                              }
                          },

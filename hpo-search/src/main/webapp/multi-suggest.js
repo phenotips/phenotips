@@ -102,6 +102,7 @@ var MS = (function (MS) {
     // tooltip, if information exists and the options state there should be a tooltip
     if (this.options.showTooltip && info) {
       listItem.appendChild(new Element("div", {class : "tooltip"}).update(info));
+      listItem.select('.expand-tool').invoke('observe', 'click', function(event){event.stop();});
     }
     this.list.appendChild(listItem);
     this.updateListTools();
