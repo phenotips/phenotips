@@ -154,3 +154,21 @@ div.resultContainer div.sourceContent.loading {
 .suggestInfo dt {
   font-style: italic;
 }
+
+.suggestInfo dt, .suggestInfo dd {
+  margin-left: 1.2em;
+  position: relative;
+}
+.suggestInfo dd.collapsed + dd {
+  display: none;
+}
+.suggestInfo dt .expand-tool {
+  cursor: pointer;
+  content: "&#x25BE";
+  position: absolute;
+  top: .5em;
+  left: -1.2em;
+}
+.suggestInfo dt.collapsed .expand-tool {
+  content: "&#x25B8";
+}

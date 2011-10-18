@@ -333,9 +333,13 @@ var MS = (function(MS){
       return;
     }
 
-    this.aSuggestions = [];
+    this.aSuggestions = this.getSuggestionList(req, source);
+    this.createList(this.aSuggestions, source);
+  },
 
-    if (source.json) {
+  getSuggestionList : function (req, source) {
+    var aSuggestions = [];
+    if (source && source.json) {
       var jsondata = req.responseJSON;
       if (!jsondata) {
         return false;
@@ -343,7 +347,7 @@ var MS = (function(MS){
       var results = jsondata[source.resultsParameter || this.options.resultsParameter];
 
       for (var i = 0; i < results.length; i++) {
-        this.aSuggestions.push({
+        aSuggestions.push({
            'id': results[i][source.resultId || this.options.resultId],
            'value': results[i][source.resultValue || this.options.resultValue],
            'info': results[i][source.resultInfo || this.options.resultInfo],
@@ -358,40 +362,87 @@ var MS = (function(MS){
       //
       var results = xml.getElementsByTagName(source.resultsParameter || this.options.resultsParameter);
 
+      var _getExpandCollapseTriggerSymbol = function(isCollapsed) {
+        if (isCollapsed) return "+";
+        return "-";
+      }
+
       for (var i = 0; i < results.length; i++) {
         if (results[i].hasChildNodes()) {
           var info = new Element("dl");
           for (var section in this.options.resultInfo) {
-            var sectionExists = false;
-            var selector = this.options.resultInfo[section].selector;
-            var processingFunction = this.options.resultInfo[section].processor;
-            if (selector) {
+            var sOptions = this.options.resultInfo[section];
+            var selector = sOptions.selector;
+            if (!selector) {
+              continue;
+            }
+            var processingFunction = sOptions.processor;
+            var sectionState = ""
+            if (sOptions.collapsed || sOptions.dynamic) {
+               sectionState = "collapsed";
+            }
+            if (sOptions.dynamic) {
+              var query = Element.down(results[i], selector).firstChild.nodeValue;
+              var queryProcessor = sOptions.queryProcessor || this.options.queryProcessor;
+              if (queryProcessor && typeof(queryProcessor.processQuery) == 'function') {
+                query = queryProcessor.processQuery(query);
+              }
+              var url= (sOptions.script || this.options.script) + (sOptions.varname || this.options.varname) + '=' + encodeURIComponent(query);
+              var trigger = new Element("a", {'class' : 'expand-tool'}).update(_getExpandCollapseTriggerSymbol(sectionState == 'collapsed'));
+              info.insert({"bottom" : new Element("dt", {'class' : sectionState}).insert({'top' : trigger}).insert({'bottom' : section})});
+              info.insert({"bottom" : new Element("dd", {'class' : 'expandable'})});
+              trigger.observe('click', function() {
+                var parent = trigger.up();
+                var target = parent.next('dd.expandable');
+                if (parent.hasClassName('collapsed') && !target.hasChildNodes()) {
+                  var ajx = new Ajax.Request(url, {
+                          method: 'get',
+                          requestHeaders: {'Accept' : "application/xml"},
+                          onSuccess: function(response) {
+                             //target.update(processingFunction.call(this, response, {}));
+                             target.update(response.responseText);
+                          }.bind(this),
+                          onFailure: function (response) {
+                            alert("Failed to retrieve suggestions : " + respose.statusText);
+                          }
+                  });
+                }
+                parent.toggleClassName('collapsed');
+                trigger.update(_getExpandCollapseTriggerSymbol(parent.hasClassName('collapsed')));
+              }.bindAsEventListener(this));
+            } else {
+              var sectionContents = null;
               Element.select(results[i], selector).each(function(item) {
-                if (!sectionExists) {
-                  info.insert({"bottom" : new Element("dt").update(section)});
-                  sectionExists = true;
+                if (!sectionContents) {
+                  var trigger = new Element("a", {'class' : 'expand-tool'}).update(_getExpandCollapseTriggerSymbol(sOptions.collapsed));
+                  info.insert({"bottom" : new Element("dt", {'class' : sectionState}).insert({'top' : trigger}).insert({'bottom' : section})});
+                  sectionContents = new Element("dd", {'class' : 'expandable'});
+                  info.insert({"bottom" : sectionContents});
+                  trigger.observe('click', function() {
+                    trigger.up().toggleClassName('collapsed');
+                    trigger.update(_getExpandCollapseTriggerSymbol(trigger.up().hasClassName('collapsed')));
+                  }.bindAsEventListener(this));
                 }
                 var text = item.firstChild.nodeValue;
                 if (typeof (processingFunction) == "function") {
                   text = processingFunction(text);
                 }
-                info.insert({"bottom" : new Element("dd").update(text)});
+                sectionContents.insert({"bottom" : new Element("div").update(text)});
               });
             }
           }
           if (!info.hasChildNodes()) {
             info = '';
           }
-          this.aSuggestions.push({
+          aSuggestions.push({
             'id'   : Element.down(results[i], this.options.resultId).firstChild.nodeValue,
             'value': Element.down(results[i], this.options.resultValue).firstChild.nodeValue,
             'info' : info
           });
         }
       }
-
     }
-    this.createList(this.aSuggestions, source);
+    return aSuggestions;
   },
 
   /**
@@ -587,43 +638,8 @@ var MS = (function(MS){
     //
     for (var i=0,len=arr.length;i<len;i++)
     {
-	  // Output is either emphasized or row value depending on source option
-      //var output = source.highlight ? this.emphasizeMatches(this.sInput, arr[i].value) : arr[i].value;
-/*      var output = arr[i].value;
-      if (arr[i].hint) {
-        output += "<span class='hint'>" + arr[i].hint + "</span>";
-      }
-
-      if (!this.options.displayValue) {
-        var displayNode = new Element("span", {'class':'info'}).update(output);
-      }
-      else {
-        var displayNode = new Element("div").insert(new Element('div', {'class':'value'}).update(output))
-                                            .insert(new Element('div', {'class':'info'}).update(
-                                              "<span class='legend'>" + this.options.displayValueText + "</span>" + arr[i].info)
-                                            );
-      }*/
-      var displayNode = new Element("div");
-      // If the search result contains an icon information, we insert this icon in the result entry.
-      if (arr[i].icon) {
-        var iconImage = new Element("img", {'src' : arr[i].icon, 'class' : 'icon' });
-        displayNode.insert({top: iconImage});
-      }
-
-      var valueNode = new Element('div')
-            .insert(new Element('span', {'class':'suggestId'}).update(arr[i].id))
-            .insert(new Element('span', {'class':'suggestValue'}).update(arr[i].value))
-            .insert(new Element('div', {'class':'suggestInfo'}).update(arr[i].info));
-
-      var item = new MS.widgets.XListItem( displayNode , {
-        containerClasses: 'suggestItem',
-        value: valueNode,
-        noHighlight: true // we do the highlighting ourselves
-      });
-
-      list.addItem(item);
+       list.addItem(this.generateListItem(arr[i]));
     }
-
     // no results
     if (arr.length == 0)
     {
@@ -640,6 +656,27 @@ var MS = (function(MS){
     if (this.options.timeout > 0) {
       this.toID = setTimeout(function () { pointer.clearSuggestions() }, this.options.timeout);
     }
+  },
+
+  generateListItem : function(data) {
+    var displayNode = new Element("div");
+    // If the search result contains an icon information, we insert this icon in the result entry.
+    if (data.icon) {
+      var iconImage = new Element("img", {'src' : data.icon, 'class' : 'icon' });
+      displayNode.insert({top: iconImage});
+    }
+    var valueNode = new Element('div')
+            .insert(new Element('span', {'class':'suggestId'}).update(data.id))
+            .insert(new Element('span', {'class':'suggestValue'}).update(data.value))
+            .insert(new Element('div', {'class':'suggestInfo'}).update(data.info));
+
+    var item = new MS.widgets.XListItem( displayNode , {
+        containerClasses: 'suggestItem',
+        value: valueNode,
+        noHighlight: true // we do the highlighting ourselves
+    });
+
+    return item;
   },
 
   /**

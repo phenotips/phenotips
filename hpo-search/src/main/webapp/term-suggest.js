@@ -32,13 +32,23 @@ document.observe('dom:loaded', function() {
             resultId : "str[name=id]",
             resultValue : "str[name=name]",
             resultInfo : {
-                           "Definition" : {"selector"  : "str[name=def]"},
-                           "Synonyms"   : {"selector"  : "arr[name=synonym] str"},
-                           "Is a"       : {"selector"  : "arr[name=is_a] str",
-                                           "processor" : function (text){
-                                                         return text.replace(/(HP:[0-9]+)\s*!\s*(.*)/, "[$1] $2");
-                                                       }
-                                          }
+                           "Definition"    : {"selector"  : "str[name=def]"},
+                           "Synonyms"      : {"selector"  : "arr[name=synonym] str"},
+                           "Is a"          : {"selector"  : "arr[name=is_a] str",
+                                              "processor" : function (text){
+                                                            return text.replace(/(HP:[0-9]+)\s*!\s*(.*)/, "[$1] $2");
+                                                          },
+                                              "collapsed" : true
+                                             },
+                           "Subcategories" : {"selector"  : "str[name=id]",
+                                              "dynamic"   : true,
+                                              "queryProcessor" : typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
+                                                                 'is_a' : { 'stub': true}
+                                               }),
+                                              "processor" : function (response) {
+                                                              this.getSuggestionList(response);
+                                                            }
+                                             }
                          },
             enableHierarchy: true,
             resultParent : "arr[name=is_a] str",
