@@ -376,6 +376,7 @@ var MS = (function(MS){
             if (!selector) {
               continue;
             }
+            sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/, '').replace(/\s+/, "-");
             var processingFunction = sOptions.processor;
             var sectionState = ""
             if (sOptions.collapsed || sOptions.dynamic) {
@@ -391,8 +392,8 @@ var MS = (function(MS){
               var trigger = new Element("a", {'class' : 'expand-tool'}).update(_getExpandCollapseTriggerSymbol(sectionState == 'collapsed'));
               trigger._url = url;
               trigger._processingFunction = processingFunction;
-              info.insert({"bottom" : new Element("dt", {'class' : sectionState}).insert({'top' : trigger}).insert({'bottom' : section})});
-              info.insert({"bottom" : new Element("dd", {'class' : 'expandable'})});
+              info.insert({"bottom" : new Element("dt", {'class' : sectionState + " " + sectionClass}).insert({'top' : trigger}).insert({'bottom' : section})});
+              info.insert({"bottom" : new Element("dd", {'class' : 'expandable ' + sectionClass})});
               trigger.observe('click', function(event) {
                 event.stop();
                 var trigger = event.element();
@@ -629,6 +630,18 @@ var MS = (function(MS){
     }
 
     // create and populate list
+    div.appendChild(this.createListElement(arr, pointer));
+
+    this.suggest = div;
+
+    // remove list after an interval
+    var pointer = this;
+    if (this.options.timeout > 0) {
+      this.toID = setTimeout(function () { pointer.clearSuggestions() }, this.options.timeout);
+    }
+  },
+
+  createListElement : function(arr, pointer) {
     var list = new MS.widgets.XList([], {
        icon: this.options.icon,
        classes: 'suggestList',
@@ -641,7 +654,7 @@ var MS = (function(MS){
     // loop throught arr of suggestions
     // creating an XlistItem for each suggestion
     //
-    for (var i=0,len=arr.length;i<len;i++)
+    for (var i = 0,len = arr.length; i < len; i++)
     {
        list.addItem(this.generateListItem(arr[i]));
     }
@@ -652,15 +665,7 @@ var MS = (function(MS){
                           'classes' : 'noSuggestion',
                           noHighlight :true }) );
     }
-    div.appendChild( list.getElement() );
-
-    this.suggest = div;
-
-    // remove list after an interval
-    var pointer = this;
-    if (this.options.timeout > 0) {
-      this.toID = setTimeout(function () { pointer.clearSuggestions() }, this.options.timeout);
-    }
+    return list.getElement();
   },
 
   generateListItem : function(data) {

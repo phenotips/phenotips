@@ -43,10 +43,21 @@ document.observe('dom:loaded', function() {
                            "Subcategories" : {"selector"  : "str[name=id]",
                                               "dynamic"   : true,
                                               "queryProcessor" : typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
-                                                                 'is_a' : { 'stub': true}
+                                                                 'is_a' : { 'stub': false, 'activationRegex' : 'HP:[0-9]+' }
                                                }),
                                               "processor" : function (response) {
-                                                              return this.getSuggestionList(response);
+                                                              var suggestions = this.getSuggestionList(response);
+                                                              for (var i = 0; i < suggestions.length; ++i) {
+                                                                suggestions[i].info = "";
+                                                                /*var info = suggestions[i].info;
+                                                                Element.select(info, 'dt').each(function (elt){
+                                                                  if (!elt.hasClassName('subcategories')) {
+                                                                    elt.next('dd').remove();
+                                                                    elt.remove();
+                                                                  }
+                                                                });*/
+                                                              }
+                                                              return this.createListElement(suggestions, this);
                                                             }
                                              }
                          },
