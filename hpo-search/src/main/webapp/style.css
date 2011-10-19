@@ -121,7 +121,7 @@ fieldset fieldset {
 	color-stop(0.64, #F7F7F7))
   );
   padding: 0 12px;
-  margin: 1.5em 0.5em .5em 0;
+  margin: 3em 0.5em .5em 0;
   border-left: 1px solid #333;
   border-top: 1px solid #333;
 }
@@ -150,11 +150,16 @@ legend {
 fieldset fieldset legend {
   font-size: 120%;
   background-color: #F7F7F7;
-  margin: 0 -13px;
-  padding: 4px 12px 0;
+  margin: -1.5em 0 0 -13px;
+  line-height: 1.4em;
+  padding: .1em 12px 0;
   border-top: 1px solid #333;
   border-left: 1px solid #333;
   border-right: .3px solid #333;
+  -moz-border-radius: 8px 8px 0 0;
+  -webkit-border-radius: 8px 8px 0 0;
+  border-radius: 8px 8px 0 0;
+  min-width: 85%;
 }
 fieldset fieldset.group-other legend {
   background-color: #FFB;
