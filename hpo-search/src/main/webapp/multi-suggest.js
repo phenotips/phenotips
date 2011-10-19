@@ -4,7 +4,7 @@ var MS = (function (MS) {
 
   options : {
     'showKey' : true,
-    'showTooltip' : true,
+    'showTooltip' : false,
     'showDeleteTool' : true,
     'enableSort' : true,
     'showClearTool' : true,
