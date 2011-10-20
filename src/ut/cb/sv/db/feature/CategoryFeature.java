@@ -8,7 +8,7 @@ import java.util.Set;
  * 
  * @version $Id$
  */
-public class CategoricalFeature extends Feature
+public class CategoryFeature extends Feature
 {
     /** The categories */
     Set<String> values = new LinkedHashSet<String>();
@@ -16,7 +16,7 @@ public class CategoricalFeature extends Feature
     public Set<String> encounteredValues = new LinkedHashSet<String>();
 
     /** {@inheritDoc} */
-    public CategoricalFeature(String name)
+    public CategoryFeature(String name)
     {
         super(name);
     }
@@ -43,7 +43,7 @@ public class CategoricalFeature extends Feature
     }
 
     /**
-     * {@inheritDoc} Upon registration into a {@link CategoricalFeature}, a value is inserted in thr {@link #values} set
+     * {@inheritDoc} Upon registration into a {@link CategoryFeature}, a value is inserted in thr {@link #values} set
      * of this feature.
      */
     @Override
@@ -57,7 +57,7 @@ public class CategoricalFeature extends Feature
 
     /** {@inheritDoc} */
     @Override
-    public Object processValue(String valueString)
+    public Object postProcessValue(String valueString)
     {
         if (isValueValid(valueString)) {
             return valueString;

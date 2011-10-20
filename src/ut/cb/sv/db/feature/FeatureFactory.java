@@ -22,12 +22,6 @@ public class FeatureFactory
     /** Separator between the feature type and feature value list in the mapping file */
     private static final String FEATURE_METADATA_TYPE_VALUE_SEPARATOR = ":";
 
-    /** Separator between the acceptable feature values in the mapping file */
-    private static final String FEATURE_METADATA_VALUES_SEPARATOR = "\\|";
-
-    /** Separates the variants of a feature's value in the mapping file */
-    private static final String FEATURE_METADATA_VALUE_VARIANTS_SEPARATOR = "=";
-
     /** The package of the feature classes */
     protected static final String DEFAULT_FEATURE_CLASS_PREFIX = Feature.class.getPackage().getName();
 
@@ -95,22 +89,7 @@ public class FeatureFactory
         }
         String type = metadata.substring(0, sepPosition).trim();
         f = getFeatureInstance(name, type);
-        String values[] = metadata.substring(sepPosition + 1).split(FEATURE_METADATA_VALUES_SEPARATOR);
-        for (String value : values) {
-            // System.out.println(value);
-            String variants[] = value.split(FEATURE_METADATA_VALUE_VARIANTS_SEPARATOR);
-            if (variants.length == 1) {
-                this.valueMapping.put(variants[0], variants[0]);
-            } else {
-                for (int i = 0; i < variants.length; ++i) {
-                    this.valueMapping.put(variants[i], variants[0]);
-                }
-            }
-            if (variants.length > 0 && variants[0] != null) {
-                f.registerValue(variants[0]);
-            }
-        }
-
+        this.valueMapping = new FeatureValueMapping().load(f, metadata.substring(sepPosition + 1));
         return f;
     }
 

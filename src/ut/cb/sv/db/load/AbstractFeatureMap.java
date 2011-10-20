@@ -109,15 +109,38 @@ public abstract class AbstractFeatureMap implements FeatureMap
         return accepts;
     }
 
-    public Object getOutputValue(String featureName, String inputValue)
+    @SuppressWarnings("unchecked")
+    public Set<Object> getOutputValue(String featureName, String inputValue)
     {
+        Set<Object> result = new LinkedHashSet<Object>();
         try {
             Feature f = this.getFeatureForName(featureName);
-            String outputValue = this.featureValueMap.get(featureName).get(inputValue);
-            if (outputValue == null) {
-                outputValue = inputValue;
+            Set<String> inputValues;
+            Object ivObj = f.preProcessValue(inputValue);
+            if (ivObj instanceof Set) {
+                inputValues = (Set<String>) ivObj;
+            } else {
+                inputValues = new LinkedHashSet<String>();
+                if (ivObj != null) {
+                    inputValues.add((String) ivObj);
+                }
             }
-            return f.processValue(outputValue);
+            for (String iVal : inputValues) {
+                String outputValue = this.featureValueMap.get(featureName).get(iVal);
+                if (outputValue == null) {
+                    outputValue = iVal;
+                }
+                Object ovObj = f.postProcessValue(outputValue);
+                if (ovObj != null) {
+                    continue;
+                }
+                if (ovObj instanceof Set) {
+                    result.addAll((Set) ovObj);
+                } else {
+                    result.add(ovObj);
+                }
+            }
+            return result;
         } catch (NullPointerException ex) {
             System.out.print(featureName + " --- " + inputValue + " ===> null");
             ex.printStackTrace();

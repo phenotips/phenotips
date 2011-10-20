@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.util.LinkedList;
 
 import ut.cb.sv.db.feature.BooleanFeature;
-import ut.cb.sv.db.feature.CategoricalFeature;
+import ut.cb.sv.db.feature.CategoryFeature;
 import ut.cb.sv.db.feature.Feature;
 import ut.cb.sv.db.feature.IntegerFeature;
 import ut.cb.sv.db.feature.NumericFeature;
@@ -55,8 +55,8 @@ public class ArffDatabaseFormatter implements DatabaseFormatter
     {
         if (f instanceof NumericFeature || f instanceof IntegerFeature) {
             return "Numeric";
-        } else if (f instanceof CategoricalFeature && !((CategoricalFeature) f).getValues().isEmpty()) {
-            return ((CategoricalFeature) f).getValues().toString().replace("[", "{\"").replace("]", "\"}").replaceAll(
+        } else if (f instanceof CategoryFeature && !((CategoryFeature) f).getValues().isEmpty()) {
+            return ((CategoryFeature) f).getValues().toString().replace("[", "{\"").replace("]", "\"}").replaceAll(
                 ",\\s*", "\",\"");
         } else if (f instanceof BooleanFeature) {
             return "{true, false}";

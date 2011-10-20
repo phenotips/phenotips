@@ -1,6 +1,7 @@
 package ut.cb.sv.db.load;
 
 import java.util.Collection;
+import java.util.Set;
 
 import ut.cb.sv.db.feature.Feature;
 
@@ -20,7 +21,7 @@ public interface FeatureMap
 
     boolean accepts(String originalName, String entryValue);
 
-    Object getOutputValue(String featureName, String inputValue);
+    Set<Object> getOutputValue(String featureName, String inputValue);
 
     String getFeatureNameForOriginalName(String originalName);
 

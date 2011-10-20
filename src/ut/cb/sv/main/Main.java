@@ -13,6 +13,8 @@ import ut.cb.sv.db.CSVDatabaseFormatter;
 import ut.cb.sv.db.Database;
 import ut.cb.sv.db.DatabaseFormatter;
 import ut.cb.sv.db.PrettyPrintDatabaseFormatter;
+import ut.cb.sv.db.feature.CategoryFeature;
+import ut.cb.sv.db.feature.Feature;
 import ut.cb.sv.db.load.DBLoader;
 import ut.cb.sv.db.load.DBLoaderFactory;
 import ut.cb.sv.gene.GeneFunctionData;
@@ -168,18 +170,26 @@ public class Main
 
             GeneFunctionData gd = new GeneFunctionData();
             // gd.writeTo(System.err);
-            gd.addGOInfoToDatabase(data);
+            // gd.addGOInfoToDatabase(data);
 
             handleOutputOption(cmd, CmdLineOptions.PRETTY_PRINT, data);
             handleOutputOption(cmd, CmdLineOptions.CSV_EXPORT, data);
             handleOutputOption(cmd, CmdLineOptions.ARFF_EXPORT, data);
 
-            /*
-             * for (Feature f : data.getFeatureSet().values()) { // if (f instanceof CategoricalFeature || f instanceof
-             * LabelFeature) { if (f.getName().equalsIgnoreCase("phenotype")) { // System.out.println("\n" + f.getName()
-             * + ":"); for (String value : ((CategoricalFeature) f).encounteredValues) { if (value == null) { continue;
-             * } for (String piece : value.split("\\s*,\\s*")) { System.out.println(piece); } } } }
-             */
+            for (Feature f : data.getFeatureSet().values()) {
+                // if (f instanceof CategoricalFeature || f instanceof LabelFeature) {
+                if (f.getName().equalsIgnoreCase("phenotype")) {
+                    // System.out.println("\n" + f.getName() + ":");
+                    for (String value : ((CategoryFeature) f).encounteredValues) {
+                        System.out.println(value);
+                        /*
+                         * if (value == null) { continue; } for (String piece : value.split("\\s*,\\s*")) {
+                         * System.out.println(piece); }
+                         */
+                    }
+                }
+            }
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
