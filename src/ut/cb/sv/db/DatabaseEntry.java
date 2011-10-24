@@ -48,7 +48,7 @@ public class DatabaseEntry
             setLabel(value);
             return previousLabel;
         }
-        return this.features.put(f.getName(), value);
+        return this.features.put(f.getName(), f.prepareValueForEntry(this, value));
     }
 
     /**

@@ -3,6 +3,8 @@ package ut.cb.sv.db.feature;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import ut.cb.sv.db.DatabaseEntry;
+
 public class MultiCategoryFeature extends CategoryFeature
 {
 
@@ -18,8 +20,8 @@ public class MultiCategoryFeature extends CategoryFeature
             return false;
         }
         int size = 0;
-        Set<Object> values = postProcessValue(value.toString());
-        for (Object valObj : values) {
+        Set<String> values = FeatureValueMapping.getValuesFromList(value.toString());
+        for (String valObj : values) {
             if (!super.registerValue(valObj)) {
                 return false;
             }
@@ -27,6 +29,19 @@ public class MultiCategoryFeature extends CategoryFeature
         }
         this.maxValueSize = Math.max(this.maxValueSize, size);
         return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object prepareValueForEntry(DatabaseEntry entry, Object value)
+    {
+        Set<Object> values = (Set<Object>) entry.get(this.name);
+        if (values == null) {
+            values = new LinkedHashSet<Object>();
+            // entry.addFeature(this, prevValue);
+        }
+        values.add(value);
+        return values;
     }
 
     @Override

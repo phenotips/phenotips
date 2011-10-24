@@ -27,7 +27,7 @@ public abstract class AbstractFeatureMap implements FeatureMap
 
     protected final Map<String, Feature> nameFeatureMap;
 
-    protected final Map<String, Map<String, String>> featureValueMap;
+    protected final Map<String, Map<String, Object>> featureValueMap;
 
     protected final static EntryFilterFactory filterFactory = new EntryFilterFactory();
 
@@ -38,7 +38,7 @@ public abstract class AbstractFeatureMap implements FeatureMap
         this.onConstructionStart();
         this.originalNameFeatureMap = new LinkedHashMap<String, Feature>();
         this.nameFeatureMap = new LinkedHashMap<String, Feature>();
-        this.featureValueMap = new LinkedHashMap<String, Map<String, String>>();
+        this.featureValueMap = new LinkedHashMap<String, Map<String, Object>>();
         EntryFilter filter;
         try {
             BufferedReader input = new BufferedReader(new FileReader(mappingFileName));
@@ -126,12 +126,12 @@ public abstract class AbstractFeatureMap implements FeatureMap
                 }
             }
             for (String iVal : inputValues) {
-                String outputValue = this.featureValueMap.get(featureName).get(iVal);
-                if (outputValue == null) {
-                    outputValue = iVal;
+                Object ovObj = this.featureValueMap.get(featureName).get(iVal);
+                if (ovObj == null) {
+                    ovObj = iVal;
                 }
-                Object ovObj = f.postProcessValue(outputValue);
-                if (ovObj != null) {
+
+                if (ovObj == null) {
                     continue;
                 }
                 if (ovObj instanceof Set) {

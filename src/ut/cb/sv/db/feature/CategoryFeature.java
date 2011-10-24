@@ -43,8 +43,8 @@ public class CategoryFeature extends Feature
     }
 
     /**
-     * {@inheritDoc} Upon registration into a {@link CategoryFeature}, a value is inserted in thr {@link #values} set
-     * of this feature.
+     * {@inheritDoc} Upon registration into a {@link CategoryFeature}, a value is inserted in thr {@link #values} set of
+     * this feature.
      */
     @Override
     public boolean registerValue(Object value)

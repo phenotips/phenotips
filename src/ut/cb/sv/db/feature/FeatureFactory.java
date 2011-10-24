@@ -29,7 +29,7 @@ public class FeatureFactory
     protected static final String DEFAULT_FEATURE_CLASS_SUFFIX = Feature.class.getSimpleName();
 
     /** Mapping between the values encountered in the input database file and the value to be stored and process */
-    private Map<String, String> valueMapping = new LinkedHashMap<String, String>();
+    private Map<String, Object> valueMapping = new LinkedHashMap<String, Object>();
 
     /**
      * Creates an instance of {@link Feature} of a certain type
@@ -102,9 +102,9 @@ public class FeatureFactory
      * @return the {@link #valueMapping} field, populated by {@link #getFeatureInstanceFromString(String, String)}.
      * @see #getFeatureInstanceFromString(String, String)
      */
-    public Map<String, String> getLastValueMapping()
+    public Map<String, Object> getLastValueMapping()
     {
-        Map<String, String> clone = new LinkedHashMap<String, String>();
+        Map<String, Object> clone = new LinkedHashMap<String, Object>();
         clone.putAll(this.valueMapping);
         return clone;
     }

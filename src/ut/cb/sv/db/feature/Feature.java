@@ -63,6 +63,11 @@ public class Feature
         return value != null;
     }
 
+    public Object prepareValueForEntry(DatabaseEntry entry, Object value)
+    {
+        return value;
+    }
+
     /**
      * Processes a string to retrieve a feature value
      * 

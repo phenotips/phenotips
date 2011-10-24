@@ -20,6 +20,14 @@ public class Location
         this.setEnd(end);
     }
 
+    public Location(Chromosome chr, int start, int end)
+    {
+        super();
+        this.setChr(chr);
+        this.setStart(start);
+        this.setEnd(end);
+    }
+
     public Location(String line)
     {
         super();
@@ -49,6 +57,11 @@ public class Location
         } else {
             this.chr = Chromosome.getValue(chr);
         }
+    }
+
+    private void setChr(Chromosome chr)
+    {
+        this.chr = chr;
     }
 
     /**
@@ -105,6 +118,14 @@ public class Location
     public int getEnd()
     {
         return this.end;
+    }
+
+    /**
+     * @return the end
+     */
+    public int getSize()
+    {
+        return this.end - this.start;
     }
 
     /**

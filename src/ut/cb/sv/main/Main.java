@@ -8,6 +8,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 
+import ut.cb.sv.cdata.SampleCollection;
 import ut.cb.sv.db.ArffDatabaseFormatter;
 import ut.cb.sv.db.CSVDatabaseFormatter;
 import ut.cb.sv.db.Database;
@@ -17,7 +18,6 @@ import ut.cb.sv.db.feature.CategoryFeature;
 import ut.cb.sv.db.feature.Feature;
 import ut.cb.sv.db.load.DBLoader;
 import ut.cb.sv.db.load.DBLoaderFactory;
-import ut.cb.sv.gene.GeneFunctionData;
 
 public class Main
 {
@@ -168,9 +168,12 @@ public class Main
                 failWithMessage("Failed to load database");
             }
 
-            GeneFunctionData gd = new GeneFunctionData();
+            // GeneFunctionData gd = new GeneFunctionData();
             // gd.writeTo(System.err);
             // gd.addGOInfoToDatabase(data);
+
+            SampleCollection sc = new SampleCollection(data);
+            System.out.println(sc);
 
             handleOutputOption(cmd, CmdLineOptions.PRETTY_PRINT, data);
             handleOutputOption(cmd, CmdLineOptions.CSV_EXPORT, data);

@@ -99,6 +99,11 @@ public class GeneFunctionData extends SetMap<GeneLocation, String>
         return this.index.getOverlappingGenes(chr, start, end);
     }
 
+    public Set<String> getGOFunctionsOfOverlappingGenes(Location location)
+    {
+        return this.getGOFunctionsOfOverlappingGenes(location.getChr(), location.getStart(), location.getEnd());
+    }
+
     public Set<String> getGOFunctionsOfOverlappingGenes(Chromosome chr, int start, int end)
     {
         Set<String> result = new HashSet<String>();

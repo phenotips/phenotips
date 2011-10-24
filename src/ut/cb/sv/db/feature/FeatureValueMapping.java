@@ -8,7 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -27,7 +29,7 @@ public class FeatureValueMapping
     {
     }
 
-    public Map<String, String> load(Feature f, String data)
+    public Map<String, Object> load(Feature f, String data)
     {
         data = data.trim();
         if (data.startsWith(VALUE_MAPPING_FILENAME_MARKER)) {
@@ -37,9 +39,9 @@ public class FeatureValueMapping
         }
     }
 
-    private Map<String, String> loadFromString(Feature f, String data)
+    private Map<String, Object> loadFromString(Feature f, String data)
     {
-        Map<String, String> valueMapping = new LinkedHashMap<String, String>();
+        Map<String, Object> valueMapping = new LinkedHashMap<String, Object>();
         String values[] = data.split(FEATURE_METADATA_VALUES_SEPARATOR);
         for (String value : values) {
             handleValueGroup(f, valueMapping, value);
@@ -47,9 +49,9 @@ public class FeatureValueMapping
         return valueMapping;
     }
 
-    private Map<String, String> loadFromFile(Feature f, String filename)
+    private Map<String, Object> loadFromFile(Feature f, String filename)
     {
-        Map<String, String> valueMapping = new LinkedHashMap<String, String>();
+        Map<String, Object> valueMapping = new LinkedHashMap<String, Object>();
         BufferedReader in;
         try {
             in = new BufferedReader(new FileReader(filename));
@@ -65,18 +67,30 @@ public class FeatureValueMapping
         return valueMapping;
     }
 
-    private void handleValueGroup(Feature f, Map<String, String> valueMapping, String group)
+    private void handleValueGroup(Feature f, Map<String, Object> valueMapping, String group)
     {
         String variants[] = group.split(FEATURE_METADATA_VALUE_VARIANTS_SEPARATOR);
-        if (variants.length == 1) {
-            valueMapping.put(variants[0], variants[0]);
-        } else {
-            for (int i = 0; i < variants.length; ++i) {
-                valueMapping.put(variants[i], variants[0]);
-            }
+        if (variants.length == 0) {
+            return;
         }
-        if (variants.length > 0 && variants[0] != null) {
-            f.registerValue(variants[0]);
+        Set<String> values = getValuesFromList(variants[0]);
+        for (String val : values) {
+            valueMapping.put(val, val);
+            f.registerValue(val);
         }
+
+        for (int i = 1; i < variants.length; ++i) {
+            valueMapping.put(variants[i], values);
+        }
+    }
+
+    public static Set<String> getValuesFromList(String list)
+    {
+        Set<String> result = new LinkedHashSet<String>();
+        String values[] = list.trim().split("\\s*[,]\\s*");
+        for (String value : values) {
+            result.add(value);
+        }
+        return result;
     }
 }
