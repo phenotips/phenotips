@@ -1,5 +1,10 @@
-h1, h1.header, input[type=text]:focus {
+h1, h1.header {
     border-color: #09f;
+}
+input[type=text]:focus {
+  border-color: #369;
+  -moz-box-shadow: 0 0 4px #ccc;
+  box-shadow: 0 0 4px #ccc;
 }
 .emphasize,
 a, a:link, a:visited, a:link:visited {
