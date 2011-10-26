@@ -63,6 +63,11 @@ h1 a, h1 a:link, h1 a:visited, h1 a:link:visited {
   float: left;
   margin-right: 1%;
 }
+.col-2 {
+  -moz-column-count: 2;
+  -webkit-column-count: 2;
+  column-count: 2;
+}
 .col-3 {
   -moz-column-count: 3;
   -webkit-column-count: 3;
@@ -75,9 +80,10 @@ h1 a, h1 a:link, h1 a:visited, h1 a:link:visited {
 }
 .clinical-info {
   margin-top: 3em;
+  position: relative;
 }
 .patient-info fieldset {
-  backgroud: transparent !important;
+  background: transparent !important;
   background-image: none !important;
   border: 0 none !important;
   margin: 0 !important;
@@ -107,39 +113,33 @@ fieldset {
   float: none;
   clear: both;
 }
-fieldset fieldset {
-  background-image: linear-gradient(bottom, #FFFFFF 0%, #F7F7F7 64%);
-  background-image: -o-linear-gradient(bottom, #FFFFFF 0%, #F7F7F7 64%);
-  background-image: -moz-linear-gradient(bottom, #FFFFFF 0%, #F7F7F7 64%);
-  background-image: -webkit-linear-gradient(bottom, #FFFFFF 0%, #F7F7F7 64%);
-  background-image: -ms-linear-gradient(bottom, #FFFFFF 0%, #F7F7F7 64%);
-  background-image: -webkit-gradient(
-	linear,
-	left bottom,
-	left top,
-	color-stop(0, #FFF),
-	color-stop(0.64, #F7F7F7))
-  );
-  padding: 0 12px;
-  margin: 3em 0.5em .5em 0;
-  border-left: 1px solid #333;
-  border-top: 1px solid #333;
+fieldset.phenotype-group {
+  padding: 1.4em .8em;
+  margin: 1em 0.5em .5em 0;
+  border-bottom: 1px inset #ccc;
 }
-fieldset fieldset.group-other {
-  background-image: linear-gradient(bottom, #FFFFFF 0%, #FFB 64%);
-  background-image: -o-linear-gradient(bottom, #FFFFFF 0%, #FFB 64%);
-  background-image: -moz-linear-gradient(bottom, #FFFFFF 0%, #FFB 64%);
-  background-image: -webkit-linear-gradient(bottom, #FFFFFF 0%, #FFB 64%);
-  background-image: -ms-linear-gradient(bottom, #FFFFFF 0%, #FFB 64%);
-  background-image: -webkit-gradient(
-	linear,
-	left bottom,
-	left top,
-	color-stop(0, #FFF),
-	color-stop(0.64, #FFB))
-  );
-  border-color: #777;
+
+fieldset.phenotype-group:last-child {
+  border-bottom: 0 none;
 }
+.quick-search-box {
+  float: right;
+  padding: .5em .8em;
+  width: 30%;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.emphasized-box { 
+  background: #DEF;
+  color: #000;
+  border: 1px solid #DEF;
+  -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.1);
+}
+
 legend {
   color: #000;
   font-weight: bold;
@@ -147,24 +147,44 @@ legend {
   padding: 0;
   margin: .5em 0 0.2em;
 }
-fieldset fieldset legend {
-  font-size: 120%;
-  background-color: #F7F7F7;
-  margin: -1.5em 0 0 -13px;
-  line-height: 1.4em;
-  padding: .1em 12px 0;
-  border-top: 1px solid #333;
-  border-left: 1px solid #333;
-  border-right: .3px solid #333;
-  -moz-border-radius: 8px 8px 0 0;
-  -webkit-border-top-right-radius: 8px;
-  -webkit-border-top-left-radius: 8px;
-  border-radius: 8px 8px 0 0;
-  min-width: 85%;
+fieldset.phenotype-group legend {
+  font-size: 110%;
+  display: block;
+  padding: 0.5em 0;
+  position: static;
+  width: 100%; 
+  cursor:pointer
 }
-fieldset fieldset.group-other legend {
-  background-color: #FFB;
-  border-color: #777;
+fieldset.phenotype-group legend:before {
+  display: inline-block;
+  color: #369;
+  font-size: 120%;
+  content: '\25BE ';
+  margin-right: .5em;
+}
+fieldset.phenotype-group.collapsed legend:before {
+  content: '\25B8 ';
+}
+fieldset.collapsed {
+  padding: 0 0.8em;
+}
+fieldset.collapsed * {
+  display: none;
+}
+fieldset.collapsed legend {
+  display: block;
+}
+fieldset.quick-search-box legend {
+  padding: 0 .5em 0 .8em;
+  background: transparent;
+  position: relative;
+  top: 0;
+  left: 0;
+}
+fieldset.quick-search-box h2 {
+  padding: 0;
+  margin: 0 0 .5em;
+  font-size: 100%;
 }
 label {
   font-weight: normal;

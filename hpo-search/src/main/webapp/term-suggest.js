@@ -118,4 +118,31 @@ document.observe('dom:loaded', function() {
         });
       }
     }
+    
+    var qsBox = $('quick-search-box');
+    if (qsBox) {
+      var content = qsBox.next('div');
+      Event.observe(window, 'scroll', function(){
+	var boxHeight = qsBox.getHeight();
+	var boxMinTop = content.cumulativeOffset().top ;
+	var boxMaxTop = content.cumulativeOffset().top + content.getHeight() - boxHeight;
+	var boxLeft = content.cumulativeOffset().left +  content.getWidth();
+	if (document.viewport.getScrollOffsets().top >= boxMinTop && document.viewport.getScrollOffsets().top < boxMaxTop) {
+	  qsBox.style.position = 'fixed';
+	  qsBox.style.left = boxLeft + 'px';
+	  qsBox.style.top = 0;//document.viewport.getScrollOffsets().top - boxMinTop;
+	} else if (document.viewport.getScrollOffsets().top >= boxMaxTop) {
+	  qsBox.style.position = 'absolute';
+	  qsBox.style.top = boxMaxTop;
+	  qsBox.style.left = boxLeft + 'px';
+	} else {
+	  qsBox.style.position = '';
+	  qsBox.style.top = '';
+	  qsBox.style.left = '';
+	}
+      });
+    }
+    $$('fieldset.phenotype-group legend').invoke('observe', 'click', function(event) {
+      event.element().up('fieldset.phenotype-group').toggleClassName('collapsed');
+    });
 });

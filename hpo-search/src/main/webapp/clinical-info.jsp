@@ -81,13 +81,13 @@ if (submitted) {%>
 <fieldset class="clinical-info">
   <legend>Clinical Information</legend>
 
-  <fieldset class="group-other">
-    <legend class="section">Quick phenotype search</legend>
+  <fieldset class="group-other quick-search-box emphasized-box" id="quick-search-box">
+    <h2 class="section">Quick phenotype search</h2>
     <label for="quick-phenotype-search">Enter a free text and choose among suggested ontology terms</label>
     <input type='text' name='phenotype' class='suggested multi suggest-hpo quickSearch' value='' size='16' id='quick-phenotype-search'/>
   </fieldset>
 
-  <div class="col-3">
+  <div class="twothird-width">
 <%!
 public boolean isHPId(String id)
 {
@@ -316,7 +316,7 @@ public String generateInput(String name, String label, boolean suggested)
   Object[] sectionNames = sections.keySet().toArray();
 
   for (int i = 0; i < sectionNames.length; ++i) {%>
-    <fieldset>
+    <fieldset class="phenotype-group">
       <legend class="section"><%= sectionNames[i] %></legend>
       <%= handleSection(sections.get(sectionNames[i])) %>
     </fieldset>
