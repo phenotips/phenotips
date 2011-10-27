@@ -9,7 +9,7 @@ var MS = (function (MS) {
     'enableSort' : true,
     'showClearTool' : true,
     'inputType': 'hidden',
-    'listInsertionEltSelector' : null,
+    'listInsertionElt' : null,
     'listInsertionPosition' : 'after',
   },
   initialize: function(element, suggest, options) {
@@ -21,7 +21,14 @@ var MS = (function (MS) {
     this.suggest.options.callback = this.acceptSuggestion.bind(this);
     this.list = new Element('ul', {'class' : 'accepted-suggestions'});
     var listInsertionElement;
-    if (!this.options.listInsertionEltSelector || !(listInsertionElement = this.input.up().down(this.options.listInsertionEltSelector))) {
+    if (this.options.listInsertionElt) {
+      if (typeof(this.options.listInsertionElt) == "string") {
+        listInsertionElement = this.input.up().down(this.options.listInsertionElt);
+      } else {
+	listInsertionElement = this.options.listInsertionElt;
+      }
+    }
+    if (!listInsertionElement) {
       listInsertionElement = this.input;
     }
     var insertion = {};

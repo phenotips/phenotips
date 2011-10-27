@@ -75,7 +75,7 @@ document.observe('dom:loaded', function() {
                   'enableSort' : false,
                   'showClearTool' : false,
                   'inputType': 'checkbox',
-                  'listInsertionEltSelector' : '.label-other-phenotype',
+                  'listInsertionElt' : '.label-other-phenotype',
                   'listInsertionPosition' : 'before',
                   'onItemAdded' : enableHighlightChecked
                 },
@@ -86,6 +86,8 @@ document.observe('dom:loaded', function() {
                   'enableSort' : false,
                   'showClearTool' : false,
                   'inputType': 'checkbox',
+                  'listInsertionElt' : document.documentElement.down('.clinical-info fieldset:last-child .phenotypes-other'),
+                  'listInsertionPosition' : 'top',
                   'onItemAdded' : enableHighlightChecked
                 }
     }
