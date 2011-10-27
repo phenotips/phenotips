@@ -112,6 +112,7 @@ var MS = (function (MS) {
       listItem.select('.expand-tool').invoke('observe', 'click', function(event){event.stop();});
     }
     this.list.appendChild(listItem);
+    this.ensureVisible($(id));
     this.updateListTools();
     this.onItemAdded($(id))
   },
