@@ -9,7 +9,7 @@
 </head>
 
 <body>
-<%= displayContentTitle("Clinical data form") %>
+<%= displayContentTitle("Clinical data form demo") %>
 
 <%
 String parameterName = "";
@@ -81,21 +81,26 @@ if (submitted) {%>
 <fieldset class="clinical-info">
   <legend>Clinical Information</legend>
 
-  <fieldset class="group-other quick-search-box emphasized-box" id="quick-search-box">
+  <div id="quick-search-box">
+  <fieldset class="group-other quick-search-box emphasized-box">
     <h2 class="section">Quick phenotype search</h2>
     <label for="quick-phenotype-search">Enter a free text and choose among suggested ontology terms</label>
     <input type='text' name='phenotype' class='suggested multi suggest-hpo quickSearch' value='' size='16' id='quick-phenotype-search'/>
   </fieldset>
+  </div>
 
   <div class="twothird-width">
 <%!
+String OTHER_FIELD_MARKER = "_other";
+String DEFAULT_NAME = "phenotype";
+
 public boolean isHPId(String id)
 {
   return id.matches("[0-9]{7}");
 }
 public boolean isHPOther(String id)
 {
-  return id.equals("_other");
+  return id.equals("OTHER_FIELD_MARKER");
 }
 public boolean isNonHPCheckBox(String id)
 {
@@ -112,23 +117,33 @@ public boolean isSubsection(String id)
 
 public String handleSection(LinkedHashMap<String, Object> sectionData)
 {
+  
   String result = "";
+  boolean hasOtherInput = false;
+  if (sectionData.containsKey(OTHER_FIELD_MARKER)) {
+    hasOtherInput = true;
+    sectionData.remove(OTHER_FIELD_MARKER);
+  }
   Object[] fieldIds = sectionData.keySet().toArray();
   for (int i = 0; i < fieldIds.length; ++i) {
     result += handleField((String)fieldIds[i], sectionData);
+  }
+  if (hasOtherInput) {
+    result  = "<div class='phenotypes-main'>" + result + "</div>";
+    result += "<div class='phenotypes-other'>" + generateInput(DEFAULT_NAME, OTHER_FIELD_MARKER, true) + "</div>";
+    result += "<div class='clear'></div>";
   }
   return result;
 }
 public String handleField(String id, LinkedHashMap<String, Object> data)
 {
-  String name = "phenotype";
   Object label = (data.get(id) == null ? id : data.get(id));
   if (isHPId(id)) {
-    return generateCheckBox(name, "HP:" + id, (String)label);
+    return generateCheckBox(DEFAULT_NAME, "HP:" + id, (String)label);
   } else if (isHPOther(id)) {
-    return generateInput(name, (String)label, true);
+    return generateInput(DEFAULT_NAME, (String)label, true);
   } else if (isNonHPCheckBox(id)) {
-    return generateCheckBox(name, id.substring(3), (String)label);
+    return generateCheckBox(DEFAULT_NAME, id.substring(3), (String)label);
   } else if (isNonHPInput(id)) {
     return generateInput(id.substring(3), (String)label, false);
   } else if (isSubsection(id)) {
@@ -180,7 +195,7 @@ public String generateInput(String name, String label, boolean suggested)
         put("0001561", "Polyhydramnios");
         put("0001511", "IUGR");
         put("0001622", "Premature birth");
-        put("_other", "");
+        put(OTHER_FIELD_MARKER, "");
       }});
 
       put ("Family history", new LinkedHashMap<String, Object>(){{
@@ -202,7 +217,7 @@ public String generateInput(String name, String label, boolean suggested)
           put("0001513", ">97th");
         }});
         put("0001535", "Failure to thrive");
-        put("_other", null);
+        put(OTHER_FIELD_MARKER, null);
       }});
 
       put ("Development", new LinkedHashMap<String, Object>(){{
@@ -210,7 +225,7 @@ public String generateInput(String name, String label, boolean suggested)
         put("0010862", "Fine motor delay");
         put("0002194", "Gross motor delay");
         put("0000750", "Impaired language development");
-        put("_other", null);
+        put(OTHER_FIELD_MARKER, null);
       }});
 
       put ("Cognitive", new LinkedHashMap<String, Object>(){{
@@ -220,7 +235,7 @@ public String generateInput(String name, String label, boolean suggested)
           put("0010864", "Severe");
         }});
         put("0001328", "Learning disability");
-        put("_other", null);
+        put(OTHER_FIELD_MARKER, null);
         put("_i_iqdq", "List IQ/DQ if known");
       }});
       put ("Behavioral", new LinkedHashMap<String, Object>(){{
@@ -230,7 +245,7 @@ public String generateInput(String name, String label, boolean suggested)
         put("0010865", "Oppositional defiant disorder");
         put("0000722", "Obsessive-compulsive disorder");
         put("0002368", "Psychiatric disorders");
-        put("_other", null);
+        put(OTHER_FIELD_MARKER, null);
       }});
       put ("Neurological", new LinkedHashMap<String, Object>(){{
         put("0001290", "Hypotonia");
@@ -242,26 +257,26 @@ public String generateInput(String name, String label, boolean suggested)
         put("0100021", "Cerebral paralysis");
         put("0010301", "Neural tube defect");
         put("0007319", "Malformation of the CNS");
-        put("_other", null);
+        put(OTHER_FIELD_MARKER, null);
       }});
       put ("Ear and Eye Defects", new LinkedHashMap<String, Object>(){{
         put("0000618", "Blindness");
         put("0000589", "Coloboma");
         put("0000404", "Deafness");
         put("0008572", "External ear malformation");
-        put("_other", null);
+        put(OTHER_FIELD_MARKER, null);
       }});
       put ("Craniofacial", new LinkedHashMap<String, Object>(){{
         put("0000204", "Cleft lip");
         put("0000175", "Cleft palate");
         put("0001363", "Craniosynostosis");
         put("0001999", "Facial dysmorphism");
-        put("_other", null);
+        put(OTHER_FIELD_MARKER, null);
       }});
       put ("Cutaneous", new LinkedHashMap<String, Object>(){{
         put("0000953", "Hyperpigmentation");
         put("0001010", "Hypopigmentation");
-        put("_other", null);
+        put(OTHER_FIELD_MARKER, null);
       }});
       put ("Cardiac", new LinkedHashMap<String, Object>(){{
         put("0001631", "ASD");
@@ -270,7 +285,7 @@ public String generateInput(String name, String label, boolean suggested)
         put("0001680", "Coarctation of aorta");
         put("0004383", "Hypoplastic left heart");
         put("0001636", "Tetralogy of fallot");
-        put("_other", null);
+        put(OTHER_FIELD_MARKER, null);
       }});
       put ("Musculoskeletal", new LinkedHashMap<String, Object>(){{
         put("0002817", "Abnormality of the upper limb");
@@ -291,7 +306,7 @@ public String generateInput(String name, String label, boolean suggested)
         put("0000925", "Vertebral Anomaly");
         put("0001371", "Contractures");
         put("0001762", "Club foot");
-        put("_other", null);
+        put(OTHER_FIELD_MARKER, null);
       }});
       put ("Gastrointestinal", new LinkedHashMap<String, Object>(){{
         put("0002575", "Tracheoesophageal fistula");
@@ -300,7 +315,7 @@ public String generateInput(String name, String label, boolean suggested)
         put("0001539", "Omphalocele");
         put("0002021", "Pyloric stenosis");
         put("0002251", "Hirschsprung disease");
-        put("_other", null);
+        put(OTHER_FIELD_MARKER, null);
       }});
       put ("Genitourinary", new LinkedHashMap<String, Object>(){{
         put("0000792", "Kidney malformation");
@@ -308,7 +323,10 @@ public String generateInput(String name, String label, boolean suggested)
         put("0000062", "Ambiguous genitalia");
         put("0000047", "Hypospadias");
         put("0000028", "Cryptorchidism");
-        put("_other", null);
+        put(OTHER_FIELD_MARKER, null);
+      }});
+       put ("Other", new LinkedHashMap<String, Object>(){{
+        put(OTHER_FIELD_MARKER, null);
       }});
     }
   };

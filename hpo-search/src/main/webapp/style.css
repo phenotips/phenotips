@@ -114,14 +114,30 @@ fieldset {
   clear: both;
 }
 fieldset.phenotype-group {
-  padding: 1.4em .8em;
+  padding: 0 .8em;
   margin: 1em 0.5em .5em 0;
-  border-bottom: 1px inset #ccc;
 }
 
-fieldset.phenotype-group:last-child {
-  border-bottom: 0 none;
+.phenotypes-main {
+  float: left;
+  width: 48.5%;
 }
+.phenotypes-other {
+  width: 48.5%;
+  float: right;
+}
+
+.phenotypes-other .accepted-suggestions {
+  margin: 0;
+}
+.accepted-suggestion {
+  padding: 0;
+}
+.phenotypes-other .accepted-suggestions li:last-child{
+  margin-bottom: 1em;
+}
+
+
 .quick-search-box {
   float: right;
   padding: .5em .8em;
@@ -145,22 +161,25 @@ legend {
   font-weight: bold;
   font-size: 140%;
   padding: 0;
-  margin: .5em 0 0.2em;
+  margin: 0;
 }
 fieldset.phenotype-group legend {
   font-size: 110%;
   display: block;
-  padding: 0.5em 0;
+  padding: 0.5em 0 0.2em;
   position: static;
   width: 100%; 
-  cursor:pointer
+  cursor:pointer;
+  margin: 0 0 .5em -1em;
+  border-bottom: 1px dotted #ccc;
 }
 fieldset.phenotype-group legend:before {
   display: inline-block;
   color: #369;
   font-size: 120%;
   content: '\25BE ';
-  margin-right: .5em;
+  width: 1em;
+  text-shadow: 0 0 5px #ccc;
 }
 fieldset.phenotype-group.collapsed legend:before {
   content: '\25B8 ';
@@ -174,7 +193,11 @@ fieldset.collapsed * {
 fieldset.collapsed legend {
   display: block;
 }
-fieldset.quick-search-box legend {
+.phenotype-group label {
+  display: inline-block;
+  width: 100%;
+}
+.quick-search-box legend {
   padding: 0 .5em 0 .8em;
   background: transparent;
   position: relative;
@@ -189,8 +212,6 @@ fieldset.quick-search-box h2 {
 label {
   font-weight: normal;
   color: #000;
-  display: inline-block;
-  width: 100%;
 }
 .hint {
   color: #777;
