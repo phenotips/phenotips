@@ -126,21 +126,25 @@ document.observe('dom:loaded', function() {
       var content = qsBox.next('div');
       Event.observe(window, 'scroll', function(){
 	var boxHeight = qsBox.getHeight();
+	var boxWidth = qsBox.getWidth();
 	var boxMinTop = content.cumulativeOffset().top ;
 	var boxMaxTop = content.cumulativeOffset().top + content.getHeight() - boxHeight;
-	var boxLeft = content.cumulativeOffset().left +  content.getWidth();
+	var boxLeft = qsBox.cumulativeOffset().left;
 	if (document.viewport.getScrollOffsets().top >= boxMinTop && document.viewport.getScrollOffsets().top < boxMaxTop) {
 	  qsBox.style.position = 'fixed';
 	  qsBox.style.left = boxLeft + 'px';
-	  qsBox.style.top = 0;//document.viewport.getScrollOffsets().top - boxMinTop;
+	  qsBox.style.width = boxWidth + 'px';
+	  qsBox.style.top = 0;
 	} else if (document.viewport.getScrollOffsets().top >= boxMaxTop) {
 	  qsBox.style.position = 'absolute';
 	  qsBox.style.top = boxMaxTop;
-	  qsBox.style.left = boxLeft + 'px';
+	  qsBox.style.left = '';//boxLeft + 'px';
+	  qsBox.style.right = 0;
 	} else {
 	  qsBox.style.position = '';
 	  qsBox.style.top = '';
 	  qsBox.style.left = '';
+	  qsBox.style.width = '';
 	}
       });
     }
