@@ -325,8 +325,8 @@ public String generateInput(String name, String label, boolean suggested)
         put("0000028", "Cryptorchidism");
         put(OTHER_FIELD_MARKER, null);
       }});
-       put ("Other", new LinkedHashMap<String, Object>(){{
-        put(OTHER_FIELD_MARKER, null);
+      put ("Other", new LinkedHashMap<String, Object>(){{
+      //  put(OTHER_FIELD_MARKER, null);
       }});
     }
   };
