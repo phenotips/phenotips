@@ -110,7 +110,7 @@ document.observe('dom:loaded', function() {
           if (!item.hasClassName('initialized')) {
             var options = {
               timeout : 30000,
-              parentContainer : item.up()
+              parentContainer : null
             };
             Object.extend(options, suggestionsMapping[keys[i]]);
             // Create the Suggest.
@@ -134,27 +134,46 @@ document.observe('dom:loaded', function() {
     var qsBox = $('quick-search-box');
     if (qsBox) {
       var content = qsBox.next('div');
+      var qsInput = qsBox.down('input[type=text]');
       Event.observe(window, 'scroll', function(){
 	var boxHeight = qsBox.getHeight();
 	var boxWidth = qsBox.getWidth();
 	var boxMinTop = content.cumulativeOffset().top ;
 	var boxMaxTop = content.cumulativeOffset().top + content.getHeight() - boxHeight;
 	var boxLeft = qsBox.cumulativeOffset().left;
+	var qsSuggest = null;
+	if (qsInput && qsInput._suggestWidget && typeof(qsInput._suggestWidget.suggest) != "undefined") {
+	  qsSuggest = qsInput._suggestWidget.suggest;
+	  qsSuggest.style.left = qsInput.cumulativeOffset().left;
+	  qsSuggest.style.width = qsInput.getWidth();
+	}
 	if (document.viewport.getScrollOffsets().top >= boxMinTop && document.viewport.getScrollOffsets().top < boxMaxTop) {
 	  qsBox.style.position = 'fixed';
 	  qsBox.style.left = boxLeft + 'px';
 	  qsBox.style.width = boxWidth + 'px';
 	  qsBox.style.top = 0;
+	  if (qsSuggest) {
+	    qsSuggest.style.position = 'fixed';
+	    qsSuggest.style.top = qsInput.viewportOffset().top + qsInput.getHeight();
+	  }
 	} else if (document.viewport.getScrollOffsets().top >= boxMaxTop) {
 	  qsBox.style.position = 'absolute';
 	  qsBox.style.top = boxMaxTop;
 	  qsBox.style.left = '';//boxLeft + 'px';
 	  qsBox.style.right = 0;
+	  if (qsSuggest) {
+	    qsSuggest.style.position = 'absolute';
+	    qsSuggest.style.top = qsInput.cumulativeOffset().top + qsInput.getHeight();
+	  }
 	} else {
 	  qsBox.style.position = '';
 	  qsBox.style.top = '';
 	  qsBox.style.left = '';
 	  qsBox.style.width = '';
+	  if (qsSuggest) {
+	    qsSuggest.style.position = 'absolute';
+	    qsSuggest.style.top = qsInput.cumulativeOffset().top + qsInput.getHeight();
+	  }
 	}
       });
     }

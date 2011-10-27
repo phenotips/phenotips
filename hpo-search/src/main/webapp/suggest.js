@@ -50,7 +50,7 @@ var MS = (function(MS){
     // The name of the JSON parameter or XML attribute holding a potential result hint (displayed next to the value).
     resultHint: "hint",
     // The id of the element that will hold the suggest element
-    parentContainer : "body",
+    //parentContainer : "body",
     // Should results fragments be highlighted when matching typed input
     highlight: true,
     // Fade the suggestion container on clear
@@ -127,6 +127,7 @@ var MS = (function(MS){
       this.fld.stopObserving();
     }
     this.fld = $(input);
+    this.fld._suggestWidget = this;
     // Bind the key listeners on the input field.
     this.fld.observe("keyup", this.onKeyUp.bindAsEventListener(this));
     if (Prototype.Browser.IE || Prototype.Browser.WebKit) {
