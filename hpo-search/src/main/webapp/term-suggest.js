@@ -2,10 +2,20 @@ document.observe('dom:loaded', function() {
     // hpo: namespace:medical_genetics
     // go : namespace:
     var highlightChecked = function(element) {
+      var subsection = element.up('.subsection');
+      if (subsection) {
+	var subsectionTitle = subsection.previous('label.section');
+      }
       if (element.checked) {
         element.up('label').addClassName('selected');
+	if (subsectionTitle) {
+	  subsectionTitle.addClassName('selected');
+	}
       } else {
         element.up('label').removeClassName('selected');
+	if (subsectionTitle) {
+	  subsectionTitle.removeClassName('selected');
+	}
       }
     };
     var enableHighlightChecked = function(element) {

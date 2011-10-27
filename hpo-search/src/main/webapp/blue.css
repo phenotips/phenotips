@@ -20,6 +20,6 @@ input[type="submit"], input[type="button"], button {
   color: #369;
 }
 label.selected {
-  background-color: #ddf;
+  background-color: #cedeee;
   border-color: #369;
 }
