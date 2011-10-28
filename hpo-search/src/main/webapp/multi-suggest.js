@@ -65,7 +65,7 @@ var MS = (function (MS) {
         }
       }
     } else {
-      if (element.viewportOffset().top < document.viewport.getScrollOffsets().top) {
+      if (element.cumulativeOffset().top < document.viewport.getScrollOffsets().top) {
         element.scrollTo();
       }
     }
