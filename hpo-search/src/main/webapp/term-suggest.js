@@ -1,6 +1,8 @@
 document.observe('dom:loaded', function() {
-    // hpo: namespace:medical_genetics
-    // go : namespace:
+  
+    // ------------------------------------------------------------------------
+    // Selected term highlighting
+    
     var highlightChecked = function(element) {
       var subsection = element.up('.subsection');
       if (subsection) {
@@ -25,6 +27,13 @@ document.observe('dom:loaded', function() {
       });
     };
     $$('label input[type=checkbox]').each(enableHighlightChecked);
+    
+    
+    // ------------------------------------------------------------------------
+    // Creation of suggest widgets
+    
+    // hpo: namespace:medical_genetics
+    // go : namespace:
     var suggestionsMapping = {
         "hpo" : {
             script: "/solr/select?start=0&rows=15&debugQuery=on&",
@@ -131,52 +140,66 @@ document.observe('dom:loaded', function() {
       }
     }
     
+    
+    // ------------------------------------------------------------------------
+    // Behavior of the quick search box
+    
     var qsBox = $('quick-search-box');
     if (qsBox) {
       var content = qsBox.next('div');
       var qsInput = qsBox.down('input[type=text]');
-      Event.observe(window, 'scroll', function(){
+      var qsResetPosition = function() {
+	if (qsInput._activeSuggest) {
+	  return;
+	}
 	var boxHeight = qsBox.getHeight();
 	var boxWidth = qsBox.getWidth();
 	var boxMinTop = content.cumulativeOffset().top ;
 	var boxMaxTop = content.cumulativeOffset().top + content.getHeight() - boxHeight;
 	var boxLeft = qsBox.cumulativeOffset().left;
-	var qsSuggest = null;
-	if (qsInput && qsInput._suggestWidget && typeof(qsInput._suggestWidget.suggest) != "undefined") {
-	  qsSuggest = qsInput._suggestWidget.suggest;
-	  qsSuggest.style.left = qsInput.cumulativeOffset().left;
-	  qsSuggest.style.width = qsInput.getWidth();
-	}
 	if (document.viewport.getScrollOffsets().top >= boxMinTop && document.viewport.getScrollOffsets().top < boxMaxTop) {
 	  qsBox.style.position = 'fixed';
 	  qsBox.style.left = boxLeft + 'px';
 	  qsBox.style.width = boxWidth + 'px';
 	  qsBox.style.top = 0;
-	  if (qsSuggest) {
-	    qsSuggest.style.position = 'fixed';
-	    qsSuggest.style.top = qsInput.viewportOffset().top + qsInput.getHeight();
-	  }
 	} else if (document.viewport.getScrollOffsets().top >= boxMaxTop) {
 	  qsBox.style.position = 'absolute';
-	  qsBox.style.top = boxMaxTop;
-	  qsBox.style.left = '';//boxLeft + 'px';
+	  qsBox.style.top = boxMaxTop + 'px';
+	  qsBox.style.left = '';
 	  qsBox.style.right = 0;
-	  if (qsSuggest) {
-	    qsSuggest.style.position = 'absolute';
-	    qsSuggest.style.top = qsInput.cumulativeOffset().top + qsInput.getHeight();
-	  }
 	} else {
 	  qsBox.style.position = '';
 	  qsBox.style.top = '';
 	  qsBox.style.left = '';
 	  qsBox.style.width = '';
-	  if (qsSuggest) {
-	    qsSuggest.style.position = 'absolute';
-	    qsSuggest.style.top = qsInput.cumulativeOffset().top + qsInput.getHeight();
+	}
+      }
+      Event.observe(document, 'ms:suggest:containerCreated', function(event) {
+	if (event.memo.suggest.fld == qsInput) {
+	  qsInput._activeSuggest = true;
+	  if (qsBox.style.position == 'fixed') {
+	    qsBox.style.position = 'absolute';
+	    qsBox.style.top = ((document.viewport.getScrollOffsets().top - content.cumulativeOffset().top) + 14) + 'px';
+	    qsBox.style.left = '';
+	    qsBox.style.right = 0;
 	  }
+	  var qsSuggest = event.memo.container;
+	  qsSuggest.style.top = (qsInput.cumulativeOffset().top + qsInput.getHeight()) + 'px';
+	  qsSuggest.style.marginTop = '1.6em';
 	}
       });
+      Event.observe(document, 'ms:suggest:clearSuggestions', function(event) {
+	if (event.memo.suggest.fld == qsInput) {
+	  qsInput._activeSuggest = false;
+	  qsResetPosition();
+	}
+      });
+      Event.observe(window, 'scroll', qsResetPosition);
     }
+    
+    // ------------------------------------------------------------------------
+    // Expand/collapse phenotype groups
+    
     $$('fieldset.phenotype-group legend').invoke('observe', 'click', function(event) {
       event.element().up('fieldset.phenotype-group').toggleClassName('collapsed');
     });
