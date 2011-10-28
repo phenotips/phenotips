@@ -247,3 +247,23 @@ label.selected {
   -webkit-border-radius: .7em;
   border-radius: .7em;
 }
+
+
+
+.warning {
+  display: block;
+  padding: .5em;
+  border: 1px solid #ffd972;
+  background-color: #ffd972;
+  font-weight: bold;
+}
+
+.warning:before {
+  display: inline-block;
+  content: "\26A0";
+  font-size: 150%;
+  font-weight: bold;
+  vertical-align: baseline;
+  margin-right: .2em;
+  color: #c82;
+}

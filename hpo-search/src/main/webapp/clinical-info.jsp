@@ -26,7 +26,7 @@ for(Enumeration e = request.getParameterNames(); e.hasMoreElements(); ){
         }
         if (!submitted) {
 %>
-  <div class="col-3">
+  <div>
 <%      }
         if (!parameterDisplayed) {
 %>
@@ -43,8 +43,9 @@ for(Enumeration e = request.getParameterNames(); e.hasMoreElements(); ){
   </ul></div>
 <%  }
   }
-}
+}*/
 if (submitted) {%>
+  <div class="emphasized-box warning">The data was NOT saved. This is just a <em>proof of concept</em>.</div>
 </div>
 <%} else {%>
 
