@@ -15,39 +15,61 @@
 String parameterName = "";
 boolean submitted = false;
 boolean parameterDisplayed = false;
+LinkedHashMap<String, String> specialParameters = new LinkedHashMap<String, String>(){{
+  put("last_name", "Last name");
+  put("first_name", "First name");
+  put("date_of_birth", "Date of birth");
+  put("gender", "Gender");
+}};
+%><%!
+public boolean ignoreParameter(String parameterName) {
+  return parameterName == null || parameterName.endsWith("__suggested");// || request.getParameter(parameterName) == null;
+}%><%
 for(Enumeration e = request.getParameterNames(); e.hasMoreElements(); ){
-   parameterName = (String)e.nextElement();
-   if(parameterName != null && !parameterName.endsWith("__suggested") && request.getParameter(parameterName) != null) {
-     String[] vals = request.getParameterValues(parameterName);
-     parameterDisplayed = false;
-     for (int i = 0; i < vals.length; i++) {
-        if (vals[i] == "") {
-          continue;
-        }
-        if (!submitted) {
-%>
-  <div>
-<%      }
-        if (!parameterDisplayed) {
+  if(!ignoreParameter((String)e.nextElement())) {
+    submitted = true;
+    break;
+  }
+}
+if (submitted) {%>
+  <div class="emphasized-box warning">The data was NOT saved anywhere. This is just a proof of concept. 
+                                      <p><a href="clinical-info.jsp">&laquo; Go back to the form</a></p>
+  </div>
+<% Object[] paramNames = specialParameters.keySet().toArray();
+
+   for (int i = 0; i < paramNames.length; ++i) {
+     String value = request.getParameter((String)paramNames[i]);
+     if (value == null) {
+       value = "&mdash; <span class='hint'> (Not provided)</span>";
+     }%>
+    <h2 class="param-name"><%= specialParameters.get(paramNames[i]) %></h2>
+    <div><%= value %></div>
+<% }
+   for(Enumeration e = request.getParameterNames(); e.hasMoreElements(); ){
+     parameterName = (String)e.nextElement();
+     if(!ignoreParameter(parameterName) && !specialParameters.containsKey(parameterName)) {
+       String[] vals = request.getParameterValues(parameterName);
+       parameterDisplayed = false;
+       for (int i = 0; i < vals.length; i++) {
+         if (vals[i] == "") {
+           continue;
+         }
+         if (!parameterDisplayed) {
 %>
   <div><h2 class="param-name"><%= parameterName %></h2>
   <ul>
-<%          submitted = true;
-            parameterDisplayed = true;
-        }
+<%          parameterDisplayed = true;
+         }
 %>
     <li><%= vals[i] %></li>
 <%     }
-     if (parameterDisplayed) {
+       if (parameterDisplayed) {
 %>
   </ul></div>
-<%  }
-  }
-}*/
-if (submitted) {%>
-  <div class="emphasized-box warning">The data was NOT saved. This is just a <em>proof of concept</em>.</div>
-</div>
-<%} else {%>
+<%     }
+     }
+   }
+} else {%>
 
 <form action="clinical-info.jsp" method="post">
 <fieldset class="twothird-width clear patient-info">
@@ -55,23 +77,23 @@ if (submitted) {%>
 
   <fieldset>
   <label class="section" for="last_name">Patient name:</label>
-  <div class="half-width">
+  <div class="half-width last_name">
     <label for="last_name" class="hint">Last name</label>
     <input type="text" name="last_name" id="last_name"/>
   </div>
-  <div class="half-width">
+  <div class="half-width first_name">
     <label for="first_name" class="hint">First name</label>
     <input type="text" name="first_name" id="first_name"/>
   </div>
   </fieldset>
   <fieldset>
-  <div class="half-width clear">
+  <div class="half-width clear date_of_birth">
     <label class="section" for="date_of_birth">Date of birth: <span class="hint">(mm/dd/yyyy)</span></label>
     <input type="text" name="date_of_birth" id="date_of_birth"/>
   </div>
   </fieldset>
   <fieldset>
-  <div class="half-width clear">
+  <div class="half-width clear gender">
     <label>Gender: </label>
     <label for="gender_male"><input type="radio" name="gender" id="gender_male" value="male"/>Male</label> 
     <label for="gender_female"><input type="radio" name="gender" id="gender_female" value="female"/>Female</label>
