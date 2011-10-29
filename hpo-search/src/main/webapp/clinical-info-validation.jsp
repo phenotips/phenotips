@@ -123,8 +123,8 @@ if (submitted) {%>
          if (vals[i] == "") {
            continue;
          }
+	 phenotypeGiven = true;
          if (!parameterDisplayed) {
-	   phenotypeGiven = true;
 %>
   <div><h2 class="param-name"><%= parameterName %></h2>
   <ul>
