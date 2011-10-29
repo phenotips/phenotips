@@ -48,6 +48,14 @@ document.observe('dom:loaded', function() {
 	markIfHasErrors(!dateValidation(dateField.value), dateField);
       });
     }
+    ['last_name', 'first_name'].each(function(item) {
+	var input = $(item);
+	if (input) {
+	  input.observe('blur', function(event){
+	    markIfHasErrors((!input.value || input.value.strip() == ""), input);
+          });
+	}
+    });
     
     // ------------------------------------------------------------------------
     // Prevent form submission if there's missing data
