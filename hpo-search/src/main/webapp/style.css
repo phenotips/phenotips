@@ -76,6 +76,7 @@ h1 a, h1 a:link, h1 a:visited, h1 a:link:visited {
 .param-name {
   color: #000;
   font-size: 110%;
+  margin: .8em 0 0;
 }
 .clinical-info {
   margin-top: 3em;
@@ -247,17 +248,16 @@ label.selected {
   border-radius: .7em;
 }
 
-
-
-.warning {
+.warning, .error {
   display: block;
   padding: .5em;
+  margin: .5em 0;
   border: 1px solid #ffd972;
   background-color: #ffd972;
   font-weight: bold;
 }
 
-.warning:before {
+.warning:before, .error:before {
   display: inline-block;
   content: "\26A0";
   font-size: 150%;
@@ -265,4 +265,11 @@ label.selected {
   vertical-align: baseline;
   margin-right: .2em;
   color: #c82;
+}
+.error, .error:before, .wrongValue {
+  color: #c00 !important;
+}
+.error {
+  border: 1px solid #c00;
+  background-color: #ffd;
 }

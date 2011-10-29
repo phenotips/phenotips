@@ -11,67 +11,7 @@
 <body>
 <%= displayContentTitle("Clinical data form demo") %>
 
-<%
-String parameterName = "";
-boolean submitted = false;
-boolean parameterDisplayed = false;
-LinkedHashMap<String, String> specialParameters = new LinkedHashMap<String, String>(){{
-  put("last_name", "Last name");
-  put("first_name", "First name");
-  put("date_of_birth", "Date of birth");
-  put("gender", "Gender");
-}};
-%><%!
-public boolean ignoreParameter(String parameterName) {
-  return parameterName == null || parameterName.endsWith("__suggested");// || request.getParameter(parameterName) == null;
-}%><%
-for(Enumeration e = request.getParameterNames(); e.hasMoreElements(); ){
-  if(!ignoreParameter((String)e.nextElement())) {
-    submitted = true;
-    break;
-  }
-}
-if (submitted) {%>
-  <div class="emphasized-box warning">The data was NOT saved anywhere. This is just a proof of concept. 
-                                      <p><a href="clinical-info.jsp">&laquo; Go back to the form</a></p>
-  </div>
-<% Object[] paramNames = specialParameters.keySet().toArray();
-
-   for (int i = 0; i < paramNames.length; ++i) {
-     String value = request.getParameter((String)paramNames[i]);
-     if (value == null) {
-       value = "&mdash; <span class='hint'> (Not provided)</span>";
-     }%>
-    <h2 class="param-name"><%= specialParameters.get(paramNames[i]) %></h2>
-    <div><%= value %></div>
-<% }
-   for(Enumeration e = request.getParameterNames(); e.hasMoreElements(); ){
-     parameterName = (String)e.nextElement();
-     if(!ignoreParameter(parameterName) && !specialParameters.containsKey(parameterName)) {
-       String[] vals = request.getParameterValues(parameterName);
-       parameterDisplayed = false;
-       for (int i = 0; i < vals.length; i++) {
-         if (vals[i] == "") {
-           continue;
-         }
-         if (!parameterDisplayed) {
-%>
-  <div><h2 class="param-name"><%= parameterName %></h2>
-  <ul>
-<%          parameterDisplayed = true;
-         }
-%>
-    <li><%= vals[i] %></li>
-<%     }
-       if (parameterDisplayed) {
-%>
-  </ul></div>
-<%     }
-     }
-   }
-} else {%>
-
-<form action="clinical-info.jsp" method="post">
+<form action="clinical-info-validation.jsp" method="post">
 <fieldset class="twothird-width clear patient-info">
   <legend>Patient Information</legend>
 
@@ -113,6 +53,7 @@ if (submitted) {%>
   </div>
 
   <div class="twothird-width">
+  
 <%!
 String OTHER_FIELD_MARKER = "_other";
 String DEFAULT_NAME = "phenotype";
@@ -366,6 +307,5 @@ public String generateInput(String name, String label, boolean suggested)
 </fieldset>
 <div><input type="submit" value="Submit"/></div>
 </form>
-<%}%>
 </body>
 </html>
