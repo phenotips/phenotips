@@ -9,6 +9,7 @@
 <script type="text/javascript" src="suggest.js"></script>
 <script type="text/javascript" src="multi-suggest.js"></script>
 <script type="text/javascript" src="solr-query-processor.js"></script>
+<script type="text/javascript" src="form-behavior.js"></script>
 <script type="text/javascript" src="term-suggest.js"></script>
 
 <%!
