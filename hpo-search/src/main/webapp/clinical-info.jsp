@@ -11,7 +11,7 @@
 <body>
 <%= displayContentTitle("Clinical data form demo") %>
 
-<form action="clinical-info-validation.jsp" method="post">
+<form id="clinical-info-form" action="clinical-info-validation.jsp" method="post">
 <fieldset class="twothird-width clear patient-info">
   <legend>Patient Information</legend>
 

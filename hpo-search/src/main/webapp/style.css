@@ -269,7 +269,10 @@ label.selected {
 .error, .error:before, .wrongValue {
   color: #c00 !important;
 }
-.error {
+.error, input.wrongValue {
   border: 1px solid #c00;
   background-color: #ffd;
+}
+input.wrongValue {
+  color: #000 !important;
 }

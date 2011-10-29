@@ -11,6 +11,7 @@
 <script type="text/javascript" src="solr-query-processor.js"></script>
 <script type="text/javascript" src="form-behavior.js"></script>
 <script type="text/javascript" src="term-suggest.js"></script>
+<script type="text/javascript" src="form-validation.js"></script>
 
 <%!
 public String getTitle(String section)
