@@ -27,5 +27,10 @@ Television, Televisions, TV, TVs
 # Synonym mappings can be used for spelling correction too
 pixima => pixma
 
-a\,a => b\,b
-
+chd => congenital heart defect
+ocd => obsessive compulsive disorder
+vsd => ventricular septal defect
+asd => atrial septal defect
+mr => mental retardation
+dd => developmental delay
+df => dysmorphic facies
