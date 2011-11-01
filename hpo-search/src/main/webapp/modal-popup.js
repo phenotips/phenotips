@@ -66,12 +66,18 @@ widgets.ModalPopup = Class.create({
       "borderColor": this.options.borderColor,
       "backgroundColor" : this.options.backgroundColor
     });
+    this.positionDialog();
+    // Append to the end of the document body.
+    document.body.appendChild(this.dialog);
+    this.dialog.hide();
+  },
+  positionDialog : function() {
     switch(this.options.verticalPosition) {
       case "top":
-        this.dialogBox.setStyle({"top": "0"});
+        this.dialogBox.setStyle({"top": (document.viewport.getScrollOffsets().top + 6) + "px"});
         break;
       case "bottom":
-        this.dialogBox.setStyle({"bottom": "0"});
+        this.dialogBox.setStyle({"bottom": ".5em"});
         break;
       default:
         // TODO: smart alignment according to the actual height
@@ -90,9 +96,6 @@ widgets.ModalPopup = Class.create({
         this.dialogBox.setStyle({"margin": "auto"});
       break;
     }
-    // Append to the end of the document body.
-    document.body.appendChild(this.dialog);
-    this.dialog.hide();
   },
   /** Set a class name to the dialog box */
   setClass : function(className) {

@@ -204,6 +204,8 @@ var MS = (function (MS) {
       var id = elt.__termId;
       var value = elt.down('.value').firstChild.nodeValue;
       this.suggest.acceptEntry(id, value, null, '', value, value);
+      elt.toggleClassName('accepted');
+      this.dialog.positionDialog();
     } else {
       alert("accept " + elt + " -->> " + elt.__termId);
     }

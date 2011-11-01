@@ -1,5 +1,5 @@
 .xdialog-modal-container {
-  position: fixed;
+  position: absolute;/*fixed;*/
   top: 0px;
   bottom: 0px;
   left: 0px;
