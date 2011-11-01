@@ -1,0 +1,66 @@
+.ontology-tree {
+}
+.ontology-tree .parents{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.ontology-tree .parents .parent {
+  padding: 0 0 0 1em;
+}
+
+.ontology-tree .parents .parent:before {
+  display: inline-block;
+  content: "\2523";
+  width: .8em;
+}
+.ontology-tree .parent:first-child:before {
+  content: "\250f";
+}
+
+.ontology-tree .root:before {
+  display: inline-block;
+  content: "\2517";
+  width: .8em;
+  font-weight: normal;
+}
+
+.ontology-tree .root {
+  font-weight: bold;
+}
+.ontology-tree .root .descendents {
+  font-weight: normal;
+}
+.ontology-tree .collapsed .descendents {
+  display: none;
+}
+.ontology-tree .descendents {
+  list-style-type: none;
+  margin: 0 0 0 .8em;
+  padding: 0;
+}
+.ontology-tree .entry-tools {
+  float: right;
+  display: none;
+}
+.ontology-tree .entry:hover .entry-tools {
+  display: block;
+}
+.ontology-tree .entry-tool {
+  background-color: #333;
+  color: #fff;
+  -moz-border-radius: .7em;
+  -webkit-border-radius: .7em;
+  border-radius: .7em;
+  display: inline-block;
+  min-width: 1.4em;
+  text-align: center;
+}
+.ontology-tree .info-tool {
+  background-color: #369;
+}
+.ontology-tree .browse-tool {
+}
+.ontology-tree .accept-tool {
+  background-color: #292;
+}

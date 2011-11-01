@@ -110,4 +110,14 @@ document.observe('dom:loaded', function() {
         });
       }
     }
+   
+   try {
+     var hTrigger = $('htrigger');
+     var obrowser = new MS.widgets.OntologyBrowser();
+     hTrigger.observe('click', function(event) {
+       obrowser.show($('hdemo').value);
+     });
+   } catch(exception) {
+     alert(exception);
+   }
 });
