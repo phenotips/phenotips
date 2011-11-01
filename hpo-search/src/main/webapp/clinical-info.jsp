@@ -148,13 +148,13 @@ public String generateInput(String name, String label, boolean suggested)
         put("0010942", "Echogenic intracardiac focus");
         put("0010945", "Fetal phyelectasis");
         put("0010943", "Echogenic fetal bowel");
-        //put("_c_thickened_nuchal_fold", "Thickened nuchal fold"); // 0000474, 0000477 ?
-        put("0000474", "Thickened nuchal fold");
+        put("_c_thickened_nuchal_fold", "Thickened nuchal fold"); // 0000474, 0000477 ?
+        //put("0000474", "Thickened nuchal fold");
         put("0010952", "Fetal ventriculomegaly");
         put("0002190", "Choroid plexus cyst");
         //put("_c_short_humerus_femur", "Short humerus and/or femur");
-        put("0003014", "Short humerus");
-        put("0003097", "Short femur");
+        //put("0003014", "Short humerus");
+        //put("0003097", "Short femur");
         put("0001562", "Oligohydramnios");
         put("0001561", "Polyhydramnios");
         put("0001511", "IUGR");
