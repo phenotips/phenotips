@@ -34,3 +34,4 @@ asd => atrial septal defect
 mr => mental retardation
 dd => developmental delay
 df => dysmorphic facies
+coartation => coarctation
