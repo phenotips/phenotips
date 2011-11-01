@@ -2,7 +2,7 @@ var MS = (function (MS) {
   var widgets = MS.widgets = MS.widgets || {};
   widgets.OntologyBrowser = Class.create({
   options : {
-    script : "/solr/select?start=0&rows=15&",
+    script : "/solr/select?start=0&rows=1000&",
     varname: "q",
     method : "post",
     responseFormat : "application/xml",
