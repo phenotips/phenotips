@@ -157,6 +157,7 @@ var MS = (function (MS) {
       }.bindAsEventListener(this));
       wrapper.insert({'top': expandTool});
     }
+    wrapper.down('.info').observe('click', this._acceptEntry.bindAsEventListener(this));
     return element.update(wrapper);
   },
   
