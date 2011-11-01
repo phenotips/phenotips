@@ -5,12 +5,11 @@
   margin: 0;
   padding: 0;
 }
-.ontology-tree .parents .parent {
-  padding: 0 0 0 1em;
-}
 
 .ontology-tree .parents .parent:before {
   display: inline-block;
+  float: left;
+  font-size: 1.1em;
   content: "\2523";
   width: .8em;
 }
@@ -20,16 +19,25 @@
 
 .ontology-tree .root:before {
   display: inline-block;
-  content: "\2517";
-  width: .8em;
+  float: left;
+  content: "\2517\2501";
+  width: 1.2em;
+  font-size: 1.1em;
   font-weight: normal;
 }
 
 .ontology-tree .root {
   font-weight: bold;
 }
-.ontology-tree .root .descendents {
+.ontology-tree .root>.descendents {
   font-weight: normal;
+  margin-left: 2.2em;
+}
+.ontology-tree .root>.hint {
+  margin-left: 3.4em;
+}
+.ontology-tree .descendents li {
+  clear: both;
 }
 .ontology-tree .collapsed .descendents {
   display: none;
@@ -39,11 +47,20 @@
   margin: 0 0 0 .8em;
   padding: 0;
 }
+.ontology-tree .hint {
+  margin-left: 1.6em;
+}
 .ontology-tree .entry-tools {
   float: right;
   display: none;
 }
-.ontology-tree .entry:hover .entry-tools {
+.ontology-tree .entry-data {
+  line-height: 1.4em;
+}
+.ontology-tree .entry-data:hover {
+  background: #FFB;
+}
+.ontology-tree .entry-data:hover .entry-tools {
   display: block;
 }
 .ontology-tree .entry-tool {
@@ -55,9 +72,14 @@
   display: inline-block;
   min-width: 1.4em;
   text-align: center;
+  font-weight: bold;
+  box-shadow: 0 0 6px #ccc;
+  margin: 0 2px;
+  cursor: pointer;
 }
 .ontology-tree .info-tool {
   background-color: #369;
+  font-style: italic;
 }
 .ontology-tree .browse-tool {
 }

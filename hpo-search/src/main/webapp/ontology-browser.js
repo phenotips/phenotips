@@ -13,8 +13,8 @@ var MS = (function (MS) {
       selector : 'arr[name=is_a] str',
       processingFunction : function (text){
 	var data = {};
-	data.id = text.replace(/(HP:[0-9]+)\s*!\s*(.*)/, "$1");
-	data.value = text.replace(/(HP:[0-9]+)\s*!\s*(.*)/, "$2");
+	data.id = text.replace(/\s+/gm, ' ').replace(/(HP:[0-9]+)\s*!\s*(.*)/m, "$1");
+	data.value = text.replace(/\s+/gm, ' ').replace(/(HP:[0-9]+)\s*!\s*(.*)/m, "$2");
 	return data;
       }
     },
@@ -34,7 +34,12 @@ var MS = (function (MS) {
     if (dialog) {
       this.dialog = dialog;
     } else {
-      this.dialog = new MS.widgets.ModalPopup(this.loadingMessage, {}, {title : "Related terms"});
+      this.dialog = new MS.widgets.ModalPopup(this.loadingMessage, {}, {
+	title : "Related terms", 
+	titleColor: "#333", 
+	borderColor: "#cedeee",
+	verticalPosition : "top"
+      });
     }
   },
   
@@ -133,25 +138,26 @@ var MS = (function (MS) {
   _createBranch: function (eltName, className, data, expandable) {
     var element =  new Element(eltName, {'class' : 'entry ' + className});
     element.__termId = data.id;
-    element.insert({'top': 
+    var wrapper = new Element('div', {'class' : 'entry-data'});
+    wrapper.insert({'top': 
 		   new Element('span', {'class' : 'info'}).insert(
 		     {'bottom' : new Element('span', {'class' : 'key'}).update('[' + data.id + ']')}).insert({'bottom' : ' '}).insert(
 		     {'bottom' : new Element('span', {'class' : 'value'}).update(data.value)})
     });
-    element.insert({'bottom':
+    wrapper.insert({'bottom':
 		   new Element('span', {'class' : 'entry-tools'}).insert(
-		     {'bottom' : this._createTool('i', 'info-tool', this._showEntryInfo)}).insert(
-		     {'bottom' : this._createTool('&#x2713;', 'accept-tool', this._acceptEntry)}).insert(
-		     {'bottom' : this._createTool('&#x260c;', 'browse-tool', this._browseEntry)})
+		     {'bottom' : this._createTool('i', 'info-tool', "Information about this term", this._showEntryInfo)}).insert(
+		     {'bottom' : this._createTool('&#x260c;', 'browse-tool', "Browse related terms", this._browseEntry)}).insert(
+		     {'bottom' : this._createTool('&#x2713;', 'accept-tool', "Add this phenotype", this._acceptEntry)})
     });
     if (expandable) {
       var expandTool = new Element('span', {'class' : 'expand-tool'}).update(this._getExpandCollapseSymbol(true));
       expandTool.observe('click', function(event) {
 	this._toggleExpandState(event.element().up('.entry'));
       }.bindAsEventListener(this));
-      element.insert({'top': expandTool});
+      wrapper.insert({'top': expandTool});
     }
-    return element;
+    return element.update(wrapper);
   },
   
   _toggleExpandState : function(target) {
@@ -166,8 +172,8 @@ var MS = (function (MS) {
         this.expand(target);
 	var _obrowserEventHandler = function(event) {
 	  event.element().insert({'bottom': event.memo});
-	  event.element.stopObserving('obrowser:expand:done');
-	  event.element.stopObserving('obrowser:expand:failed');
+	  event.element().stopObserving('obrowser:expand:done');
+	  event.element().stopObserving('obrowser:expand:failed');
 	};
 	target.observe('obrowser:expand:done', _obrowserEventHandler);
 	target.observe('obrowser:expand:failed', _obrowserEventHandler);
@@ -183,27 +189,34 @@ var MS = (function (MS) {
     return "&#x25bc;";
   },
   
-  _createTool : function (text, className, method) {
-    var element = new Element('span', {'class' : 'entry-tool ' + className}).update(text);
-    element.observe('click', method.bindAsEventListener(this, element.up('.entry')));
+  _createTool : function (text, className, title, method) {
+    var element = new Element('span', {'class' : 'entry-tool ' + className, "title" : title}).update(text);
+    element.observe('click', method.bindAsEventListener(this));
     return element;
   },
-  _showEntryInfo : function(event, element) {
+  _showEntryInfo : function(event) {
     var elt = event.element().up('.entry');
     alert("Not yet");
   },
-  _acceptEntry : function(event, element) {
+  _acceptEntry : function(event) {
     var elt = event.element().up('.entry');
-    alert("accept " + elt + " -->> " + elt.__termId);
+    if (this.suggest) {
+      var id = elt.__termId;
+      var value = elt.down('.value').firstChild.nodeValue;
+      this.suggest.acceptEntry(id, value, null, '', value, value);
+    } else {
+      alert("accept " + elt + " -->> " + elt.__termId);
+    }
   },
-  _browseEntry : function(event, element) {
+  _browseEntry : function(event) {
     var elt = event.element().up('.entry');
-    alert("browse " + elt + " -->> " + elt.__termId);
     this.load(elt.__termId);
   },
   
   _createParentBranch: function (parent) {
-    return this._createBranch('li', 'parent', parent, false);
+    var parent = this._createBranch('li', 'parent', parent, false);
+    //parent
+    return parent;
   },
   
   _createRoot : function (data) {

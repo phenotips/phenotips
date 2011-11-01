@@ -167,13 +167,17 @@ fieldset.phenotype-group legend {
   margin: 0 0 .5em -1em;
   border-bottom: 1px dotted #ccc;
 }
-fieldset.phenotype-group legend:before {
+
+fieldset.phenotype-group legend:before, .expand-tool {
   display: inline-block;
   color: #369;
-  font-size: 120%;
-  content: '\25BE ';
   width: 1em;
   text-shadow: 0 0 5px #ccc;
+  cursor: pointer;
+}
+fieldset.phenotype-group legend:before {
+  font-size: 120%;
+  content: '\25BE ';
 }
 fieldset.phenotype-group.collapsed legend:before {
   content: '\25B8 ';
@@ -236,6 +240,11 @@ button {
 }
 .suggestItems .suggestValue {
   color: #000;
+}
+.suggestItem .related-terms {
+  font-size: 125%;
+  font-weight: bold;
+  float: right;
 }
 label.selected {
   color: #000;

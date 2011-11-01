@@ -24,11 +24,11 @@ document.observe('dom:loaded', function() {
             resultInfo : {
                            "Definition"    : {"selector"  : "str[name=def]"},
                            "Synonyms"      : {"selector"  : "arr[name=synonym] str"},
-                           "Is a"          : {"selector"  : "arr[name=is_a] str",
+                           /*"Is a"          : {"selector"  : "arr[name=is_a] str",
                                               "processor" : function (text){
                                                             return text.replace(/(HP:[0-9]+)\s*!\s*(.*)/, "[$1] $2");
                                                           },
-                                              "collapsed" : true
+                                              "collapsed" : false
                                              },
                            "Subcategories" : {"selector"  : "str[name=id]",
                                               "dynamic"   : true,
@@ -39,17 +39,21 @@ document.observe('dom:loaded', function() {
                                                               var suggestions = this.getSuggestionList(response);
                                                               for (var i = 0; i < suggestions.length; ++i) {
                                                                 suggestions[i].info = "";
-                                                                /*var info = suggestions[i].info;
-                                                                Element.select(info, 'dt').each(function (elt){
-                                                                  if (!elt.hasClassName('subcategories')) {
-                                                                    elt.next('dd').remove();
-                                                                    elt.remove();
-                                                                  }
-                                                                });*/
                                                               }
                                                               return this.createListElement(suggestions, this);
                                                             }
-                                             }
+                                             },*/
+		           "Related terms" : {"extern" : true,
+		                              "processor" : function(trigger) {
+							      trigger._obrowser = new MS.widgets.OntologyBrowser(this);
+							      trigger.observe('click', function(event){
+								event.stop();
+								event.element()._obrowser.show(
+								  event.element().up('.suggestItem').down('.suggestId').firstChild.nodeValue
+								);
+							      }.bindAsEventListener(this));
+							    }
+			                      }
                          },
             enableHierarchy: true,
             resultParent : "arr[name=is_a] str",
@@ -110,14 +114,4 @@ document.observe('dom:loaded', function() {
         });
       }
     }
-   
-   try {
-     var hTrigger = $('htrigger');
-     var obrowser = new MS.widgets.OntologyBrowser();
-     hTrigger.observe('click', function(event) {
-       obrowser.show($('hdemo').value);
-     });
-   } catch(exception) {
-     alert(exception);
-   }
 });

@@ -26,10 +26,6 @@
   <div><input type="submit" value="Submit"/></div>
 </form>
 
-<div>
-<input type="text" id="hdemo" value=""/><input type="button" id="htrigger" value="Show hierarchy"/>
-</div>
-
 <%}%>
 </body>
 </html>

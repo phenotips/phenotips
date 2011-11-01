@@ -373,16 +373,29 @@ var MS = (function(MS){
           var info = new Element("dl");
           for (var section in this.options.resultInfo) {
             var sOptions = this.options.resultInfo[section];
-            var selector = sOptions.selector;
-            if (!selector) {
-              continue;
-            }
+	    
             sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/, '').replace(/\s+/, "-");
-            var processingFunction = sOptions.processor;
+	    
             var sectionState = ""
             if (sOptions.collapsed || sOptions.dynamic) {
                sectionState = "collapsed";
             }
+            
+            var processingFunction = sOptions.processor;
+	    
+	    if (sOptions.extern) {
+	      var trigger =  new Element("a").update(section);
+              trigger._processingFunction = processingFunction;
+	      info.insert({"bottom" : new Element("dt", {'class' : sectionState + " " + sectionClass}).insert({'bottom' : trigger})});
+	      trigger._processingFunction.call(this, trigger);
+	      continue;
+	    }
+	    
+            var selector = sOptions.selector;
+            if (!selector) {
+              continue;
+            }
+	    
             if (sOptions.dynamic) {
               var query = Element.down(results[i], selector).firstChild.nodeValue;
               var queryProcessor = sOptions.queryProcessor || this.options.queryProcessor;
@@ -875,13 +888,26 @@ var MS = (function(MS){
         else
           selection = newFieldValue = this.iHighlighted.down(".suggestValue").innerHTML;
       }
-
+      
+      //
+      this.acceptEntry(
+	this.iHighlighted.down(".suggestId").innerHTML,
+        this.iHighlighted.down(".suggestValue").innerHTML,
+	this.iHighlighted.down(".suggestInfo").innerHTML,
+	this.iHighlighted.down('img.icon') ? this.iHighlighted.down('img.icon').src : '',
+	selection,
+	newFieldValue
+      );
+    }
+  },
+  
+  acceptEntry : function(id, value, info, icon, selection, newFieldValue) {
       var event = Event.fire(this.fld, "ms:suggest:selected", {
         'suggest' : this,
-        'id': this.iHighlighted.down(".suggestId").innerHTML,
-        'value': this.iHighlighted.down(".suggestValue").innerHTML,
-        'info': this.iHighlighted.down(".suggestInfo").innerHTML,
-        'icon' : this.iHighlighted.down('img.icon') ? this.iHighlighted.down('img.icon').src : ''
+        'id': id,
+        'value': value,
+        'info': info,
+        'icon' : icon,
       });
 
       if (!event.stopped) {
@@ -893,9 +919,9 @@ var MS = (function(MS){
         // pass selected object to callback function, if exists
         if (typeof(this.options.callback) == "function") {
           this.options.callback({
-            'id': this.iHighlighted.down(".suggestId").innerHTML,
-            'value': this.iHighlighted.down(".suggestValue").innerHTML,
-            'info': this.iHighlighted.down(".suggestInfo").innerHTML
+            'id': id,
+            'value': value,
+            'info': info
           });
         }
 
@@ -904,11 +930,10 @@ var MS = (function(MS){
           var hidden_id = this.fld.id.substring(0, this.fld.id.indexOf("_suggest"));
           var hidden_inp = $(hidden_id);
           if (hidden_inp) {
-            hidden_inp.value =  this.iHighlighted.down(".suggestInfo").innerHTML;
+            hidden_inp.value =  info;
           }
         }
       }
-    }
   },
 
   /**
