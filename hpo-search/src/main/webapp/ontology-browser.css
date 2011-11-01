@@ -24,13 +24,21 @@
   width: 1.2em;
   font-size: 1.1em;
   font-weight: normal;
+  color: #f5f5f5;
 }
 
-.ontology-tree .root {
+.ontology-tree .parents+.root:before {
+  color: #000;
+}
+
+.ontology-tree .key {
+  color: #777;
+  font-size: .8em;
+}
+.ontology-tree .root>.entry-data .value {
   font-weight: bold;
 }
 .ontology-tree .root>.descendents {
-  font-weight: normal;
   margin-left: 2.2em;
 }
 .ontology-tree .root>.hint {
@@ -85,4 +93,7 @@
 }
 .ontology-tree .accept-tool {
   background-color: #292;
+}
+.ontology-tree .accepted >.entry-data .info * {
+  color: #292;
 }
