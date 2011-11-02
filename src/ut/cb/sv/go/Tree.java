@@ -276,4 +276,9 @@ public class Tree
         return str.toString();
     }
 
+    public int getNodeCount()
+    {
+        return this.identifierToNode.size();
+    }
+
 }

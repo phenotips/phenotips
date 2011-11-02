@@ -3,11 +3,11 @@ package ut.cb.sv.db.feature;
 import ut.cb.sv.db.Database;
 
 /**
- * A {@link CategoricalFeature} designated as the classification label of the entries in a {@link Database}.
+ * A {@link CategoryFeature} designated as the classification label of the entries in a {@link Database}.
  * 
  * @version $Id$
  */
-public class LabelFeature extends CategoricalFeature
+public class LabelFeature extends CategoryFeature
 {
 
     /** {@inheritDoc} */

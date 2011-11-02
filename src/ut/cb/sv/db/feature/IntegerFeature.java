@@ -1,5 +1,6 @@
 package ut.cb.sv.db.feature;
 
+
 public class IntegerFeature extends Feature
 {
     public IntegerFeature(String name)
@@ -20,7 +21,7 @@ public class IntegerFeature extends Feature
      * {@inheritDoc} Parse the String into an integer value. Return null if parsing fails.
      */
     @Override
-    public Object processValue(String valueString)
+    public Integer postProcessValue(final String valueString)
     {
         try {
             return Integer.parseInt(valueString);

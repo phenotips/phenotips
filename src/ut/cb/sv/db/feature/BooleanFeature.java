@@ -1,5 +1,6 @@
 package ut.cb.sv.db.feature;
 
+
 /**
  * A {@link Feature} with boolean values.
  * 
@@ -43,7 +44,7 @@ public class BooleanFeature extends Feature
      * {@inheritDoc} Parse the String into a boolean value. Return null if parsing fails.
      */
     @Override
-    public Object processValue(String valueString)
+    public Boolean postProcessValue(final String valueString)
     {
         try {
             return Boolean.parseBoolean(valueString);

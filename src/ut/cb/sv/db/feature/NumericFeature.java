@@ -1,5 +1,6 @@
 package ut.cb.sv.db.feature;
 
+
 /**
  * A {@link Feature} with numeric({@link Double)) values.
  * 
@@ -25,7 +26,7 @@ public class NumericFeature extends Feature
      * {@inheritDoc} Parse the String into a double value. Return null if parsing fails.
      */
     @Override
-    public Object processValue(String valueString)
+    public Double postProcessValue(final String valueString)
     {
         try {
             return Double.parseDouble(valueString);

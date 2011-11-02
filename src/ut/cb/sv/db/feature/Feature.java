@@ -63,13 +63,29 @@ public class Feature
         return value != null;
     }
 
+    public Object prepareValueForEntry(DatabaseEntry entry, Object value)
+    {
+        return value;
+    }
+
     /**
      * Processes a string to retrieve a feature value
      * 
      * @param valueString the string to process
      * @return an the processed value
      */
-    public Object processValue(String valueString)
+    public Object preProcessValue(final String valueString)
+    {
+        return valueString;
+    }
+
+    /**
+     * Processes a string to retrieve a feature value
+     * 
+     * @param valueString the string to process
+     * @return an the processed value
+     */
+    public Object postProcessValue(final String valueString)
     {
         return valueString;
     }

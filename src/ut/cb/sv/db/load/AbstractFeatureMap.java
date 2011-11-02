@@ -27,7 +27,7 @@ public abstract class AbstractFeatureMap implements FeatureMap
 
     protected final Map<String, Feature> nameFeatureMap;
 
-    protected final Map<String, Map<String, String>> featureValueMap;
+    protected final Map<String, Map<String, Object>> featureValueMap;
 
     protected final static EntryFilterFactory filterFactory = new EntryFilterFactory();
 
@@ -38,7 +38,7 @@ public abstract class AbstractFeatureMap implements FeatureMap
         this.onConstructionStart();
         this.originalNameFeatureMap = new LinkedHashMap<String, Feature>();
         this.nameFeatureMap = new LinkedHashMap<String, Feature>();
-        this.featureValueMap = new LinkedHashMap<String, Map<String, String>>();
+        this.featureValueMap = new LinkedHashMap<String, Map<String, Object>>();
         EntryFilter filter;
         try {
             BufferedReader input = new BufferedReader(new FileReader(mappingFileName));
@@ -109,17 +109,39 @@ public abstract class AbstractFeatureMap implements FeatureMap
         return accepts;
     }
 
-    public Object getOutputValue(String featureName, String inputValue)
+    @SuppressWarnings("unchecked")
+    public Set<Object> getOutputValue(String featureName, String inputValue)
     {
+        Set<Object> result = new LinkedHashSet<Object>();
         try {
             Feature f = this.getFeatureForName(featureName);
-            String outputValue = this.featureValueMap.get(featureName).get(inputValue);
-            if (outputValue == null) {
-                outputValue = inputValue;
+            Set<String> inputValues;
+            Object ivObj = f.preProcessValue(inputValue);
+            if (ivObj instanceof Set) {
+                inputValues = (Set<String>) ivObj;
+            } else {
+                inputValues = new LinkedHashSet<String>();
+                if (ivObj != null) {
+                    inputValues.add((String) ivObj);
+                }
             }
-            return f.processValue(outputValue);
+            for (String iVal : inputValues) {
+                Object ovObj = this.featureValueMap.get(featureName).get(iVal);
+                if (ovObj == null) {
+                    ovObj = iVal;
+                }
+
+                if (ovObj == null) {
+                    continue;
+                }
+                if (ovObj instanceof Set) {
+                    result.addAll((Set) ovObj);
+                } else {
+                    result.add(f.postProcessValue(ovObj.toString()));
+                }
+            }
+            return result;
         } catch (NullPointerException ex) {
-            System.out.print(featureName + " --- " + inputValue + " ===> null");
             ex.printStackTrace();
             System.exit(0);
             return null;

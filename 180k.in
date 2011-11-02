@@ -1,17 +1,20 @@
 /aberrations/submission[@SAMPLE_ID] SAMPLE_ID
-/aberrations/submission[@SAMPLE_MALE] GENDER  Categorical:M=true|F=false
-/aberrations/submission[@PHENOTYPE_DETAILS] PHENOTYPE Categorical:? Prader-Willi Syndrome|Ambiguous Genitalia|Amenorrhea|Asperger Syndrome|Autism|Autism Spectrum Disorder|Behavioural Problems|Chromosome Abnormality=Child with Chromosome Anomaly=ChromosomeAbnormality=Chromosome Abnormality in Blood|Cleft Palate|Congenital Anomaly|Congenital Heart Defect|Developmental Delay=Developmenta Delay=Developmental Delay=Developmental delay|Developmental Delay; Dysmorphic features=Developmental Delay; Dysmorphic Features|Developmental Delay; Chromosome abnormality|Dysmorphic Features=Dysmorphic features=Dysmorphic Features|Epilepsy|Failure to Thrive|Familial Cancer|Family History|Family history of Autism|Family History of Chromosome Abnormality|Family history of Multiple Congenital Anomalies|Hypospadias|IUGR|Joubert Syndrome|Language/Speech Delay|Learning Disability|Mental Retardation|Microarray follow-up|Microcephaly|Multiple Congenital Anomalies=Multiple congenital abnormalities|Omphalocele|Parent of child with chromosome anomaly|Seizures|Short Stature|Sib of Child with Chrom. Anomaly|Stillbirth|Ventricular Septal Defect|Reason Not Provided|OTHER
-/aberrations/submission/regions/aberration/CHROMOSOME CHR Categorical:1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|X=x|Y=y
-/aberrations/submission/regions/aberration/CYTOBAND[@value] CYTOBAND
+/aberrations/submission[@ARRAY_DESIGN] ARRAY_DESIGN
+/aberrations/submission[@SAMPLE_MALE] GENDER  Category:M=true|F=false
+/aberrations/submission[@PHENOTYPE_DETAILS] PHENOTYPE MultiCategory:@phenotype-categories.in
+/aberrations/submission/regions/aberration/CHROMOSOME CHR Category:1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|X=x|Y=y
+##/aberrations/submission/regions/aberration/CYTOBAND[@value] CYTOBAND
 /aberrations/submission/regions/aberration/START[@value] START Integer
 /aberrations/submission/regions/aberration/STOP[@value] STOP Integer
-/aberrations/submission/regions/aberration/SIZE[@value] SIZE Integer
-/aberrations/submission/regions/aberration/DUP_OR_DEL[@value] TYPE Categorical:DEL=true|DUP=false
-/aberrations/submission/regions/aberration/CLASSIFICATION[@value] CLASSIFICATION Label:CNV (seen in normal individuals)|Confirmed CNC=Confirmed Copy Number Change|Below size cut-off=Bacbone CNC below size cut-off|? False Positive|Likely Benign|Clinically Significant|Likely Clinically Significant|Uncertain Clinical Significance|Unclassified
-/aberrations/submission/regions/aberration/FINAL_CLASSIFICATION[@value] FINAL_CLASSIFICATION Categorical::CNV (seen in normal individuals)|Confirmed CNC=Confirmed Copy Number Change|Below size cut-off=Bacbone CNC below size cut-off|? False Positive|Likely Benign|Clinically Significant|Likely Clinically Significant|Uncertain Clinical Significance|Unclassified|Inherited|Inherited from Mother=Inherited from mother|Inherited from Father=inherited from father
-/aberrations/submission/regions/aberration/INHERITANCE[@value] INHERITANCE Categorical:Not_tested|Maternal|De_novo|Paternal
+##/aberrations/submission/regions/aberration/SIZE[@value] SIZE Integer
+/aberrations/submission/regions/aberration/DUP_OR_DEL[@value] TYPE Category:DEL=true|DUP=false
+/aberrations/submission/regions/aberration/CLASSIFICATION[@value] CLASSIFICATION Label:@classification.in
+/aberrations/submission/regions/aberration/FINAL_CLASSIFICATION[@value] FINAL_CLASSIFICATION Category:@classification.in
+/aberrations/submission/regions/aberration/INHERITANCE[@value] INHERITANCE Category:Not_tested|Maternal|De_novo|Paternal
 ##/aberrations/submission/regions/aberration/INHERITANCE_COVERAGE[@value] INHERITANCE_COVERAGE Numeric
 ##/aberrations/submission/regions/aberration/P_VALUE[@value] P_VALUE Numeric
-/aberrations/submission/regions/aberration/ISCN[@value] ISCN
+##/aberrations/submission/regions/aberration/ISCN[@value] ISCN
 entryEndXPath:/aberrations/submission/regions/aberration
+dataPropagationEndXPath:/aberrations/submission
 Accept: /aberrations/submission[@SAMPLE_ID]=(ANON|R)[0-9]+
+Accept: /aberrations/submission[@SAMPLE_MALE]=true|false

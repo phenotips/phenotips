@@ -1,5 +1,5 @@
 IRRELEVANT = 22ph+
-HP:0001627,HP:0001999,HP:0000175,HP:0010515,HP:0002901,SYNDROME = 22q = 22q- = 22q-? = features of 22q- = microdeletion 22
+SYNDROME,22q = 22q = 22q- = 22q-? = features of 22q- = microdeletion 22
 HP:0005268 = 2 spontaneous abortions
 IRRELEVANT = 46
 IRRELEVANT = 47
@@ -11,7 +11,7 @@ HP:0007018,HP:0000725 = adhd psychotic
 HP:0000062 = ambi. geni
 HP:0000062 = ambiguous genitalia
 HP:0000141 = amenorrhea
-HP:0001328,HP:0001263,HP:0002360,HP:0100023,HP:0000748,SYNDROME   = angelman
+SYNDROME,angelman = angelman
 HP:0001680 = aortic coartation 
 HP:0001009,HP:0001251 = ? ataxia telangiectasia
 HP:0007018 = attention deficit disorder
@@ -20,7 +20,7 @@ HP:0000717 = autism spectrum disorder
 HP:0000717 = autism with t(13;14)
 HP:0000717 = autistic
 HP:0000717 = autistic spectrum disorder
-SYNDROME   = beckwith-wiedemann syndrome
+SYNDROME,beckwith-wiedemann   = beckwith-wiedemann syndrome
 HP:0000708 = behavioral problem
 HP:0000708 = behavioural problem
 HP:0000708 = behavioural problems
@@ -68,7 +68,7 @@ HP:0002564 = cong. malfor
 HP:0002564,IRRELEVANT = cong. malfor. family history
 HP:0002564,IRRELEVANT = cong. m. inv(10)(p11.2q21.2)
 HP:0003549 = connective tissue disorder
-IRRELEVANT = consanguinity
+consanguinity
 HP:0001363 = craniosyn
 HP:0200046 = cri du chat (5p-) syndrome 
 HP:0001305 = dandy walker 
@@ -81,7 +81,7 @@ HP:0001263,HP:0006877 = dd. mental retardation
 HP:0001263,HP:0006877 = dd mr
 HP:0000404 = deafness bilateral
 HP:0000823 = delayed puberty
-SYNDROME   = del/dup syndrom
+SYNDROME,del/dup   = del/dup syndrom
 HP:0001263 = developemental delay
 HP:0001263 = developmental delay
 HP:0001999 = df
@@ -95,7 +95,7 @@ HP:0001999,HP:0000823 = df< delayed puberty
 HP:0001999,HP:0001513 = df obesity
 HP:0001999,HP:0004322 = df. short stature
 HP:0001999,HP:0004322,HP:0006877 = df. short stature. mental retardation
-SYNDROME   = ?down syndrome
+SYNDROME,down   = ?down syndrome
 HP:0000958 = dry skin
 HP:0001999 = dysmorphic
 HP:0001999 = dysmorphic faces
@@ -111,9 +111,9 @@ HP:0001994,HP:0001903 = ? fanconi anemia
 IRRELEVANT = f. history of neonatal death
 HP:0001508 = ftt
 HP:0001543 = gastroschisis
-giant melancytic nesus
+HP:0000995 = giant melancytic nesus
 HP:0001517,HP:0001508 = growth failure
-hearing loss
+HP:0000365 = hearing loss
 hemifacial microsomi
 HP:0001528 = hemihyperplasia
 HP:0001528 = hemihypertrophy
@@ -128,7 +128,7 @@ HP:0002721 = immunodefiency
 HP:0008222 = infertility - female
 HP:0001303 = intractable seizures
 HP:0001511 = iugr
-SYNDROME   = ? kallman syndrome
+SYNDROME,kallman   = ? kallman syndrome
 IRRELEVANT = known dup(13)
 HP:0001328 = learning delauy
 HP:0001328 = learning delay
@@ -143,7 +143,7 @@ HP:0006877 = mental retar
 HP:0006877,HP:0000708 = mental retar. behav. pro.
 HP:0006877 = mental retardation
 HP:0006877,HP:0004322 = mental retar.short stature
-metopic synostosis
+HP:0001363 = metopic synostosis
 IRRELEVANT = microarray
 FOLLOW_UP  = microarray follow up
 FOLLOW_UP  = microarray follow-up
@@ -151,7 +151,7 @@ HP:0000252 = microcephaly
 IRRELEVANT = microdeletion
 IRRELEVANT = microdeletion 22
 HP:0001442 = moaicism
-SYNDROME   = moebius syndrome
+SYNDROME,moebius   = moebius syndrome
 HP:0006877 = mr
 multiple congenital anomalies
 HP:0002757 = multiple fractures
@@ -176,7 +176,7 @@ FOLLOW_UP  = part of a family study
 HP:0000201 = pierre robin syn
 HP:0000201 = pierre robin syndrome
 HP:0010442 = polydactyly
-SYNDROME   = prader-willi = ? prader-willi syndrome
+SYNDROME,prader-willi   = prader-willi = ? prader-willi syndrome = ? prader-willi syndrome
 HP:0000826 = precocious puberty
 HP:0004392 = pune belly syndrome
 r(12)
@@ -186,7 +186,7 @@ IRRELEVANT = repeat for further studies
 IRRELEVANT = repeat of failed culture
 IRRELEVANT = repeat studies
 ring 13
-SYNDROME   = russell-silver syndrome
+SYNDROME,russell-silver   = russell-silver syndrome
 HP:0100753 = schizophrenia
 HP:0001250 = seizure
 HP:0001250 = seizures
@@ -201,12 +201,12 @@ small baby
 HP:0002117 = speech delay
 spiral rib
 HP:0004322 = ss
-SYNDROME   = stickler syndrome
+SYNDROME,stickler  = stickler syndrome
 HP:0000098 = tall stature
 HP:0000062 = ? testes
 HP:0002777 = tracheal steosis
-SYNDROME   = ? trisomy 13 syndrome
-SYNDROME   = turner = ? turner syndrome
+SYNDROME,trysomy13   = ? trisomy 13 syndrome
+SYNDROME,turner   = turner = ? turner syndrome
 HP:0004494 = unilateral craniosynostosis
 HP:0000796 = urethral obstruction
 HP:0001629 = vsd
@@ -214,7 +214,6 @@ HP:0002667 = ? wilm's tumor
 IRRELEVANT = xxx/46/xx
 IRRELEVANT = xy
 IRRELEVANT = xyy
-
 HP:0001508 = failure to thrive
 HP:0000175 = cleft palate
 congenital anomaly
@@ -224,7 +223,6 @@ HP:0000717 = autism
 IRRELEVANT = other
 IRRELEVANT = reason not provided
 HP:0001999 = dysmorphic features
-SYNDROME   = ? prader-willi syndrome
 HP:0002564 = congenital heart defect
 FOLLOW_UP  = family history of autism
 HP:0001250 = seizures
@@ -234,7 +232,7 @@ chromosome abnormality
 HP:0001328 = learning disability
 HP:0000062 = ambiguous genitalia
 HP:0000708 = behavioural problems
-SYNDROME   = joubert syndrome
+SYNDROME,joubert   = joubert syndrome
 FOLLOW_UP  = family history of chromosome abnormality
 HP:0000252 = microcephaly
 multiple congenital anomalies
@@ -252,8 +250,7 @@ HP:0001263,HP:0001999 = developmental delay; dysmorphic features
 HP:0000141 = amenorrhea
 HP:0001263,HP:0003220 = developmental delay; chromosome abnormality
 FOLLOW_UP  = microarray follow-up
-SYNDROME   = asperger syndrome
+SYNDROME,asperger   = asperger syndrome
 HP:0001624 = stillbirth
 HP:0002117 = language/speech delay
-
 HP:0001999,HP:0002117 = df&lt

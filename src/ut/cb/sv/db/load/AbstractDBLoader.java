@@ -1,5 +1,7 @@
 package ut.cb.sv.db.load;
 
+import java.util.Set;
+
 import ut.cb.sv.db.Database;
 import ut.cb.sv.db.DatabaseEntry;
 import ut.cb.sv.db.feature.Feature;
@@ -54,16 +56,26 @@ public abstract class AbstractDBLoader implements DBLoader
 
     public void loadFeatureValueToCrtDBEntry(String featureName, String value)
     {
-        Object valueObj = getFeatureMap().getOutputValue(featureName, value.replaceAll("\r?\n", "; "));
-        if (valueObj != null) {
-            getDatabase().addFeatureValue(featureName, valueObj);
-            this.crtDBEntry.addFeature(getDatabase().getFeature(featureName), valueObj);
+        Set<Object> valueSet = getFeatureMap().getOutputValue(featureName, value);
+        if (valueSet != null) {
+            for (Object valueObj : valueSet) {
+                if (valueObj == null) {
+                    continue;
+                }
+                // getDatabase().addFeatureValue(featureName, valueObj);
+                this.crtDBEntry.addFeature(getDatabase().getFeature(featureName), valueObj);
+            }
         }
     }
 
     public void saveCrtDBEntry()
     {
         getDatabase().add(this.crtDBEntry.clone());
+    }
+
+    public void clearCrtDBEntry()
+    {
+        this.crtDBEntry = new DatabaseEntry();
     }
 
     public Database load(String filename, int nbOfEntries)
