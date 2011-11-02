@@ -69,7 +69,10 @@ public class FeatureValueMapping
 
     private void handleValueGroup(Feature f, Map<String, Object> valueMapping, String group)
     {
-        String variants[] = group.split(FEATURE_METADATA_VALUE_VARIANTS_SEPARATOR);
+        if ("".equals(group.trim())) {
+            return;
+        }
+        String variants[] = group.trim().split(FEATURE_METADATA_VALUE_VARIANTS_SEPARATOR);
         if (variants.length == 0) {
             return;
         }

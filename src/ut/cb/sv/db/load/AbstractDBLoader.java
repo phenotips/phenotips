@@ -62,7 +62,7 @@ public abstract class AbstractDBLoader implements DBLoader
                 if (valueObj == null) {
                     continue;
                 }
-                getDatabase().addFeatureValue(featureName, valueObj);
+                // getDatabase().addFeatureValue(featureName, valueObj);
                 this.crtDBEntry.addFeature(getDatabase().getFeature(featureName), valueObj);
             }
         }
@@ -71,6 +71,11 @@ public abstract class AbstractDBLoader implements DBLoader
     public void saveCrtDBEntry()
     {
         getDatabase().add(this.crtDBEntry.clone());
+    }
+
+    public void clearCrtDBEntry()
+    {
+        this.crtDBEntry = new DatabaseEntry();
     }
 
     public Database load(String filename, int nbOfEntries)

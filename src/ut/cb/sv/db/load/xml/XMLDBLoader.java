@@ -88,6 +88,9 @@ public class XMLDBLoader extends AbstractDBLoader
             if (this.getCrtXPath().equals(getFeatureMap().getEntryEndXPath()) && this.crtIgnoredElement == null) {
                 saveCrtDBEntry();
             }
+            if (this.getCrtXPath().equals(getFeatureMap().getDataPropagationEndXPath())) {
+                clearCrtDBEntry();
+            }
             if (this.getCrtXPath().equals(this.crtIgnoredElement)) {
                 this.crtIgnoredElement = null;
             }

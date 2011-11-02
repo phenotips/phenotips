@@ -2,4 +2,5 @@
 /aberrations/submission[@SAMPLE_MALE] GENDER  Category:M=true|F=false
 /aberrations/submission[@PHENOTYPE_DETAILS] PHENOTYPE MultiCategory:@phenotype-categories.in
 entryEndXPath:/aberrations/submission
+dataPropagationEndXPath:/aberrations/submission
 Accept: /aberrations/submission[@SAMPLE_ID]=(ANON|R)[0-9]+

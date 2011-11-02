@@ -8,7 +8,11 @@ public class XMLFeatureMap extends AbstractFeatureMap
 
     protected final static String ENTRY_END_XPATH_MARKER = "entryEndXPath:";
 
+    protected final static String DATA_PROPAGATION_XPATH_MARKER = "dataPropagationEndXPath:";
+
     private String entryEndXPath;
+
+    private String dataPropagationEndXPath;
 
     public XMLFeatureMap(String mappingFileName)
     {
@@ -22,12 +26,21 @@ public class XMLFeatureMap extends AbstractFeatureMap
             this.entryEndXPath = line.substring(ENTRY_END_XPATH_MARKER.length()).trim();
             return false;
         }
+        if (line.startsWith(DATA_PROPAGATION_XPATH_MARKER)) {
+            this.dataPropagationEndXPath = line.substring(DATA_PROPAGATION_XPATH_MARKER.length()).trim();
+            return false;
+        }
         return true;
     }
 
     public String getEntryEndXPath()
     {
         return this.entryEndXPath;
+    }
+
+    public String getDataPropagationEndXPath()
+    {
+        return this.dataPropagationEndXPath;
     }
 
     public String getFeatureNameForXPath(String xPath)

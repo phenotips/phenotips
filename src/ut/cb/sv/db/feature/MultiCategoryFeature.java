@@ -35,10 +35,10 @@ public class MultiCategoryFeature extends CategoryFeature
     @Override
     public Object prepareValueForEntry(DatabaseEntry entry, Object value)
     {
-        Set<Object> values = (Set<Object>) entry.get(this.name);
-        if (values == null) {
-            values = new LinkedHashSet<Object>();
-            // entry.addFeature(this, prevValue);
+        Set<Object> values = new LinkedHashSet<Object>();
+        Set<Object> prev = (Set<Object>) entry.get(this.name);
+        if (prev != null) {
+            values.addAll(prev);
         }
         values.add(value);
         return values;

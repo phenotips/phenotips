@@ -142,7 +142,6 @@ public abstract class AbstractFeatureMap implements FeatureMap
             }
             return result;
         } catch (NullPointerException ex) {
-            System.out.print(featureName + " --- " + inputValue + " ===> null");
             ex.printStackTrace();
             System.exit(0);
             return null;
