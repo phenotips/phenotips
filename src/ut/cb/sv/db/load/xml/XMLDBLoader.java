@@ -6,6 +6,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -49,10 +50,11 @@ public class XMLDBLoader extends AbstractDBLoader
             for (int i = 0; i < attributes.getLength(); ++i) {
                 String attrName = attributes.getQName(i);
                 this.addAttrNameToXPath(attrName.toString());
-                if (getFeatureMap().accepts(this.getCrtXPath(), attributes.getValue(attrName))) {
+                String attrValue = StringEscapeUtils.unescapeXml(attributes.getValue(attrName));
+                if (getFeatureMap().accepts(this.getCrtXPath(), attrValue)) {
                     String crtAttrFeatureName = getFeatureMap().getFeatureNameForXPath(this.getCrtXPath());
                     if (crtAttrFeatureName != null) {
-                        loadFeatureValueToCrtDBEntry(crtAttrFeatureName, attributes.getValue(attrName));
+                        loadFeatureValueToCrtDBEntry(crtAttrFeatureName, attrValue);
                     }
                     this.removeLastAttrNameFromXPath();
                 } else {
