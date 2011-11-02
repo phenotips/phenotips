@@ -3,4 +3,5 @@
 /aberrations/submission[@PHENOTYPE_DETAILS] PHENOTYPE MultiCategory:@phenotype-categories.in
 entryEndXPath:/aberrations/submission
 dataPropagationEndXPath:/aberrations/submission
+Accept: /aberrations/submission[@SAMPLE_MALE]=true|false
 Accept: /aberrations/submission[@SAMPLE_ID]=(ANON|R)[0-9]+

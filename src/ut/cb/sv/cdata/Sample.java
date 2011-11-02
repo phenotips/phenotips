@@ -15,9 +15,9 @@ public class Sample
 
     final private Gender gender;
 
-    Set<String> phenotype;
+    private Set<String> phenotype;
 
-    List<Variant> variants;
+    private List<Variant> variants;
 
     public Sample(String id, Gender gender)
     {
@@ -44,12 +44,12 @@ public class Sample
 
     public boolean addPhenotype(Collection<String> phenotype)
     {
-        return phenotype.addAll(phenotype);
+        return this.phenotype.addAll(phenotype);
     }
 
-    public boolean hasPhenotype(String goFunction)
+    public boolean hasPhenotype(String phenotype)
     {
-        return this.phenotype.contains(goFunction);
+        return this.phenotype.contains(phenotype);
     }
 
     public Set<String> getPhenotype()
@@ -149,11 +149,10 @@ public class Sample
         StringBuilder str = new StringBuilder();
         str.append("ID:        ").append(this.id).append("\n");
         str.append("GENDER:    ").append(this.gender).append("\n");
-        str.append("PHENOTYPE: ");
+        str.append("PHENOTYPE: ").append("\n");
         for (String p : this.phenotype) {
             str.append("    ").append(p).append("\n");
         }
-        str.append("\n");
         str.append("VARIANTS:  ");
         for (Variant v : this.variants) {
             str.append("    ").append(v);

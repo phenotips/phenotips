@@ -1,6 +1,6 @@
 package ut.cb.sv.cdata;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.TreeMap;
 
 import ut.cb.sv.db.Database;
@@ -23,6 +23,7 @@ public class SampleCollection extends TreeMap<String, Sample>
 
     public static final String VARIANT_TYPE_FEATURE_NAME = "TYPE";
 
+    @SuppressWarnings("unchecked")
     public SampleCollection(Database data)
     {
         GeneFunctionData gd = new GeneFunctionData();
@@ -37,14 +38,21 @@ public class SampleCollection extends TreeMap<String, Sample>
                 sample = new Sample(id, gender);
                 this.put(id, sample);
             }
-            if (entry.get(PHENOTYPE_FEATURE_NAME) != null) {
-                sample.addPhenotype((Set<String>) entry.get(PHENOTYPE_FEATURE_NAME));
+            Object phenotype = entry.get(PHENOTYPE_FEATURE_NAME);
+            System.out.println(id + " -> " + phenotype + " " + (phenotype instanceof Collection< ? >));
+            if (phenotype != null && phenotype instanceof Collection< ? >) {
+                sample.addPhenotype((Collection<String>) entry.get(PHENOTYPE_FEATURE_NAME));
             }
-            Variant variant = new Variant((String) entry.get(CHROMOSOME_FEATURE_NAME),
-                (Integer) entry.get(LOCATION_START_FEATURE_NAME), (Integer) entry
-                .get(LOCATION_END_FEATURE_NAME), (String) entry.get(VARIANT_TYPE_FEATURE_NAME));
-            variant.addGoFunctions(gd.getGOFunctionsOfOverlappingGenes(variant));
-            sample.addVariant(variant);
+            System.out.println(sample.getPhenotype());
+            String chr = (String) entry.get(CHROMOSOME_FEATURE_NAME);
+            Integer start = (Integer) entry.get(LOCATION_START_FEATURE_NAME);
+            Integer end = (Integer) entry.get(LOCATION_END_FEATURE_NAME);
+            String type = (String) entry.get(VARIANT_TYPE_FEATURE_NAME);
+            if (chr != null && start != null && end != null && type != null) {
+                Variant variant = new Variant(chr, start, end, type);
+                variant.addGoFunctions(gd.getGOFunctionsOfOverlappingGenes(variant));
+                sample.addVariant(variant);
+            }
         }
     }
 

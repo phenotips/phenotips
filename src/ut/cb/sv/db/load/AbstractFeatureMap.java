@@ -137,7 +137,7 @@ public abstract class AbstractFeatureMap implements FeatureMap
                 if (ovObj instanceof Set) {
                     result.addAll((Set) ovObj);
                 } else {
-                    result.add(ovObj);
+                    result.add(f.postProcessValue(ovObj.toString()));
                 }
             }
             return result;
