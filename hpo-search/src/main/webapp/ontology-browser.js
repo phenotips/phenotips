@@ -132,7 +132,7 @@ var MS = (function (MS) {
     if (list.hasChildNodes()) {
       return list;
     }
-    return new Element('div', {'class' : 'descendents hint'}).update(this.options.noresults);
+    return new Element('div', {'class' : 'descendents hint empty'}).update(this.options.noresults);
   },
   
   _createBranch: function (eltName, className, data, expandable) {
