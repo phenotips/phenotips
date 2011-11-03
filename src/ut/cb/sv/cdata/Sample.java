@@ -11,6 +11,13 @@ import ut.cb.sv.gene.Location;
 
 public class Sample
 {
+    public static final Set<String> IRRELEVANT_PHENOTYPES = new TreeSet<String>()
+            {
+        {
+            add("IRRELEVANT");
+        }
+    };
+
     final private String id;
 
     final private Gender gender;
@@ -58,6 +65,12 @@ public class Sample
         clone.addAll(this.phenotype);
         return clone;
 
+    }
+
+    public Set<String> cleanPhenotype()
+    {
+        this.phenotype.removeAll(IRRELEVANT_PHENOTYPES);
+        return getPhenotype();
     }
 
     public boolean addVariant(Chromosome chr, int start, int end, VariantType type)

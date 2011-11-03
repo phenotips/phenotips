@@ -173,7 +173,7 @@ public class Main
             // gd.addGOInfoToDatabase(data);
 
             SampleCollection sc = new SampleCollection(data);
-            System.out.println(sc);
+            // System.out.println(sc);
 
             handleOutputOption(cmd, CmdLineOptions.PRETTY_PRINT, data);
             handleOutputOption(cmd, CmdLineOptions.CSV_EXPORT, data);

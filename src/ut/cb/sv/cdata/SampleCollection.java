@@ -39,11 +39,18 @@ public class SampleCollection extends TreeMap<String, Sample>
                 this.put(id, sample);
             }
             Object phenotype = entry.get(PHENOTYPE_FEATURE_NAME);
-            System.out.println(id + " -> " + phenotype + " " + (phenotype instanceof Collection< ? >));
-            if (phenotype != null && phenotype instanceof Collection< ? >) {
-                sample.addPhenotype((Collection<String>) entry.get(PHENOTYPE_FEATURE_NAME));
+            // System.out.println(id + " -> " + phenotype + " " + (phenotype instanceof Collection< ? >));
+            try {
+                if (phenotype != null && phenotype instanceof Collection< ? >) {
+                    sample.addPhenotype((Collection<String>) entry.get(PHENOTYPE_FEATURE_NAME));
+                    if (sample.cleanPhenotype().isEmpty()) {
+                        continue;
+                    }
+                }
+            } catch (ClassCastException ex) {
+                System.out.println("[" + id + "] UNEXPECTED PHENOTYPE FORMAT  " + entry.get(PHENOTYPE_FEATURE_NAME));
             }
-            System.out.println(sample.getPhenotype());
+            // System.out.println(sample.getPhenotype());
             String chr = (String) entry.get(CHROMOSOME_FEATURE_NAME);
             Integer start = (Integer) entry.get(LOCATION_START_FEATURE_NAME);
             Integer end = (Integer) entry.get(LOCATION_END_FEATURE_NAME);
