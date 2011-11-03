@@ -66,7 +66,7 @@ var MS = (function (MS) {
       });
   },
   
-  expand : function (element) {
+  expand : function (element, doPopulate) {
       var query = element.__termId;
       if (this.options.expandQueryProcessor != null && typeof(this.options.expandQueryProcessor.processQuery) == "function") {
         query = this.options.expandQueryProcessor.processQuery(query);
@@ -79,11 +79,16 @@ var MS = (function (MS) {
         method: this.options.method,
         requestHeaders: headers,
         onSuccess: function (response) {
-	  var descendents = this.buildDescendentsList(response.responseXML);
-          Event.fire(element, 'obrowser:expand:done', descendents);
+	  var memo = {};
+	  if (doPopulate) {
+	    memo.data = this.buildDescendentsList(response.responseXML);
+	  } else {
+	    memo.count = this.countDescendents(response.responseXML);
+	  }
+          Event.fire(element, 'obrowser:expand:done', memo);
 	}.bind(this),
         onFailure: function (response) {
-          Event.fire(element, 'obrowser:expand:failed', new Element('div', {'class' : 'error'}).update("Failed to retrieve data : " + respose.statusText));
+          Event.fire(element, 'obrowser:expand:failed', {data: new Element('div', {'class' : 'error'}).update("Failed to retrieve data : " + respose.statusText), count: -1});
         }
       });
   },
@@ -115,6 +120,10 @@ var MS = (function (MS) {
     newContent.insert({'bottom' : root});
     this._toggleExpandState(root);
     return newContent;
+  },
+  
+  countDescendents : function(xml) {
+    return xml.getElementsByTagName(this.options.resultsParameter).length;
   },
   
   buildDescendentsList : function(xml) {
@@ -150,15 +159,19 @@ var MS = (function (MS) {
 		     {'bottom' : this._createTool('&#x260c;', 'browse-tool', "Browse related terms", this._browseEntry)}).insert(
 		     {'bottom' : this._createTool('&#x2713;', 'accept-tool', "Add this phenotype", this._acceptEntry)})
     });
+    wrapper.down('.info').observe('click', this._acceptEntry.bindAsEventListener(this));
+    element.update(wrapper);
     if (expandable) {
       var expandTool = new Element('span', {'class' : 'expand-tool'}).update(this._getExpandCollapseSymbol(true));
       expandTool.observe('click', function(event) {
 	this._toggleExpandState(event.element().up('.entry'));
       }.bindAsEventListener(this));
       wrapper.insert({'top': expandTool});
+      this.expand(element, element.hasClassName('root'));
+      element.observe('obrowser:expand:done', this._obrowserExpandEventHandler.bindAsEventListener(this));
+      element.observe('obrowser:expand:failed', this._obrowserExpandEventHandler.bindAsEventListener(this));
     }
-    wrapper.down('.info').observe('click', this._acceptEntry.bindAsEventListener(this));
-    return element.update(wrapper);
+    return element;
   },
   
   _toggleExpandState : function(target) {
@@ -170,17 +183,32 @@ var MS = (function (MS) {
 	if (target.down(".error")) {
 	  target.down(".error").remove();
 	}
-        this.expand(target);
-	var _obrowserEventHandler = function(event) {
-	  event.element().insert({'bottom': event.memo});
-	  event.element().stopObserving('obrowser:expand:done');
-	  event.element().stopObserving('obrowser:expand:failed');
-	};
-	target.observe('obrowser:expand:done', _obrowserEventHandler);
-	target.observe('obrowser:expand:failed', _obrowserEventHandler);
+        this.expand(target, true);
+	target.observe('obrowser:expand:done', this._obrowserExpandEventHandler.bindAsEventListener(this));
+	target.observe('obrowser:expand:failed', this._obrowserExpandEventHandler.bindAsEventListener(this));
       }
       target.down('.expand-tool').update(this._getExpandCollapseSymbol(target.hasClassName("collapsed")));
     }
+  },
+  
+  _obrowserExpandEventHandler : function(event) {
+     var element = event.element();
+     if (!event.memo) {
+       return;
+    }
+    if (event.memo.data) {
+       element.insert({'bottom': event.memo.data});
+    }
+    if ((event.memo.count == "0") || (!element.hasClassName('root') && event.memo.data && !element.down('.descendents .entry, .error'))) {
+      element.addClassName('collapsed');
+      var expandTool = element.down('.expand-tool');
+      if (expandTool) {
+        expandTool.update(this._getExpandCollapseSymbol(true)).addClassName('disabled');
+        expandTool.stopObserving('click');
+      }
+    }
+    element.stopObserving('obrowser:expand:done');
+    element.stopObserving('obrowser:expand:failed');
   },
   
   _getExpandCollapseSymbol : function (isCollapsed) {
@@ -200,6 +228,7 @@ var MS = (function (MS) {
     alert("Not yet");
   },
   _acceptEntry : function(event) {
+    event.stop();
     var elt = event.element().up('.entry');
     if (this.suggest) {
       var id = elt.__termId;

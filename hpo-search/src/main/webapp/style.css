@@ -175,6 +175,10 @@ fieldset.phenotype-group legend:before, .expand-tool {
   text-shadow: 0 0 5px #ccc;
   cursor: pointer;
 }
+.expand-tool.disabled {
+  color: #ccc;
+  cursor: default;
+}
 fieldset.phenotype-group legend:before {
   font-size: 120%;
   content: '\25BE ';
