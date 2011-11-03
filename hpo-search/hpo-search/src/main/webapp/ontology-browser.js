@@ -159,7 +159,7 @@ var MS = (function (MS) {
     wrapper.insert({'top': this._generateEntryTitle(data.id, data.value)});
     wrapper.insert({'bottom':
                    new Element('span', {'class' : 'entry-tools'}).insert(
-                     {'bottom' : this._createTool('&#x260c;', 'browse-tool', "Browse related terms", this._browseEntry)}).insert(
+                     {'bottom' : this._createTool('...', 'browse-tool', "Browse related terms", this._browseEntry)}).insert(
                      {'bottom' : this._createTool('i', 'info-tool', "Information about this term", this._showEntryInfo)}).insert(
                      {'bottom' : this._createTool('&#x2713;', 'accept-tool', "Add this phenotype", this._acceptEntry)})
     });

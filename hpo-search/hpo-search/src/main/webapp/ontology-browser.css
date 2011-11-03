@@ -90,6 +90,11 @@
   font-style: italic;
 }
 .ontology-tree .browse-tool {
+    -moz-border-radius: 0.875em;
+    -webkit-border-radius: 0.875em;
+    border-radius: 0.875em;
+    font-size: 0.8em;
+    min-width: 1.75em;
 }
 .ontology-tree .accept-tool {
   background-color: #292;
