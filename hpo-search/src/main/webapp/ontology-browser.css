@@ -97,3 +97,43 @@
 .ontology-tree .accepted >.entry-data .info * {
   color: #292;
 }
+
+.ontology-tree .entry {
+  position: relative;
+}
+.ontology-tree .entry .tooltip {
+  position: absolute;
+  top: .7em;
+  width: 80%;
+  right: 2.8em;
+  border: 0 none;
+  background: #fff;
+  padding: 4px 8px;
+  -moz-border-radius: 12px 0 12px 12px;
+  -webkit-border-radius: 12px 0 12px 12px;
+  border-radius: 12px 0 12px 12px;
+  -moz-box-shadow: 0 0 6px #777;
+  box-shadow: 0 0 6px #777;
+  z-index: 20000;
+}
+.ontology-tree .entry .tooltip .value {
+  font-weight: bold;
+}
+.ontology-tree .entry .tooltip .key {
+  font-size: .8em;
+  color: #777;
+}
+.ontology-tree .entry .tooltip dl {
+  margin: .3em 0;
+}
+.ontology-tree .entry .tooltip dt {
+  color: #000;
+  font-style: italic;
+  margin: .4em 0 0.2em;
+}
+.ontology-tree .entry .tooltip .hide-tool {
+  position: absolute;
+  top: .2em;
+  right: .5em;
+  cursor: pointer;
+}

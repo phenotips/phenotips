@@ -9,6 +9,10 @@ var MS = (function (MS) {
     resultsParameter : "doc",
     resultId : "str[name=id]",
     resultValue : "str[name=name]",
+    resultInfo : {
+                           "Definition"    : {"selector"  : "str[name=def]"},
+                           "Synonyms"      : {"selector"  : "arr[name=synonym] str"}
+    },
     resultParent : {
       selector : 'arr[name=is_a] str',
       processingFunction : function (text){
@@ -116,7 +120,8 @@ var MS = (function (MS) {
     }
     var data = {
       id : Element.down(targetResult, this.options.resultId).firstChild.nodeValue,
-      value : Element.down(targetResult, this.options.resultValue).firstChild.nodeValue
+      value : Element.down(targetResult, this.options.resultValue).firstChild.nodeValue,
+      info : this._generateEntryInfo(targetResult)
     }
     var root = this._createRoot(data);
     newContent.insert({'bottom' : root});
@@ -135,7 +140,8 @@ var MS = (function (MS) {
       if (results[i].hasChildNodes()) {
         var data = {
           id : Element.down(results[i], this.options.resultId).firstChild.nodeValue,
-          value : Element.down(results[i], this.options.resultValue).firstChild.nodeValue
+          value : Element.down(results[i], this.options.resultValue).firstChild.nodeValue,
+          info : this._generateEntryInfo(results[i])
          };
          list.insert({'bottom': this._createDescendentBranch(data)});
       }
@@ -150,11 +156,7 @@ var MS = (function (MS) {
     var element =  new Element(eltName, {'class' : 'entry ' + className});
     element.__termId = data.id;
     var wrapper = new Element('div', {'class' : 'entry-data'});
-    wrapper.insert({'top':
-                   new Element('span', {'class' : 'info'}).insert(
-                     {'bottom' : new Element('span', {'class' : 'key'}).update('[' + data.id + ']')}).insert({'bottom' : ' '}).insert(
-                     {'bottom' : new Element('span', {'class' : 'value'}).update(data.value)})
-    });
+    wrapper.insert({'top': this._generateEntryTitle(data.id, data.value)});
     wrapper.insert({'bottom':
                    new Element('span', {'class' : 'entry-tools'}).insert(
                      {'bottom' : this._createTool('&#x260c;', 'browse-tool', "Browse related terms", this._browseEntry)}).insert(
@@ -163,6 +165,9 @@ var MS = (function (MS) {
     });
     wrapper.down('.info').observe('click', this._acceptEntry.bindAsEventListener(this));
     element.update(wrapper);
+    if (data.info) {
+      element.insert({bottom : data.info});
+    }
     if (expandable) {
       var expandTool = new Element('span', {'class' : 'expand-tool'}).update(this._getExpandCollapseSymbol(true));
       expandTool.observe('click', function(event) {
@@ -176,10 +181,50 @@ var MS = (function (MS) {
       element.observe('obrowser:expand:done', this._obrowserExpandEventHandler.bindAsEventListener(this));
       element.observe('obrowser:expand:failed', this._obrowserExpandEventHandler.bindAsEventListener(this));
     }
-    if (element.hasClassName('root')) {
-      element.down('.browse-tool').remove();
-    }
     return element;
+  },
+  
+  _generateEntryTitle : function(id, value) {
+    return  new Element('span', {'class' : 'info'}).insert(
+                     {'bottom' : new Element('span', {'class' : 'key'}).update('[' + id + ']')}).insert(
+                     {'bottom' : ' '}).insert(
+                     {'bottom' : new Element('span', {'class' : 'value'}).update(value)});
+  },
+  
+  _generateEntryInfo : function(xmlFragment) {
+    var title = this._generateEntryTitle(
+      Element.down(xmlFragment, this.options.resultId).firstChild.nodeValue,
+      Element.down(xmlFragment, this.options.resultValue).firstChild.nodeValue
+    );
+    var info = new Element("dl");
+    for (var section in this.options.resultInfo) {
+      var sOptions = this.options.resultInfo[section];
+      sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/, '').replace(/\s+/, "-");
+      var selector = sOptions.selector;
+      if (!selector) {
+        continue;
+      }
+      var sectionContents = null;
+      Element.select(xmlFragment, selector).each(function(item) {
+        if (!sectionContents) {
+          info.insert({"bottom" : new Element("dt", {'class' : sectionClass}).insert({'bottom' : section})});
+          sectionContents = new Element("dd");
+          info.insert({"bottom" : sectionContents});
+	}
+        var text = item.firstChild.nodeValue;
+        sectionContents.insert({"bottom" : new Element("div").update(text)});
+      });
+    }
+    var result = new Element("div", {class : "tooltip invisible"}).update(title);
+    if (info.hasChildNodes()) {
+      result.insert({bottom : info});
+    }
+    var hideTool = new Element('span', {'class' : 'hide-tool', title : 'Hide'}).update("&#215;");
+    result.insert({top : hideTool});
+    hideTool.observe('click', function(event){
+      event.element().up('.tooltip').addClassName('invisible');
+    });
+    return result;
   },
 
   _toggleExpandState : function(target) {
@@ -255,7 +300,7 @@ var MS = (function (MS) {
   },
   _showEntryInfo : function(event) {
     var elt = event.element().up('.entry');
-    alert("Not yet");
+    elt.down('.tooltip').toggleClassName('invisible');
   },
   _acceptEntry : function(event) {
     event.stop();
@@ -266,8 +311,6 @@ var MS = (function (MS) {
       this.suggest.acceptEntry(id, value, null, '', value, value);
       elt.toggleClassName('accepted');
       this.dialog.positionDialog();
-    } else {
-      alert("accept " + elt + " -->> " + elt.__termId);
     }
   },
   _browseEntry : function(event) {
@@ -277,12 +320,14 @@ var MS = (function (MS) {
 
   _createParentBranch: function (parent) {
     var parent = this._createBranch('li', 'parent', parent, false);
-    //parent
+    parent.down('.info-tool').remove();
     return parent;
   },
 
   _createRoot : function (data) {
-    return this._createBranch('div', 'root', data, true);
+    var root = this._createBranch('div', 'root', data, true);
+    root.down('.browse-tool').remove();
+    return root;
   },
 
   _createDescendentBranch : function(data) {
