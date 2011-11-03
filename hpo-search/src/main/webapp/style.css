@@ -175,7 +175,7 @@ fieldset.phenotype-group legend:before, .expand-tool {
   text-shadow: 0 0 5px #ccc;
   cursor: pointer;
 }
-.expand-tool.disabled {
+.expand-tool.disabled, .expand-tool.locked {
   color: #ccc;
   cursor: default;
 }

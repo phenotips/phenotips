@@ -74,6 +74,8 @@ var MS = (function (MS) {
       var url = this.options.script + this.options.varname + "=" + encodeURIComponent(query);
       var headers = {};
       headers.Accept = this.options.responseFormat;
+      
+      this._lockExpandTool(element);
 
       var ajx = new Ajax.Request(url, {
         method: this.options.method,
@@ -164,7 +166,10 @@ var MS = (function (MS) {
     if (expandable) {
       var expandTool = new Element('span', {'class' : 'expand-tool'}).update(this._getExpandCollapseSymbol(true));
       expandTool.observe('click', function(event) {
-	this._toggleExpandState(event.element().up('.entry'));
+	var entry = event.element().up('.entry');
+	if (!this._isExpandToolLocked(entry)){
+	  this._toggleExpandState(entry);
+	}
       }.bindAsEventListener(this));
       wrapper.insert({'top': expandTool});
       this.expand(element, element.hasClassName('root'));
@@ -212,6 +217,28 @@ var MS = (function (MS) {
     }
     element.stopObserving('obrowser:expand:done');
     element.stopObserving('obrowser:expand:failed');
+    this._unlockExpandTool(element);
+  },
+  
+  _lockExpandTool : function(element) {
+    var expandTool = element.down('.expand-tool');
+    if (expandTool) {
+      expandTool.addClassName('locked');
+    }
+  },
+  
+  _unlockExpandTool : function(element) {
+    var expandTool = element.down('.expand-tool');
+    if (expandTool) {
+      expandTool.removeClassName('locked');
+    }
+  },
+  
+  _isExpandToolLocked : function(element) {
+    if (element.down('.expand-tool.locked')) {
+      return true;
+    }
+    return false;
   },
   
   _getExpandCollapseSymbol : function (isCollapsed) {
