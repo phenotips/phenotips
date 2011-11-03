@@ -1,17 +1,16 @@
 IRRELEVANT = 22ph+
-SYNDROME,22q = 22q = 22q- = 22q-? = features of 22q- = microdeletion 22
+SYNDROME 22q = 22q = 22q- = 22q-? = features of 22q- = microdeletion 22
 HP:0005268 = 2 spontaneous abortions
 IRRELEVANT = 46
 IRRELEVANT = 47
 IRRELEVANT = 4p-
 HP:0001665 = abn cardiac
 HP:0009556 = absent tibia
-HP:0100543 = academic difficluties
+HP:0100543,HP:0001328 = academic difficluties
 HP:0007018,HP:0000725 = adhd psychotic
-HP:0000062 = ambi. geni
-HP:0000062 = ambiguous genitalia
+HP:0000062 = ambi. geni = ambiguous genitalia
 HP:0000141 = amenorrhea
-SYNDROME,angelman = angelman
+SYNDROME angelman = angelman
 HP:0001680 = aortic coartation 
 HP:0001009,HP:0001251 = ? ataxia telangiectasia
 HP:0007018 = attention deficit disorder
@@ -20,7 +19,7 @@ HP:0000717 = autism spectrum disorder
 HP:0000717 = autism with t(13;14)
 HP:0000717 = autistic
 HP:0000717 = autistic spectrum disorder
-SYNDROME,beckwith-wiedemann   = beckwith-wiedemann syndrome
+SYNDROME beckwith-wiedemann = beckwith-wiedemann syndrome
 HP:0000708 = behavioral problem
 HP:0000708 = behavioural problem
 HP:0000708 = behavioural problems
@@ -32,9 +31,9 @@ HP:0000708 = behav. pro.
 HP:0000708 = behav. prob.
 HP:0000708 = behav. problem
 HP:0000708,HP:0006877 = behav. pro.mental retard
-HP:0100337 = bilateral cl+palate
+HP:0000202,HP:0100337 = bilateral cl+palate
 IRRELEVANT = bilateral ear
-HP:0100549 = IRRELEVANT = bm failure
+HP:0100549,IRRELEVANT = bm failure
 IRRELEVANT = brian malfunction
 IRRELEVANT = brkpt?
 HP:0000886 = cage deformity 
@@ -95,7 +94,7 @@ HP:0001999,HP:0000823 = df< delayed puberty
 HP:0001999,HP:0001513 = df obesity
 HP:0001999,HP:0004322 = df. short stature
 HP:0001999,HP:0004322,HP:0006877 = df. short stature. mental retardation
-SYNDROME,down   = ?down syndrome
+SYNDROME,down = ?down syndrome
 HP:0000958 = dry skin
 HP:0001999 = dysmorphic
 HP:0001999 = dysmorphic faces
