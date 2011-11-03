@@ -155,8 +155,8 @@ var MS = (function (MS) {
     });
     wrapper.insert({'bottom':
 		   new Element('span', {'class' : 'entry-tools'}).insert(
-		     {'bottom' : this._createTool('i', 'info-tool', "Information about this term", this._showEntryInfo)}).insert(
 		     {'bottom' : this._createTool('&#x260c;', 'browse-tool', "Browse related terms", this._browseEntry)}).insert(
+		     {'bottom' : this._createTool('i', 'info-tool', "Information about this term", this._showEntryInfo)}).insert(
 		     {'bottom' : this._createTool('&#x2713;', 'accept-tool', "Add this phenotype", this._acceptEntry)})
     });
     wrapper.down('.info').observe('click', this._acceptEntry.bindAsEventListener(this));
@@ -170,6 +170,9 @@ var MS = (function (MS) {
       this.expand(element, element.hasClassName('root'));
       element.observe('obrowser:expand:done', this._obrowserExpandEventHandler.bindAsEventListener(this));
       element.observe('obrowser:expand:failed', this._obrowserExpandEventHandler.bindAsEventListener(this));
+    }
+    if (element.hasClassName('root')) {
+      element.down('.browse-tool').remove();
     }
     return element;
   },
