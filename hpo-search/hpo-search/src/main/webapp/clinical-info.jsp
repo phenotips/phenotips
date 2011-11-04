@@ -39,6 +39,19 @@
     <label for="gender_female"><input type="radio" name="gender" id="gender_female" value="female"/>Female</label>
   </div>
   </fieldset>
+  <fieldset>
+  <div class="half-width family_study">
+    <label>Family study:</label>
+    <label for="relative_mother"><input type="radio" name="relative" id="relative_mother" value="mother"/>Mother</label>
+    <label for="relative_father"><input type="radio" name="relative" id="relative_father" value="father"/>Father</label>
+    <label for="relative_sibling"><input type="radio" name="relative" id="relative_sibling" value="sibling"/>Sibling</label>
+    <label for="relative_of">of:</label>
+  </div>
+  <div class="half-width relative_of">
+    <label for="relative_of" class="hint">MRN</label>
+    <input type="text" name="relative_of" id="relative_of"/>
+  </div>
+  </fieldset>
 </fieldset>
 
 <fieldset class="clinical-info">
@@ -180,6 +193,7 @@ public String generateFreeText(String name, String label)
       }});
 
       put ("Family history", new LinkedHashMap<String, Object>(){{
+        put("_c_cosanguinity", "Cosanguinity");
         put("_c_miscarriages", "Parents with at least 3 miscarriages");
         put("_c_relatives", "Other relatives with similar clinical history");
         put("_i_relative_details", "(please give details here)");
