@@ -5,23 +5,23 @@ window.location = "unsupported-browser.html";
 <![endif]-->
 <link rel="stylesheet" type="text/css" href="style.css"></link>
 <link rel="stylesheet" type="text/css" href="blue.css"></link>
-<link rel="stylesheet" type="text/css" href="modal-popup.css"></link>
-<link rel="stylesheet" type="text/css" href="suggest.css"></link>
-<link rel="stylesheet" type="text/css" href="multi-suggest.css"></link>
-<link rel="stylesheet" type="text/css" href="ontology-browser.css"></link>
+<link rel="stylesheet" type="text/css" href="widgets/modal-popup.css"></link>
+<link rel="stylesheet" type="text/css" href="widgets/suggest.css"></link>
+<link rel="stylesheet" type="text/css" href="widgets/multi-suggest.css"></link>
+<link rel="stylesheet" type="text/css" href="widgets/ontology-browser.css"></link>
 <link rel="icon" href="favicon.ico" type="image/ico"></link>
 <link rel="shortcut icon" href="favicon.ico" type="image/ico"></link>
-<script type="text/javascript" src="prototype.js"></script>
-<script type="text/javascript" src="xlist.js"></script>
-<script type="text/javascript" src="suggest.js"></script>
-<script type="text/javascript" src="multi-suggest.js"></script>
-<script type="text/javascript" src="shortcuts.js"></script>
-<script type="text/javascript" src="modal-popup.js"></script>
-<script type="text/javascript" src="solr-query-processor.js"></script>
-<script type="text/javascript" src="ontology-browser.js"></script>
-<script type="text/javascript" src="form-behavior.js"></script>
-<script type="text/javascript" src="term-suggest.js"></script>
-<script type="text/javascript" src="form-validation.js"></script>
+<script type="text/javascript" src="jslib/prototype.js"></script>
+<script type="text/javascript" src="widgets/xlist.js"></script>
+<script type="text/javascript" src="widgets/suggest.js"></script>
+<script type="text/javascript" src="widgets/multi-suggest.js"></script>
+<script type="text/javascript" src="jslib/shortcuts.js"></script>
+<script type="text/javascript" src="widgets/modal-popup.js"></script>
+<script type="text/javascript" src="jsform/solr-query-processor.js"></script>
+<script type="text/javascript" src="widgets/ontology-browser.js"></script>
+<script type="text/javascript" src="jsform/form-behavior.js"></script>
+<script type="text/javascript" src="jsform/term-suggest.js"></script>
+<script type="text/javascript" src="jsform/form-validation.js"></script>
 
 
 <%!
