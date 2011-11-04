@@ -907,7 +907,7 @@ var MS = (function(MS){
         'id': id,
         'value': value,
         'info': info,
-        'icon' : icon,
+        'icon' : icon
       });
 
       if (!event.stopped) {

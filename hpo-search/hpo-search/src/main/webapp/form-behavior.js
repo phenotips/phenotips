@@ -17,7 +17,7 @@ var highlightChecked = function(element) {
 };
 var enableHighlightChecked = function(element) {
       highlightChecked(element);
-      ['change', 'suggest:change'].each(function(eventName) {
+      ['click', 'change', 'suggest:change'].each(function(eventName) {
         element.observe(eventName, highlightChecked.bind(element,element));
       });
 };
@@ -44,20 +44,26 @@ document.observe('dom:loaded', function() {
 	var boxMaxTop = content.cumulativeOffset().top + content.getHeight() - boxHeight;
 	var boxLeft = qsBox.cumulativeOffset().left;
 	if (document.viewport.getScrollOffsets().top >= boxMinTop && document.viewport.getScrollOffsets().top < boxMaxTop) {
-	  qsBox.style.position = 'fixed';
-	  qsBox.style.left = boxLeft + 'px';
-	  qsBox.style.width = boxWidth + 'px';
-	  qsBox.style.top = 0;
+	  if (qsBox.style.position != 'fixed') {
+	    qsBox.style.position = 'fixed';
+	    qsBox.style.left = boxLeft + 'px';
+	    qsBox.style.width = boxWidth + 'px';
+	    qsBox.style.top = 0;
+	  }
 	} else if (document.viewport.getScrollOffsets().top >= boxMaxTop) {
-	  qsBox.style.position = 'absolute';
-	  qsBox.style.top = boxMaxTop + 'px';
-	  qsBox.style.left = '';
-	  qsBox.style.right = 0;
+	  if (qsBox.style.position = 'absolute'){
+	    qsBox.style.position = 'absolute';
+	    qsBox.style.top = boxMaxTop + 'px';
+	    qsBox.style.left = '';
+	    qsBox.style.right = 0;
+	  }
 	} else {
-	  qsBox.style.position = '';
-	  qsBox.style.top = '';
-	  qsBox.style.left = '';
-	  qsBox.style.width = '';
+	  if (qsBox.style.position = ''){
+	    qsBox.style.position = '';
+	    qsBox.style.top = '';
+	    qsBox.style.left = '';
+	    qsBox.style.width = '';
+	  }
 	}
       }
       Event.observe(document, 'ms:suggest:containerCreated', function(event) {
@@ -71,6 +77,7 @@ document.observe('dom:loaded', function() {
 	  }
 	  var qsSuggest = event.memo.container;
 	  qsSuggest.style.top = (qsInput.cumulativeOffset().top + qsInput.getHeight()) + 'px';
+	  qsSuggest.style.left = qsInput.cumulativeOffset().left;
 	  qsSuggest.style.marginTop = '1.6em';
 	}
       });

@@ -1,3 +1,8 @@
+<!--[if !(gte IE 8)]>
+<script type="text/javascript">
+window.location = "unsupported-browser.html";
+</script>
+<![endif]-->
 <link rel="stylesheet" type="text/css" href="style.css"></link>
 <link rel="stylesheet" type="text/css" href="blue.css"></link>
 <link rel="stylesheet" type="text/css" href="modal-popup.css"></link>

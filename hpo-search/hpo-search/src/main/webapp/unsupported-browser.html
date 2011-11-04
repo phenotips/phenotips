@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" type="text/css" href="style.css"></link>
+<style type="text/css">
+.browser-alternatives {
+    list-style-type: none;
+    margin: 2em auto;
+    text-align: center;
+    width: 540px;
+}
+.browser {
+    display: inline-block;
+    width: 180px;
+    text-align: center;
+    float: left;
+}
+.browser a {
+    display: block;
+    width: 180px;
+    text-align: center;
+}
+.browser .logo {
+    background: no-repeat 70px top transparent;
+    display: block;
+    width: 64px;
+    height: 64px;
+    margin: 0 58px;
+    overflow: hidden;
+}
+.IE {
+    background: no-repeat -280px top transparent;
+    padding-left: 80px;
+}
+.browser .logo, .IE {
+    background-image: url("http://paulirish.com/lovesyou/browser_logos-64.png");
+}
+.FF .logo {
+    background-position: -79px top;
+}
+.Chrome .logo {
+    background-position: -6px top;
+}
+.Opera .logo {
+    background-position: -146px top;
+}
+</style>
+<title>Your browser is not supported</title>
+</head>
+
+<body>
+
+<h1>Your browser is not supported</h1>
+
+<div class="IE">
+<div class="warning"><strong>You are using an obsolete Internet Explorer version.</strong></div>
+<p>Please <a href="https://www.microsoft.com/download/en/ie.aspx?q=internet+explorer" title="Upgrade your IE">upgrade to the newer and better IE8</a> or higher, or choose one of the following free alternatives:</p>
+</div>
+
+<ul class="browser-alternatives">
+<li class="browser FF"><a href="http://www.getfirefox.com" title="Download Mozilla Firefox"><span class="logo"></span>Mozilla Firefox</a></li>
+<li class="browser Chrome"><a href="https://www.google.com/chrome/" title="Download Google Chrome"><span class="logo"></span>Google Chrome</a></li>
+<li class="browser Opera"><a href="http://www.opera.com/browser/download/" title="Download Opera"><span class="logo"></span>Opera</a></li>
+</ul>
+
+</body>
+</html>

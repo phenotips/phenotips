@@ -215,7 +215,7 @@ var MS = (function (MS) {
         sectionContents.insert({"bottom" : new Element("div").update(text)});
       });
     }
-    var result = new Element("div", {class : "tooltip invisible"}).update(title);
+    var result = new Element("div", {'class' : "tooltip invisible"}).update(title);
     if (info.hasChildNodes()) {
       result.insert({bottom : info});
     }

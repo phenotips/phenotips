@@ -80,7 +80,7 @@ document.observe('dom:loaded', function() {
                   'enableSort' : false,
                   'showClearTool' : false,
                   'inputType': 'checkbox',
-                  'listInsertionElt' : document.documentElement.down('.clinical-info .phenotype-group:last-child'),
+                  'listInsertionElt' : $(document.documentElement).down('.clinical-info .phenotype-group:last-child'),
                   'listInsertionPosition' : 'bottom',
                   'onItemAdded' : enableHighlightChecked
                 }
