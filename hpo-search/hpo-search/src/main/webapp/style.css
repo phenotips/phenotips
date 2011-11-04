@@ -88,8 +88,11 @@ h1 a, h1 a:link, h1 a:visited, h1 a:link:visited {
   border: 0 none !important;
   margin: 0 !important;
 }
-.family_study {
-  padding-top: 1em;
+fieldset.family_study {
+  margin-top: 1.2em ! important;
+}
+.family_study .relative {
+  padding-top: .8em;
 }
 .subsection {
   margin-left: 1em;

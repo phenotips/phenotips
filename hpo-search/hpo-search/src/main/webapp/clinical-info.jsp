@@ -39,16 +39,16 @@
     <label for="gender_female"><input type="radio" name="gender" id="gender_female" value="female"/>Female</label>
   </div>
   </fieldset>
-  <fieldset>
-  <div class="half-width family_study">
+  <fieldset class="family_study">
+  <div class="half-width relative">
     <label>Family study:</label>
     <label for="relative_mother"><input type="radio" name="relative" id="relative_mother" value="mother"/>Mother</label>
     <label for="relative_father"><input type="radio" name="relative" id="relative_father" value="father"/>Father</label>
     <label for="relative_sibling"><input type="radio" name="relative" id="relative_sibling" value="sibling"/>Sibling</label>
-    <label for="relative_of">of:</label>
+    <label for="relative_of">of</label>
   </div>
   <div class="half-width relative_of">
-    <label for="relative_of" class="hint">MRN</label>
+    <label for="relative_of" class="hint">Patient (MRN)</label>
     <input type="text" name="relative_of" id="relative_of"/>
   </div>
   </fieldset>
