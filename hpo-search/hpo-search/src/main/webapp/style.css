@@ -112,15 +112,6 @@ fieldset.phenotype-group {
   margin: 1em 0.5em .5em 0;
 }
 
-.phenotypes-main {
-  float: left;
-  width: 48.5%;
-}
-.phenotypes-other {
-  width: 48.5%;
-  float: right;
-}
-
 .phenotypes-other .accepted-suggestions {
   margin: 0;
 }
@@ -221,14 +212,17 @@ label {
   padding: 0;
   margin: 0;
 }
-input[type=text] {
+input[type=text], textarea {
   width: 100%;
   border: 1px solid #ddd;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
   border-radius: 4px;
 }
-input[type=text]:focus {
+textarea {
+  width: 98%;
+}
+input[type=text]:focus, textarea:focus {
   border-color: #e82;
 }
 input[type=submit],

@@ -74,6 +74,10 @@ public boolean isNonHPInput(String id)
 {
   return !isHPOther(id) && id.startsWith("_i_");
 }
+public boolean isFreeText(String id)
+{
+  return !isHPOther(id) && id.startsWith("_t_");
+}
 public boolean isSubsection(String id)
 {
   return !isHPId(id) && !id.startsWith("_");
@@ -93,9 +97,11 @@ public String handleSection(LinkedHashMap<String, Object> sectionData)
     result += handleField((String)fieldIds[i], sectionData);
   }
   if (hasOtherInput) {
-    result  = "<div class='phenotypes-main'>" + result + "</div>";
-    result += "<div class='phenotypes-other'>" + generateInput(DEFAULT_NAME, OTHER_FIELD_MARKER, true) + "</div>";
+    result  = "<div class='phenotypes-main half-width'>" + result + "</div>";
+    result += "<div class='phenotypes-other half-width'>" + generateInput(DEFAULT_NAME, OTHER_FIELD_MARKER, true) + "</div>";
     result += "<div class='clear'></div>";
+  } else {
+    result  = "<div class='phenotypes-main'>" + result + "</div>";
   }
   return result;
 }
@@ -112,6 +118,8 @@ public String handleField(String id, LinkedHashMap<String, Object> data)
     return generateInput(id.substring(3), (String)label, false);
   } else if (isSubsection(id)) {
     return "<label class='section'>" + id + "</label><div class='subsection'>" + handleSection((LinkedHashMap<String, Object>)data.get(id)) + "</div>";
+  } else if (isFreeText(id)) {
+    return generateFreeText(id.substring(3), (String)label);
   }
   return "";
 }
@@ -136,6 +144,15 @@ public String generateInput(String name, String label, boolean suggested)
     result +="<p class='hint'>(enter a free text and choose among suggested ontology terms)</p>";
   }
   result +="<input type='text' name='" + name + "'" +(suggested ? "' class='suggested multi suggest-hpo generateCheckboxes'" : "") + " value='' size='16' id='" + id + "'/>";
+  return result;
+}
+
+public String generateFreeText(String name, String label)
+{
+  String result = "";
+  String id = name + "_" + Math.random();
+  result = "<label for='" + id + "'" + ">" + label + "</label>";
+  result +="<textarea name='" + name + "' rows='8' cols='40' id='" + id + "'></textarea>";
   return result;
 }
 %>
@@ -291,6 +308,7 @@ public String generateInput(String name, String label, boolean suggested)
       }});
       put ("Other", new LinkedHashMap<String, Object>(){{
       //  put(OTHER_FIELD_MARKER, null);
+        put("_t_comments", "Additional comments");
       }});
     }
   };
