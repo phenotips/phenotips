@@ -92,6 +92,11 @@ widgets.ModalPopup = Class.create({
         this.updateScreenSize();
       }
     }.bindAsEventListener(this));
+    Event.observe(document, 'ms:popup:content-updated', function(event) {
+      if (event.memo && event.memo.popup == this && this.dialog.visible()) {
+        this.updateScreenSize();
+      }
+    }.bindAsEventListener(this));
   },
   positionDialog : function() {
     switch(this.options.verticalPosition) {
@@ -151,6 +156,7 @@ widgets.ModalPopup = Class.create({
   setContent : function(content) {
      this.content = content;
      this.dialogBox._x_contentPlug.update(this.content);
+     this.updateScreenSize();
   },
   /** Called when the dialog is displayed. Enables the key listeners and gives focus to the (cleared) input. */
   showDialog : function(event) {

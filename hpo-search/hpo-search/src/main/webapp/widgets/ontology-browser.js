@@ -264,6 +264,7 @@ var MS = (function (MS) {
     element.stopObserving('obrowser:expand:done');
     element.stopObserving('obrowser:expand:failed');
     this._unlockExpandTool(element);
+    Event.fire(document, "ms:popup:content-updated", {popup: this.dialog});
   },
 
   _lockExpandTool : function(element) {
