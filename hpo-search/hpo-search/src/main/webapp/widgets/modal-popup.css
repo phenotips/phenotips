@@ -62,6 +62,7 @@
   color: #FFF;
   background-color: #333;
   padding: .3em 1.2em .3em .8em;
+  cursor: move;
 }
 .xdialog-box .xform { 
   width: 100%;
