@@ -10,7 +10,7 @@ var highlightChecked = function(element) {
 	}
       } else {
         element.up('label').removeClassName('selected');
-	if (subsectionTitle) {
+	if (subsectionTitle && !(subsectionTitle.next('.subsection') && subsectionTitle.next('.subsection').down('.selected'))) {
 	  subsectionTitle.removeClassName('selected');
 	}
       }
