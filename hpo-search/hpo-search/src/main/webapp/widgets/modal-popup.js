@@ -36,11 +36,11 @@ widgets.ModalPopup = Class.create({
   createDialog : function(event) {
     this.dialog = new Element('div', {'class': 'xdialog-modal-container'});
     // A full-screen semi-transparent screen covering the main document
-    var screen = new Element('div', {'class': 'xdialog-screen'}).setStyle({
+    this.screen = new Element('div', {'class': 'xdialog-screen'}).setStyle({
       opacity : this.options.screenOpacity,
       backgroundColor : this.options.screenColor
     });
-    this.dialog.update(screen);
+    this.dialog.update(this.screen);
     // The dialog chrome
     this.dialogBox = new Element('div', {'class': 'xdialog-box'});
     // Insert the content
@@ -70,6 +70,11 @@ widgets.ModalPopup = Class.create({
     // Append to the end of the document body.
     document.body.appendChild(this.dialog);
     this.dialog.hide();
+    Event.observe(window, 'resize', function(event) {
+      if (this.dialog.visible()) {
+        this.updateScreenSize();
+      }
+    }.bindAsEventListener(this));
   },
   positionDialog : function() {
     switch(this.options.verticalPosition) {
@@ -96,6 +101,25 @@ widgets.ModalPopup = Class.create({
         this.dialogBox.setStyle({"margin": "auto"});
       break;
     }
+  },
+  updateScreenSize : function() {
+    var __getNewDimension = function (eltToFit, dimensionAccessFunction, position) {
+      var crtDimension = $(document.documentElement)[dimensionAccessFunction]();
+      var viewportDimension = document.viewport.getScrollOffsets()[position] + document.viewport[dimensionAccessFunction]();
+      if (eltToFit) {
+        var limit = eltToFit.cumulativeOffset()[position] + eltToFit[dimensionAccessFunction]();
+      }
+      var result = '';
+      if (limit && crtDimension < limit) {
+        result = limit + 'px';
+      }
+      if (limit && limit < viewportDimension) {
+        result = viewportDimension + 'px';
+      }
+      return result;
+    };
+    this.screen.style.width  = __getNewDimension(this.dialogBox, 'getWidth', 'left');
+    this.screen.style.height = __getNewDimension(this.dialogBox, 'getHeight', 'top');
   },
   /** Set a class name to the dialog box */
   setClass : function(className) {
@@ -136,6 +160,7 @@ widgets.ModalPopup = Class.create({
       }*/
       // Display the dialog
       this.dialog.show();
+      this.updateScreenSize();
     }
   },
   onScroll : function(event) {
