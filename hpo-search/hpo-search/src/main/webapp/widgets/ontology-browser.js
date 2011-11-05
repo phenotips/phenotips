@@ -39,6 +39,7 @@ var MS = (function (MS) {
       this.dialog = dialog;
     } else {
       this.dialog = new MS.widgets.ModalPopup(this.loadingMessage, {}, {
+        idPrefix : 'ontology-browser-window-',
         title : "Related terms",
         titleColor: "#333",
         borderColor: "#cedeee",

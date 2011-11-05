@@ -4,6 +4,7 @@ var widgets = MS.widgets = MS.widgets || {};
 widgets.ModalPopup = Class.create({
   /** Configuration. Empty values will fall back to the CSS. */
   options : {
+    idPrefix : "modal-popup-",
     title : "",
     displayCloseButton : true,
     screenColor : "",
@@ -13,6 +14,7 @@ widgets.ModalPopup = Class.create({
     screenOpacity : "0.5",
     verticalPosition : "center",
     horizontalPosition : "center",
+    resetPositionOnShow: true,
     removeOnClose : false,
     onClose : Prototype.emptyFunction
   },
@@ -31,7 +33,17 @@ widgets.ModalPopup = Class.create({
     this.options = Object.extend(Object.clone(this.options), options || { });
     // Register a shortcut for showing the dialog.
     this.registerShortcuts("show");
+
+    if (typeof (widgets.ModalPopup.instanceCounter) == 'undefined') {
+      widgets.ModalPopup.instanceCounter = 0;
+    }
+    this.id = ++widgets.ModalPopup.instanceCounter;
   },
+
+  getBoxId : function() {
+    return this.options.idPrefix + this.id;
+  },
+
   /** Create the dialog, if it is not already loaded. Otherwise, just make it visible again. */
   createDialog : function(event) {
     this.dialog = new Element('div', {'class': 'xdialog-modal-container'});
@@ -42,7 +54,7 @@ widgets.ModalPopup = Class.create({
     });
     this.dialog.update(this.screen);
     // The dialog chrome
-    this.dialogBox = new Element('div', {'class': 'xdialog-box'});
+    this.dialogBox = new Element('div', {'class': 'xdialog-box', 'id' : this.getBoxId()});
     // Insert the content
     this.dialogBox._x_contentPlug = new Element('div', {'class' : 'content'});
     this.dialogBox.update(this.dialogBox._x_contentPlug);
@@ -69,6 +81,11 @@ widgets.ModalPopup = Class.create({
     this.positionDialog();
     // Append to the end of the document body.
     document.body.appendChild(this.dialog);
+    new Draggable(this.getBoxId(), {
+      handle: $(this.getBoxId()).down('.xdialog-title'),
+      scroll: window,
+      change: this.updateScreenSize.bind(this)
+    });
     this.dialog.hide();
     Event.observe(window, 'resize', function(event) {
       if (this.dialog.visible()) {
@@ -89,6 +106,7 @@ widgets.ModalPopup = Class.create({
         this.dialogBox.setStyle({"top": "35%"});
         break;
     }
+    this.dialogBox.setStyle({"left": "", "right" : ""});
     switch(this.options.horizontalPosition) {
       case "left":
         this.dialog.setStyle({"textAlign": "left"});
@@ -160,6 +178,9 @@ widgets.ModalPopup = Class.create({
       }*/
       // Display the dialog
       this.dialog.show();
+      if (this.options.resetPositionOnShow) {
+        this.positionDialog();
+      }
       this.updateScreenSize();
     }
   },

@@ -12,6 +12,7 @@ window.location = "unsupported-browser.html";
 <link rel="icon" href="favicon.ico" type="image/ico"></link>
 <link rel="shortcut icon" href="favicon.ico" type="image/ico"></link>
 <script type="text/javascript" src="jslib/prototype.js"></script>
+<script type="text/javascript" src="jslib/scriptaculous.js"></script>
 <script type="text/javascript" src="widgets/xlist.js"></script>
 <script type="text/javascript" src="widgets/suggest.js"></script>
 <script type="text/javascript" src="widgets/multi-suggest.js"></script>
