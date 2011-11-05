@@ -99,6 +99,9 @@
 .ontology-tree .accept-tool {
   background-color: #292;
 }
+.ontology-tree .remove-tool {
+  background-color: #a00;
+}
 .ontology-tree .accepted >.entry-data .info * {
   color: #292;
 }

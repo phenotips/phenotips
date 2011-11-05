@@ -22,6 +22,27 @@ var enableHighlightChecked = function(element) {
       });
 };
 
+var findFormElementForPhenotype = function(id) {
+  return $('phenotype_' + id);
+};
+
+var isPhenotypeSelected = function (id) {
+  var elt = findFormElementForPhenotype(id);
+  return (elt && elt.checked);
+};
+var unselectPhenotype = function (id) {
+  var targetElt = findFormElementForPhenotype(id);
+  if (targetElt) {
+    var suggestion = targetElt.up('.accepted-suggestion');
+    if (suggestion) {
+      suggestion.remove();
+    } else {
+      targetElt.checked = false;
+      highlightChecked(targetElt);
+    }
+  }
+};
+
 document.observe('dom:loaded', function() {
     // ------------------------------------------------------------------------
     // Selected term highlighting 

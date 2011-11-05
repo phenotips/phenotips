@@ -28,7 +28,10 @@ var MS = (function (MS) {
                          }),
     expandQueryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
                             'is_a' : { 'stub': false, 'activationRegex' : 'HP:[0-9]+' }
-                         })
+                         }),
+    selectedTermHint : 'This term is already selected',
+    isTermSelected : function (id) {return false;},
+    unselectTerm : function(id) {}
   },
 
   initialize: function(suggest, dialog, options) {
@@ -162,10 +165,20 @@ var MS = (function (MS) {
                    new Element('span', {'class' : 'entry-tools'}).insert(
                      {'bottom' : this._createTool('...', 'browse-tool', "Browse related terms", this._browseEntry)}).insert(
                      {'bottom' : this._createTool('i', 'info-tool', "Information about this term", this._showEntryInfo)}).insert(
-                     {'bottom' : this._createTool('&#x2713;', 'accept-tool', "Add this phenotype", this._acceptEntry)})
+                     {'bottom' : this._createTool('&#x2713;', 'accept-tool', "Select this phenotype", this._acceptEntry)}).insert(
+                     {'bottom' : this._createTool('&#x2716;', 'remove-tool', "Unselect this phenotype", this._removeEntry)})
     });
     wrapper.down('.info').observe('click', this._acceptEntry.bindAsEventListener(this));
     element.update(wrapper);
+    element.__acceptTool = element.down('.accept-tool');
+    element.__removeTool = element.down('.remove-tool');
+    if (this.options.isTermSelected(element.__termId)) {
+      element.addClassName('accepted');
+      element.title = this.options.selectedTermHint;
+      element.__acceptTool.remove();
+    } else {
+      element.__removeTool.remove();
+    }
     if (data.info) {
       element.insert({bottom : data.info});
     }
@@ -301,6 +314,7 @@ var MS = (function (MS) {
     return element;
   },
   _showEntryInfo : function(event) {
+    event.stop();
     var elt = event.element().up('.entry');
     elt.down('.tooltip').toggleClassName('invisible');
   },
@@ -311,11 +325,23 @@ var MS = (function (MS) {
       var id = elt.__termId;
       var value = elt.down('.value').firstChild.nodeValue;
       this.suggest.acceptEntry(id, value, null, '', value, value);
-      elt.toggleClassName('accepted');
+      elt.addClassName('accepted');
+      elt.title = this.options.selectedTermHint;
       this.dialog.positionDialog();
     }
+    elt.__acceptTool.replace(elt.__removeTool);
+  },
+  _removeEntry : function(event) {
+    event.stop();
+    var elt = event.element().up('.entry');
+    var id = elt.__termId;
+    this.options.unselectTerm(id);
+    elt.removeClassName('accepted');
+    elt.title = '';
+    elt.__removeTool.replace(elt.__acceptTool);
   },
   _browseEntry : function(event) {
+    event.stop();
     var elt = event.element().up('.entry');
     this.load(elt.__termId);
   },

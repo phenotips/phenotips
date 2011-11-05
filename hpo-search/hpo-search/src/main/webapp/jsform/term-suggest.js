@@ -45,7 +45,10 @@ document.observe('dom:loaded', function() {
                                              },*/
 		           "Related terms" : {"extern" : true,
 		                              "processor" : function(trigger) {
-							      trigger._obrowser = new MS.widgets.OntologyBrowser(this);
+							      trigger._obrowser = new MS.widgets.OntologyBrowser(this, null, {
+								 isTermSelected : isPhenotypeSelected,
+								 unselectTerm : unselectPhenotype
+							      });
 							      trigger.observe('click', function(event){
 								event.stop();
 								event.element()._obrowser.show(
