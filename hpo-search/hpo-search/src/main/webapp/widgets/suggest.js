@@ -311,7 +311,7 @@ var MS = (function(MS){
         onSuccess: this.setSuggestions.bindAsEventListener(this, source, requestId),
         onFailure: function (response) {
           //new MS.widgets.Notification("Failed to retrieve suggestions : ')" + response.statusText, "error", {timeout: 5});
-          alert("Failed to retrieve suggestions : " + respose.statusText);
+          alert("Failed to retrieve suggestions : " + response.statusText);
         }
       });
     }
