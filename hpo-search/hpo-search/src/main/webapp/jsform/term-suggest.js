@@ -7,7 +7,7 @@ document.observe('dom:loaded', function() {
     // go : namespace:
     var suggestionsMapping = {
         "hpo" : {
-            script: "/solr/select?start=0&rows=15&debugQuery=on&",
+            script: "/solr/select?start=0&rows=15&",
             queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
                            'name' : { 'stub': true, 'boost': 50 },
                            'synonym' : { 'stub': true, 'boost': 50 },
@@ -24,25 +24,6 @@ document.observe('dom:loaded', function() {
             resultInfo : {
                            "Definition"    : {"selector"  : "str[name=def]"},
                            "Synonyms"      : {"selector"  : "arr[name=synonym] str"},
-                           /*"Is a"          : {"selector"  : "arr[name=is_a] str",
-                                              "processor" : function (text){
-                                                            return text.replace(/(HP:[0-9]+)\s*!\s*(.*)/, "[$1] $2");
-                                                          },
-                                              "collapsed" : false
-                                             },
-                           "Subcategories" : {"selector"  : "str[name=id]",
-                                              "dynamic"   : true,
-                                              "queryProcessor" : typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
-                                                                 'is_a' : { 'stub': false, 'activationRegex' : 'HP:[0-9]+' }
-                                               }),
-                                              "processor" : function (response) {
-                                                              var suggestions = this.getSuggestionList(response);
-                                                              for (var i = 0; i < suggestions.length; ++i) {
-                                                                suggestions[i].info = "";
-                                                              }
-                                                              return this.createListElement(suggestions, this);
-                                                            }
-                                             },*/
 		           "Related terms" : {"extern" : true,
 		                              "processor" : function(trigger) {
 							      trigger._obrowser = new MS.widgets.OntologyBrowser(this, null, {
