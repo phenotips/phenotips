@@ -87,16 +87,15 @@ widgets.ModalPopup = Class.create({
       change: this.updateScreenSize.bind(this)
     });
     this.dialog.hide();
-    Event.observe(window, 'resize', function(event) {
+    var __enableUpdateScreenSize = function (event) {
       if (this.dialog.visible()) {
         this.updateScreenSize();
       }
-    }.bindAsEventListener(this));
-    Event.observe(document, 'ms:popup:content-updated', function(event) {
-      if (event.memo && event.memo.popup == this && this.dialog.visible()) {
-        this.updateScreenSize();
-      }
-    }.bindAsEventListener(this));
+    }.bindAsEventListener(this);
+    ['resize', 'scroll'].each(function(eventName) {
+       Event.observe(window, eventName, __enableUpdateScreenSize);
+    }.bind(this));
+    Event.observe(document, 'ms:popup:content-updated', __enableUpdateScreenSize);
   },
   positionDialog : function() {
     switch(this.options.verticalPosition) {
@@ -133,12 +132,14 @@ widgets.ModalPopup = Class.create({
         var limit = eltToFit.cumulativeOffset()[position] + eltToFit[dimensionAccessFunction]();
       }
       var result = '';
-      if (limit && crtDimension < limit) {
+      if (crtDimension < viewportDimension) {
+	result = viewportDimension + 'px';
+      }
+      /*if (limit && crtDimension < limit) {
         result = limit + 'px';
-      }
-      if (limit && limit < viewportDimension) {
+      } else if (limit && limit < viewportDimension) {
         result = viewportDimension + 'px';
-      }
+      }*/
       return result;
     };
     this.screen.style.width  = __getNewDimension(this.dialogBox, 'getWidth', 'left');
