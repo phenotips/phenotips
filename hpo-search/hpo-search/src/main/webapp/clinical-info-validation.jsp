@@ -17,6 +17,7 @@ boolean submitted = false;
 boolean phenotypeGiven = false;
 
 boolean parameterDisplayed = false;
+String RESTRICITON_FIELD_MARKER = "_category";
 
 %><%!
 
@@ -30,7 +31,7 @@ LinkedHashMap<String, String> specialParameters = new LinkedHashMap<String, Stri
 }};
 
 public boolean ignoreParameter(String paramName) {
-  return paramName == null || paramName.endsWith("__suggested");
+  return paramName == null || paramName.endsWith("__suggested") || paramName.equals(RESTRICITON_FIELD_MARKER);
 }
 
 public boolean isTextValueValid(String value) {

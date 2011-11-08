@@ -69,6 +69,7 @@
   
 <%!
 String OTHER_FIELD_MARKER = "_other";
+String RESTRICITON_FIELD_MARKER = "_category";
 String DEFAULT_NAME = "phenotype";
 
 public boolean isHPId(String id)
@@ -101,17 +102,23 @@ public String handleSection(LinkedHashMap<String, Object> sectionData)
   
   String result = "";
   boolean hasOtherInput = false;
+  String restriction;
   if (sectionData.containsKey(OTHER_FIELD_MARKER)) {
     hasOtherInput = true;
     sectionData.remove(OTHER_FIELD_MARKER);
   }
+  restriction = (String)sectionData.remove(RESTRICITON_FIELD_MARKER);
   Object[] fieldIds = sectionData.keySet().toArray();
   for (int i = 0; i < fieldIds.length; ++i) {
     result += handleField((String)fieldIds[i], sectionData);
   }
   if (hasOtherInput) {
     result  = "<div class='phenotypes-main half-width'>" + result + "</div>";
-    result += "<div class='phenotypes-other half-width'>" + generateInput(DEFAULT_NAME, OTHER_FIELD_MARKER, true) + "</div>";
+    result += "<div class='phenotypes-other half-width'>" + generateInput(DEFAULT_NAME, OTHER_FIELD_MARKER, true);
+    if (restriction != null) {
+      result += "<input type='hidden' name='" + RESTRICITON_FIELD_MARKER + "' value='" + restriction + "' />";
+    }
+    result += "</div>";
     result += "<div class='clear'></div>";
   } else {
     result  = "<div class='phenotypes-main'>" + result + "</div>";
@@ -174,6 +181,7 @@ public String generateFreeText(String name, String label)
   LinkedHashMap<String, LinkedHashMap<String, Object>> sections = new LinkedHashMap<String, LinkedHashMap<String, Object>>() {
     {
       put ("Prenatal and perinatal history", new LinkedHashMap<String, Object>(){{
+        put(RESTRICITON_FIELD_MARKER, "HP:0001197");
         put("0010880", "Increased nuchal translucency");
         put("0010942", "Echogenic intracardiac focus");
         put("0010945", "Fetal phyelectasis");
@@ -199,6 +207,7 @@ public String generateFreeText(String name, String label)
         put("_i_relative_details", "(please give details here)");
       }});
       put ("Growth parameters", new LinkedHashMap<String, Object>(){{
+        put(RESTRICITON_FIELD_MARKER, "HP:0001507");
         put("Weight for age", new LinkedHashMap<String, Object>(){{
           put("0004325", "<3rd");
           put("0001513", ">97th");
@@ -216,6 +225,7 @@ public String generateFreeText(String name, String label)
       }});
 
       put ("Development", new LinkedHashMap<String, Object>(){{
+        put(RESTRICITON_FIELD_MARKER, "HP:0001263");
         put("0007228", "Global development delay");
         put("0010862", "Fine motor delay");
         put("0002194", "Gross motor delay");
@@ -224,6 +234,7 @@ public String generateFreeText(String name, String label)
       }});
 
       put ("Cognitive", new LinkedHashMap<String, Object>(){{
+        put(RESTRICITON_FIELD_MARKER, "HP:0100543");
         put("Mental retardation", new LinkedHashMap<String, Object>(){{
           put("0001256", "Mild");
           put("0002342", "Moderate");
@@ -234,6 +245,7 @@ public String generateFreeText(String name, String label)
         put("_i_iqdq", "List IQ/DQ if known");
       }});
       put ("Behavioral", new LinkedHashMap<String, Object>(){{
+        put(RESTRICITON_FIELD_MARKER, "HP:0000708");
         put("0007018", "Attention deficit hyperactivity disorder");
         put("0000717", "Autism");
         put("0000729", "Pervasive developmental delay");
@@ -243,6 +255,7 @@ public String generateFreeText(String name, String label)
         put(OTHER_FIELD_MARKER, null);
       }});
       put ("Neurological", new LinkedHashMap<String, Object>(){{
+        put(RESTRICITON_FIELD_MARKER, "HP:0000707");
         put("0001290", "Hypotonia");
         put("0002197", "Seizures");
         put("0001251", "Ataxia");
@@ -255,6 +268,7 @@ public String generateFreeText(String name, String label)
         put(OTHER_FIELD_MARKER, null);
       }});
       put ("Ear and Eye Defects", new LinkedHashMap<String, Object>(){{
+        put(RESTRICITON_FIELD_MARKER, "HP:0000478, HP:0000598");
         put("0000618", "Blindness");
         put("0000589", "Coloboma");
         put("0000404", "Deafness");
@@ -262,6 +276,7 @@ public String generateFreeText(String name, String label)
         put(OTHER_FIELD_MARKER, null);
       }});
       put ("Craniofacial", new LinkedHashMap<String, Object>(){{
+        put(RESTRICITON_FIELD_MARKER, "HP:0000234");
         put("0000204", "Cleft lip");
         put("0000175", "Cleft palate");
         put("0001363", "Craniosynostosis");
@@ -269,11 +284,13 @@ public String generateFreeText(String name, String label)
         put(OTHER_FIELD_MARKER, null);
       }});
       put ("Cutaneous", new LinkedHashMap<String, Object>(){{
+        put(RESTRICITON_FIELD_MARKER, "HP:0000951");
         put("0000953", "Hyperpigmentation");
         put("0001010", "Hypopigmentation");
         put(OTHER_FIELD_MARKER, null);
       }});
       put ("Cardiac", new LinkedHashMap<String, Object>(){{
+        put(RESTRICITON_FIELD_MARKER, "HP:0001627");
         put("0001631", "ASD");
         put("0001629", "VSD");
         put("0001674", "AV canal defect");
@@ -283,6 +300,7 @@ public String generateFreeText(String name, String label)
         put(OTHER_FIELD_MARKER, null);
       }});
       put ("Musculoskeletal", new LinkedHashMap<String, Object>(){{
+        put(RESTRICITON_FIELD_MARKER, "HP:0000924");
         put("0002817", "Abnormality of the upper limb");
         put("0002814", "Abnormality of the lower limb");
         put("Syndactyly", new LinkedHashMap<String, Object>(){{
@@ -304,6 +322,7 @@ public String generateFreeText(String name, String label)
         put(OTHER_FIELD_MARKER, null);
       }});
       put ("Gastrointestinal", new LinkedHashMap<String, Object>(){{
+        put(RESTRICITON_FIELD_MARKER, "HP:0011024");
         put("0002575", "Tracheoesophageal fistula");
         put("0000776", "Diaphragmatic hernia");
         put("0001543", "Gastroschisis");
@@ -313,6 +332,7 @@ public String generateFreeText(String name, String label)
         put(OTHER_FIELD_MARKER, null);
       }});
       put ("Genitourinary", new LinkedHashMap<String, Object>(){{
+        put(RESTRICITON_FIELD_MARKER, "HP:0000119");
         put("0000792", "Kidney malformation");
         put("0000126", "Hydronephrosis");
         put("0000062", "Ambiguous genitalia");

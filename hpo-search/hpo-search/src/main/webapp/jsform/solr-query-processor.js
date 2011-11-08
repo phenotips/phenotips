@@ -1,11 +1,34 @@
 var MS = (function (MS) {
   var widgets = MS.widgets = MS.widgets || {};
   widgets.SolrQueryProcessor = Class.create({
-  initialize: function(queryFields) {
+  initialize: function(queryFields, restriction) {
     this.queryFields = queryFields;
+    this.restriction = restriction;
   },
 
   processQuery: function(query)
+  {
+    return this.restrictQuery(this.inflateQuery(query));
+  },
+
+  restrictQuery : function(query)
+  {
+    if (!this.restriction) {
+      return query;
+    }
+    var result = "+(" + query + ") ";
+    for (var rField in this.restriction) {
+      var restrictionString = "+(";
+      for (var i = 0; i < this.restriction[rField].length; ++i) {
+	restrictionString += rField + ":" + this.restriction[rField][i].replace(/:/g, "\\:");
+      }
+      restrictionString = restrictionString.strip() + ") ";
+      result += restrictionString;
+    }
+    return result.strip();
+  },
+
+  inflateQuery : function(query)
   {
     var txt = query.strip();
     var result = "";

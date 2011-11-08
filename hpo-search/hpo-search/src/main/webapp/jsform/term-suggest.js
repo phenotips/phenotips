@@ -14,6 +14,8 @@ document.observe('dom:loaded', function() {
                            'text' : { 'stub': true, 'default': true },
                            'phonetic' : {'boost': 0.1 },
                            'id' : {'activationRegex' : 'HP:[0-9]+', 'stub': true, 'boost' : 50}
+                         }, {
+                           'term_category': ['HP:0000118']
                          }),
             varname: "q",
             noresults: "No matching terms",
@@ -41,7 +43,9 @@ document.observe('dom:loaded', function() {
                          },
             enableHierarchy: true,
             resultParent : "arr[name=is_a] str",
-            fadeOnClear : false
+            fadeOnClear : false,
+            timeout : 30000,
+            parentContainer : null
         }
     };
     var pickerSpecialClassOptions = {
@@ -76,13 +80,24 @@ document.observe('dom:loaded', function() {
         var selector = 'input.suggest-' + keys[i];
         $$(selector).each(function(item) {
           if (!item.hasClassName('initialized')) {
-            var options = {
-              timeout : 30000,
-              parentContainer : null
-            };
-            Object.extend(options, suggestionsMapping[keys[i]]);
+            item._customOptions = Object.clone(suggestionsMapping[keys[i]]);
+            item._restriction = item.up('.phenotype-group')
+            if (item._restriction) {
+              item._restriction = item._restriction.down('input[name=_category]');
+              if (item._restriction && item._restriction.value.strip() != '') {
+                item._restriction = item._restriction.value.strip().split(",");
+              } else {
+                item._restriction == null;
+              }
+            }
+            if (item._customOptions.queryProcessor && item._restriction) {
+              item._customOptions.queryProcessor = Object.clone(item._customOptions.queryProcessor);
+	      item._customOptions.queryProcessor.restriction = {
+                'term_category' : item._restriction
+              }
+            }
             // Create the Suggest.
-            var suggest = new MS.widgets.Suggest(item, options);
+            item._suggest = new MS.widgets.Suggest(item, item._customOptions);
             if (item.hasClassName('multi') && typeof(MS.widgets.SuggestPicker) != "undefined") {
               var multiSuggestOptions = {};
               for (var j = 0; j < specialClasses.length; j++) {
@@ -91,7 +106,7 @@ document.observe('dom:loaded', function() {
                   break;
                 }
               }
-              var suggestPicker = new MS.widgets.SuggestPicker(item, suggest, multiSuggestOptions);
+              var suggestPicker = new MS.widgets.SuggestPicker(item, item._suggest, multiSuggestOptions);
             }
             item.addClassName('initialized');
           }

@@ -505,6 +505,7 @@
    <field name="comment" type="text_general" indexed="true" stored="true"/>
    <field name="xref" type="text_ws" indexed="true" stored="true" multiValued="true"/>
    <field name="is_a" type="text_ws" indexed="true" stored="true" multiValued="true"/>
+   <field name="term_category" type="text_ws" indexed="true" stored="true" multiValued="true"/>
 
    <!--
    The following store examples are used to demonstrate the various ways one might _CHOOSE_ to
