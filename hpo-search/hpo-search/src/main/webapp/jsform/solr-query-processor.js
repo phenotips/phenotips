@@ -20,7 +20,7 @@ var MS = (function (MS) {
     for (var rField in this.restriction) {
       var restrictionString = "+(";
       for (var i = 0; i < this.restriction[rField].length; ++i) {
-	restrictionString += rField + ":" + this.restriction[rField][i].replace(/:/g, "\\:");
+	restrictionString += rField + ":" + this.restriction[rField][i].replace(/:/g, "\\:") + " ";
       }
       restrictionString = restrictionString.strip() + ") ";
       result += restrictionString;
