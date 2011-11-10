@@ -57,7 +57,7 @@ document.observe('dom:loaded', function() {
                   'enableSort' : false,
                   'showClearTool' : false,
                   'inputType': 'checkbox',
-                  'listInsertionElt' : '.label-other-phenotype',
+                  'listInsertionElt' : '.label-other',
                   'listInsertionPosition' : 'before',
                   'onItemAdded' : enableHighlightChecked
                 },
