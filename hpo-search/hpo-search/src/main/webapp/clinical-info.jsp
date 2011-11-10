@@ -12,11 +12,11 @@
 <%= displayContentTitle("Clinical data form demo") %>
 
 <form id="clinical-info-form" action="clinical-info-validation.jsp" method="post">
-<fieldset class="twothird-width clear patient-info">
-  <legend>Patient Information</legend>
+<fieldset class="twothird-width clear patient-info chapter">
+  <legend class="chapter-title">Patient Information</legend>
 
   <fieldset>
-  <label class="section" for="last_name">Patient name:</label>
+  <label class="section clear" for="last_name">Patient name:</label>
   <div class="half-width last_name">
     <label for="last_name" class="hint">Last name</label>
     <input type="text" name="last_name" id="last_name"/>
@@ -27,25 +27,29 @@
   </div>
   </fieldset>
   <fieldset>
-  <div class="half-width clear date_of_birth">
-    <label class="section" for="date_of_birth">Date of birth: <span class="hint">(mm/dd/yyyy)</span></label>
+  <div class="half-width date_of_birth">
+    <label class="section" for="date_of_birth">Date of birth <span class="hint">(mm/dd/yyyy)</span>:</label>
+  </div>
+  <div class="half-width date_of_birth">
     <input type="text" name="date_of_birth" id="date_of_birth"/>
   </div>
   </fieldset>
   <fieldset>
-  <div class="half-width clear gender">
-    <label>Gender: </label>
+  <div class="half-width gender">
+    <label class="section">Gender: </label>
+  </div>
+  <div class="half-width gender">
     <label for="gender_male"><input type="radio" name="gender" id="gender_male" value="male"/>Male</label> 
     <label for="gender_female"><input type="radio" name="gender" id="gender_female" value="female"/>Female</label>
   </div>
   </fieldset>
   <fieldset class="family_study">
   <div class="half-width relative">
-    <label>Family study:</label>
+    <label class="section">Family study:</label>
     <label for="relative_mother"><input type="radio" name="relative" id="relative_mother" value="mother"/>Mother</label>
     <label for="relative_father"><input type="radio" name="relative" id="relative_father" value="father"/>Father</label>
     <label for="relative_sibling"><input type="radio" name="relative" id="relative_sibling" value="sibling"/>Sibling</label>
-    <label for="relative_of">of</label>
+    <label class="section" for="relative_of">of</label>
   </div>
   <div class="half-width relative_of">
     <label for="relative_of" class="hint">Patient (MRN)</label>
@@ -53,19 +57,6 @@
   </div>
   </fieldset>
 </fieldset>
-
-<fieldset class="clinical-info">
-  <legend>Clinical Information</legend>
-
-  <div id="quick-search-box">
-  <fieldset class="group-other quick-search-box emphasized-box">
-    <h2 class="section">Quick phenotype search</h2>
-    <label for="quick-phenotype-search">Enter a free text and choose among suggested ontology terms</label>
-    <input type='text' name='phenotype' class='suggested multi suggest-hpo quickSearch' value='' size='16' id='quick-phenotype-search'/>
-  </fieldset>
-  </div>
-
-  <div class="twothird-width">
   
 <%!
 String OTHER_FIELD_MARKER = "_other";
@@ -346,6 +337,20 @@ public String generateFreeText(String name, String label)
       }});
     }
   };
+  %>
+  <fieldset class="clinical-info chapter">
+  <legend class="chapter-title">Phenotypic description (Clinical symptoms)</legend>
+
+  <div id="quick-search-box">
+  <fieldset class="group-other quick-search-box emphasized-box">
+    <h2 class="section">Quick phenotype search</h2>
+    <label for="quick-phenotype-search">Enter a free text and choose among suggested ontology terms</label>
+    <input type='text' name='phenotype' class='suggested multi suggest-hpo quickSearch' value='' size='16' id='quick-phenotype-search'/>
+  </fieldset>
+  </div>
+
+  <div class="twothird-width">
+  <%
 
   Object[] sectionNames = sections.keySet().toArray();
 
