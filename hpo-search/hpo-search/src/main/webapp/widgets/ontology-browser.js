@@ -168,7 +168,7 @@ var MS = (function (MS) {
                      {'bottom' : this._createTool('&#x2713;', 'accept-tool', "Select this phenotype", this._acceptEntry)}).insert(
                      {'bottom' : this._createTool('&#x2716;', 'remove-tool', "Unselect this phenotype", this._removeEntry)})
     });
-    wrapper.down('.info').observe('click', this._acceptEntry.bindAsEventListener(this));
+    wrapper.down('.info').observe('click', this._browseEntry.bindAsEventListener(this));
     element.update(wrapper);
     element.__acceptTool = element.down('.accept-tool');
     element.__removeTool = element.down('.remove-tool');
