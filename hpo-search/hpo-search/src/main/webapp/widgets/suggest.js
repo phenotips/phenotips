@@ -234,6 +234,10 @@ var MS = (function(MS){
       return false;
     }
 
+    if (val.length == 0) {
+      this.clearSuggestions();
+      return false;
+    }
     // input length is less than the min required to trigger a request
     // reset input string
     // do nothing
