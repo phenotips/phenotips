@@ -3,6 +3,8 @@ package ut.cb.sv.db.feature;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import ut.cb.util.maps.CounterMap;
+
 /**
  * A {@link Feature} with a finite set of values (categories).
  * 
@@ -13,7 +15,7 @@ public class CategoryFeature extends Feature
     /** The categories */
     Set<String> values = new LinkedHashSet<String>();
 
-    public Set<String> encounteredValues = new LinkedHashSet<String>();
+    public CounterMap<String> encounteredValues = new CounterMap<String>();
 
     /** {@inheritDoc} */
     public CategoryFeature(String name)
@@ -37,7 +39,7 @@ public class CategoryFeature extends Feature
     public boolean isValueValid(Object value)
     {
         // if (this.values.isEmpty()) {
-        this.encounteredValues.add(value.toString());
+        this.encounteredValues.addTo(value.toString());
         // }
         return super.isValueValid(value) && (this.values.isEmpty() || this.values.contains(value));
     }

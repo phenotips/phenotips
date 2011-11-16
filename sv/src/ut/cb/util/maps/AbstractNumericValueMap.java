@@ -3,11 +3,11 @@ package ut.cb.util.maps;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeMap;
 
-public abstract class AbstractNumericValueMap<K, N extends Number> extends LinkedHashMap<K, N> implements
+public abstract class AbstractNumericValueMap<K, N extends Number> extends TreeMap<K, N> implements
     NumericValueMap<K, N>
 {
     public AbstractNumericValueMap()
@@ -17,7 +17,7 @@ public abstract class AbstractNumericValueMap<K, N extends Number> extends Linke
 
     public AbstractNumericValueMap(int initialCapacity)
     {
-        super(initialCapacity);
+        super();// initialCapacity);
     }
 
     public N addTo(K key, N value)

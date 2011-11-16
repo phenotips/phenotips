@@ -173,7 +173,7 @@ public class Main
             // gd.addGOInfoToDatabase(data);
 
             SampleCollection sc = new SampleCollection(data);
-            // System.out.println(sc);
+            System.out.println(sc);
 
             handleOutputOption(cmd, CmdLineOptions.PRETTY_PRINT, data);
             handleOutputOption(cmd, CmdLineOptions.CSV_EXPORT, data);
@@ -183,8 +183,8 @@ public class Main
                 // if (f instanceof CategoricalFeature || f instanceof LabelFeature) {
                 if (f.getName().equalsIgnoreCase("phenotype")) {
                     // System.out.println("\n" + f.getName() + ":");
-                    for (String value : ((CategoryFeature) f).encounteredValues) {
-                        System.out.println(value);
+                    for (String value : ((CategoryFeature) f).encounteredValues.keySet()) {
+                        System.out.println(value + " : " + ((CategoryFeature) f).encounteredValues.get(value));
                         /*
                          * if (value == null) { continue; } for (String piece : value.split("\\s*,\\s*")) {
                          * System.out.println(piece); }
