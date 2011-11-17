@@ -84,7 +84,8 @@ public class XMLDBLoader extends AbstractDBLoader
                 return;
             }
             if (this.crtElementFeatureName != null) {
-                loadFeatureValueToCrtDBEntry(this.crtElementFeatureName, this.crtCharData.toString());
+                loadFeatureValueToCrtDBEntry(this.crtElementFeatureName, StringEscapeUtils.unescapeXml(this.crtCharData
+                    .toString()));
                 this.cleanupTmpData();
             }
             if (this.getCrtXPath().equals(getFeatureMap().getEntryEndXPath()) && this.crtIgnoredElement == null) {
