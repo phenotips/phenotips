@@ -4,11 +4,11 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeMap;
 
-public abstract class AbstractCollectionMap<K, V> extends LinkedHashMap<K, Collection<V>>
+public abstract class AbstractCollectionMap<K extends Comparable< ? super K>, V> extends TreeMap<K, Collection<V>>
 {
     public AbstractCollectionMap()
     {
@@ -17,7 +17,7 @@ public abstract class AbstractCollectionMap<K, V> extends LinkedHashMap<K, Colle
 
     public AbstractCollectionMap(int initialCapacity)
     {
-        super(initialCapacity);
+        super();// initialCapacity);
     }
 
     public boolean addTo(K key, V value)

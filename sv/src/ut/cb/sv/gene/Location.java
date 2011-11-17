@@ -1,6 +1,6 @@
 package ut.cb.sv.gene;
 
-public class Location
+public class Location implements Comparable<Location>
 {
     public static final String INPUT_SEPARATOR = "\t";
 
@@ -197,6 +197,40 @@ public class Location
 
     public boolean isValid()
     {
-        return (!"".equals(this.chr) && this.start >= 0 && this.end > this.start);
+        return (this.chr != null && this.start >= 0 && this.end > this.start);
+    }
+
+    public int compareTo(Location o)
+    {
+        int result = 0;
+        if (o == null) {
+            return 1;
+        }
+        if (this.chr != null) {
+            if (o.chr == null) {
+                return 1;
+            }
+            if ((result = this.chr.compareTo(o.getChr())) != 0) {
+                return result;
+            }
+        } else {
+            if (o.chr != null) {
+                return -1;
+            }
+        }
+
+        if (this.start < o.getStart()) {
+            return -1;
+        }
+        if (this.start > o.getStart()) {
+            return 1;
+        }
+        if (this.end < o.getEnd()) {
+            return -1;
+        }
+        if (this.end > o.getEnd()) {
+            return 1;
+        }
+        return 0;
     }
 }

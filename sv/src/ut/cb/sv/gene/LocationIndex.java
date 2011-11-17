@@ -21,17 +21,17 @@ public class LocationIndex
         // Memorize and sort all location bounds
         SetMap<Chromosome, Integer> bounds = new SetMap<Chromosome, Integer>();
         for (GeneLocation geneLoc : g.keySet()) {
+            if (geneLoc == null || geneLoc.getChr() == null) {
+                System.err.println(geneLoc);
+                continue;
+            }
             bounds.addTo(geneLoc.getChr(), geneLoc.getStart());
             bounds.addTo(geneLoc.getChr(), geneLoc.getEnd());
         }
         for (Chromosome chr : bounds.keySet()) {
-            ArrayList<Integer> sortedBounds = new ArrayList<Integer>(bounds.size());
-            sortedBounds.addAll(bounds.get(chr));
-            Collections.sort(sortedBounds);
             RelativeLocationMap<GeneLocation> map = new RelativeLocationMap<GeneLocation>();
             this.index.put(chr, map);
-            // just making sure the numbers appear in the right order...
-            for (Integer i : sortedBounds) {
+            for (Integer i : bounds.get(chr)) {
                 map.reset(i);
             }
         }
@@ -48,7 +48,7 @@ public class LocationIndex
             RelativeLocationMap<GeneLocation> chrIndex = this.index.get(chr);
             Set<GeneLocation> current = new HashSet<GeneLocation>();
             for (Integer key : chrIndex.keySet()) {
-                chrIndex.remove(null);
+                // chrIndex.remove(null);
                 current.removeAll(chrIndex.safeGet(key, RelativePosition.END));
                 chrIndex.addTo(key, RelativePosition.IN, current);
                 current.addAll(chrIndex.safeGet(key, RelativePosition.START));

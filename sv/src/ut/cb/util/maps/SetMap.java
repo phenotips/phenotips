@@ -3,7 +3,7 @@ package ut.cb.util.maps;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-public class SetMap<K, V> extends AbstractCollectionMap<K, V>
+public class SetMap<K extends Comparable< ? super K>, V> extends AbstractCollectionMap<K, V>
 {
 
     @Override

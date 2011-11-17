@@ -2,14 +2,14 @@ package ut.cb.sv.gene;
 
 import java.io.PrintStream;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeMap;
 
 import ut.cb.util.maps.SetMap;
 
 public class RelativeLocationMap<V extends Location> extends
-    LinkedHashMap<Integer, SetMap<RelativeLocationMap.RelativePosition, V>>
+    TreeMap<Integer, SetMap<RelativeLocationMap.RelativePosition, V>>
 {
     public enum RelativePosition
     {
@@ -32,7 +32,7 @@ public class RelativeLocationMap<V extends Location> extends
 
     public RelativeLocationMap(int initialCapacity)
     {
-        super(initialCapacity);
+        super();// initialCapacity);
     }
 
     public boolean addTo(Integer key, V value)

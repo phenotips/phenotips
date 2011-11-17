@@ -1,6 +1,6 @@
 package ut.cb.sv.gene;
 
-public class GeneLocation extends Location
+public class GeneLocation extends Location implements Comparable<Location>
 {
     private String id = "";
 
