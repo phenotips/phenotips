@@ -1,5 +1,6 @@
 package ut.cb.sv.db.feature;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -13,11 +14,19 @@ public class MultiCategoryFeature extends CategoryFeature
         super(name);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean registerValue(Object value)
     {
         if (value == null) {
             return false;
+        }
+        if (value instanceof Collection< ? >) {
+            boolean result = true;
+            for (Object v : (Collection<Object>) value) {
+                result &= this.registerValue(v);
+            }
+            return result;
         }
         int size = 0;
         Set<String> values = FeatureValueMapping.getValuesFromList(value.toString());
@@ -40,7 +49,11 @@ public class MultiCategoryFeature extends CategoryFeature
         if (prev != null) {
             values.addAll(prev);
         }
-        values.add(value);
+        if (value instanceof Collection< ? >) {
+            values.addAll((Collection<String>) value);
+        } else {
+            values.add(value);
+        }
         return values;
     }
 
