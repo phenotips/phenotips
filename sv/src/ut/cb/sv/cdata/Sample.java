@@ -11,13 +11,6 @@ import ut.cb.sv.gene.Location;
 
 public class Sample
 {
-    public static final Set<String> IRRELEVANT_PHENOTYPES = new TreeSet<String>()
-            {
-        {
-            add("IRRELEVANT");
-        }
-    };
-
     final private String id;
 
     final private Gender gender;
@@ -67,12 +60,6 @@ public class Sample
 
     }
 
-    public Set<String> cleanPhenotype()
-    {
-        this.phenotype.removeAll(IRRELEVANT_PHENOTYPES);
-        return getPhenotype();
-    }
-
     public boolean addVariant(Chromosome chr, int start, int end, VariantType type)
     {
         return this.variants.add(new Variant(chr, start, end, type));
@@ -106,6 +93,15 @@ public class Sample
     public boolean hasVariant(Location location, VariantType type)
     {
         return this.variants.contains(new Variant(location.getChr(), location.getStart(), location.getEnd(), type));
+    }
+
+    public Set<String> getAffectedGeneFunctions()
+    {
+        Set<String> result = new TreeSet<String>();
+        for (Variant v : this.variants) {
+            result.addAll(v.getGoFunctions());
+        }
+        return result;
     }
 
     /*
@@ -170,6 +166,17 @@ public class Sample
         for (Variant v : this.variants) {
             str.append("    ").append(v);
         }
+        return str.toString();
+    }
+
+    protected String toCSV(String sep)
+    {
+        StringBuilder str = new StringBuilder();
+        str.append("\"" + this.id + "\"" + sep);
+        str.append("\"" + this.gender + "\"" + sep);
+        str.append("\"" + this.phenotype + "\"" + sep);
+        str.append("\"" + this.getAffectedGeneFunctions() + "\"" + sep);
+        // str.append("\"" + this.variants + "\"" + sep);
         return str.toString();
     }
 }

@@ -40,7 +40,7 @@ public class Variant extends Location
 
     public boolean addGoFunctions(Collection<String> goFunctions)
     {
-        return goFunctions.addAll(goFunctions);
+        return this.goFunctions.addAll(goFunctions);
     }
 
     public boolean hasGoFunction(String goFunction)
@@ -102,9 +102,9 @@ public class Variant extends Location
         StringBuilder str = new StringBuilder();
         str.append(this.getChr()).append("(").append(this.getStart()).append("-").append(this.getEnd()).append(")")
             .append(this.type).append("\n");
-        for (String f : this.goFunctions) {
-            str.append("        ").append(f);
-        }
+        /*
+         * for (String f : this.goFunctions) { str.append("        ").append(f); }
+         */
         return str.toString();
     }
 }

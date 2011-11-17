@@ -27,6 +27,7 @@ public class SampleCollection extends TreeMap<String, Sample>
     public SampleCollection(Database data)
     {
         GeneFunctionData gd = new GeneFunctionData();
+
         for (DatabaseEntry entry : data) {
             String id = (String) entry.get(SAMPLE_ID_FEATURE_NAME);
             Gender gender = Gender.getValue((String) entry.get(GENDER_FEATURE_NAME));
@@ -43,9 +44,6 @@ public class SampleCollection extends TreeMap<String, Sample>
             try {
                 if (phenotype != null && phenotype instanceof Collection< ? >) {
                     sample.addPhenotype((Collection<String>) entry.get(PHENOTYPE_FEATURE_NAME));
-                    if (sample.cleanPhenotype().isEmpty()) {
-                        continue;
-                    }
                 }
             } catch (ClassCastException ex) {
                 System.out.println("[" + id + "] UNEXPECTED PHENOTYPE FORMAT  " + entry.get(PHENOTYPE_FEATURE_NAME));
@@ -71,5 +69,25 @@ public class SampleCollection extends TreeMap<String, Sample>
             str.append(this.get(id)).append("\n");
         }
         return str.toString();
+    }
+
+    public String toCSV()
+    {
+        return this.toCSV("\t");
+    }
+
+    public String toCSV(String sep)
+    {
+        StringBuilder str = new StringBuilder();
+        str.append(SAMPLE_ID_FEATURE_NAME + sep)
+            .append(GENDER_FEATURE_NAME + sep)
+            .append(PHENOTYPE_FEATURE_NAME + sep)
+            .append(GeneFunctionData.GO_FUNCTIONS_MARKER + sep)
+            .append('\n');
+        for (Sample s : this.values()) {
+            str.append(s.toCSV(sep)).append('\n');
+        }
+        return str.toString();
+
     }
 }

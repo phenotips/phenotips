@@ -1,5 +1,6 @@
 package ut.cb.sv.db.feature;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ public class CategoryFeature extends Feature
     /** The categories */
     Set<String> values = new LinkedHashSet<String>();
 
-    public CounterMap<String> encounteredValues = new CounterMap<String>();
+    protected CounterMap<String> encounteredValues = new CounterMap<String>();
 
     /** {@inheritDoc} */
     public CategoryFeature(String name)
@@ -72,5 +73,51 @@ public class CategoryFeature extends Feature
     public String displayValidValues()
     {
         return this.values.toString();
+    }
+
+    public Set<String> getEncounteredValues()
+    {
+        return this.encounteredValues.keySet();
+
+    }
+
+    public CounterMap<String> getEncounteredValueCounters()
+    {
+        CounterMap<String> clone = new CounterMap<String>();
+        clone.putAll(this.encounteredValues);
+        return clone;
+
+    }
+
+    public int getValueCounter(String value)
+    {
+        try {
+            return this.encounteredValues.get(value);
+        } catch (NullPointerException ex) {
+            return 0;
+        }
+
+    }
+
+    public Set<String> getFrequentValues(int threshold)
+    {
+        Set<String> result = new HashSet<String>();
+        for (String value : this.getEncounteredValues()) {
+            if (this.getValueCounter(value) >= threshold) {
+                result.add(value);
+            }
+        }
+        return result;
+    }
+
+    public Set<String> getUnfrequentValues(int threshold)
+    {
+        Set<String> result = new HashSet<String>();
+        for (String value : this.getEncounteredValues()) {
+            if (this.getValueCounter(value) < threshold) {
+                result.add(value);
+            }
+        }
+        return result;
     }
 }
