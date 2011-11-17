@@ -85,13 +85,11 @@ public class GeneFunctionData extends SetMap<GeneLocation, String>
     private void loadAllGeneFuntions(String mapFile) throws Exception
     {
         this.goTree = GeneOntologyWrapper.makeTree(mapFile);
-        for (GeneLocation geneLoc : this.keySet()) {
-            Set<String> crtFunctions = new LinkedHashSet<String>();
-            crtFunctions.addAll(this.get(geneLoc));
-            for (String f : crtFunctions) {
-                this.get(geneLoc).addAll(this.goTree.getNodeAndAncestorsIds(f));
-            }
-        }
+        /*
+         * for (GeneLocation geneLoc : this.keySet()) { Set<String> crtFunctions = new LinkedHashSet<String>();
+         * crtFunctions.addAll(this.get(geneLoc)); for (String f : crtFunctions) {
+         * this.get(geneLoc).addAll(this.goTree.getNodeAndAncestorsIds(f)); } }
+         */
     }
 
     public Set<GeneLocation> getOverlappingGenes(Chromosome chr, int start, int end)
