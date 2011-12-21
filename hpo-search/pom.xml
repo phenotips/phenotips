@@ -11,5 +11,6 @@
     <module>solr-config</module>
     <module>jetty-resources</module>
     <module>distribution</module>
+    <module>xwiki-ui</module>
   </modules>
 </project>

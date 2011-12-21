@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>ClinicalInformationCode</web>
+<name>DBWebHomeSheet</name>
+<language></language>
+<defaultLanguage>en</defaultLanguage>
+<translation>0</translation>
+<parent>ClinicalInformationCode.WebHome</parent>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+<creationDate>1323762338000</creationDate>
+<date>1323888731000</date>
+<contentUpdateDate>1323888731000</contentUpdateDate>
+<version>1.1</version>
+<title></title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>false</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>false</hidden>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.DBWebHomeSheet</name>
+<number>0</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>406c6371-adb7-4468-ad28-c12a5cb5cf83</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>document.observe('xwiki:livetable:newrow', function(tableEvent){
+  tableEvent.memo.row.select(".actionedit").invoke('setAttribute', 'title', 'Edit');
+  tableEvent.memo.row.select(".actiondelete").invoke('setAttribute', 'title', 'Delete');
+  tableEvent.memo.row.select(".actiondelete").invoke('observe', 'click', function(clickEvent){
+    clickEvent.stop();
+    var item = clickEvent.element(); 
+    item.blur();
+    if (item.disabled) {
+      // Do nothing if the button was already clicked and it's waiting for a response from the server.
+      return;
+    } else {
+      new XWiki.widgets.ConfirmedAjaxRequest(
+        /* Ajax request URL */
+        item.readAttribute('href') + "?confirm=1&amp;form_token=$!{services.csrf.getToken()}" + (Prototype.Browser.Opera ? "" : "&amp;ajax=1"),
+        /* Ajax request parameters */
+        {
+          onCreate : function() {
+            // Disable the button, to avoid a cascade of clicks from impatient users
+            item.disabled = true;
+          },
+          onSuccess : function() {
+            // Refresh the table after deleting the row
+            var table = tableEvent.memo.table;
+            table.clearCache();
+            table.showRows(table.lastOffset, table.limit);
+          },
+          onFailure : function() {
+            // Better luck next time!
+            item.disabled = false;
+          }
+        },
+        /* Interaction parameters */
+        {
+          confirmationText: "$msg.get('core.delete.confirm')"
+        }
+      );
+    }
+  });
+});</code>
+</property>
+<property>
+<name>Confirmed AJAX deletion</name>
+</property>
+<property>
+<parse>1</parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.StyleSheetExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.DBWebHomeSheet</name>
+<number>0</number>
+<className>XWiki.StyleSheetExtension</className>
+<guid>be904bc0-bfcc-4272-a0c1-88fcf238824d</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>.viewbody #document-title,
+.viewbody #document-info {
+  display: none;
+}</code>
+</property>
+<property>
+<name>Minor layout fix</name>
+</property>
+<property>
+<parse></parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<content>{{velocity}}
+$xwiki.ssx.use('ClinicalInformationCode.DBWebHomeSheet')##
+$xwiki.ssx.use('ClinicalInformationCode.Skin')##
+$xwiki.jsx.use('ClinicalInformationCode.DBWebHomeSheet')##
+#set($config = $doc.getObject('ClinicalInformationCode.DBConfigurationClass'))
+#if ($config &amp;&amp; "$!{config.getProperty('patientClass').value}" != '')
+#if($hasEdit)
+  {{html clean="false" wiki="false"}}&lt;form action="$xwiki.getURL('ClinicalInformationCode.CreatePatientRecord', 'view', 'doCreate=1')" method="post"&gt;&lt;div&gt;
+    &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+    &lt;input type="hidden" name="className" value="$!{config.getProperty('patientClass').value}" /&gt;
+    &lt;input type="hidden" name="classTemplate" value="$!{config.getProperty('patientTemplate').value}" /&gt;
+    &lt;input type="hidden" name="idField" value="$!{config.getProperty('idField').value}" /&gt;
+    &lt;input type="hidden" name="idPrefix" value="$!{config.getProperty('idPrefix').value}" /&gt;
+    &lt;input type="hidden" name="space" value="$!{doc.space}" /&gt;
+    &lt;input type="submit" class="button add-data-button" id="create-patient-record" title="Add new patient record" value="Add new patient record"/&gt;
+  &lt;/div&gt;&lt;/form&gt;{{/html}}
+#end
+
+#set($configuredColumns = $config.getProperty('livetableColumns').value)
+#if (!$configuredColumns &amp;&amp; !($configuredColumns.length &gt; 0))
+  #set($configuredColumns = 'doc.name')
+#end
+#set($columns = [])
+#set($discard = $columns.addAll($configuredColumns))
+#set($columnsProperties = {
+      "_actions" : {"actions": ["edit", "delete"]}
+})
+#foreach($column in $columns)
+      #set($discard = $columnsProperties.put($column, { "type" : "text", "link" : "view", "size" : 7, "filterable" : true, "sortable": true  }))
+#end
+#set($discard = $columns.add("_actions"))
+
+#set($options = {
+"className"         : $!{config.getProperty('patientClass').value},
+"translationPrefix" : "patient.livetable.",  
+"rowCount"          : 25,  
+"maxPages"          : 10, 
+"defaultOrder"      : "asc"
+})
+#livetable("patients" $columns $columnsProperties $options)
+
+#else
+
+{{warning}}**Configuration missing.**{{/warning}}
+
+#end
+{{/velocity}}</content></xwikidoc>

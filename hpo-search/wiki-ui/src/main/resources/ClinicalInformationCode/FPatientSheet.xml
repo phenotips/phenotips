@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>ClinicalInformationCode</web>
+<name>FPatientSheet</name>
+<language></language>
+<defaultLanguage>en</defaultLanguage>
+<translation>0</translation>
+<parent>ClinicalInformationCode.PatientClass</parent>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+<creationDate>1320966572000</creationDate>
+<date>1324325152000</date>
+<contentUpdateDate>1324325152000</contentUpdateDate>
+<version>1.1</version>
+<title></title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>false</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>false</hidden>
+<content>{{include document="ClinicalInformationCode.PatientSheetUI" /}}
+
+{{velocity}}
+#if ("$!{class}" != '')
+= $doc.name =
+(% class="twothird-width clear patient-info chapter" %)(((
+== Patient Information ==
+#__display2Col('p_id' '' 'mandatory' '')
+#__display2Col('gender' 'Sex:' 'mandatory' 'group-title')
+## Age of onset zone:
+#if ($context.action == 'edit')
+  (% class="fieldset onset" %)(((
+    (% class="half-width side" %)(((
+##      (% class="half-width" %)(((
+        #__label('age_of_onset_years' "section group-title" 'Onset:')   (% style="margin: 0 1em" %)(%%)##
+##      )))
+##      (% class="half-width" %)(((
+          $doc.display('congenital')##
+          #__label('congenital' '' 'Congenital') ##
+##      )))## congenital
+##    )))## general label + congenital
+##    (% class="half-width" %)(((
+##      (% class="half-width" %)(((
+        (% style="margin: 0 1em" %)or(%%) #__label('age_of_onset_years' 'section' 'Specify age:')
+      )))## or specify age
+      (% class="half-width" %)(((
+        (% class="half-width age_of_onset_years" %)(((
+          #__label('age_of_onset_years' 'hint')
+          #__display('age_of_onset_years')
+        )))## years
+        (% class="half-width age_of_onset_months" %)(((
+          #__label('age_of_onset_months' 'hint')
+          #__display('age_of_onset_months')
+        )))## months
+      )))## years and months
+##    )))## possible options
+  )))## fieldset: age of onset zone
+#else
+  (% class="fieldset onset" %)(((
+    #if ($doc.display('congenital') == 'Yes')
+      #set ($sectionLabel  = 'Onset:')
+    #else
+      #set ($sectionLabel  = 'Age of onset:')
+    #end
+    (% class="half-width" %)(((
+      #__label('age_of_onset_years' "section group-title" $sectionLabel)
+    )))
+    (% class="half-width" %)(((
+    #if ($doc.display('congenital') == 'Yes') Congenital
+    #else
+      #set ($years  = $doc.display('age_of_onset_years'))
+      #set ($months = $doc.display('age_of_onset_months'))
+      #if ("$!{years}$!{months}" == '')
+        -
+      #elseif ("$!{years}$!{months}" == '0' || "$!{years}$!{months}" == '00')
+        0
+      #else
+        #if ("$!{years}"  != '' &amp;&amp; "$!{years}"  != '0') $years year#if ("$!{years}" != '1')s#end#end
+        #if ("$!{months}" != '' &amp;&amp; "$!{months}" != '0') $months month#if ("$!{months}" != '1')s#end#end
+      #end
+    #end
+    ))) 
+  )))
+#end
+(% class="clear" %)((()))
+#if ($context.action == 'edit' || ($doc.display('relative') != '' &amp;&amp; $doc.display('relative_of') != ''))
+###if ($false)
+  (% class="fieldset family_study" %)(((
+  (% class="half-width relative side" %)(((
+    #__label('' 'section' 'Family study:') ##
+    $doc.display('relative') ##
+    #__label('relative_of' 'section' 'of')##
+  )))
+  (% class="half-width relative_of" %)(((
+    #__label('relative_of' 'hint' 'Patient (MRN)')
+    #__display('relative_of')
+  )))
+  )))##fieldset
+  (% class="clear" %)((()))
+#end
+#__displayIfNotEmpty2Col('omim_number' '' '' '')
+)))##chapter
+
+(% class="clear" %)((()))
+
+(% class="clear clinical-info phenotype-info chapter mandatory" %)(((
+#__qsBox("$!{class.name}_$!{obj.number}_phenotype")
+(% class="twothird-width" %)(((
+(% class="group-title" %)
+== $!{class.get('phenotype').prettyName} ==
+$doc.display('phenotype')##
+)))
+(% class="twothird-width" %)(((
+#__displayIfNotEmpty('comments')
+)))
+)))##chapter
+
+(% class="twothird-width clear clinical-info prenatal_phenotype-info chapter" %)(((
+== $!{class.get('prenatal_phenotype').prettyName} ==
+$doc.display('prenatal_phenotype')
+)))##chapter
+
+(% class="twothird-width clear clinical-info family_history-info chapter" %)(((
+== $!{class.get('family_history').prettyName} ==
+$doc.display('family_history')
+#__displayIfNotEmpty('family_comments')
+)))##chapter
+
+#if ($config &amp;&amp; "$!{config.getProperty('variants').value}" == '1')
+(% class="clear variant-info chapter" %)(((
+== Variants ==
+#__variant_displayVariants()
+)))##chapter
+#end
+
+#end## class exists
+{{/velocity}}</content></xwikidoc>

@@ -1,0 +1,2023 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>ClinicalInformationCode</web>
+<name>PatientSheetUI</name>
+<language></language>
+<defaultLanguage>en</defaultLanguage>
+<translation>0</translation>
+<parent>ClinicalInformationCode.PatientClass</parent>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+<creationDate>1323751780000</creationDate>
+<date>1324319943000</date>
+<contentUpdateDate>1324319943000</contentUpdateDate>
+<version>1.1</version>
+<title></title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>false</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>false</hidden>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PatientSheetUI</name>
+<number>0</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>5ec4907f-5197-4bd5-aa8d-18396012e126</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>document.observe('xwiki:dom:loaded', function() {
+  var deleteTool = $('tmActionDelete');
+  if (!deleteTool) {
+    return false;
+  }
+  deleteTool.observe('click', function(clickEvent) {
+    clickEvent.stop();
+    var item = clickEvent.element(); 
+    item.blur();
+    if (item.disabled) {
+      // Do nothing if the button was already clicked and it's waiting for a response from the server.
+      return;
+    } else {
+      var url = item.readAttribute('href') + "?confirm=1&amp;form_token=$!{services.csrf.getToken()}" + (Prototype.Browser.Opera ? "" : "&amp;ajax=1");
+      new XWiki.widgets.ConfirmedAjaxRequest(
+        /* Ajax request URL */
+        url,
+        /* Ajax request parameters */
+        {
+          onCreate : function() {
+            // Disable the button, to avoid a cascade of clicks from impatient users
+            item.disabled = true;
+          },
+          onSuccess : function() {
+            // Go to space WebHome
+            window.location = new XWiki.Document('WebHome', XWiki.Document.currentSpace).getURL('view');
+          },
+          onFailure : function() {
+            // Better luck next time!
+            item.disabled = false;
+          }
+        },
+        /* Interaction parameters */
+        {
+          confirmationText: "$msg.get('core.recyclebin.confirm')"
+        }
+      );
+    }
+  });
+});</code>
+</property>
+<property>
+<name>Confirmed AJAX deletion</name>
+</property>
+<property>
+<parse>1</parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PatientSheetUI</name>
+<number>1</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>b9d3abcd-397a-423d-a1f6-b5b9ca6db51b</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>document.observe('xwiki:dom:loaded', function() {
+  var tocElement = $('table-of-contents')
+  if (!tocElement) {return;}
+  var titleLink = tocElement.down('li a');//first link
+  if (titleLink) {
+    titleLink.href = '#document-title';
+  }
+  var crtContents = tocElement.down('ul ul');
+  if (!crtContents) {return;}
+  var completeContents = new Element('ul');
+  var crtContainer = completeContents;
+  var crtLevel = 2;
+  $$('h2[id], h3[id]').each(function(title) {
+    var target = title.id;
+    var myLevel = parseInt(title.nodeName.substring(1));
+    var tocLine = new Element('li').update(new Element('a', {'href' : '#' + target}).update(title.innerHTML));
+    if (myLevel &lt; crtLevel) {
+       crtContainer = crtContainer.up('ul');
+    } else if (myLevel &gt; crtLevel) {
+      var lastTocLine = crtContainer.down('li:last-child');
+      if (!lastTocLine) {
+        lastTocLine = new Element('li');
+        crtContainer.insert({'bottom' : lastTocLine});
+      }
+      crtContainer = new Element('ul');
+      lastTocLine.insert({'bottom' : crtContainer});
+    }
+    crtLevel = myLevel;
+    crtContainer.insert({'bottom' : tocLine});
+  });
+  crtContents.replace(completeContents);
+
+  // JS show/hide of ToC, to avoid jumps in Chrome
+  var tocTrigger = $('tmToC');
+  if (tocTrigger) {
+    tocTrigger.observe('click', function(event) {
+      event.stop();
+      tocElement.style.display= 'block';
+    });
+  }
+  var tocHideTriggers = tocElement.select('.hide-toc a');
+  tocHideTriggers.invoke('observe', 'click', function(event) {
+     event.stop();
+     tocElement.style.display= '';
+  });
+  var tocLinks = tocElement.select('ul a');
+  tocLinks.invoke('observe', 'click', function(event) {
+     tocElement.style.display= '';
+  });
+});</code>
+</property>
+<property>
+<name>Fix for the incomplete ToC</name>
+</property>
+<property>
+<parse></parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PatientSheetUI</name>
+<number>2</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>5d84bae3-f15f-41cd-b99b-5e0a2bbf27d4</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>var highlightChecked = function(element) {
+      var subsection = element.up('.subsection');
+      if (subsection) {
+	var subsectionTitle = subsection.previous('label.section');
+      }
+      if (element.checked) {
+        element.up('label').addClassName('selected');
+	if (subsectionTitle) {
+	  subsectionTitle.addClassName('selected');
+	}
+      } else {
+        element.up('label').removeClassName('selected');
+	if (subsectionTitle &amp;&amp; !(subsectionTitle.next('.subsection') &amp;&amp; subsectionTitle.next('.subsection').down('.selected'))) {
+	  subsectionTitle.removeClassName('selected');
+	}
+      }
+};
+var enableHighlightChecked = function(element) {
+      highlightChecked(element);
+      ['click', 'change', 'suggest:change'].each(function(eventName) {
+        element.observe(eventName, highlightChecked.bind(element,element));
+      });
+};
+
+var findPropertyField = function(name) {
+  if ($('prefix'))
+    return $($('prefix').value + name);
+  return null;
+}
+
+var findFormElementForPhenotype = function(id) {
+  return $($('prefix').value + 'phenotype_' + id);
+};
+
+var isPhenotypeSelected = function (id) {
+  var elt = findFormElementForPhenotype(id);
+  return (elt &amp;&amp; elt.checked);
+};
+var unselectPhenotype = function (id) {
+  var targetElt = findFormElementForPhenotype(id);
+  if (targetElt) {
+    //var suggestion = targetElt.up('.accepted-suggestion');
+    //if (suggestion) {
+    //  suggestion.remove();
+    //} else {
+      targetElt.checked = false;
+      highlightChecked(targetElt);
+    //}
+  }
+};
+
+document.observe('dom:loaded', function() {
+    // ------------------------------------------------------------------------
+    // Selected term highlighting 
+    $$('label input[type=checkbox]').each(function (input) {
+      enableHighlightChecked(input);
+      input.observe('click', function(event) {
+          $$('input[type=checkbox][value=' + event.element().value +']').each(function(item) {
+            if (item.checked != event.element().checked) {
+              item.click();
+            }
+          });
+      });
+    });
+    
+    // ------------------------------------------------------------------------
+    // Behavior of the quick search box
+    
+    var qsBox = $('quick-search-box');
+    if (qsBox) {
+      var content = qsBox.next('div');
+      var qsInput = qsBox.down('input[type=text]');
+      var shadowSize = 6;
+
+      var qsResetPosition = function(event, forceUpdate) {
+
+	if (qsInput._activeSuggest) {
+	  return;
+	}
+	var boxHeight = qsBox.down().getHeight();
+	if (boxHeight == 0) {
+          boxHeight = qsBox.down().getHeight();
+	}
+        var boxWidth = qsBox.getWidth();
+	var boxMinTop = content.cumulativeOffset().top + shadowSize ;
+	var boxMaxTop = content.cumulativeOffset().top + content.getHeight();// - boxHeight;
+	var boxLeft = qsBox.cumulativeOffset().left;
+        var relativeContentPosition = content.viewportOffset().top;
+        var direction = 0;
+        if (content._prevPosition) {
+          if (content._prevPosition &gt; relativeContentPosition) {
+            direction = 1;
+          } else if (content._prevPosition &lt; relativeContentPosition) {
+            direction = -1;
+          }
+        }
+/*
+        if (forceUpdate) {
+	    qsBox.style.position = '';
+	    qsBox.style.top = '';
+	    qsBox.style.left = '';
+	    qsBox.style.right = '';
+	    qsBox.style.width = '';
+        }
+*/
+	if ((!qsInput._activeSuggest || direction == 1) &amp;&amp; document.viewport.getScrollOffsets().top &gt;= boxMinTop &amp;&amp; document.viewport.getScrollOffsets().top &lt; boxMaxTop) {
+	  if (qsBox.style.position != 'fixed') {
+	    qsBox.style.left = boxLeft + 'px';
+	    qsBox.style.width = (boxWidth) + 'px';
+	    qsBox.style.top = shadowSize + 'px';
+	    qsBox.style.right = '';
+	    qsBox.style.position = 'fixed';
+	  }
+	} else if ((!qsInput._activeSuggest || direction == -1) &amp;&amp; document.viewport.getScrollOffsets().top &gt;= boxMaxTop) {
+	  if (qsBox.style.position != 'absolute'){
+            var top = content.getHeight(); - boxHeight;
+	    qsBox.style.top = top + 'px';
+	    qsBox.style.left = '';
+	    qsBox.style.right = '';//shadowSize + 'px';
+	    qsBox.style.position = 'absolute';
+	  }
+	} else {
+	  if (qsBox.style.position != ''){
+	    qsBox.style.position = '';
+	    qsBox.style.top = '';
+	    qsBox.style.left = '';
+	    qsBox.style.right = '';
+	    qsBox.style.width = '';
+	  }
+	}
+        content._prevPosition = relativeContentPosition;
+      }
+      Event.observe(document, 'ms:suggest:containerCreated', function(event) {
+	if (event.memo.suggest.fld == qsInput) {
+	  qsInput._activeSuggest = true;
+	  if (qsBox.style.position == 'fixed') {
+	    qsBox.style.position = 'absolute';
+	    qsBox.style.top = ((document.viewport.getScrollOffsets().top - content.cumulativeOffset().top) + shadowSize) + 'px';
+	    qsBox.style.left = '';
+	    qsBox.style.right = '';
+	  }
+	  var qsSuggest = event.memo.container;
+	  qsSuggest.style.top = (qsInput.cumulativeOffset().top + qsInput.getHeight()) + 'px';
+	  qsSuggest.style.left = qsInput.cumulativeOffset().left;
+	  //qsSuggest.style.marginTop = '1.6em';
+	}
+      });
+      Event.observe(document, 'ms:suggest:clearSuggestions', function(event) {
+	if (event.memo.suggest.fld == qsInput) {
+	  qsInput._activeSuggest = false;
+	  qsResetPosition();
+	}
+      });
+      Event.observe(window, 'scroll', qsResetPosition);
+      Event.observe(window, 'resize', qsResetPosition.bindAsEventListener(window, true));
+      qsResetPosition();
+    }
+});</code>
+</property>
+<property>
+<name>Form behavior</name>
+</property>
+<property>
+<parse></parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PatientSheetUI</name>
+<number>3</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>a0b2957f-46c1-4784-a861-b38d168c29b1</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>document.observe('dom:loaded', function() {
+
+    // Only do this in edit mode:
+    if (!$('inline')) {return;}
+
+    // ------------------------------------------------------------------------
+    // Live validation of the date of birth
+    
+    var hasErrors = false;
+    
+    var dateValidation = function (value) {
+      if (!value || !value.match(/^(0[1-9]|1[012])[/](0[1-9]|[12][0-9]|3[01])[/](19|20)\d\d$/)) {
+	return false;
+      }
+      var parts = value.split("/");
+      var month = parseInt(parts[0]);
+      var day = parseInt(parts[1]);
+      var year = parseInt(parts[2]);
+      if (((month == 4 || month == 6 || month == 9 || month == 11) &amp;&amp; day &gt; 30) ||
+          (month == 2 &amp;&amp; (day &gt; 29 || (year % 4 != 0 || year % 100 == 0 &amp;&amp; year % 400 != 0) &amp;&amp; day &gt; 28))) {
+        return false;
+      }
+      return true;
+    }
+    
+    var markIfHasErrors = function(inputHasErrors, input) {
+      if (!input) {
+        return false;
+      }
+      var label = null;
+      if (input.id) {
+        label = input.up('.mandatory').down("label[for=" + input.id + "]");
+        if (!label) {
+          label = input.up('.mandatory').down("label");
+        }
+      }
+      if (inputHasErrors) {
+        input.addClassName('wrongValue');
+        if (label) {
+          label.addClassName('wrongValue');
+        }
+        return true;
+      } else {
+        input.removeClassName('wrongValue');
+        if (label) {
+          label.removeClassName('wrongValue');
+        }
+        return false;
+      }
+    }
+    
+    $$('.mandatory.date input[type=text]').invoke('observe', 'blur', function (event) {
+      var dateField = event.element();
+      markIfHasErrors(!dateValidation(dateField.value), dateField);
+    });
+    
+    $$('.mandatory input[type=text]:not(.suggested, .mapping)').invoke('observe', 'blur', function (event) {
+      var input = event.element();
+      markIfHasErrors((!input.value || input.value.strip() == ""), input);
+    });
+    
+    // ------------------------------------------------------------------------
+    // Prevent form submission if there's missing data
+
+    try {
+    $('inline').observe('submit', function(event) {
+      var form = event.element();
+      var hasErrors = false;
+
+      $$('.mandatory.date input[type=text]').each(function (dateField) {
+       hasErrors =  markIfHasErrors(!dateValidation(dateField.value), dateField) || hasErrors;
+      });
+    
+      $$('.mandatory input[type=text]:not(.suggested, .mapping)').each(function (input) {
+        hasErrors = markIfHasErrors((!input.value || input.value.strip() == ""), input) || hasErrors;
+      });
+
+      var hasVal = new Object();
+      var titles = new Object();
+
+      $$('.mandatory input[type=checkbox], .mandatory input[type=radio]').each(function (input) {
+        hasVal[input.name] = hasVal[input.name] || (input.value != '' &amp;&amp; input.checked);
+        titles[input.name] = input.up('.mandatory').down('.group-title');
+      });
+      for (var inputName in hasVal) {
+         if (!hasVal[inputName]) {
+           hasErrors = true;
+	   if (titles[inputName]) {
+	     titles[inputName].addClassName('wrongValue');
+	   }
+	 } else {
+	   if (titles[inputName]) {
+	     titles[inputName].removeClassName('wrongValue');
+	   }
+	 }
+      }
+      
+      if (hasErrors) {
+
+        // ------------------------------------------------------------------------
+        // The data has errors. Prevent submission and show fields with errors
+	if (!form.down('div.errormessage')) {
+	   form.insert({'top' : new Element('div', {'class' : 'errormessage'}).update("Some mandatory fields are missing or have incorrect values.")});
+	}
+	form.scrollTo();
+        event.stop();
+      } else {
+
+        // ------------------------------------------------------------------------
+        // Everything looks fine.
+        // Update the data to be submitted
+
+        var __updateNewValues = function(section) {
+           var target = section.down('input.mapping');
+           if (target) {
+             var value = '';
+             var newValueInputs = section.select('.accepted-suggestions input[type=checkbox]');
+             for (var i = 0; i &lt; newValueInputs.length; ++i) {
+                if (newValueInputs[i].checked) {
+                  value += newValueInputs[i].value + '|';
+                }
+             }
+             target.value = value;
+           }
+        }
+        form.select('.phenotype-group').each(__updateNewValues);
+      }
+    });
+    } catch (error) { /* No form? No problem */ }
+});</code>
+</property>
+<property>
+<name>Form validation</name>
+</property>
+<property>
+<parse></parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PatientSheetUI</name>
+<number>4</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>5bef4aa8-4f23-4e20-b54e-54f918c3d219</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>document.observe('dom:loaded', function() {
+    
+    // ------------------------------------------------------------------------
+    // Creation of suggest widgets
+    
+    // hpo: namespace:medical_genetics
+    // go : namespace:
+    var suggestionsMapping = {
+        "hpo" : {
+            script: "/solr/select?start=0&amp;rows=15&amp;",
+            queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
+                           'name' : { 'stub': true, 'boost': 50 },
+                           'synonym' : { 'stub': true, 'boost': 50 },
+                           'text' : { 'stub': true, 'default': true },
+                           'phonetic' : {'boost': 0.1 },
+                           'id' : {'activationRegex' : 'HP:[0-9]+', 'stub': true, 'boost' : 50}
+                         }, {
+                           'term_category': ['HP:0000118']
+                         }),
+            varname: "q",
+            noresults: "No matching terms",
+            json: false,
+            resultsParameter : "doc",
+            resultId : "str[name=id]",
+            resultValue : "str[name=name]",
+            resultInfo : {
+                           "Definition"    : {"selector"  : "str[name=def]"},
+                           "Synonyms"      : {"selector"  : "arr[name=synonym] str"},
+		           "Related terms" : {"extern" : true,
+		                              "processor" : function(trigger) {
+							      trigger._obrowser = new MS.widgets.OntologyBrowser(this, null, {
+								 isTermSelected : isPhenotypeSelected,
+								 unselectTerm : unselectPhenotype
+							      });
+							      trigger.observe('click', function(event){
+								event.stop();
+								event.element()._obrowser.show(
+								  event.element().up('.suggestItem').down('.suggestId').firstChild.nodeValue
+								);
+							      }.bindAsEventListener(this));
+							    }
+			                      }
+                         },
+            enableHierarchy: true,
+            resultParent : "arr[name=is_a] str",
+            fadeOnClear : false,
+            timeout : 30000,
+            parentContainer : null
+        }
+    };
+    var pickerSpecialClassOptions = {
+      'defaultPicker' : {},
+      'generateCheckboxes' : {
+                  'showKey' : false,
+                  'showTooltip' : false,
+                  'showDeleteTool' : true,
+                  'enableSort' : false,
+                  'showClearTool' : false,
+                  'inputType': 'checkbox',
+                  'listInsertionElt' : '.label-other',
+                  'listInsertionPosition' : 'before',
+                  'onItemAdded' : enableHighlightChecked
+                },
+      'quickSearch' : {
+                  'showKey' : false,
+                  'showTooltip' : false,
+                  'showDeleteTool' : true,
+                  'enableSort' : false,
+                  'showClearTool' : false,
+                  'inputType': 'checkbox',
+                  'listInsertionElt' : $(document.documentElement).down('.phenotype-info .phenotype-group:last-child .phenotypes-main'),
+                  'listInsertionPosition' : 'top',
+                  'onItemAdded' : enableHighlightChecked
+                }
+    }
+    if (typeof(MS.widgets.Suggest) != "undefined") {
+      var keys = Object.keys(suggestionsMapping);
+      var specialClasses = Object.keys(pickerSpecialClassOptions);
+      for (var i = 0; i &lt; keys.length; i++) {
+        var selector = 'input.suggest-' + keys[i];
+        $$(selector).each(function(item) {
+          if (!item.hasClassName('initialized')) {
+            item._customOptions = Object.clone(suggestionsMapping[keys[i]]);
+            item._restriction = item.up('.phenotype-group')
+            if (item._restriction) {
+              item._restriction = item._restriction.down('input[name=_category]');
+              if (item._restriction &amp;&amp; item._restriction.value.strip() != '') {
+                item._restriction = item._restriction.value.strip().split(",");
+              } else {
+                item._restriction == null;
+              }
+            }
+            if (item._customOptions.queryProcessor &amp;&amp; item._restriction) {
+              item._customOptions.queryProcessor = Object.clone(item._customOptions.queryProcessor);
+	      item._customOptions.queryProcessor.restriction = {
+                'term_category' : item._restriction
+              }
+            }
+            // Create the Suggest.
+            item._suggest = new MS.widgets.Suggest(item, item._customOptions);
+            if (item.hasClassName('multi') &amp;&amp; typeof(MS.widgets.SuggestPicker) != "undefined") {
+              var multiSuggestOptions = {};
+              for (var j = 0; j &lt; specialClasses.length; j++) {
+                if (item.hasClassName(specialClasses[j])) {
+                  multiSuggestOptions = pickerSpecialClassOptions[specialClasses[j]];
+                  break;
+                }
+              }
+              var suggestPicker = new MS.widgets.SuggestPicker(item, item._suggest, multiSuggestOptions);
+              item._suggestPicker = suggestPicker;
+
+              // Integrate the custom fields
+              // 1. find the container element displaying them
+              var customFieldsContainer = suggestPicker.list.up().down('.custom-display-data');
+              if (customFieldsContainer) {
+                 // 2. get rid of the container
+                 customFieldsContainer.remove();
+                 // 3. find all the values and display them as part of the multi suggest picker
+                 suggestPicker.silent = true;
+                 customFieldsContainer.select('label input[type="checkbox"]').each(function(entry) {
+                   suggestPicker.addItem(entry.value, entry.nextSibling.nodeValue);
+                 });
+                 suggestPicker.silent = false;
+              }
+ 
+            }
+            item.addClassName('initialized');
+          }
+        });
+      }
+
+      // Add dropdowns to all predefined elements
+      $$('.phenotype-group, .prenatal_phenotype-info').each(function(group) {
+        var sugestedInput = group.down('.suggested.multi');
+        if (sugestedInput) {
+          group.select('.phenotypes-main label.term-label &gt; input[type=checkbox]').each(function(item) {
+            if (!item.up('.subsection')) {
+            item._dropDown = new MS.widgets.DropDown(item.up('label'));
+            item._ontologyBrowser = new MS.widgets.OntologyBrowser(
+              sugestedInput._suggest,
+              item._dropDown,
+              {
+                isTermSelected : isPhenotypeSelected,
+                unselectTerm : unselectPhenotype,
+                showParents: false,
+                showRoot: false,
+                defaultEntryAction: 'select',
+                enableBrowse: false
+              }
+            );
+            item._trigger = new Element('span', {'class' : 'expand-tool'}).update(item._ontologyBrowser._getExpandCollapseSymbol(true));
+            item._trigger._source = item;
+            item._trigger._root = item.up('label');
+            item._trigger._root.insert({'top' : item._trigger});
+            if (item._trigger._root.hasClassName('dropdown-root')) {
+            item._trigger.observe('click', function(event) {
+              event.stop();
+              var trigger =  event.element();
+              var source  =  trigger._source;
+              var root    =  trigger._root;
+
+              if (root._expanded) {
+                source._ontologyBrowser.hide();
+              } else {
+                source._ontologyBrowser.show(source.value);
+              }
+
+              trigger.update(source._ontologyBrowser._getExpandCollapseSymbol(root._expanded));
+              root._expanded = !root._expanded;
+            });
+            } else {
+              item._trigger.addClassName('disabled');
+            }
+          }
+          });
+        }
+      });
+    }
+});</code>
+</property>
+<property>
+<name>Term suggest</name>
+</property>
+<property>
+<parse></parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PatientSheetUI</name>
+<number>5</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>1ff4c592-3029-49ae-ac68-17e2cefcfb43</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>var Variants = (function (Variants) {
+  var tools = Variants.tools = Variants.tools || {};
+  tools.Editor = Class.create({
+    initialize : function () {
+      $$('.variant-list a.delete').invoke('observe', 'click', this.ajaxDeleteData.bindAsEventListener(this));
+      $$('.variant-info a.add').invoke('observe', 'click', this.ajaxAddData.bindAsEventListener(this));
+    },
+    ajaxDeleteData : function (event) {
+      event.stop();
+      var deleteTrigger = event.element();
+      if (deleteTrigger.disabled) {
+         return;
+      }
+      new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href, {
+        onCreate : function() {
+          deleteTrigger.disabled = true
+        },
+        onSuccess : function() {
+          var dataRow = deleteTrigger.up('tr');
+          var dataTable = deleteTrigger.up('table');
+          if (dataRow) {
+            dataRow.remove();
+          }
+          if (dataTable) {
+            var i = 1;
+            dataTable.select('th.row-count').each(function(item) {
+              item.update((i++));
+            });
+          }
+        },
+        onComplete : function() {
+          deleteTrigger.disabled = false;
+        }
+      },
+      {
+         confirmationText : "Are you sure you wish to delete this variant?"
+      });
+    },
+    ajaxAddData : function (event) {
+      event.stop();
+      var addTrigger = event.element();
+      if (addTrigger.disabled) {
+         return;
+      }
+      var classname = '';
+      try {
+        var classname = /classname=([^&amp;]+)/.exec(addTrigger.href)[1];
+      } catch (err) {
+         new XWiki.widgets.Notification('Cannot add data: type not found', 'error');
+         return;
+      }
+      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?&amp;xpage=plain&amp;xaction=lastvar'));
+      new Ajax.Request(url, {
+        onCreate : function() {
+          addTrigger.disabled = true
+          addTrigger._x_notif = new XWiki.widgets.Notification('Adding variant...', 'inprogress');
+        },
+        onSuccess : function (response) {
+          addTrigger._x_notif.hide();
+          var dataTable = $('variant-list-' + classname);
+          //var dataTable = addTrigger.up('.variant-list');
+          if (dataTable) {
+            var idx = dataTable.select('.row-count').size() + 1;
+            var rowHead = '';
+            rowHead = '&lt;th scope="row" class="row-count"&gt;' + idx + '&lt;/th&gt;';
+            dataTable.insert({'bottom' : '&lt;tr class="new"&gt;' + rowHead + response.responseText + '&lt;/tr&gt;'});
+            var lastAdded = dataTable.down('.new');
+            lastAdded.down('a.delete').observe('click', this.ajaxDeleteData.bindAsEventListener(this));
+            lastAdded.removeClassName('new');
+          } else {
+            new XWiki.widgets.Notification("Cannot find the variant list to update " + classname, 'error');
+          }
+        }.bind(this),
+        onFailure : function(response) {
+          var failureReason = response.statusText;
+          if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+            failureReason = 'Server not responding';
+          }
+          if (addTrigger._x_notif) {
+            addTrigger._x_notif.replace(new XWiki.widgets.Notification("Failed: " + failureReason, "error"));
+          } else {
+            new XWiki.widgets.Notification(this.interactionParameters.failureMessageText + failureReason, "error");
+          }
+        },
+        on1223 : function(response) {
+          response.request.options.onSuccess(response);
+        },
+        on0 : function(response) {
+          response.request.options.onFailure(response);
+        },
+        onComplete : function() {
+          addTrigger.disabled = false
+        }
+      });
+    }
+  });
+  return Variants;
+}(Variants || {}));
+
+document.observe('xwiki:dom:loaded', function() {
+  new Variants.tools.Editor();
+})</code>
+</property>
+<property>
+<name>Add/Remove variants</name>
+</property>
+<property>
+<parse>1</parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PatientSheetUI</name>
+<number>6</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>297fd397-f8d7-47e4-b554-384046aaa007</guid>
+<property>
+<cache>forbid</cache>
+</property>
+<property>
+<code>document.observe('xwiki:dom:loaded', function() {
+  // Only do this in edit mode
+  if (XWiki.contextaction != 'edit') { return; }
+  var form = $('edit') || $('inline');
+  if (!form) {return; }
+  var formToken = form.form_token &amp;&amp; form.form_token.value;
+
+  // What the form initially looked like
+  var originalFormData = form.serialize();
+
+  // Warn users when they navigate away from this page without submitting the form, if the data changed
+  /*window.onbeforeunload = function(uEvent) {
+    if (originalFormData != form.serialize()) {
+      return "There are unsaved changes on this page. Are you sure you wish to leave?";
+    }
+  };
+  form.observe('submit', function(event) {
+     window.onbeforeunload = function() {};
+  });*/
+
+  // Obtain the number of the loaded version
+  var originalVersion = ($$("meta[name=version]").length &gt; 0) ? $$("meta[name=version]")[0].content : false;
+
+  // What could happen on cancel:
+  var __getRollbackURL = function (version) {
+    return XWiki.currentDocument.getURL('rollback', 'rev=' + version + "&amp;confirm=1&amp;form_token=" + formToken);
+  }
+  var deleteURL =  XWiki.currentDocument.getURL('delete', "confirm=1&amp;form_token=" + formToken);
+  var NEW_DOCUMENT = 'none';
+
+  if (originalVersion) {
+     var cancelURL = __getRollbackURL(originalVersion);
+  }
+
+  var versionProviderURL = XWiki.currentDocument.getRestURL();
+  var __getDocumentVersionFromREST = function(xml) {
+    var version = xml.getElementsByTagName('version');
+    if (version.length &gt; 0) {
+       return version[0].firstChild.nodeValue;
+    }
+    return false;
+  };
+
+  // In background, check if the document actually exists; if not, it should be deleted on cancel
+  // (non-existing documents have 1.1 in their meta version)
+  new Ajax.Request(
+            versionProviderURL, {
+              method: 'get',
+              onSuccess : function (response) {
+                // only update if the information was unavailable in the meta section
+                if (!originalVersion &amp;&amp; (originalVersion = __getDocumentVersionFromREST(response.responseXML))) {
+                   cancelURL = __getRollbackURL(originalVersion);
+                }
+              },
+              onFailure : function (response) {
+                if (response.statusCode == 404) {
+                   //Document missing
+                   originalVersion = NEW_DOCUMENT;
+                   cancelURL = deleteURL;
+                }
+              }.bind(this)
+            }
+      );
+
+  //form.select('input[name=action_cancel]').invoke('stopOserving', 'click');
+  form.select('input[name=action_cancel]').invoke('observe', 'click', function (event) {
+    // Continue with the default behavior if the cancel action is being forced after form version verification
+    // or if at this point we still have no information regarding the original document version
+    if (form._isVersionVerified || !originalVersion || !cancelURL) { return; }
+    Event.stop(event);
+    // Find the current version
+    new Ajax.Request(
+            versionProviderURL,
+            {
+              method: 'get',
+              onCreate : function() {
+                form._isVersionVerified = true; 
+              },
+              onSuccess : function(response) {
+                var crtVersion = __getDocumentVersionFromREST(response.responseXML);
+                window.onbeforeunload = function() {};
+                if (crtVersion &amp;&amp; crtVersion != originalVersion) {
+                  // Go to the original state (i.e. rollback or delete)
+                  window.location = cancelURL;
+                } else {
+                  //just cancel
+                  event.element().click();
+                }
+              }.bind(this),
+              onFailure : function (response) {
+                window.onbeforeunload = function() {};
+                // Fail silently
+                event.element().click();
+              }.bind(this),
+              on0 : function (response) {
+                response.request.options.onFailure(response);
+              }
+            }
+      );
+  });
+});</code>
+</property>
+<property>
+<name>Fix uncancellable object changes</name>
+</property>
+<property>
+<parse>1</parse>
+</property>
+<property>
+<use>onDemand</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.StyleSheetExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PatientSheetUI</name>
+<number>0</number>
+<className>XWiki.StyleSheetExtension</className>
+<guid>3107f5aa-1450-46df-be7b-af4e79cbe51f</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>#template('colorThemeInit.vm')
+/** ----------------------------------------------------------- */
+/** Default style fixes **/
+.xwiki-form-listclass {
+    display: inline-block;
+}
+.xwiki-form-listclass input[type="radio"][value=""], option[value=""] {
+  display: none;
+}
+input[type=text], textarea {
+  width: 100%;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+textarea {
+  width: 98%;
+}
+input[type=text]:focus, textarea:focus {
+  border-color: $theme.linkColor;
+  -moz-box-shadow: 0 0 4px $theme.borderColor;
+  box-shadow: 0 0 4px $theme.borderColor;
+}
+.clinical-info .fullScreenEditLinkContainer {
+  display: none !important;
+}
+.errormessage {
+  background-color: $theme.highlightColor;
+}
+.suggestItems .suggestValue {
+  color: $theme.textColor;
+}
+.suggestItem .related-terms {
+  font-size: 125%;
+  font-weight: bold;
+  float: right;
+  margin: 0;
+  padding: 2px .5em;
+  color: $theme.buttonPrimaryTextColor;
+  background-color: $theme.buttonPrimaryBackgroundColor;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+}
+.suggestItem .related-terms a {
+  color: $theme.buttonPrimaryTextColor;
+}
+/** ----------------------------------------------------------- */
+/** ----------------------------------------------------------- */
+/** Layout **/
+.invisible {
+  display: none !important;
+}
+.clear {
+  display: block;
+  float: none;
+  clear: both;
+}
+.twothird-width {
+  width: 67%;
+}
+.half-width {
+  width: 48.5%;
+  margin-right: 1%;
+  float: left;
+}
+.third-width {
+  width: 32%;
+  float: left;
+  margin-right: 1%;
+}
+/** ----------------------------------------------------------- */
+/** Specific form elements **/
+.hint {
+  color: $theme.textSecondaryColor;
+  font-size: 70%;
+  padding: 0;
+  margin: 0;
+  font-style: normal;
+}
+.chapter {
+  margin: 1em 0;
+  padding-left: 14px;
+  position: relative
+}
+.chapter h2 {
+  color: $theme.linkColor;
+  font-size: 1.2em;
+  margin-left: -14px;
+  text-transform: uppercase;
+}
+.fieldset .displayed-value p {
+  line-height: 1.4em;
+  margin: 0;
+}
+.fieldset .displayed-value {
+  margin: 0 0 0.5em;
+}
+label.selected {
+  background-color: $theme.backgroundSecondaryColor;
+  font-weight: bold;
+  padding-left: 4px;
+  margin-left: -4px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+}
+.wrongValue {
+  color: $theme.notificationErrorColor !important;
+  font-weight: bold;
+}
+input.wrongValue {
+  border: 1px solid $theme.notificationErrorColor;
+  background-color: $theme.highlightColor;
+  color: $theme.textColor !important;
+  font-weight: normal;
+}
+/** ----------------------------------------------------------- */
+/** Patient info zone **/
+.patient-info .fieldset {
+  margin: .3em 0 !important;
+}
+.patient-info .family_study {
+  margin-top: 1.2em ! important;
+}
+.patient-info .side {
+  padding-top: .3em;
+}
+.patient-info label.section {
+  font-weight: bold;
+}
+/** ----------------------------------------------------------- */
+/** Quick search box &amp; suggest */
+.quick-search-box {
+  float: right;
+  padding: .5em .8em;
+  width: 29%;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.quick-search-box .section{
+  margin: 0.5em 0;
+}
+.emphasized-box { 
+  background: $theme.backgroundSecondaryColor;
+  border: 1px solid $theme.backgroundSecondaryColor;
+  -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.15);
+}
+/** ----------------------------------------------------------- */
+/** Clinical info zone **/
+/** view mode **/
+.viewbody .clinical-info .displayed-value {
+  padding-left: 8px;
+  margin-left: 8px;
+  border-left: 2px solid $theme.borderColor;
+}
+.clinical-info label {
+  display: inline-block;
+  width: 100%;
+}
+.value-checked, .viewbody .clinical-info label.section {
+  padding-left: 18px;
+  background: transparent none left 40% no-repeat;
+}
+.viewbody .subsection {
+  margin-left: 18px;
+}
+.viewbody .subsection .value-checked {
+  background-image: url("$xwiki.getSkinFile('icons/silk/bullet_blue.gif')");
+}
+/** edit mode **/
+.editbody .clinical-info label.section {
+  line-height: 1.4em;
+}
+.editbody .clinical-info label.section:before {
+  content: "\25bc";
+  display: inline-block;
+  color: $theme.textSecondaryColor;
+  font-size: .75em;
+  top: -0.5em;
+  text-shadow: 0 0 5px $theme.textSecondaryColor;
+  opacity: .3;
+}
+.phenotypes-main {
+  position: relative;
+}
+.phenotypes-main .hint {
+  margin-left: 20px;
+}
+.subsection {
+  margin-left: 1.3em;
+}
+.subsection .phenotypes-main br {
+  display: none;
+}
+.subsection .phenotypes-main label {
+  float: left;
+  margin: 0 1% 0 0;
+  padding: 0 8px;
+  width: auto;
+  font-weight: normal !important;
+}
+.subsection .phenotypes-main label.section {
+  clear: both;
+  display: block;
+  float: none;
+}
+/** -------------------------------------------- **/
+/** Suggestions **/
+.accepted-suggestions li .delete-tool, .clear-tool {
+    background-color: $theme.buttonPrimaryBackgroundColor;
+    color: $theme.buttonPrimaryTextColor;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    padding: 2px;
+}</code>
+</property>
+<property>
+<name>Patient sheet UI</name>
+</property>
+<property>
+<parse>1</parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.StyleSheetExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PatientSheetUI</name>
+<number>1</number>
+<className>XWiki.StyleSheetExtension</className>
+<guid>fb941776-130a-4f84-a7d0-d4db921a0da3</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>#template('colorThemeInit.vm')
+.variant-list {
+    width: 99%;
+}
+.variant-list td, .variant-list th {
+    border: 1px solid $theme.backgroundSecondaryColor;
+    border-left: 1px solid $theme.pageContentBackgroundColor;
+    border-right: 1px solid $theme.pageContentBackgroundColor;
+}
+.variant-list th.col-label {
+    font-weight: normal;
+    font-variant: small-caps;
+}
+.variant-list th.col-label, .viewbody td {
+    text-align: center;
+}
+.viewbody td.comments, .editbody th.comments {
+    text-align: left;
+    border-right: 0 none;
+}
+.variant-list th.row-count {
+    background: transparent;
+}
+.variant-list th.row-count,
+.variant-list td.start,
+.variant-list td.end {
+    text-align: right;
+}
+.variant-list td.start,
+.variant-list td.end,
+.variant-list td.band {
+    min-width: 6em;
+}
+.variant-list th.comments {
+    min-width: 20em;
+}
+.variant-list .xwiki-form-listclass {
+    display: block;
+    white-space: nowrap;
+}
+.variant-list .fullScreenEditLinkContainer {
+    display: none;
+}
+.variant-list th.actions {
+  width: 24px;
+  ## border-left: 0 none;
+}
+.variant-list th.actions .buttonwrapper {
+    display: block;
+    height: 2.3em;
+    position: relative;
+    margin: 0;
+}
+.variant-list th.actions .add-data-button {
+    position: absolute;
+    right: 0;
+}
+.list-actions {
+  text-align: right;
+  width: 99%;
+}
+.list-actions .buttonwrapper {
+  text-align: left;
+  margin: 0 !important;
+}</code>
+</property>
+<property>
+<name>Variant table ui</name>
+</property>
+<property>
+<parse>1</parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<content>{{velocity output=false}}
+#macro (__label $propName $cssClass $text)
+   #set($displayedText = "$!{text}")
+   #if ($displayedText == '' &amp;&amp; "$!{propName}" != '')
+     #set($displayedText = "$!{class.get($propName).prettyName}:")
+   #end
+   #set($for = '')
+   #if ("$!{propName}" != '')
+     #set($for = "for='$!{class.name}_$!{obj.number}_$!{propName}'")
+   #end
+  {{html clean="false" wiki="false"}}&lt;label class="${cssClass}" $!{for}&gt;${displayedText}&lt;/label&gt;{{/html}}##
+#end
+
+#macro (__display $propName)
+(% class="displayed-value"%)(((#if ("$!{doc.display($propName)}" == '')-#else${doc.display($propName)}#end)))##
+#end
+
+#macro (__displayIfNotEmpty $propName)
+#if ($context.action == 'edit' || ($doc.display($propName) != ''))
+#__label($propName '')
+#__display($propName)
+#end
+#end
+
+#macro (__display2Col $propName $label $groupCssClass $labelCssClass)
+  (% class="fieldset ${propName} $!{groupCssClass}" %)(((
+  (% class="half-width ${propName}" %)(((
+    #__label(${propName} "section $!{labelCssClass}" "$!{label}")
+  )))
+  (% class="half-width ${propName}" %)(((
+    #__display(${propName})
+  )))
+  )))##fieldset
+#end
+
+#macro (__displayIfNotEmpty2Col $propName $label $groupCssClass $labelCssClass)
+#if ($context.action == 'edit' || $doc.display(${propName}) != '')
+#__display2Col($propName $label $groupCssClass $labelCssClass)
+#end
+#end
+
+#macro (__qsBox $fieldName)
+#if ($context.action == 'edit')
+(% id="quick-search-box"  class="group-other quick-search-box emphasized-box" %)(((
+  {{html clean="false" wiki="false"}}
+  &lt;fieldset&gt;
+    &lt;h3 class="section"&gt;Quick phenotype search&lt;/h3&gt;
+    &lt;label for="quick-phenotype-search"&gt;Enter a free text and choose among suggested ontology terms&lt;/label&gt;
+    &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch' value='' size='16' id='quick-phenotype-search'/&gt;
+  &lt;/fieldset&gt;
+  {{/html}}
+)))
+#end
+#end
+
+
+#macro (__variant_deleteTool $object $anchor)
+  {{html}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="Delete"&gt;Delete&lt;/a&gt;&lt;/span&gt;{{/html}}
+#end
+
+#macro (__variant_addTool $classname $anchor)
+  {{html}}&lt;span class="buttonwrapper"&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New variant'&gt;New variant&lt;/a&gt;&lt;/span&gt;{{/html}}#end
+
+#set($dataClassName = 'ClinicalInformationCode.VariantClass')
+
+#macro (__variant_displayVariants)
+    #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
+    #if ($dataClass)
+    #if ($context.action == 'view' &amp;&amp; $doc.getObjects($dataClassName).size() == 0)
+    (% class="hint" %)None specified
+    #else
+    ##(% class="actions" %)#__variant_addTool($dataClassName "project-data-${dataClassName}")
+    (% class="variant-list" id="variant-list-${dataClassName}" %)
+    |=(% class="col-label" %)# #foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name" %)$prop.prettyName#end#if ($context.action == 'edit')|=(% class="actions" %)#end
+
+    #foreach ($o in $doc.getObjects($dataClassName))
+      |=(% class="row-count" %)${velocityCount}#foreach($prop in $dataClass.properties)|(% class="$prop.name" %)$doc.display($prop.getName(), $o)#end#if ($context.action == 'edit')|(% class="actions" %)#__variant_deleteTool($o "project-data-${dataClassName}") #end
+
+    #end
+
+    #if ($context.action == 'edit')(% class="list-actions" %)(((#__variant_addTool($dataClassName "project-data-${dataClassName}"))))#end
+
+    #end
+    #end
+#end
+
+#macro (__variant_displayLastVariant)
+  #set ($objects = $doc.getObjects('ClinicalInformationCode.VariantClass'))
+  #if ($objects.size() &gt; 0)
+    #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
+    #set($dataClass = $targetObj.xWikiClass)
+    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}"&gt;$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__variant_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
+  #end
+#end
+{{/velocity}}
+
+{{velocity}}
+#if ("$!{request.xaction}" == 'lastvar')
+  #__variant_displayLastVariant()
+  ###set($class = '')
+#else
+#if ($context.action != 'export')
+(% id="table-of-contents" %)(((
+{{toc /}}
+
+(% class="hide-toc" id="hide-toc" %)((([[×&gt;&gt;#tmToC||title="Hide table of contents"]])))
+
+(% class="hide-toc hide-toc-ghost" %)((([[Hide table of contents&gt;&gt;#tmToC||id="tmHideToC" class="document-action" title="Hide table of contents"]])))
+)))
+
+#end
+$xwiki.ssx.use('ClinicalInformationCode.Skin')##
+$xwiki.ssx.use('ClinicalInformationCode.Widgets')##
+$xwiki.jsx.use('ClinicalInformationCode.Widgets', {'minify' : false})##
+$xwiki.ssx.use('ClinicalInformationCode.PatientSheetUI')##
+$xwiki.jsx.use('ClinicalInformationCode.PatientSheetUI', {'minify' : false})##
+##
+##
+#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))
+#if ($config)
+#set($obj = $doc.getObject("$!{config.getProperty('patientClass').value}"))
+#set($class = $obj.xWikiClass)
+#set($discard = $doc.use($obj))
+#if ($context.action == 'edit')
+{{include document="ClinicalInformationCode.PatientSheetEditMenu" /}}
+
+#set($previewenabled = false)
+{{html clean="false" wiki="false"}}&lt;input type='hidden' id='prefix' value='$!{class.name}_$!{obj.number}_'/&gt;{{/html}}##
+#end
+#else
+
+{{warning}}**Configuration missing**{{/warning}}
+#end
+#end
+{{/velocity}}</content></xwikidoc>

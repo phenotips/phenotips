@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>ClinicalInformationCode</web>
+<name>FPhenotypeMapping</name>
+<language></language>
+<defaultLanguage>en</defaultLanguage>
+<translation>0</translation>
+<parent></parent>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+<creationDate>1323798122000</creationDate>
+<date>1323985582000</date>
+<contentUpdateDate>1323985582000</contentUpdateDate>
+<version>1.1</version>
+<title></title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>false</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>false</hidden>
+<content>{{include document="ClinicalInformationCode.PhenotypeCommons" context="new"/}}
+
+{{groovy}}
+    def t = xcontext.get('vcontext').get('phenotypeDisplayTools');
+
+    LinkedHashMap&lt;String, LinkedHashMap&lt;String, Object&gt;&gt; phenotype = [
+      "Behavior, Cognition and Development"     : [
+        (t.RESTRICTION_FIELD_MARKER()) : "HP:0000118",
+        (t.CUSTOM_MAPPING_FIELD_MARKER()) : "bcd",
+        "HP:0007228"                    : "Global development delay",
+        "HP:0010862"                    : "Fine motor delay",
+        "HP:0002194"                    : "Gross motor delay",
+        "HP:0000750"                    : "Language delay",
+        "HP:0001328"                    : "Learning disability",
+        "Intellectual disability"       : [
+          "HP:0001256"     : "Mild",
+          "HP:0002342"     : "Moderate",
+          "HP:0010864"     : "Severe"
+        ],
+        "HP:0007018"                    : "Attention deficit hyperactivity disorder",
+        "HP:0000717"                    : "Autism",
+        "HP:0000729"                    : "Pervasive developmental delay",
+        "HP:0000708"                    : "Psychiatric disorders",
+        (t.OTHER_FIELD_MARKER())       : null
+      ], 
+      "Neurological"     : [
+       (t.RESTRICTION_FIELD_MARKER())   : "HP:0000118",
+       (t.CUSTOM_MAPPING_FIELD_MARKER()) : "ne",
+        "HP:0001290"                    : "Hypotonia",
+        "HP:0002197"                    : "Seizures",
+        "HP:0001251"                    : "Ataxia",
+        "HP:0001332"                    : "Dystonia",
+        "HP:0002072"                    : "Chorea",
+        "HP:0001257"                    : "Spasticity",
+        "HP:0010301"                    : "Neural tube defect",
+        "HP:0007319"                    : "Malformation of the CNV",
+       (t.OTHER_FIELD_MARKER())      : null
+      ],
+      "Growth parameters"     : [
+       (t.RESTRICTION_FIELD_MARKER()) : "HP:0000118",
+       (t.CUSTOM_MAPPING_FIELD_MARKER()) : "gp",
+        "Postnatal growth parameters:"     : [
+        "Weight for age"     : [
+          "HP:0004325"                    : "&lt;3rd",
+          "HP:0001513"                    : "&gt;97th",
+        ],
+        "Stature for age"     : [
+          "HP:0004322"                    : "&lt;3rd",
+          "HP:0000098"                    : "&gt;97th",
+        ],
+        "Head circumference for age"     : [
+          "HP:0000252"                    : "&lt;3rd",
+          "HP:0000256"                    : "&gt;97th",
+        ],
+        ],
+        "HP:0001535"                    : "Hemihypertrophy",
+       (t.OTHER_FIELD_MARKER())      : null
+      ],
+      "Cardiac"     : [
+       (t.RESTRICTION_FIELD_MARKER()) : "HP:0000118",
+       (t.CUSTOM_MAPPING_FIELD_MARKER()) : "ca",
+        "HP:0001631"                    : "ASD",
+        "HP:0001629"                    : "VSD",
+        "HP:0001674"                    : "AV canal defect",
+        "HP:0001680"                    : "Coarctation of aorta",
+        "HP:0001636"                    : "Tetralogy of fallot",
+        "HP:0001638"                    : "Cardiomyopathy",
+        "HP:0001665"                    : "Conduction defect",
+       (t.OTHER_FIELD_MARKER())      : null
+      ],
+      "Craniofacial"     : [
+       (t.RESTRICTION_FIELD_MARKER()) : "HP:0000118",
+       (t.CUSTOM_MAPPING_FIELD_MARKER()) : "cf",
+        "HP:0001363"                    : "Craniosynostosis",
+        "HP:0000204"                    : "Cleft lip",
+        "HP:0000175"                    : "Cleft palate",
+        "HP:0001999"                    : "Facial dysmorphism",
+       (t.IMAGE_FIELD_MARKER())         : "Facial dysmorphism photos:",
+       (t.OTHER_FIELD_MARKER())      : null
+      ],
+      "Eye Defects"     : [
+       (t.RESTRICTION_FIELD_MARKER()) : "HP:0000118",
+       (t.CUSTOM_MAPPING_FIELD_MARKER()) : "ey",
+        "HP:0000481"                    : "Abnormality of the cornea",
+        "HP:0000589"                    : "Coloboma",
+        "HP:0000593"                    : "Abnormality of the anterior chamber",
+        "HP:0000518"                    : "Cataract",
+        "HP:0000479"                    : "Abnormality of the retina",
+        "HP:0000587"                    : "Abnormality of the optic nerve",
+        "HP:0000568"                    : "Microphthalmia",
+        "HP:0000639"                    : "Nystagmus",
+        "HP:0000486"                    : "Strabismus",
+       (t.OTHER_FIELD_MARKER())      : null
+      ],
+      "Ear Defects"     : [
+       (t.RESTRICTION_FIELD_MARKER()) : "HP:0000118",
+       (t.CUSTOM_MAPPING_FIELD_MARKER()) : "ea",
+        "Deafness" : [
+           "HP:0008538"                    : "Sensorineural",
+           "HP:0000367"                    : "Conductive"
+        ],
+        "HP:0004467"                    : "Peauricular pit",
+        "HP:0000384"                    : "Preauricular skin tag",
+        "HP:0000356"                    : "Outer ear abnormality",
+        "HP:0000359"                    : "Inner ear abnormality",
+       (t.OTHER_FIELD_MARKER())      : null
+      ],
+      "Cutaneous"     : [
+       (t.RESTRICTION_FIELD_MARKER()) : "HP:0000118",
+       (t.CUSTOM_MAPPING_FIELD_MARKER()) : "cu",
+        "HP:0000953"                    : "Hyperpigmentation",
+        "HP:0001010"                    : "Hypopigmentation",
+        "HP:0005306"                    : "Capillary hemangiomas",
+        "_c_vascmal"                    : "Vascular malformation",
+       (t.OTHER_FIELD_MARKER())      : null
+      ],
+      "Respiratory"     : [
+       (t.RESTRICTION_FIELD_MARKER()) : "HP:0000118",
+        "HP:0000776"                    : "Diaphragmatic hernia",
+        "HP:0002088"                    : "Lung abnormality",
+       (t.OTHER_FIELD_MARKER())      : null
+      ],
+      "Musculoskeletal"     : [
+       (t.RESTRICTION_FIELD_MARKER()) : "HP:0000118",
+       (t.CUSTOM_MAPPING_FIELD_MARKER()) : "ms",
+        "HP:0002652"                    : "Skeletal dysplasia",
+        "HP:0002659"                    : "Increased susceptibility to fracture",
+        "HP:0009816"                    : "Hypoplasia of lower limbs",
+        "HP:0009824"                    : "Hypoplasia of upper limbs",
+        "Camptodactyly"     : [
+          "HP:0100490"                    : "Finger",
+          "HP:0001836"                    : "Toe",
+        ],
+        "Syndactyly"     : [
+          "HP:0006101"                    : "Finger",
+          "HP:0001770"                    : "Toe",
+        ],
+        "Polydactyly"     : [
+          "HP:0100258"                    : "Preaxial",
+          "HP:0100259"                    : "Postaxial",
+        ],
+        "Oligodactyly"     : [
+          "HP:0001180"                    : "Hands",
+          "HP:0001849"                    : "Feet",
+        ],
+        "HP:0002650"                    : "Scoliosis",
+        "HP:0000925"                    : "Vertebral Anomaly",
+        "HP:0001371"                    : "Contractures",
+        "HP:0001762"                    : "Club foot",
+       (t.OTHER_FIELD_MARKER())      : null
+      ],
+      "Gastrointestinal"     : [
+       (t.RESTRICTION_FIELD_MARKER()) : "HP:0000118",
+       (t.CUSTOM_MAPPING_FIELD_MARKER()) : "gi",
+        "HP:0002032"                    : "Esophageal atresia",
+        "HP:0002575"                    : "Tracheoesophageal fistula",
+        "HP:0001543"                    : "Gastroschisis",
+        "HP:0001539"                    : "Omphalocele",
+        "HP:0002251"                    : "Hirschsprung",
+        "HP:0001396"                    : "Cholestasis",
+        "HP:0001411"                    : "Abnormal liver function",
+        "HP:0002581"                    : "Pancreatic Insufficiency",
+        "HP:0000819"                    : "Diabetes",
+       (t.OTHER_FIELD_MARKER())      : null
+      ],
+      "Genitourinary"     : [
+       (t.RESTRICTION_FIELD_MARKER()) : "HP:0000118",
+       (t.CUSTOM_MAPPING_FIELD_MARKER()) : "gu",
+        "HP:0000107"                    : "Renal Cysts",
+        "HP:0000085"                    : "Horseshoe Kidney",
+        "HP:0000069"                    : "Abnormality of ureter",
+        "HP:0000795"                    : "Abnormality of urethra",
+        "HP:0000062"                    : "Ambiguous genitalia",
+        "HP:0000047"                    : "Hypospadias",
+        "HP:0000028"                    : "Cryptorchidism",
+       (t.OTHER_FIELD_MARKER())      : null
+      ],
+      "Other"     : [
+        (t.RESTRICTION_FIELD_MARKER()): "HP:0000118",
+       (t.CUSTOM_MAPPING_FIELD_MARKER()) : "oth",
+      ]
+  ];
+
+  LinkedHashMap&lt;String, Object&gt; prenatal_history = [
+       (t.RESTRICTION_FIELD_MARKER()): "HP:0000118",
+       (t.CUSTOM_MAPPING_FIELD_MARKER()) : "pre",
+        "Prenatal growth parameters:"     : [
+        "Weight for age"     : [
+          "HP:0004325"                    : "&lt;3rd",
+          "HP:0001513"                    : "&gt;97th",
+        ],
+        "Stature for age"     : [
+          "HP:0004322"                    : "&lt;3rd",
+          "HP:0000098"                    : "&gt;97th",
+        ],
+        "Head circumference for age"     : [
+          "HP:0000252"                    : "&lt;3rd",
+          "HP:0000256"                    : "&gt;97th",
+        ],
+        ],
+        "HP:0001562"                    : "Oligohydramnios",
+        "HP:0001561"                    : "Polyhydramnios",
+        "HP:0001622"                    : "Premature birth",
+       (t.OTHER_FIELD_MARKER())      : null
+  ];
+
+  LinkedHashMap&lt;String, Object&gt; family_history = [
+        "_c_miscarriages"            : "Parents with at least 3 miscarriages",
+        "_c_consanguinity"            : "Consanguinity"
+  ];
+  LinkedHashMap&lt;String, String&gt; extraMessages = [];
+
+
+xcontext.get('vcontext').put('mapping__phenotype', phenotype);
+
+xcontext.get('vcontext').put('mapping__prenatal_phenotype', prenatal_history);
+
+xcontext.get('vcontext').put('mapping__family_history', family_history);
+
+xcontext.get('vcontext').put('mapping__extraMessages', extraMessages);
+{{/groovy}}</content></xwikidoc>

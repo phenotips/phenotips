@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>ClinicalInformationCode</web>
+<name>CreatePatientRecord</name>
+<language></language>
+<defaultLanguage>en</defaultLanguage>
+<translation>0</translation>
+<parent>ClinicalInformationCode.WebHome</parent>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+<creationDate>1320967726000</creationDate>
+<date>1323793626000</date>
+<contentUpdateDate>1323793626000</contentUpdateDate>
+<version>1.1</version>
+<title></title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>false</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>false</hidden>
+<content>{{groovy}}
+synchronized (System.class) { //really?
+  def crtContext = com.xpn.xwiki.web.Utils.getComponent(org.xwiki.context.Execution.class).getContext().getProperty('xwikicontext')
+  def request = crtContext.getRequest()
+  if (request.get('doCreate') == '1') {
+   def crtMaxID
+   def className = request.get('className')
+   def templateName = request.get('classTemplate')
+   def idPropertyName = request.get('idField')//'identifier'
+   def prefix = request.get('idPrefix')
+   def targetSpace = request.get('space')
+   def crtMaxIDList = crtContext.getWiki().search("select prop.value from BaseObject obj, LongProperty prop where obj.className = '${className}' and prop.id.id = obj.id and prop.id.name = '${idPropertyName}' order by 1 desc", 1, 0, crtContext)
+   if (crtMaxIDList.size() &gt; 0 &amp;&amp; crtMaxIDList.get(0) != null) {
+     crtMaxID = crtMaxIDList.get(0)
+   } else {
+     crtMaxID = 0
+   }
+   def name
+   def newDoc
+   while(!newDoc || !newDoc.isNew()) {
+     crtMaxID++
+     name = prefix + String.format("%07d", crtMaxID)
+     newDoc = crtContext.getWiki().getDocument(targetSpace + "." + name, crtContext)
+   } 
+   def createURL = newDoc.getURL('save', "form_token=${request.get('form_token')}&amp;template=${templateName}&amp;${className}_0_${idPropertyName}=${crtMaxID}&amp;title=${name}&amp;xredirect=" + crtContext.vcontext.escapetool.url(newDoc.getURL('edit', "form_token=${request.get('form_token')}", crtContext)), crtContext)
+   crtContext.getResponse().sendRedirect(createURL)
+  }
+}
+{{/groovy}}</content></xwikidoc>
