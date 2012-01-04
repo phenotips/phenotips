@@ -870,7 +870,8 @@ document.observe('dom:loaded', function() {
             resultId : "str[name=id]",
             resultValue : "str[name=name]",
             resultInfo : {
-                           "Definition"    : {"selector"  : "str[name=def]"},
+                           "Definition"    : {"selector"  : "str[name=def]",
+                                              "processor" : function(text) { return text.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;'); }},
                            "Synonyms"      : {"selector"  : "arr[name=synonym] str"},
 		           "Related terms" : {"extern" : true,
 		                              "processor" : function(trigger) {
