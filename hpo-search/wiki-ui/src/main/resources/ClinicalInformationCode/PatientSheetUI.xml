@@ -1633,23 +1633,27 @@ input.wrongValue {
 }
 /** ----------------------------------------------------------- */
 /** Quick search box &amp; suggest */
-.quick-search-box {
-  float: right;
-  padding: .5em .8em;
-  width: 29%;
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-.quick-search-box .section{
-  margin: 0.5em 0;
-}
 .emphasized-box { 
   background: $theme.backgroundSecondaryColor;
   border: 1px solid $theme.backgroundSecondaryColor;
   -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.15);
   -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.15);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.15);
+}
+.quick-search-box {
+  border: 0 none;
+  float: right;
+  width: 29%;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.quick-search-box fieldset {
+  border: 1px solid $theme.backgroundSecondaryColor;
+  padding: .5em .8em;
+}
+.quick-search-box .section{
+  margin: 0.5em 0;
 }
 /** ----------------------------------------------------------- */
 /** Clinical info zone **/
