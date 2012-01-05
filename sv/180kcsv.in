@@ -1,8 +1,0 @@
-SAMPLE_ID   sampleID
-START   from    Numeric
-STOP    to  Numeric
-SIZE    length  Numeric
-CYTOBAND    band
-CHR   chr
-TYPE    isDeletion  Categorical:true=DEL|false=DUP
-Ignore: CHR=X
