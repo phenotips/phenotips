@@ -414,21 +414,15 @@ var isPhenotypeSelected = function (id) {
 };
 var unselectPhenotype = function (id) {
   var targetElt = findFormElementForPhenotype(id);
-  if (targetElt) {
-    //var suggestion = targetElt.up('.accepted-suggestion');
-    //if (suggestion) {
-    //  suggestion.remove();
-    //} else {
-      targetElt.checked = false;
-      highlightChecked(targetElt);
-    //}
+  if (targetElt &amp;&amp; targetElt.checked) {
+    targetElt.click();
   }
 };
 
 document.observe('dom:loaded', function() {
     // ------------------------------------------------------------------------
     // Selected term highlighting 
-    $$('label input[type=checkbox]').each(function (input) {
+    $$('label.term-label input[type=checkbox]').each(function (input) {
       enableHighlightChecked(input);
       input.observe('click', function(event) {
           $$('input[type=checkbox][value=' + event.element().value +']').each(function(item) {
@@ -437,6 +431,35 @@ document.observe('dom:loaded', function() {
             }
           });
       });
+    });
+    // ------------------------------------------------------------------------
+    // Sync dynamic subtree selections
+    var fieldName = '';
+    var syncTermCategory = function(term) {
+      var field = document.documentElement.down('label.term-label.dropdown-root input[type=checkbox][name=' + fieldName + '][value=' + term +']');
+      if (field) {
+        var subtermsInCategory = $$('label.accepted-suggestion[for^=' + fieldName + '_] + .term-category input[type=hidden][value=' + term + ']');
+        var selectedSubterms  = 0;
+        var countIfSelectedSubterm = function (categoryElement) {
+           var subtermElement = categoryElement.up('li').down('label.accepted-suggestion input[type=checkbox]');
+           if (subtermElement &amp;&amp; subtermElement.checked) {
+             ++selectedSubterms;
+           }
+        };
+        subtermsInCategory.each(countIfSelectedSubterm);
+        if (selectedSubterms &gt; 0) {
+          field.up('label').addClassName('subterm-selected');
+        } else {
+          field.up('label').removeClassName('subterm-selected');
+        }
+      }
+    };
+    document.observe('custom:selection:changed', function(event) {
+      var categories = event.memo &amp;&amp; event.memo.categories;
+      if (categories) {
+         fieldName = event.memo.fieldName || '';
+         categories.each(syncTermCategory);
+      }
     });
     
     // ------------------------------------------------------------------------
@@ -448,7 +471,7 @@ document.observe('dom:loaded', function() {
       var qsInput = qsBox.down('input[type=text]');
       var shadowSize = 6;
 
-      var qsResetPosition = function(event, forceUpdate) {
+      var qsResetPosition = function(event) {
 
 	if (qsInput._activeSuggest) {
 	  return;
@@ -470,15 +493,6 @@ document.observe('dom:loaded', function() {
             direction = -1;
           }
         }
-/*
-        if (forceUpdate) {
-	    qsBox.style.position = '';
-	    qsBox.style.top = '';
-	    qsBox.style.left = '';
-	    qsBox.style.right = '';
-	    qsBox.style.width = '';
-        }
-*/
 	if ((!qsInput._activeSuggest || direction == 1) &amp;&amp; document.viewport.getScrollOffsets().top &gt;= boxMinTop &amp;&amp; document.viewport.getScrollOffsets().top &lt; boxMaxTop) {
 	  if (qsBox.style.position != 'fixed') {
 	    qsBox.style.left = boxLeft + 'px';
@@ -510,10 +524,10 @@ document.observe('dom:loaded', function() {
 	if (event.memo.suggest.fld == qsInput) {
 	  qsInput._activeSuggest = true;
 	  if (qsBox.style.position == 'fixed') {
-	    qsBox.style.position = 'absolute';
 	    qsBox.style.top = ((document.viewport.getScrollOffsets().top - content.cumulativeOffset().top) + shadowSize) + 'px';
 	    qsBox.style.left = '';
 	    qsBox.style.right = '';
+	    qsBox.style.position = 'absolute';
 	  }
 	  var qsSuggest = event.memo.container;
 	  qsSuggest.style.top = (qsInput.cumulativeOffset().top + qsInput.getHeight()) + 'px';
@@ -528,7 +542,7 @@ document.observe('dom:loaded', function() {
 	}
       });
       Event.observe(window, 'scroll', qsResetPosition);
-      Event.observe(window, 'resize', qsResetPosition.bindAsEventListener(window, true));
+      Event.observe(window, 'resize', qsResetPosition);
       qsResetPosition();
     }
 });</code>
@@ -858,7 +872,6 @@ document.observe('dom:loaded', function() {
                            'name' : { 'stub': true, 'boost': 50 },
                            'synonym' : { 'stub': true, 'boost': 50 },
                            'text' : { 'stub': true, 'default': true },
-                           'phonetic' : {'boost': 0.1 },
                            'id' : {'activationRegex' : 'HP:[0-9]+', 'stub': true, 'boost' : 50}
                          }, {
                            'term_category': ['HP:0000118']
@@ -869,9 +882,11 @@ document.observe('dom:loaded', function() {
             resultsParameter : "doc",
             resultId : "str[name=id]",
             resultValue : "str[name=name]",
+            resultCategory : "arr[name=term_category] str",
             resultInfo : {
                            "Definition"    : {"selector"  : "str[name=def]",
-                                              "processor" : function(text) { return text.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;'); }},
+                                              "processor" : function(text) { return text.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;'); }
+                                             },
                            "Synonyms"      : {"selector"  : "arr[name=synonym] str"},
 		           "Related terms" : {"extern" : true,
 		                              "processor" : function(trigger) {
@@ -965,7 +980,7 @@ document.observe('dom:loaded', function() {
                  // 3. find all the values and display them as part of the multi suggest picker
                  suggestPicker.silent = true;
                  customFieldsContainer.select('label input[type="checkbox"]').each(function(entry) {
-                   suggestPicker.addItem(entry.value, entry.nextSibling.nodeValue);
+                   suggestPicker.addItem(entry.value, entry.nextSibling.nodeValue, '', entry.up('label').next('.term-category'));
                  });
                  suggestPicker.silent = false;
               }
@@ -1598,7 +1613,7 @@ input[type=text]:focus, textarea:focus {
 .fieldset .displayed-value {
   margin: 0 0 0.5em;
 }
-label.selected {
+label.selected, label.subterm-selected {
   background-color: $theme.backgroundSecondaryColor;
   font-weight: bold;
   padding-left: 4px;

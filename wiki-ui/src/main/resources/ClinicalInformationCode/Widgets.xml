@@ -151,6 +151,8 @@
     // "info" for the old suggest, "pageFullName" for the REST search.
     resultInfo : "info",
     // The name of the JSON parameter or XML attribute holding the result icon.
+    resultCategory : "category",
+    // The name of the JSON parameter or XML attribute holding the result icon.
     resultIcon: "icon",
     // The name of the JSON parameter or XML attribute holding a potential result hint (displayed next to the value).
     resultHint: "hint",
@@ -565,10 +567,20 @@
           if (!info.hasChildNodes()) {
             info = '';
           }
+          if (this.options.resultCategory) {
+            var category = new Element("span", {'class' : 'hidden term-category'});
+            Element.select(results[i], this.options.resultCategory).each(function(c) {
+              category.insert(new Element('input', {'type' : 'hidden', 'value' : c.firstChild.nodeValue}));
+            });
+          }
+          if (!this.options.resultCategory || !category.hasChildNodes()) {
+            category = this.options.resultCategory + ' ' + Element.select(results[i], this.options.resultCategory);
+          }
           aSuggestions.push({
-            'id'   : Element.down(results[i], this.options.resultId).firstChild.nodeValue,
-            'value': Element.down(results[i], this.options.resultValue).firstChild.nodeValue,
-            'info' : info
+            'id'      : Element.down(results[i], this.options.resultId).firstChild.nodeValue,
+            'value'   : Element.down(results[i], this.options.resultValue).firstChild.nodeValue,
+            'info'    : info,
+            'category': category
           });
         }
       }
@@ -824,7 +836,8 @@
     var valueNode = new Element('div')
             .insert(new Element('span', {'class':'suggestId'}).update(data.id))
             .insert(new Element('span', {'class':'suggestValue'}).update(data.value))
-            .insert(new Element('div', {'class':'suggestInfo'}).update(data.info));
+            .insert(new Element('div', {'class':'suggestInfo'}).update(data.info))
+            .insert(new Element('div', {'class':'suggestCategory'}).update(data.category));
 
     var item = new MS.widgets.XListItem( displayNode , {
         containerClasses: 'suggestItem',
@@ -1021,26 +1034,20 @@
           selection = newFieldValue = this.iHighlighted.down(".suggestValue").innerHTML;
       }
       
-      //
-      this.acceptEntry(
-	this.iHighlighted.down(".suggestId").innerHTML,
-        this.iHighlighted.down(".suggestValue").innerHTML,
-	this.iHighlighted.down(".suggestInfo").innerHTML,
-	this.iHighlighted.down('img.icon') ? this.iHighlighted.down('img.icon').src : '',
-	selection,
-	newFieldValue
-      );
+      var data = {
+        suggest  : this,
+        id       : this.iHighlighted.down(".suggestId").innerHTML,
+        value    : this.iHighlighted.down(".suggestValue").innerHTML,
+	info     : this.iHighlighted.down(".suggestInfo").innerHTML,
+	icon     : (this.iHighlighted.down('img.icon') ? this.iHighlighted.down('img.icon').src : ''),
+        category : this.iHighlighted.down(".suggestCategory").innerHTML
+      };
+      this.acceptEntry(data, selection, newFieldValue);
     }
   },
   
-  acceptEntry : function(id, value, info, icon, selection, newFieldValue) {
-      var event = Event.fire(this.fld, "ms:suggest:selected", {
-        'suggest' : this,
-        'id': id,
-        'value': value,
-        'info': info,
-        'icon' : icon
-      });
+  acceptEntry : function(data, selection, newFieldValue) {
+      var event = Event.fire(this.fld, "ms:suggest:selected", data);
 
       if (!event.stopped) {
         this.sInput = selection;
@@ -1050,11 +1057,7 @@
 
         // pass selected object to callback function, if exists
         if (typeof(this.options.callback) == "function") {
-          this.options.callback({
-            'id': id,
-            'value': value,
-            'info': info
-          });
+          this.options.callback(data);
         }
 
         //there is a hidden input
@@ -1254,7 +1257,7 @@
     }
   },
 
-  acceptAddItem : function (key, value, info) {
+  acceptAddItem : function (key) {
     var input = $(this.getInputId(key));
     if (input) {
       input.checked = true;
@@ -1284,14 +1287,14 @@
   },
 
   acceptSuggestion : function(obj) {
-    if (this.acceptAddItem(obj.id || obj.value, obj.value, obj.info)) {
-      this.addItem(obj.id || obj.value, obj.value, obj.info);
+    if (this.acceptAddItem(obj.id || obj.value)) {
+      this.addItem(obj.id || obj.value, obj.value, obj.info, obj.category);
     }
     this.input.value = "";
     return false;
   },
 
-  addItem : function(key, value, info) {
+  addItem : function(key, value, info, category) {
     if (!key) {
       return;
     }
@@ -1311,7 +1314,10 @@
     }
     // insert the displayed value
     displayedValue.insert({'bottom' : new Element("span", {"class": "value"}).update(value.escapeHTML())});
-    listItem.appendChild(displayedValue);
+    listItem.insert(displayedValue);
+    if (category &amp;&amp; category != '') {
+      listItem.insert(category);
+    }
     // delete tool
     if (this.options.showDeleteTool) {
       var deleteTool = new Element("span", {'class': "delete-tool", "title" : "Delete this term"}).update('&amp;#x2716;');
@@ -1323,7 +1329,7 @@
       listItem.appendChild(new Element("div", {'class' : "tooltip"}).update(info));
       listItem.select('.expand-tool').invoke('observe', 'click', function(event){event.stop();});
     }
-    this.list.appendChild(listItem);
+    this.list.insert(listItem);
     var newItem = $(id);
     this.ensureVisible(newItem);
     this.synchronizeSelection(newItem);
@@ -1338,8 +1344,12 @@
 
   removeItem : function(event) {
     var item = event.findElement('li');
-    this.synchronizeSelection({ value: item.down('input[type=checkbox]').value, checked : false});
+    this.synchronizeSelection({
+      value   : item.down('input[type=checkbox]').value, 
+      checked : false
+    });
     item.remove();
+    this.notifySelectionChange(item);
     this.input.value = "";
     this.updateListTools();
   },
@@ -1374,11 +1384,25 @@
   },
 
   synchronizeSelection : function (input) {
-   $$('input[type=checkbox][value=' + input.value +']').each(function(item) {
-     if (item.checked != input.checked) {
+    $$('input[type=checkbox][value=' + input.value +']').each(function(item) {
+      if (item.checked != input.checked) {
         item.click();
-     }
-   });
+      }
+    });
+    var element = (typeof (input.up) == 'function') &amp;&amp; input.up('li');
+    if (element) {
+      this.notifySelectionChange(element);
+    }
+  },
+
+  notifySelectionChange : function(elt) {
+    if (!elt.__categoryArray) {
+      elt.__categoryArray = [];
+      Element.select(elt, 'input[type=hidden]').each(function(c) {
+        elt.__categoryArray.push(c.value); 
+      });
+    }
+    Event.fire(document, "custom:selection:changed", {'categories' : elt.__categoryArray, 'fieldName' : this.inputName});
   }
 });
   return MS;
@@ -1557,11 +1581,13 @@ widgets.ModalPopup = Class.create({
     this.positionDialog();
     // Append to the end of the document body.
     document.body.appendChild(this.dialog);
-    new Draggable(this.getBoxId(), {
-      handle: $(this.getBoxId()).down('.msdialog-title'),
-      scroll: window,
-      change: this.updateScreenSize.bind(this)
-    });
+    if (typeof (Draggable) != 'undefined') {
+      new Draggable(this.getBoxId(), {
+        handle: $(this.getBoxId()).down('.msdialog-title'),
+        scroll: window,
+        change: this.updateScreenSize.bind(this)
+      });
+    }
     this.dialog.hide();
     var __enableUpdateScreenSize = function (event) {
       if (this.dialog.visible()) {
@@ -2056,6 +2082,7 @@ return MS;
     resultsParameter : "doc",
     resultId : "str[name=id]",
     resultValue : "str[name=name]",
+    resultCategory : "arr[name=term_category] str",
     resultInfo : {
                            "Definition"    : {"selector"  : "str[name=def]"},
                            "Synonyms"      : {"selector"  : "arr[name=synonym] str"}
@@ -2186,7 +2213,8 @@ return MS;
     var data = {
       id : Element.down(targetResult, this.options.resultId).firstChild.nodeValue,
       value : Element.down(targetResult, this.options.resultValue).firstChild.nodeValue,
-      info : this._generateEntryInfo(targetResult)
+      info : this._generateEntryInfo(targetResult),
+      category: this._generateEntryCategory(targetResult)
     }
     var root = this._createRoot(data);
     newContent.insert({'bottom' : root});
@@ -2206,9 +2234,10 @@ return MS;
         var data = {
           id : Element.down(results[i], this.options.resultId).firstChild.nodeValue,
           value : Element.down(results[i], this.options.resultValue).firstChild.nodeValue,
-          info : this._generateEntryInfo(results[i])
-         };
-         list.insert({'bottom': this._createDescendentBranch(data)});
+          info : this._generateEntryInfo(results[i]),
+          category: this._generateEntryCategory(results[i])
+        };
+        list.insert({'bottom': this._createDescendentBranch(data)});
       }
     }
     if (list.hasChildNodes()) {
@@ -2220,6 +2249,7 @@ return MS;
   _createBranch: function (eltName, className, data, expandable) {
     var element =  new Element(eltName, {'class' : 'entry ' + className});
     element.__termId = data.id;
+    element.__termCategory = data.category;
     var wrapper = new Element('div', {'class' : 'entry-data'});
     wrapper.insert({'bottom': this._generateEntryTitle(data.id, data.value)});
     var entryTools = new Element('span', {'class' : 'entry-tools'});
@@ -2273,7 +2303,21 @@ return MS;
                      {'bottom' : ' '}).insert(
                      {'bottom' : new Element('span', {'class' : 'value'}).update(value)});
   },
-  
+
+  _generateEntryCategory : function (xmlFragment) {
+    var category = new Element("span", {'class' : 'hidden term-category'});
+    if (this.options.resultCategory) {
+      Element.select(xmlFragment, this.options.resultCategory).each(function(c) {
+        category.insert(new Element('input', {'type' : 'hidden', 'value' : c.firstChild.nodeValue}));
+      });
+    }
+    if (category.hasChildNodes()) {
+      return category;
+    } else {
+      return null;
+    }
+  },
+
   _generateEntryInfo : function(xmlFragment) {
     var title = this._generateEntryTitle(
       Element.down(xmlFragment, this.options.resultId).firstChild.nodeValue,
@@ -2390,7 +2434,7 @@ return MS;
           var prevPosition = this.container.getPositionInViewport();
         }
         var value = elt.down('.value').firstChild.nodeValue;
-        this.suggest.acceptEntry(id, value, null, '', value, value);
+        this.suggest.acceptEntry({'id':id, 'value':value, 'category' : elt.__termCategory}, value, '');
         elt.addClassName('accepted');
         if (prevPosition &amp;&amp; typeof (this.container.positionDialogInViewport) == 'function') {
           this.container.positionDialogInViewport(prevPosition.left, prevPosition.top);
@@ -3557,11 +3601,15 @@ div.resultContainer div.sourceContent.loading {
   margin-left: .8em;
   width: 95%;
   z-index: 100;
+  opacity: .5;
+}
+.dropdown:hover {
+  opacity: 1;
 }
 .dropdown.emphasized-box {
   margin-left: -4px;
   padding: 0.25em 0.25em 0.25em 1.05em;
-  xposition: absolute;
+  /*position: absolute;*/
 }
 .dropdown .close {
   cursor: pointer;

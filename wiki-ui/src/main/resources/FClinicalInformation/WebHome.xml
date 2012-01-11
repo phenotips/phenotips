@@ -481,7 +481,7 @@ B/tPD/z92/5t//b/9fb/ADnOn+Sf4LkzAAAAAElFTkSuQmCC
 <patientTemplate>ClinicalInformationCode.FPatientTemplate</patientTemplate>
 </property>
 <property>
-<variants>1</variants>
+<variants>0</variants>
 </property>
 </object>
 <content>{{include document="ClinicalInformationCode.DBWebHomeSheet" /}}</content></xwikidoc>

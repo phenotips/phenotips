@@ -37,5 +37,6 @@ patient.livetable.age=Age at last assessment
 patient.livetable.sex=Sex
 
 admin.clinicalinformationcode=Clinical information application code
+admin.ontology=Ontology index
 
 saveandview=Save</content></xwikidoc>

@@ -51,6 +51,11 @@ public class PhenotypeDisplayTools {
   private Set&lt;String&gt; selectedValues = new HashSet&lt;String&gt;();
   private Map&lt;String, String&gt; messages = new LinkedHashMap&lt;String, String&gt;();
 
+  private Map&lt;String, Boolean&gt; valuesWithSelectedSubterms = new HashMap&lt;String, Boolean&gt;();
+  private Set&lt;String&gt;          predefinedSelectedValues   = new HashSet&lt;String&gt;();
+  private Set&lt;String&gt;          customSelectedValues       = new HashSet&lt;String&gt;();
+  private Map&lt;String, String&gt;  customValuesCategoriesElt  = new HashMap&lt;String, String&gt;();
+
   public PhenotypeDisplayTools(Object ontologyService)
   {
     this.ontologyService = ontologyService;
@@ -181,6 +186,7 @@ public class PhenotypeDisplayTools {
       customValueDisplay = '';
       for (String val : mappingObj.getProperty(__CUSTOM_MAPPING_VALUES_FIELD).value) {
         customValueDisplay += generateCheckBox(val, getLabelFromOntology(val));
+        customValueDisplay += customValuesCategoriesElt.get(val);
       }
       customValueDisplay = '&lt;div class="custom-display-data"&gt;' + customValueDisplay + '&lt;/div&gt;';
 
@@ -246,7 +252,7 @@ public class PhenotypeDisplayTools {
     if (this.mode != 'edit') {
       return "&lt;div class='value-checked'&gt;" + label + "&lt;/div&gt;";
     }
-    String cssClass = "term-label" + (enableDropdown(value) ? " dropdown-root" : "");
+    String cssClass = "term-label" + (enableDropdown(value) ? " dropdown-root" : "") + (valuesWithSelectedSubterms.get(value) ? " subterm-selected" : '');
     String id = name + (value.startsWith("_") ? "" : "_") + value;
     String message = this.messages.get(value);
     message = (message == null) ? "" : this.wrapDetailsRequestMessage(message);
@@ -377,6 +383,7 @@ public class PhenotypeDisplayTools {
 
   public String display(LinkedHashMap&lt;String, Object&gt; data)
   {
+     preDisplay(data);
      if (hasSections(data)) {
         if (this.mode != 'edit') {
           cleanSections(data);
@@ -404,6 +411,49 @@ public class PhenotypeDisplayTools {
         }
         return "{{html wiki=true clean=false}}\n" + handleSection(data) + "\n{{/html}}\n";
      }
+     postDisplay();
+  }
+
+  private void preDisplay(LinkedHashMap&lt;String, Object&gt; data)
+  {
+    if (selectedValues.size() == 0) {
+      return;
+    }
+    Object[] fieldIds = data.keySet().toArray();
+    for (int i = 0; i &lt; fieldIds.length; ++i) {
+      String id = (String)fieldIds[i];
+      if (isOntologyId(id)) {
+        valuesWithSelectedSubterms.put(id, false);
+      } else if (isSubsection(id)) {
+        preDisplay(data.get(id));
+      }
+    }
+    Object[] selVals = selectedValues.toArray();
+    for (int i = 0; i &lt; selVals.length; ++i) {
+      if (valuesWithSelectedSubterms.containsKey(selVals[i])) {
+        predefinedSelectedValues.add(selVals[i]);
+      } else {
+        customSelectedValues.add(selVals[i]);
+        String categoriesElt = '';
+        def termObj = ontologyService.get(selVals[i]);
+        if (termObj &amp;&amp; termObj.term_category &amp;&amp; termObj.term_category instanceof ArrayList) {
+          for (int j = 0; j &lt; termObj.term_category.size; ++j) {
+            if (valuesWithSelectedSubterms.containsKey(termObj.term_category.get(j))) {
+              valuesWithSelectedSubterms.put(termObj.term_category.get(j), true);
+            }
+            categoriesElt += '&lt;input type="hidden" value="' + termObj.term_category.get(j) + '"/&gt;\n';
+          }
+        }
+        categoriesElt = '&lt;span class="hidden term-category"&gt;\n' + categoriesElt + '&lt;/span&gt;\n';
+        customValuesCategoriesElt.put(selVals[i], categoriesElt);
+      }
+    }
+  }
+  private void postDisplay()
+  {
+    valuesWithSelectedSubterms.clear();
+    predefinedSelectedValues.clear();
+    customSelectedValues.clear();
   }
 }
 

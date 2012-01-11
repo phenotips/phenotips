@@ -106,15 +106,20 @@
   /** Handles the gallery buttons directly in the current page without reloading the window. */
   XWiki.MultiImageSelector = Class.create({
      DEDUPLICATION_PREFIX : "IMAGE_SELECTOR",
+     ENFORCE_POPUP_MARKER : "showmng",
+     CHECK_LASTATT_MARKER : "lastatt",
     /**
      * Constructor.
      *
      * @param dialog the modal dialog where the gallery was loaded
      */
-    initialize : function(dialog, reloadTargetId) {
+    initialize : function(dialog, reloadTargetId, sourceList) {
       this.dialog = dialog;
       this.gallery = dialog.dialogBox;
+      this.list = this.gallery.down('.attachment-list');
+      this.sourceList = sourceList;
       this.reloadTargetId = reloadTargetId;
+
       this.filterFormUpload();
       this.addDeleteListeners();
       this.addCloseListener();
@@ -125,15 +130,15 @@
      */
     filterFormUpload : function() {
       this.form = this.gallery.down('form');
+      // Make sure unsaved selections are not lost 
+      this.gallery.select('.attachment-item input[type=checkbox]').each(function(item) {
+          var twin = $(item.id.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length));
+          if (twin) {item.checked = twin.checked;}
+      });
       if (typeof (XWiki.FileUploader) != 'undefined') {
         // -------------------------------------------------------
         // HTML5 ajax file uploader is available, use it
         // -------------------------------------------------------
-        // Make sure unsaved selections are not lost 
-        this.gallery.select('.attachment-item input[type=checkbox]').each(function(item) {
-          var twin = $(item.id.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length));
-          if (twin) {item.checked = twin.checked;}
-        });
         // Update the url that will provide the submission result
         var xredirect = this.form.down('input[type=hidden][name=xredirect]');
         var ajaxxredirect = this.form.down('input[type=hidden][name=ajaxxredirect]');
@@ -151,16 +156,15 @@
                this.gallery.select('.attachment-list .attachment-item input[type=checkbox][value=' + attachmentField.value + ']').each(function (item) {
                  item.up('.attachment-item').remove();
                })
-               var list = this.gallery.down('.attachment-list');
                // if the attachment list contained some "Empty list" message, make sure to remove it
-               if (!list.down('.attachment-item')) {
-                 list.update('');
+               if (!this.list.down('.attachment-item')) {
+                 this.list.update('');
                }
                // only update the gallery with valid attachment-item elements
-               list.insert({top: responseContainer.innerHTML});
+               this.list.insert({top: responseContainer.innerHTML});
                responseContainer.update('');
                // delete listener for the new-comer
-               var newItemAction = list.down('.attachment-item .action.delete')
+               var newItemAction = this.list.down('.attachment-item .action.delete')
                if (newItemAction) {
                  newItemAction.observe('click', this.onDelete.bindAsEventListener(this));
                }
@@ -172,13 +176,6 @@
         // The browser does not support AJAX file upload. Do what you can...
         // -------------------------------------------------------
         new XWiki.widgets.Notification("This feature works better in more advanced browsers (Mozilla Firefox 4.0+, Google Chrome). Please consider upgrading.", 'info');
-        // Hide checkboxes, they are of no use here
-        this.gallery.select('.attachment-item input[type=checkbox]').invoke('setStyle', {'display' : 'none'});
-        // Update the url that will provide the submission result
-        var xredirect = this.form.down('input[type=hidden][name=xredirect]');
-        if (xredirect) {
-          xredirect.value = window.location.toString().replace(/#.*/g, "") + (this.reloadTargetId ? '#' + this.reloadTargetId : '');
-        }
         // Setup the allowed extensions for each file input
         this.form.select('.upload-attachment input[type=file]').each(function(fileInput) {
           fileInput.__allowedExtensions = fileInput.title.toLowerCase().replace(/\s*[,|; ]\s*/g, " ").strip();
@@ -205,6 +202,15 @@
           // No form submission by AJAX right now, because file uploads can't be done this way without HTML5, this is future work
           // Save the document before submitting, since the current form data will be lost otherwise
           if (!hasErrors) {
+            this.updateSource();
+            // Update the url that will provide the submission result
+            var xredirect = this.form.down('input[type=hidden][name=xredirect]');
+            if (xredirect) {
+              xredirect.value = window.location.toString().replace(/#.*$/g, "").replace(/\?.*$/g, '')
+                               + "?" + this.ENFORCE_POPUP_MARKER + "=1"
+                               + "&amp;" + this.CHECK_LASTATT_MARKER + "=" + this.getFileName(uploadForm.down('input[type=file]').value)
+                               + (this.reloadTargetId ? '#' + this.reloadTargetId : '');
+            }
             document.observe('xwiki:document:saved', function() {
               new XWiki.widgets.Notification("$msg.get('xe.attachmentSelector.upload.inProgress')", 'inprogress');
               uploadForm.submit();
@@ -214,13 +220,16 @@
         }.bindAsEventListener(this));
       }
     },
-    getFileExtension : function(filename) {
-      var fpath = filename.replace('\\', '/');
+    getFileName : function(filepath) {
+      var fpath = filepath.replace('\\', '/');
       var pieces = fpath.split('/');
       if (pieces.length == 0) {
         return null;
       }
-      var basename = pieces[pieces.length-1];
+      return pieces[pieces.length-1];
+    },
+    getFileExtension : function(filepath) {
+      var basename = this.getFileName(filepath);
       pieces = basename.split('.');
       return pieces[pieces.length-1].toLowerCase();
     },
@@ -263,14 +272,42 @@
       }
     },
 
-    addCloseListener : function () {
-      var closeButton = $('attachment-picker-close');
-      if (closeButton) {
-        closeButton.observe('click', function(event) {
-          event.stop();
-          this.dialog.closeDialog();
-        }.bindAsEventListener(this));
+    updateSource : function () {
+      var newList = new Element('div', {'class' : 'attachment-list'});
+      this.list.select('.attachment-item').each(function(item) {
+        var label = item.down('label');
+        var input = label.down('input');
+        var image = item.down('.attachment-preview img');
+        var id = input.id.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length);
+        var lItem = new Element('div', {'class' : 'attachment-item'});
+        lItem.insert({
+                  'top' : new Element('label', {'for' : id, 'title' : input.value}).update(input.value).insert({
+                              top : new Element('input', {
+                                        'type' : 'checkbox',
+                                        'checked' : input.checked,
+                                        'id' : id,
+                                        'name' : input.name.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length),
+                                        'value' : input.value
+                                    })
+                   }),
+                  'bottom': new Element ('div', {'class' : 'attachment-preview'}).update(image)
+        });
+        newList.insert({bottom: lItem});
+      });
+      // is there at least one 
+      if (!newList.down('.attachment-item')) {
+        newList.update(this.list.innerHTML);
+      } else {
+        this.sourceList.replace(newList);
+        this.sourceList = newList;
       }
+    },
+
+    addCloseListener : function () {
+      this.dialog.__controller = this;
+      var closeButton = new Element('input', {'type' : 'button', 'class' : 'button', 'value' : 'Done'});
+      this.gallery.down('.content').insert({bottom : closeButton});
+      closeButton.observe('click', this.dialog.closeDialog.bindAsEventListener(this.dialog));
     }
   });
 
@@ -279,6 +316,11 @@
 
   /* Hook onto the picker buttons so that the gallery is loaded via AJAX in a modal dialog. */
   document.observe('xwiki:dom:loaded', function() {
+    var __getParameter = function (name) {
+      var result;
+      if(result = (new RegExp('[?&amp;]'+encodeURIComponent(name)+'=([^&amp;#]*)')).exec(window.location.search))
+        return decodeURIComponent(result[1]);
+    };
     $$('.manage-images-button').invoke('observe', 'click', function(event) {
       event.stop();
       var targetElement = event.element();
@@ -296,45 +338,11 @@
           'verticalPosition' : 'top',
           'removeOnClose' : true,
           'title' : targetElement.innerHTML,
-           onClose : function() {
-             var newList = new Element('div', {'class' : 'attachment-list'});
-             this.dialogBox.select('.attachment-item').each(function(item) {
-                var label = item.down('label');
-                var input = label.down('input');
-                var image = item.down('.attachment-preview img');
-                var id = input.id.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length);
-                var lItem = new Element('div', {'class' : 'attachment-item'});
-                lItem.insert({
-                  'top' : new Element(
-                     'label', {'for' : id, 'title' : input.value}
-                   ).update(input.value).insert({top : new Element('input', {
-                     'type' : 'checkbox',
-                     'checked' : input.checked,
-                     'id' : id,
-                     'name' : input.name.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length),
-                     'value' : input.value
-                   }),
-                  'bottom': new Element ('div', {'class' : 'attachment-preview'}).update(image)})
-                });
-                newList.insert({bottom: lItem});
-             });
-             // is there at least one 
-             if (!newList.down('.attachment-item')) {
-               newList.update(this.dialogBox.down('.attachment-list').innerHTML);
-             }
-             targetElement.up('.actions').next('.attachment-list').replace(newList);
-           }
+           onClose : function() {this.__controller.updateSource()}
         }
       );
       dialog.shortcuts.close.keys = [];
       dialog.showDialog();
-      if (window.browser.isIE6x) {
-        dialog.dialog.down().setStyle({position: "absolute"});
-      } else {
-        dialog.dialog.down().setStyle({position: "fixed"});
-      }
-      //dialog.dialog.setStyle({top: document.viewport.getScrollOffsets().top + "px", position: "absolute"});
-      //dialog.dialogBox.setStyle({overflow: "hidden"});
       new Ajax.Updater(loading.up(), url, {
         onComplete : function() {
           // Play nice with the Lightbox widget
@@ -349,10 +357,22 @@
             XWiki.fixLinksTargetAttribute(dialog.dialog);
             XWiki.contextaction = __tmp;
           }
-          new XWiki.MultiImageSelector(dialog, reloadTargetId);
+          new XWiki.MultiImageSelector(dialog, reloadTargetId,  targetElement.up('.actions').next('.attachment-list'));
+          var toCheck = null;
+          if (toCheck = __getParameter(XWiki.MultiImageSelector.prototype.CHECK_LASTATT_MARKER)) {
+            var lastAtt = dialog.dialogBox.down('.attachment-item input[type=checkbox]'); // in 3.4+ add "[value=' + toCheck + ']"
+            if (lastAtt) {lastAtt.checked = true}
+          }
         }
       });
     });
+    var activeAction = null;
+    if (__getParameter(XWiki.MultiImageSelector.prototype.ENFORCE_POPUP_MARKER) &amp;&amp; window.location.hash
+        &amp;&amp; (activeAction = $(window.location.hash.substring(1)))
+        &amp;&amp; (activeAction = activeAction.down('.manage-images-button'))
+    ) {
+      activeAction.click();
+    }
   });
   return XWiki;
 }(XWiki || {}));</code>
