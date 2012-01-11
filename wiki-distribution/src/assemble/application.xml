@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+  <id>distribution</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>true</includeBaseDirectory>
+  <dependencySets>
+    <!-- XWiki webapp. -->
+    <dependencySet>
+      <includes>
+        <include>org.xwiki.enterprise:xwiki-enterprise-web</include>
+      </includes>
+      <outputDirectory>webapps/xwiki</outputDirectory>
+      <unpack>true</unpack>
+    </dependencySet>
+    <!-- Add JDBC driver for the database to use. -->
+    <dependencySet>
+      <includes>
+        <include>hsqldb:hsqldb</include>
+      </includes>
+      <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
+      <unpack>false</unpack>
+    </dependencySet>
+    <!-- Add solr-access component and dependencies. -->
+    <dependencySet>
+      <includes>
+        <include>edu.toronto.cs:solr-access-service</include>
+        <include>org.apache.solr:solr-solrj</include>
+        <include>edu.toronto.cs:obo2solr</include>
+      </includes>
+      <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
+      <unpack>false</unpack>
+    </dependencySet>
+    <!-- Unpack the HSQLDB database files to package it in the distribution -->
+    <dependencySet>
+      <includes>
+        <include>edu.toronto.cs:phenotype-database-zip</include>
+      </includes>
+      <outputDirectory>/database</outputDirectory>
+      <unpack>true</unpack>
+    </dependencySet>
+    <!-- "solr" webapp. -->
+    <dependencySet>
+      <includes>
+        <include>org.apache.solr:solr</include>
+      </includes>
+      <outputDirectory>webapps/solr</outputDirectory>
+      <unpack>true</unpack>
+    </dependencySet>
+    <!-- Solr configuration. -->
+    <dependencySet>
+      <includes>
+        <include>edu.toronto.cs:medical-ontology-terms-configuration</include>
+      </includes>
+      <outputDirectory>solrconfig/</outputDirectory>
+      <unpack>true</unpack>
+    </dependencySet>
+    <!-- Unpack Jetty files -->
+    <dependencySet>
+      <includes>
+        <include>edu.toronto.cs:medical-ontology-terms-jetty-resources</include>
+      </includes>
+      <outputDirectory>/</outputDirectory>
+      <unpack>true</unpack>
+      <unpackOptions>
+        <excludes>
+          <exclude>jetty/contexts/search.xml</exclude>
+        </excludes>
+      </unpackOptions>
+    </dependencySet>
+  </dependencySets>
+</assembly>

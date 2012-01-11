@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ *
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>edu.toronto.cs</groupId>
+    <artifactId>medical-ontology-terms</artifactId>
+    <version>1.0-SNAPSHOT</version>
+<!--    <groupId>org.xwiki.enterprise</groupId>
+    <artifactId>xwiki-enterprise-database</artifactId>
+    <version>3.3</version>-->
+  </parent>
+  <artifactId>phenotype-database-zip</artifactId>
+  <name>Phenotype database</name>
+  <packaging>pom</packaging>
+  <description>ZIP packaging of the XWiki-based phenotype database interface, stored as a HSQLDB database dump.</description>
+  <properties>
+    <xwiki.db.connection.url>jdbc:hsqldb:file:${project.build.directory}/database/xwiki_db;shutdown=true</xwiki.db.connection.url>
+    <commons.version>3.3</commons.version>
+  </properties>
+  <!-- Required for the exec:exec plugin execution below. Doesn't seem to work as an exec plugin
+       dependency -->
+  <dependencies>
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.8.0.7</version>
+    </dependency>
+    <dependency>
+      <groupId>edu.toronto.cs</groupId>
+      <artifactId>phenotype-database-wiki</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <type>xar</type>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- Step 1: Copy and filter the Hibernate config file which will be used by the packager
+       plugin -->
+        <!-- Step 2: Expand the XAR file -->
+        <plugin>
+          <groupId>org.xwiki.commons</groupId>
+          <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
+          <version>${commons.version}</version>
+          <configuration>
+            <groupId>edu.toronto.cs</groupId>
+            <artifactId>phenotype-database-wiki</artifactId>
+            <outputDirectory>${project.build.directory}/xar</outputDirectory>
+          </configuration>
+          <executions>
+            <execution>
+              <!-- Right phase is prepare-package, but it is only in maven-2.1
+              <phase>prepare-package</phase>-->
+              <phase>package</phase>
+              <goals>
+                <goal>unxar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- Step 3: Import the XAR content into the Database -->
+        <plugin>
+          <groupId>org.xwiki.platform</groupId>
+          <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
+          <version>${commons.version}</version>
+          <configuration>
+            <sourceDirectory>${project.build.directory}/xar</sourceDirectory>
+            <hibernateConfig>
+              ${project.build.directory}/maven-shared-archive-resources/hibernate.cfg.xml
+            </hibernateConfig>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>hsqldb</groupId>
+              <artifactId>hsqldb</artifactId>
+              <version>1.8.0.7</version>
+            </dependency>
+            <!-- We need the Servlet API dep since it's used by the Packager and since it has
+                 a provided scope in XWiki core it's not inherited as part of transitive deps -->
+            <dependency>
+              <groupId>javax.servlet</groupId>
+              <artifactId>servlet-api</artifactId>
+              <version>2.4</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <!-- Right phase is prepare-package, but it is only in maven-2.1
+              <phase>prepare-package</phase>-->
+              <phase>package</phase>
+              <goals>
+                <goal>import</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- Step 4: Zip the generated database (for embedded databases only) -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <configuration>
+            <descriptors>
+              <descriptor>${basedir}/src/assemble/database.xml</descriptor>
+            </descriptors>
+          </configuration>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>single</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+          <plugin>
+            <artifactId>maven-remote-resources-plugin</artifactId>
+            <version>1.2.1</version>
+            <executions>
+              <execution>
+                <id>xwiki-platform-tool-configuration-resources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>process</goal>
+                </goals>
+                <configuration>
+                  <resourceBundles>
+                    <resourceBundle>org.xwiki.platform:xwiki-platform-tool-configuration-resources:3.3</resourceBundle>
+                  </resourceBundles>
+                  <properties>
+                    <xwikiDbConnectionUrl>jdbc:hsqldb:file:${project.build.directory}/database/xwiki_db;shutdown=true</xwikiDbConnectionUrl>
+                    <xwikiDbConnectionUsername>sa</xwikiDbConnectionUsername>
+                    <xwikiDbConnectionPassword />
+                    <xwikiDbConnectionDriverClass>org.hsqldb.jdbcDriver</xwikiDbConnectionDriverClass>
+                    <xwikiDbDialect>org.hibernate.dialect.HSQLDialect</xwikiDbDialect>
+                    <xwikiDbHbmXwiki>xwiki.hbm.xml</xwikiDbHbmXwiki>
+                    <xwikiDbHbmFeeds>feeds.hbm.xml</xwikiDbHbmFeeds>
+                    <xwikiDbHbmCommonExtraMappings />
+                    <xwikiCfgPlugins>\
+  com.xpn.xwiki.monitor.api.MonitorPlugin,\
+  com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.JsSkinFileExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssSkinFileExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.LinkExtensionPlugin,\
+  com.xpn.xwiki.plugin.feed.FeedPlugin,\
+  com.xpn.xwiki.plugin.ldap.LDAPPlugin,\
+  com.xpn.xwiki.plugin.google.GooglePlugin,\
+  com.xpn.xwiki.plugin.mail.MailPlugin,\
+  com.xpn.xwiki.plugin.packaging.PackagePlugin,\
+  com.xpn.xwiki.plugin.query.QueryPlugin,\
+  com.xpn.xwiki.plugin.svg.SVGPlugin,\
+  com.xpn.xwiki.plugin.charts.ChartingPlugin,\
+  com.xpn.xwiki.plugin.fileupload.FileUploadPlugin,\
+  com.xpn.xwiki.plugin.image.ImagePlugin,\
+  com.xpn.xwiki.plugin.userdirectory.UserDirectoryPlugin,\
+  com.xpn.xwiki.plugin.usertools.XWikiUserManagementToolsImpl,\
+  com.xpn.xwiki.plugin.zipexplorer.ZipExplorerPlugin,\
+  com.xpn.xwiki.plugin.autotag.AutoTagPlugin,\
+  com.xpn.xwiki.plugin.lucene.LucenePlugin,\
+  com.xpn.xwiki.plugin.diff.DiffPlugin,\
+  com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin,\
+  com.xpn.xwiki.plugin.jodatime.JodaTimePlugin,\
+  com.xpn.xwiki.plugin.scheduler.SchedulerPlugin,\
+  com.xpn.xwiki.plugin.mailsender.MailSenderPlugin,\
+  com.xpn.xwiki.plugin.activitystream.plugin.ActivityStreamPlugin, \
+  com.xpn.xwiki.plugin.watchlist.WatchListPlugin, \
+  com.xpn.xwiki.plugin.tag.TagPlugin</xwikiCfgPlugins>
+                    <xwikiCfgVirtual>0</xwikiCfgVirtual>
+                    <xwikiCfgVirtualUsepath>${xwiki.cfg.virtual.usepath}</xwikiCfgVirtualUsepath>
+                    <xwikiCfgEditCommentMandatory>0</xwikiCfgEditCommentMandatory>
+                    <xwikiCfgDefaultSkin>colibri</xwikiCfgDefaultSkin>
+                    <xwikiCfgDefaultBaseSkin>colibri</xwikiCfgDefaultBaseSkin>
+                    <xwikiCfgEncoding>UTF-8</xwikiCfgEncoding>
+                    <xwikiCfgAdditionalProperties>xwiki.work.dir=data</xwikiCfgAdditionalProperties>
+                    <xwikiPropertiesContainerPersistentDirectory>data</xwikiPropertiesContainerPersistentDirectory>
+                  </properties>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <!-- Step 1: Copy and filter the Hibernate config file which will be used by the packager
+           plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>xwiki-platform-tool-configuration-resources</id>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Step 2: Expand the XAR file -->
+      <plugin>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
+      </plugin>
+      <!-- Step 3: Import the XAR content into the Database -->
+      <plugin>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
+      </plugin>
+      <!-- Step 4: Zip the generated database -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

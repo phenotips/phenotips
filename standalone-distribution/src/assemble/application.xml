@@ -37,6 +37,11 @@
       </includes>
       <outputDirectory>/</outputDirectory>
       <unpack>true</unpack>
+      <unpackOptions>
+        <excludes>
+          <exclude>jetty/contexts/xwiki.xml</exclude>
+        </excludes>
+      </unpackOptions>
     </dependencySet>
   </dependencySets>
 </assembly>

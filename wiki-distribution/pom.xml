@@ -6,18 +6,11 @@
     <artifactId>medical-ontology-terms</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>medical-ontology-terms-distribution</artifactId>
+  <artifactId>medical-ontology-terms-distribution-xwiki</artifactId>
   <name>Medical Ontology Terms - Distribution</name>
   <packaging>pom</packaging>
-  <description>Distribution including a Jetty server, Solr, and the suggestion UI</description>
+  <description>Distribution including a Jetty server, Solr, and an UI based on XWiki</description>
   <dependencies>
-    <dependency>
-      <groupId>edu.toronto.cs</groupId>
-      <artifactId>medical-ontology-terms-hpo-search</artifactId>
-      <version>${project.version}</version>
-      <type>war</type>
-      <optional>true</optional>
-    </dependency>
     <dependency>
       <groupId>org.apache.solr</groupId>
       <artifactId>solr</artifactId>
@@ -26,8 +19,36 @@
       <optional>true</optional>
     </dependency>
     <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.8.0.7</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.enterprise</groupId>
+      <artifactId>xwiki-enterprise-web</artifactId>
+      <version>3.3</version>
+      <type>war</type>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>edu.toronto.cs</groupId>
       <artifactId>medical-ontology-terms-configuration</artifactId>
+      <version>${project.version}</version>
+      <type>jar</type>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>edu.toronto.cs</groupId>
+      <artifactId>phenotype-database-zip</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <classifier>distribution</classifier>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>edu.toronto.cs</groupId>
+      <artifactId>solr-access-service</artifactId>
       <version>${project.version}</version>
       <type>jar</type>
       <optional>true</optional>

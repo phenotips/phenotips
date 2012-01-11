@@ -7,10 +7,16 @@
   <version>1.0-SNAPSHOT</version>
   <name>Medical Ontology Terms</name>
   <modules>
-    <module>hpo-search</module>
     <module>solr-config</module>
     <module>jetty-resources</module>
-    <module>distribution</module>
-    <module>xwiki-ui</module>
+
+    <module>standalone-ui</module>
+    <module>standalone-distribution</module>
+
+    <module>obo2solr</module>
+    <module>solr-access-service</module>
+    <module>wiki-ui</module>
+    <module>wiki-database</module>
+    <module>wiki-distribution</module>
   </modules>
 </project>

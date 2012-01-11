@@ -1,4 +1,5 @@
 package edu.toronto.cs.cidb.solr;
+
 /*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,31 +19,46 @@ package edu.toronto.cs.cidb.solr;
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.MapSolrParams;
 import org.apache.solr.common.params.SolrParams;
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.script.service.ScriptService;
+
+import edu.toronto.cs.cidb.obo2solr.ParameterPreparer;
+import edu.toronto.cs.cidb.obo2solr.SolrUpdateGenerator;
+import edu.toronto.cs.cidb.obo2solr.TermData;
 
 @Component
 @Named("solr")
 @Singleton
 public class SolrScriptService implements ScriptService, Initializable
 {
+    @Inject
+    private Logger logger;
+
     private SolrServer server;
 
     protected static final String FIELD_VALUE_SEPARATOR = ":";
@@ -148,5 +164,51 @@ public class SolrScriptService implements ScriptService, Initializable
             return all.get(0);
         }
         return null;
+    }
+
+    public int clear()
+    {
+        try {
+            UpdateResponse r = this.server.deleteByQuery("*:*");
+            this.server.commit();
+            return 0;
+        } catch (SolrServerException ex) {
+            this.logger.error("Exception while clearing the Solr index", ex);
+        } catch (IOException ex) {
+            this.logger.error("Exception while clearing the Solr index", ex);
+        }
+        return 1;
+    }
+
+    public int index(String ontologyUrl, String fieldList) throws MalformedURLException
+    {
+        ParameterPreparer paramPrep = new ParameterPreparer();
+        SolrUpdateGenerator generator = new SolrUpdateGenerator();
+        Map<String, Double> fieldSelection = paramPrep.getFieldSelection(fieldList);
+        Map<String, TermData> data = generator.transform(new URL(ontologyUrl), fieldSelection);
+        Collection<SolrInputDocument> allTerms = new HashSet<SolrInputDocument>();
+        for (Map.Entry<String, TermData> item : data.entrySet()) {
+            SolrInputDocument doc = new SolrInputDocument();
+            for (Map.Entry<String, Collection<String>> property : item.getValue().entrySet()) {
+                String name = property.getKey();
+                for (String value : property.getValue()) {
+                    doc.addField(name, value, (fieldSelection.get(name) == null ? ParameterPreparer.DEFAULT_BOOST
+                        : fieldSelection.get(name)).floatValue());
+                }
+            }
+            allTerms.add(doc);
+        }
+        try {
+            this.server.add(allTerms);
+            this.server.commit();
+            return 0;
+        } catch (SolrServerException ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
+        return 1;
     }
 }
