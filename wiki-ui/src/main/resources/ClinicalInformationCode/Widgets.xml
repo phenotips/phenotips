@@ -545,6 +545,11 @@
             } else {
               var sectionContents = null;
               Element.select(results[i], selector).each(function(item) {
+                var text = item.firstChild &amp;&amp; item.firstChild.nodeValue || '';
+                if (typeof (processingFunction) == "function") {
+                  text = processingFunction(text);
+                }
+                if (text == '') {return;}
                 if (!sectionContents) {
                   var trigger = new Element("a", {'class' : 'expand-tool'}).update(_getExpandCollapseTriggerSymbol(sOptions.collapsed));
                   info.insert({"bottom" : new Element("dt", {'class' : sectionState}).insert({'top' : trigger}).insert({'bottom' : section})});
@@ -555,10 +560,6 @@
                     trigger.up().toggleClassName('collapsed');
                     trigger.update(_getExpandCollapseTriggerSymbol(trigger.up().hasClassName('collapsed')));
                   }.bindAsEventListener(this));
-                }
-                var text = item.firstChild.nodeValue;
-                if (typeof (processingFunction) == "function") {
-                  text = processingFunction(text);
                 }
                 sectionContents.insert({"bottom" : new Element("div").update(text)});
               });
@@ -574,7 +575,7 @@
             });
           }
           if (!this.options.resultCategory || !category.hasChildNodes()) {
-            category = this.options.resultCategory + ' ' + Element.select(results[i], this.options.resultCategory);
+            category = '';
           }
           aSuggestions.push({
             'id'      : Element.down(results[i], this.options.resultId).firstChild.nodeValue,

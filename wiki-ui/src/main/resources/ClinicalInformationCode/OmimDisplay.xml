@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>ClinicalInformationCode</web>
+<name>OmimDisplay</name>
+<language></language>
+<defaultLanguage>en</defaultLanguage>
+<translation>0</translation>
+<parent></parent>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+<creationDate>1326345382000</creationDate>
+<date>1326392781000</date>
+<contentUpdateDate>1326392781000</contentUpdateDate>
+<version>1.1</version>
+<title>OmimDisplay</title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>false</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>false</hidden>
+<content>{{velocity}}
+#if (!$value)
+  #set($value=[])
+#end 
+#set ($names = $!services.omim.getNames($value))
+#if ($xcontext.action == 'edit')
+  {{html wiki=false clean=false}}
+  &lt;div class="custom-display-data"&gt;
+  #foreach ($val in $value)
+    &lt;label for="${prefix}${name}_${val}"&gt;
+      &lt;input type="checkbox" checked="checked" name="${prefix}${name}" id="${prefix}${name}_${val}" value="${val}"/&gt;
+      $names.get($val)
+    &lt;/label&gt;
+  #end
+  &lt;/div&gt;
+  &lt;input type="text" name="${prefix}${name}" id="${prefix}${name}" value="" class="suggested suggest-omim multi generateShortList"/&gt;
+  {{/html}}
+#else
+  #foreach ($val in $value)
+    (%%)((([$val] $!names.get($val))))
+  #end
+#end
+{{/velocity}}</content></xwikidoc>

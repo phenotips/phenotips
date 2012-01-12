@@ -552,7 +552,7 @@ input[name=action_save] {
   background-image: url("#__img('check-s')");
 }
 input[name=action_cancel] {
-  background-image: url("#__img('back-s')");
+  background-image: url("#__img('delete-s')");
 }
 
 .add-data-button,
@@ -622,13 +622,13 @@ input[name=action_cancel] {
   display: none;
 }
 #tmActionDelete, #patients.xwiki-livetable .actiondelete, .action.delete {
-    background-image: url("#__img('delete-s')");
+    background-image: url("#__img('no-s')");
 }
 #tmActionsave {
     background-image: url("#__img('check-s')");
 }
 #tmActioncancel {
-    background-image: url("#__img('back-s')");
+    background-image: url("#__img('delete-s')");
 }
 #tmToC, #tmHideToC, #patients.xwiki-livetable .actionview {
     background-image: url("#__img('toc-s')");
@@ -676,7 +676,8 @@ input[name=action_cancel] {
 }
 h1:target, h2:target, h3:target {
   background-color: $theme.highlightColor;
-}</code>
+}
+#globallinks {display: none;}</code>
 </property>
 <property>
 <name></name>

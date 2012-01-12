@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xwikidoc>
-<web>ClinicalInformationCode</web>
-<name>FPatientTemplate</name>
+<web>SKClinicalInformation</web>
+<name>SampleForm</name>
 <language></language>
 <defaultLanguage>en</defaultLanguage>
 <translation>0</translation>
-<parent>FClinicalInformation.WebHome</parent>
+<parent>SKClinicalInformation.WebHome</parent>
 <creator>xwiki:XWiki.Admin</creator>
 <author>xwiki:XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-<creationDate>1323761145000</creationDate>
-<date>1324150950000</date>
-<contentUpdateDate>1324150950000</contentUpdateDate>
+<creationDate>1326395227000</creationDate>
+<date>1326395416000</date>
+<contentUpdateDate>1326395416000</contentUpdateDate>
 <version>1.1</version>
-<title>PatientClass Template</title>
+<title>SK0000004</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
@@ -88,10 +88,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>0</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>1e718e4b-4526-4c23-acc2-efb35d7b38d2</guid>
+<guid>f8744695-b56d-462e-b11b-51f82b428318</guid>
 <property>
 <category_id>bcd</category_id>
 </property>
@@ -168,10 +168,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>1</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>1796e40c-54f2-4a51-abda-555d91a1772d</guid>
+<guid>0f035857-14a4-41e6-a90e-23fa9f6633ce</guid>
 <property>
 <category_id>ne</category_id>
 </property>
@@ -248,10 +248,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>2</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>76ca9d31-a981-4eef-a338-d69707e04870</guid>
+<guid>0ba916d0-c50a-4847-9178-52122b7f175e</guid>
 <property>
 <category_id>gp</category_id>
 </property>
@@ -328,10 +328,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>3</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>56725afd-a0d2-4a50-9f00-008e9676df38</guid>
+<guid>b18b45c8-bb56-4558-8bf8-3172a7641dcf</guid>
 <property>
 <category_id>ca</category_id>
 </property>
@@ -408,10 +408,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>4</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>7c524147-d49c-4255-846c-e534fa3af97a</guid>
+<guid>dfb9062a-8fd9-448d-8151-6129f932a2e5</guid>
 <property>
 <category_id>cf</category_id>
 </property>
@@ -488,10 +488,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>5</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>d6e4cbdf-8ed4-4f9f-ad22-def05322711a</guid>
+<guid>a6119bfe-a0bf-4cc3-8b25-75617d2511e3</guid>
 <property>
 <category_id>ey</category_id>
 </property>
@@ -568,10 +568,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>6</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>3b195961-4954-486e-9e39-c9627e170fa0</guid>
+<guid>d4a2fc86-8fe6-4351-a209-dbdae1fd56a1</guid>
 <property>
 <category_id>ea</category_id>
 </property>
@@ -648,10 +648,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>7</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>91882c9e-ed52-448f-8aeb-fafd56cc18d5</guid>
+<guid>1c2e79dd-cc3c-4ee3-893c-e9c4d092d5cb</guid>
 <property>
 <category_id>cu</category_id>
 </property>
@@ -728,10 +728,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>8</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>8a098ee7-75a7-4082-a84c-d7539616b0eb</guid>
+<guid>a66d59b3-39aa-478e-a246-2d4fd97b5e7d</guid>
 <property>
 <category_id>re</category_id>
 </property>
@@ -808,10 +808,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>9</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>8acac74f-8cd6-48a4-85be-d02ad097cfc7</guid>
+<guid>b30ffc46-ab94-4b32-98ca-5b964848e3e1</guid>
 <property>
 <category_id>ms</category_id>
 </property>
@@ -888,10 +888,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>10</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>c9766b08-658d-42e1-9579-fc39ccca7bd6</guid>
+<guid>4ea078a4-a95a-4a10-9b7e-79162b41a20b</guid>
 <property>
 <category_id>gi</category_id>
 </property>
@@ -968,10 +968,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>11</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>21b3c2c4-8e1b-46b9-8f74-9314559124bb</guid>
+<guid>84bb9142-0d4f-4ea7-8693-854b38ecd24d</guid>
 <property>
 <category_id>gu</category_id>
 </property>
@@ -1048,10 +1048,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>12</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>7add53ef-1c08-4a69-8c01-1bc3a7403e0a</guid>
+<guid>1b877bfd-0468-4577-90d0-57877386bde2</guid>
 <property>
 <category_id>pre</category_id>
 </property>
@@ -1128,10 +1128,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </values>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>13</number>
 <className>ClinicalInformationCode.CategoryMappingClass</className>
-<guid>eaf71ba8-1504-4544-a3d3-239b045f96a3</guid>
+<guid>adf8ad95-1743-4b0a-bd4e-35b0163fd3f1</guid>
 <property>
 <category_id>oth</category_id>
 </property>
@@ -1144,7 +1144,7 @@
 </object>
 <object>
 <class>
-<name>ClinicalInformationCode.FPatientClass</name>
+<name>ClinicalInformationCode.SKPatientClass</name>
 <customClass></customClass>
 <customMapping></customMapping>
 <defaultViewSheet></defaultViewSheet>
@@ -1152,38 +1152,12 @@
 <defaultWeb></defaultWeb>
 <nameField></nameField>
 <validationScript></validationScript>
-<age_of_onset_months>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>age_of_onset_months</name>
-<number>6</number>
-<numberType>long</numberType>
-<prettyName>Months</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</age_of_onset_months>
-<age_of_onset_years>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>age_of_onset_years</name>
-<number>5</number>
-<numberType>long</numberType>
-<prettyName>Years</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</age_of_onset_years>
 <comments>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <editor>---</editor>
 <name>comments</name>
-<number>13</number>
+<number>12</number>
 <picker>0</picker>
 <prettyName>Additional comments</prettyName>
 <rows>5</rows>
@@ -1193,26 +1167,27 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
 </comments>
-<congenital>
+<date_of_birth>
 <customDisplay></customDisplay>
-<defaultValue></defaultValue>
+<dateFormat>MM/dd/yyyy</dateFormat>
 <disabled>0</disabled>
-<displayFormType>checkbox</displayFormType>
-<displayType></displayType>
-<name>congenital</name>
+<emptyIsToday>1</emptyIsToday>
+<name>date_of_birth</name>
 <number>4</number>
-<prettyName>Congenital</prettyName>
+<picker>1</picker>
+<prettyName>Date of birth</prettyName>
+<size>20</size>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</congenital>
+<classType>com.xpn.xwiki.objects.classes.DateClass</classType>
+</date_of_birth>
 <family_comments>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <editor>---</editor>
 <name>family_comments</name>
-<number>14</number>
+<number>13</number>
 <picker>0</picker>
 <prettyName>List health conditions found in family (describe the relationship with proband)</prettyName>
 <rows>5</rows>
@@ -1224,12 +1199,12 @@
 </family_comments>
 <family_history>
 <cache>0</cache>
-<customDisplay>{{include document="ClinicalInformationCode.FPhenotypeDisplay" /}}</customDisplay>
+<customDisplay>{{include document="ClinicalInformationCode.SKPhenotypeDisplay" /}}</customDisplay>
 <disabled>0</disabled>
 <displayType>select</displayType>
 <multiSelect>0</multiSelect>
 <name>family_history</name>
-<number>12</number>
+<number>11</number>
 <picker>0</picker>
 <prettyName>Family History</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -1243,6 +1218,19 @@
 <values></values>
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </family_history>
+<first_name>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>first_name</name>
+<number>3</number>
+<picker>0</picker>
+<prettyName>First name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</first_name>
 <gender>
 <cache>0</cache>
 <customDisplay></customDisplay>
@@ -1250,9 +1238,9 @@
 <displayType>radio</displayType>
 <multiSelect>0</multiSelect>
 <name>gender</name>
-<number>3</number>
+<number>5</number>
 <picker>0</picker>
-<prettyName>Sex</prettyName>
+<prettyName>Gender</prettyName>
 <relationalStorage>0</relationalStorage>
 <separator> </separator>
 <separators> ,|</separators>
@@ -1264,6 +1252,19 @@
 <values>M=Male|F=Female</values>
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </gender>
+<health_card>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>health_card</name>
+<number>6</number>
+<picker>0</picker>
+<prettyName>Provincial Health Card #</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</health_card>
 <identifier>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -1277,53 +1278,29 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </identifier>
-<omim_id>
-<cache>0</cache>
-<classname></classname>
-<customDisplay>{{include document="ClinicalInformationCode.OmimDisplay" /}}</customDisplay>
-<disabled>0</disabled>
-<displayType>input</displayType>
-<idField></idField>
-<multiSelect>1</multiSelect>
-<name>omim_id</name>
-<number>8</number>
-<picker>0</picker>
-<prettyName>OMIM number</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators></separators>
-<size>1</size>
-<sort>none</sort>
-<sql></sql>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<valueField></valueField>
-<classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-</omim_id>
-<p_id>
+<last_name>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
-<name>p_id</name>
+<name>last_name</name>
 <number>2</number>
 <picker>0</picker>
-<prettyName>Patient identifier</prettyName>
+<prettyName>Last name</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</p_id>
+</last_name>
 <phenotype>
 <cache>0</cache>
 <classname></classname>
-<customDisplay>{{include document="ClinicalInformationCode.FPhenotypeDisplay" /}}
+<customDisplay>{{include document="ClinicalInformationCode.SKPhenotypeDisplay" /}}
 </customDisplay><disabled>0</disabled>
 <displayType>select</displayType>
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>phenotype</name>
-<number>10</number>
+<number>9</number>
 <picker>0</picker>
 <prettyName>Phenotypic description (Clinical symptoms)</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -1341,13 +1318,13 @@
 <prenatal_phenotype>
 <cache>0</cache>
 <classname></classname>
-<customDisplay>{{include document="ClinicalInformationCode.FPhenotypeDisplay" /}}</customDisplay>
+<customDisplay>{{include document="ClinicalInformationCode.SKPhenotypeDisplay" /}}</customDisplay>
 <disabled>0</disabled>
 <displayType>select</displayType>
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>prenatal_phenotype</name>
-<number>11</number>
+<number>10</number>
 <picker>0</picker>
 <prettyName>Prenatal and Perinatal History</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -1385,14 +1362,14 @@
 </relative>
 <relative_of>
 <cache>0</cache>
-<classname>ClinicalInformationCode.FPatientClass</classname>
+<classname>ClinicalInformationCode.PatientClass</classname>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <displayType>input</displayType>
 <idField></idField>
 <multiSelect>0</multiSelect>
 <name>relative_of</name>
-<number>9</number>
+<number>8</number>
 <picker>1</picker>
 <prettyName>relative_of</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -1408,21 +1385,15 @@
 <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
 </relative_of>
 </class>
-<name>ClinicalInformationCode.FPatientTemplate</name>
+<name>SKClinicalInformation.SampleForm</name>
 <number>0</number>
-<className>ClinicalInformationCode.FPatientClass</className>
-<guid>042f17ad-1689-4512-bf2c-be07f7172765</guid>
-<property>
-<age_of_onset_months></age_of_onset_months>
-</property>
-<property>
-<age_of_onset_years></age_of_onset_years>
-</property>
+<className>ClinicalInformationCode.SKPatientClass</className>
+<guid>f558aad4-b8e6-441c-93da-4d5b2274e572</guid>
 <property>
 <comments></comments>
 </property>
 <property>
-<congenital>0</congenital>
+<date_of_birth>2012-01-12 00:00:00.0</date_of_birth>
 </property>
 <property>
 <family_comments></family_comments>
@@ -1431,18 +1402,19 @@
 <family_history></family_history>
 </property>
 <property>
+<first_name></first_name>
+</property>
+<property>
 <gender></gender>
 </property>
 <property>
-<identifier></identifier>
+<health_card></health_card>
 </property>
 <property>
-<omim_id>
-<value></value>
-</omim_id>
+<identifier>-1</identifier>
 </property>
 <property>
-<p_id></p_id>
+<last_name></last_name>
 </property>
 <property>
 <phenotype/>

@@ -186,6 +186,155 @@ B/tPD/z92/5t//b/9fb/ADnOn+Sf4LkzAAAAAElFTkSuQmCC
 </content></attachment>
 <object>
 <class>
+<name>ClinicalInformationCode.DBConfigurationClass</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<idField>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>idField</name>
+<number>3</number>
+<picker>0</picker>
+<prettyName>Identifier field</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</idField>
+<idPrefix>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>idPrefix</name>
+<number>5</number>
+<picker>0</picker>
+<prettyName>Identifier prefix</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</idPrefix>
+<livetableColumns>
+<cache>0</cache>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<displayType>input</displayType>
+<multiSelect>1</multiSelect>
+<name>livetableColumns</name>
+<number>4</number>
+<picker>0</picker>
+<prettyName>Livetable columns</prettyName>
+<relationalStorage>1</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>40</size>
+<sort>none</sort>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<values></values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</livetableColumns>
+<patientClass>
+<cache>0</cache>
+<classname></classname>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<displayType>input</displayType>
+<idField></idField>
+<multiSelect>0</multiSelect>
+<name>patientClass</name>
+<number>1</number>
+<picker>1</picker>
+<prettyName>Patient class</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators></separators>
+<size>1</size>
+<sort>none</sort>
+<sql></sql>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<valueField></valueField>
+<classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+</patientClass>
+<patientTemplate>
+<cache>0</cache>
+<classname></classname>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<displayType>input</displayType>
+<idField>doc.fullName</idField>
+<multiSelect>0</multiSelect>
+<name>patientTemplate</name>
+<number>2</number>
+<picker>1</picker>
+<prettyName>patientTemplate</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators></separators>
+<size>30</size>
+<sort>none</sort>
+<sql></sql>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<valueField></valueField>
+<classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+</patientTemplate>
+<variants>
+<customDisplay></customDisplay>
+<defaultValue></defaultValue>
+<disabled>0</disabled>
+<displayFormType>checkbox</displayFormType>
+<displayType></displayType>
+<name>variants</name>
+<number>6</number>
+<prettyName>Show variants</prettyName>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</variants>
+</class>
+<name>SKClinicalInformation.WebHome</name>
+<number>0</number>
+<className>ClinicalInformationCode.DBConfigurationClass</className>
+<guid>2be9c1d9-9963-49e6-89b5-f90282b34377</guid>
+<property>
+<idField>identifier</idField>
+</property>
+<property>
+<idPrefix>SK</idPrefix>
+</property>
+<property>
+<livetableColumns>
+<value>doc.name</value>
+<value>last_name</value>
+<value>first_name</value>
+<value>gender</value>
+<value>relative_of</value>
+</livetableColumns>
+</property>
+<property>
+<patientClass>ClinicalInformationCode.SKPatientClass</patientClass>
+</property>
+<property>
+<patientTemplate>ClinicalInformationCode.SKPatientTemplate</patientTemplate>
+</property>
+<property>
+<variants>1</variants>
+</property>
+</object>
+<object>
+<class>
 <name>XWiki.ConfigurableClass</name>
 <customClass></customClass>
 <customMapping></customMapping>
@@ -554,27 +703,4 @@ B/tPD/z92/5t//b/9fb/ADnOn+Sf4LkzAAAAAElFTkSuQmCC
 <use>currentPage</use>
 </property>
 </object>
-<content>{{velocity}}
-#if($hasEdit)
-  {{html clean="false" wiki="false"}}&lt;form action="$xwiki.getURL('ClinicalInformationCode.CreatePatientRecord', 'view', 'doCreate=1')" method="post"&gt;&lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;&lt;input type="submit" class="button" id="create-patient-record" title="Add new patient record" value="Add new patient record"/&gt;&lt;/form&gt;{{/html}}
-#end
-
-#set($columns = [ "doc.name" , "last_name", "first_name", "health_card", "relative_of", "_actions" ])
-#set($columnsProperties = {
-      "doc.name" : { "type" : "text", "link" : "view", "size" : 7, "filterable" : true, "sortable": true  },
-      "last_name" : { "type" : "text", "link" : "view", "size" : 10, "filterable" : true, "sortable": true  },
-      "first_name" : { "type" : "text", "link" : "view", "size" : 10, "filterable" : true, "sortable": true  }, 
-      "health_card" : { "type" : "text", "link" : "view", "size" : 10, "filterable" : true, "sortable": true  },
-      "relative_of" : { "type" : "text", "link" : "view", "size" : 7, "filterable" : true, "sortable": true  },
-      "_actions" : {"actions": ["edit", "delete"]}
-})
-#set($options = {
-"className":"ClinicalInformationCode.SKPatientClass",  
-"translationPrefix" : "patient.livetable.",  
-"rowCount": 15,  
-"maxPages" : 10, 
-"defaultOrder" : "asc"
-})
-#livetable("patients" $columns $columnsProperties $options)
-
-{{/velocity}}</content></xwikidoc>
+<content>{{include document="ClinicalInformationCode.DBWebHomeSheet" /}}</content></xwikidoc>

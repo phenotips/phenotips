@@ -867,7 +867,7 @@ document.observe('dom:loaded', function() {
     // go : namespace:
     var suggestionsMapping = {
         "hpo" : {
-            script: "/solr/select?start=0&amp;rows=15&amp;",
+            script: "$xwiki.getURL('ClinicalInformationCode.SolrService', 'get')?",
             queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
                            'name' : { 'stub': true, 'boost': 50 },
                            'synonym' : { 'stub': true, 'boost': 50 },
@@ -908,10 +908,35 @@ document.observe('dom:loaded', function() {
             fadeOnClear : false,
             timeout : 30000,
             parentContainer : null
+        },
+        "omim" : {
+            script: "$xwiki.getURL('ClinicalInformationCode.OmimService', 'get')?",
+            varname: "q",
+            noresults: "No matching terms",
+            json: false,
+            resultsParameter : "DocSum",
+            resultId : "Id",
+            resultValue : "Item[Name=Title]",
+            resultInfo : {
+                           "Synonyms"   : {"selector"  : "Item[Name=AltTitles]"},
+                           "Locus"          : {"selector"  : "Item[Name=Locus]"}
+                         },
+            enableHierarchy: false,
+            fadeOnClear : false,
+            timeout : 30000,
+            parentContainer : null
         }
     };
     var pickerSpecialClassOptions = {
       'defaultPicker' : {},
+      'generateShortList' : {
+                  'showKey' : true,
+                  'showTooltip' : false,
+                  'showDeleteTool' : true,
+                  'enableSort' : false,
+                  'showClearTool' : false,
+                  'inputType': 'checkbox'
+                },
       'generateCheckboxes' : {
                   'showKey' : false,
                   'showTooltip' : false,
@@ -935,6 +960,9 @@ document.observe('dom:loaded', function() {
                   'onItemAdded' : enableHighlightChecked
                 }
     }
+    // -----------------------------------------------------------------
+    // Create and attach the suggests
+    // -----------------------------------------------------------------
     if (typeof(MS.widgets.Suggest) != "undefined") {
       var keys = Object.keys(suggestionsMapping);
       var specialClasses = Object.keys(pickerSpecialClassOptions);
@@ -1044,7 +1072,7 @@ document.observe('dom:loaded', function() {
 <name>Term suggest</name>
 </property>
 <property>
-<parse></parse>
+<parse>1</parse>
 </property>
 <property>
 <use>currentPage</use>

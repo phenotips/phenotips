@@ -35,16 +35,9 @@
 #if ($context.action == 'edit')
   (% class="fieldset onset" %)(((
     (% class="half-width side" %)(((
-##      (% class="half-width" %)(((
         #__label('age_of_onset_years' "section group-title" 'Onset:')   (% style="margin: 0 1em" %)(%%)##
-##      )))
-##      (% class="half-width" %)(((
           $doc.display('congenital')##
           #__label('congenital' '' 'Congenital') ##
-##      )))## congenital
-##    )))## general label + congenital
-##    (% class="half-width" %)(((
-##      (% class="half-width" %)(((
         (% style="margin: 0 1em" %)or(%%) #__label('age_of_onset_years' 'section' 'Specify age:')
       )))## or specify age
       (% class="half-width" %)(((
@@ -57,7 +50,6 @@
           #__display('age_of_onset_months')
         )))## months
       )))## years and months
-##    )))## possible options
   )))## fieldset: age of onset zone
 #else
   (% class="fieldset onset" %)(((
@@ -70,7 +62,7 @@
       #__label('age_of_onset_years' "section group-title" $sectionLabel)
     )))
     (% class="half-width" %)(((
-    #if ($doc.display('congenital') == 'Yes') Congenital
+    #if ($doc.display('congenital') == 'Yes')Congenital
     #else
       #set ($years  = $doc.display('age_of_onset_years'))
       #set ($months = $doc.display('age_of_onset_months'))
@@ -102,7 +94,7 @@
   )))##fieldset
   (% class="clear" %)((()))
 #end
-#__displayIfNotEmpty2Col('omim_number' '' '' '')
+#__displayIfNotEmpty2Col('omim_id' '' '' '')
 )))##chapter
 
 (% class="clear" %)((()))

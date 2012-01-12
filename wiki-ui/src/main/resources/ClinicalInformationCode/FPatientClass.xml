@@ -156,19 +156,30 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </identifier>
-<omim_number>
-<customDisplay></customDisplay>
+<omim_id>
+<cache>0</cache>
+<classname></classname>
+<customDisplay>{{include document="ClinicalInformationCode.OmimDisplay" /}}</customDisplay>
 <disabled>0</disabled>
-<name>omim_number</name>
-<number>9</number>
+<displayType>input</displayType>
+<idField></idField>
+<multiSelect>1</multiSelect>
+<name>omim_id</name>
+<number>8</number>
 <picker>0</picker>
-<prettyName>OMIM Number</prettyName>
-<size>30</size>
+<prettyName>OMIM number</prettyName>
+<relationalStorage>1</relationalStorage>
+<separator> </separator>
+<separators></separators>
+<size>1</size>
+<sort>none</sort>
+<sql></sql>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</omim_number>
+<valueField></valueField>
+<classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+</omim_id>
 <p_id>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -260,7 +271,7 @@
 <idField></idField>
 <multiSelect>0</multiSelect>
 <name>relative_of</name>
-<number>8</number>
+<number>9</number>
 <picker>1</picker>
 <prettyName>relative_of</prettyName>
 <relationalStorage>0</relationalStorage>
