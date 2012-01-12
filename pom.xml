@@ -7,7 +7,7 @@
   <version>1.0-SNAPSHOT</version>
   <name>Phenotype Database - Parent POM</name>
   <modules>
-    <module>solr-config</module>
+    <module>solr-configuration</module>
     <module>jetty-resources</module>
 
     <module>standalone-ui</module>
