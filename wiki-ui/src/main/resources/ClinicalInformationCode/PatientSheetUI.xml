@@ -1650,6 +1650,17 @@ label.selected, label.subterm-selected {
   -webkit-border-radius: 2px;
   border-radius: 2px;
 }
+label.subterm-selected {
+  background-image: url("$xwiki.getSkinFile('icons/silk/shading.gif')");
+  background-position: 14px center;
+  background-repeat: no-repeat;
+}
+label.subterm-selected input[type="checkbox"] {
+  opacity: .2;
+}
+label.selected input[type="checkbox"] {
+  opacity: 1;
+}
 .wrongValue {
   color: $theme.notificationErrorColor !important;
   font-weight: bold;
