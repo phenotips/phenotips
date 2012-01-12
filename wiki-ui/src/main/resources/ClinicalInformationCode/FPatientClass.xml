@@ -167,7 +167,7 @@
 <name>omim_id</name>
 <number>8</number>
 <picker>0</picker>
-<prettyName>OMIM number</prettyName>
+<prettyName>OMIM disorder</prettyName>
 <relationalStorage>1</relationalStorage>
 <separator> </separator>
 <separators></separators>
