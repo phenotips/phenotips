@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>edu.toronto.cs</groupId>
-    <artifactId>medical-ontology-terms</artifactId>
+    <groupId>edu.toronto.cs.cidb</groupId>
+    <artifactId>phenotype-database</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>medical-ontology-terms-jetty-resources</artifactId>
-  <name>Medical Ontology Terms - Jetty Resources</name>
+  <artifactId>jetty-resources</artifactId>
+  <name>Phenotype Database - Jetty Resources</name>
   <packaging>pom</packaging>
   <description>Packages a Jetty installation</description>
   <properties>

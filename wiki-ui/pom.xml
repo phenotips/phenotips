@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>edu.toronto.cs</groupId>
-    <artifactId>medical-ontology-terms</artifactId>
+    <groupId>edu.toronto.cs.cidb</groupId>
+    <artifactId>phenotype-database</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotype-database-wiki</artifactId>
-  <name>Phenotype Database - XWiki-based interface</name>
+  <artifactId>wiki-ui</artifactId>
+  <name>Phenotype Database - Wiki-based interface</name>
   <packaging>xar</packaging>
   <dependencies>
     <dependency>

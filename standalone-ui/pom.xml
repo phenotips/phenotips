@@ -2,13 +2,13 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>edu.toronto.cs</groupId>
-    <artifactId>medical-ontology-terms</artifactId>
+    <groupId>edu.toronto.cs.cidb</groupId>
+    <artifactId>phenotype-database</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>medical-ontology-terms-hpo-search</artifactId>
+  <artifactId>standalone-ui</artifactId>
   <packaging>war</packaging>
-  <name>Medical Ontology Terms - Search UI</name>
+  <name>Phenotype Database - Simple Search UI</name>
   <build>
     <finalName>search</finalName>
   </build>

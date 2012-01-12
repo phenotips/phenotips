@@ -25,17 +25,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>edu.toronto.cs</groupId>
-    <artifactId>medical-ontology-terms</artifactId>
+    <groupId>edu.toronto.cs.cidb</groupId>
+    <artifactId>phenotype-database</artifactId>
     <version>1.0-SNAPSHOT</version>
-<!--    <groupId>org.xwiki.enterprise</groupId>
-    <artifactId>xwiki-enterprise-database</artifactId>
-    <version>3.3</version>-->
   </parent>
-  <artifactId>phenotype-database-zip</artifactId>
-  <name>Phenotype database</name>
+  <artifactId>database-zip</artifactId>
+  <name>Phenotype Database - HSQLDB Database for XWiki</name>
   <packaging>pom</packaging>
-  <description>ZIP packaging of the XWiki-based phenotype database interface, stored as a HSQLDB database dump.</description>
+  <description>ZIP packaging of the XWiki-based phenotype database interface, stored as an HSQLDB database dump.</description>
   <properties>
     <xwiki.db.connection.url>jdbc:hsqldb:file:${project.build.directory}/database/xwiki_db;shutdown=true</xwiki.db.connection.url>
     <commons.version>3.3</commons.version>
@@ -49,8 +46,8 @@
       <version>1.8.0.7</version>
     </dependency>
     <dependency>
-      <groupId>edu.toronto.cs</groupId>
-      <artifactId>phenotype-database-wiki</artifactId>
+      <groupId>edu.toronto.cs.cidb</groupId>
+      <artifactId>wiki-ui</artifactId>
       <version>1.0-SNAPSHOT</version>
       <type>xar</type>
       <scope>provided</scope>
@@ -67,8 +64,8 @@
           <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
           <version>${commons.version}</version>
           <configuration>
-            <groupId>edu.toronto.cs</groupId>
-            <artifactId>phenotype-database-wiki</artifactId>
+            <groupId>edu.toronto.cs.cidb</groupId>
+            <artifactId>wiki-ui</artifactId>
             <outputDirectory>${project.build.directory}/xar</outputDirectory>
           </configuration>
           <executions>

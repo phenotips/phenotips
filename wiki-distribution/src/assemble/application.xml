@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <assembly>
-  <id>distribution</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -25,10 +24,10 @@
     <!-- Add solr-access component and dependencies. -->
     <dependencySet>
       <includes>
-        <include>edu.toronto.cs:solr-access-service</include>
-        <include>edu.toronto.cs:omim-access-service</include>
+        <include>edu.toronto.cs.cidb:solr-access-service</include>
+        <include>edu.toronto.cs.cidb:omim-access-service</include>
         <include>org.apache.solr:solr-solrj</include>
-        <include>edu.toronto.cs:obo2solr</include>
+        <include>edu.toronto.cs.cidb:obo2solr</include>
       </includes>
       <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
       <unpack>false</unpack>
@@ -36,7 +35,7 @@
     <!-- Unpack the HSQLDB database files to package it in the distribution -->
     <dependencySet>
       <includes>
-        <include>edu.toronto.cs:phenotype-database-zip</include>
+        <include>edu.toronto.cs.cidb:database-zip</include>
       </includes>
       <outputDirectory>/database</outputDirectory>
       <unpack>true</unpack>
@@ -52,7 +51,7 @@
     <!-- Solr configuration. -->
     <dependencySet>
       <includes>
-        <include>edu.toronto.cs:medical-ontology-terms-configuration</include>
+        <include>edu.toronto.cs.cidb:solr-configuration</include>
       </includes>
       <outputDirectory>solrconfig/</outputDirectory>
       <unpack>true</unpack>
@@ -60,7 +59,7 @@
     <!-- Unpack Jetty files -->
     <dependencySet>
       <includes>
-        <include>edu.toronto.cs:medical-ontology-terms-jetty-resources</include>
+        <include>edu.toronto.cs.cidb:jetty-resources</include>
       </includes>
       <outputDirectory>/</outputDirectory>
       <unpack>true</unpack>
