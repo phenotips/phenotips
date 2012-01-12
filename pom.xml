@@ -15,6 +15,7 @@
 
     <module>obo2solr</module>
     <module>solr-access-service</module>
+    <module>omim-access-service</module>
     <module>wiki-ui</module>
     <module>wiki-database</module>
     <module>wiki-distribution</module>
