@@ -34,7 +34,7 @@ import javax.inject.Singleton;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
-import org.apache.solr.client.solrj.response.UpdateResponse;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
@@ -109,6 +109,9 @@ public class SolrScriptService implements ScriptService, Initializable
             result.put(CommonParams.ROWS, rows + "");
         }
         result.put(CommonParams.Q, query);
+        result.put("spellcheck", Boolean.toString(true));
+        result.put("spellcheck.collate", Boolean.toString(true));
+        result.put("spellcheck.onlyMorePopular", Boolean.toString(true));
         return result;
     }
 
@@ -120,6 +123,26 @@ public class SolrScriptService implements ScriptService, Initializable
         } catch (MalformedURLException ex) {
             // TODO Auto-generated catch block
         }
+    }
+
+    public SolrDocumentList search(final String queryParameters)
+    {
+        SolrParams params = new MapSolrParams(getSolrQuery(queryParameters, -1, 0));
+        try {
+            QueryResponse response = this.server.query(params);
+            SolrDocumentList results = response.getResults();
+            if (results.size() == 0 && !response.getSpellCheckResponse().isCorrectlySpelled()) {
+                params = new MapSolrParams(getSolrQuery(response.getSpellCheckResponse().getCollatedResult()
+                    .replaceAll("term_category:hip", "term_category:HP"), -1, 0));
+                return this.server.query(params).getResults();
+            } else {
+                return results;
+            }
+        } catch (SolrServerException ex) {
+            // TODO Auto-generated catch block
+            this.logger.error("Failed to search: {}", ex.getMessage(), ex);
+        }
+        return null;
     }
 
     public SolrDocumentList search(final Map<String, String> queryParameters)
@@ -136,9 +159,17 @@ public class SolrScriptService implements ScriptService, Initializable
     {
         SolrParams params = new MapSolrParams(getSolrQuery(queryParameters, rows, start));
         try {
-            return this.server.query(params).getResults();
+            QueryResponse response = this.server.query(params);
+            SolrDocumentList results = response.getResults();
+            if (results.size() == 0 && !response.getSpellCheckResponse().isCorrectlySpelled()) {
+                params = new MapSolrParams(getSolrQuery(response.getSpellCheckResponse().getCollatedResult()
+                    .replaceAll("term_category:hip", "term_category:HP"), rows, start));
+                return this.server.query(params).getResults();
+            } else {
+                return results;
+            }
         } catch (SolrServerException ex) {
-            // TODO Auto-generated catch block
+            this.logger.error("Failed to search: {}", ex.getMessage(), ex);
         }
         return null;
     }
@@ -169,7 +200,7 @@ public class SolrScriptService implements ScriptService, Initializable
     public int clear()
     {
         try {
-            UpdateResponse r = this.server.deleteByQuery("*:*");
+            this.server.deleteByQuery("*:*");
             this.server.commit();
             return 0;
         } catch (SolrServerException ex) {
