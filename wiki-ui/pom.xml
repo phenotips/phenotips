@@ -16,6 +16,13 @@
       <type>xar</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.enterprise</groupId>
+      <artifactId>xwiki-enterprise-ui</artifactId>
+      <version>3.3</version>
+      <type>xar</type>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <build>
     <pluginManagement>
@@ -36,5 +43,23 @@
         <version>3.3</version>
       </extension>
     </extensions>
+    <plugins>
+      <plugin>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <includes>
+            <include>**/Main/*.xml</include>
+            <include>**/XWiki/*.xml</include>
+            <include>**/*ClinicalInformation*/*.xml</include>
+            <include>**/ColorThemes/Soft Blue.xml</include>
+          </includes>
+          <excludes>
+            <exclude>**/Main/Welcome*.xml</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>
