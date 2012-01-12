@@ -55,6 +55,13 @@
     </dependency>
     <dependency>
       <groupId>edu.toronto.cs</groupId>
+      <artifactId>omim-access-service</artifactId>
+      <version>${project.version}</version>
+      <type>jar</type>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>edu.toronto.cs</groupId>
       <artifactId>medical-ontology-terms-jetty-resources</artifactId>
       <version>${project.version}</version>
       <type>zip</type>

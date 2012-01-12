@@ -26,6 +26,7 @@
     <dependencySet>
       <includes>
         <include>edu.toronto.cs:solr-access-service</include>
+        <include>edu.toronto.cs:omim-access-service</include>
         <include>org.apache.solr:solr-solrj</include>
         <include>edu.toronto.cs:obo2solr</include>
       </includes>
