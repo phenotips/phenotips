@@ -423,7 +423,7 @@ document.observe('dom:loaded', function() {
     // ------------------------------------------------------------------------
     // Dropdown behavior...
     document.observe('click', function (event) {
-       if (event.element() && !event.element().hasClassName('.dropdown')  && !event.element().up('.dropdown')) {
+       if (event.element() &amp;&amp; !event.element().hasClassName('.dropdown')  &amp;&amp; !event.element().up('.dropdown')) {
          $$('.dropdown').each(function(item) {
            item.previous('label').down('.expand-tool').click();
          });
