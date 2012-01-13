@@ -23,24 +23,23 @@
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
 <content>{{velocity}}
-#if (!$value)
-  #set($value=[])
+#if ($value)
+  #set ($names = $!services.omim.getNames($value))
 #end 
-#set ($names = $!services.omim.getNames($value))
 #if ($xcontext.action == 'edit')
   {{html wiki=false clean=false}}
   &lt;div class="custom-display-data"&gt;
   #foreach ($val in $value)
     &lt;label for="${prefix}${name}_${val}"&gt;
       &lt;input type="checkbox" checked="checked" name="${prefix}${name}" id="${prefix}${name}_${val}" value="${val}"/&gt;
-      $names.get($val)
+      $!names.get($val)
     &lt;/label&gt;
   #end
   &lt;/div&gt;
   &lt;input type="text" name="${prefix}${name}" id="${prefix}${name}" value="" class="suggested suggest-omim multi generateShortList"/&gt;
   &lt;input type="hidden" name="${prefix}${name}" value=""/&gt;
   {{/html}}
-#else
+#elseif ($value.size() &gt; 0 &amp;&amp; "${value.get(0)}" != '')
   #foreach ($val in $value)
     (%%)((([$val] $!names.get($val))))
   #end
