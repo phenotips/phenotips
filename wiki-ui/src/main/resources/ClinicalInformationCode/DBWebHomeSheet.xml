@@ -235,6 +235,11 @@
 <code>.viewbody #document-title,
 .viewbody #document-info {
   display: none;
+}
+#mainContentArea, #mainEditArea {
+  background: transparent;
+  box-shadow: none;
+  border: 0 none;
 }</code>
 </property>
 <property>
@@ -287,6 +292,8 @@ $xwiki.jsx.use('ClinicalInformationCode.DBWebHomeSheet')##
 "defaultOrder"      : "asc"
 })
 #livetable("patients" $columns $columnsProperties $options)
+
+$xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
 
 #else
 

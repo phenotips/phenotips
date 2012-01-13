@@ -1653,6 +1653,7 @@ input[type=text]:focus, textarea:focus {
 }
 label.selected, label.subterm-selected {
   background-color: $theme.backgroundSecondaryColor;
+  background-image: none;
   font-weight: bold;
   padding-left: 4px;
   margin-left: -4px;
@@ -2066,11 +2067,11 @@ input.wrongValue {
 )))
 
 #end
-$xwiki.ssx.use('ClinicalInformationCode.Skin')##
-$xwiki.ssx.use('ClinicalInformationCode.Widgets')##
-$xwiki.jsx.use('ClinicalInformationCode.Widgets', {'minify' : false})##
-$xwiki.ssx.use('ClinicalInformationCode.PatientSheetUI')##
-$xwiki.jsx.use('ClinicalInformationCode.PatientSheetUI', {'minify' : false})##
+$xwiki.ssx.use('ClinicalInformationCode.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.ssx.use('ClinicalInformationCode.Widgets', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('ClinicalInformationCode.Widgets')##
+$xwiki.ssx.use('ClinicalInformationCode.PatientSheetUI', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('ClinicalInformationCode.PatientSheetUI')##
 ##
 ##
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))

@@ -1249,7 +1249,7 @@ $content
 #if ("$!{request.xaction}" == 'lastatt')
 #__displayLastAttachmentSelected($targetDoc)
 #else
-  $xwiki.ssx.use($displayerName)##
+  $xwiki.ssx.use($displayerName, {'colorTheme' : "$xwiki.getSpacePreferenceFor('colorTheme', ${targetDoc.space})"})##
   $xwiki.jsx.use($displayerName, {'minify' : false})##
   ## check if the property exists and its value has the right type (is a list)
   #if ("$!{propValue.size()}" != '')

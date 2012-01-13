@@ -2124,8 +2124,6 @@ return MS;
       this.container = new MS.widgets.ModalPopup(this.loadingMessage, {}, {
         idPrefix : 'ontology-browser-window-',
         title : "Related terms",
-        titleColor: "#333",
-        borderColor: "#cedeee",
         backgroundColor: "#ffffff",
         verticalPosition : "top"
       });
@@ -2728,7 +2726,8 @@ return MS;
 <cache>long</cache>
 </property>
 <property>
-<code>.msdialog-modal-container {
+<code>#template('colorThemeInit.vm')
+.msdialog-modal-container {
   position: absolute;/*fixed;*/
   top: 0px;
   bottom: 0px;
@@ -2766,7 +2765,7 @@ return MS;
   -moz-border-radius: 8px;
   -webkit-border-radius: 8px;
   border-radius: 8px;
-  box-shadow: 0 0 6px #09f;
+  box-shadow: 0 0 6px $theme.linkColor;
 }
 .msdialog-box .content{
   margin: .8em;
@@ -2802,7 +2801,7 @@ return MS;
 <name>Modified Modal popup</name>
 </property>
 <property>
-<parse></parse>
+<parse>1</parse>
 </property>
 <property>
 <use>currentPage</use>
@@ -2888,7 +2887,8 @@ return MS;
 <cache>long</cache>
 </property>
 <property>
-<code>.xhover {
+<code>#template('colorThemeInit.vm')
+.xhover {
   background:red;
 }
 
@@ -2978,7 +2978,7 @@ ul.suggestList li:first-child{
   border-top: 0 none;
 }
 ul.suggestList .xhighlight {
-  background-color: #FFB;
+  background-color: $theme.highlightColor;
   cursor:pointer;
 }
 
@@ -2997,7 +2997,7 @@ div.suggestItemInfo {
 }
 
 .highlight {
-  background-color: #FFB;
+  background-color: $theme.highlightColor;
   color: #000;
   font-weight:bold;
   text-decoration: inherit;
@@ -3080,7 +3080,7 @@ div.resultContainer div.sourceContent.loading {
 <name>Modified suggest</name>
 </property>
 <property>
-<parse></parse>
+<parse>1</parse>
 </property>
 <property>
 <use>currentPage</use>
@@ -3166,7 +3166,8 @@ div.resultContainer div.sourceContent.loading {
 <cache>long</cache>
 </property>
 <property>
-<code>.accepted-suggestions {
+<code>#template('colorThemeInit.vm')
+.accepted-suggestions {
   margin: 0 0 1em !important;
   list-style-type: none;
   padding: 0;
@@ -3200,7 +3201,7 @@ div.resultContainer div.sourceContent.loading {
   display: block;
 }
 .accepted-suggestions li:hover {
-  background: #FFB;
+  background: #$theme.highlightColor;
 }
 .accepted-suggestions li:hover .delete-tool {
   position: absolute;
@@ -3237,7 +3238,7 @@ div.resultContainer div.sourceContent.loading {
 <name>Multi suggest</name>
 </property>
 <property>
-<parse></parse>
+<parse>1</parse>
 </property>
 <property>
 <use>currentPage</use>
@@ -3445,7 +3446,7 @@ div.resultContainer div.sourceContent.loading {
   background-color: #a00;
 }
 .ontology-tree .accepted &gt;.entry-data {
-  background-color: #cedeee;
+  background-color: $theme.backgroundSecondaryColor;
 }
 .ontology-tree .accepted &gt;.entry-data .info .value {
   /*color: #292;*/
@@ -3493,7 +3494,7 @@ div.resultContainer div.sourceContent.loading {
 }
 .expand-tool {
   display: inline-block;
-  color: #369;
+  color: $theme.linkColor;
   width: .8em;
   text-shadow: 0 0 5px #ccc;
   cursor: pointer;
@@ -3512,7 +3513,7 @@ div.resultContainer div.sourceContent.loading {
 <name>Ontology browser</name>
 </property>
 <property>
-<parse></parse>
+<parse>1</parse>
 </property>
 <property>
 <use>currentPage</use>

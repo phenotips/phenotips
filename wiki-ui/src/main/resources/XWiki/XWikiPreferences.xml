@@ -2584,7 +2584,8 @@ Your account on ${wikiname} has been successfully activated. You can now login a
 #if($doc.fullName != "XWiki.XWikiLogin")
 &lt;link rel="alternate" type="application/rss+xml" title="Wiki Feed RSS" href="$xwiki.getURL('Main.WebRss', 'view', 'xpage=rdf')" /&gt;
 &lt;link rel="alternate" type="application/rss+xml" title="Blog RSS Feed" href="$xwiki.getURL('Blog.GlobalBlogRss', 'view', 'xpage=plain')" /&gt;
-#end</meta>
+#end
+$xwiki.ssx.use($xwiki.getSpacePreference('colorTheme'))</meta>
 </property>
 <property>
 <minoredit>0</minoredit>

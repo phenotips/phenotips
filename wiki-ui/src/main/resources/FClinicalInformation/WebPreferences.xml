@@ -1125,7 +1125,7 @@
 <className>XWiki.XWikiPreferences</className>
 <guid>e9325249-720d-4911-9c3f-22e4fde0cc58</guid>
 <property>
-<colorTheme></colorTheme>
+<colorTheme>ColorThemes.Maple leaf</colorTheme>
 </property>
 <property>
 <leftPanels></leftPanels>
