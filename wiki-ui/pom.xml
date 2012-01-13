@@ -53,7 +53,7 @@
             <include>**/Main/*.xml</include>
             <include>**/XWiki/*.xml</include>
             <include>**/*ClinicalInformation*/*.xml</include>
-            <include>**/ColorThemes/Soft Blue.xml</include>
+            <include>**/ColorThemes/*.xml</include>
           </includes>
           <excludes>
             <exclude>**/Main/Welcome*.xml</exclude>
