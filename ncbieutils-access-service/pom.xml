@@ -30,9 +30,9 @@
     <version>3.3</version>
   </parent>
   <groupId>edu.toronto.cs.cidb</groupId>
-  <artifactId>omim-access-service</artifactId>
+  <artifactId>ncbieutils-access-service</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>Phenotype Database - OMIM Access Service</name>
+  <name>Phenotype Database - NCBI eUtils Access Service</name>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

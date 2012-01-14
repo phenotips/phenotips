@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package edu.toronto.cs.cidb.omim;
+package edu.toronto.cs.cidb.ncbieutils;
 
 import java.io.BufferedInputStream;
 import java.io.StringWriter;
@@ -48,9 +48,9 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 
 @Component
-@Named("omim")
+@Named("ncbieutils")
 @Singleton
-public class OmimAccessService implements ScriptService
+public class NCBIEUtilsAccessService implements ScriptService
 {
     @Inject
     private Logger logger;
@@ -71,9 +71,12 @@ public class OmimAccessService implements ScriptService
 
     protected static final String DB_PARAM_NAME = "db";
 
-    protected static final String DEFAULT_DB_NAME = "omim";
+    protected String getDatabaseName()
+    {
+        return "";
+    }
 
-    public String getSuggestions(String query)
+    protected String getSuggestions(String query)
     {
         // Step 1: get spelling suggestions for query
         String correctedQuery = getCorrectedQuery(query);
@@ -84,7 +87,7 @@ public class OmimAccessService implements ScriptService
         return result;
     }
 
-    public String getName(String id)
+    protected String getName(String id)
     {
         String url = composeURL(TERM_SUMMARY_QUERY_SCRIPT, TERM_SUMMARY_PARAM_NAME, id);
         String result = id;
@@ -107,7 +110,7 @@ public class OmimAccessService implements ScriptService
         return id;
     }
 
-    public Map<String, String> getNames(List<String> idList)
+    protected Map<String, String> getNames(List<String> idList)
     {
         Map<String, String> result = new HashMap<String, String>();
         String queryList = getSerializedList(idList);
@@ -162,7 +165,7 @@ public class OmimAccessService implements ScriptService
         return result;
     }
 
-    private String getCorrectedQuery(String query)
+    protected String getCorrectedQuery(String query)
     {
         // response example at http://eutils.ncbi.nlm.nih.gov/entrez/eutils/espell.fcgi?db=omim&term=atention+sindrom
         // response type: XML
@@ -189,7 +192,7 @@ public class OmimAccessService implements ScriptService
         return query;
     }
 
-    private List<String> getMatches(String query)
+    protected List<String> getMatches(String query)
     {
         // response example at http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=omim&term=down
         // response type: XML
@@ -216,7 +219,7 @@ public class OmimAccessService implements ScriptService
         return result;
     }
 
-    private String getSummaries(List<String> idList)
+    protected String getSummaries(List<String> idList)
     {
         // response example at
         // http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=omim&id=190685,605298,604829,602917,601088,602523,602259
@@ -252,7 +255,7 @@ public class OmimAccessService implements ScriptService
 
     private String composeURL(String scriptName, String paramName, String query)
     {
-        return SERVER_URL + scriptName + "?" + DB_PARAM_NAME + '=' + DEFAULT_DB_NAME + "&" + paramName + "=" + query;
+        return SERVER_URL + scriptName + "?" + DB_PARAM_NAME + '=' + getDatabaseName() + "&" + paramName + "=" + query;
     }
 
     private org.w3c.dom.Document readXML(String url)
@@ -290,5 +293,17 @@ public class OmimAccessService implements ScriptService
             result = listBuilder.substring(1);
         }
         return result;
+    }
+
+    public SpecializedNCBIEUtilsAccessService get(final String name)
+    {
+        return new SpecializedNCBIEUtilsAccessService()
+        {
+            @Override
+            public String getDatabaseName()
+            {
+                return name;
+            }
+        };
     }
 }
