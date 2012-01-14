@@ -104,7 +104,7 @@ public class NCBIEUtilsAccessService implements ScriptService
             this.logger.warn("Name not found for OMIM id " + id);
             return id;
         } catch (Exception ex) {
-            this.logger.error("Error while trying to retrieve name for OMIM id " + id + " "
+            this.logger.error("Error while trying to retrieve name for " + getDatabaseName() + " id " + id + " "
                 + ex.getClass().getName() + " " + ex.getMessage(), ex);
         }
         return id;
@@ -124,12 +124,13 @@ public class NCBIEUtilsAccessService implements ScriptService
                     if (idList.contains(id)) {
                         result.put(id, idToName.get(id));
                     } else {
-                        this.logger.warn("Unrequested OMIM id " + id);
+                        this.logger.warn("Unrequested " + getDatabaseName() + " id " + id);
                     }
                 }
             }
         } catch (Exception ex) {
-            this.logger.error("Error while trying to retrieve name for OMIM ids " + queryList + " "
+            this.logger.error("Error while trying to retrieve name for " + getDatabaseName() + " ids " + queryList
+                + " "
                 + ex.getClass().getName() + " " + ex.getMessage(), ex);
         }
         return result;
