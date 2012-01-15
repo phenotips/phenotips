@@ -289,6 +289,19 @@ B/tPD/z92/5t//b/9fb/ADnOn+Sf4LkzAAAAAElFTkSuQmCC
 <valueField></valueField>
 <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
 </patientTemplate>
+<tagProperty>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>tagProperty</name>
+<number>7</number>
+<picker>0</picker>
+<prettyName>Tag property</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</tagProperty>
 <variants>
 <customDisplay></customDisplay>
 <defaultValue></defaultValue>
@@ -321,6 +334,7 @@ B/tPD/z92/5t//b/9fb/ADnOn+Sf4LkzAAAAAElFTkSuQmCC
 <value>first_name</value>
 <value>gender</value>
 <value>relative_of</value>
+<value>phenotype</value>
 </livetableColumns>
 </property>
 <property>
@@ -328,6 +342,9 @@ B/tPD/z92/5t//b/9fb/ADnOn+Sf4LkzAAAAAElFTkSuQmCC
 </property>
 <property>
 <patientTemplate>ClinicalInformationCode.SKPatientTemplate</patientTemplate>
+</property>
+<property>
+<tagProperty>phenotype</tagProperty>
 </property>
 <property>
 <variants>1</variants>

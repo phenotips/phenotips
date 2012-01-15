@@ -30,11 +30,14 @@ patient.livetable.date_of_birth=Date of birth
 patient.livetable.health_card=Provincial health card #
 patient.livetable.relative_of=Relative of
 patient.livetable._actions=
-patient.livetable.emptyvalue=
+patient.livetable.emptyvalue=-
 
 patient.livetable.p_id=Identifier
-patient.livetable.age=Age at last assessment
+patient.livetable.congenital=Congenital
 patient.livetable.sex=Sex
+patient.livetable.age_of_onset_years=Age of onset (years)
+patient.livetable.age_of_onset_months=(months)
+patient.livetable.phenotype=Phenotype
 
 admin.clinicalinformationcode=Clinical information application code
 admin.ontology=Ontology index

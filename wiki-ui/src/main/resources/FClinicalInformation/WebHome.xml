@@ -289,6 +289,19 @@ B/tPD/z92/5t//b/9fb/ADnOn+Sf4LkzAAAAAElFTkSuQmCC
 <valueField></valueField>
 <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
 </patientTemplate>
+<tagProperty>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>tagProperty</name>
+<number>7</number>
+<picker>0</picker>
+<prettyName>Tag property</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</tagProperty>
 <variants>
 <customDisplay></customDisplay>
 <defaultValue></defaultValue>
@@ -317,7 +330,9 @@ B/tPD/z92/5t//b/9fb/ADnOn+Sf4LkzAAAAAElFTkSuQmCC
 <property>
 <livetableColumns>
 <value>doc.name</value>
-<value>age</value>
+<value>age_of_onset_years</value>
+<value>age_of_onset_months</value>
+<value>phenotype</value>
 </livetableColumns>
 </property>
 <property>
@@ -325,6 +340,9 @@ B/tPD/z92/5t//b/9fb/ADnOn+Sf4LkzAAAAAElFTkSuQmCC
 </property>
 <property>
 <patientTemplate>ClinicalInformationCode.FPatientTemplate</patientTemplate>
+</property>
+<property>
+<tagProperty>phenotype</tagProperty>
 </property>
 <property>
 <variants>0</variants>
@@ -479,6 +497,7 @@ B/tPD/z92/5t//b/9fb/ADnOn+Sf4LkzAAAAAElFTkSuQmCC
 <value>patientTemplate</value>
 <value>idField</value>
 <value>livetableColumns</value>
+<value>tagProperty</value>
 <value>idPrefix</value>
 <value>variants</value>
 </propertiesToShow>

@@ -240,6 +240,9 @@
   background: transparent;
   box-shadow: none;
   border: 0 none;
+}
+.xwiki-livetable-display-body td h3, .xwiki-livetable-display-body td .image-gallery {
+  display: none;
 }</code>
 </property>
 <property>
@@ -257,19 +260,20 @@ $xwiki.ssx.use('ClinicalInformationCode.DBWebHomeSheet')##
 $xwiki.ssx.use('ClinicalInformationCode.Skin')##
 $xwiki.jsx.use('ClinicalInformationCode.DBWebHomeSheet')##
 #set($config = $doc.getObject('ClinicalInformationCode.DBConfigurationClass'))
-#if ($config &amp;&amp; "$!{config.getProperty('patientClass').value}" != '')
+#set($patientClassName = "$!{config.getProperty('patientClass').value}")
+#if ($config &amp;&amp; $patientClassName != '')
 #if($hasEdit)
   {{html clean="false" wiki="false"}}&lt;form action="$xwiki.getURL('ClinicalInformationCode.CreatePatientRecord', 'view', 'doCreate=1')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-    &lt;input type="hidden" name="className" value="$!{config.getProperty('patientClass').value}" /&gt;
+    &lt;input type="hidden" name="className" value="$patientClassName" /&gt;
     &lt;input type="hidden" name="classTemplate" value="$!{config.getProperty('patientTemplate').value}" /&gt;
     &lt;input type="hidden" name="idField" value="$!{config.getProperty('idField').value}" /&gt;
     &lt;input type="hidden" name="idPrefix" value="$!{config.getProperty('idPrefix').value}" /&gt;
     &lt;input type="hidden" name="space" value="$!{doc.space}" /&gt;
     &lt;input type="submit" class="button add-data-button" id="create-patient-record" title="Add new patient record" value="Add new patient record"/&gt;
-  &lt;/div&gt;&lt;/form&gt;{{/html}}
+  &lt;/div&gt;&lt;/form&gt;{{/html}}##
 #end
-
+##
 #set($configuredColumns = $config.getProperty('livetableColumns').value)
 #if (!$configuredColumns &amp;&amp; !($configuredColumns.length &gt; 0))
   #set($configuredColumns = 'doc.name')
@@ -282,19 +286,28 @@ $xwiki.jsx.use('ClinicalInformationCode.DBWebHomeSheet')##
 #foreach($column in $columns)
       #set($discard = $columnsProperties.put($column, { "type" : "text", "link" : "view", "size" : 7, "filterable" : true, "sortable": true  }))
 #end
+#set($tagProperty = "$!{config.getProperty('tagProperty').value}")
+#if ($tagProperty != '')
+      #if ($columnsProperties.containsKey($tagProperty))
+        #set($discard = $columnsProperties.put($tagProperty, { "type" : "text", "filterable" : false, "sortable": false  }))
+      #else
+        #set($discard = $columns.add($tagProperty))
+        #set($discard = $columnsProperties.put($tagProperty, { "type" : "hidden"}))
+      #end
+      #set($topFilters = $doc.getRenderedContent("{{valuecloud classname='${patientClassName}' property='${tagProperty}' nameService='solr' enableJoinMode='1' collapsed='1'/}}", "xwiki/2.0"))
+#end
 #set($discard = $columns.add("_actions"))
-
+##
 #set($options = {
-"className"         : $!{config.getProperty('patientClass').value},
-"translationPrefix" : "patient.livetable.",  
-"rowCount"          : 25,  
-"maxPages"          : 10, 
-"defaultOrder"      : "asc"
+"className"         : $patientClassName,
+"translationPrefix" : "patient.livetable.",
+"rowCount"          : 25,
+"maxPages"          : 10,
+"defaultOrder"      : "asc",
+"topFilters"        : $topFilters
 })
 #livetable("patients" $columns $columnsProperties $options)
-
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
-
 #else
 
 {{warning}}**Configuration missing.**{{/warning}}

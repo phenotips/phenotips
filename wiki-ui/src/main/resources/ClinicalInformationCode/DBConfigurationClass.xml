@@ -126,6 +126,19 @@
 <valueField></valueField>
 <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
 </patientTemplate>
+<tagProperty>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>tagProperty</name>
+<number>7</number>
+<picker>0</picker>
+<prettyName>Tag property</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</tagProperty>
 <variants>
 <customDisplay></customDisplay>
 <defaultValue></defaultValue>
