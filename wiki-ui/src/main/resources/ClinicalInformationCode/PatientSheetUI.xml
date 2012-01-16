@@ -401,6 +401,33 @@ var enableHighlightChecked = function(element) {
       });
 };
 
+var restoreCategory = function (element) {
+  var parentElement = element.up('.accepted-suggestions li');
+  var selector = '';
+  var ignoredCategories = this.suggest &amp;&amp; this.suggest.options &amp;&amp;
+          this.suggest.options.queryProcessor &amp;&amp; this.suggest.options.queryProcessor.restriction &amp;&amp;
+          this.suggest.options.queryProcessor.restriction.term_category;
+  if (parentElement) {
+    parentElement.select('.term-category input[type=hidden]').each(function (item) {
+      if (ignoredCategories &amp;&amp; ignoredCategories.indexOf(item.value) &gt;= 0) return;
+      selector += 'input.suggested[name^=' + element.name + '] + input[type=hidden][name=_category][value*=' + item.value +'], '
+    });
+  }
+  var matchingCategory = document.documentElement.down(selector);
+  if (matchingCategory) {
+    var matchingList = matchingCategory.previous('ul.accepted-suggestions');
+    if (matchingList) {
+      matchingList.insert(parentElement);
+    }
+  }
+  enableHighlightChecked(element);
+  if (typeof (this.ensureVisible) == 'function') {
+    this.ensureVisible(element, true);
+  } else {
+    element.scrollTo();
+  }
+}
+
 var findPropertyField = function(name) {
   if ($('prefix'))
     return $($('prefix').value + name);
@@ -1022,7 +1049,8 @@ document.observe('dom:loaded', function() {
                   'inputType': 'checkbox',
                   'listInsertionElt' : $(document.documentElement).down('.phenotype-info .phenotype-group:last-child .phenotypes-main'),
                   'listInsertionPosition' : 'top',
-                  'onItemAdded' : enableHighlightChecked
+                  'silent' : true,
+                  'onItemAdded' : restoreCategory
                 }
     }
     // -----------------------------------------------------------------

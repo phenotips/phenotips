@@ -1263,15 +1263,15 @@
     if (input) {
       input.checked = true;
       Event.fire(input, 'suggest:change');
-      this.ensureVisible(input);
+      this.ensureVisible(input, true);
       this.synchronizeSelection(input);
       return false;
     }
     return true;
   },
 
-  ensureVisible : function (element) {
-    if (this.silent) {return;}
+  ensureVisible : function (element, force) {
+    if (this.silent || (!force &amp;&amp; this.options.silent)) {return;}
     if (element.viewportOffset().top &gt; this.input.viewportOffset().top) { 
       if (element.viewportOffset().top &gt; document.viewport.getHeight()) {
         if (element.viewportOffset().top - this.input.viewportOffset().top &lt; document.viewport.getHeight()) {
