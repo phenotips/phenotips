@@ -271,16 +271,19 @@
     tocTrigger.observe('click', function(event) {
       event.stop();
       tocElement.style.display= 'block';
+      tocElement.style.visibility= 'visible';
     });
   }
   var tocHideTriggers = tocElement.select('.hide-toc a');
   tocHideTriggers.invoke('observe', 'click', function(event) {
      event.stop();
      tocElement.style.display= '';
+     tocElement.style.visibility= 'hidden';
   });
   var tocLinks = tocElement.select('ul a');
   tocLinks.invoke('observe', 'click', function(event) {
-     tocElement.style.display= '';
+     //tocElement.style.display= '';
+     //tocElement.select('.hide-toc a').click();
   });
 });</code>
 </property>
@@ -475,86 +478,138 @@ document.observe('dom:loaded', function() {
     // ------------------------------------------------------------------------
     // Behavior of the quick search box
     
-    var qsBox = $('quick-search-box');
-    if (qsBox) {
-      var content = qsBox.next('div');
-      var qsInput = qsBox.down('input[type=text]');
-      var shadowSize = 6;
-
-      var qsResetPosition = function(event) {
-
-	if (qsInput._activeSuggest) {
-	  return;
-	}
-	var boxHeight = qsBox.down().getHeight();
-	if (boxHeight == 0) {
-          boxHeight = qsBox.down().getHeight();
-	}
-        var boxWidth = qsBox.getWidth();
-	var boxMinTop = content.cumulativeOffset().top + shadowSize ;
-	var boxMaxTop = content.cumulativeOffset().top + content.getHeight();// - boxHeight;
-	var boxLeft = qsBox.cumulativeOffset().left;
-        var relativeContentPosition = content.viewportOffset().top;
-        var direction = 0;
-        if (content._prevPosition) {
-          if (content._prevPosition &gt; relativeContentPosition) {
-            direction = 1;
-          } else if (content._prevPosition &lt; relativeContentPosition) {
-            direction = -1;
-          }
+    StickyBox = Class.create({
+    options : {
+      shadowSize : 6,
+      isSticky : function(element) {return true}
+    },
+    initialize : function(stickyElement, stickyAreaElement, options) {
+      this.stickyElement = stickyElement;
+      this.stickyAreaElement = stickyAreaElement;
+      if (this.stickyElement &amp;&amp; this.stickyAreaElement) {
+        this.options = Object.extend(Object.clone(this.options), options || { });
+        this.resetPosition = this.resetPosition.bindAsEventListener(this);
+        Event.observe(window, 'scroll', this.resetPosition);
+        Event.observe(window, 'resize', this.resetPosition);
+        if (typeof(this.options.makeDefault) == 'function') {
+          thid.makeDefault = this.options.makeDefault.bind(this);
         }
-	if ((!qsInput._activeSuggest || direction == 1) &amp;&amp; document.viewport.getScrollOffsets().top &gt;= boxMinTop &amp;&amp; document.viewport.getScrollOffsets().top &lt; boxMaxTop) {
-	  if (qsBox.style.position != 'fixed') {
-	    qsBox.style.left = boxLeft + 'px';
-	    qsBox.style.width = (boxWidth) + 'px';
-	    qsBox.style.top = shadowSize + 'px';
-	    qsBox.style.right = '';
-	    qsBox.style.position = 'fixed';
-	  }
-	} else if ((!qsInput._activeSuggest || direction == -1) &amp;&amp; document.viewport.getScrollOffsets().top &gt;= boxMaxTop) {
-	  if (qsBox.style.position != 'absolute'){
-            var top = content.getHeight(); - boxHeight;
-	    qsBox.style.top = top + 'px';
-	    qsBox.style.left = '';
-	    qsBox.style.right = '';//shadowSize + 'px';
-	    qsBox.style.position = 'absolute';
-	  }
-	} else {
-	  if (qsBox.style.position != ''){
-	    qsBox.style.position = '';
-	    qsBox.style.top = '';
-	    qsBox.style.left = '';
-	    qsBox.style.right = '';
-	    qsBox.style.width = '';
-	  }
-	}
-        content._prevPosition = relativeContentPosition;
+        this.resetPosition();
       }
+    },
+    
+    resetPosition : function() {
+      if (!this.options.isSticky(this.stickyElement)) {
+        return;
+      }
+      this.boxHeight = this.stickyElement.getHeight();
+      this.boxWidth = this.stickyElement.getWidth();
+      this.boxMinTop = this.stickyAreaElement.cumulativeOffset().top + this.options.shadowSize ;
+      this.boxMaxTop = this.stickyAreaElement.cumulativeOffset().top + this.stickyAreaElement.getHeight();
+      this.boxLeft = this.stickyElement.cumulativeOffset().left;
+      var relativeContentPosition = this.stickyAreaElement.viewportOffset().top;
+      this.direction = 0;
+      if (this.stickyAreaElement._prevPosition) {
+        if (this.stickyAreaElement._prevPosition &gt; relativeContentPosition) {
+          this.direction = 1;
+        } else if (this.stickyAreaElement._prevPosition &lt; relativeContentPosition) {
+          this.direction = -1;
+        }
+      }
+      if ((this.options.isSticky(this.stickyElement) || this.direction == 1) &amp;&amp;
+        document.viewport.getScrollOffsets().top &gt;= this.boxMinTop &amp;&amp;
+        document.viewport.getScrollOffsets().top &lt; this.boxMaxTop) {
+        this.makeFixed();
+      } else if ((this.options.isSticky(this.stickyElement) || this.direction == -1) &amp;&amp;
+        document.viewport.getScrollOffsets().top &gt;= this.boxMaxTop) {
+        this.makeAbsolute();
+      } else {
+        this.makeDefault();
+      }
+      this.stickyAreaElement._prevPosition = relativeContentPosition;
+    },
+    
+    makeFixed : function() {
+      if (this.stickyElement.style.position != 'fixed') {
+        this.stickyElement.style.left = this.boxLeft + 'px';
+        this.stickyElement.style.width = (this.boxWidth) + 'px';
+        this.stickyElement.style.top = this.options.shadowSize + 'px';
+        this.stickyElement.style.right = '';
+        this.stickyElement.style.position = 'fixed';
+      }
+    },
+    makeAbsolute : function(top) {
+      if (this.stickyElement.style.position != 'absolute' || this.stickyElement.style.top != top + 'px'){
+        top = top || this.stickyAreaElement.getHeight();
+        this.stickyElement.style.top = top + 'px';
+        this.stickyElement.style.left = '';
+        this.stickyElement.style.right = '';
+        this.stickyElement.style.position = 'absolute';
+      }       
+    },
+    makeDefault : function() {
+      if (this.stickyElement.style.position != ''){
+        this.stickyElement.style.position = '';
+        this.stickyElement.style.top = '';
+        this.stickyElement.style.left = '';
+        this.stickyElement.style.right = '';
+        this.stickyElement.style.width = '';
+      }       
+    },
+    isFixed: function() {
+      return (this.stickyElement.style.position == 'fixed');
+    },
+    isAbsolute: function() {
+      return (this.stickyElement.style.position == 'absolute');
+    },
+    isDefault: function() {
+      return (this.stickyElement.style.position == '');
+    }
+  });
+  
+  var qsBox = $('quick-search-box');
+  if (qsBox) {
+    var content = qsBox.next('div');
+    if (content) {
+      qsBox.__x_qsInput = qsBox.down('input[type=text]') || {};
+      var qsSticky = new StickyBox(qsBox, content, {isSticky : function(element) {return !element.__x_qsInput._activeSuggest} });
       Event.observe(document, 'ms:suggest:containerCreated', function(event) {
-	if (event.memo.suggest.fld == qsInput) {
-	  qsInput._activeSuggest = true;
-	  if (qsBox.style.position == 'fixed') {
-	    qsBox.style.top = ((document.viewport.getScrollOffsets().top - content.cumulativeOffset().top) + shadowSize) + 'px';
-	    qsBox.style.left = '';
-	    qsBox.style.right = '';
-	    qsBox.style.position = 'absolute';
-	  }
-	  var qsSuggest = event.memo.container;
-	  qsSuggest.style.top = (qsInput.cumulativeOffset().top + qsInput.getHeight()) + 'px';
-	  qsSuggest.style.left = qsInput.cumulativeOffset().left;
-	  //qsSuggest.style.marginTop = '1.6em';
-	}
+        if (event.memo.suggest.fld == qsBox.__x_qsInput) {
+          qsBox.__x_qsInput._activeSuggest = true;
+          if (qsSticky.isFixed()) {
+            qsSticky.makeAbsolute((document.viewport.getScrollOffsets().top - content.cumulativeOffset().top) + qsSticky.options.shadowSize);
+          }
+          var qsSuggest = event.memo.container;
+          qsSuggest.style.top = (qsBox.__x_qsInput.cumulativeOffset().top + qsBox.__x_qsInput.getHeight()) + 'px';
+          qsSuggest.style.left = qsBox.__x_qsInput.cumulativeOffset().left;
+          //qsSuggest.style.marginTop = '1.6em';
+        }
       });
       Event.observe(document, 'ms:suggest:clearSuggestions', function(event) {
-	if (event.memo.suggest.fld == qsInput) {
-	  qsInput._activeSuggest = false;
-	  qsResetPosition();
-	}
+        if (event.memo.suggest.fld == qsBox.__x_qsInput) {
+          qsBox.__x_qsInput._activeSuggest = false;
+          qsSticky.resetPosition();
+        }
       });
-      Event.observe(window, 'scroll', qsResetPosition);
-      Event.observe(window, 'resize', qsResetPosition);
-      qsResetPosition();
     }
+  }
+
+  var docContent = $('mainContentArea');
+  if (docContent) {
+    docContent.style.position = 'relative';
+
+    var docActions = $('document-actions');
+    if (docActions) {
+      docActions.addClassName('absolute');
+      var daSticky  = new StickyBox(docActions, docContent, {shadowSize : 6});
+    }
+
+    var toc = $('table-of-contents');
+    if (toc) {
+      toc.addClassName('absolute');
+      var tocSticky = new StickyBox(toc, docContent, {shadowSize : 6});
+    }
+  }
 });</code>
 </property>
 <property>
@@ -1556,6 +1611,9 @@ document.observe('xwiki:dom:loaded', function() {
 <code>#template('colorThemeInit.vm')
 /** ----------------------------------------------------------- */
 /** Default style fixes **/
+#xwikicontent {
+  overflow: visible;
+}
 .xwiki-form-listclass {
     display: inline-block;
 }
@@ -2079,11 +2137,12 @@ $xwiki.jsx.use('ClinicalInformationCode.PatientSheetUI')##
 #set($obj = $doc.getObject("$!{config.getProperty('patientClass').value}"))
 #set($class = $obj.xWikiClass)
 #set($discard = $doc.use($obj))
-#if ($context.action == 'edit')
-{{include document="ClinicalInformationCode.PatientSheetEditMenu" /}}
+{{include document="ClinicalInformationCode.PatientSheetMenu" /}}
 
+#if ($context.action == 'edit')
 #set($previewenabled = false)
 {{html clean="false" wiki="false"}}&lt;input type='hidden' id='prefix' value='$!{class.name}_$!{obj.number}_'/&gt;{{/html}}##
+
 #end
 #else
 

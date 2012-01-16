@@ -1973,23 +1973,17 @@ kqIDRaFRz7IAAAAASUVORK5CYII=
 .inlinebody #hierarchy, .editbody #hierarchy {
     border-right: 0 none;
 }
-#document-actions {
-    top: 152px !important;
-    margin-right: -8px !important;
-    right: 10% !important;
-}
 #mainContentArea, #mainEditArea {
     border: 1px solid #FFFFFF;
     background-color: #F9f9f9;
     box-shadow: 0 0 8px #DDDDDD;
-    margin: 4px 10%;
-    padding: 10px !important;
 }
-#table-of-contents {
-    margin-right: 20px !important;
-    right: 10% !important;
-    top: 159px !important;
-    background-color: #FFF !important;
+body #document-actions {
+    top: 152px;
+}
+body #table-of-contents {
+    top: 159px;
+    background-color: #FFF;
 }</code>
 </property>
 <property>

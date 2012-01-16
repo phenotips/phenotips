@@ -58,36 +58,11 @@ rQ9E0gBcga3QxrHYSmwIQYDxUKSGj6RxV8gBUFDx+0f2NZZztpaM9qF9C98FkM9+ul9qQnsBQCXu
 TXVppcEAAAAASUVORK5CYII=
 </content></attachment><attachment>
 <filename>contentmenu.vm</filename>
-<filesize>1473</filesize>
-<author>xwiki:XWiki.Admin</author>
-<date>1323805811000</date>
-<version>1.1</version>
-<comment></comment><content>I2lmICgkZG9jLmdldE9iamVjdCgiQ2xpbmljYWxJbmZvcm1hdGlvbkNvZGUuQ2F0ZWdvcnlNYXBw
-aW5nQ2xhc3MiKSkKCiNtYWNybyAoZG9jdW1lbnRBY3Rpb24gJHVybCAkaWQgJHRleHQpCiAgPGEg
-aHJlZj0iJHt1cmx9IiBpZD0iJHtpZH0iIGNsYXNzPSJkb2N1bWVudC1hY3Rpb24iIHRpdGxlPSIk
-e3RleHR9Ij4ke3RleHR9PC9hPgojZW5kCgo8ZGl2IGlkPSJkb2N1bWVudC1hY3Rpb25zIj4KCiNp
-ZighJGRvYy5pc05ldygpKQogICNkb2N1bWVudEFjdGlvbignI3RhYmxlLW9mLWNvbnRlbnRzJyAn
-dG1Ub0MnICdUYWJsZSBvZiBjb250ZW50cycpCiNlbmQKI2lmKCRoYXNFZGl0ICYmICEkaXNSZWFk
-T25seVMpCiAgI3NldCgkZWRpdGFjdGlvbiA9ICRkb2MuZ2V0RGVmYXVsdEVkaXRNb2RlKCkpCiAg
-I2RvY3VtZW50QWN0aW9uKCRkb2MuZ2V0VVJMKCRlZGl0YWN0aW9uLCAkIWxhbmd1YWdlcGFyYW1z
-KSAndG1BY3Rpb25FZGl0JyAkbXNnLmdldCgnY29yZS5tZW51LmVkaXQnKSkKICAjaWYoJGtleWJv
-YXJkU2hvcnRjdXRzRW5hYmxlZCkKICAgIDxzY3JpcHQgdHlwZT0idGV4dC9qYXZhc2NyaXB0Ij4K
-ICAgIC8vPCFbQ0RBVEFbCiAgICAgIHNob3J0Y3V0LmFkZCgiJG1zZy5nZXQoJ2NvcmUuc2hvcnRj
-dXRzLnZpZXcuZWRpdCcpIixmdW5jdGlvbigpIHsgbG9jYXRpb24uaHJlZj0kKCd0bUVkaXQnKS5o
-cmVmOyB9LCB7ICd0eXBlJzona2V5cHJlc3MnLCAncHJvcGFnYXRlJzpmYWxzZSwgJ2Rpc2FibGVf
-aW5faW5wdXQnOnRydWUgfSk7CiAgICAvL11dPgogICAgPC9zY3JpcHQ+CiAgI2VuZAojZW5kCiNz
-ZXQgKCRjYW5EZWxldGUgPSAhJGRvYy5pc05ldygpICYmICR4d2lraS5jaGVja0FjY2VzcygkZG9j
-LmZ1bGxOYW1lLCAnZGVsZXRlJykpCiNpZiAoJGNhbkRlbGV0ZSkKICAjZG9jdW1lbnRBY3Rpb24o
-JGRvYy5nZXRVUkwoJ2RlbGV0ZScsICQhbGFuZ3VhZ2VwYXJhbXMpICd0bUFjdGlvbkRlbGV0ZScg
-JG1zZy5nZXQoJ2NvcmUubWVudS5kZWxldGUnKSkKICAjaWYgKCRrZXlib2FyZFNob3J0Y3V0c0Vu
-YWJsZWQpCiAgICA8c2NyaXB0IHR5cGU9InRleHQvamF2YXNjcmlwdCI+CiAgICAgIC8vPCFbQ0RB
-VEFbCiAgICAgIHNob3J0Y3V0LmFkZCgiJG1zZy5nZXQoJ2NvcmUuc2hvcnRjdXRzLnZpZXcuZGVs
-ZXRlJykiLGZ1bmN0aW9uKCkgeyBsb2NhdGlvbi5ocmVmPSQoJ3RtQWN0aW9uRGVsZXRlJykuaHJl
-ZjsgfSwgeyAndHlwZSc6J2tleXByZXNzJywgJ3Byb3BhZ2F0ZSc6ZmFsc2UsICdkaXNhYmxlX2lu
-X2lucHV0Jzp0cnVlIH0pOwogICAgICAvL11dPgogICAgPC9zY3JpcHQ+CiAgI2VuZAojZW5kCiMj
-I2lmKCEkZG9jLmlzTmV3KCkpCiMjICAjZG9jdW1lbnRBY3Rpb24oJGRvYy5nZXRVUkwoJ3ZpZXcn
-LCAieHBhZ2U9cGRmb3B0aW9ucyZhbXA7JCFkb2N2YXJpYW50IikgJ3RtRXhwb3J0UGRmJyAkbXNn
-LmdldCgnY29yZS5tZW51LmV4cG9ydC5wZGYnKSkKIyMjZW5kCjwvZGl2PgojZW5k
+<filesize>2</filesize>
+<author>XWiki.Admin</author>
+<date>1326686555000</date>
+<version>1.2</version>
+<comment></comment><content>IyM=
 </content></attachment><attachment>
 <filename>check.png</filename>
 <filesize>340</filesize>
@@ -518,7 +493,9 @@ J0zuqu9ndCPsB+nQ8JRBimVn2f00tlza4/I//PSZ/vnOTwg0Ptx978igAAAAAElFTkSuQmCC
     padding: 5px 0 0;
 }
 #mainContentArea, #mainEditArea {
-    padding: 10px 10%;
+    ##padding: 10px 10%;
+    margin: 4px 10%;
+    padding: 10px;
 }
 .actionmenu .tmHome {
     background-image: url("#__img('home-s')");
@@ -586,6 +563,18 @@ input[name=action_cancel] {
   position: fixed;
   right: 4px;
   top: 8.5em;
+  margin-right: -8px;
+  right: 10%;
+}
+#document-actions.absolute {
+  position: absolute;
+  top: 0;
+  right: 0;
+  float: right;
+  margin-top: -5px;
+  margin-right: -32px;
+  height: 0;
+  overflow: visible;
 }
 * html #document-actions {
   position: absolute;
@@ -638,12 +627,22 @@ input[name=action_cancel] {
   border: 1px solid $theme.borderColor;
   position: fixed;
   top: 9em;
-  right: 32px;
+  right: 10%;
   padding: 1em 1em 1em 0;
-  margin-top: -2px;
-  display:none;
+  ##display:none;
+  visibility: hidden;
   z-index: 20000;
-  width: 32%;
+  width: 22%;
+  margin-top: -2px;
+  margin-right: 20px;
+}
+#table-of-contents.absolute {
+  position: absolute;
+  margin-right: -4px;
+  margin-left: -16px;
+  margin-top: 0;
+  top: 0;
+  right: 0;
 }
 #table-of-contents ul {
   padding: 0;
@@ -651,7 +650,8 @@ input[name=action_cancel] {
   list-style-type: square;
 }
 #table-of-contents:target {
-  display: block;
+  ##display: block;
+  visibility: visible;
 }
 #hide-toc {
   position: absolute;

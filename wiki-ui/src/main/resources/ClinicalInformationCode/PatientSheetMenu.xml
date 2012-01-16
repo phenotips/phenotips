@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>ClinicalInformationCode</web>
+<name>PatientSheetMenu</name>
+<language></language>
+<defaultLanguage>en</defaultLanguage>
+<translation>0</translation>
+<parent>ClinicalInformationCode.PatientSheetUI</parent>
+<creator>XWiki.Admin</creator>
+<author>XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>XWiki.Admin</contentAuthor>
+<creationDate>1326686171000</creationDate>
+<date>1326692936000</date>
+<contentUpdateDate>1326692936000</contentUpdateDate>
+<version>1.4</version>
+<title></title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment>Copied from xwiki:ClinicalInformationCode.PatientSheetEditMenu</comment>
+<minorEdit>true</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>false</hidden>
+<content>{{velocity output=false}}
+#macro (documentAction $url $id $text)
+  &lt;a href="${url}" id="${id}" class="document-action" title="${text}"&gt;${text}&lt;/a&gt;
+#end
+#macro (documentEditorAction $action $text)
+  &lt;input class="document-action document-action-button" id="tmAction${action}" type="submit" value="${text}" title="${text}" name="action_${action}"/&gt;
+#end
+{{/velocity}}
+
+{{velocity }}
+{{html clean="false" wiki="false"}}
+&lt;div id="document-actions"&gt;
+  #documentAction('#table-of-contents' 'tmToC' 'Table of contents')
+  #if ($xcontext.action == 'view')
+    #if($hasEdit &amp;&amp; !$isReadOnly)
+      #set($editaction = $doc.getDefaultEditMode())
+      #documentAction($doc.getURL($editaction, $!languageparams) 'tmActionEdit' $msg.get('core.menu.edit'))
+    #end
+    #set ($canDelete = !$doc.isNew() &amp;&amp; $xwiki.checkAccess($doc.fullName, 'delete'))
+    #if ($canDelete)
+      #documentAction($doc.getURL('delete', $!languageparams) 'tmActionDelete' $msg.get('core.menu.delete'))
+    #end
+  #elseif ($xcontext.action == 'edit') 
+    #documentEditorAction('save', 'Save')
+    #documentEditorAction('cancel', 'Cancel changes')
+  #end
+&lt;/div&gt;
+{{/html}}
+{{/velocity}}</content></xwikidoc>
