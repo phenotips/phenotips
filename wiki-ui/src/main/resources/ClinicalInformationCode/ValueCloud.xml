@@ -107,8 +107,8 @@
   var contentToCollapse = filterElt.down('.value-cloud-box.collapse');
   if (contentToCollapse) {
     var expandCollapseTools = new Element('div', {'class' : 'value-cloud-tools'});
-    var expandTool = new Element('a', {'href' : '#', class : 'expand'}).update('Show more filters...');
-    var collapseTool = new Element('a', {'href' : '#', class : 'collapse', 'title' : 'Disable and hide filters'}).update('×');
+    var expandTool = new Element('a', {'href' : '#', 'class' : 'expand'}).update('Show more filters...');
+    var collapseTool = new Element('a', {'href' : '#', 'class' : 'collapse', 'title' : 'Disable and hide filters'}).update('×');
     expandCollapseTools.insert(expandTool);
     expandCollapseTools.insert(collapseTool);
     var doExpand = function(event){
