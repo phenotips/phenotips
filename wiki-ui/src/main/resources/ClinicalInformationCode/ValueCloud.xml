@@ -111,19 +111,22 @@
     var collapseTool = new Element('a', {'href' : '#', class : 'collapse', 'title' : 'Disable and hide filters'}).update('×');
     expandCollapseTools.insert(expandTool);
     expandCollapseTools.insert(collapseTool);
-    expandTool.observe('click', function(event){
-      event.stop();
+    var doExpand = function(event){
+      if (event) { event.stop(); }
       contentToCollapse.show();
       expandTool.hide();
       collapseTool.show();
-    });
-    collapseTool.observe('click', function(event){
-      event.stop();
+    }
+    var doCollapse = function(event){
+      if (event) { event.stop();}
       contentToCollapse.hide();
       contentToCollapse.select('label.tag.selected').invoke('click');
       expandTool.show();
       collapseTool.hide();
-    });
+    }
+    expandTool.observe('click', doExpand);
+    collapseTool.observe('click', doCollapse);
+
     contentToCollapse.insert({before: expandCollapseTools});
     contentToCollapse.collapseTool = collapseTool;
     expandTool.hide();
@@ -142,12 +145,12 @@
       item.addClassName('selected');
     }
   });
-  if (contentToCollapse &amp;&amp; contentToCollapse.collapseTool &amp;&amp; !hasFilters) {
-    contentToCollapse.collapseTool.click()
-  }
   filterElt.select('label.tag').invoke('observe', 'click', function(event) {
     event.element().toggleClassName('selected');
   });
+  if (contentToCollapse &amp;&amp; contentToCollapse.collapseTool &amp;&amp; typeof (doCollapse) == 'function' &amp;&amp; !hasFilters) {
+    doCollapse();
+  }
 })</code>
 </property>
 <property>
