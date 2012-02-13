@@ -36,11 +36,11 @@
       #if ($values.size() &gt; 1)
         &lt;arr name="$field"&gt;
         #foreach ($value in $values)
-          &lt;str&gt;$value&lt;/str&gt;
+          &lt;str&gt;$escapetool.xml($value)&lt;/str&gt;
         #end
         &lt;/arr&gt;
       #else
-        &lt;str name="$field"&gt;$values.get(0)&lt;/str&gt;
+        &lt;str name="$field"&gt;$escapetool.xml($values.get(0))&lt;/str&gt;
       #end
     #end
   &lt;/doc&gt;
