@@ -37,6 +37,7 @@ patient.livetable.congenital=Congenital
 patient.livetable.sex=Sex
 patient.livetable.age_of_onset_years=Age of onset (years)
 patient.livetable.age_of_onset_months=(months)
+patient.livetable.onset=Onset
 patient.livetable.phenotype=Phenotype
 
 admin.clinicalinformationcode=Clinical information application code

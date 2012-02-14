@@ -330,8 +330,8 @@ B/tPD/z92/5t//b/9fb/ADnOn+Sf4LkzAAAAAElFTkSuQmCC
 <property>
 <livetableColumns>
 <value>doc.name</value>
-<value>age_of_onset_years</value>
-<value>age_of_onset_months</value>
+<value>p_id</value>
+<value>onset</value>
 <value>phenotype</value>
 </livetableColumns>
 </property>
