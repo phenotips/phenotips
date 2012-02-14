@@ -3,7 +3,7 @@
 <web>ClinicalInformationCode</web>
 <name>PhenotypeDisplay</name>
 <language></language>
-<defaultLanguage>en</defaultLanguage>
+<defaultLanguage></defaultLanguage>
 <translation>0</translation>
 <parent></parent>
 <creator>xwiki:XWiki.Admin</creator>
