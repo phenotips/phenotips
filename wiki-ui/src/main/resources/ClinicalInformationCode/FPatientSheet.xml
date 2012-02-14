@@ -53,29 +53,12 @@
   )))## fieldset: age of onset zone
 #else
   (% class="fieldset onset" %)(((
-    #if ($doc.display('congenital') == 'Yes')
-      #set ($sectionLabel  = 'Onset:')
-    #else
-      #set ($sectionLabel  = 'Age of onset:')
-    #end
     (% class="half-width" %)(((
-      #__label('age_of_onset_years' "section group-title" $sectionLabel)
+       #__label('onset' 'section')
     )))
     (% class="half-width" %)(((
-    #if ($doc.display('congenital') == 'Yes')Congenital
-    #else
-      #set ($years  = $doc.display('age_of_onset_years'))
-      #set ($months = $doc.display('age_of_onset_months'))
-      #if ("$!{years}$!{months}" == '')
-        -
-      #elseif ("$!{years}$!{months}" == '0' || "$!{years}$!{months}" == '00')
-        0
-      #else
-        #if ("$!{years}"  != '' &amp;&amp; "$!{years}"  != '0') $years year#if ("$!{years}" != '1')s#end#end
-        #if ("$!{months}" != '' &amp;&amp; "$!{months}" != '0') $months month#if ("$!{months}" != '1')s#end#end
-      #end
-    #end
-    ))) 
+      #__display('onset')
+    )))
   )))
 #end
 (% class="clear" %)((()))
