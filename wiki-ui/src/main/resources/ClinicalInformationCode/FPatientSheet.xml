@@ -33,14 +33,14 @@
 #__display2Col('gender' 'Sex:' 'mandatory' 'group-title')
 ## Age of onset zone:
 #if ($context.action == 'edit')
-  (% class="fieldset onset" %)(((
-    (% class="half-width side" %)(((
+  (% class="fieldset onset controlled-group" %)(((
+    (% class="half-width side controller" %)(((
         #__label('age_of_onset_years' "section group-title" 'Onset:')   (% style="margin: 0 1em" %)(%%)##
           $doc.display('congenital')##
           #__label('congenital' '' 'Congenital') ##
-        (% style="margin: 0 1em" %)or(%%) #__label('age_of_onset_years' 'section' 'Specify age:')
+        (% class="controlled" style="margin: 0 1em" %)or(%%) #__label('age_of_onset_years' 'section controlled' 'Specify age:')
       )))## or specify age
-      (% class="half-width" %)(((
+      (% class="half-width controlled" %)(((
         (% class="half-width age_of_onset_years" %)(((
           #__label('age_of_onset_years' 'hint')
           #__display('age_of_onset_years')

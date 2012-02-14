@@ -735,6 +735,30 @@ document.observe('dom:loaded', function() {
     if (!$('inline')) {return;}
 
     // ------------------------------------------------------------------------
+    // Enable value-controlled visibility
+
+    var visibilityControllers = $$('.controlled-group .controller input[type=checkbox]');
+
+    var controlVisibility = function(controller) {
+      if (typeof (controller.element) == 'function') {
+         return controlVisibility(controller.element());
+      }
+      if (!controller.__controlled) {
+        controller.__controlled = controller.up('.controlled-group').select('.controlled');
+      }
+      if (controller.checked) {
+         controller.__controlled.invoke('setStyle', {'visibility' : 'hidden'});
+      } else {
+         controller.__controlled.invoke('setStyle', {'visibility' : 'visible'});
+      }
+    }
+
+    visibilityControllers.each(function (item) {
+       controlVisibility(item);
+       item.observe('change', controlVisibility);
+    });
+
+    // ------------------------------------------------------------------------
     // Live validation of the date of birth
     
     var hasErrors = false;
