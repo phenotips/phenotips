@@ -61,6 +61,13 @@
     </dependency>
     <dependency>
       <groupId>edu.toronto.cs.cidb</groupId>
+      <artifactId>patient-update-listeners</artifactId>
+      <version>${project.version}</version>
+      <type>jar</type>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>edu.toronto.cs.cidb</groupId>
       <artifactId>jetty-resources</artifactId>
       <version>${project.version}</version>
       <type>zip</type>

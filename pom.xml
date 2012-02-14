@@ -15,6 +15,7 @@
 
     <module>obo2solr</module>
     <module>solr-access-service</module>
+    <module>patient-update-listeners</module>
     <module>ncbieutils-access-service</module>
     <module>wiki-ui</module>
     <module>wiki-database</module>

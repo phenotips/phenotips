@@ -62,7 +62,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>comments</name>
-<number>13</number>
+<number>14</number>
 <picker>0</picker>
 <prettyName>Additional comments</prettyName>
 <rows>5</rows>
@@ -91,7 +91,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>family_comments</name>
-<number>14</number>
+<number>15</number>
 <picker>0</picker>
 <prettyName>List health conditions found in family (describe the relationship with proband)</prettyName>
 <rows>5</rows>
@@ -108,7 +108,7 @@
 <displayType>select</displayType>
 <multiSelect>0</multiSelect>
 <name>family_history</name>
-<number>12</number>
+<number>13</number>
 <picker>0</picker>
 <prettyName>Family History</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -165,7 +165,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>omim_id</name>
-<number>8</number>
+<number>9</number>
 <picker>0</picker>
 <prettyName>OMIM disorder</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -180,6 +180,19 @@
 <valueField></valueField>
 <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
 </omim_id>
+<onset>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>onset</name>
+<number>7</number>
+<picker>0</picker>
+<prettyName>Onset</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</onset>
 <p_id>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -202,7 +215,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>phenotype</name>
-<number>10</number>
+<number>11</number>
 <picker>0</picker>
 <prettyName>Phenotypic description (Clinical symptoms)</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -226,7 +239,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>prenatal_phenotype</name>
-<number>11</number>
+<number>12</number>
 <picker>0</picker>
 <prettyName>Prenatal and Perinatal History</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -248,7 +261,7 @@
 <displayType>radio</displayType>
 <multiSelect>0</multiSelect>
 <name>relative</name>
-<number>7</number>
+<number>8</number>
 <picker>0</picker>
 <prettyName>Relative</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -271,7 +284,7 @@
 <idField></idField>
 <multiSelect>0</multiSelect>
 <name>relative_of</name>
-<number>9</number>
+<number>10</number>
 <picker>1</picker>
 <prettyName>relative_of</prettyName>
 <relationalStorage>0</relationalStorage>

@@ -28,6 +28,7 @@
         <include>edu.toronto.cs.cidb:omim-access-service</include>
         <include>org.apache.solr:solr-solrj</include>
         <include>edu.toronto.cs.cidb:obo2solr</include>
+        <include>edu.toronto.cs.cidb:patient-update-listeners</include>
       </includes>
       <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
       <unpack>false</unpack>
