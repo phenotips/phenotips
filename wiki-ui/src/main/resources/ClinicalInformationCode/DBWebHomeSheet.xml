@@ -154,6 +154,107 @@
 </object>
 <object>
 <class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.DBWebHomeSheet</name>
+<number>1</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>51a47b60-13f0-4294-8b0a-314e3189163b</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>document.observe("xwiki:dom:loaded", function(){
+  var createForm = $('patient-creation-form');
+  var livetable = $('patients');
+  if (!createForm || !livetable) {
+    return;
+  }
+  var parent = livetable.down('td.xwiki-livetable-pagination', 1);
+  if (parent) {
+    parent.insert({'top' : createForm});
+  }
+});
+
+</code></property><property><name>Move the creation button</name>
+</property>
+<property>
+<parse></parse>
+</property>
+<property>
+<use>onDemand</use>
+</property>
+</object>
+<object>
+<class>
 <name>XWiki.StyleSheetExtension</name>
 <customClass></customClass>
 <customMapping></customMapping>
@@ -243,6 +344,9 @@
 }
 .xwiki-livetable-display-body td h3, .xwiki-livetable-display-body td .image-gallery {
   display: none;
+}
+h1 {
+  border: 0 none;
 }</code>
 </property>
 <property>
@@ -255,25 +359,28 @@
 <use>currentPage</use>
 </property>
 </object>
-<content>{{velocity}}
+<content>{{html wiki=false clean=false}}&lt;div class="general-tools"&gt;&lt;a href="#patients"&gt;Browse patients&lt;/a&gt; · &lt;label for="create-patient-record"&gt;New patient record&lt;/label&gt;&lt;/div&gt;{{/html}}
+
+= Phenotype database =
+
+{{velocity}} 
 $xwiki.ssx.use('ClinicalInformationCode.DBWebHomeSheet')##
-$xwiki.ssx.use('ClinicalInformationCode.Skin')##
+$xwiki.ssx.use('ClinicalInformationCode.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('ClinicalInformationCode.DBWebHomeSheet')##
 #set($config = $doc.getObject('ClinicalInformationCode.DBConfigurationClass'))
 #set($patientClassName = "$!{config.getProperty('patientClass').value}")
 #if ($config &amp;&amp; $patientClassName != '')
 #if($hasEdit)
-  {{html clean="false" wiki="false"}}&lt;form action="$xwiki.getURL('ClinicalInformationCode.CreatePatientRecord', 'view', 'doCreate=1')" method="post"&gt;&lt;div&gt;
+  {{html clean="false" wiki="false"}}&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('ClinicalInformationCode.CreatePatientRecord', 'view', 'doCreate=1')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
     &lt;input type="hidden" name="className" value="$patientClassName" /&gt;
     &lt;input type="hidden" name="classTemplate" value="$!{config.getProperty('patientTemplate').value}" /&gt;
     &lt;input type="hidden" name="idField" value="$!{config.getProperty('idField').value}" /&gt;
     &lt;input type="hidden" name="idPrefix" value="$!{config.getProperty('idPrefix').value}" /&gt;
     &lt;input type="hidden" name="space" value="$!{doc.space}" /&gt;
-    &lt;input type="submit" class="button add-data-button" id="create-patient-record" title="Add new patient record" value="Add new patient record"/&gt;
+    &lt;label class="create-button-label" for="create-patient-record"&gt;+&lt;/label&gt;&lt;input type="submit" class="button create-button" id="create-patient-record" title="Add new patient record" value="New patient record..."/&gt;
   &lt;/div&gt;&lt;/form&gt;{{/html}}##
 #end
-##
 #set($configuredColumns = $config.getProperty('livetableColumns').value)
 #if (!$configuredColumns &amp;&amp; !($configuredColumns.length &gt; 0))
   #set($configuredColumns = 'doc.name')
@@ -294,7 +401,7 @@ $xwiki.jsx.use('ClinicalInformationCode.DBWebHomeSheet')##
         #set($discard = $columns.add($tagProperty))
         #set($discard = $columnsProperties.put($tagProperty, { "type" : "hidden"}))
       #end
-      #set($topFilters = $doc.getRenderedContent("{{valuecloud classname='${patientClassName}' property='${tagProperty}' nameService='solr' enableJoinMode='1' collapsed='1'/}}", "xwiki/2.0"))
+      #set($topFilters = $doc.getRenderedContent("{{valuecloud classname='${patientClassName}' property='${tagProperty}' nameService='solr' enableJoinMode='1' collapsed='0'/}}", "xwiki/2.0"))
 #end
 #set($discard = $columns.add("_actions"))
 ##

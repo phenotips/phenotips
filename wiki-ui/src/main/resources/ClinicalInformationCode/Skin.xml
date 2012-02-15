@@ -536,27 +536,81 @@ input[name=action_cancel] {
 .buttonwrapper a.add-data-button:link,
 .buttonwrapper a.add-data-button:visited,
 .buttonwrapper a.add-data-button:active {
+  #__css3_rule("border-radius: 4px")
+  #__css3_rule("box-shadow: 0 0 6px $theme.borderColor")
+  background-color: $theme.buttonPrimaryBackgroundColor;
+  color: $theme.buttonPrimaryTextColor;
   display: inline-block;
-  font-weight: bold;
-  padding: .5em 1em;
+  font: normal normal 700 .8em/140% "Helvetica",sans-serif;
+  padding: .3em .2em .3em  2.2em;
+  position: relative;
+  text-transform: uppercase;
   white-space: nowrap;
 }
-.add-data-button:before {
-  content: "+";
-  display: inline-block;
-  font-size: 2em;
-  font-weight: bold;
-  white-space: nowrap;
-  width: .9em;
+.add-data-button:hover,
+.buttonwrapper a.add-data-button:hover {
+  #__css3_rule("box-shadow: 0 0 6px $theme.linkColor")
 }
-
+.general-tools {
+  margin: 25px 3px;
+  padding: 3px 0;
+  float: right;
+  position: relative;
+}
+.general-tools label{
+  cursor: pointer;
+  color: $theme.linkColor;
+}
+.general-tools label:hover {
+  text-decoration: underline;
+}
 #create-patient-record {
-  padding: 1em 2em;
-  margin: 6px;
+  padding: .3em .2em .3em  2.2em;
+}
+#patient-creation-form {
+  position: relative;
+}
+.xwiki-livetable-pagination #patient-creation-form {
+  float: left;
+}
+label.create-button-label, .add-data-button:before {
+  display: inline-block;
+  position: absolute;
+  top: .24em;
+  left: .4em;
+  width: .8em;
+  height: .8em;
+  color: $theme.buttonPrimaryTextColor;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.25em;
+  line-height: .9em;
+  vertical-align: middle;
+  z-index: 2;
+}
+body .xwiki-livetable-topfilters-container, body .xwiki-livetable-tagcloud-container {
+  border-color: $theme.buttonPrimaryBackgroundColor;
+  background-color: $theme.backgroundSecondaryColor;
+}
+body .xwiki-livetable-topfilters-tip .tippointer, body .xwiki-livetable-tagcloud-tip .tippointer {
+  border-top-color: $theme.buttonPrimaryBackgroundColor;
+}
+body .xwiki-livetable-topfilters-tip .tippointer div, body .xwiki-livetable-tagcloud-tip .tippointer div {
+  border-top-color: $theme.backgroundSecondaryColor;
+  top: -22px;
+}
+body .xwiki-livetable-topfilters-container .value-cloud-tools a {
+  color: $theme.textColor;
+  font-weight: bold;
+}
+#patients.xwiki-livetable .actions {
+  text-align: right;
 }
 .document-action, #table-of-contents, #patients.xwiki-livetable .action, .action {
   #__css3_rule("border-radius: 6px")
   #__css3_rule("box-shadow: 0 0 6px $theme.borderColor")
+  text-align: left;
 }
 #document-actions {
   color: $theme.textColor;
