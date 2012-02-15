@@ -569,6 +569,8 @@ input[name=action_cancel] {
 }
 #patient-creation-form {
   position: relative;
+  margin: -2.5em 6px 0.5em;
+  float: left;
 }
 .xwiki-livetable-pagination #patient-creation-form {
   float: left;

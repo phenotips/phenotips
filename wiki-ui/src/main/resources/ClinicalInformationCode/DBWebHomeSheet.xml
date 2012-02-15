@@ -232,7 +232,7 @@
 <cache>long</cache>
 </property>
 <property>
-<code>document.observe("xwiki:dom:loaded", function(){
+<code>/*document.observe("xwiki:dom:loaded", function(){
   var createForm = $('patient-creation-form');
   var livetable = $('patients');
   if (!createForm || !livetable) {
@@ -242,7 +242,7 @@
   if (parent) {
     parent.insert({'top' : createForm});
   }
-});
+});*/
 
 </code></property><property><name>Move the creation button</name>
 </property>
@@ -370,17 +370,7 @@ $xwiki.jsx.use('ClinicalInformationCode.DBWebHomeSheet')##
 #set($config = $doc.getObject('ClinicalInformationCode.DBConfigurationClass'))
 #set($patientClassName = "$!{config.getProperty('patientClass').value}")
 #if ($config &amp;&amp; $patientClassName != '')
-#if($hasEdit)
-  {{html clean="false" wiki="false"}}&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('ClinicalInformationCode.CreatePatientRecord', 'view', 'doCreate=1')" method="post"&gt;&lt;div&gt;
-    &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-    &lt;input type="hidden" name="className" value="$patientClassName" /&gt;
-    &lt;input type="hidden" name="classTemplate" value="$!{config.getProperty('patientTemplate').value}" /&gt;
-    &lt;input type="hidden" name="idField" value="$!{config.getProperty('idField').value}" /&gt;
-    &lt;input type="hidden" name="idPrefix" value="$!{config.getProperty('idPrefix').value}" /&gt;
-    &lt;input type="hidden" name="space" value="$!{doc.space}" /&gt;
-    &lt;label class="create-button-label" for="create-patient-record"&gt;+&lt;/label&gt;&lt;input type="submit" class="button create-button" id="create-patient-record" title="Add new patient record" value="New patient record..."/&gt;
-  &lt;/div&gt;&lt;/form&gt;{{/html}}##
-#end
+
 #set($configuredColumns = $config.getProperty('livetableColumns').value)
 #if (!$configuredColumns &amp;&amp; !($configuredColumns.length &gt; 0))
   #set($configuredColumns = 'doc.name')
@@ -415,6 +405,18 @@ $xwiki.jsx.use('ClinicalInformationCode.DBWebHomeSheet')##
 })
 #livetable("patients" $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
+
+#if($hasEdit)
+  {{html clean="false" wiki="false"}}&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('ClinicalInformationCode.CreatePatientRecord', 'view', 'doCreate=1')" method="post"&gt;&lt;div&gt;
+    &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+    &lt;input type="hidden" name="className" value="$patientClassName" /&gt;
+    &lt;input type="hidden" name="classTemplate" value="$!{config.getProperty('patientTemplate').value}" /&gt;
+    &lt;input type="hidden" name="idField" value="$!{config.getProperty('idField').value}" /&gt;
+    &lt;input type="hidden" name="idPrefix" value="$!{config.getProperty('idPrefix').value}" /&gt;
+    &lt;input type="hidden" name="space" value="$!{doc.space}" /&gt;
+    &lt;label class="create-button-label" for="create-patient-record"&gt;+&lt;/label&gt;&lt;input type="submit" class="button create-button" id="create-patient-record" title="Add new patient record" value="New patient record..."/&gt;
+  &lt;/div&gt;&lt;/form&gt;{{/html}}##
+#end
 #else
 
 {{warning}}**Configuration missing.**{{/warning}}
