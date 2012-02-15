@@ -104,7 +104,7 @@
 <property>
 <code>document.observe("xwiki:dom:loaded", function() {
   var filterElt = document.documentElement.down('.xwiki-livetable-topfilters-container');
-  var contentToCollapse = filterElt.down('.value-cloud-box.collapse');
+  var contentToCollapse = filterElt.down('.value-cloud-box');
   if (contentToCollapse) {
     var expandCollapseTools = new Element('div', {'class' : 'value-cloud-tools'});
     var expandTool = new Element('a', {'href' : '#', 'class' : 'expand'}).update('Show more filters...');
@@ -119,8 +119,8 @@
     }
     var doCollapse = function(event){
       if (event) { event.stop();}
+      contentToCollapse.select('label.tag.selected input').invoke('click');
       contentToCollapse.hide();
-      contentToCollapse.select('label.tag.selected').invoke('click');
       expandTool.show();
       collapseTool.hide();
     }
@@ -148,7 +148,7 @@
   filterElt.select('label.tag').invoke('observe', 'click', function(event) {
     event.element().toggleClassName('selected');
   });
-  if (contentToCollapse &amp;&amp; contentToCollapse.collapseTool &amp;&amp; typeof (doCollapse) == 'function' &amp;&amp; !hasFilters) {
+  if (contentToCollapse &amp;&amp; contentToCollapse.hasClassName('collapse') &amp;&amp; contentToCollapse.collapseTool &amp;&amp; typeof (doCollapse) == 'function' &amp;&amp; !hasFilters) {
     doCollapse();
   }
 })</code>
@@ -244,7 +244,10 @@
 </property>
 <property>
 <code>#template("colorThemeInit.vm")
-.value-cloud {
+.value-cloud-box {
+  margin: 0 -10px;
+  padding: 0 10px;
+  background-color: $theme.pageContentBackgroundColor;
 }
 .value-cloud li {
   display: inline-block !important;
@@ -261,6 +264,9 @@
   white-space: nowrap;
   letter-spacing: -.02em;
 }
+.value-cloud label.tag:hover {
+  opacity: 1;
+}
 .value-cloud label.tag.selected {
   opacity: 1;
   color: $theme.linkColor;
@@ -272,7 +278,7 @@
   background-color: $theme.backgroundSecondaryColor;
   font-size: 0.875em;
   margin: 10px -10px -10px;
-  padding: 0 10px;
+  padding: 0 10px 3px;
   text-shadow: 0 1px 1px $theme.pageContentBackgroundColor;
 }
 .value-cloud-tools {
@@ -290,9 +296,9 @@
   background-color: $theme.backgroundSecondaryColor;
   font-size: 0.875em;
   line-height: 1.1ex;
-  margin: -10px;
-  opacity: 0.7;
+  margin: -10px -10px 0;
   padding: 10px 10px;
+  text-shadow: 0 1px 1px $theme.pageContentBackgroundColor;
 }</code>
 </property>
 <property>
