@@ -1984,7 +1984,31 @@ body #document-actions {
 body #table-of-contents {
     top: 159px;
     background-color: #FFF;
-}</code>
+}
+fieldset.xwikimessage, fieldset.xwikimessage legend, fieldset.xwikimessage .xwikilogintable th {
+  background-color: transparent;
+  text-transform: none;
+}
+fieldset.xwikimessage .xwikilogintable #rememberme {
+  margin-left: 0;
+}
+fieldset.xwikimessage .xwikilogintable label[for=rememberme] {
+  font-size: .85em;
+}
+.xwikilogintable + .buttons {
+  padding: 0 4px;
+}
+fieldset.xwikimessage legend {
+  padding: 0 4px;
+  font-size: 1em;
+  border-bottom: 1px dotted;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+.xwikilogintable + .buttons + div {
+  display: none;
+}
+</code>
 </property>
 <property>
 <name></name>
