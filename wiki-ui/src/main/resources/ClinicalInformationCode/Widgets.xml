@@ -1223,7 +1223,8 @@
     'showClearTool' : true,
     'inputType': 'hidden',
     'listInsertionElt' : null,
-    'listInsertionPosition' : 'after'
+    'listInsertionPosition' : 'after',
+    'acceptFreeText' : false
   },
   initialize: function(element, suggest, options, serializedDataInput) {
     this.options = Object.extend(Object.clone(this.options), options || { });
@@ -1231,7 +1232,11 @@
     this.input = element;
     this.suggest = suggest;
     this.inputName = this.input.name;
-    this.input.name = this.input.name + "__suggested";
+    if (!this.options.acceptFreeText) {
+      this.input.name = this.input.name + "__suggested";
+    } else {
+      this.input.addClassName("accept-value");
+    }
     this.suggest.options.callback = this.acceptSuggestion.bind(this);
     this.list = new Element('ul', {'class' : 'accepted-suggestions'});
     var listInsertionElement;

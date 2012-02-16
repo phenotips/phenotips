@@ -875,6 +875,14 @@ document.observe('dom:loaded', function() {
                   value += newValueInputs[i].value + '|';
                 }
              }
+             var otherValuesInput = section.down('input[type=text].suggested.accept-value');
+             if (otherValuesInput) {
+               var otherValues = otherValuesInput.value;
+               if (otherValuesInput.hasClassName('multi')) {
+                 otherValues = otherValues.replace(/\s*,\s*/g, "|");
+               }
+               value += otherValues;
+             }
              target.value = value;
            }
         }
@@ -1062,7 +1070,8 @@ document.observe('dom:loaded', function() {
                   'inputType': 'checkbox',
                   'listInsertionElt' : '.label-other',
                   'listInsertionPosition' : 'before',
-                  'onItemAdded' : enableHighlightChecked
+                  'onItemAdded' : enableHighlightChecked,
+                  'acceptFreeText' : true
                 },
       'quickSearch' : {
                   'showKey' : false,
