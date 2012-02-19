@@ -477,12 +477,32 @@ J0zuqu9ndCPsB+nQ8JRBimVn2f00tlza4/I//PSZ/vnOTwg0Ptx978igAAAAAElFTkSuQmCC
 #body {
     font-family: Arial,Verdana,sans-serif;
 }
+#hierarchy,
 #globallinks,
 .edit-meta-tools,
 #contentmenu,
 #document-info,
 .edit_section {
-  display: none;
+  display: none !important;
+}
+#company h1 a{
+  color: $theme.pageBackgroundColor !important;
+  text-decoration: none !important;
+}
+#company h1, #company .sep {
+  border: 0 none;
+  color: $theme.pageBackgroundColor;
+  float: left;
+  margin-bottom: 0px;
+  margin-top: 24px;
+  text-shadow: 0 0 6px #777;
+}
+#company .sep {
+  font-size: 1.77em;
+  margin-right: 24px;
+}
+#headerglobal {
+  border-bottom: 2px solid;
 }
 .xdocCreation {
   float: right;
@@ -899,7 +919,53 @@ h1:target, h2:target, h3:target {
 <footer.vm></footer.vm>
 </property>
 <property>
-<header.vm></header.vm>
+<header.vm>###
+### Global header
+###
+### The uppermost area of each page
+### Contains the company logo, links to global actions and the search facility
+###
+#if($isInServletMode) ## Visible only in a page
+&lt;div id="headerglobal" class="layoutsection"&gt;
+#if($xcontext.action == "view")
+&lt;div class="minwidthb"&gt;&lt;/div&gt;
+#else
+&lt;div class="minwidthd"&gt;&lt;/div&gt;
+#end
+  &lt;div id="company"&gt;
+  &lt;div id="companylogo"&gt;
+    &lt;a href="$!xwiki.getURL('Main.WebHome')" title="Home" rel="home"&gt;
+#if("$!{themeDocFullName}" == '')
+  #set($themeDocFullName = "$!xwiki.getUserPreference('colorTheme')")
+#end
+#if($themeDocFullName == '')
+  #set($themeDocFullName = 'ColorThemes.DefaultColorTheme')
+#end
+#set($themeDoc = $xwiki.getDocument($themeDocFullName))
+#set($themeObj = $themeDoc.getObject('ColorThemes.ColorThemeClass'))
+#set($logoname = $themeObj.getProperty('logoImage').value)
+#if("$!{logoname}" != '')
+  #set($logourl = $themeDoc.getAttachmentURL($logoname))
+#else
+  #set($logoname = $xwiki.getSkinPreference('logo', 'logo.png'))
+  #set($logo = $!prefdoc.getAttachment($logoname))
+  #if(!$logo)
+    #set($logourl = $xwiki.getSkinFile($logoname))
+  #else
+    #set($logourl = $prefdoc.getAttachmentURL($logo.filename))
+  #end
+#end
+    &lt;img src="$!logourl" alt="Logo"/&gt;
+    &lt;/a&gt;
+  &lt;/div&gt; ## companylogo
+  &lt;div class="sep"&gt;·&lt;/div&gt;
+  #set($spaceHome = $xwiki.getDocument("${doc.space}.WebHome"))
+  &lt;h1 id="spaceName"&gt;&lt;a href="$spaceHome.getURL()"&gt;$spaceHome.displayTitle&lt;/a&gt;&lt;/h1&gt;
+  &lt;/div&gt; ## company
+  &lt;div class="clearfloats"&gt;&lt;/div&gt;
+&lt;/div&gt; ## headerglobal
+#end
+### TODO: Format the header for pdf output</header.vm>
 </property>
 <property>
 <logo></logo>

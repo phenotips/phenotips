@@ -1970,6 +1970,13 @@ kqIDRaFRz7IAAAAASUVORK5CYII=
     height: 98px;
     border-bottom: 2px solid;
 }
+#company h1 {
+  margin: 0 0 0 80px;
+  line-height: 110px;
+}
+#company .sep {
+  visibility: hidden;
+}
 .inlinebody #hierarchy, .editbody #hierarchy {
     border-right: 0 none;
 }
