@@ -78,6 +78,18 @@
   (% class="clear" %)((()))
 #end
 #__displayIfNotEmpty2Col('omim_id' '' '' '')
+
+#if ($xcontext.action == 'edit')
+{{html}}&lt;div class="pubmed-search-box emphasized-box quick-search-box"&gt;&lt;fieldset&gt;
+&lt;h3 class="section"&gt;Search PubMed&lt;/h3&gt;
+&lt;label for="pubmed"&gt;Type in your query:&lt;/label&gt;
+&lt;input type=text id="pubmed" class="suggested multi suggest-pubmed portal withTip" value="" name="pubmed"/&gt;
+&lt;div&gt;
+&lt;div id="pubmed-search-history"&gt;
+&lt;h4 class="search-history-title"&gt;Search history&lt;/h4&gt;
+&lt;/div&gt;
+&lt;/div&gt;{{/html}}
+#end
 )))##chapter
 
 (% class="clear" %)((()))
