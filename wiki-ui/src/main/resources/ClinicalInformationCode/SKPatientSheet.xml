@@ -63,7 +63,7 @@
 #if ($config &amp;&amp; "$!{config.getProperty('measurements').value}" == '1')
 (% class="clear measurement-info chapter twothird-width" %)(((
 == Measurements ==
-#__extradata_displayTable('ClinicalInformationCode.MeasurementsClass' [] {'counter' : false, 'labels' : true})
+#__extradata_displayTable('ClinicalInformationCode.MeasurementsClass' {'counter' : false, 'labels' : true})
 )))##chapter
 #end
 
@@ -95,7 +95,7 @@ $doc.display('family_history')
 #if ($config &amp;&amp; "$!{config.getProperty('variants').value}" == '1')
 (% class="clear variant-info chapter" %)(((
 == Variants ==
-#__extradata_displayTable('ClinicalInformationCode.VariantClass' [] {'counter' : true, 'labels' : false})
+#__extradata_displayTable('ClinicalInformationCode.VariantClass' {'counter' : true, 'labels' : false})
 )))##chapter
 #end
 

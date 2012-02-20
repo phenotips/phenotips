@@ -32,11 +32,34 @@
 <nameField></nameField>
 <validationScript></validationScript>
 <bmi>
-<customDisplay></customDisplay>
+<customDisplay>{{velocity}}
+#if ($context.action == 'inline' || $context.action == 'edit' &amp;&amp; ("$!{request.editor}" == '' || $request.editor == 'inline'))
+  #set ($cssClass = '')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  #if ($value &lt; 18.5)
+    #set ($title = 'Below normal')
+  #elseif ($value &gt; 25.5)
+    #set ($cssClass = 'above-normal')
+    #set ($title = 'Above normal value')
+  #elseif ($dValue != '')
+    #set ($cssClass = 'normal')
+    #set ($title = 'Normal value')
+  #end
+  {{html wiki=false clean=false}}
+  &lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;
+  &lt;div class="$name displayed-value $cssClass" title="$title"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{/html}}
+#end
+{{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>bmi</name>
 <number>4</number>
-<numberType>long</numberType>
+<numberType>float</numberType>
 <prettyName>BMI</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
@@ -60,7 +83,32 @@
 <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
 </date>
 <hc_percentile>
-<customDisplay></customDisplay>
+<customDisplay>{{velocity}}
+#if ($context.action == 'inline' || $context.action == 'edit' &amp;&amp; ("$!{request.editor}" == '' || $request.editor == 'inline'))
+  #set ($cssClass = '')
+  #set ($title = '')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  #if ($value &lt; 3)
+    #set ($cssClass = 'below-normal value')
+    #set ($title = 'Below normal')
+  #elseif ($value &gt; 97)
+    #set ($cssClass = 'above-normal')
+    #set ($title = 'Above normal value')
+  #elseif ($dValue != '')
+    #set ($cssClass = 'normal')
+    #set ($title = 'Normal value')
+  #end
+  {{html wiki=false clean=false}}
+  &lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;
+  &lt;div class="$name displayed-value $cssClass" title="$title"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{/html}}
+#end
+{{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>hc_percentile</name>
 <number>6</number>

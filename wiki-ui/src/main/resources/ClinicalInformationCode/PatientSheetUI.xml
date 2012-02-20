@@ -1725,12 +1725,39 @@ document.observe('xwiki:dom:loaded', function() {
       } else {
         target.value = '';
       }
+      var displayedValue = target.next('div.displayed-value');
+      if (displayedValue) {
+        displayedValue.update(target.value);
+        if (target.value == '') {
+           displayedValue.update('-');
+           displayedValue.title = '';
+           displayedValue.removeClassName('above-normal');
+           displayedValue.removeClassName('below-normal');
+           displayedValue.removeClassName('normal');
+        }
+        if (target.value &lt; 18.5) {
+           displayedValue.title = 'Below normal value';
+           displayedValue.removeClassName('above-normal');
+           displayedValue.removeClassName('normal');
+           displayedValue.addClassName('below-normal');
+        } else if (target.value &gt; 25.5) {
+           displayedValue.title = 'Above normal value';
+           displayedValue.addClassName('above-normal');
+           displayedValue.removeClassName('normal');
+           displayedValue.removeClassName('below-normal');
+        } else {
+           displayedValue.title = 'Normal value';
+           displayedValue.removeClassName('above-normal');
+           displayedValue.removeClassName('below-normal');
+           displayedValue.addClassName('normal');
+        }
+      }
     }
   });
 });</code>
 </property>
 <property>
-<name></name>
+<name>Automatic computation of growth parameters</name>
 </property>
 <property>
 <parse></parse>
@@ -2180,8 +2207,9 @@ input.wrongValue {
 </property>
 <property>
 <code>#template('colorThemeInit.vm')
-.extradata-list {
+table.extradata-list {
     width: 99%;
+   margin-top: -.5em;
 }
 .extradata-list td, .extradata-list th {
     border: 1px solid $theme.backgroundSecondaryColor;
@@ -2244,8 +2272,20 @@ input.wrongValue {
   text-align: left;
   margin: 0 !important;
 }
-table.withLabel td {
+table.withLabel td, table.withLabel th {
   border: 0 none;
+}
+table.withLabel tr:first-child th {
+  display: none;
+}
+.extradata-list .bmi, .extradata-list .hc_percentile {
+  min-width: 4em;
+}
+.extradata-list .normal {
+  color: $theme.notificationSuccessColor;
+}
+.extradata-list .below-normal, .extradata-list .above-normal {
+  color: $theme.notificationErrorColor;
 }</code>
 </property>
 <property>
@@ -2325,15 +2365,14 @@ table.withLabel td {
 #macro (__extradata_addTool $classname $anchor)
   {{html}}&lt;span class="buttonwrapper"&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
 
-#macro (__extradata_displayTable $dataClassName $readOnlyProperties $options)
+#macro (__extradata_displayTable $dataClassName $options)
   #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
   #if ($dataClass)
     #if ($context.action == 'view' &amp;&amp; $doc.getObjects($dataClassName).size() == 0)
       (% class="hint" %)None specified
     #else
       (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}" %)
-      #if ("$!{options.labels}" != 'true')|=(% class="col-label" %)#if ("$!{options.counter}" == 'true')# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name" %)$prop.prettyName#end#if ($context.action == 'edit')|=(% class="actions" %)
-      #end
+      #if ("$!{options.counter}" == 'true')|=(% class="col-label" %)# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name" %)$prop.prettyName#end#if ($context.action == 'edit')|=(% class="actions" %)
     #end
     #foreach ($o in $doc.getObjects($dataClassName))
       #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name" %)#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="hint" &gt;$prop.prettyName&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $o)#end#if ($context.action == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
