@@ -60,6 +60,15 @@
 
 (% class="clear" %)((()))
 
+#if ($config &amp;&amp; "$!{config.getProperty('measurements').value}" == '1')
+(% class="clear measurement-info chapter twothird-width" %)(((
+== Measurements ==
+#__extradata_displayTable('ClinicalInformationCode.MeasurementsClass' [] {'counter' : false, 'labels' : true})
+)))##chapter
+#end
+
+(% class="clear" %)((()))
+
 (% class="clear clinical-info phenotype-info chapter mandatory" %)(((
 #__qsBox("$!{class.name}_$!{obj.number}_phenotype")
 (% class="twothird-width" %)(((
@@ -86,7 +95,7 @@ $doc.display('family_history')
 #if ($config &amp;&amp; "$!{config.getProperty('variants').value}" == '1')
 (% class="clear variant-info chapter" %)(((
 == Variants ==
-#__variant_displayVariants()
+#__extradata_displayTable('ClinicalInformationCode.VariantClass' [] {'counter' : true, 'labels' : false})
 )))##chapter
 #end
 

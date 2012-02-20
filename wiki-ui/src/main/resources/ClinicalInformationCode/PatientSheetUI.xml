@@ -1284,12 +1284,12 @@ document.observe('dom:loaded', function() {
 <cache>long</cache>
 </property>
 <property>
-<code>var Variants = (function (Variants) {
-  var tools = Variants.tools = Variants.tools || {};
+<code>var ExtraData = (function (ExtraData) {
+  var tools = ExtraData.tools = ExtraData.tools || {};
   tools.Editor = Class.create({
     initialize : function () {
-      $$('.variant-list a.delete').invoke('observe', 'click', this.ajaxDeleteData.bindAsEventListener(this));
-      $$('.variant-info a.add').invoke('observe', 'click', this.ajaxAddData.bindAsEventListener(this));
+      $$('.extradata-list a.delete').invoke('observe', 'click', this.ajaxDeleteData.bindAsEventListener(this));
+      $$('.list-actions a.add').invoke('observe', 'click', this.ajaxAddData.bindAsEventListener(this));
     },
     ajaxDeleteData : function (event) {
       event.stop();
@@ -1319,7 +1319,7 @@ document.observe('dom:loaded', function() {
         }
       },
       {
-         confirmationText : "Are you sure you wish to delete this variant?"
+         confirmationText : "Are you sure you wish to delete this row?"
       });
     },
     ajaxAddData : function (event) {
@@ -1335,27 +1335,27 @@ document.observe('dom:loaded', function() {
          new XWiki.widgets.Notification('Cannot add data: type not found', 'error');
          return;
       }
-      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?&amp;xpage=plain&amp;xaction=lastvar'));
+      var dataTable = $('extradata-list-' + classname);
+      if (!dataTable) {
+        new XWiki.widgets.Notification("Cannot find the list to update " + classname, 'error');
+      }
+      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?&amp;xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;withLabel=' + dataTable.hasClassName('withLabel')));
       new Ajax.Request(url, {
         onCreate : function() {
           addTrigger.disabled = true
-          addTrigger._x_notif = new XWiki.widgets.Notification('Adding variant...', 'inprogress');
+          addTrigger._x_notif = new XWiki.widgets.Notification('Adding...', 'inprogress');
         },
         onSuccess : function (response) {
           addTrigger._x_notif.hide();
-          var dataTable = $('variant-list-' + classname);
-          //var dataTable = addTrigger.up('.variant-list');
-          if (dataTable) {
+          var rowHead = '';
+          if (dataTable.hasClassName('withCounter')) {
             var idx = dataTable.select('.row-count').size() + 1;
-            var rowHead = '';
             rowHead = '&lt;th scope="row" class="row-count"&gt;' + idx + '&lt;/th&gt;';
-            dataTable.insert({'bottom' : '&lt;tr class="new"&gt;' + rowHead + response.responseText + '&lt;/tr&gt;'});
-            var lastAdded = dataTable.down('.new');
-            lastAdded.down('a.delete').observe('click', this.ajaxDeleteData.bindAsEventListener(this));
-            lastAdded.removeClassName('new');
-          } else {
-            new XWiki.widgets.Notification("Cannot find the variant list to update " + classname, 'error');
           }
+          dataTable.down('tbody').insert({'bottom' : '&lt;tr class="new"&gt;' + rowHead + response.responseText + '&lt;/tr&gt;'});
+          var lastAdded = dataTable.down('.new');
+          lastAdded.down('a.delete').observe('click', this.ajaxDeleteData.bindAsEventListener(this));
+          lastAdded.removeClassName('new');
         }.bind(this),
         onFailure : function(response) {
           var failureReason = response.statusText;
@@ -1380,15 +1380,15 @@ document.observe('dom:loaded', function() {
       });
     }
   });
-  return Variants;
-}(Variants || {}));
+  return ExtraData;
+}(ExtraData || {}));
 
 document.observe('xwiki:dom:loaded', function() {
-  new Variants.tools.Editor();
+  new ExtraData.tools.Editor();
 })</code>
 </property>
 <property>
-<name>Add/Remove variants</name>
+<name>Add/Remove data associated with the patient report</name>
 </property>
 <property>
 <parse>1</parse>
@@ -1587,6 +1587,117 @@ document.observe('xwiki:dom:loaded', function() {
 </property>
 <property>
 <use>onDemand</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PatientSheetUI</name>
+<number>7</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>c5e3eab9-1e8c-4935-a6f4-825937f81ec5</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>document.observe('xwiki:dom:loaded', function() {
+  // TODO: make sure events work on all browsers
+  $$('.extradata-list td.weight input, .extradata-list td.height input').invoke('observe', 'keyup', function(event) {
+    var elt = event.element();
+    var row = elt &amp;&amp; elt.up('tr');
+    if (row) {
+      var target = row.down('td.bmi input');
+      if (!target) {return}
+      var weight = row.down('td.weight input');
+      var height = row.down('td.height input');
+      if (weight &amp;&amp; weight.value &amp;&amp; height &amp;&amp; height.value) {
+        var h = parseInt(height.value);
+        var w = parseInt(weight.value);
+        target.value = Math.round(w * 1000000.0 / (h * h))/100.0;
+      } else {
+        target.value = '';
+      }
+    }
+  });
+});</code>
+</property>
+<property>
+<name></name>
+</property>
+<property>
+<parse></parse>
+</property>
+<property>
+<use>currentPage</use>
 </property>
 </object>
 <object>
@@ -2000,59 +2111,59 @@ input.wrongValue {
 </property>
 <property>
 <code>#template('colorThemeInit.vm')
-.variant-list {
+.extradata-list {
     width: 99%;
 }
-.variant-list td, .variant-list th {
+.extradata-list td, .extradata-list th {
     border: 1px solid $theme.backgroundSecondaryColor;
     border-left: 1px solid $theme.pageContentBackgroundColor;
     border-right: 1px solid $theme.pageContentBackgroundColor;
 }
-.variant-list th.col-label {
+.extradata-list th.col-label {
     font-weight: normal;
     font-variant: small-caps;
 }
-.variant-list th.col-label, .viewbody td {
+.extradata th.col-label, .viewbody td {
     text-align: center;
 }
 .viewbody td.comments, .editbody th.comments {
     text-align: left;
     border-right: 0 none;
 }
-.variant-list th.row-count {
+.extradata-list th.row-count {
     background: transparent;
 }
-.variant-list th.row-count,
-.variant-list td.start,
-.variant-list td.end {
+.extradata-list th.row-count,
+.extradata-list td.start,
+.extradata-list td.end {
     text-align: right;
 }
-.variant-list td.start,
-.variant-list td.end,
-.variant-list td.band {
+.extradata-list td.start,
+.extradata-list td.end,
+.extradata-list td.band {
     min-width: 6em;
 }
-.variant-list th.comments {
+.extradata-list th.comments {
     min-width: 20em;
 }
-.variant-list .xwiki-form-listclass {
+.extradata-list .xwiki-form-listclass {
     display: block;
     white-space: nowrap;
 }
-.variant-list .fullScreenEditLinkContainer {
-    display: none;
+.extradata-list .fullScreenEditLinkContainer {
+    display: none !important;
 }
-.variant-list th.actions {
+.extradata-list th.actions {
   width: 24px;
   ## border-left: 0 none;
 }
-.variant-list th.actions .buttonwrapper {
+.extradata-list th.actions .buttonwrapper {
     display: block;
     height: 2.3em;
     position: relative;
     margin: 0;
 }
-.variant-list th.actions .add-data-button {
+.extradata-list th.actions .add-data-button {
     position: absolute;
     right: 0;
 }
@@ -2063,10 +2174,13 @@ input.wrongValue {
 .list-actions .buttonwrapper {
   text-align: left;
   margin: 0 !important;
+}
+table.withLabel td {
+  border: 0 none;
 }</code>
 </property>
 <property>
-<name>Variant table ui</name>
+<name>Extra data table ui</name>
 </property>
 <property>
 <parse>1</parse>
@@ -2130,51 +2244,51 @@ input.wrongValue {
 #end
 #end
 
-
-#macro (__variant_deleteTool $object $anchor)
+## =====================================================================
+##
+## "Tabelar" data associated with the patient report
+##
+##
+#macro (__extradata_deleteTool $object $anchor)
   {{html}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="Delete"&gt;Delete&lt;/a&gt;&lt;/span&gt;{{/html}}
 #end
 
-#macro (__variant_addTool $classname $anchor)
-  {{html}}&lt;span class="buttonwrapper"&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New variant'&gt;New variant&lt;/a&gt;&lt;/span&gt;{{/html}}#end
+#macro (__extradata_addTool $classname $anchor)
+  {{html}}&lt;span class="buttonwrapper"&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
 
-#set($dataClassName = 'ClinicalInformationCode.VariantClass')
-
-#macro (__variant_displayVariants)
-    #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
-    #if ($dataClass)
+#macro (__extradata_displayTable $dataClassName $readOnlyProperties $options)
+  #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
+  #if ($dataClass)
     #if ($context.action == 'view' &amp;&amp; $doc.getObjects($dataClassName).size() == 0)
-    (% class="hint" %)None specified
+      (% class="hint" %)None specified
     #else
-    ##(% class="actions" %)#__variant_addTool($dataClassName "project-data-${dataClassName}")
-    (% class="variant-list" id="variant-list-${dataClassName}" %)
-    |=(% class="col-label" %)# #foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name" %)$prop.prettyName#end#if ($context.action == 'edit')|=(% class="actions" %)#end
-
+      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}" %)
+      #if ("$!{options.labels}" != 'true')|=(% class="col-label" %)#if ("$!{options.counter}" == 'true')# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name" %)$prop.prettyName#end#if ($context.action == 'edit')|=(% class="actions" %)
+      #end
+    #end
     #foreach ($o in $doc.getObjects($dataClassName))
-      |=(% class="row-count" %)${velocityCount}#foreach($prop in $dataClass.properties)|(% class="$prop.name" %)$doc.display($prop.getName(), $o)#end#if ($context.action == 'edit')|(% class="actions" %)#__variant_deleteTool($o "project-data-${dataClassName}") #end
-
+      #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name" %)#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="hint" &gt;$prop.prettyName&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $o)#end#if ($context.action == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
     #end
 
-    #if ($context.action == 'edit')(% class="list-actions" %)(((#__variant_addTool($dataClassName "project-data-${dataClassName}"))))#end
+    #if ($context.action == 'edit')(% class="list-actions" %)(((#__extradata_addTool($dataClassName "extradata-${dataClassName}"))))#end
 
     #end
     #end
 #end
 
-#macro (__variant_displayLastVariant)
-  #set ($objects = $doc.getObjects('ClinicalInformationCode.VariantClass'))
+#macro (__extradata_displayLastEntry $dataClassName $withLabel)
+  #set ($objects = $doc.getObjects($dataClassName))
   #if ($objects.size() &gt; 0)
     #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
     #set($dataClass = $targetObj.xWikiClass)
-    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}"&gt;$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__variant_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
+    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}"&gt;#if ("$!{withLabel}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="hint" &gt;$prop.prettyName&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
   #end
 #end
 {{/velocity}}
 
 {{velocity}}
-#if ("$!{request.xaction}" == 'lastvar')
-  #__variant_displayLastVariant()
-  ###set($class = '')
+#if ("$!{request.xaction}" == 'lastentry')
+  #__extradata_displayLastEntry($request.dataClassName $request.withLabel)
 #else
 #if ($context.action != 'export')
 (% id="table-of-contents" %)(((
