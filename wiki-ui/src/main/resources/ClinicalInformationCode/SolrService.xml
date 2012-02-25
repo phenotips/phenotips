@@ -24,8 +24,7 @@
 <hidden>false</hidden>
 <content>{{velocity}}{{html clean="false"}}
 #if ($xcontext.action == 'get')
-  $response.setContentType('text/xml')
-#end
+$response.setContentType('text/xml')
 #set ($results = $services.solr.search("$!request.q"))
 &lt;response&gt;
 &lt;result name="response" numFound="$results.size()"&gt;
@@ -47,4 +46,5 @@
 #end
 &lt;/result&gt;
 &lt;/response&gt;
+#end
 {{/html}}{{/velocity}}</content></xwikidoc>
