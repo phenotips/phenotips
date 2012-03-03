@@ -41,6 +41,7 @@ public class SystemPropertiesConfigurationSource extends CommonsConfigurationSou
     public void initialize() throws InitializationException
     {
         BaseConfiguration configuration = new BaseConfiguration();
+        configuration.setDelimiterParsingDisabled(true);
 
         Properties properties = System.getProperties();
         for (String key : properties.stringPropertyNames()) {

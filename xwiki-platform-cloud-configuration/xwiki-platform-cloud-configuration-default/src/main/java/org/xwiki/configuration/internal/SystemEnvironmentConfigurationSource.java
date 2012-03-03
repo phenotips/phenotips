@@ -41,6 +41,7 @@ public class SystemEnvironmentConfigurationSource extends CommonsConfigurationSo
     public void initialize() throws InitializationException
     {
         BaseConfiguration configuration = new BaseConfiguration();
+        configuration.setDelimiterParsingDisabled(true);
 
         Map<String, String> environment = System.getenv();
         for (String key : environment.keySet()) {
