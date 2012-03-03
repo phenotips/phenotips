@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
+
 <!--
   *
   * See the NOTICE file distributed with this work for additional
@@ -19,24 +20,35 @@
   * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   *
---><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.platform</groupId>
-    <artifactId>xwiki-platform-cloud</artifactId>
+    <artifactId>xwiki-platform-cloud-configuration</artifactId>
     <version>3.5</version>
   </parent>
-  <artifactId>xwiki-platform-cloud-configuration</artifactId>
-  <packaging>pom</packaging>
+  <artifactId>xwiki-platform-cloud-configuration-hibernate-api</artifactId>
 
-  <name>XWiki Platform - Cloud - Configuration - Parent POM</name>
+  <name>XWiki Platform - Cloud - Configuration - Hibernate - API</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
   </properties>
-  
-  <modules>
-    <module>xwiki-platform-cloud-configuration-default</module>
-    <module>xwiki-platform-cloud-configuration-hibernate-api</module>
-  </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-configuration-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>
