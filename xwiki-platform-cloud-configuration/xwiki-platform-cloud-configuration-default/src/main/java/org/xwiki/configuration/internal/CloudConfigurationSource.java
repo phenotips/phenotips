@@ -19,10 +19,14 @@
  */
 package org.xwiki.configuration.internal;
 
+import java.io.InputStream;
+import java.util.Properties;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.configuration.BaseConfiguration;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
@@ -76,8 +80,49 @@ public class CloudConfigurationSource extends DefaultConfigurationSource
     public void initialize() throws InitializationException
     {
         super.initialize();
+
         addConfigurationSource(systemPropertiesConfigurationSource);
         addConfigurationSource(systemEnvironmentConfigurationSource);
+
+        try {
+            ConfigurationSource remappings = loadRemappings();
+            if (remappings != null) {
+                addConfigurationSource(remappings);
+            }
+        } catch (Exception e) {
+            throw new InitializationException(String.format("Unable to read remappings %s", REMAPPING_FILE), e);
+        }
+    }
+
+    /**
+     * Load remapping definitions from the remapping file and provide them as a configuration source.
+     * 
+     * @return A configuration source containing the remappings. null if the file is not present.
+     * @throws Exception if there is an error loading the file.
+     */
+    private ConfigurationSource loadRemappings() throws Exception
+    {
+        InputStream is = environment.getResourceAsStream(REMAPPING_FILE);
+        if (is == null) {
+            return null;
+        }
+
+        Properties properties = new Properties();
+        try {
+            properties.load(is);
+        } catch (Exception e) {
+            throw new InitializationException(String.format("Unable to read %s", REMAPPING_FILE), e);
+        }
+
+        BaseConfiguration configuration = new BaseConfiguration();
+        for (String key : properties.stringPropertyNames()) {
+            configuration.setProperty(key, properties.get(key));
+        }
+
+        CommonsConfigurationSource commonsConfigurationSource = new CommonsConfigurationSource();
+        commonsConfigurationSource.setConfiguration(configuration);
+
+        return commonsConfigurationSource;
     }
 
     @Override
