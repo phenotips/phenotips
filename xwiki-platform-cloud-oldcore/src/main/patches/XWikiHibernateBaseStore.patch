@@ -1,5 +1,5 @@
 diff --git com/xpn/xwiki/store/XWikiHibernateBaseStore.java com/xpn/xwiki/store/XWikiHibernateBaseStore.java
-index e4522e2..c951aee 100644
+index e4522e2..d7beda1 100644
 --- com/xpn/xwiki/store/XWikiHibernateBaseStore.java
 +++ com/xpn/xwiki/store/XWikiHibernateBaseStore.java
 @@ -29,6 +29,7 @@
@@ -22,16 +22,20 @@ index e4522e2..c951aee 100644
  import org.xwiki.context.Execution;
  
  import com.xpn.xwiki.XWiki;
-@@ -164,7 +168,15 @@ public DatabaseProduct getDatabaseProductName(XWikiContext context)
+@@ -164,7 +168,19 @@ public DatabaseProduct getDatabaseProductName(XWikiContext context)
       */
      private synchronized void initHibernate(XWikiContext context) throws HibernateException
      {
 -        getConfiguration().configure(getPath());
 +        try {
-+            Provider<HibernateConfigurator> hibernateConfigurator =
++            Provider<HibernateConfigurator> hibernateConfiguratorProvider =
 +                Utils.getComponentManager().lookup(Provider.class, "hibernate");
 +
-+            Document hibernateConfiguration = hibernateConfigurator.get().getConfiguration();
++            HibernateConfigurator hibernateConfigurator = hibernateConfiguratorProvider.get();
++
++            LOGGER.debug("Configuring Hibernate using configurator '{}'", hibernateConfigurator.getClass().getName());
++
++            Document hibernateConfiguration = hibernateConfigurator.getConfiguration();
 +            getConfiguration().configure(hibernateConfiguration);
 +        } catch (ComponentLookupException e) {
 +            throw new HibernateException(e);
