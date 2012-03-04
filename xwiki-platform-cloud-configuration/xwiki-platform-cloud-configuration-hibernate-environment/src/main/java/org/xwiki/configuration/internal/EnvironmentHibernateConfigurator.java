@@ -52,6 +52,11 @@ public class EnvironmentHibernateConfigurator implements HibernateConfigurator, 
     private static final String HIBERNATE_CONFIGURATION_FILE = "/WEB-INF/hibernate.cfg.xml";
 
     /**
+     * The prefix for hibernate-related properties.
+     */
+    private static final String HIBERNATE_PROPERTY_PREFIX = "hibernate.";
+
+    /**
      * Logger.
      */
     @Inject
@@ -108,7 +113,8 @@ public class EnvironmentHibernateConfigurator implements HibernateConfigurator, 
             Node nameAttribute = node.getAttributes().getNamedItem("name");
             if (nameAttribute != null) {
                 String propertyName = nameAttribute.getTextContent();
-                String overrideValue = configurationSource.getProperty(propertyName);
+                String overrideValue =
+                    configurationSource.getProperty(String.format("%s%s", HIBERNATE_PROPERTY_PREFIX, propertyName));
                 if (overrideValue != null) {
                     logger.debug("Setting property '{}' to '{}'", propertyName, overrideValue);
                     node.setTextContent(overrideValue);
