@@ -30,15 +30,15 @@
     <artifactId>xwiki-platform-cloud</artifactId>
     <version>3.5</version>
   </parent>
-  <artifactId>xwiki-platform-cloud-oldcore</artifactId>
+  <artifactId>xwiki-platform-cloud-legacy-oldcore</artifactId>
 
-  <name>XWiki Platform - Cloud - Old core</name>
+  <name>XWiki Platform - Cloud - Legacy old core</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
-    <!-- Location of the unpacked xwiki-core jar -->
-    <core.directory>${project.build.directory}/xwiki-platform-oldcore</core.directory>
+    <!-- Location of the unpacked legacy xwiki-core jar -->
+    <core.directory>${project.build.directory}/xwiki-platform-legacy-oldcore</core.directory>
     <!-- Location of xwiki-core sources -->
     <src.directory>${project.build.directory}/xwiki-platform-oldcore-sources</src.directory>
   </properties>
@@ -92,10 +92,16 @@
             </goals>
             <configuration>
               <artifactItems>
-                <!--Unpack compiled core -->
+                <!--
+                   Unpack compiled core 
+                   TODO: Here we are unpacking the legacy old core jar which has all the compatibility aspects applied.
+                   This should work as long as we don't patch classes that have aspects appliend on them.
+                   To do a more clean thing, a fork of the legacy old core build should be used, so that it correctly
+                   applies compatibility aspects on the patched version of the old core.
+                -->
                 <artifactItem>
                   <groupId>org.xwiki.platform</groupId>
-                  <artifactId>xwiki-platform-oldcore</artifactId>
+                  <artifactId>xwiki-platform-legacy-oldcore</artifactId>
                   <version>${project.version}</version>
                   <type>jar</type>
                   <outputDirectory>${core.directory}</outputDirectory>
