@@ -41,7 +41,7 @@
   <modules>
     <module>xwiki-platform-cloud-blobstore</module>
     <module>xwiki-platform-cloud-configuration</module>
-    <module>xwiki-platform-cloud-oldcore</module>
+    <module>xwiki-platform-cloud-legacy-oldcore</module>
   </modules>
 
   <build>

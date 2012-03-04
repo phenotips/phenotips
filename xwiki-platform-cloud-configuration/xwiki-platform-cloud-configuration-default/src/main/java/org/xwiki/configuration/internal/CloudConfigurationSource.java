@@ -28,6 +28,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.environment.Environment;
@@ -43,7 +44,8 @@ import org.xwiki.environment.Environment;
 @Component
 @Named("cloud")
 @Singleton
-public class CloudConfigurationSource extends DefaultConfigurationSource
+public class CloudConfigurationSource extends CompositeConfigurationSource implements Initializable
+
 {
     /**
      * The prefix to be used in order to look for remapped properties.
@@ -63,6 +65,13 @@ public class CloudConfigurationSource extends DefaultConfigurationSource
     private Environment environment;
 
     /**
+     * XWiki properties configuration source.
+     */
+    @Inject
+    @Named("xwikiproperties")
+    private ConfigurationSource xwikiPropertiesSource;
+
+    /**
      * System properties configuration source.
      */
     @Inject
@@ -79,10 +88,9 @@ public class CloudConfigurationSource extends DefaultConfigurationSource
     @Override
     public void initialize() throws InitializationException
     {
-        super.initialize();
-
         addConfigurationSource(systemPropertiesConfigurationSource);
         addConfigurationSource(systemEnvironmentConfigurationSource);
+        addConfigurationSource(xwikiPropertiesSource);
 
         try {
             ConfigurationSource remappings = loadRemappings();

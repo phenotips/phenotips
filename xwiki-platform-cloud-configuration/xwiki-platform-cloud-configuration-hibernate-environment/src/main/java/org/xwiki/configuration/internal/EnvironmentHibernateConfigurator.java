@@ -26,6 +26,7 @@ import javax.inject.Named;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -49,6 +50,17 @@ public class EnvironmentHibernateConfigurator implements HibernateConfigurator, 
      * The Hibernate configuration file.
      */
     private static final String HIBERNATE_CONFIGURATION_FILE = "/WEB-INF/hibernate.cfg.xml";
+
+    /**
+     * The prefix for hibernate-related properties.
+     */
+    private static final String HIBERNATE_PROPERTY_PREFIX = "hibernate.";
+
+    /**
+     * Logger.
+     */
+    @Inject
+    private Logger logger;
 
     /**
      * Configuration.
@@ -98,10 +110,13 @@ public class EnvironmentHibernateConfigurator implements HibernateConfigurator, 
     private void configureHibernateProperties(Node node)
     {
         if ("property".equals(node.getNodeName())) {
-            Node name = node.getAttributes().getNamedItem("name");
-            if (name != null) {
-                String overrideValue = configurationSource.getProperty(name.getTextContent());
+            Node nameAttribute = node.getAttributes().getNamedItem("name");
+            if (nameAttribute != null) {
+                String propertyName = nameAttribute.getTextContent();
+                String overrideValue =
+                    configurationSource.getProperty(String.format("%s%s", HIBERNATE_PROPERTY_PREFIX, propertyName));
                 if (overrideValue != null) {
+                    logger.debug("Setting property '{}' to '{}'", propertyName, overrideValue);
                     node.setTextContent(overrideValue);
                 }
             }
