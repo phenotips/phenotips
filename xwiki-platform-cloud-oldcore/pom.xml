@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+
+<!--
+ *
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.xwiki.platform</groupId>
+    <artifactId>xwiki-platform-cloud</artifactId>
+    <version>3.5</version>
+  </parent>
+  <artifactId>xwiki-platform-cloud-oldcore</artifactId>
+
+  <name>XWiki Platform - Cloud - Old core</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+    <!-- Location of the unpacked xwiki-core jar -->
+    <core.directory>${project.build.directory}/xwiki-platform-oldcore</core.directory>
+    <!-- Location of xwiki-core sources -->
+    <src.directory>${project.build.directory}/xwiki-platform-oldcore-sources</src.directory>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
+      <version>${project.version}</version>
+      <type>java-source</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
+      <version>${project.version}</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-cloud-configuration-hibernate-api</artifactId>
+      <version>${project.version}</version>
+      <type>jar</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <!-- Java source directory -->
+    <sourceDirectory>${src.directory}</sourceDirectory>
+    <!-- Java classes output directory -->
+    <outputDirectory>${core.directory}</outputDirectory>
+
+    <plugins>
+      <plugin>
+        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <!-- Unpack xwiki-core -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <!--Unpack compiled core -->
+                <artifactItem>
+                  <groupId>org.xwiki.platform</groupId>
+                  <artifactId>xwiki-platform-oldcore</artifactId>
+                  <version>${project.version}</version>
+                  <type>jar</type>
+                  <outputDirectory>${core.directory}</outputDirectory>
+                </artifactItem>
+                <!-- Unpack core sources -->
+                <artifactItem>
+                  <groupId>org.xwiki.platform</groupId>
+                  <artifactId>xwiki-platform-oldcore</artifactId>
+                  <version>${project.version}</version>
+                  <type>java-source</type>
+                  <includes>com/xpn/xwiki/store/XWikiHibernateBaseStore.java</includes>
+                  <outputDirectory>${src.directory}</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <!-- Patch the java classes -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-patch-plugin</artifactId>
+        <version>1.1.1</version>
+        <configuration>
+          <skipApplication>false</skipApplication>
+        </configuration>
+        <executions>
+          <execution>
+            <configuration>
+              <patchDirectory>src/main/patches/</patchDirectory>
+              <targetDirectory>${src.directory}</targetDirectory>
+              <patches>
+                <patch>XWikiHibernateBaseStore.patch</patch>
+              </patches>
+              <patchTrackingFile>${project.build.directory}/patch-log.txt</patchTrackingFile>
+              <naturalOrderProcessing>true</naturalOrderProcessing>
+              <ignoreWhitespace>true</ignoreWhitespace>
+            </configuration>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>apply</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

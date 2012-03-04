@@ -1,0 +1,41 @@
+diff --git com/xpn/xwiki/store/XWikiHibernateBaseStore.java com/xpn/xwiki/store/XWikiHibernateBaseStore.java
+index e4522e2..c951aee 100644
+--- com/xpn/xwiki/store/XWikiHibernateBaseStore.java
++++ com/xpn/xwiki/store/XWikiHibernateBaseStore.java
+@@ -29,6 +29,7 @@
+ 
+ import javax.inject.Inject;
+ import javax.inject.Named;
++import javax.inject.Provider;
+ 
+ import org.hibernate.FlushMode;
+ import org.hibernate.HibernateException;
+@@ -45,8 +46,11 @@
+ import org.hibernate.tool.hbm2ddl.DatabaseMetadata;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
++import org.w3c.dom.Document;
++import org.xwiki.component.manager.ComponentLookupException;
+ import org.xwiki.component.phase.Initializable;
+ import org.xwiki.component.phase.InitializationException;
++import org.xwiki.configuration.HibernateConfigurator;
+ import org.xwiki.context.Execution;
+ 
+ import com.xpn.xwiki.XWiki;
+@@ -164,7 +168,15 @@ public DatabaseProduct getDatabaseProductName(XWikiContext context)
+      */
+     private synchronized void initHibernate(XWikiContext context) throws HibernateException
+     {
+-        getConfiguration().configure(getPath());
++        try {
++            Provider<HibernateConfigurator> hibernateConfigurator =
++                Utils.getComponentManager().lookup(Provider.class, "hibernate");
++
++            Document hibernateConfiguration = hibernateConfigurator.get().getConfiguration();
++            getConfiguration().configure(hibernateConfiguration);
++        } catch (ComponentLookupException e) {
++            throw new HibernateException(e);
++        }
+ 
+         XWiki wiki = context.getWiki();
+         if (wiki != null && wiki.Param("xwiki.db") != null && !wiki.isVirtualMode()) {

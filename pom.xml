@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
   *
   * See the NOTICE file distributed with this work for additional
@@ -42,6 +41,7 @@
   <modules>
     <module>xwiki-platform-cloud-blobstore</module>
     <module>xwiki-platform-cloud-configuration</module>
+    <module>xwiki-platform-cloud-oldcore</module>
   </modules>
 
   <build>
