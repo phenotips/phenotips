@@ -39,5 +39,6 @@
 
   <modules>
     <module>xwiki-platform-cloud-distribution-beanstalk</module>
+    <module>xwiki-platform-cloud-distribution-beanstalk-s3</module>
   </modules>
 </project>
