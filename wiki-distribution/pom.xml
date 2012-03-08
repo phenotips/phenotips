@@ -54,6 +54,13 @@
     </dependency>
     <dependency>
       <groupId>edu.toronto.cs.cidb</groupId>
+      <artifactId>patient-tools</artifactId>
+      <version>${project.version}</version>
+      <type>jar</type>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>edu.toronto.cs.cidb</groupId>
       <artifactId>omim-access-service</artifactId>
       <version>${project.version}</version>
       <type>jar</type>

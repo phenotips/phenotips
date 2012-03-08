@@ -23,16 +23,15 @@
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
 <content>{{velocity}}
-#set($phenotypeDisplayTools  = $context.context.vcontext.get('phenotypeDisplayTools'))
+#set($phenotypeDisplayTools = $services.phenotype)
 #set($data = $context.context.vcontext.get("mapping__${name}"))
 
 #if ("$!{data}" != '')
 $phenotypeDisplayTools.use($prefix, $name)##
 $phenotypeDisplayTools.setMode($context.action)##
 $phenotypeDisplayTools.setDocument($doc)##
-$phenotypeDisplayTools.setSelectedValues($value)##
+$!phenotypeDisplayTools.setSelectedValues($value)##
 $phenotypeDisplayTools.setMessageMap($context.context.vcontext.get('mapping__extraMessages'))##
 $phenotypeDisplayTools.display($data)##
-$phenotypeDisplayTools.reset()##
 #end
 {{/velocity}}</content></xwikidoc>
