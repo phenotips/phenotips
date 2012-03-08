@@ -41,9 +41,9 @@
        dependency -->
   <dependencies>
     <dependency>
-      <groupId>hsqldb</groupId>
+      <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
-      <version>1.8.0.7</version>
+      <version>2.2.8</version>
     </dependency>
     <dependency>
       <groupId>edu.toronto.cs.cidb</groupId>
@@ -92,9 +92,9 @@
           </configuration>
           <dependencies>
             <dependency>
-              <groupId>hsqldb</groupId>
+              <groupId>org.hsqldb</groupId>
               <artifactId>hsqldb</artifactId>
-              <version>1.8.0.7</version>
+              <version>2.2.8</version>
             </dependency>
             <!-- We need the Servlet API dep since it's used by the Packager and since it has
                  a provided scope in XWiki core it's not inherited as part of transitive deps -->
