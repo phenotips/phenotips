@@ -22,16 +22,16 @@ package edu.toronto.cs.cidb.listeners;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-import org.xwiki.bridge.event.DocumentCreatedEvent;
-import org.xwiki.bridge.event.DocumentUpdatedEvent;
-import org.xwiki.context.Execution;
+import org.xwiki.bridge.event.DocumentCreatingEvent;
+import org.xwiki.bridge.event.DocumentUpdatingEvent;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -40,33 +40,30 @@ import com.xpn.xwiki.objects.BaseObject;
  * 
  * @version $Id$
  */
-public class PatientSaveListener implements EventListener
+@Component
+@Named("patient-onset-updater")
+@Singleton
+public class PatientOnsetUpdater implements EventListener
 {
-    /** Provides access to the current execution context. */
-    @Inject
-    private Execution execution;
-
     @Override
     public String getName()
     {
-        // The unique name of this event listener
-        return "PatientRecordSaved";
+        return "patient-onset-updater";
     }
 
     @Override
     public List<Event> getEvents()
     {
         // The list of events this listener listens to
-        return Arrays.<Event> asList(new DocumentCreatedEvent(), new DocumentUpdatedEvent());
+        return Arrays.<Event> asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        // Current context
-        XWikiContext crtContext = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
         XWikiDocument doc = (XWikiDocument) source;
-        BaseObject patientRecordObj = doc.getObject("ClinicalInformationCode.FPatientClass");
+        BaseObject patientRecordObj = doc.getXObject(new DocumentReference(
+            doc.getDocumentReference().getRoot().getName(), "ClinicalInformationCode", "FPatientClass"));
         if (patientRecordObj == null) {
             return;
         }
@@ -85,13 +82,6 @@ public class PatientSaveListener implements EventListener
         }
         if (!newOnset.equals(onset)) {
             patientRecordObj.setStringValue(targetPropertyName, newOnset);
-            doc.setMetaDataDirty(false);
-            doc.setContentDirty(false);
-            try {
-                crtContext.getWiki().saveDocument(doc, doc.getComment(), doc.isMinorEdit(), crtContext);
-            } catch (XWikiException ex) {
-                // TODO Auto-generated catch block
-            }
         }
     }
 
