@@ -230,6 +230,27 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Convert the percentile number into a string grossly describing the value.
+     * 
+     * @param percentile a number between 0 and 100
+     * @return the percentile description
+     */
+    public String getFuzzyValue(int percentile)
+    {
+        String returnValue = "normal";
+        if (percentile <= 3) {
+            returnValue = "extreme-below-normal";
+        } else if (percentile <= 10) {
+            returnValue = "below-normal";
+        } else if (percentile >= 97) {
+            returnValue = "extreme-above-normal";
+        } else if (percentile >= 90) {
+            returnValue = "above-normal";
+        }
+        return returnValue;
+    }
+
+    /**
      * Compute the percentile corresponding to a given absolute value, compared to a normal distribution specified by
      * the given Box-Cox triplet.
      * 

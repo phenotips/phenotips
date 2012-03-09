@@ -88,4 +88,27 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase
         Assert.assertEquals(50, this.tool.getHeightPercentile(false, 0, 51.68));
         Assert.assertEquals(50, this.tool.getHeightPercentile(true, 1000, 176.85));
     }
+
+    @Test
+    public void testGetFuzzyValue()
+    {
+        Assert.assertEquals("extreme-below-normal", this.tool.getFuzzyValue(Integer.MIN_VALUE));
+        Assert.assertEquals("extreme-below-normal", this.tool.getFuzzyValue(-1));
+        Assert.assertEquals("extreme-below-normal", this.tool.getFuzzyValue(0));
+        Assert.assertEquals("extreme-below-normal", this.tool.getFuzzyValue(3));
+        Assert.assertEquals("below-normal", this.tool.getFuzzyValue(4));
+        Assert.assertEquals("below-normal", this.tool.getFuzzyValue(7));
+        Assert.assertEquals("below-normal", this.tool.getFuzzyValue(10));
+        Assert.assertEquals("normal", this.tool.getFuzzyValue(11));
+        Assert.assertEquals("normal", this.tool.getFuzzyValue(50));
+        Assert.assertEquals("normal", this.tool.getFuzzyValue(89));
+        Assert.assertEquals("above-normal", this.tool.getFuzzyValue(90));
+        Assert.assertEquals("above-normal", this.tool.getFuzzyValue(93));
+        Assert.assertEquals("above-normal", this.tool.getFuzzyValue(96));
+        Assert.assertEquals("extreme-above-normal", this.tool.getFuzzyValue(97));
+        Assert.assertEquals("extreme-above-normal", this.tool.getFuzzyValue(99));
+        Assert.assertEquals("extreme-above-normal", this.tool.getFuzzyValue(100));
+        Assert.assertEquals("extreme-above-normal", this.tool.getFuzzyValue(101));
+        Assert.assertEquals("extreme-above-normal", this.tool.getFuzzyValue(Integer.MAX_VALUE));
+    }
 }
