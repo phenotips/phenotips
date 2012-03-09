@@ -96,6 +96,12 @@ public class PercentileTools implements ScriptService, Initializable
             this.m = m;
             this.s = s;
         }
+
+        @Override
+        public String toString()
+        {
+            return "[" + this.l + ", " + this.m + ", " + this.s + "]";
+        }
     }
 
     /** Table storing the BMI LMS triplets for each month of the normal development of boys. */
