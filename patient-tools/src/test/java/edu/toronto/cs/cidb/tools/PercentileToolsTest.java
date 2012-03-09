@@ -75,10 +75,31 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase
     {
         Assert.assertEquals(50, this.tool.getBMIPercentile(true, 0, 3.34, 49.9));
         Assert.assertEquals(50, this.tool.getBMIPercentile(false, 0, 3.32, 49.9));
+        Assert.assertEquals(0, this.tool.getBMIPercentile(true, 0, 1, 1000));
+        Assert.assertEquals(100, this.tool.getBMIPercentile(true, 0, 1000, 1));
+        Assert.assertEquals(0, this.tool.getBMIPercentile(false, 0, 1, 1000));
+        Assert.assertEquals(100, this.tool.getBMIPercentile(false, 0, 1000, 1));
+        Assert.assertEquals(0, this.tool.getBMIPercentile(false, 0, 0, 0));
         Assert.assertEquals(10, this.tool.getBMIPercentile(true, 42, 14.49, 100.0));
         Assert.assertEquals(90, this.tool.getBMIPercentile(false, 42, 17.36, 100.0));
         Assert.assertEquals(0, this.tool.getBMIPercentile(true, 100, 18, 130.0));
         Assert.assertEquals(100, this.tool.getBMIPercentile(true, 100, 90, 110.0));
+        Assert.assertEquals(16, this.tool.getBMIPercentile(true, 349, 67.0, 181.0));
+        Assert.assertEquals(0, this.tool.getBMIPercentile(false, 359, 49.0, 173.0));
+    }
+
+    @Test
+    public void testGetWeightPercentile()
+    {
+        Assert.assertEquals(50, this.tool.getWeightPercentile(true, 0, 4.0));
+        Assert.assertEquals(50, this.tool.getWeightPercentile(false, 0, 3.8));
+        Assert.assertEquals(0, this.tool.getWeightPercentile(true, 0, 0));
+        Assert.assertEquals(100, this.tool.getWeightPercentile(true, 0, 1000));
+        Assert.assertEquals(0, this.tool.getWeightPercentile(false, 0, 0));
+        Assert.assertEquals(100, this.tool.getWeightPercentile(false, 0, 1000));
+        Assert.assertEquals(50, this.tool.getWeightPercentile(true, 1000, 70.6));
+        Assert.assertEquals(37, this.tool.getWeightPercentile(true, 349, 67.0));
+        Assert.assertEquals(12, this.tool.getWeightPercentile(false, 359, 49.0));
     }
 
     @Test
@@ -86,7 +107,13 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase
     {
         Assert.assertEquals(50, this.tool.getHeightPercentile(true, 0, 52.7));
         Assert.assertEquals(50, this.tool.getHeightPercentile(false, 0, 51.68));
+        Assert.assertEquals(0, this.tool.getHeightPercentile(true, 0, 0));
+        Assert.assertEquals(100, this.tool.getHeightPercentile(true, 0, 1000));
+        Assert.assertEquals(0, this.tool.getHeightPercentile(false, 0, 0));
+        Assert.assertEquals(100, this.tool.getHeightPercentile(false, 0, 1000));
         Assert.assertEquals(50, this.tool.getHeightPercentile(true, 1000, 176.85));
+        Assert.assertEquals(72, this.tool.getHeightPercentile(true, 349, 181.0));
+        Assert.assertEquals(93, this.tool.getHeightPercentile(false, 359, 173.0));
     }
 
     @Test
