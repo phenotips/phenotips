@@ -460,131 +460,109 @@
       }
       var results = jsondata[source.resultsParameter || this.options.resultsParameter];
 
-      for (var i = 0; i &lt; results.length; i++) {
-        aSuggestions.push({
-           'id': results[i][source.resultId || this.options.resultId],
-           'value': results[i][source.resultValue || this.options.resultValue],
-           'info': results[i][source.resultInfo || this.options.resultInfo],
-           'icon' : results[i][source.resultIcon || this.options.resultIcon],
-           'hint' : results[i][source.resultHint || this.options.resultHint]
-        });
+      var _getResultFieldValue = function(data, fieldName) {
+        return data &amp;&amp; data[fieldName] || '';
       }
+
+      var _getResultFieldValueAsArray = function(data, fieldName) {
+        return new Array(data &amp;&amp; data[fieldName] || '').flatten();
+      };
     } else {
-      var xml = req.responseXML;
+      var xmldata = req.responseXML;
+      if (!xmldata) {
+        return false;
+      }
+      var results = xmldata.getElementsByTagName((source &amp;&amp; source.resultsParameter) || this.options.resultsParameter);
 
-      // traverse xml
-      //
-      var results = xml.getElementsByTagName((source &amp;&amp; source.resultsParameter) || this.options.resultsParameter);
-
-      var _getExpandCollapseTriggerSymbol = function(isCollapsed) {
-        if (isCollapsed) return "&amp;#x25B8;";
-        return "&amp;#x25BE;";
+      var _getResultFieldValue = function(data, selector) {
+        var element = data &amp;&amp; Element.down(data, selector);
+        return element &amp;&amp; element.firstChild &amp;&amp; element.firstChild.nodeValue || '';
       }
 
-      for (var i = 0; i &lt; results.length; i++) {
-        if (results[i].hasChildNodes()) {
-          var info = new Element("dl");
-          for (var section in this.options.resultInfo) {
-            var sOptions = this.options.resultInfo[section];
-	    
-            sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/, '').replace(/\s+/, "-");
-	    
-            var sectionState = ""
-            if (sOptions.collapsed || sOptions.dynamic) {
-               sectionState = "collapsed";
+      var _getResultFieldValueAsArray = function(data, selector) {
+        var result = new Array();
+        if (data) {
+          Element.select(data, selector).each(function(item) {
+            var value = item.firstChild &amp;&amp; item.firstChild.nodeValue;
+            if (value) {
+              result.push(value);
             }
-            
-            var processingFunction = sOptions.processor;
-	    
-	    if (sOptions.extern) {
-	      var trigger =  new Element("a").update(section);
-              trigger._processingFunction = processingFunction;
-	      info.insert({"bottom" : new Element("dt", {'class' : sectionState + " " + sectionClass}).insert({'bottom' : trigger})});
-	      trigger._processingFunction.call(this, trigger);
-	      continue;
-	    }
-	    
-            var selector = sOptions.selector;
-            if (!selector) {
-              continue;
-            }
-	    
-            if (sOptions.dynamic) {
-              var query = Element.down(results[i], selector).firstChild.nodeValue;
-              var queryProcessor = sOptions.queryProcessor || this.options.queryProcessor;
-              if (queryProcessor &amp;&amp; typeof(queryProcessor.processQuery) == 'function') {
-                query = queryProcessor.processQuery(query);
-              }
-              var url= (sOptions.script || this.options.script) + (sOptions.varname || this.options.varname) + '=' + encodeURIComponent(query);
-              var trigger = new Element("a", {'class' : 'expand-tool'}).update(_getExpandCollapseTriggerSymbol(sectionState == 'collapsed'));
-              trigger._url = url;
-              trigger._processingFunction = processingFunction;
-              info.insert({"bottom" : new Element("dt", {'class' : sectionState + " " + sectionClass}).insert({'top' : trigger}).insert({'bottom' : section})});
-              info.insert({"bottom" : new Element("dd", {'class' : 'expandable ' + sectionClass})});
-              trigger.observe('click', function(event) {
-                event.stop();
-                var trigger = event.element();
-                var parent = trigger.up('dt');
-                var target = parent.next('dd.expandable');
-                if (parent.hasClassName('collapsed') &amp;&amp; !target.hasChildNodes()) {
-                  var ajx = new Ajax.Request(trigger._url, {
-                          method: 'get',
-                          requestHeaders: {'Accept' : "application/xml"},
-                          onSuccess: function(response) {
-                             target.update(trigger._processingFunction.call(this, response, {}));
-                             //target.update(response.responseText);
-                          }.bind(this),
-                          onFailure: function (response) {
-                            alert("Failed to retrieve suggestions : " + respose.statusText);
-                          }
-                  });
-                }
-                parent.toggleClassName('collapsed');
-                trigger.update(_getExpandCollapseTriggerSymbol(parent.hasClassName('collapsed')));
-              }.bindAsEventListener(this));
-            } else {
-              var sectionContents = null;
-              Element.select(results[i], selector).each(function(item) {
-                var text = item.firstChild &amp;&amp; item.firstChild.nodeValue || '';
-                if (typeof (processingFunction) == "function") {
-                  text = processingFunction(text);
-                }
-                if (text == '') {return;}
-                if (!sectionContents) {
-                  var trigger = new Element("a", {'class' : 'expand-tool'}).update(_getExpandCollapseTriggerSymbol(sOptions.collapsed));
-                  info.insert({"bottom" : new Element("dt", {'class' : sectionState}).insert({'top' : trigger}).insert({'bottom' : section})});
-                  sectionContents = new Element("dd", {'class' : 'expandable'});
-                  info.insert({"bottom" : sectionContents});
-                  trigger.observe('click', function(event) {
-                    event.stop();
-                    trigger.up().toggleClassName('collapsed');
-                    trigger.update(_getExpandCollapseTriggerSymbol(trigger.up().hasClassName('collapsed')));
-                  }.bindAsEventListener(this));
-                }
-                sectionContents.insert({"bottom" : new Element("div").update(text)});
-              });
-            }
-          }
-          if (!info.hasChildNodes()) {
-            info = '';
-          }
-          if (this.options.resultCategory) {
-            var category = new Element("span", {'class' : 'hidden term-category'});
-            Element.select(results[i], this.options.resultCategory).each(function(c) {
-              category.insert(new Element('input', {'type' : 'hidden', 'value' : c.firstChild.nodeValue}));
-            });
-          }
-          if (!this.options.resultCategory || !category.hasChildNodes()) {
-            category = '';
-          }
-          aSuggestions.push({
-            'id'      : Element.down(results[i], this.options.resultId).firstChild.nodeValue,
-            'value'   : Element.down(results[i], this.options.resultValue).firstChild.nodeValue,
-            'info'    : info,
-            'category': category
           });
         }
+        return result;
+      };
+    }
+
+    var _getExpandCollapseTriggerSymbol = function(isCollapsed) {
+      if (isCollapsed) return "&amp;#x25B8;";
+      return "&amp;#x25BE;";
+    }
+    for (var i = 0; i &lt; results.length; i++) {
+      var info = new Element("dl");
+      for (var section in this.options.resultInfo) {
+        var sOptions = this.options.resultInfo[section];
+            
+        sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/, '').replace(/\s+/, "-");
+            
+        var sectionState = ""
+        if (sOptions.collapsed) {
+          sectionState = "collapsed";
+        }
+            
+        var processingFunction = sOptions.processor;
+            
+        if (sOptions.extern) {
+          var trigger =  new Element("a").update(section);
+          trigger._processingFunction = processingFunction;
+          info.insert({"bottom" : new Element("dt", {'class' : sectionState + " " + sectionClass}).insert({'bottom' : trigger})});
+          trigger._processingFunction.call(this, trigger);
+          continue;
+        }
+            
+        var selector = sOptions.selector;
+        if (!selector) {
+          continue;
+        }
+          
+        var sectionContents = null;
+        _getResultFieldValueAsArray(results[i], selector).each(function(item) {
+          var text = item || '';
+          if (typeof (processingFunction) == "function") {
+            text = processingFunction(text);
+          }
+          if (text == '') {return;}
+          if (!sectionContents) {
+            var trigger = new Element("a", {'class' : 'expand-tool'}).update(_getExpandCollapseTriggerSymbol(sOptions.collapsed));
+            info.insert({"bottom" : new Element("dt", {'class' : sectionState}).insert({'top' : trigger}).insert({'bottom' : section})});
+            sectionContents = new Element("dd", {'class' : 'expandable'});
+            info.insert({"bottom" : sectionContents});
+            trigger.observe('click', function(event) {
+              event.stop();
+              trigger.up().toggleClassName('collapsed');
+              trigger.update(_getExpandCollapseTriggerSymbol(trigger.up().hasClassName('collapsed')));
+            }.bindAsEventListener(this));
+          }
+          sectionContents.insert({"bottom" : new Element("div").update(text)});
+        });
       }
+      if (!info.hasChildNodes()) {
+        info = '';
+      }
+      if (this.options.resultCategory) {
+        var category = new Element("span", {'class' : 'hidden term-category'});
+        _getResultFieldValueAsArray(results[i], this.options.resultCategory).each(function(c) {
+           category.insert(new Element('input', {'type' : 'hidden', 'value' : c}));
+        });
+      }
+      if (!this.options.resultCategory || !category.hasChildNodes()) {
+        category = '';
+      }
+      aSuggestions.push({
+        'id': _getResultFieldValue(results[i], source.resultId || this.options.resultId),
+        'value': _getResultFieldValue(results[i], source.resultValue || this.options.resultValue),
+        'info'    : info,
+        'category': category
+      });
     }
     return aSuggestions;
   },
@@ -2081,20 +2059,35 @@ return MS;
   var widgets = MS.widgets = MS.widgets || {};
   widgets.OntologyBrowser = Class.create({
   options : {
-    script : "/solr/select?start=0&amp;rows=10000&amp;",
+    script : "$xwiki.getURL('ClinicalInformationCode.SolrService', 'get', 'start=0&amp;rows=10000')&amp;",
     varname: "q",
     method : "post",
-    responseFormat : "application/xml",
-    resultsParameter : "doc",
-    resultId : "str[name=id]",
-    resultValue : "str[name=name]",
-    resultCategory : "arr[name=term_category] str",
+    json : true,
+    responseFormat : "application/json",
+    resultsParameter : "rows",
+    resultId : "id",
+    resultValue : "name",
+    resultCategory : "term_category",
     resultInfo : {
-                           "Definition"    : {"selector"  : "str[name=def]"},
-                           "Synonyms"      : {"selector"  : "arr[name=synonym] str"}
+                           "Definition"    : {"selector"  : "def",
+                                              "processor" : function(text) { return text.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;'); }
+                           },
+                           "Synonyms"      : {"selector"  : "synonym"}
     },
     resultParent : {
-      selector : 'arr[name=is_a] str',
+      selector : 'is_a',
+//    json : false,
+//    responseFormat : "application/xml",
+//    resultsParameter : "doc",
+//    resultId : "str[name=id]",
+//    resultValue : "str[name=name]",
+//    resultCategory : "arr[name=term_category] str",
+//    resultInfo : {
+//                           "Definition"    : {"selector"  : "str[name=def]"},
+//                           "Synonyms"      : {"selector"  : "arr[name=synonym] str"}
+//    },
+//    resultParent : {
+//      selector : 'arr[name=is_a] str',
       processingFunction : function (text){
         var data = {};
         data.id = text.replace(/\s+/gm, ' ').replace(/(HP:[0-9]+)\s*!\s*(.*)/m, "$1");
@@ -2155,8 +2148,8 @@ return MS;
         method: this.options.method,
         requestHeaders: headers,
         onSuccess: function (response) {
-          //var tree = this.buildTree(response.responseXML);
-          this.setContent(this.buildTree(response.responseXML));
+          //var tree = this.buildTree(this._getDataFromResponse(response));
+          this.setContent(this.buildTree(this._getDataFromResponse(response)));
         }.bind(this),
         onFailure: function (response) {
           this.setContent("Failed to retrieve data : " + respose.statusText);
@@ -2181,9 +2174,9 @@ return MS;
         onSuccess: function (response) {
           var memo = {};
           if (doPopulate) {
-            memo.data = this.buildDescendentsList(response.responseXML);
+            memo.data = this.buildDescendentsList(this._getDataFromResponse(response));
           } else {
-            memo.count = this.countDescendents(response.responseXML);
+            memo.count = this.countDescendents(this._getDataFromResponse(response));
           }
           Event.fire(element, 'obrowser:expand:done', memo);
         }.bind(this),
@@ -2192,9 +2185,62 @@ return MS;
         }
       });
   },
+  _getDataFromResponse : function(response) {
+    if (this.options.json) {
+      return response.responseJSON;
+    }
+    return response.responseXML;
+  },
+  _getResultset_json : function(data, fieldName) {
+    return data &amp;&amp; data[fieldName] || [];
+  },
+  _getResultFieldValue_json : function(data, fieldName) {
+    return data &amp;&amp; data[fieldName] || '';
+  },
+  _getResultFieldValueAsArray_json : function(data, fieldName) {
+    return new Array(data &amp;&amp; data[fieldName] || '').flatten();
+  },
+  _getResultset_xml : function(data, selector) {
+    var elements = data &amp;&amp; data.getElementsByTagName(selector);
+    return elements;
+  },
+  _getResultFieldValue_xml : function(data, selector) {
+    var element = data &amp;&amp; Element.down(data, selector);
+    return element &amp;&amp; element.firstChild &amp;&amp; element.firstChild.nodeValue || '';
+  },
+  _getResultFieldValueAsArray_xml : function(data, selector) {
+    var result = new Array();
+    if (data) {
+      Element.select(data, selector).each(function(item) {
+        var value = item.firstChild &amp;&amp; item.firstChild.nodeValue;
+        if (value) {
+          result.push(value);
+        }
+      });
+    }
+    return result;
+  },
+  _getResultset : function(data, fieldName) {
+    if (this.options.json) {
+      return this._getResultset_json(data, fieldName);
+    }
+    return this._getResultset_xml(data, fieldName);
+  },
+  _getResultFieldValue : function(data, fieldName) {
+    if (this.options.json) {
+      return this._getResultFieldValue_json(data, fieldName);
+    }
+    return this._getResultFieldValue_xml(data, fieldName);
+  },
+  _getResultFieldValueAsArray : function(data, fieldName) {
+    if (this.options.json) {
+      return this._getResultFieldValueAsArray_json(data, fieldName);
+    }
+    return this._getResultFieldValueAsArray_xml(data, fieldName);
+  },
 
-  buildTree : function (xml) {
-    var results = xml.getElementsByTagName(this.options.resultsParameter);
+  buildTree : function (data) {
+    var results = this._getResultset(data, this.options.resultsParameter);
     if (results.length == 0) {
       return new Element('div', {'class' : 'error'}).update(this.options.noresults);
     }
@@ -2202,8 +2248,8 @@ return MS;
     var newContent = new Element('div');
     if (this.options.showParents) {
       var parents = new Element('ul', {'class': 'parents'});
-      Element.select(targetResult, this.options.resultParent.selector).each(function(item) {
-        var text = item.firstChild.nodeValue;
+      this._getResultFieldValueAsArray(targetResult, this.options.resultParent.selector).each(function(item) {
+        var text = item;
         var data = {};
         if (typeof (this.options.resultParent.processingFunction) == "function") {
           data = this.options.resultParent.processingFunction(text);
@@ -2215,8 +2261,8 @@ return MS;
       }
     }
     var data = {
-      id : Element.down(targetResult, this.options.resultId).firstChild.nodeValue,
-      value : Element.down(targetResult, this.options.resultValue).firstChild.nodeValue,
+      id : this._getResultFieldValue(targetResult, this.options.resultId),
+      value : this._getResultFieldValue(targetResult, this.options.resultValue),
       info : this._generateEntryInfo(targetResult),
       category: this._generateEntryCategory(targetResult)
     }
@@ -2227,22 +2273,20 @@ return MS;
   },
 
   countDescendents : function(xml) {
-    return xml.getElementsByTagName(this.options.resultsParameter).length;
+    return this._getResultset(xml, this.options.resultsParameter).length;
   },
 
   buildDescendentsList : function(xml) {
-    var results = xml.getElementsByTagName(this.options.resultsParameter);
+    var results = this._getResultset(xml, this.options.resultsParameter);
     var list = new Element('ul', {'class' : 'descendents'});
     for (var i = 0; i &lt; results.length; i++) {
-      if (results[i].hasChildNodes()) {
         var data = {
-          id : Element.down(results[i], this.options.resultId).firstChild.nodeValue,
-          value : Element.down(results[i], this.options.resultValue).firstChild.nodeValue,
+          id : this._getResultFieldValue(results[i], this.options.resultId),
+          value : this._getResultFieldValue(results[i], this.options.resultValue),
           info : this._generateEntryInfo(results[i]),
           category: this._generateEntryCategory(results[i])
         };
         list.insert({'bottom': this._createDescendentBranch(data)});
-      }
     }
     if (list.hasChildNodes()) {
       return list;
@@ -2311,8 +2355,8 @@ return MS;
   _generateEntryCategory : function (xmlFragment) {
     var category = new Element("span", {'class' : 'hidden term-category'});
     if (this.options.resultCategory) {
-      Element.select(xmlFragment, this.options.resultCategory).each(function(c) {
-        category.insert(new Element('input', {'type' : 'hidden', 'value' : c.firstChild.nodeValue}));
+      this._getResultFieldValueAsArray(xmlFragment, this.options.resultCategory).each(function(c) {
+        category.insert(new Element('input', {'type' : 'hidden', 'value' : c}));
       });
     }
     if (category.hasChildNodes()) {
@@ -2324,8 +2368,8 @@ return MS;
 
   _generateEntryInfo : function(xmlFragment) {
     var title = this._generateEntryTitle(
-      Element.down(xmlFragment, this.options.resultId).firstChild.nodeValue,
-      Element.down(xmlFragment, this.options.resultValue).firstChild.nodeValue
+      this._getResultFieldValue(xmlFragment, this.options.resultId),
+      this._getResultFieldValue(xmlFragment, this.options.resultValue)
     );
     var info = new Element("dl");
     for (var section in this.options.resultInfo) {
@@ -2336,13 +2380,19 @@ return MS;
         continue;
       }
       var sectionContents = null;
-      Element.select(xmlFragment, selector).each(function(item) {
+      this._getResultFieldValueAsArray(xmlFragment, selector).each(function(item) {
+        if (!item) {
+          return;
+        }
         if (!sectionContents) {
           info.insert({"bottom" : new Element("dt", {'class' : sectionClass}).insert({'bottom' : section})});
           sectionContents = new Element("dd");
           info.insert({"bottom" : sectionContents});
 	}
-        var text = item.firstChild.nodeValue;
+        var text = item;
+        if (typeof sOptions.processor == 'function') {
+          text = sOptions.processor(text);
+        }
         sectionContents.insert({"bottom" : new Element("div").update(text)});
       });
     }
@@ -2525,7 +2575,7 @@ return MS;
 <name>Ontology browser</name>
 </property>
 <property>
-<parse></parse>
+<parse>1</parse>
 </property>
 <property>
 <use>currentPage</use>

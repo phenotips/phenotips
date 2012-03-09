@@ -1011,16 +1011,16 @@ document.observe('dom:loaded', function() {
                          }),
             varname: "q",
             noresults: "No matching terms",
-            json: false,
-            resultsParameter : "doc",
-            resultId : "str[name=id]",
-            resultValue : "str[name=name]",
-            resultCategory : "arr[name=term_category] str",
+            json: true,
+            resultsParameter : "rows",
+            resultId : "id",
+            resultValue : "name",
+            resultCategory : "term_category",
             resultInfo : {
-                           "Definition"    : {"selector"  : "str[name=def]",
-                                              "processor" : function(text) { return text.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;'); }
+                           "Definition"    : {"selector"  : "def",
+                                              "processor" : function(text) { return text.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;'); }
                                              },
-                           "Synonyms"      : {"selector"  : "arr[name=synonym] str"},
+                           "Synonyms"      : {"selector"  : "synonym"},
 		           "Related terms" : {"extern" : true,
 		                              "processor" : function(trigger) {
 							      trigger._obrowser = new MS.widgets.OntologyBrowser(this, null, {
@@ -1037,7 +1037,7 @@ document.observe('dom:loaded', function() {
 			                      }
                          },
             enableHierarchy: true,
-            resultParent : "arr[name=is_a] str",
+            resultParent : "is_a",
             fadeOnClear : false,
             timeout : 30000,
             parentContainer : null

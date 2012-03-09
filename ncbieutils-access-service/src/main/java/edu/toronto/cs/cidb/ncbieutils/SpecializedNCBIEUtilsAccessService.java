@@ -25,9 +25,27 @@ import java.util.Map;
 public class SpecializedNCBIEUtilsAccessService extends NCBIEUtilsAccessService
 {
     @Override
-    public String getSuggestions(String query)
+    public List<Map<String, Object>> getSuggestions(String query)
     {
         return super.getSuggestions(query);
+    }
+
+    @Override
+    public List<Map<String, Object>> getSuggestions(final String query, final int rows, final int start)
+    {
+        return super.getSuggestions(query, rows, start);
+    }
+
+    @Override
+    public String getSuggestionsXML(String query)
+    {
+        return super.getSuggestionsXML(query);
+    }
+
+    @Override
+    public String getSuggestionsXML(final String query, final int rows, final int start)
+    {
+        return super.getSuggestionsXML(query, rows, start);
     }
 
     @Override
@@ -49,13 +67,13 @@ public class SpecializedNCBIEUtilsAccessService extends NCBIEUtilsAccessService
     }
 
     @Override
-    public List<String> getMatches(String query)
+    public List<String> getMatches(final String query, final int rows, final int start)
     {
-        return super.getMatches(query);
+        return super.getMatches(query, rows, start);
     }
 
     @Override
-    public String getSummaries(List<String> idList)
+    public List<Map<String, Object>> getSummaries(List<String> idList)
     {
         return super.getSummaries(idList);
     }

@@ -24,8 +24,17 @@
 <hidden>false</hidden>
 <content>{{velocity}}{{html clean="false"}}
 #if ($xcontext.action == 'get')
-$response.setContentType('text/xml')
-#set ($results = $services.solr.search("$!request.q"))
+  #set ($rows = -1)
+  #if ("$!request.rows" != '')
+    #set ($rows = $util.parseInt($request.rows))
+  #end
+  #set ($start = 0)
+  #if ("$!request.start" != '')
+    #set ($start = $util.parseInt($request.start))
+  #end
+  #set ($results = $services.solr.search("$!request.q", $rows, $start))
+  #if ("$!request.format" == 'xml')
+    $response.setContentType('text/xml')
 &lt;response&gt;
 &lt;result name="response" numFound="$results.size()"&gt;
 #foreach ($result in $results)
@@ -46,5 +55,35 @@ $response.setContentType('text/xml')
 #end
 &lt;/result&gt;
 &lt;/response&gt;
+  #else## No known custom format requested. Defaulting to JSON
+    $response.setContentType('application/json')
+{
+   "returnedrows" : "$results.size()",
+   "rows" : [
+#foreach ($result in $results)
+     {
+    #foreach ($field in $result.fieldNames)
+      #set ($values = $result.getFieldValues($field))
+      #if ($values.size() &gt; 0)
+      #if ($values.size() == 1)
+        "$field" : "$escapetool.javascript($values.get(0)).replace('\''', '''')"##
+      #else
+        "$field" : [
+        #foreach ($value in $values)
+          "$escapetool.javascript($value).replace('\''', '''')"#if($foreach.hasNext()),#end
+
+        #end
+        ]##
+      #end
+      #if($foreach.hasNext()),#end
+
+      #end
+    #end
+     }#if($foreach.hasNext()),#end
+
 #end
+   ]## docs array
+}
+  #end## Done generating response
+#end## Done handling get action
 {{/html}}{{/velocity}}</content></xwikidoc>

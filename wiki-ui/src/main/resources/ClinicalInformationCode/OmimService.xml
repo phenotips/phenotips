@@ -22,9 +22,26 @@
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
-<content>{{velocity}}{{html clean="false"}}
-#if ($xcontext.action == 'get')
-  $response.setContentType('text/xml')
+<content>{{include document="ClinicalInformationCode.JSONMacros" /}}
+
+{{velocity filter="indent"}}
+#if ($xcontext.action == 'get' &amp;&amp; "$!request.q" != '')##
+  #set ($_service = $services.omim)
+  #set ($limit = $mathtool.toInteger("$!{request.limit}"))
+  #if (!($limit &gt; 0))
+    #set ($limit = 20)
+  #end
+  #set ($start = $mathtool.toInteger("$!{request.start}"))
+  #if (!($start &gt;= 0))
+    #set ($start = 0)
+  #end
+  #if ("$!{request.format}" == 'xml')
+  {{html clean="false"}}
+    $response.setContentType('text/xml')
+    $_service.getSuggestionsXML("$!request.q", $limit, $start)
+  {{/html}}
+  #else
+    #json__respondJSON($_service.getSuggestions("$!request.q", $limit, $start))
+  #end
 #end
-$services.omim.getSuggestions("$!request.q")
-{{/html}}{{/velocity}}</content></xwikidoc>
+{{/velocity}}</content></xwikidoc>

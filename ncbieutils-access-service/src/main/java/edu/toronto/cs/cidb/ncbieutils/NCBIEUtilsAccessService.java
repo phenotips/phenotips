@@ -23,7 +23,9 @@ import java.io.BufferedInputStream;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,8 +41,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -76,14 +80,35 @@ public class NCBIEUtilsAccessService implements ScriptService
         return "";
     }
 
-    protected String getSuggestions(String query)
+    protected List<Map<String, Object>> getSuggestions(final String query)
+    {
+        return getSuggestions(query, 10, 0);
+    }
+
+    protected List<Map<String, Object>> getSuggestions(final String query, final int rows, final int start)
     {
         // Step 1: get spelling suggestions for query
         String correctedQuery = getCorrectedQuery(query);
         // Step 2: get ID list matching the corrected query
-        List<String> idList = getMatches(correctedQuery);
+        List<String> idList = getMatches(correctedQuery, rows, start);
         // step 3: get Summaries for ID list
-        String result = getSummaries(idList);
+        List<Map<String, Object>> result = getSummaries(idList);
+        return result;
+    }
+
+    protected String getSuggestionsXML(final String query)
+    {
+        return getSuggestionsXML(query, 10, 0);
+    }
+
+    protected String getSuggestionsXML(final String query, final int rows, final int start)
+    {
+        // Step 1: get spelling suggestions for query
+        String correctedQuery = getCorrectedQuery(query);
+        // Step 2: get ID list matching the corrected query
+        List<String> idList = getMatches(correctedQuery, rows, start);
+        // step 3: get Summaries for ID list
+        String result = getSummariesXML(idList);
         return result;
     }
 
@@ -193,12 +218,12 @@ public class NCBIEUtilsAccessService implements ScriptService
         return query;
     }
 
-    protected List<String> getMatches(String query)
+    protected List<String> getMatches(final String query, final int rows, final int start)
     {
         // response example at http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=omim&term=down
         // response type: XML
         // get corrected query from /eSearchResult/IdList/Id (multiple elements)
-        String url = composeURL(TERM_SEARCH_QUERY_SCRIPT, TERM_SEARCH_PARAM_NAME, query);
+        String url = composeURL(TERM_SEARCH_QUERY_SCRIPT, TERM_SEARCH_PARAM_NAME, query, rows, start);
         List<String> result = new ArrayList<String>();
         try {
             Document response = readXML(url);
@@ -220,7 +245,7 @@ public class NCBIEUtilsAccessService implements ScriptService
         return result;
     }
 
-    protected String getSummaries(List<String> idList)
+    protected List<Map<String, Object>> getSummaries(List<String> idList)
     {
         // response example at
         // http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=omim&id=190685,605298,604829,602917,601088,602523,602259
@@ -231,6 +256,62 @@ public class NCBIEUtilsAccessService implements ScriptService
         try {
             Document response = readXML(url);
             NodeList nodes = response.getElementsByTagName("Item");
+            // OMIM titles are all UPPERCASE, try to fix this
+            for (int i = 0; i < nodes.getLength(); ++i) {
+                Node n = nodes.item(i);
+                if (n.getNodeType() == Node.ELEMENT_NODE) {
+                    if (n.getFirstChild() != null) {
+                        n.replaceChild(response.createTextNode(fixCase(n.getTextContent())), n.getFirstChild());
+                    }
+                }
+            }
+            List<Map<String, Object>> result = new LinkedList<Map<String, Object>>();
+            nodes = response.getElementsByTagName("DocSum");
+            for (int i = 0; i < nodes.getLength(); ++i) {
+                Element n = (Element) nodes.item(i);
+                Map<String, Object> doc = new HashMap<String, Object>();
+                doc.put("id", n.getElementsByTagName("Id").item(0).getTextContent());
+                NodeList items = n.getElementsByTagName("Item");
+                for (int j = 0; j < items.getLength(); ++j) {
+                    Element item = (Element) items.item(j);
+                    if ("List".equals(item.getAttribute("Type"))) {
+                        NodeList subitems = item.getElementsByTagName("Item");
+                        if (subitems.getLength() > 0) {
+                            List<String> values = new ArrayList<String>(subitems.getLength());
+                            for (int k = 0; k < subitems.getLength(); ++k) {
+                                values.add(subitems.item(k).getTextContent());
+                            }
+                            doc.put(item.getAttribute("Name"), values);
+                        }
+                    } else {
+                        String value = item.getTextContent();
+                        if (StringUtils.isNotEmpty(value)) {
+                            doc.put(item.getAttribute("Name"), value);
+                        }
+                    }
+                }
+                result.add(doc);
+            }
+            return result;
+        } catch (Exception ex) {
+            this.logger.error("Error while trying to retrieve summaries for ids " + idList + " "
+                + ex.getClass().getName() + " " + ex.getMessage(), ex);
+        }
+        return Collections.emptyList();
+    }
+
+    protected String getSummariesXML(List<String> idList)
+    {
+        // response example at
+        // http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=omim&id=190685,605298,604829,602917,601088,602523,602259
+        // response type: XML
+        // return it
+        String queryList = getSerializedList(idList);
+        String url = composeURL(TERM_SUMMARY_QUERY_SCRIPT, TERM_SUMMARY_PARAM_NAME, queryList);
+        try {
+            Document response = readXML(url);
+            NodeList nodes = response.getElementsByTagName("Item");
+            // OMIM titles are all UPPERCASE, try to fix this
             for (int i = 0; i < nodes.getLength(); ++i) {
                 Node n = nodes.item(i);
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
@@ -246,7 +327,6 @@ public class NCBIEUtilsAccessService implements ScriptService
             Transformer transformer = factory.newTransformer();
             transformer.transform(source, result);
             return stringWriter.getBuffer().toString();
-
         } catch (Exception ex) {
             this.logger.error("Error while trying to retrieve summaries for ids " + idList + " "
                 + ex.getClass().getName() + " " + ex.getMessage(), ex);
@@ -257,6 +337,12 @@ public class NCBIEUtilsAccessService implements ScriptService
     private String composeURL(String scriptName, String paramName, String query)
     {
         return SERVER_URL + scriptName + "?" + DB_PARAM_NAME + '=' + getDatabaseName() + "&" + paramName + "=" + query;
+    }
+
+    private String composeURL(String scriptName, String paramName, String query, final int rows, final int start)
+    {
+        return SERVER_URL + scriptName + "?" + DB_PARAM_NAME + '=' + getDatabaseName() + "&" + paramName + "=" + query
+            + "&RetMax=" + rows + "&RetStart=" + start;
     }
 
     private org.w3c.dom.Document readXML(String url)
@@ -280,7 +366,10 @@ public class NCBIEUtilsAccessService implements ScriptService
         if (text == null || text.length() == 0) {
             return "";
         }
-        return text.toUpperCase().substring(0, 1) + text.toLowerCase().substring(1);
+        if (StringUtils.isAllUpperCase(text.replaceAll("[^a-zA-Z]", ""))) {
+            return StringUtils.capitalize(text.toLowerCase());
+        }
+        return text;
     }
 
     private static String getSerializedList(List<String> list)

@@ -96,6 +96,20 @@ public class SolrScriptService implements ScriptService, Initializable
     }
 
     /**
+     * Search for HPO terms matching the specified query, using the Lucene query language.
+     * 
+     * @param queryParameters a Lucene query
+     * @param rows the number of items to return, or -1 to use the default number of results
+     * @param start the number of items to skip, i.e. the index of the first hit to return, 0-based
+     * @return the list of matching documents, empty if there are no matching terms
+     */
+    public SolrDocumentList search(final String queryParameters, final int rows, final int start)
+    {
+        MapSolrParams params = new MapSolrParams(getSolrQuery(queryParameters, rows, start));
+        return search(params);
+    }
+
+    /**
      * Search for HPO terms matching the specified query, where the query is specified as a map of field name and
      * keywords.
      * 
