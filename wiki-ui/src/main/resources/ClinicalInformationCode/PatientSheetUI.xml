@@ -2339,6 +2339,31 @@ table.withLabel tr:first-child th {
 #end
 #end
 
+#macro(__markIfMandatory $propName)#if ("$!mandatoryFields.contains($propName)" != 'false')mandatory#{end}#end
+
+#macro (__displayHalfWidth $propName $label $groupCssClass $labelCssClass)
+  (% class="half-width $groupCssClass ${propName}" %)(((
+    #__label(${propName} "hint ${labelCssClass}" $label)
+    #__display(${propName}, $obj)
+  )))
+#end 
+
+#macro (__displayFormatted $mode $propName $label $groupCssClass $labelCssClass)
+#if ("$!activeFields.contains($propName)" != 'false' &amp;&amp; ($context.action == 'edit' || $doc.display(${propName}) != ''))
+  #set($_groupCssClass = "$!{groupCssClass} #__markIfMandatory($propName)")
+  #if ($mode == 'half-width')
+    #__displayHalfWidth($propName $label $_groupCssClass $labelCssClass)
+  #elseif ($mode == '2-col')
+    #__display2Col($propName $label $_groupCssClass $labelCssClass)
+  #else
+  (% class="$groupCssClass ${propName}" %)(((
+   #__label($propName $labelCssClass $label)
+   #__display($propName)
+  )))
+  #end
+#end## field not configured as inactive, field not empty in view mode
+#end
+
 #macro (__qsBox $fieldName)
 #if ($context.action == 'edit')
 (% id="quick-search-box"  class="group-other quick-search-box emphasized-box" %)(((
@@ -2420,6 +2445,8 @@ $xwiki.jsx.use('ClinicalInformationCode.PatientSheetUI')##
 #set($obj = $doc.getObject("$!{config.getProperty('patientClass').value}"))
 #set($class = $obj.xWikiClass)
 #set($discard = $doc.use($obj))
+#set($activeFields = $!{config.getProperty('activeFields').value})
+#set($mandatoryFields = $!{config.getProperty('mandatoryFields').value})
 {{include document="ClinicalInformationCode.PatientSheetMenu" /}}
 
 #if ($context.action == 'edit')
