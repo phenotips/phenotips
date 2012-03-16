@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -125,6 +126,17 @@ public class SolrUpdateGenerator
         } finally {
             this.fieldSelection = null;
         }
+    }
+
+    public Map<String, TermData> transform(String ontologyUrl, Map<String, Double> fieldSelection)
+    {
+        URL url;
+        try {
+            url = new URL(ontologyUrl);
+        } catch (MalformedURLException ex) {
+            return null;
+        }
+        return transform(url, fieldSelection);
     }
 
     public Map<String, TermData> transform(URL input, Map<String, Double> fieldSelection)

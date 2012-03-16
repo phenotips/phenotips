@@ -21,7 +21,6 @@ package edu.toronto.cs.cidb.solr;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -206,14 +205,10 @@ public class SolrScriptService implements ScriptService, Initializable
         ParameterPreparer paramPrep = new ParameterPreparer();
         SolrUpdateGenerator generator = new SolrUpdateGenerator();
         Map<String, Double> fieldSelection = paramPrep.getFieldSelection(fieldList);
-        URL url;
-        try {
-            url = new URL(ontologyUrl);
-        } catch (MalformedURLException ex) {
-            this.logger.warn("Invalid ontoloty URL ({}) provided for indexing: {}", ontologyUrl, ex.getMessage());
+        Map<String, TermData> data = generator.transform(ontologyUrl, fieldSelection);
+        if (data == null) {
             return 2;
         }
-        Map<String, TermData> data = generator.transform(url, fieldSelection);
         Collection<SolrInputDocument> allTerms = new HashSet<SolrInputDocument>();
         for (Map.Entry<String, TermData> item : data.entrySet()) {
             SolrInputDocument doc = new SolrInputDocument();
