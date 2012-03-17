@@ -54,6 +54,7 @@
             <include>**/XWiki/*.xml</include>
             <include>**/*ClinicalInformation*/*.xml</include>
             <include>**/ColorThemes/*.xml</include>
+            <include>**/data/*.xml</include>
           </includes>
           <excludes>
             <exclude>**/Main/Welcome*.xml</exclude>
