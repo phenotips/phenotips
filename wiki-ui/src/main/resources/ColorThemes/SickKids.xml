@@ -3,30 +3,30 @@
 <web>ColorThemes</web>
 <name>SickKids</name>
 <language></language>
-<defaultLanguage>en</defaultLanguage>
+<defaultLanguage></defaultLanguage>
 <translation>0</translation>
 <parent>ColorThemes.WebHome</parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
 <customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
 <creationDate>1329596427000</creationDate>
-<date>1329632019000</date>
-<contentUpdateDate>1329632019000</contentUpdateDate>
-<version>8.13</version>
+<date>1332169633000</date>
+<contentUpdateDate>1332169633000</contentUpdateDate>
+<version>1.1</version>
 <title>SickKids</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Upload new image sickkids.png</comment>
-<minorEdit>true</minorEdit>
+<comment></comment>
+<minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden><attachment>
 <filename>sickkids.png</filename>
 <filesize>4557</filesize>
-<author>XWiki.Admin</author>
+<author>xwiki:XWiki.Admin</author>
 <date>1329611024000</date>
-<version>1.2</version>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAAIkAAAA3CAYAAAA45GnMAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
 WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AITABYKbQmBLAAAEVpJREFUeNrtnH1YFEeawN/qnmFm
 EPkcRCKKiBKNnCbjB5qAkFx0V5Jdo8aYvShr8oiX5DSJmgsmRheNqxhxnwTDxmTXy5rE7Mlp3MNL
@@ -112,7 +112,7 @@ UF7MnxftAWV462l7scYKuXLai4HxRTY9efsiAH3fZKAViwJYl78xgj9G1lvvkqft9enRm478FQRi
 <filesize>31799</filesize>
 <author>xwiki:XWiki.Admin</author>
 <date>1329596427000</date>
-<version>1.2</version>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAABYsAAAFBCAMAAAABlADpAAACiFBMVEURg7MXsc8YtNEXstAYs9AY
 s9ETjbkTjLgYtdERhbUWqMkSjrkSj7sTj7sWp8gXss8XrcwSj7oWrMwSjboTi7gXsc4Ti7cTlr8X
 qcoXqssTlr4TjrkWq8wSkLsTl78Yr84WpccXr88TkLoTjboUkrwYsM8TjLkWqsoXr80Ysc8VpccX
@@ -1308,11 +1308,14 @@ JB+c1NM62E24I6RhRDBxq0NfFDe4ClSsv8TDMIzfoQ0Tt+s6Zh8AAAAASUVORK5CYII=
 <cache>long</cache>
 </property>
 <property>
-<code>#companylogo a img {
-  margin: 8px 8px -12px 12.5%;
+<code>#company h1 {
+  bottom: 2px;
+}
+#companylogo a img {
+  margin: 8px 8px -12px 8px;
 }
 #companylogo {
-  margin:  0 -20px;
+  padding:  0 0 0 5%;
 }</code>
 </property>
 <property>
