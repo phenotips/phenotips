@@ -3,23 +3,23 @@
 <web>data</web>
 <name>WebHome</name>
 <language></language>
-<defaultLanguage>en</defaultLanguage>
+<defaultLanguage></defaultLanguage>
 <translation>0</translation>
 <parent></parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
 <customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
 <creationDate>1331574445000</creationDate>
-<date>1331592916000</date>
-<contentUpdateDate>1331592916000</contentUpdateDate>
-<version>4.6</version>
+<date>1331942300000</date>
+<contentUpdateDate>1331942300000</contentUpdateDate>
+<version>1.1</version>
 <title>Phenotype database</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Updated class property name</comment>
-<minorEdit>true</minorEdit>
+<comment></comment>
+<minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
 <object>
