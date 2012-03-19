@@ -61,7 +61,7 @@
     </dependency>
     <dependency>
       <groupId>edu.toronto.cs.cidb</groupId>
-      <artifactId>omim-access-service</artifactId>
+      <artifactId>ncbieutils-access-service</artifactId>
       <version>${project.version}</version>
       <type>jar</type>
       <optional>true</optional>
