@@ -466,6 +466,10 @@ document.observe('dom:loaded', function() {
          });
        }
     });
+    $$('.negative_phenotype-group .phenotypes-main').invoke('insert', {'before' : new Element('div', {'class' : 'infomessage'}).update("Add here any relevant phenotypic description that was verified and proved absent for this patient.")});
+    $$('.negative_phenotype-group h3').each(function(title) {
+      title.update(title.innerHTML.replace(" NOT ", " &lt;em&gt;NOT&lt;/em&gt; "));
+    });
 
     // ------------------------------------------------------------------------
     // Selected term highlighting 
@@ -2543,6 +2547,33 @@ input.wrongValue {
     -webkit-border-radius: 3px;
     border-radius: 3px;
     padding: 2px;
+}
+/** -------------------------------------------- **/
+/** Negative phenotypes **/
+
+.negative_phenotype-group h3 em {
+  color: $theme.linkColor;
+  font-weight: bold;
+  font-style: normal;
+}
+.negative_phenotype-group .infomessage {
+  margin-left: -4px;
+}
+.negative_phenotype-group .phenotypes-main .hint {
+  margin-left: 0;
+}
+.negative_phenotype-group .label-other {
+  display: none;
+}
+.negative_phenotype-group .selected .value {
+  text-decoration: line-through;
+  color: $theme.notificationErrorColor;
+}
+/** -------------------------------------------- **/
+/** "Unaffected" zone **/
+.unaffected label {
+  display: inline;
+  font-weight: bold;
 }</code>
 </property>
 <property>
@@ -2552,7 +2583,7 @@ input.wrongValue {
 <parse>1</parse>
 </property>
 <property>
-<use>currentPage</use>
+<use>onDemand</use>
 </property>
 </object>
 <object>

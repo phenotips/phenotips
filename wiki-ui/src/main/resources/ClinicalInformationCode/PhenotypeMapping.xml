@@ -212,12 +212,20 @@
         "markers"                       : "abnormalities"
   ];
 
+  LinkedHashMap&lt;String, Object&gt; negative_phenotype = [
+    "Phenotypes NOT observed in this patient"     : [
+       (t.OTHER_FIELD_MARKER)      : null
+    ]
+  ];
+
 
 xcontext.get('vcontext').put('mapping__phenotype', phenotype);
 
 xcontext.get('vcontext').put('mapping__prenatal_phenotype', prenatal_history);
 
 xcontext.get('vcontext').put('mapping__family_history', family_history);
+
+xcontext.get('vcontext').put('mapping__negative_phenotype', negative_phenotype);
 
 xcontext.get('vcontext').put('mapping__extraMessages', extraMessages);
 {{/groovy}}</content></xwikidoc>
