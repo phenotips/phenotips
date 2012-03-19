@@ -1157,7 +1157,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>comments</name>
-<number>15</number>
+<number>17</number>
 <picker>0</picker>
 <prettyName>Additional comments</prettyName>
 <rows>5</rows>
@@ -1168,8 +1168,8 @@
 <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
 </comments>
 <date_of_birth>
-<customDisplay>{{velocity}}{{html wiki=false clean=false}}
-#set ($definedFormat = "$!obj.xWikiClass.get($name).getProperty('dateFormat').value")
+<customDisplay>{{velocity filter="indent"}}{{html wiki=false clean=false}}
+#set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))
 #if ($config)
   #set ($format = "$!{config.getProperty('dateOfBirthFormat').value}")
@@ -1179,8 +1179,9 @@
 #end
 #if ($xcontext.action == 'edit')
   #if ($format.indexOf('d') &lt; 0)
-    &lt;span class="$name" id="$prefix${name}_container"&gt;
-      &lt;input type="hidden" id="$prefix$name" name="$prefix$name" value="$xwiki.formatDate($value, $definedFormat)"/&gt;
+    #if (!$value)#set($value = $util.date)#end
+    &lt;span class="month-year-date $name" id="$prefix${name}_container"&gt;
+      &lt;input type="hidden" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date-hidden" alt="#formatdateISO($value)"/&gt;
       #set ($date = $util.date)
       #if ($value)
         #set ($selMonth = $value.month)
@@ -1192,7 +1193,7 @@
       #set ($mFormat = $format.replaceAll("[^M]", ''))
       #set ($yFormat = $format.replaceAll("[^y]", ''))
 
-      &lt;select name="$prefix${name}_month"&gt;
+      &lt;select name="$prefix${name}_month" class="month"&gt;
       #foreach ($val in [0..11])
         #set ($date.month = $val)
         &lt;option value="$val"#if ($selMonth == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $mFormat)&lt;/option&gt;
@@ -1202,18 +1203,18 @@
       #set ($startYear = $date.year - 99)
       #set ($endYear = $date.year + 1)
 
-      &lt;select name="$prefix${name}_year"&gt;
+      &lt;select name="$prefix${name}_year" class="year"&gt;
       #foreach ($val in [$startYear..$endYear])
         #set ($date.year = $val)
-        &lt;option value="$val"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $yFormat)&lt;/option&gt;
+        &lt;option value="$xwiki.formatDate($date, $yFormat)"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $yFormat)&lt;/option&gt;
       #end      
       &lt;/select&gt;
     &lt;/span&gt;
   #else
-    &lt;input type="text" class="date" title="${format}" id="$prefix$name" name="$prefix$name" value="$xwiki.formatDate($value, $definedFormat)"/&gt;
+    &lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date" alt="#formatdateISO($value)"/&gt;
   #end
 #else
-&lt;span class="date"&gt;$xwiki.formatDate($value, $format)&lt;/span&gt;
+&lt;span class="date"&gt;$!xwiki.formatDate($value, $format)&lt;/span&gt;
 #end
 {{/html}}{{/velocity}}</customDisplay>
 <dateFormat>MM/dd/yyyy</dateFormat>
@@ -1234,7 +1235,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>family_comments</name>
-<number>14</number>
+<number>16</number>
 <picker>0</picker>
 <prettyName>List health conditions found in family (describe the relationship with proband)</prettyName>
 <rows>5</rows>
@@ -1258,7 +1259,7 @@
 <displayType>select</displayType>
 <multiSelect>1</multiSelect>
 <name>family_history</name>
-<number>13</number>
+<number>15</number>
 <picker>0</picker>
 <prettyName>Family History</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -1345,6 +1346,37 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
 </last_name>
+<negative_phenotype>
+<cache>0</cache>
+<classname></classname>
+<customDisplay>{{velocity}}
+#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))
+#if ($config)
+  {{include document="$!{config.getProperty('phenotypeMapping').value}" context="new"/}}
+  
+  {{include document="ClinicalInformationCode.PhenotypeDisplay" /}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<idField></idField>
+<multiSelect>0</multiSelect>
+<name>negative_phenotype</name>
+<number>13</number>
+<picker>0</picker>
+<prettyName>Phenotypes NOT observed in this patient</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators></separators>
+<size>1</size>
+<sort>none</sort>
+<sql></sql>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<valueField></valueField>
+<classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+</negative_phenotype>
 <omim_id>
 <cache>0</cache>
 <classname></classname>
@@ -1422,7 +1454,7 @@
 <disabled>0</disabled>
 <name>onset</name>
 <number>6</number>
-<numberType>long</numberType>
+<numberType>integer</numberType>
 <prettyName>Onset</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
@@ -1446,7 +1478,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>phenotype</name>
-<number>11</number>
+<number>12</number>
 <picker>0</picker>
 <prettyName>Phenotypic description (Clinical symptoms)</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -1477,7 +1509,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>prenatal_phenotype</name>
-<number>12</number>
+<number>14</number>
 <picker>0</picker>
 <prettyName>Prenatal and Perinatal History</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -1537,6 +1569,20 @@
 <valueField></valueField>
 <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
 </relative_of>
+<unaffected>
+<customDisplay></customDisplay>
+<defaultValue></defaultValue>
+<disabled>0</disabled>
+<displayFormType>checkbox</displayFormType>
+<displayType></displayType>
+<name>unaffected</name>
+<number>11</number>
+<prettyName>This patient is clinically normal</prettyName>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</unaffected>
 </class>
 <name>ClinicalInformationCode.PatientTemplate</name>
 <number>0</number>
