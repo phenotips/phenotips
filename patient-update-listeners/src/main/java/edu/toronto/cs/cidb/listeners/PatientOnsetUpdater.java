@@ -22,12 +22,14 @@ package edu.toronto.cs.cidb.listeners;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.bridge.event.DocumentCreatingEvent;
 import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.container.Container;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
@@ -36,7 +38,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * Update the Onset aggregated property whenever the congenital, year or month properties are changed.
+ * Update the Onset aggregated property whenever the congenital, year or month properties are specified in the request.
  * 
  * @version $Id$
  */
@@ -45,6 +47,10 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class PatientOnsetUpdater implements EventListener
 {
+    /** Needed for getting access to the request. */
+    @Inject
+    private Container container;
+
     @Override
     public String getName()
     {
@@ -62,47 +68,43 @@ public class PatientOnsetUpdater implements EventListener
     public void onEvent(Event event, Object source, Object data)
     {
         XWikiDocument doc = (XWikiDocument) source;
+
         BaseObject patientRecordObj = doc.getXObject(new DocumentReference(
-            doc.getDocumentReference().getRoot().getName(), "ClinicalInformationCode", "FPatientClass"));
+            doc.getDocumentReference().getRoot().getName(), "ClinicalInformationCode", "PatientClass"));
         if (patientRecordObj == null) {
             return;
         }
         String targetPropertyName = "onset";
-        int congenital = patientRecordObj.getIntValue("congenital");
-        int years = patientRecordObj.getIntValue("age_of_onset_years");
-        int months = patientRecordObj.getIntValue("age_of_onset_months");
-        String onset = patientRecordObj.getStringValue(targetPropertyName);
-        String newOnset = "Not specified";
+        int congenital = getParameter("onset_congenital", patientRecordObj.getNumber());
+        int years = getParameter("onset_years", patientRecordObj.getNumber());
+        int months = getParameter("onset_months", patientRecordObj.getNumber());
+        int onset = patientRecordObj.getIntValue(targetPropertyName);
+        int newOnset = onset;
         if (congenital == 1) {
-            newOnset = "Congenital";
-        } else if (years != 0 || months != 0) {
-            newOnset = displayNumber(years, "year", false);
-            newOnset += displayNumber(months, "month", true);
-            newOnset = newOnset.trim();
+            newOnset = -1;
+        } else if (years >= 0 && months >= 0) {
+            newOnset = Math.max(-1, years * 12 + months);
         }
-        if (!newOnset.equals(onset)) {
-            patientRecordObj.setStringValue(targetPropertyName, newOnset);
+        if (newOnset != onset) {
+            patientRecordObj.setIntValue(targetPropertyName, newOnset);
         }
     }
 
     /**
-     * Display a number nicely.
+     * Read a property from the request.
      * 
-     * @param value the number to display
-     * @param itemName the unit, "year" or "month"
-     * @param displayIfZero should the value be displayed or not when the value is 0
-     * @return the formatted string, for example "2 years", "1 month", or the empty string if the value is 0 and it
-     *         shouldn't be displayed
+     * @param propertyName the name of the property as it would appear in the class, for example {@code
+     *        age_of_onset_years}
+     * @param objectNumber the object's number
+     * @return the value sent in the request, or {@code 0} if the property is missing
      */
-    private String displayNumber(int value, String itemName, boolean displayIfZero)
+    private int getParameter(String propertyName, int objectNumber)
     {
-        String result = "";
-        if (value != 0 || displayIfZero) {
-            result = " " + value + " " + itemName;
-            if (value != 1) {
-                result += 's';
-            }
+        String parameterName = "ClinicalInformationCode.PatientClass_" + objectNumber + "_" + propertyName;
+        String value = (String) this.container.getRequest().getProperty(parameterName);
+        if (value == null) {
+            return -1;
         }
-        return result;
+        return Integer.valueOf(value);
     }
 }
