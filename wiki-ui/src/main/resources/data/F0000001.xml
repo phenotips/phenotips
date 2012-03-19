@@ -1144,6 +1144,474 @@
 </object>
 <object>
 <class>
+<name>ClinicalInformationCode.MeasurementsClass</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<bmi>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>bmi</name>
+<number>6</number>
+<numberType>float</numberType>
+<prettyName>BMI</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</bmi>
+<bmi_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>bmi_percentile</name>
+<number>7</number>
+<numberType>long</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</bmi_percentile>
+<date>
+<customDisplay>{{velocity}}{{html wiki=false clean=false}}
+#set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
+#if ($xcontext.action == 'edit')
+&lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date" alt="#formatdateISO($value)"/&gt;
+#else
+&lt;span class="date"&gt;$!xwiki.formatDate($!value, $definedFormat)&lt;/span&gt;
+#end
+{{/html}}{{/velocity}}</customDisplay>
+<dateFormat>MM/dd/yyyy</dateFormat>
+<disabled>0</disabled>
+<emptyIsToday>1</emptyIsToday>
+<name>date</name>
+<number>1</number>
+<picker>1</picker>
+<prettyName>Date of measurement</prettyName>
+<size>20</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.DateClass</classType>
+</date>
+<hc_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>hc_percentile</name>
+<number>9</number>
+<numberType>long</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</hc_percentile>
+<head_circumference>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>head_circumference</name>
+<number>8</number>
+<numberType>long</numberType>
+<prettyName>Head circumference (cm)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</head_circumference>
+<height>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>height</name>
+<number>4</number>
+<numberType>long</numberType>
+<prettyName>Height (cm)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</height>
+<height_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>height_percentile</name>
+<number>5</number>
+<numberType>long</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</height_percentile>
+<weight>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>weight</name>
+<number>2</number>
+<numberType>long</numberType>
+<prettyName>Weight (kg)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</weight>
+<weight_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>weight_percentile</name>
+<number>3</number>
+<numberType>long</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</weight_percentile>
+</class>
+<name>data.F0000001</name>
+<number>0</number>
+<className>ClinicalInformationCode.MeasurementsClass</className>
+<guid>2fcf4c1a-caf5-4238-9e33-e2954ac42bf2</guid>
+<property>
+<bmi>0.0</bmi>
+</property>
+<property>
+<bmi_percentile>0</bmi_percentile>
+</property>
+<property>
+<date>2012-03-14 00:00:00.0</date>
+</property>
+<property>
+<hc_percentile>0</hc_percentile>
+</property>
+<property>
+<head_circumference></head_circumference>
+</property>
+<property>
+<height></height>
+</property>
+<property>
+<height_percentile>0</height_percentile>
+</property>
+<property>
+<weight></weight>
+</property>
+<property>
+<weight_percentile>0</weight_percentile>
+</property>
+</object>
+<object>
+<class>
+<name>ClinicalInformationCode.MeasurementsClass</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<bmi>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>bmi</name>
+<number>6</number>
+<numberType>float</numberType>
+<prettyName>BMI</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</bmi>
+<bmi_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>bmi_percentile</name>
+<number>7</number>
+<numberType>long</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</bmi_percentile>
+<date>
+<customDisplay>{{velocity}}{{html wiki=false clean=false}}
+#set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
+#if ($xcontext.action == 'edit')
+&lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date" alt="#formatdateISO($value)"/&gt;
+#else
+&lt;span class="date"&gt;$!xwiki.formatDate($!value, $definedFormat)&lt;/span&gt;
+#end
+{{/html}}{{/velocity}}</customDisplay>
+<dateFormat>MM/dd/yyyy</dateFormat>
+<disabled>0</disabled>
+<emptyIsToday>1</emptyIsToday>
+<name>date</name>
+<number>1</number>
+<picker>1</picker>
+<prettyName>Date of measurement</prettyName>
+<size>20</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.DateClass</classType>
+</date>
+<hc_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>hc_percentile</name>
+<number>9</number>
+<numberType>long</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</hc_percentile>
+<head_circumference>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>head_circumference</name>
+<number>8</number>
+<numberType>long</numberType>
+<prettyName>Head circumference (cm)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</head_circumference>
+<height>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>height</name>
+<number>4</number>
+<numberType>long</numberType>
+<prettyName>Height (cm)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</height>
+<height_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>height_percentile</name>
+<number>5</number>
+<numberType>long</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</height_percentile>
+<weight>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>weight</name>
+<number>2</number>
+<numberType>long</numberType>
+<prettyName>Weight (kg)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</weight>
+<weight_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>weight_percentile</name>
+<number>3</number>
+<numberType>long</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</weight_percentile>
+</class>
+<name>data.F0000001</name>
+<number>1</number>
+<className>ClinicalInformationCode.MeasurementsClass</className>
+<guid>cf4f0816-c9f5-4458-bc29-6ae00f1f2886</guid>
+<property>
+<bmi></bmi>
+</property>
+<property>
+<bmi_percentile></bmi_percentile>
+</property>
+<property>
+<date>2012-03-19 00:00:00.0</date>
+</property>
+<property>
+<hc_percentile></hc_percentile>
+</property>
+<property>
+<head_circumference></head_circumference>
+</property>
+<property>
+<height></height>
+</property>
+<property>
+<height_percentile></height_percentile>
+</property>
+<property>
+<weight></weight>
+</property>
+<property>
+<weight_percentile></weight_percentile>
+</property>
+</object>
+<object>
+<class>
 <name>ClinicalInformationCode.PatientClass</name>
 <customClass></customClass>
 <customMapping></customMapping>
@@ -1157,7 +1625,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>comments</name>
-<number>15</number>
+<number>17</number>
 <picker>0</picker>
 <prettyName>Additional comments</prettyName>
 <rows>5</rows>
@@ -1168,8 +1636,8 @@
 <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
 </comments>
 <date_of_birth>
-<customDisplay>{{velocity}}{{html wiki=false clean=false}}
-#set ($definedFormat = "$!obj.xWikiClass.get($name).getProperty('dateFormat').value")
+<customDisplay>{{velocity filter="indent"}}{{html wiki=false clean=false}}
+#set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))
 #if ($config)
   #set ($format = "$!{config.getProperty('dateOfBirthFormat').value}")
@@ -1179,8 +1647,9 @@
 #end
 #if ($xcontext.action == 'edit')
   #if ($format.indexOf('d') &lt; 0)
-    &lt;span class="$name" id="$prefix${name}_container"&gt;
-      &lt;input type="hidden" id="$prefix$name" name="$prefix$name" value="$xwiki.formatDate($value, $definedFormat)"/&gt;
+    #if (!$value)#set($value = $util.date)#end
+    &lt;span class="month-year-date $name" id="$prefix${name}_container"&gt;
+      &lt;input type="hidden" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date-hidden" alt="#formatdateISO($value)"/&gt;
       #set ($date = $util.date)
       #if ($value)
         #set ($selMonth = $value.month)
@@ -1192,7 +1661,7 @@
       #set ($mFormat = $format.replaceAll("[^M]", ''))
       #set ($yFormat = $format.replaceAll("[^y]", ''))
 
-      &lt;select name="$prefix${name}_month"&gt;
+      &lt;select name="$prefix${name}_month" class="month"&gt;
       #foreach ($val in [0..11])
         #set ($date.month = $val)
         &lt;option value="$val"#if ($selMonth == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $mFormat)&lt;/option&gt;
@@ -1202,18 +1671,18 @@
       #set ($startYear = $date.year - 99)
       #set ($endYear = $date.year + 1)
 
-      &lt;select name="$prefix${name}_year"&gt;
+      &lt;select name="$prefix${name}_year" class="year"&gt;
       #foreach ($val in [$startYear..$endYear])
         #set ($date.year = $val)
-        &lt;option value="$val"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $yFormat)&lt;/option&gt;
+        &lt;option value="$xwiki.formatDate($date, $yFormat)"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $yFormat)&lt;/option&gt;
       #end      
       &lt;/select&gt;
     &lt;/span&gt;
   #else
-    &lt;input type="text" class="date" title="${format}" id="$prefix$name" name="$prefix$name" value="$xwiki.formatDate($value, $definedFormat)"/&gt;
+    &lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date" alt="#formatdateISO($value)"/&gt;
   #end
 #else
-&lt;span class="date"&gt;$xwiki.formatDate($value, $format)&lt;/span&gt;
+&lt;span class="date"&gt;$!xwiki.formatDate($value, $format)&lt;/span&gt;
 #end
 {{/html}}{{/velocity}}</customDisplay>
 <dateFormat>MM/dd/yyyy</dateFormat>
@@ -1234,7 +1703,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>family_comments</name>
-<number>14</number>
+<number>16</number>
 <picker>0</picker>
 <prettyName>List health conditions found in family (describe the relationship with proband)</prettyName>
 <rows>5</rows>
@@ -1258,7 +1727,7 @@
 <displayType>select</displayType>
 <multiSelect>1</multiSelect>
 <name>family_history</name>
-<number>13</number>
+<number>15</number>
 <picker>0</picker>
 <prettyName>Family History</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -1345,6 +1814,37 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
 </last_name>
+<negative_phenotype>
+<cache>0</cache>
+<classname></classname>
+<customDisplay>{{velocity}}
+#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))
+#if ($config)
+  {{include document="$!{config.getProperty('phenotypeMapping').value}" context="new"/}}
+  
+  {{include document="ClinicalInformationCode.PhenotypeDisplay" /}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<idField></idField>
+<multiSelect>0</multiSelect>
+<name>negative_phenotype</name>
+<number>13</number>
+<picker>0</picker>
+<prettyName>Phenotypes NOT observed in this patient</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators></separators>
+<size>1</size>
+<sort>none</sort>
+<sql></sql>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<valueField></valueField>
+<classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+</negative_phenotype>
 <omim_id>
 <cache>0</cache>
 <classname></classname>
@@ -1422,7 +1922,7 @@
 <disabled>0</disabled>
 <name>onset</name>
 <number>6</number>
-<numberType>long</numberType>
+<numberType>integer</numberType>
 <prettyName>Onset</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
@@ -1446,7 +1946,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>phenotype</name>
-<number>11</number>
+<number>12</number>
 <picker>0</picker>
 <prettyName>Phenotypic description (Clinical symptoms)</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -1477,7 +1977,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>prenatal_phenotype</name>
-<number>12</number>
+<number>14</number>
 <picker>0</picker>
 <prettyName>Prenatal and Perinatal History</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -1537,13 +2037,63 @@
 <valueField></valueField>
 <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
 </relative_of>
+<unaffected>
+<customDisplay></customDisplay>
+<defaultValue></defaultValue>
+<disabled>0</disabled>
+<displayFormType>checkbox</displayFormType>
+<displayType></displayType>
+<name>unaffected</name>
+<number>11</number>
+<prettyName>This patient is clinically normal</prettyName>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</unaffected>
 </class>
 <name>data.F0000001</name>
 <number>0</number>
 <className>ClinicalInformationCode.PatientClass</className>
 <guid>f0461024-a8a8-4a3d-adf7-1eeaeae31738</guid>
 <property>
+<comments></comments>
+</property>
+<property>
+<date_of_birth>2009-07-01 00:00:00.0</date_of_birth>
+</property>
+<property>
+<family_comments></family_comments>
+</property>
+<property>
+<gender>F</gender>
+</property>
+<property>
 <identifier>1</identifier>
+</property>
+<property>
+<negative_phenotype></negative_phenotype>
+</property>
+<property>
+<omim_id/>
+</property>
+<property>
+<phenotype>
+<value>HP:0002194</value>
+<value>HP:0002088</value>
+</phenotype>
+</property>
+<property>
+<prenatal_phenotype/>
+</property>
+<property>
+<relative>Sibling</relative>
+</property>
+<property>
+<relative_of></relative_of>
+</property>
+<property>
+<unaffected>0</unaffected>
 </property>
 </object>
 <content></content></xwikidoc>
