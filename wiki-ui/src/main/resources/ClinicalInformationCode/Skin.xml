@@ -516,6 +516,7 @@ J0zuqu9ndCPsB+nQ8JRBimVn2f00tlza4/I//PSZ/vnOTwg0Ptx978igAAAAAElFTkSuQmCC
     ##padding: 10px 10%;
     margin: 4px 10%;
     padding: 10px;
+  overflow: visible;
 }
 .actionmenu .tmHome {
     background-image: url("#__img('home-s')");
@@ -546,10 +547,10 @@ input[name=action_saveandcontinue] {
   background-repeat: no-repeat;
 }
 input[name=action_save] {
-  background-image: url("#__img('check-s')");
+  background-image: url("#__img('check-s')") !important;
 }
 input[name=action_cancel] {
-  background-image: url("#__img('delete-s')");
+  background-image: url("#__img('delete-s')") !important;
 }
 
 .add-data-button,
@@ -753,7 +754,19 @@ body .xwiki-livetable-topfilters-container .value-cloud-tools a {
 h1:target, h2:target, h3:target {
   background-color: $theme.highlightColor;
 }
-#globallinks {display: none;}</code>
+#globallinks {display: none;}
+
+## Disable gradients
+#mainmenu {
+  background-image: none;
+  box-shadow: none;
+}
+input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .buttonwrapper a:active, .buttonwrapper a:hover {
+  background-image: none;
+}
+#mainmenu * {
+  text-shadow: none;
+}</code>
 </property>
 <property>
 <name></name>
