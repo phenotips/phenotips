@@ -35,7 +35,40 @@
   #if (!($start &gt;= 0))
     #set ($start = 0)
   #end
-  #if ("$!{request.format}" == 'xml')
+  #if ("$!{request.format}" == 'html'){{html clean="false"}}##
+$response.setHeader("X-ReqNo", "$!request.reqNo")##
+#set ($results = $_service.getSuggestions("$!request.q", $limit, $start))
+#if ($results.size() &gt; 0) 
+&lt;ul&gt;
+#foreach($item in $results)
+  #if ("$!item.id"!= '' &amp;&amp; "$!item.Title" != '')
+  &lt;li class="article"&gt;
+    #if ("$!item.Source" != '')
+      &lt;div class="pub-info"&gt;
+        &lt;span class="journal"&gt;#if ("$!item.FullJournalName" != '')${item.FullJournalName}#else${item.Source}#end&lt;/span&gt;
+        #if ("$!item.Volume" != ''), Volume ${item.Volume}#end
+        #if ("$!item.Issue" != ''), Issue ${item.Issue}#end
+        #if ("$!item.Pages" != ''), ${item.Pages}#end
+        #if ("$!item.EPubDate" != '') | &lt;span class="pub-date"&gt;$item.EPubDate&lt;/span&gt;#end
+      &lt;/div&gt;
+    #end
+    &lt;cite class="title"&gt;&lt;a href="http://www.ncbi.nlm.nih.gov/pubmed?term=${item.id}" target="_blank" title="See this article on PubMed"&gt;${item.Title}&lt;/a&gt;&lt;/cite&gt;
+    #if ("$!item.AuthorList" != '' &amp;&amp; $item.AuthorList.size() &gt; 0)
+      &lt;div class="authors"&gt;Authors:
+      #foreach ($author in $item.AuthorList)
+        &lt;span class="author"&gt;$author&lt;/span&gt;#if($foreach.hasNext()), #end
+      #end
+      &lt;/div&gt;
+    #end
+  &lt;/li&gt;
+  #end
+#end## foreach item
+&lt;ul&gt;
+#else
+&lt;div class="hint"&gt;No matches found.&lt;/div&gt;
+#end
+  {{/html}}
+  #elseif ("$!{request.format}" == 'xml')
   {{html clean="false"}}
     $response.setContentType('text/xml')
     $_service.getSuggestionsXML("$!request.q", $limit, $start)

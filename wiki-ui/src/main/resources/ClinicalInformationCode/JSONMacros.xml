@@ -46,6 +46,9 @@
 #macro(json__displayJSON $results)
 {
    "returnedrows" : "$results.size()",
+   #if ("$!request.reqNo" != '')
+     "reqNo" : $!{request.reqNo},
+   #end
    "rows" : #json__displayJSONFragment($results)
 }
 #end

@@ -393,6 +393,13 @@
 	  subsectionTitle.removeClassName('selected');
 	}
       }
+      if (element.id == element.name + '_' + element.value) {
+        Event.fire(document, 'phenotype:selected', {
+              key : element.value,
+              text: element.title || element.nextSibling.nodeValue || element.nextSibling.firstChild.nodeValue,
+              enable: element.checked
+        });
+      }
 };
 var enableHighlightChecked = function(element) {
       highlightChecked(element);
@@ -1043,7 +1050,7 @@ document.observe('dom:loaded', function() {
             parentContainer : null
         },
         "omim" : {
-            script: "$xwiki.getURL('ClinicalInformationCode.OmimService', 'get')?",
+            script: "$xwiki.getURL('ClinicalInformationCode.OmimService', 'get')?outputSyntax=plain&amp;",
             varname: "q",
             noresults: "No matching terms",
             json: false,
@@ -1052,7 +1059,7 @@ document.observe('dom:loaded', function() {
             resultValue : "Item[Name=Title]",
             resultInfo : {
                            "Synonyms"   : {"selector"  : "Item[Name=AltTitles]"},
-                           "Locus"          : {"selector"  : "Item[Name=Locus]"}
+                           "Locus"      : {"selector"  : "Item[Name=Locus]"}
                          },
             enableHierarchy: false,
             fadeOnClear : false,
@@ -1839,6 +1846,211 @@ document.observe('xwiki:dom:loaded', function() {
 </use>
 </class>
 <name>ClinicalInformationCode.PatientSheetUI</name>
+<number>9</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>903e1899-539b-4242-8763-15b4dc6cabef</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>document.observe('xwiki:dom:loaded', function() {
+
+  $$('.ncbi-search-box h3, .ncbi-search-box .expand-tools .tool').invoke('observe', 'click', function(event) {
+     event.element().up('.ncbi-search-box').toggleClassName('collapsed');
+  });
+  //$$('.ncbi-search-box').invoke('toggleClassName' ,'collapsed');
+
+  var defaultSearchTerms = $('defaultSearchTerms');
+  var defaultSearchTermsInput = $('defaultSearchTermsInput');
+  var customSearchTermsInput = $('customSearchTermsInput');
+
+  var services = {
+    'omim' : {
+       'script' : "$xwiki.getURL('ClinicalInformationCode.OmimService', 'get', 'format=html&amp;q=')",
+       'target' : $('omim-search-results')
+    },
+    'pubmed' : {
+       'script' : "$xwiki.getURL('ClinicalInformationCode.PubMedService', 'get', 'format=html&amp;q=')",
+       'target' : $('pubmed-search-results')
+    }
+  };
+
+  if (!defaultSearchTerms || !defaultSearchTermsInput || (!services.omim.target &amp;&amp; !services.pubmed.target)) {return;}
+
+  var cache = {'all' : {}, 'displayed' : {}};
+
+  var updateSearchValue = function() {
+    var prevValue = defaultSearchTermsInput.value;
+    defaultSearchTermsInput.value = '';
+    defaultSearchTerms.select('.search-term:not(.disabled)').each(function(term) {
+      defaultSearchTermsInput.value += ' "' + term.innerHTML + '"';
+    });
+    if (defaultSearchTermsInput.value != prevValue) {
+      doSearch('omim');
+      doSearch('pubmed');
+    }
+  }
+
+  var updateDefaultSearchTerms = function() {
+    var container = new Element('div', { 'class' : 'default-search-terms-container'});
+    for (var k in cache.displayed) {
+       var obj = cache.all[k];
+       if (obj) {
+          var elt = new Element('span', {'class' : 'search-term'}).update(obj.text);
+          elt.__key = obj.key;
+          elt.title = obj.disabled &amp;&amp; 'Click to enable' || 'Click to disable';
+          if (obj.disabled) {
+            elt.addClassName('disabled');
+          }
+          container.insert(elt);
+          elt.observe('click', function(event) {
+             var target = event.element();
+             target.toggleClassName('disabled');
+             cache.all[target.__key].disabled = target.hasClassName('disabled');
+             target.title = cache.all[target.__key].disabled &amp;&amp; 'Click to enable' || 'Click to disable';
+             updateSearchValue();
+          })
+       }
+    }
+    defaultSearchTerms.update(container);
+    updateSearchValue();
+  }
+
+  var requestCreated = function(service, request) {
+    service.target.up().addClassName('loading');
+  }
+  var responseReceived = function(service, request) {
+    if (request.getHeader('X-ReqNo') == service.expectedReqNo) {
+      service.target.up().removeClassName('loading');
+    } else {
+      request.request.container = {};
+    }
+  }
+
+  var doSearch = function(service) {
+    var data = services[service];
+    if (!data) {return;}
+    if (!data.expectedReqNo) {
+      data.expectedReqNo = 0;
+    }
+    var queryString = (customSearchTermsInput &amp;&amp; (customSearchTermsInput.value.strip() + ' ') || '') + defaultSearchTermsInput.value.strip();
+    
+    new Ajax.Updater(data.target, data.script + encodeURIComponent(queryString.strip()) + "&amp;reqNo=" + ++data.expectedReqNo, {onCreate : requestCreated.bind(this, data), onSuccess : responseReceived.bind(this, data)});
+  }
+
+  document.observe('phenotype:selected', function(event) {
+    if (!event.memo || !event.memo.key) {return;}
+    var key = event.memo.key;
+    var text = event.memo.text || event.memo.key;
+    var obj = cache.all[key];
+    if (event.memo.enable) {
+      if (!obj) {
+        obj = {'key' : key, 'text' : text};
+        cache.all[key] = obj;
+      } else {
+        obj.hidden = false;
+      }
+      cache.displayed[key] = true;
+    } else {
+      if (obj) {
+        obj.hidden = true;
+        delete cache.displayed[key];
+      }
+    }
+    updateDefaultSearchTerms();
+  });
+
+  if (customSearchTermsInput) {
+    customSearchTermsInput.observe('keyup', function(event) {
+       doSearch('omim');
+       doSearch('pubmed');
+    });
+  }
+});</code>
+</property>
+<property>
+<name>Instant searches in the Diagnosis zone</name>
+</property>
+<property>
+<parse>1</parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PatientSheetUI</name>
 <number>0</number>
 <className>XWiki.StyleSheetExtension</className>
 <guid>3107f5aa-1450-46df-be7b-af4e79cbe51f</guid>
@@ -1849,6 +2061,53 @@ document.observe('xwiki:dom:loaded', function() {
 <code>#template('colorThemeInit.vm')
 /** ----------------------------------------------------------- */
 /** Default style fixes **/
+#mainContentArea, #mainEditArea {
+    background-color: #F9F9F9;
+    border: 1px solid #FFFFFF;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    margin: 2em 5%;
+    padding: 0.5em 10px;
+    text-shadow: 1px 1px 0 #FFFFFF;
+}
+.bottombuttons {
+   margin: 3em -10px -3em;
+}
+#document-head {
+  border-bottom: .4em solid $theme.buttonPrimaryBackgroundColor;
+  margin: -2.7em -12px 0;
+}
+#document-head #document-title {
+  display: inline-block;
+}
+#document-head h1 {
+    background-color: $theme.buttonPrimaryBackgroundColor;
+    border-bottom: 0 none;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    color: $theme.buttonPrimaryTextColor;
+    display: inline-block;
+    font-size: 1.2em;
+    letter-spacing: 2px;
+    margin: 0 0 -0.4em;
+    padding: 0.4em 3em;
+    text-shadow: 0 0 1px $theme.buttonPrimaryTextColor;
+    text-transform: uppercase;
+}
+#document-head #document-authors {
+  color: $theme.textPrimaryColor;
+  display: inline-block;
+  font-size: .87em;
+  margin-left: 1em;
+  padding-top: .6em;
+  vertical-align: top;
+}
+#document-head #document-authors .sep {
+  margin: 0 .5em;
+}
+#document-head #document-authors  .document-creator {
+  color: $theme.textColor;
+  font-weight: bold;
+}
 #xwikicontent {
   overflow: visible;
 }
@@ -1857,6 +2116,9 @@ document.observe('xwiki:dom:loaded', function() {
 }
 .xwiki-form-listclass input[type="radio"][value=""], option[value=""] {
   display: none;
+}
+.buttonwrapper, .button {
+  text-shadow: none;
 }
 input[type=text], textarea {
   width: 100%;
@@ -1872,7 +2134,7 @@ input[type=text]:focus, textarea:focus {
   -moz-box-shadow: 0 0 4px $theme.borderColor;
   box-shadow: 0 0 4px $theme.borderColor;
 }
-.clinical-info .fullScreenEditLinkContainer {
+.fullScreenEditLinkContainer {
   display: none !important;
 }
 .errormessage {
@@ -1882,11 +2144,10 @@ input[type=text]:focus, textarea:focus {
   color: $theme.textColor;
 }
 .suggestItem .related-terms {
-  font-size: 125%;
+  font-size: 100%;
   font-weight: bold;
   float: right;
-  margin: 0;
-  padding: 2px .5em;
+  margin: .5em 0 0;
   color: $theme.buttonPrimaryTextColor;
   background-color: $theme.buttonPrimaryBackgroundColor;
   -moz-border-radius: 2px;
@@ -2295,7 +2556,193 @@ table.withLabel tr:first-child th {
 <parse>1</parse>
 </property>
 <property>
-<use>currentPage</use>
+<use>onDemand</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.StyleSheetExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PatientSheetUI</name>
+<number>2</number>
+<className>XWiki.StyleSheetExtension</className>
+<guid>80f1b899-6037-4af3-bf0f-b0187bc83a54</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>#template('colorThemeInit.vm')
+/*--------------------------------------------------------------*/
+/** Box style */
+.ncbi-search-box {
+  margin-top: 2em;
+}
+.ncbi-search-box h3 {
+  font-size: 1.2em;
+  text-transform: uppercase;
+  margin: 1em 0;
+  padding: 0 20px 0 0;
+  cursor: pointer;
+}
+.ncbi-search-box.collapsed h3 {
+  color: $theme.linkColor;
+}
+.ncbi-search-box.collapsed .ncbi-search-box-content,
+.ncbi-search-box.collapsed .expand-tools .hide,
+.ncbi-search-box .expand-tools .show {
+  display: none;
+}
+.ncbi-search-box.collapsed .expand-tools .show {
+  display: inline;
+}
+/*--------------------------------------------------------------*/
+/** Search terms from phenotypes */
+.default-search-terms-container {
+  margin: .5em 0;
+  padding: .5em 1em;
+  border: 1px dotted $theme.borderColor;
+  background-color: $theme.highlightColor;
+}
+.search-term {
+  margin: 0 1.5em 0 0;
+  cursor: pointer;
+}
+.search-term:hover, .search-term.disabled:hover {
+  opacity: .7;
+}
+.search-term.disabled {
+  opacity: .5;
+  text-decoration: line-through;
+}
+/** ----------------------------------------------------------- */
+/** PubMed &amp; OMIM suggestions */
+.background-suggestions {
+  max-height: 15em;
+  overflow: hidden;
+  padding: 0 16px 0 0.5em;
+  border: 1px solid $theme.pageContentBackgroundColor;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.15) inset;
+}
+.background-suggestions:hover {
+  overflow: auto;
+  padding-right: 0;
+}
+.background-suggestions ul {
+  list-style-type: none;
+  margin: .5em 0;
+}
+.background-suggestions li {
+  margin: .7em 0;
+  font-size: .8em;
+  line-height: 1.2em;
+  padding-left: 20px;
+  background-position: left 2px;
+  background-repeat: no-repeat;
+}
+.background-suggestions .journal {
+  font-style: italic;
+}
+.background-suggestions .locus {
+  display: block;
+}
+.background-suggestions .title {
+  font-size: 1.25em;
+}
+#pubmed-search-results ul li {
+  background-image: url("$xwiki.getSkinFile('icons/silk/page.gif')");
+}
+#omim-search-results ul li {
+  background-image: url("$xwiki.getSkinFile('icons/silk/chart_line.gif')");
+}
+.background-search h4 {
+  font-size: 1.2em;
+  margin: 0;
+  padding: 0 20px 0 0;
+}
+.background-search {
+  margin-top: 1em;
+  background: transparent none right top no-repeat;
+}
+.background-search.loading, .plainmessage.loading {
+  background-image: url("$xwiki.getSkinFile('icons/xwiki/spinner.gif')");
+}</code>
+</property>
+<property>
+<name>Instant search style</name>
+</property>
+<property>
+<parse>1</parse>
+</property>
+<property>
+<use>onDemand</use>
 </property>
 </object>
 <content>{{velocity output=false}}
@@ -2374,6 +2821,33 @@ table.withLabel tr:first-child th {
     &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch' value='' size='16' id='quick-phenotype-search'/&gt;
   &lt;/fieldset&gt;
   {{/html}}
+)))
+#end
+#end
+
+#macro(__ncbiSBox $fieldName $cssClass)
+#if ($xcontext.action == 'edit')
+(% class="ncbi-search-box $!{cssClass}" %)(((
+=== Instant OMIM / PubMed search ===
+(% class="expand-tools" %)(((
+(% class="tool show" %)Show(%%) (% class="tool hide" %)Hide(%%)
+)))
+(% class="ncbi-search-box-content"%)(((
+(% class="hint"%)The following terms are extracted from the phenotypic description and used automatically in searches. You can disable or re-enable their contribution in OMIM and PubMed search results by clicking on them.(%%)
+{{html wiki=false clean=false}}&lt;input type="hidden" id="defaultSearchTermsInput" value="" /&gt;{{/html}}
+(% id="defaultSearchTerms" %)(((
+)))
+(% class="hint"%)Include the following custom terms in your search:(%%)
+{{html wiki=false clean=false}}&lt;input type="text" id="customSearchTermsInput" value="" /&gt;{{/html}}
+(% class="half-width background-search omim-search" %)(((
+==== Matching disorders in OMIM ====
+(% id="omim-search-results" class="background-suggestions" %)((()))
+)))
+(% class="half-width background-search pubmed-search" %)(((
+==== Suggested reading on PubMed ====
+(% id="pubmed-search-results" class="background-suggestions" %)((()))
+)))
+)))
 )))
 #end
 #end
