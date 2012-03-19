@@ -36,7 +36,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>comments</name>
-<number>16</number>
+<number>17</number>
 <picker>0</picker>
 <prettyName>Additional comments</prettyName>
 <rows>5</rows>
@@ -113,7 +113,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>family_comments</name>
-<number>15</number>
+<number>16</number>
 <picker>0</picker>
 <prettyName>List health conditions found in family (describe the relationship with proband)</prettyName>
 <rows>5</rows>
@@ -137,7 +137,7 @@
 <displayType>select</displayType>
 <multiSelect>1</multiSelect>
 <name>family_history</name>
-<number>14</number>
+<number>15</number>
 <picker>0</picker>
 <prettyName>Family History</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -224,6 +224,37 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
 </last_name>
+<negative_phenotype>
+<cache>0</cache>
+<classname></classname>
+<customDisplay>{{velocity}}
+#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))
+#if ($config)
+  {{include document="$!{config.getProperty('phenotypeMapping').value}" context="new"/}}
+  
+  {{include document="ClinicalInformationCode.PhenotypeDisplay" /}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<idField></idField>
+<multiSelect>0</multiSelect>
+<name>negative_phenotype</name>
+<number>13</number>
+<picker>0</picker>
+<prettyName>Phenotypes NOT observed in this patient</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators></separators>
+<size>1</size>
+<sort>none</sort>
+<sql></sql>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<valueField></valueField>
+<classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+</negative_phenotype>
 <omim_id>
 <cache>0</cache>
 <classname></classname>
@@ -356,7 +387,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>prenatal_phenotype</name>
-<number>13</number>
+<number>14</number>
 <picker>0</picker>
 <prettyName>Prenatal and Perinatal History</prettyName>
 <relationalStorage>1</relationalStorage>
