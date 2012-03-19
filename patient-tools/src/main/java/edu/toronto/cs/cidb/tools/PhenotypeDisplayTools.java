@@ -171,7 +171,9 @@ public class PhenotypeDisplayTools implements ScriptService
     public void setSelectedValues(Collection<String> values)
     {
         Set<String> selectedValues = new HashSet<String>();
-        selectedValues.addAll(values);
+        if (values != null) {
+            selectedValues.addAll(values);
+        }
         this.execution.getContext().setProperty(SELECTED_VALUES_KEY, selectedValues);
     }
 
