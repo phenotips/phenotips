@@ -361,6 +361,7 @@ public class PhenotypeDisplayTools implements ScriptService
 
     private String generateCheckBox(String value, String label)
     {
+        SolrDocument doc = ((SolrScriptService) this.ontologyService).get(value);
         if (!"edit".equals(getMode())) {
             return "<div class='value-checked'>" + label + "</div>";
         }
@@ -369,8 +370,12 @@ public class PhenotypeDisplayTools implements ScriptService
         String id = getName() + (value.startsWith(UNDERSCORE) ? "" : UNDERSCORE) + value;
         String message = getMessageMap().get(value);
         message = (message == null) ? "" : this.wrapDetailsRequestMessage(message);
-        String checked = getSelectedValues().contains(value) ? " checked='checked' " : "";
-        return "<label class='" + cssClass + "' for='" + id + "'><input type='checkbox' " + checked + " name='"
+        String title = "";
+        if (doc != null && StringUtils.isNotEmpty((String) doc.getFieldValue("name"))) {
+            title = " title='" + doc.getFieldValue("name") + "'";
+        }
+        String checked = getSelectedValues().contains(value) ? " checked='checked'" : "";
+        return "<label class='" + cssClass + "' for='" + id + "'><input type='checkbox'" + checked + title + " name='"
             + getName() + "' id='" + id + "' value='" + value + "'/>" + label + "</label><br/>" + message;
     }
 
