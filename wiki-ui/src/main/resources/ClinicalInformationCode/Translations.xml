@@ -22,7 +22,11 @@
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
-<content>patient.livetable.doc.name=ID
+<content>patient.livetable.doc.name=Report name
+patient.livetable.doc.creator=Created by
+patient.livetable.doc.author=Last modified by
+patient.livetable.doc.creationDate=Creation date
+patient.livetable.doc.date=Last modification date
 patient.livetable.last_name=Last name
 patient.livetable.first_name=First name
 patient.livetable.gender=Gender
@@ -41,6 +45,8 @@ patient.livetable.onset=Onset
 patient.livetable.phenotype=Phenotype
 
 admin.clinicalinformationcode=Clinical information application code
+admin.dbconfig=Database and form configuraion
+admin.menuconfig=Menu configuration
 admin.ontology=Ontology index
 
 saveandview=Save</content></xwikidoc>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>ClinicalInformationCode</web>
+<name>DBConfigurationClassDisplayer</name>
+<language></language>
+<defaultLanguage></defaultLanguage>
+<translation>0</translation>
+<parent></parent>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+<creationDate>1331840117000</creationDate>
+<date>1331861580000</date>
+<contentUpdateDate>1331861580000</contentUpdateDate>
+<version>1.1</version>
+<title></title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>false</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>false</hidden>
+<content>{{velocity output=false}}
+#macro(__xclass__displayCustomClassOption)
+  #if("$!{customClassName}" != '' &amp;&amp; "$!{customClassTableName}" != '')
+  &lt;ul class="custom-display-list"&gt;
+  &lt;li&gt;
+    &lt;label for="${prefix}${name}_${customClassName}"&gt;
+    &lt;input type="checkbox" name="${prefix}${name}" id="${prefix}${name}_${customClassName}" value="$customClassName"#if ($value.contains($customClassName)) checked="checked"#end/&gt;
+    Display ${customClassTableName} table
+    &lt;/label&gt;
+  &lt;/li&gt;
+  &lt;/ul&gt;
+  #end
+#end
+
+#macro(__xclass__displayFieldList $xclassName $targetFieldName $targetFieldType $valuesList)
+  #if("$!{hideClassFields}" != 'true')
+  #set($xclass = $xwiki.getDocument($xclassName).getxWikiClass())
+  #if ($xclass.properties)
+    #if ($targetFieldType == 'select')
+      &lt;select name="${targetFieldName}" id="${targetFieldName}_${field.name}"&gt;
+      #foreach ($field in $xclass.properties)
+        &lt;option  value="${field.name}" #if($value == ${field.name}) selected="selected" #end&gt;${field.prettyName}&lt;/option&gt;
+      #end
+      &lt;/select&gt;
+    #else
+      &lt;ul  class="custom-display-list col-2"&gt;
+      #foreach ($field in $xclass.properties)
+        &lt;li&gt;
+          &lt;label for="${targetFieldName}_${field.name}"&gt;
+          &lt;input type="$targetFieldType" name="${targetFieldName}" id="${targetFieldName}_${field.name}" value="${field.name}" #if($targetFieldType == 'radio' &amp;&amp; $value == ${field.name} || $value.contains(${field.name})) checked="checked" #end /&gt;
+          ${field.prettyName}
+        &lt;/li&gt;
+      #end
+      &lt;/ul&gt;
+    #end
+    &lt;input type="hidden" name="${targetFieldName}" value="" /&gt;
+  #end
+  #end
+#end
+
+#set ($displayType = $object.xWikiClass.get($name).getProperty('displayType').value)
+#set ($multiSelect = $object.xWikiClass.get($name).getProperty('multiSelect').value)
+#if ("$!displayType" == '')
+  #set ($displayType = 'select')
+#elseif ($displayType != 'radio' &amp;&amp; $displayType != 'select' || $multiSelect == '1')
+  #set ($displayType = 'checkbox')
+#end
+{{/velocity}}
+
+{{velocity filter="indent"}}
+{{html wiki=false clean=false}}#__xclass__displayCustomClassOption(){{/html}}
+
+#if ($name.indexOf('section__') == 0 &amp;&amp; "$!{hideClassFields}" != 'true')
+//Select the fields that will be displayed in this section: //
+#end
+
+{{html wiki=false clean=false}}#__xclass__displayFieldList($object.getProperty('patientClass').value "$prefix$name" $displayType $value){{/html}}
+{{/velocity}}</content></xwikidoc>

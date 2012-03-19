@@ -2364,9 +2364,9 @@ table.withLabel tr:first-child th {
 #end## field not configured as inactive, field not empty in view mode
 #end
 
-#macro (__qsBox $fieldName)
+#macro (__qsBox $fieldName $cssClass)
 #if ($context.action == 'edit')
-(% id="quick-search-box"  class="group-other quick-search-box emphasized-box" %)(((
+(% id="quick-search-box"  class="group-other quick-search-box emphasized-box $!{cssClass}" %)(((
   {{html clean="false" wiki="false"}}
   &lt;fieldset&gt;
     &lt;h3 class="section"&gt;Quick phenotype search&lt;/h3&gt;
@@ -2417,6 +2417,174 @@ table.withLabel tr:first-child th {
     {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}"&gt;#if ("$!{withLabel}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="hint" &gt;$prop.prettyName&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
   #end
 #end
+
+
+## =====================================================================
+##
+## SECTIONS DISPLAY
+##
+##
+#macro(__reportSection_display $sectionName)
+  #set($cleanSectionName = $sectionName)
+  #set($cleanSectionName = $cleanSectionName.replace('-', '_'))
+  #evaluate("#__reportSection__${cleanSectionName}()")
+#end
+
+## =================================================================
+## Patient information
+##
+#macro(__reportSection__patient_info)
+(% class="twothird-width clear patient-info chapter" %)(((
+== Patient Information ==
+  #if ("$!activeFields.contains('last_name')" != false &amp;&amp; "$!activeFields.contains('first_name')" != false)
+  (% class="fieldset" %)(((
+    #__label('last_name' 'section clear' 'Patient name:')
+    #__displayFormatted('half-width' 'last_name')
+    #__displayFormatted('half-width' 'first_name')
+  )))##fieldset
+  #end## display first name / last name
+  #__displayFormatted('2-col' 'date_of_birth' '' 'date' '')
+  #__displayFormatted('2-col' 'gender' 'Sex' 'gender' 'group-title')
+  #__displayFormatted('2-col' 'health_card' '' '' '')
+
+#if ("$!activeFields.contains('relative')" != 'false' &amp;&amp; ($context.action == 'edit' || ($doc.display('relative') != '' &amp;&amp; $doc.display('relative_of') != '')))
+  (% class="fieldset family_study" %)(((
+  (% class="half-width relative" %)(((
+    #__label('' 'section' 'Family study:') ##
+    $doc.display('relative') ##
+    #__label('relative_of' 'section' 'of')##
+  )))
+  (% class="half-width relative_of" %)(((
+    #__label('relative_of' 'hint' "$!{config.getProperty('relativeReportHint').value}")
+    #__display('relative_of')
+  )))
+  )))##fieldset
+#end
+
+#if ("$!activeFields.contains('onset')" != 'false')
+  #if ($context.action == 'edit')
+    $doc.display('onset')
+  #else
+    #__displayFormatted('2-col' 'onset' '' '' 'section')
+  #end
+#end
+(% class="clear" %)((()))
+)))##chapter
+#end
+
+## =================================================================
+## Measurements
+##
+#macro(__reportSection__measurements)
+#if ($config &amp;&amp; $config.getProperty('section__measurements').value.contains('ClinicalInformationCode.MeasurementsClass'))
+(% class="twothird-width clear measurement-info chapter" %)(((
+== Growth parameters ==
+#__extradata_displayTable('ClinicalInformationCode.MeasurementsClass' {'counter' : false, 'labels' : true})
+)))##chapter
+#end
+#end
+
+## =================================================================
+## Phenotype information
+##
+#macro(__reportSection__phenotype_info)
+#if ("$!activeFields.contains('unaffected')" != 'false')
+  (% class="controlled-group complete-hide" %)(((
+#end
+#if ("$!activeFields.contains('phenotype')" != 'false')
+  (% class="clear clinical-info phenotype-info chapter #__markIfMandatory('phenotype')" %)(((
+  #if ("$!activeFields.contains('unaffected')" != 'false')#set ($__qsBoxCssClass = 'controlled')#end
+  #__qsBox("$!{class.name}_$!{obj.number}_phenotype" "$!{__qsBoxCssClass}")
+    (% class="twothird-width chapter-inner" %)(((
+    (% class="group-title" %)
+    == $!{class.get('phenotype').prettyName} ==
+      #if ("$!activeFields.contains('unaffected')" != 'false')
+        (% class="fieldset unaffected controller" %)(((
+        #if ($xcontext.action == 'edit')
+          $doc.display('unaffected') #__label('unaffected' '' "$class.get('unaffected').prettyName")
+
+          (% class="hint controlled" %)Or select observed phenotypes:(%%)
+        #else
+          $class.get('unaffected').prettyName
+        #end
+        )))
+        (% class="controlled" %) (((
+      #end
+          $doc.display('phenotype')##
+          #if ("$!activeFields.contains('negative_phenotype')" != 'false')
+            (% class="negative-phenotype" %)(((
+              $doc.display('negative_phenotype')
+            )))## negative_phenotype
+          #end
+      #if ("$!activeFields.contains('unaffected')" != 'false')
+        )))## controlled (phenotype)
+      #end
+        )))## chapter-inner
+  )))## chapter
+#end
+#if ("$!activeFields.contains('unaffected')" != 'false')
+  )))## controlled-group
+#end
+#end
+
+## =================================================================
+## Prenatal information
+##
+#macro(__reportSection__prenatal_phenotype_info)
+#if ("$!activeFields.contains('prenatal_phenotype')" != 'false')
+(% class="twothird-width clear clinical-info prenatal_phenotype-info chapter #__markIfMandatory('prenatal_phenotype')" %)(((
+== $!{class.get('prenatal_phenotype').prettyName} ==
+$doc.display('prenatal_phenotype')
+)))##chapter
+#end
+#end
+
+## =================================================================
+## Family history
+##
+#macro(__reportSection__family_history)
+#if ("$!activeFields.contains('family_history')" != 'false')
+(% class="twothird-width clear clinical-info family_history-info chapter #__markIfMandatory('family_history')" %)(((
+== $!{class.get('family_history').prettyName} ==
+(((
+$doc.display('family_history')
+#__displayIfNotEmpty('family_comments')
+)))
+)))##chapter
+#end
+#end
+
+## =================================================================
+## Diagnosis information
+##
+#macro(__reportSection__diagnosis_info)
+#if ("$!activeFields.contains('omim_id')" != 'false')
+(% class="clear chapter twothird-width" %)(((
+##(% class="diagnosis-info"%)(((
+== Diagnosis ==
+#__displayIfNotEmpty2Col('omim_id' '' '' '')
+(% class="clear" %)(((#__displayIfNotEmpty('comments'))))
+##)))
+#__ncbiSBox("$!{class.name}_$!{obj.number}_phenotype" '')
+(% class="clear" %)((()))
+)))##chapter
+#end
+#end
+
+## =================================================================
+## Variants information
+##
+#macro(__reportSection__variant_info)
+#if ($config &amp;&amp; $config.getProperty('section__variant-info').value.contains('ClinicalInformationCode.VariantClass'))
+(% class="clear variant-info chapter" %)(((
+== Variants ==
+#__extradata_displayTable('ClinicalInformationCode.VariantClass' {'counter' : true, 'labels' : false})
+)))##chapter
+#end
+#end
+
+##
+## =====================================================================
 {{/velocity}}
 
 {{velocity}}

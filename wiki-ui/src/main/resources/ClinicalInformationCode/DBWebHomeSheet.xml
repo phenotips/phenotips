@@ -370,7 +370,6 @@ $xwiki.jsx.use('ClinicalInformationCode.DBWebHomeSheet')##
 #set($config = $doc.getObject('ClinicalInformationCode.DBConfigurationClass'))
 #set($patientClassName = "$!{config.getProperty('patientClass').value}")
 #if ($config &amp;&amp; $patientClassName != '')
-
 #set($configuredColumns = $config.getProperty('livetableColumns').value)
 #if (!$configuredColumns &amp;&amp; !($configuredColumns.length &gt; 0))
   #set($configuredColumns = 'doc.name')
@@ -417,6 +416,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
     &lt;label class="create-button-label" for="create-patient-record"&gt;+&lt;/label&gt;&lt;input type="submit" class="button create-button" id="create-patient-record" title="Add new patient record" value="New patient record..."/&gt;
   &lt;/div&gt;&lt;/form&gt;{{/html}}##
 #end
+
 #else
 
 {{warning}}**Configuration missing.**{{/warning}}

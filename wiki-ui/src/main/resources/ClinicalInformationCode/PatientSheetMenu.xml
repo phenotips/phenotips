@@ -29,25 +29,40 @@
 #macro (documentEditorAction $action $text)
   &lt;input class="document-action document-action-button" id="tmAction${action}" type="submit" value="${text}" title="${text}" name="action_${action}"/&gt;
 #end
+#set ($menuconfig = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.MenuConfigurationClass'))
 {{/velocity}}
 
 {{velocity }}
+#if ($menuconfig)
 {{html clean="false" wiki="false"}}
 &lt;div id="document-actions"&gt;
-  #documentAction('#table-of-contents' 'tmToC' 'Table of contents')
-  #if ($xcontext.action == 'view')
-    #if($hasEdit &amp;&amp; !$isReadOnly)
-      #set($editaction = $doc.getDefaultEditMode())
-      #documentAction($doc.getURL($editaction, $!languageparams) 'tmActionEdit' $msg.get('core.menu.edit'))
+  #if ($hasAdmin &amp;&amp; $menuconfig.getProperty('enableHistoryTool').value.contains($xcontext.action))
+    #documentAction($doc.getURL('view', 'viewer=history') 'tmHistory' 'Browse modification history')
+  #end
+  #if ($menuconfig.getProperty('enablePdfTool').value.contains($xcontext.action))
+    #documentAction($doc.getURL('export', 'format=pdf') 'tmExportPdf' 'Export PDF')
+  #end
+  #if ($menuconfig.getProperty('enableTocTool').value.contains($xcontext.action))
+    #documentAction('#table-of-contents' 'tmToC' 'Table of contents')
+  #end
+  #if ($menuconfig.getProperty('enableEditTool').value.contains($xcontext.action))
+    #if ($xcontext.action == 'view')
+      #if($hasEdit &amp;&amp; !$isReadOnly)
+        #set($editaction = $doc.getDefaultEditMode())
+        #documentAction($doc.getURL($editaction, $!languageparams) 'tmActionEdit' $msg.get('core.menu.edit'))
+      #end
+    #elseif ($xcontext.action == 'edit') 
+      #documentEditorAction('save', 'Save')
+      #documentEditorAction('cancel', 'Cancel changes')
     #end
+  #end
+  #if ($menuconfig.getProperty('enableDeleteTool').value.contains($xcontext.action))
     #set ($canDelete = !$doc.isNew() &amp;&amp; $xwiki.checkAccess($doc.fullName, 'delete'))
     #if ($canDelete)
       #documentAction($doc.getURL('delete', $!languageparams) 'tmActionDelete' $msg.get('core.menu.delete'))
     #end
-  #elseif ($xcontext.action == 'edit') 
-    #documentEditorAction('save', 'Save')
-    #documentEditorAction('cancel', 'Cancel changes')
   #end
 &lt;/div&gt;
 {{/html}}
+#end
 {{/velocity}}</content></xwikidoc>
