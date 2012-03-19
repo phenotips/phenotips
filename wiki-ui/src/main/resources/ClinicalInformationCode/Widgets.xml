@@ -1025,15 +1025,16 @@
     }
   },
   
-  acceptEntry : function(data, selection, newFieldValue) {
+  acceptEntry : function(data, selection, newFieldValue, silent) {
       var event = Event.fire(this.fld, "ms:suggest:selected", data);
 
       if (!event.stopped) {
-        this.sInput = selection;
-        this.fld.value = newFieldValue;
-        this.fld.focus();
-        this.clearSuggestions();
-
+        if (!silent) {
+          this.sInput = selection;
+          this.fld.value = newFieldValue;
+          this.fld.focus();
+          this.clearSuggestions();
+        }
         // pass selected object to callback function, if exists
         if (typeof(this.options.callback) == "function") {
           this.options.callback(data);
@@ -1255,6 +1256,14 @@
 
   ensureVisible : function (element, force) {
     if (this.silent || (!force &amp;&amp; this.options.silent)) {return;}
+    var section = element.up('.collapsed');
+    while (section) {
+      section.removeClassName('collapsed');
+      if (section.down('.expand-tool')) {
+        section.down('.expand-tool').update('▼');
+      }
+      section = section.up('.collapsed');
+    }
     if (element.viewportOffset().top &gt; this.input.viewportOffset().top) { 
       if (element.viewportOffset().top &gt; document.viewport.getHeight()) {
         if (element.viewportOffset().top - this.input.viewportOffset().top &lt; document.viewport.getHeight()) {
@@ -1386,7 +1395,7 @@
         elt.__categoryArray.push(c.value); 
       });
     }
-    Event.fire(document, "custom:selection:changed", {'categories' : elt.__categoryArray, 'fieldName' : this.inputName});
+    Event.fire(document, "custom:selection:changed", {'categories' : elt.__categoryArray, 'fieldName' : this.inputName, customElement : elt});
   }
 });
   return MS;
@@ -2115,7 +2124,7 @@ return MS;
   initialize: function(suggest, container, options) {
     this.options = Object.extend(Object.clone(this.options), options || { });
     this.suggest = suggest;
-    this.loadingMessage = "Loading..."
+    this.loadingMessage = new Element('div', {'class' : 'plainmessage loading'}).update("Loading...");
     if (container) {
       this.container = container;
     } else {
@@ -2150,9 +2159,11 @@ return MS;
         onSuccess: function (response) {
           //var tree = this.buildTree(this._getDataFromResponse(response));
           this.setContent(this.buildTree(this._getDataFromResponse(response)));
+          this.__crtRoot = id;
         }.bind(this),
         onFailure: function (response) {
           this.setContent("Failed to retrieve data : " + respose.statusText);
+          this.__crtRoot = '';
         }.bind(this)
       });
   },
@@ -2488,7 +2499,7 @@ return MS;
           var prevPosition = this.container.getPositionInViewport();
         }
         var value = elt.down('.value').firstChild.nodeValue;
-        this.suggest.acceptEntry({'id':id, 'value':value, 'category' : elt.__termCategory}, value, '');
+        this.suggest.acceptEntry({'id':id, 'value':value, 'category' : elt.__termCategory}, value, '', true);
         elt.addClassName('accepted');
         if (prevPosition &amp;&amp; typeof (this.container.positionDialogInViewport) == 'function') {
           this.container.positionDialogInViewport(prevPosition.left, prevPosition.top);
@@ -2560,7 +2571,9 @@ return MS;
   show : function(id) {
     if (id) {
       this.container.show();
-      this.load (id);
+      if (this.__crtRoot != id) {
+        this.load (id);
+      }
     }
   },
 
@@ -2667,7 +2680,7 @@ return MS;
   options : {},
   initialize : function (element) {
     this.element = element;
-    this.dropdown = new Element('div', {'class' : 'dropdown emphasized-box'});
+    this.dropdown = new Element('div', {'class' : 'dropdown'});
 
     this.contentContainer = new Element('div');
     this.dropdown.update(this.contentContainer);
@@ -2680,12 +2693,15 @@ return MS;
     this.contentContainer.update(content);
   },
   show : function () {
-    //this.dropdown.removeClassName('invisible');
-    this.element.insert({after : this.dropdown});
+    if (this.dropdown.hasClassName('invisible')) {
+      this.dropdown.removeClassName('invisible');
+    } else  {
+      this.element.insert({after : this.dropdown});
+    }
   },
   close : function () {
-    //this.dropdown.addClassName('invisible');
-    this.dropdown.remove();
+    this.dropdown.addClassName('invisible');
+    //this.dropdown.remove();
   }
   });
   return MS;
@@ -2693,6 +2709,185 @@ return MS;
 </property>
 <property>
 <name>Dropdown ontology browser</name>
+</property>
+<property>
+<parse></parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.Widgets</name>
+<number>6</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>1cc2a76f-aca1-4bfa-a468-3a599799c13c</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>StickyBox = Class.create({
+    options : {
+      shadowSize : 6,
+      isSticky : function(element) {return true}
+    },
+    initialize : function(stickyElement, stickyAreaElement, options) {
+      this.stickyElement = stickyElement;
+      this.stickyAreaElement = stickyAreaElement;
+      if (this.stickyElement &amp;&amp; this.stickyAreaElement) {
+        this.options = Object.extend(Object.clone(this.options), options || { });
+        this.resetPosition = this.resetPosition.bindAsEventListener(this);
+        Event.observe(window, 'scroll', this.resetPosition);
+        Event.observe(window, 'resize', this.resetPosition);
+        if (typeof(this.options.makeDefault) == 'function') {
+          thid.makeDefault = this.options.makeDefault.bind(this);
+        }
+        this.resetPosition();
+      }
+    },
+    
+    resetPosition : function() {
+      if (!this.options.isSticky(this.stickyElement)) {
+        return;
+      }
+      this.boxHeight = this.stickyElement.getHeight();
+      this.boxWidth = this.stickyElement.getWidth();
+      this.boxMinTop = this.stickyAreaElement.cumulativeOffset().top + this.options.shadowSize ;
+      this.boxMaxTop = this.stickyAreaElement.cumulativeOffset().top + this.stickyAreaElement.getHeight();
+      this.boxLeft = this.stickyElement.cumulativeOffset().left;
+      var relativeContentPosition = this.stickyAreaElement.viewportOffset().top;
+      this.direction = 0;
+      if (this.stickyAreaElement._prevPosition) {
+        if (this.stickyAreaElement._prevPosition &gt; relativeContentPosition) {
+          this.direction = 1;
+        } else if (this.stickyAreaElement._prevPosition &lt; relativeContentPosition) {
+          this.direction = -1;
+        }
+      }
+      if ((this.options.isSticky(this.stickyElement) || this.direction == 1) &amp;&amp;
+        document.viewport.getScrollOffsets().top &gt;= this.boxMinTop &amp;&amp;
+        document.viewport.getScrollOffsets().top &lt; this.boxMaxTop) {
+        this.makeFixed();
+      } else if ((this.options.isSticky(this.stickyElement) || this.direction == -1) &amp;&amp;
+        document.viewport.getScrollOffsets().top &gt;= this.boxMaxTop) {
+        this.makeAbsolute();
+      } else {
+        this.makeDefault();
+      }
+      this.stickyAreaElement._prevPosition = relativeContentPosition;
+    },
+    
+    makeFixed : function() {
+      if (this.stickyElement.style.position != 'fixed') {
+        this.stickyElement.style.left = this.boxLeft + 'px';
+        this.stickyElement.style.width = (this.boxWidth) + 'px';
+        this.stickyElement.style.top = this.options.shadowSize + 'px';
+        this.stickyElement.style.right = '';
+        this.stickyElement.style.position = 'fixed';
+      }
+    },
+    makeAbsolute : function(top) {
+      if (this.stickyElement.style.position != 'absolute' || this.stickyElement.style.top != top + 'px'){
+        top = top || this.stickyAreaElement.getHeight();
+        this.stickyElement.style.top = top + 'px';
+        this.stickyElement.style.left = '';
+        this.stickyElement.style.right = '';
+        this.stickyElement.style.position = 'absolute';
+      }       
+    },
+    makeDefault : function() {
+      if (this.stickyElement.style.position != ''){
+        this.stickyElement.style.position = '';
+        this.stickyElement.style.top = '';
+        this.stickyElement.style.left = '';
+        this.stickyElement.style.right = '';
+        this.stickyElement.style.width = '';
+      }       
+    },
+    isFixed: function() {
+      return (this.stickyElement.style.position == 'fixed');
+    },
+    isAbsolute: function() {
+      return (this.stickyElement.style.position == 'absolute');
+    },
+    isDefault: function() {
+      return (this.stickyElement.style.position == '');
+    }
+});</code>
+</property>
+<property>
+<name>Sticky Box</name>
 </property>
 <property>
 <parse></parse>
@@ -2994,11 +3189,11 @@ div.suggestItems .suggestItem .value {
   display: block !important;
 }
 div.suggestItems * {
-  line-height:1.6em;
+  line-height:1.2em !important;
 }
 
 div.suggestItems em {
-  font-weight:700;
+  font-weight:normal !important;
   margin-right:2px;
 }
 
@@ -3106,7 +3301,7 @@ div.resultContainer div.sourceContent.loading {
   font-size: 87%;
 }
 .suggestInfo {
-  font-size: 70%;
+  font-size: 100%;
   word-wrap: normal !important;
   display: block;
   width: 99%;
@@ -3562,6 +3757,21 @@ div.resultContainer div.sourceContent.loading {
 }
 .select-tool {
   vertical-align: middle;
+}
+.ontology-tree .subterm-selected .select-tool {
+  opacity: .5;
+}
+.ontology-tree .subterm-selected .expand-tool:after {
+    background: none repeat scroll 0 0 $theme.linkColor;
+    color: $theme.linkColor;
+    content: "...";
+    display: inline-block;
+    font-weight: bold;
+    margin-left: 1.3em;
+    position: absolute;
+    text-align: center;
+    top: .3em;
+    width: 11px;
 }</code>
 </property>
 <property>
@@ -3654,11 +3864,14 @@ div.resultContainer div.sourceContent.loading {
 <cache>long</cache>
 </property>
 <property>
-<code>.dropdown {
-  margin-left: .8em;
+<code>#template('colorThemeInit.vm')
+.dropdown {
+  margin-left: 1em;
+  border-left: .5em solid $theme.backgroundSecondaryColor;
+  font-size: .9em;
   width: 95%;
   z-index: 100;
-  opacity: .5;
+  opacity: .9;
 }
 .dropdown:hover {
   opacity: 1;
@@ -3700,7 +3913,7 @@ div.resultContainer div.sourceContent.loading {
 <name>Dropdown style</name>
 </property>
 <property>
-<parse></parse>
+<parse>1</parse>
 </property>
 <property>
 <use>currentPage</use>
