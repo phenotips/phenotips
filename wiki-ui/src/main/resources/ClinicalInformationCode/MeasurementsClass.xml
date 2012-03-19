@@ -33,32 +33,22 @@
 <validationScript></validationScript>
 <bmi>
 <customDisplay>{{velocity}}
-#if ($context.action == 'inline' || $context.action == 'edit' &amp;&amp; ("$!{request.editor}" == '' || $request.editor == 'inline'))
-  #set ($cssClass = '')
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
   #set ($dValue = "$!{value}")
   #if ($dValue == '')
     #set ($dValue = '-')
   #end
-  #if ($value &lt; 18.5)
-    #set ($title = 'Below normal')
-  #elseif ($value &gt; 25.5)
-    #set ($cssClass = 'above-normal')
-    #set ($title = 'Above normal value')
-  #elseif ($dValue != '')
-    #set ($cssClass = 'normal')
-    #set ($title = 'Normal value')
-  #end
   {{html wiki=false clean=false}}
-  &lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;
-  &lt;div class="$name displayed-value $cssClass" title="$title"&gt;$dValue&lt;/div&gt;
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value"&gt;$dValue&lt;/div&gt;
   {{/html}}
 #else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{/html}}
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
 #end
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>bmi</name>
-<number>4</number>
+<number>6</number>
 <numberType>float</numberType>
 <prettyName>BMI</prettyName>
 <size>30</size>
@@ -67,9 +57,42 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </bmi>
+<bmi_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>bmi_percentile</name>
+<number>7</number>
+<numberType>long</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</bmi_percentile>
 <date>
-<customDisplay></customDisplay>
-<dateFormat>yyyy/MM/dd</dateFormat>
+<customDisplay>{{velocity}}{{html wiki=false clean=false}}
+#set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
+#if ($xcontext.action == 'edit')
+&lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date" alt="#formatdateISO($value)"/&gt;
+#else
+&lt;span class="date"&gt;$!xwiki.formatDate($!value, $definedFormat)&lt;/span&gt;
+#end
+{{/html}}{{/velocity}}</customDisplay>
+<dateFormat>MM/dd/yyyy</dateFormat>
 <disabled>0</disabled>
 <emptyIsToday>1</emptyIsToday>
 <name>date</name>
@@ -84,34 +107,22 @@
 </date>
 <hc_percentile>
 <customDisplay>{{velocity}}
-#if ($context.action == 'inline' || $context.action == 'edit' &amp;&amp; ("$!{request.editor}" == '' || $request.editor == 'inline'))
-  #set ($cssClass = '')
-  #set ($title = '')
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
   #set ($dValue = "$!{value}")
   #if ($dValue == '')
     #set ($dValue = '-')
   #end
-  #if ($value &lt; 3)
-    #set ($cssClass = 'below-normal value')
-    #set ($title = 'Below normal')
-  #elseif ($value &gt; 97)
-    #set ($cssClass = 'above-normal')
-    #set ($title = 'Above normal value')
-  #elseif ($dValue != '')
-    #set ($cssClass = 'normal')
-    #set ($title = 'Normal value')
-  #end
   {{html wiki=false clean=false}}
-  &lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;
-  &lt;div class="$name displayed-value $cssClass" title="$title"&gt;$dValue&lt;/div&gt;
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
   {{/html}}
 #else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{/html}}
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
 #end
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>hc_percentile</name>
-<number>6</number>
+<number>9</number>
 <numberType>long</numberType>
 <prettyName>Percentile</prettyName>
 <size>30</size>
@@ -124,7 +135,7 @@
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <name>head_circumference</name>
-<number>5</number>
+<number>8</number>
 <numberType>long</numberType>
 <prettyName>Head circumference (cm)</prettyName>
 <size>30</size>
@@ -137,7 +148,7 @@
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <name>height</name>
-<number>3</number>
+<number>4</number>
 <numberType>long</numberType>
 <prettyName>Height (cm)</prettyName>
 <size>30</size>
@@ -146,6 +157,32 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </height>
+<height_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>height_percentile</name>
+<number>5</number>
+<numberType>long</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</height_percentile>
 <weight>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -159,5 +196,31 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </weight>
+<weight_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>weight_percentile</name>
+<number>3</number>
+<numberType>long</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</weight_percentile>
 </class>
 <content></content></xwikidoc>

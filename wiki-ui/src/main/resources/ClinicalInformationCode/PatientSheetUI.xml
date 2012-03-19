@@ -770,21 +770,6 @@ document.observe('dom:loaded', function() {
     
     var hasErrors = false;
     
-    var dateValidation = function (value) {
-      if (!value || !value.match(/^(0[1-9]|1[012])[/](0[1-9]|[12][0-9]|3[01])[/](19|20)\d\d$/)) {
-	return false;
-      }
-      var parts = value.split("/");
-      var month = parseInt(parts[0]);
-      var day = parseInt(parts[1]);
-      var year = parseInt(parts[2]);
-      if (((month == 4 || month == 6 || month == 9 || month == 11) &amp;&amp; day &gt; 30) ||
-          (month == 2 &amp;&amp; (day &gt; 29 || (year % 4 != 0 || year % 100 == 0 &amp;&amp; year % 400 != 0) &amp;&amp; day &gt; 28))) {
-        return false;
-      }
-      return true;
-    }
-    
     var markIfHasErrors = function(inputHasErrors, input) {
       if (!input) {
         return false;
@@ -811,11 +796,6 @@ document.observe('dom:loaded', function() {
       }
     }
     
-    $$('.mandatory.date input[type=text]').invoke('observe', 'blur', function (event) {
-      var dateField = event.element();
-      markIfHasErrors(!dateValidation(dateField.value), dateField);
-    });
-    
     $$('.mandatory input[type=text]:not(.suggested, .mapping)').invoke('observe', 'blur', function (event) {
       var input = event.element();
       markIfHasErrors((!input.value || input.value.strip() == ""), input);
@@ -828,10 +808,6 @@ document.observe('dom:loaded', function() {
     $('inline').observe('submit', function(event) {
       var form = event.element();
       var hasErrors = false;
-
-      $$('.mandatory.date input[type=text]').each(function (dateField) {
-       hasErrors =  markIfHasErrors(!dateValidation(dateField.value), dateField) || hasErrors;
-      });
     
       $$('.mandatory input[type=text]:not(.suggested, .mapping)').each(function (input) {
         hasErrors = markIfHasErrors((!input.value || input.value.strip() == ""), input) || hasErrors;
@@ -1402,6 +1378,7 @@ document.observe('dom:loaded', function() {
           var lastAdded = dataTable.down('.new');
           lastAdded.down('a.delete').observe('click', this.ajaxDeleteData.bindAsEventListener(this));
           lastAdded.removeClassName('new');
+          Event.fire(dataTable, 'extradata:added', {'element' : lastAdded});
         }.bind(this),
         onFailure : function(response) {
           var failureReason = response.statusText;
@@ -1716,50 +1693,126 @@ document.observe('xwiki:dom:loaded', function() {
 </property>
 <property>
 <code>document.observe('xwiki:dom:loaded', function() {
-  // TODO: make sure events work on all browsers
-  $$('.extradata-list td.weight input, .extradata-list td.height input').invoke('observe', 'keyup', function(event) {
-    var elt = event.element();
-    var row = elt &amp;&amp; elt.up('tr');
-    if (row) {
-      var target = row.down('td.bmi input');
-      if (!target) {return}
-      var weight = row.down('td.weight input');
-      var height = row.down('td.height input');
-      if (weight &amp;&amp; weight.value &amp;&amp; height &amp;&amp; height.value) {
-        var h = parseInt(height.value);
-        var w = parseInt(weight.value);
-        target.value = Math.round(w * 1000000.0 / (h * h))/100.0;
-      } else {
-        target.value = '';
-      }
-      var displayedValue = target.next('div.displayed-value');
-      if (displayedValue) {
-        displayedValue.update(target.value);
-        if (target.value == '') {
-           displayedValue.update('-');
-           displayedValue.title = '';
-           displayedValue.removeClassName('above-normal');
-           displayedValue.removeClassName('below-normal');
-           displayedValue.removeClassName('normal');
-        }
-        if (target.value &lt; 18.5) {
-           displayedValue.title = 'Below normal value';
-           displayedValue.removeClassName('above-normal');
-           displayedValue.removeClassName('normal');
-           displayedValue.addClassName('below-normal');
-        } else if (target.value &gt; 25.5) {
-           displayedValue.title = 'Above normal value';
-           displayedValue.addClassName('above-normal');
-           displayedValue.removeClassName('normal');
-           displayedValue.removeClassName('below-normal');
-        } else {
-           displayedValue.title = 'Normal value';
-           displayedValue.removeClassName('above-normal');
-           displayedValue.removeClassName('below-normal');
-           displayedValue.addClassName('normal');
-        }
-      }
+  var dataTable = $('extradata-list-ClinicalInformationCode.MeasurementsClass');
+  if (!dataTable || !dataTable.down('input[type=text]')) {return;}
+
+  var script = "$xwiki.getURL('ClinicalInformationCode.PatientToolsService', 'get')";
+
+  var createReqParam = function (name, sourceInput) {
+    var value = sourceInput &amp;&amp; sourceInput.value != '' &amp;&amp; parseFloat(sourceInput.value);
+    if (value) {
+      return '&amp;' + name + '=' + encodeURIComponent(value);
     }
+    return '';
+  }
+  var createReqParamAge = function (name, crtDate, birthDate) {
+    if (!birthDate || !crtDate) {return ''}
+    var bDateObj = Date.parseISO_8601(birthDate.alt || '');
+    var cDateObj = Date.parseISO_8601(birthDate.alt || '');
+    if (!bDateObj || !cDateObj) {return ''}
+    var age = (cDateObj.getFullYear() - bDateObj.getFullYear()) * 12 + (cDateObj.getMonth() - bDateObj.getMonth());
+    return (age &gt;= 0) &amp;&amp; ('&amp;' + name + '=' + encodeURIComponent(age)) || '';
+  }
+  var createReqParamSex = function (name, sourceInput) {
+    return (sourceInput &amp;&amp; sourceInput.value &amp;&amp; ('&amp;' + name + '=' + encodeURIComponent(sourceInput.value))) || '';
+  }
+
+  var updateValue = function (target, value, fuzzyValue) {
+    var input = target.down('input[type=hidden]');
+    var displayed = target.down('.displayed-value');
+    input.value = value;
+    displayed.update(value || '-');
+    if (fuzzyValue) {
+      ['extreme-below-normal', 'below-normal', 'normal', 'above-normal', 'extreme-above-normal'].each(function (cssClass) {
+        displayed.removeClassName(cssClass);
+      });
+      displayed.addClassName(fuzzyValue);
+    }
+  } 
+
+  var updateDependentValues = function (targets, values) {
+    for (var p in values) {
+      ['value', 'percentile'].each( function (value) {
+        if (values[p] &amp;&amp; values[p][value] &amp;&amp; targets[p] &amp;&amp; targets[p][value]) {
+           updateValue(targets[p][value], values[p][value], (value == 'percentile') &amp;&amp; values[p]['valCategory']);
+        }
+      });
+    }
+  }
+
+  var lastRequestID = 0;
+
+  var valueChanged = function(event) {
+    // Get inputs holding the values needed for computing the dependent values
+    var row = event &amp;&amp; event.element &amp;&amp; event.element() &amp;&amp; event.element().up('tr');
+    if (row) {
+       updateDataRow(row);
+    } else {
+       dataTable.select('tr').each(updateDataRow);
+    }
+  }
+
+  var updateDataRow = function(row) {
+    var weight = row.down('td.weight input');
+    var height = row.down('td.height input');
+    var hc = row.down('td.head_circumference input');
+
+    if (!weight || !height || !hc) {return;}
+
+    var date = row.down('td.date input');
+    var birthDate = document.documentElement.down('input[name$=date_of_birth]');
+    var sex = document.documentElement.down('input[name$=gender]:checked');
+
+    var url = script + "?" + createReqParam('w', weight)
+                           + createReqParam('h', height)
+                           + createReqParam('c', hc)
+                           + createReqParamAge('a', date, birthDate)
+                           + createReqParamSex('s', sex);
+
+    var targets = {
+       bmi : {
+         value : row.down('td.bmi'),
+         percentile : row.down('td.bmi_percentile')
+       },
+       weight : {
+         percentile : row.down('td.weight_percentile')
+       },
+       height : {
+         percentile : row.down('td.height_percentile')
+       },
+       head_c : {
+         percentile : row.down('td.hc_percentile')
+       }
+    };
+
+    var requestID = ++lastRequestID;
+
+    var ajx = new Ajax.Request(url, {
+       method: 'get',
+       requestHeaders: {Accept : "application/json"},
+       onSuccess: function(response) {
+          if (requestID &lt; lastRequestID) {return;}
+          updateDependentValues(targets, response.responseJSON)
+       },
+       onFailure: function (response) {}
+    });
+  }
+
+  // TODO: make sure events work on all browsers
+  var handleValueChanged = function (elementsList) {
+    ['blur', 'keypress', 'keyup', 'xwiki:date:changed'].each(function (eventName) {
+      elementsList.invoke('observe', eventName, valueChanged);
+    })
+  };
+  
+  // Attach all listeners
+  handleValueChanged(dataTable.select('input[type=text]'));
+  handleValueChanged($$('input[name$=date_of_birth], input[name$=gender]'));
+  dataTable.observe('extradata:added', function (event) {
+     var elements = event &amp;&amp; event.memo &amp;&amp; event.memo.element &amp;&amp; event.memo.element.select('input[type=text]');
+     if (elements) {
+       handleValueChanged(elements);
+     }
   });
 });</code>
 </property>
@@ -1775,7 +1828,7 @@ document.observe('xwiki:dom:loaded', function() {
 </object>
 <object>
 <class>
-<name>XWiki.StyleSheetExtension</name>
+<name>XWiki.JavaScriptExtension</name>
 <customClass></customClass>
 <customMapping></customMapping>
 <defaultViewSheet></defaultViewSheet>
@@ -1981,6 +2034,121 @@ document.observe('xwiki:dom:loaded', function() {
 <object>
 <class>
 <name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PatientSheetUI</name>
+<number>10</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>e261844f-d2f2-4ac5-882a-10d7670949ca</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>document.observe('xwiki:dom:loaded', function() {
+  $$('.month-year-date').each(function(dateWidget){
+    var dateValueInput = dateWidget.down('input.xwiki-date-hidden');
+    var monthSelect = dateWidget.down('select.month');
+    var yearSelect = dateWidget.down('select.year');
+    if (!dateValueInput || !dateValueInput.title || !monthSelect || !yearSelect) {return;}
+    [monthSelect, yearSelect].invoke('observe', 'change', function(event) {
+       var format = dateValueInput.title;
+       var month = monthSelect.selectedIndex &gt;= 0 &amp;&amp; monthSelect.options[monthSelect.selectedIndex].value;
+       var year = yearSelect.selectedIndex &gt;= 0 &amp;&amp; yearSelect.options[yearSelect.selectedIndex].value;
+       if (month &amp;&amp; year) {
+          var date = new Date();
+          date.setFullYear(year, month, 1);
+          if (typeof (SimpleDateFormat) != 'undefined') {
+            var formatter = new SimpleDateFormat(format);
+            dateValueInput.value = formatter.format(date);
+            var altFormatter = new SimpleDateFormat(Date.ISO8601Format);
+            dateValueInput.alt = altFormatter.format(date);
+            Event.fire(dateValueInput, 'xwiki:date:changed');
+          }
+       }
+    })
+  })
+});</code>
+</property>
+<property>
+<name>Date Pickers</name>
+</property>
+<property>
+<parse></parse>
+</property>
+<property>
+<use>onDemand</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.StyleSheetExtension</name>
 <customClass></customClass>
 <customMapping></customMapping>
 <defaultViewSheet></defaultViewSheet>
@@ -2469,8 +2637,7 @@ input.wrongValue {
 <property>
 <code>#template('colorThemeInit.vm')
 table.extradata-list {
-    width: 99%;
-   margin-top: -.5em;
+    width: 100%;
 }
 .extradata-list td, .extradata-list th {
     border: 1px solid $theme.backgroundSecondaryColor;
@@ -2508,9 +2675,6 @@ table.extradata-list {
     display: block;
     white-space: nowrap;
 }
-.extradata-list .fullScreenEditLinkContainer {
-    display: none !important;
-}
 .extradata-list th.actions {
   width: 24px;
   ## border-left: 0 none;
@@ -2526,7 +2690,7 @@ table.extradata-list {
     right: 0;
 }
 .list-actions {
-  text-align: right;
+  position: relative;
   width: 99%;
 }
 .list-actions .buttonwrapper {
@@ -2545,8 +2709,61 @@ table.withLabel tr:first-child th {
 .extradata-list .normal {
   color: $theme.notificationSuccessColor;
 }
-.extradata-list .below-normal, .extradata-list .above-normal {
+.extradata-list .extreme-below-normal, .extradata-list .extreme-above-normal {
   color: $theme.notificationErrorColor;
+}
+.extradata-list .below-normal, .extradata-list .above-normal {
+  color: $theme.notificationWarningColor;
+}
+form .extradata-list tr:hover td {
+  background-color: $theme.highlightColor;
+}
+
+table.extradata-list td.weight,
+table.extradata-list td.height,
+table.extradata-list td.bmi,
+table.extradata-list td.head_circumference {
+  paddingr-left: .5em;
+}
+table.extradata-list td.date,
+table.extradata-list td.bmi_percentile {
+  padding-right: .5em;
+}
+#extradata-list-ClinicalInformationCode\.MeasurementsClass tr {
+  position: relative;
+}
+#extradata-list-ClinicalInformationCode\.MeasurementsClass td {
+  padding-top: 2.5em;
+  padding-bottom: 2em;
+}
+#extradata-list-ClinicalInformationCode\.MeasurementsClass td.date {
+  position: absolute;
+  padding-top: 3px;
+  padding-bottom: 0;
+}
+#extradata-list-ClinicalInformationCode\.MeasurementsClass td.date label.hint {
+  font-size: 1em;
+  color: $theme.textColor;
+  font-weight: bold;
+}
+#extradata-list-ClinicalInformationCode\.MeasurementsClass td.date input {
+  width: 10em;
+  margin: 0 0 0 .7em;
+}
+#extradata-list-ClinicalInformationCode\.MeasurementsClass td.actions {
+  padding: 3px;
+  position: absolute;
+  right: 10px;
+}
+#extradata-list-ClinicalInformationCode\.MeasurementsClass td.actions a.delete{
+  margin: 0;
+  background-image: none;
+  width: 1em;
+  height: auto;
+  text-indent: 0;
+  text-align: center;
+  color: $theme.buttonPrimaryTextColor;
+  text-decoration: none !important;
 }</code>
 </property>
 <property>
@@ -2858,11 +3075,11 @@ table.withLabel tr:first-child th {
 ##
 ##
 #macro (__extradata_deleteTool $object $anchor)
-  {{html}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="Delete"&gt;Delete&lt;/a&gt;&lt;/span&gt;{{/html}}
+  {{html}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="Delete"&gt;✖&lt;/a&gt;&lt;/span&gt;{{/html}}##
 #end
 
 #macro (__extradata_addTool $classname $anchor)
-  {{html}}&lt;span class="buttonwrapper"&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
+  {{html}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
 
 #macro (__extradata_displayTable $dataClassName $options)
   #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
@@ -2872,15 +3089,16 @@ table.withLabel tr:first-child th {
     #else
       (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}" %)
       #if ("$!{options.counter}" == 'true')|=(% class="col-label" %)# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name" %)$prop.prettyName#end#if ($context.action == 'edit')|=(% class="actions" %)
-    #end
-    #foreach ($o in $doc.getObjects($dataClassName))
-      #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name" %)#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="hint" &gt;$prop.prettyName&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $o)#end#if ($context.action == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
-    #end
+      #end
+      #foreach ($o in $doc.getObjects($dataClassName))
+        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name" %)#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="hint" &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $o)#end#if ($context.action == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
 
-    #if ($context.action == 'edit')(% class="list-actions" %)(((#__extradata_addTool($dataClassName "extradata-${dataClassName}"))))#end
+      #end## foreach object
 
-    #end
-    #end
+      #if ($context.action == 'edit')(% class="list-actions" %)(((#__extradata_addTool($dataClassName "extradata-${dataClassName}"))))
+      #end
+    #end## if context.action
+  #end## if dataclass
 #end
 
 #macro (__extradata_displayLastEntry $dataClassName $withLabel)
@@ -2888,7 +3106,7 @@ table.withLabel tr:first-child th {
   #if ($objects.size() &gt; 0)
     #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
     #set($dataClass = $targetObj.xWikiClass)
-    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}"&gt;#if ("$!{withLabel}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="hint" &gt;$prop.prettyName&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
+    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}"&gt;#if ("$!{withLabel}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="hint" &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
   #end
 #end
 
@@ -3075,6 +3293,8 @@ $doc.display('family_history')
 )))
 
 #end
+$xwiki.ssx.use('XWiki.DateTimePicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('ClinicalInformationCode.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.ssx.use('ClinicalInformationCode.Widgets', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('ClinicalInformationCode.Widgets')##
