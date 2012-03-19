@@ -47,8 +47,8 @@
 <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
 </comments>
 <date_of_birth>
-<customDisplay>{{velocity}}{{html wiki=false clean=false}}
-#set ($definedFormat = "$!obj.xWikiClass.get($name).getProperty('dateFormat').value")
+<customDisplay>{{velocity filter="indent"}}{{html wiki=false clean=false}}
+#set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))
 #if ($config)
   #set ($format = "$!{config.getProperty('dateOfBirthFormat').value}")
@@ -58,8 +58,9 @@
 #end
 #if ($xcontext.action == 'edit')
   #if ($format.indexOf('d') &lt; 0)
-    &lt;span class="$name" id="$prefix${name}_container"&gt;
-      &lt;input type="hidden" id="$prefix$name" name="$prefix$name" value="$xwiki.formatDate($value, $definedFormat)"/&gt;
+    #if (!$value)#set($value = $util.date)#end
+    &lt;span class="month-year-date $name" id="$prefix${name}_container"&gt;
+      &lt;input type="hidden" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date-hidden" alt="#formatdateISO($value)"/&gt;
       #set ($date = $util.date)
       #if ($value)
         #set ($selMonth = $value.month)
@@ -71,7 +72,7 @@
       #set ($mFormat = $format.replaceAll("[^M]", ''))
       #set ($yFormat = $format.replaceAll("[^y]", ''))
 
-      &lt;select name="$prefix${name}_month"&gt;
+      &lt;select name="$prefix${name}_month" class="month"&gt;
       #foreach ($val in [0..11])
         #set ($date.month = $val)
         &lt;option value="$val"#if ($selMonth == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $mFormat)&lt;/option&gt;
@@ -81,18 +82,18 @@
       #set ($startYear = $date.year - 99)
       #set ($endYear = $date.year + 1)
 
-      &lt;select name="$prefix${name}_year"&gt;
+      &lt;select name="$prefix${name}_year" class="year"&gt;
       #foreach ($val in [$startYear..$endYear])
         #set ($date.year = $val)
-        &lt;option value="$val"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $yFormat)&lt;/option&gt;
+        &lt;option value="$xwiki.formatDate($date, $yFormat)"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $yFormat)&lt;/option&gt;
       #end      
       &lt;/select&gt;
     &lt;/span&gt;
   #else
-    &lt;input type="text" class="date" title="${format}" id="$prefix$name" name="$prefix$name" value="$xwiki.formatDate($value, $definedFormat)"/&gt;
+    &lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date" alt="#formatdateISO($value)"/&gt;
   #end
 #else
-&lt;span class="date"&gt;$xwiki.formatDate($value, $format)&lt;/span&gt;
+&lt;span class="date"&gt;$!xwiki.formatDate($value, $format)&lt;/span&gt;
 #end
 {{/html}}{{/velocity}}</customDisplay>
 <dateFormat>MM/dd/yyyy</dateFormat>
