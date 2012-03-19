@@ -660,8 +660,8 @@ document.observe('dom:loaded', function() {
 
     visibilityControllers.each(function (item) {
        if (item.up('.controlled-group.complete-hide')) {
-          item.__hideStyle = {'visibility' : 'hidden', 'height' : '0'};
-          item.__showStyle = {'visibility' : 'visible', 'height' : ''};
+          item.__hideStyle = {'display' : 'none'};
+          item.__showStyle = {'display' : ''};
        } else {
           item.__hideStyle = {'visibility' : 'hidden'};
           item.__showStyle = {'visibility' : 'visible'};
@@ -3433,10 +3433,11 @@ table.extradata-list td.bmi_percentile {
 ## Measurements
 ##
 #macro(__reportSection__measurements)
-#if ($config &amp;&amp; $config.getProperty('section__measurements').value.contains('ClinicalInformationCode.MeasurementsClass'))
+#set ($targetClassName = 'ClinicalInformationCode.MeasurementsClass')
+#if ($config &amp;&amp; $config.getProperty('section__measurements').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
 (% class="twothird-width clear measurement-info chapter" %)(((
 == Growth parameters ==
-#__extradata_displayTable('ClinicalInformationCode.MeasurementsClass' {'counter' : false, 'labels' : true})
+#__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
 )))##chapter
 #end
 #end
@@ -3445,6 +3446,7 @@ table.extradata-list td.bmi_percentile {
 ## Phenotype information
 ##
 #macro(__reportSection__phenotype_info)
+#if ($xcontext.action == 'edit' || "$doc.display('unaffected')$doc.display('phenotype')$doc.display('negative_phenotype')" != '')
 #if ("$!activeFields.contains('unaffected')" != 'false')
   (% class="controlled-group complete-hide" %)(((
 #end
@@ -3462,7 +3464,7 @@ table.extradata-list td.bmi_percentile {
 
           (% class="hint controlled" %)Or select observed phenotypes:(%%)
         #else
-          $class.get('unaffected').prettyName
+          #if ($doc.display('unaffected') == 'Yes')$class.get('unaffected').prettyName#end
         #end
         )))
         (% class="controlled" %) (((
@@ -3482,13 +3484,14 @@ table.extradata-list td.bmi_percentile {
 #if ("$!activeFields.contains('unaffected')" != 'false')
   )))## controlled-group
 #end
+#end## section has content
 #end
 
 ## =================================================================
 ## Prenatal information
 ##
 #macro(__reportSection__prenatal_phenotype_info)
-#if ("$!activeFields.contains('prenatal_phenotype')" != 'false')
+#if ("$!activeFields.contains('prenatal_phenotype')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('prenatal_phenotype')" != ''))
 (% class="twothird-width clear clinical-info prenatal_phenotype-info chapter #__markIfMandatory('prenatal_phenotype')" %)(((
 == $!{class.get('prenatal_phenotype').prettyName} ==
 $doc.display('prenatal_phenotype')
@@ -3500,7 +3503,7 @@ $doc.display('prenatal_phenotype')
 ## Family history
 ##
 #macro(__reportSection__family_history)
-#if ("$!activeFields.contains('family_history')" != 'false')
+#if ("$!activeFields.contains('family_history')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('family_history')$doc.display('family_comments')" != ''))
 (% class="twothird-width clear clinical-info family_history-info chapter #__markIfMandatory('family_history')" %)(((
 == $!{class.get('family_history').prettyName} ==
 (((
@@ -3515,7 +3518,7 @@ $doc.display('family_history')
 ## Diagnosis information
 ##
 #macro(__reportSection__diagnosis_info)
-#if ("$!activeFields.contains('omim_id')" != 'false')
+#if ("$!activeFields.contains('omim_id')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('omim_id')" != ''))
 (% class="clear chapter twothird-width" %)(((
 ##(% class="diagnosis-info"%)(((
 == Diagnosis ==
@@ -3532,10 +3535,11 @@ $doc.display('family_history')
 ## Variants information
 ##
 #macro(__reportSection__variant_info)
-#if ($config &amp;&amp; $config.getProperty('section__variant-info').value.contains('ClinicalInformationCode.VariantClass'))
+#set ($targetClassName = 'ClinicalInformationCode.VariantClass')
+#if ($config &amp;&amp; $config.getProperty('section__variant-info').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
 (% class="clear variant-info chapter" %)(((
 == Variants ==
-#__extradata_displayTable('ClinicalInformationCode.VariantClass' {'counter' : true, 'labels' : false})
+#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false})
 )))##chapter
 #end
 #end
