@@ -121,8 +121,7 @@ public class PhenotypeDisplayTools implements ScriptService
                 cleanSection(data);
                 addSectionCustomValues(data, fieldsToAdd);
                 if (data.isEmpty()) {
-                    return "{{html wiki=true clean=false}}\n" + hintMessage(EMPTY_SECTION_MESSAGE)
-                        + "\n{{/html}}\n";
+                    return "";
                 }
             }
             return "{{html wiki=true clean=false}}\n" + handleSection(data) + "\n{{/html}}\n";
@@ -138,8 +137,7 @@ public class PhenotypeDisplayTools implements ScriptService
             if (!"edit".equals(getMode())) {
                 cleanSections(data);
                 if (data.isEmpty()) {
-                    return "{{html wiki=true clean=false}}\n" + hintMessage(EMPTY_SECTION_MESSAGE)
-                        + "\n{{/html}}\n";
+                    return "";
                 }
             }
             Object[] sectionNames = data.keySet().toArray();
