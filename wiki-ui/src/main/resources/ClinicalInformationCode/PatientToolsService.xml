@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>ClinicalInformationCode</web>
+<name>PatientToolsService</name>
+<language></language>
+<defaultLanguage></defaultLanguage>
+<translation>0</translation>
+<parent></parent>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+<creationDate>1330990815000</creationDate>
+<date>1331255871000</date>
+<contentUpdateDate>1331255871000</contentUpdateDate>
+<version>1.1</version>
+<title></title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>false</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>false</hidden>
+<content>{{velocity}}{{html clean="false"}}
+#if ($xcontext.action == 'get')
+  #macro (dashIfEmpty $val)#if ("$!val" == '')-#else$val#end#end
+  $response.setContentType('application/json')
+  #set ($age = $util.parseInt("$!request.a"))
+  #set ($sex = ("$!request.s" != 'F'))
+  #set ($weight = $util.parseDouble("$!request.w"))
+  #set ($height = $util.parseDouble("$!request.h"))
+  #set ($head_c = $util.parseDouble("$!request.c"))
+  {
+  #if ("$!weight" != '' &amp;&amp; "$!height" != '')
+    "bmi" : {
+       "value" : "#dashIfEmpty($!mathtool.roundTo(2, $services.percentile.getBMI($weight, $height)))"##
+       #if ("$!age" != ''),
+#set($p = $!services.percentile.getBMIPercentile($sex, $age, $weight, $height))
+       "percentile" : "#dashIfEmpty($p)",
+       "valCategory" : "$!services.percentile.getFuzzyValue($p)"
+       #end
+
+    }##
+  #end
+  #if ("$!age" != '')
+    #if ("$!weight" != ''),
+    "weight" : {
+      "value" : "#dashIfEmpty($!request.w)",
+#set($p = $!services.percentile.getWeightPercentile($sex, $age, $weight))
+      "percentile" : "#dashIfEmpty($p)",
+      "valCategory" : "$!services.percentile.getFuzzyValue($p)"
+
+    }
+    #end
+    #if ("$!height" != ''),
+    "height" : {
+      "value" : "#dashIfEmpty($!request.h)",
+#set($p = $!services.percentile.getHeightPercentile($sex, $age, $height))
+      "percentile" : "#dashIfEmpty($p)",
+      "valCategory" : "$!services.percentile.getFuzzyValue($p)"
+
+    }
+    #end
+    #if ("$!head_c" != ''),
+    "head_c" : {
+      "value" : "#dashIfEmpty($!request.c)",
+#set($p = $!services.percentile.getHCPercentile($sex, $age, $head_c))
+      "percentile" : "#dashIfEmpty($p)",
+      "valCategory" : "$!services.percentile.getFuzzyValue($p)"
+
+    }
+    #end
+  #end
+
+  }
+#end{{/html}}{{/velocity}}
+</content></xwikidoc>
