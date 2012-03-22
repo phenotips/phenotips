@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.bridge.event.DocumentCreatingEvent;
 import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
@@ -107,7 +108,7 @@ public class PatientBirthdateUpdater implements EventListener
     {
         String parameterName = "ClinicalInformationCode.PatientClass_" + objectNumber + "_" + propertyName;
         String value = (String) this.container.getRequest().getProperty(parameterName);
-        if (value == null) {
+        if (StringUtils.isEmpty(value)) {
             return -1;
         }
         return Integer.valueOf(value);
