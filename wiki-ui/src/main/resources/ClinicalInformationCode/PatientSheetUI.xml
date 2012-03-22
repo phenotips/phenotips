@@ -714,14 +714,14 @@ document.observe('dom:loaded', function() {
       var form = event.element();
       var hasErrors = false;
     
-      $$('.mandatory input[type=text]:not(.suggested, .mapping)').each(function (input) {
+      $$('.mandatory *:not(.exclude) input[type=text]:not(.suggested, .mapping)').each(function (input) {
         hasErrors = markIfHasErrors((!input.value || input.value.strip() == ""), input) || hasErrors;
       });
 
       var hasVal = new Object();
       var titles = new Object();
 
-      $$('.mandatory input[type=checkbox], .mandatory input[type=radio]').each(function (input) {
+      $$('.mandatory *:not(.exclude) input[type=checkbox], .mandatory *:not(.exclude) input[type=radio]').each(function (input) {
         hasVal[input.name] = hasVal[input.name] || (input.value != '' &amp;&amp; input.checked);
         titles[input.name] = input.up('.mandatory').down('.group-title');
       });
@@ -1144,6 +1144,10 @@ document.observe('dom:loaded', function() {
               field._ontologyBrowser.show(field.value);
               field._trigger.update(field._ontologyBrowser._getExpandCollapseSymbol(false));
               field._trigger._root._expanded = true;
+              var sourceInput = source &amp;&amp; source.down('input[type=checkbox]');
+              if (sourceInput &amp;&amp; sourceInput.checked) {
+                field._ontologyBrowser.expandTo(sourceInput.value, categories);
+              }
             }
           } else {
             field.up('label').removeClassName('subterm-selected');
@@ -1653,7 +1657,7 @@ document.observe('xwiki:dom:loaded', function() {
   var createReqParamAge = function (name, crtDate, birthDate) {
     if (!birthDate || !crtDate) {return ''}
     var bDateObj = Date.parseISO_8601(birthDate.alt || '');
-    var cDateObj = Date.parseISO_8601(birthDate.alt || '');
+    var cDateObj = Date.parseISO_8601(crtDate.alt || '');
     if (!bDateObj || !cDateObj) {return ''}
     var age = (cDateObj.getFullYear() - bDateObj.getFullYear()) * 12 + (cDateObj.getMonth() - bDateObj.getMonth());
     return (age &gt;= 0) &amp;&amp; ('&amp;' + name + '=' + encodeURIComponent(age)) || '';
@@ -1680,6 +1684,21 @@ document.observe('xwiki:dom:loaded', function() {
       ['value', 'percentile'].each( function (value) {
         if (values[p] &amp;&amp; values[p][value] &amp;&amp; targets[p] &amp;&amp; targets[p][value]) {
            updateValue(targets[p][value], values[p][value], (value == 'percentile') &amp;&amp; values[p]['valCategory']);
+           var target = targets[p];
+           if (value == 'percentile' &amp;&amp; target['valueHooks']) {
+             ['extreme-below-normal', 'extreme-above-normal'].each(function(val) {
+                var elt = target['valueHooks'][val];
+                if (elt) {
+                  elt.checked = false;
+                  highlightChecked(elt);
+                }
+             });
+             var targetElt = values[p]['valCategory'] &amp;&amp; target['valueHooks'][values[p]['valCategory']];
+             if (targetElt) {
+                 targetElt.checked = true;
+                 highlightChecked(targetElt);
+             }
+           }
         }
       });
     }
@@ -1720,13 +1739,25 @@ document.observe('xwiki:dom:loaded', function() {
          percentile : row.down('td.bmi_percentile')
        },
        weight : {
-         percentile : row.down('td.weight_percentile')
+         percentile : row.down('td.weight_percentile'),
+         valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0004325'),
+           'extreme-above-normal': findFormElementForPhenotype('HP:0001513')
+         }
        },
        height : {
-         percentile : row.down('td.height_percentile')
+         percentile : row.down('td.height_percentile'),
+         valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0004322'),
+           'extreme-above-normal': findFormElementForPhenotype('HP:0000098')
+         }
        },
        head_c : {
-         percentile : row.down('td.hc_percentile')
+         percentile : row.down('td.hc_percentile'),
+         valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0000252'),
+           'extreme-above-normal': findFormElementForPhenotype('HP:0000256')
+         }
        }
     };
 
@@ -2239,8 +2270,8 @@ document.observe('xwiki:dom:loaded', function() {
           if (typeof (SimpleDateFormat) != 'undefined') {
             var formatter = new SimpleDateFormat(format);
             dateValueInput.value = formatter.format(date);
-            var altFormatter = new SimpleDateFormat(Date.ISO8601Format);
-            dateValueInput.alt = altFormatter.format(date);
+            //var altFormatter = new SimpleDateFormat(Date.ISO8601Format);
+            dateValueInput.alt = date.toISO8601();
             Event.fire(dateValueInput, 'xwiki:date:changed');
           }
        }
@@ -3451,14 +3482,14 @@ table.extradata-list td.bmi_percentile {
   (% class="controlled-group complete-hide" %)(((
 #end
 #if ("$!activeFields.contains('phenotype')" != 'false')
-  (% class="clear clinical-info phenotype-info chapter #__markIfMandatory('phenotype')" %)(((
+  (% class="clear clinical-info phenotype-info chapter" %)(((
   #if ("$!activeFields.contains('unaffected')" != 'false')#set ($__qsBoxCssClass = 'controlled')#end
   #__qsBox("$!{class.name}_$!{obj.number}_phenotype" "$!{__qsBoxCssClass}")
     (% class="twothird-width chapter-inner" %)(((
     (% class="group-title" %)
     == $!{class.get('phenotype').prettyName} ==
       #if ("$!activeFields.contains('unaffected')" != 'false')
-        (% class="fieldset unaffected controller" %)(((
+        (% class="fieldset unaffected controller exclude" %)(((
         #if ($xcontext.action == 'edit')
           $doc.display('unaffected') #__label('unaffected' '' "$class.get('unaffected').prettyName")
 
@@ -3469,9 +3500,11 @@ table.extradata-list td.bmi_percentile {
         )))
         (% class="controlled" %) (((
       #end
+        (% class="phenotype  #__markIfMandatory('phenotype')" %)(((
           $doc.display('phenotype')##
+        )))
           #if ("$!activeFields.contains('negative_phenotype')" != 'false')
-            (% class="negative-phenotype" %)(((
+            (% class="negative-phenotype  #__markIfMandatory('negative_phenotype')" %)(((
               $doc.display('negative_phenotype')
             )))## negative_phenotype
           #end

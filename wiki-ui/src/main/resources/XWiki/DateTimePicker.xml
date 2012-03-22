@@ -1574,7 +1574,7 @@ Date.prototype.toFormattedString = function(display_options){
 	return str;
 }
 Date.parseISO_8601 = function(string) {
-        if (/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})[+-](\d{2}):(\d{2})$/.match(string)) {
+        if (/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(([+-](\d{2})([:]?(\d{2}))?)|Z)$/.match(string)) {
            return new Date(
              parseInt(string.substring(0,4)),
              parseInt(string.substring(5,7)) - 1,
@@ -2128,14 +2128,16 @@ CalendarDateSelect.prototype = {
   DateTimePicker.showCalendar = function (target, calendar_options) {
     new CalendarDateSelect(target, calendar_options);
   }
+  var crtYear = new Date().getFullYear();
   document.observe('xwiki:dom:loaded', function () {
     var dateInputs = $$("input.xwiki-date");
     var cal_options = {
-      year_range: 2,
+      year_range: [crtYear - 99, crtYear + 1],
       time: false,
       convert_to_UTC: false,
       hour_format_12: false,
-      minute_interval:1, //must be numeric, defaults to 5
+      minute_interval: 1, //must be numeric, defaults to 5
+      minute_interval: 1,
       popup:'force'
     };
     var updateOptions = function(elt, cal_options) {
