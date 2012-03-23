@@ -956,8 +956,8 @@ document.observe('dom:loaded', function() {
             resultValue : "Title",
             resultInfo : {
                            "Authors"   : {"selector"  : "AuthorList"},
-                           "Date"      : {"selector"  : "Name=EPubDate"},
-                           "Journal"   : {"selector"  : "Name=Source"}
+                           "Date"      : {"selector"  : "EPubDate"},
+                           "Journal"   : {"selector"  : "Source"}
                          },
             enableHierarchy: false,
             fadeOnClear : false,
