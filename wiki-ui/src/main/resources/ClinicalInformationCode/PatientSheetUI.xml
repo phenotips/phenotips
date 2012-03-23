@@ -934,13 +934,12 @@ document.observe('dom:loaded', function() {
             script: "$xwiki.getURL('ClinicalInformationCode.OmimService', 'get')?outputSyntax=plain&amp;",
             varname: "q",
             noresults: "No matching terms",
-            json: false,
-            resultsParameter : "DocSum",
-            resultId : "Id",
-            resultValue : "Item[Name=Title]",
+            json: true,
+            resultsParameter : "rows",
+            resultId : "id",
+            resultValue : "Title",
             resultInfo : {
-                           "Synonyms"   : {"selector"  : "Item[Name=AltTitles]"},
-                           "Locus"      : {"selector"  : "Item[Name=Locus]"}
+                           "Locus"      : {"selector"  : "Locus"}
                          },
             enableHierarchy: false,
             fadeOnClear : false,
@@ -951,14 +950,14 @@ document.observe('dom:loaded', function() {
             script: "$xwiki.getURL('ClinicalInformationCode.PubMedService', 'get')?",
             varname: "q",
             noresults: "No matching articles",
-            json: false,
-            resultsParameter : "DocSum",
-            resultId : "Id",
-            resultValue : "Item[Name=Title]",
+            json: true,
+            resultsParameter : "rows",
+            resultId : "id",
+            resultValue : "Title",
             resultInfo : {
-                           "Authors"   : {"selector"  : "Item[Name=AuthorList] Item[Name=Author]"},
-                           "Date"      : {"selector"  : "Item[Name=EPubDate]"},
-                           "Journal"   : {"selector"  : "Item[Name=Source]"}
+                           "Authors"   : {"selector"  : "AuthorList"},
+                           "Date"      : {"selector"  : "Name=EPubDate"},
+                           "Journal"   : {"selector"  : "Name=Source"}
                          },
             enableHierarchy: false,
             fadeOnClear : false,
@@ -2060,10 +2059,13 @@ document.observe('xwiki:dom:loaded', function() {
   var defaultSearchTermsInput = $('defaultSearchTermsInput');
   var customSearchTermsInput = $('customSearchTermsInput');
 
+  var omimField = $('prefix') &amp;&amp; $($('prefix').value + 'omim_id');
+
   var services = {
     'omim' : {
        'script' : "$xwiki.getURL('ClinicalInformationCode.OmimService', 'get', 'format=html&amp;q=')",
-       'target' : $('omim-search-results')
+       'target' : $('omim-search-results'),
+       'suggestFor' : omimField
     },
     'pubmed' : {
        'script' : "$xwiki.getURL('ClinicalInformationCode.PubMedService', 'get', 'format=html&amp;q=')",
@@ -2116,12 +2118,48 @@ document.observe('xwiki:dom:loaded', function() {
     service.target.up().addClassName('loading');
   }
   var responseReceived = function(service, request) {
-    if (request.getHeader('X-ReqNo') == service.expectedReqNo) {
+    if (request &amp;&amp; request.getHeader('X-ReqNo') == service.expectedReqNo) {
       service.target.up().removeClassName('loading');
     } else {
       request.request.container = {};
     }
   }
+
+  var updateDone = function(service) {
+    if (service.suggestFor  &amp;&amp; service.suggestFor._suggestPicker) {
+        service.target.select('li').each(function (item) {
+          if (item.down('input[type=checkbox]')) {return;}
+          var idElt = item.down('.id');
+          var id = idElt &amp;&amp; idElt.title;
+          var name = item.down('.title a') &amp;&amp; item.down('.title a').innerHTML;
+          if (id &amp;&amp; name) {
+            var trigger = new Element('input', {'type' :  'checkbox', 'value' : id, 'title' : 'Select'});
+            var existingValue = $(service.suggestFor.id + '_' + id);
+            if (existingValue &amp;&amp; existingValue.checked) {
+              trigger.checked = true;
+            }
+            trigger.__suggestion = {'id' : id, 'value' : name};
+            idElt.wrap('label');
+            idElt.up('label').insert({'top' : trigger});
+            trigger.observe('click', function(event) {
+               var input = Event.findElement(event, 'input[type=checkbox]');
+               if (input.checked) {
+                 service.suggestFor._suggestPicker.silent = true;
+                 service.suggestFor._suggestPicker.acceptSuggestion(input.__suggestion);
+                 service.suggestFor._suggestPicker.silent = false;
+                 new XWiki.widgets.Notification('The OMIM disease "' + input.__suggestion.value + '" was added to the patient\'s diagnosis.', 'done');
+               } else {
+                 var existingValue = $(service.suggestFor.id + '_' + input.value);
+                 if (existingValue) {
+                   existingValue.checked = false;
+                   new XWiki.widgets.Notification('The OMIM disease "' + input.__suggestion.value + '" was removed from the patient\'s diagnosis.', 'done');
+                 }
+               }
+            });
+          } 
+        });
+    }
+  };
 
   var doSearch = function(service) {
     var data = services[service];
@@ -2131,7 +2169,7 @@ document.observe('xwiki:dom:loaded', function() {
     }
     var queryString = (customSearchTermsInput &amp;&amp; (customSearchTermsInput.value.strip() + ' ') || '') + defaultSearchTermsInput.value.strip();
     
-    new Ajax.Updater(data.target, data.script + encodeURIComponent(queryString.strip()) + "&amp;reqNo=" + ++data.expectedReqNo, {onCreate : requestCreated.bind(this, data), onSuccess : responseReceived.bind(this, data)});
+    new Ajax.Updater(data.target, data.script + encodeURIComponent(queryString.strip()) + "&amp;reqNo=" + ++data.expectedReqNo, {onCreate : requestCreated.bind(this, data), onSuccess : responseReceived.bind(this, data), onComplete : updateDone.bind(this, data)});
   }
 
   document.observe('phenotype:selected', function(event) {
@@ -3233,7 +3271,13 @@ table.extradata-list td.bmi_percentile {
   background-image: url("$xwiki.getSkinFile('icons/silk/page.gif')");
 }
 #omim-search-results ul li {
-  background-image: url("$xwiki.getSkinFile('icons/silk/chart_line.gif')");
+  ##background-image: url("$xwiki.getSkinFile('icons/silk/chart_line.gif')");
+}
+#omim-search-results ul li label {
+  margin-left: -20px;
+}
+#omim-search-results ul li label input {
+  vertical-align: middle;
 }
 .background-search h4 {
   font-size: 1.2em;

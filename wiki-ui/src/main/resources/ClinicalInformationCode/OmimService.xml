@@ -44,7 +44,7 @@ $response.setHeader("X-ReqNo", "$!request.reqNo")##
 #foreach($item in $results)
   #if ("$!item.id"!= '' &amp;&amp; "$!item.Title" != '')
   &lt;li class="disorder"&gt;
-    &lt;span class="id"&gt;[#if("$!item.Oid"!= '')${item.Oid}#else${item.id}#end]&lt;/span&gt;
+    &lt;span class="id" title="${item.id}"&gt;[#if("$!item.Oid"!= '')${item.Oid}#else${item.id}#end]&lt;/span&gt;
     &lt;span class="title"&gt;&lt;a href="http://www.omim.org/entry/${item.id}" target="_blank" title="Read about this disorder on OMIM"&gt;${item.Title}&lt;/a&gt;&lt;/span&gt;
     #if ("$!item.Locus" != '')&lt;span class="locus"&gt;(Locus: ${item.Locus})&lt;/span&gt;#end
   &lt;/li&gt;
