@@ -1787,6 +1787,12 @@ document.observe('xwiki:dom:loaded', function() {
      var elements = event &amp;&amp; event.memo &amp;&amp; event.memo.element &amp;&amp; event.memo.element.select('input[type=text]');
      if (elements) {
        handleValueChanged(elements);
+       if (window.dateTimePicker) {
+         window.dateTimePicker.attachPickers(event.memo.element);
+       } else {
+         var crtYear = new Date().getFullYear();
+         window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
+       }
      }
   });
 });</code>
@@ -2308,7 +2314,6 @@ document.observe('xwiki:dom:loaded', function() {
           if (typeof (SimpleDateFormat) != 'undefined') {
             var formatter = new SimpleDateFormat(format);
             dateValueInput.value = formatter.format(date);
-            //var altFormatter = new SimpleDateFormat(Date.ISO8601Format);
             dateValueInput.alt = date.toISO8601();
             Event.fire(dateValueInput, 'xwiki:date:changed');
           }
