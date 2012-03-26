@@ -60,6 +60,49 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase
     }
 
     @Test
+    public void testValueComputation()
+    {
+        // Values taken from the CDC data tables (Weight for age, boys, 0.5 months)
+        double x = this.tool.percentileToValue(3, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(2.799548641, x, 1.0E-8);
+        x = this.tool.percentileToValue(5, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(2.964655655, x, 1.0E-8);
+        x = this.tool.percentileToValue(10, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(3.209510017, x, 1.0E-8);
+        x = this.tool.percentileToValue(25, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(3.597395573, x, 1.0E-8);
+        x = this.tool.percentileToValue(50, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(4.003106424, x, 1.0E-8);
+        x = this.tool.percentileToValue(75, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(4.387422565, x, 1.0E-8);
+        x = this.tool.percentileToValue(90, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(4.718161283, x, 1.0E-8);
+        x = this.tool.percentileToValue(95, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(4.910130108, x, 1.0E-8);
+        x = this.tool.percentileToValue(97, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(5.032624982, x, 1.0E-8);
+        // Values taken from the CDC data tables (Weight for age, boys, 9.5 months)
+        x = this.tool.percentileToValue(3, 9.476500305, -0.1600954, 0.11218624);
+        Assert.assertEquals(7.700624405, x, 1.0E-8);
+        x = this.tool.percentileToValue(90, 9.476500305, -0.1600954, 0.11218624);
+        Assert.assertEquals(10.96017225, x, 1.0E-8);
+        // Don't expect a child with +- Infinity kilograms...
+        x = this.tool.percentileToValue(0, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(2.089641107, x, 1.0E-8);
+        x = this.tool.percentileToValue(100, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(5.498638677, x, 1.0E-8);
+        // Correct out of range percentiles
+        x = this.tool.percentileToValue(Integer.MIN_VALUE, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(2.089641107, x, 1.0E-8);
+        x = this.tool.percentileToValue(-50, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(2.089641107, x, 1.0E-8);
+        x = this.tool.percentileToValue(1000, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(5.498638677, x, 1.0E-8);
+        x = this.tool.percentileToValue(Integer.MAX_VALUE, 4.003106424, 1.547523128, 0.146025021);
+        Assert.assertEquals(5.498638677, x, 1.0E-8);
+    }
+
+    @Test
     public void testGetBMI()
     {
         Assert.assertEquals(100.0, this.tool.getBMI(100, 100));
@@ -89,6 +132,20 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase
     }
 
     @Test
+    public void testGetPercentileBMI()
+    {
+        Assert.assertEquals(13.4, this.tool.getPercentileBMI(true, 0, 50), 1.0E-2);
+        Assert.assertEquals(13.34, this.tool.getPercentileBMI(false, 0, 50), 1.0E-2);
+        Assert.assertEquals(10.36, this.tool.getPercentileBMI(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(17.74, this.tool.getPercentileBMI(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(10.3, this.tool.getPercentileBMI(false, 0, 0), 1.0E-2);
+        Assert.assertEquals(17.34, this.tool.getPercentileBMI(false, 0, 100), 1.0E-2);
+        Assert.assertEquals(23.04, this.tool.getPercentileBMI(true, 1000, 50), 1.0E-2);
+        Assert.assertEquals(22.07, this.tool.getPercentileBMI(true, 349, 37), 1.0E-2);
+        Assert.assertEquals(18.7, this.tool.getPercentileBMI(false, 359, 12), 1.0E-2);
+    }
+
+    @Test
     public void testGetWeightPercentile()
     {
         Assert.assertEquals(50, this.tool.getWeightPercentile(true, 0, 4.0));
@@ -103,6 +160,20 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase
     }
 
     @Test
+    public void testGetPercentileWeight()
+    {
+        Assert.assertEquals(4.0, this.tool.getPercentileWeight(true, 0, 50), 1.0E-2);
+        Assert.assertEquals(3.8, this.tool.getPercentileWeight(false, 0, 50), 1.0E-2);
+        Assert.assertEquals(2.09, this.tool.getPercentileWeight(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(5.5, this.tool.getPercentileWeight(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(2.2, this.tool.getPercentileWeight(false, 0, 0), 1.0E-2);
+        Assert.assertEquals(5.18, this.tool.getPercentileWeight(false, 0, 100), 1.0E-2);
+        Assert.assertEquals(70.6, this.tool.getPercentileWeight(true, 1000, 50), 1.0E-2);
+        Assert.assertEquals(67.0, this.tool.getPercentileWeight(true, 349, 37), 1.0E-2);
+        Assert.assertEquals(49.04, this.tool.getPercentileWeight(false, 359, 12), 1.0E-2);
+    }
+
+    @Test
     public void testGetHeightPercentile()
     {
         Assert.assertEquals(50, this.tool.getHeightPercentile(true, 0, 52.7));
@@ -114,6 +185,20 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase
         Assert.assertEquals(50, this.tool.getHeightPercentile(true, 1000, 176.85));
         Assert.assertEquals(72, this.tool.getHeightPercentile(true, 349, 181.0));
         Assert.assertEquals(93, this.tool.getHeightPercentile(false, 359, 173.0));
+    }
+
+    @Test
+    public void testGetPercentileHeight()
+    {
+        Assert.assertEquals(52.7, this.tool.getPercentileHeight(true, 0, 50), 1.0E-2);
+        Assert.assertEquals(51.68, this.tool.getPercentileHeight(false, 0, 50), 1.0E-2);
+        Assert.assertEquals(45.73, this.tool.getPercentileHeight(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(60.14, this.tool.getPercentileHeight(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(45.61, this.tool.getPercentileHeight(false, 0, 0), 1.0E-2);
+        Assert.assertEquals(59.39, this.tool.getPercentileHeight(false, 0, 100), 1.0E-2);
+        Assert.assertEquals(176.85, this.tool.getPercentileHeight(true, 1000, 50), 1.0E-2);
+        Assert.assertEquals(181.0, this.tool.getPercentileHeight(true, 349, 72), 1.0E-2);
+        Assert.assertEquals(172.86, this.tool.getPercentileHeight(false, 359, 93), 1.0E-2);
     }
 
     @Test

@@ -181,6 +181,24 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the BMI that would correspond to the given BMI for age percentile.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
+     * @return the BMI (in kilograms per square meter) that falls in the middle of the target percentile, with the exception of the
+     *         open ended 0 and 100 percentiles, for which the value corresponding to the 0.25, respectively 99.75
+     *         percentage is returned
+     */
+    public double getPercentileBMI(boolean male, int ageInMonths, int targetPercentile)
+    {
+        List<LMS> bmiForAge = male ? this.bmiForAgeBoys : this.bmiForAgeGirls;
+        LMS lms = (ageInMonths < bmiForAge.size()) ? bmiForAge.get(ageInMonths) :
+            bmiForAge.get(bmiForAge.size() - 1);
+        return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
+    }
+
+    /**
      * Get the height for age percentile for the given height and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
@@ -195,6 +213,24 @@ public class PercentileTools implements ScriptService, Initializable
         LMS lms = (ageInMonths < heightForAge.size()) ? heightForAge.get(ageInMonths) :
             heightForAge.get(heightForAge.size() - 1);
         return valueToPercentile(heightInCentimeters, lms);
+    }
+
+    /**
+     * Get the height that would correspond to the given height for age percentile.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
+     * @return the height (in centimeters) that falls in the middle of the target percentile, with the exception of the
+     *         open ended 0 and 100 percentiles, for which the value corresponding to the 0.25, respectively 99.75
+     *         percentage is returned
+     */
+    public double getPercentileHeight(boolean male, int ageInMonths, int targetPercentile)
+    {
+        List<LMS> heightForAge = male ? this.heightForAgeBoys : this.heightForAgeGirls;
+        LMS lms = (ageInMonths < heightForAge.size()) ? heightForAge.get(ageInMonths) :
+            heightForAge.get(heightForAge.size() - 1);
+        return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
     }
 
     /**
@@ -214,6 +250,24 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the weight that would correspond to the given weight for age percentile.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
+     * @return the weight (in kilograms) that falls in the middle of the target percentile, with the exception of the
+     *         open ended 0 and 100 percentiles, for which the value corresponding to the 0.25, respectively 99.75
+     *         percentage is returned
+     */
+    public double getPercentileWeight(boolean male, int ageInMonths, int targetPercentile)
+    {
+        List<LMS> weightForAge = male ? this.weightForAgeBoys : this.weightForAgeGirls;
+        LMS lms = (ageInMonths < weightForAge.size()) ? weightForAge.get(ageInMonths) :
+            weightForAge.get(weightForAge.size() - 1);
+        return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
+    }
+
+    /**
      * Get the weight for age percentile for the given weight and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
@@ -227,6 +281,24 @@ public class PercentileTools implements ScriptService, Initializable
         LMS lms = (ageInMonths < hcForAge.size()) ? hcForAge.get(ageInMonths) :
             hcForAge.get(hcForAge.size() - 1);
         return valueToPercentile(headCircumferenceInCentimeters, lms);
+    }
+
+    /**
+     * Get the head circumference that would correspond to the given HC for age percentile.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
+     * @return the head circumference (in centimeters) that falls in the middle of the target percentile, with the
+     *         exception of the open ended 0 and 100 percentiles, for which the value corresponding to the 0.25,
+     *         respectively 99.75 percentage is returned
+     */
+    public double getPercentileHC(boolean male, int ageInMonths, int targetPercentile)
+    {
+        List<LMS> hcForAge = male ? this.hcForAgeBoys : this.hcForAgeGirls;
+        LMS lms = (ageInMonths < hcForAge.size()) ? hcForAge.get(ageInMonths) :
+            hcForAge.get(hcForAge.size() - 1);
+        return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
     }
 
     /**
@@ -279,6 +351,33 @@ public class PercentileTools implements ScriptService, Initializable
         try {
             double p = NORMAL.cumulativeProbability(z) * 100;
             return (int) Math.round(p);
+        } catch (MathException ex) {
+            return 0;
+        }
+    }
+
+    /**
+     * Compute the percentile corresponding to a given absolute value, compared to a normal distribution specified by
+     * the given Box-Cox triplet.
+     * 
+     * @param x the absolute value to fit into the normal distribution
+     * @param m the M value, the median
+     * @param l the L value, the power
+     * @param s the S value, the generalized coefficient of variation
+     * @return a number between 0 and 100 (inclusive) specyfing the percentile of this measurement
+     */
+    public double percentileToValue(int percentile, double m, double l, double s)
+    {
+        double correctedPercentile = percentile;
+        if (percentile <= 0) {
+            correctedPercentile = 0.25;
+        } else if (percentile >= 100) {
+            correctedPercentile = 99.75;
+        }
+        try {
+            double z = NORMAL.inverseCumulativeProbability(correctedPercentile / 100.0);
+            double x = (l != 0) ? Math.pow(z * l * s + 1, 1 / l) * m : Math.exp(z * s) * m;
+            return x;
         } catch (MathException ex) {
             return 0;
         }
