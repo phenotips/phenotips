@@ -75,7 +75,7 @@
 <disabled>0</disabled>
 <name>bmi_percentile</name>
 <number>7</number>
-<numberType>long</numberType>
+<numberType>integer</numberType>
 <prettyName>Percentile</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
@@ -123,7 +123,7 @@
 <disabled>0</disabled>
 <name>hc_percentile</name>
 <number>9</number>
-<numberType>long</numberType>
+<numberType>integer</numberType>
 <prettyName>Percentile</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
@@ -136,7 +136,7 @@
 <disabled>0</disabled>
 <name>head_circumference</name>
 <number>8</number>
-<numberType>long</numberType>
+<numberType>float</numberType>
 <prettyName>Head circumference (cm)</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
@@ -149,7 +149,7 @@
 <disabled>0</disabled>
 <name>height</name>
 <number>4</number>
-<numberType>long</numberType>
+<numberType>float</numberType>
 <prettyName>Height (cm)</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
@@ -175,7 +175,7 @@
 <disabled>0</disabled>
 <name>height_percentile</name>
 <number>5</number>
-<numberType>long</numberType>
+<numberType>integer</numberType>
 <prettyName>Percentile</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
@@ -188,7 +188,7 @@
 <disabled>0</disabled>
 <name>weight</name>
 <number>2</number>
-<numberType>long</numberType>
+<numberType>float</numberType>
 <prettyName>Weight (kg)</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
@@ -214,7 +214,7 @@
 <disabled>0</disabled>
 <name>weight_percentile</name>
 <number>3</number>
-<numberType>long</numberType>
+<numberType>integer</numberType>
 <prettyName>Percentile</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
