@@ -1685,18 +1685,18 @@ document.observe('xwiki:dom:loaded', function() {
            updateValue(targets[p][value], values[p][value], (value == 'percentile') &amp;&amp; values[p]['valCategory']);
            var target = targets[p];
            if (value == 'percentile' &amp;&amp; target['valueHooks']) {
-             ['extreme-below-normal', 'extreme-above-normal'].each(function(val) {
+             var targetElt = values[p]['valCategory'] &amp;&amp; target['valueHooks'][values[p]['valCategory']];
+             if (targetElt &amp;&amp; !targetElt.checked) {
+                 targetElt.checked = true;
+                 highlightChecked(targetElt);
+             }
+             ['extreme-below-normal', 'extreme-above-normal'].without(values[p]['valCategory'] || '').each(function(val) {
                 var elt = target['valueHooks'][val];
-                if (elt) {
+                if (elt &amp;&amp; elt.checked) {
                   elt.checked = false;
                   highlightChecked(elt);
                 }
              });
-             var targetElt = values[p]['valCategory'] &amp;&amp; target['valueHooks'][values[p]['valCategory']];
-             if (targetElt) {
-                 targetElt.checked = true;
-                 highlightChecked(targetElt);
-             }
            }
         }
       });
