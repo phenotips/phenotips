@@ -1125,7 +1125,7 @@ document.observe('dom:loaded', function() {
       var source = '';
       var categories = '';
       var syncTermCategory = function(term) {
-        var field = document.documentElement.down('label.term-label.dropdown-root input[type=checkbox][name=' + fieldName + '][value=' + term +']');
+        var field = $(document.documentElement).down('label.term-label.dropdown-root input[type=checkbox][name=' + fieldName + '][value=' + term +']');
         if (field) {
           var subtermsInCategory = $$('label.accepted-suggestion[for^=' + fieldName + '_] + .term-category input[type=hidden][value=' + term + ']');
           var selectedSubterms  = 0;
@@ -1644,22 +1644,40 @@ document.observe('xwiki:dom:loaded', function() {
   var dataTable = $('extradata-list-ClinicalInformationCode.MeasurementsClass');
   if (!dataTable || !dataTable.down('input[type=text]')) {return;}
 
-  var script = "$xwiki.getURL('ClinicalInformationCode.PatientToolsService', 'get')";
+  var measurementsService = "$xwiki.getURL('ClinicalInformationCode.PatientToolsService', 'get')";
+  var chartService = "$xwiki.getURL('ClinicalInformationCode.ChartService', 'get')";
+  var chartContainer = $('charts')
 
-  var createReqParam = function (name, sourceInput) {
+  var createRowQueryString = function (row, forceParam) {
+    var weight = row.down('td.weight input');
+    var height = row.down('td.height input');
+    var hc = row.down('td.head_circumference input');
+
+    if (!weight || !height || !hc) {return '';}
+
+    var date = row.down('td.date input');
+    var birthDate = $(document.documentElement).down('input[name$=date_of_birth]');
+
+    return createReqParam('w', weight, forceParam) +
+           createReqParam('h', height, forceParam) +
+           createReqParam('c', hc, forceParam) +
+           createReqParamAge('a', date, birthDate, forceParam);
+  }
+
+  var createReqParam = function (name, sourceInput, forceParam) {
     var value = sourceInput &amp;&amp; sourceInput.value != '' &amp;&amp; parseFloat(sourceInput.value);
     if (value) {
       return '&amp;' + name + '=' + encodeURIComponent(value);
     }
-    return '';
+    return forceParam &amp;&amp; ('&amp;' + name + '=') || '';
   }
-  var createReqParamAge = function (name, crtDate, birthDate) {
+  var createReqParamAge = function (name, crtDate, birthDate, forceParam) {
     if (!birthDate || !crtDate) {return ''}
     var bDateObj = Date.parseISO_8601(birthDate.alt || '');
     var cDateObj = Date.parseISO_8601(crtDate.alt || '');
     if (!bDateObj || !cDateObj) {return ''}
     var age = (cDateObj.getFullYear() - bDateObj.getFullYear()) * 12 + (cDateObj.getMonth() - bDateObj.getMonth());
-    return (age &gt;= 0) &amp;&amp; ('&amp;' + name + '=' + encodeURIComponent(age)) || '';
+    return (age &gt;= 0) &amp;&amp; ('&amp;' + name + '=' + encodeURIComponent(age)) || forceParam &amp;&amp; ('&amp;' + name + '=') || '';
   }
   var createReqParamSex = function (name, sourceInput) {
     return (sourceInput &amp;&amp; sourceInput.value &amp;&amp; ('&amp;' + name + '=' + encodeURIComponent(sourceInput.value))) || '';
@@ -1704,6 +1722,28 @@ document.observe('xwiki:dom:loaded', function() {
   }
 
   var lastRequestID = 0;
+  var lastChartRequestID = 0;
+
+  var updateCharts = function(event) {
+    var qs = '';
+    dataTable.select('tr').each(function(row) {
+      qs += createRowQueryString(row, true);
+    })
+    if (qs == '') {return;}
+    var sex = $(document.documentElement).down('input[name$=gender]:checked');
+    var url = chartService + "?" + qs + createReqParamSex('s', sex);
+
+    var requestID = ++lastChartRequestID;
+
+    var ajx = new Ajax.Request(url, {
+       method: 'get',
+       onSuccess: function(response) {
+          if (requestID &lt; lastChartRequestID) {return;}
+          chartContainer.update(response.responseText);
+       },
+       onFailure: function (response) {}
+    });
+  }
 
   var valueChanged = function(event) {
     // Get inputs holding the values needed for computing the dependent values
@@ -1716,21 +1756,11 @@ document.observe('xwiki:dom:loaded', function() {
   }
 
   var updateDataRow = function(row) {
-    var weight = row.down('td.weight input');
-    var height = row.down('td.height input');
-    var hc = row.down('td.head_circumference input');
+    var qs = createRowQueryString(row);
+    if (qs == '') {return;}
+    var sex = $(document.documentElement).down('input[name$=gender]:checked');
 
-    if (!weight || !height || !hc) {return;}
-
-    var date = row.down('td.date input');
-    var birthDate = document.documentElement.down('input[name$=date_of_birth]');
-    var sex = document.documentElement.down('input[name$=gender]:checked');
-
-    var url = script + "?" + createReqParam('w', weight)
-                           + createReqParam('h', height)
-                           + createReqParam('c', hc)
-                           + createReqParamAge('a', date, birthDate)
-                           + createReqParamSex('s', sex);
+    var url = measurementsService + "?" + qs + createReqParamSex('s', sex);
 
     var targets = {
        bmi : {
@@ -1778,6 +1808,11 @@ document.observe('xwiki:dom:loaded', function() {
     ['blur', 'keypress', 'keyup', 'xwiki:date:changed'].each(function (eventName) {
       elementsList.invoke('observe', eventName, valueChanged);
     })
+    if (chartContainer) {
+      ['blur', 'xwiki:date:changed'].each(function (eventName) {
+        elementsList.invoke('observe', eventName, updateCharts);
+      })
+    }
   };
   
   // Attach all listeners
@@ -3535,12 +3570,57 @@ table.extradata-list td.bmi_percentile {
 ## =================================================================
 ## Measurements
 ##
+#macro(__measurementCharts)
+#set ($wMeasurements = [])
+#set ($hMeasurements = [])
+#set ($hcMeasurements = [])
+#set ($bDate = $obj.getProperty('date_of_birth').value.time)
+#foreach ($o in $doc.getObjects($targetClassName))
+  #set ($mDate = $xwiki.jodatime.getMutableDateTime($o.getProperty('date').value.time))
+  #set ($age = $mDate.toInstant().minus($bDate).toDateTime())
+  #set ($age = ($age.year - 1970) * 12 + $age.monthOfYear)
+  #if ("$!{o.getProperty('weight').value}" != '')
+    #set ($discard = $wMeasurements.add({'a': $age, 'x' : $o.getProperty('weight').value}))
+  #end
+  #if ("$!{o.getProperty('height').value}" != '')
+    #set ($discard = $hMeasurements.add({'a': $age, 'x' : $o.getProperty('height').value}))
+  #end
+  #if ("$!{o.getProperty('head_circumference').value}" != '')
+    #set ($discard = $hcMeasurements.add({'a': $age, 'x' : $o.getProperty('head_circumference').value}))
+  #end
+#end
+#set ($sex = $obj.getProperty('gender').value != 'F')
+#set ($c = $xwiki.getDocument('ClinicalInformationCode.ChartGenerator').getContent())
+##
+#macro (_generateChart $measurements, $chartName $title)
+  #if ($measurements.size() &gt; 0)
+    #set ($chart = $chartName)
+    #set ($svg = "#evaluate($c)")
+    #set ($svg = $svg.replaceAll('\{\{/?html.*?}}', '').trim())
+    #set ($src = $xwiki.svg.getSVGImageURL($svg, $chartHeight, $chartWidth))
+    {{html}}&lt;a rel="_blank" href="$src" style="display:inline-block;width:32%;margin-left:1%"&gt;&lt;img style="width:100%" title="$title" src="$src"/&gt;&lt;/a&gt;{{/html}}##
+  #end
+#end
+#_generateChart($wMeasurements, 'weight03' 'Weight for age')
+#_generateChart($hMeasurements, 'height03' 'Height for age')
+#_generateChart($hcMeasurements, 'hc03' 'Head circumference for age')
+#end
+##
+##
 #macro(__reportSection__measurements)
 #set ($targetClassName = 'ClinicalInformationCode.MeasurementsClass')
 #if ($config &amp;&amp; $config.getProperty('section__measurements').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
 (% class="twothird-width clear measurement-info chapter" %)(((
 == Growth parameters ==
 #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
+#if ($xcontext.action != 'export')
+=== Charts ===
+(% id="charts"%)(((
+#__measurementCharts()
+(% class="clear"%)((()))
+)))##charts
+###end
+#end
 )))##chapter
 #end
 #end

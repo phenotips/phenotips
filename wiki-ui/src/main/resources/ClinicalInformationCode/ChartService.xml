@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>ClinicalInformationCode</web>
+<name>ChartService</name>
+<language></language>
+<defaultLanguage></defaultLanguage>
+<translation>0</translation>
+<parent></parent>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+<creationDate>1332766503000</creationDate>
+<date>1332775339000</date>
+<contentUpdateDate>1332775339000</contentUpdateDate>
+<version>1.1</version>
+<title></title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>false</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>false</hidden>
+<content>{{velocity}}
+#set ($ages = $request.getParameterValues('a'))
+#set ($sex = ($request.getParameter('s') != 'F'))
+#set ($c = $xwiki.getDocument('ClinicalInformationCode.ChartGenerator').getContent())
+##
+#macro (_generateChart $paramName, $chartName)
+  #set ($measurements = [])
+  #foreach ($m in $request.getParameterValues($paramName))
+    #if ("$!{m}" != '')
+      #set ($discard = $measurements.add({'a': $mathtool.toInteger($ages.get($foreach.index)), 'x' : $mathtool.toDouble($m)}))
+    #end
+  #end
+  #if ($measurements.size() &gt; 0)
+    #set ($chart = $chartName)
+    #set ($svg = "#evaluate($c)")
+    #set ($svg = $svg.replaceAll('\{\{/?html.*?}}', '').trim())
+    #set ($src = $xwiki.svg.getSVGImageURL($svg, $chartHeight, $chartWidth))
+    {{html}}&lt;a rel="_blank" href="$src" style="display:inline-block;width:32%;margin-left:1%"&gt;&lt;img style="width:100%" title="$title" src="$src"/&gt;&lt;/a&gt;{{/html}}##
+  #end
+#end
+#_generateChart('w', 'weight03')
+#_generateChart('h', 'height03')
+#_generateChart('c', 'hc03')
+(% class="clear"%)((()))
+{{/velocity}}
+</content></xwikidoc>
