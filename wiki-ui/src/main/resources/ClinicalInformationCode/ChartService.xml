@@ -26,14 +26,9 @@
 #set ($ages = $request.getParameterValues('a'))
 #set ($sex = ($request.getParameter('s') != 'F'))
 #set ($c = $xwiki.getDocument('ClinicalInformationCode.ChartGenerator').getContent())
+#set ($ageLimits = {'w' : {}, 'h' : {}, 'c' : {}})
 ##
-#macro (_generateChart $paramName, $chartName)
-  #set ($measurements = [])
-  #foreach ($m in $request.getParameterValues($paramName))
-    #if ("$!{m}" != '')
-      #set ($discard = $measurements.add({'a': $mathtool.toInteger($ages.get($foreach.index)), 'x' : $mathtool.toDouble($m)}))
-    #end
-  #end
+#macro (_generateChart $measurements, $chartName $title)
   #if ($measurements.size() &gt; 0)
     #set ($chart = $chartName)
     #set ($svg = "#evaluate($c)")
@@ -42,9 +37,29 @@
     {{html}}&lt;a rel="_blank" href="$src" style="display:inline-block;width:32%;margin-left:1%"&gt;&lt;img style="width:100%" title="$title" src="$src"/&gt;&lt;/a&gt;{{/html}}##
   #end
 #end
-#_generateChart('w', 'weight03')
-#_generateChart('h', 'height03')
-#_generateChart('c', 'hc03')
+#macro (_generateCharts $paramName, $chartName $title)
+  #set ($measurements = [])
+  #foreach ($m in $request.getParameterValues($paramName))
+    #if ("$!{m}" != '')
+      #set ($age = $mathtool.toInteger($ages.get($foreach.index)))
+      #if (!($ageLimits.get($paramName).min &lt;= $age))
+        #set ($ageLimits.get($paramName).min = $age)
+      #end
+      #if (!($ageLimits.get($paramName).max &gt;= $age))
+        #set ($ageLimits.get($paramName).max = $age)
+      #end
+      #set ($discard = $measurements.add({'a': $age, 'x' : $mathtool.toDouble($m)}))
+    #end
+  #end
+  #if ($ageLimits.get($paramName).min &lt; 24 || ($paramName == 'c' &amp;&amp; $ageLimits.get($paramName).min &lt;= 36))
+    #_generateChart($measurements, "${chartName}03" $title)
+  #end
+  #if ($ageLimits.get($paramName).max &gt; 36 &amp;&amp; ($paramName != 'c'))
+    #_generateChart($measurements, "${chartName}220" $title)
+  #end
+#end
+#_generateCharts('w', 'weight' 'Weight for age')
+#_generateCharts('h', 'height' 'Height for age')
+#_generateCharts('c', 'hc' 'Head circumference for age')
 (% class="clear"%)((()))
-{{/velocity}}
-</content></xwikidoc>
+{{/velocity}}</content></xwikidoc>

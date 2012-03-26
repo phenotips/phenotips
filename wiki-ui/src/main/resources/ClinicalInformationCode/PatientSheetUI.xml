@@ -3574,24 +3574,38 @@ table.extradata-list td.bmi_percentile {
 #set ($wMeasurements = [])
 #set ($hMeasurements = [])
 #set ($hcMeasurements = [])
+#set ($ageLimits = {'weight' : {}, 'height' : {}, 'head_circumference' : {}})
+#macro (_updateMeasurements $measurements $o $sourceName $age)
+  #if ("$!{o.getProperty($sourceName).value}" != '')
+    #if (!($ageLimits.get($sourceName).min &lt;= $age))
+      #set ($ageLimits.get($sourceName).min = $age)
+    #end
+    #if (!($ageLimits.get($sourceName).max &gt;= $age))
+      #set ($ageLimits.get($sourceName).max = $age)
+    #end
+    #set ($discard = $measurements.add({'a': $age, 'x' : $o.getProperty($sourceName).value}))
+  #end
+#end
 #set ($bDate = $obj.getProperty('date_of_birth').value.time)
 #foreach ($o in $doc.getObjects($targetClassName))
   #set ($mDate = $xwiki.jodatime.getMutableDateTime($o.getProperty('date').value.time))
   #set ($age = $mDate.toInstant().minus($bDate).toDateTime())
   #set ($age = ($age.year - 1970) * 12 + $age.monthOfYear)
-  #if ("$!{o.getProperty('weight').value}" != '')
-    #set ($discard = $wMeasurements.add({'a': $age, 'x' : $o.getProperty('weight').value}))
-  #end
-  #if ("$!{o.getProperty('height').value}" != '')
-    #set ($discard = $hMeasurements.add({'a': $age, 'x' : $o.getProperty('height').value}))
-  #end
-  #if ("$!{o.getProperty('head_circumference').value}" != '')
-    #set ($discard = $hcMeasurements.add({'a': $age, 'x' : $o.getProperty('head_circumference').value}))
-  #end
+  #_updateMeasurements($wMeasurements $o 'weight' $age)
+  #_updateMeasurements($hMeasurements $o 'height' $age)
+  #_updateMeasurements($hcMeasurements $o 'head_circumference' $age)
 #end
 #set ($sex = $obj.getProperty('gender').value != 'F')
 #set ($c = $xwiki.getDocument('ClinicalInformationCode.ChartGenerator').getContent())
 ##
+#macro (_generateCharts $measurements, $chartName $sourceName $title)
+    #if ($ageLimits.get($sourceName).min &lt; 2)
+      #_generateChart($measurements, "${chartName}03" $title)
+    #end
+    #if ($ageLimits.get($sourceName).max &gt; 3)
+      #_generateChart($measurements, "${chartName}220" $title)
+    #end
+#end
 #macro (_generateChart $measurements, $chartName $title)
   #if ($measurements.size() &gt; 0)
     #set ($chart = $chartName)
@@ -3601,9 +3615,11 @@ table.extradata-list td.bmi_percentile {
     {{html}}&lt;a rel="_blank" href="$src" style="display:inline-block;width:32%;margin-left:1%"&gt;&lt;img style="width:100%" title="$title" src="$src"/&gt;&lt;/a&gt;{{/html}}##
   #end
 #end
-#_generateChart($wMeasurements, 'weight03' 'Weight for age')
-#_generateChart($hMeasurements, 'height03' 'Height for age')
-#_generateChart($hcMeasurements, 'hc03' 'Head circumference for age')
+#_generateCharts($wMeasurements, 'weight' 'weight' 'Weight for age')
+#_generateCharts($hMeasurements, 'height' 'height' 'Height for age')
+#if ($ageLimits.get('head_circumference').min &lt;=3)
+  #_generateChart($hcMeasurements, 'hc03' 'Head circumference for age')
+#end
 #end
 ##
 ##
