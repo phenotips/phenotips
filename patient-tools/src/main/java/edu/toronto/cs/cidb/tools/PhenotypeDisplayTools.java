@@ -393,7 +393,7 @@ public class PhenotypeDisplayTools implements ScriptService
             "<label for='" + id + '\'' + (suggested ? " class='label-other label-other-" + getName() + '\'' : "") + ">"
             + displayedLabel + "</label>";
         if (suggested) {
-            result += "<p class='hint'>(enter a free text and choose among suggested ontology terms)</p>";
+            result += "<p class='hint'>(enter free text and choose among suggested ontology terms)</p>";
         }
         result +=
             "<input type='text' name='" + getName() + '\''
