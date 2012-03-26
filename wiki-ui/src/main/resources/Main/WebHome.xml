@@ -123,24 +123,7 @@
 </code></property><property><name></name></property><property><parse></parse></property><property><use>currentPage</use>
 </property>
 </object>
-<content>= Phenotyping form =
-
-{{velocity}}
-(% class="start-box emphasized-box" %)(((
-(% class="info" %)SickKids sample form:(%%)
-(% class="buttonwrapper" %){{html clean=false wiki=false}}&lt;a href="$xwiki.getDocument('SKClinicalInformation.SampleForm').getURL('edit')"class="button start-button"&gt;Version 1&lt;/a&gt;{{/html}}
-(% class="infos" %)[[SickKids sample database&gt;&gt;SKClinicalInformation.WebHome]](%%)
-)))
-
-(% class="start-box emphasized-box" %)(((
-(% class="info" %)FORGE sample form:(%%)
-(% class="buttonwrapper" %){{html clean=false wiki=false}}&lt;a href="$xwiki.getDocument('FClinicalInformation.SampleForm').getURL('edit')"class="button start-button"&gt;Version 2&lt;/a&gt;{{/html}}
-(% class="infos" %)[[FORGE sample database&gt;&gt;FClinicalInformation.WebHome]](%%)
-)))
-{{/velocity}}
-
-{{velocity output="false"}}
-$xwiki.ssx.use('ClinicalInformationCode.PatientSheetUI')
-$xwiki.ssx.use('ClinicalInformationCode.Skin')
+<content>{{velocity}}
+$response.sendRedirect($xwiki.getURL('data.WebHome'))
 {{/velocity}}
 </content></xwikidoc>
