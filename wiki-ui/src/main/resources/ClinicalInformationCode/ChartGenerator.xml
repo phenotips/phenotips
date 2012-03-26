@@ -24,9 +24,10 @@
 <hidden>false</hidden>
 <content>#set ($scales = {
   'weight03' : {'min' : 1.4, 'max' : 19.4, 'step': 0.2, 'labelStep' : 1, 'minX' : 0, 'maxX' : 36, 'stepX': 1, 'labelStepX' : 3, 'llabel' : 'Weight (kg)', 'rlabel' : 'Weight (kg)', 'blabel' : 'Age (months)', 'tlabel' : 'Age (months)', 'title' : 'Weight for age, birth to 36 months'},
+  'weight220' : {'min' : 7, 'max' : 127, 'step': 1, 'labelStep' : 5, 'minX' : 24, 'maxX' : 240, 'stepX': 6, 'labelStepX' : 12, 'ageInYears' : true, 'llabel' : 'Weight (kg)', 'rlabel' : 'Weight (kg)', 'blabel' : 'Age (years)', 'tlabel' : 'Age (years)', 'title' : 'Weight for age, 2 to 20 years'},
   'height03' : {'min' : 39.0, 'max' : 111.0, 'step' : 1.0, 'labelStep' : 5, 'minX' : 0, 'maxX' : 36, 'stepX': 1, 'labelStepX' : 3, 'llabel' : 'Length (cm)', 'rlabel' : 'Stature (cm)', 'blabel' : 'Age (months)', 'tlabel' : 'Age (months)', 'title' : 'Height for age, birth to 36 months'},
   'height02' : {'min' : 39.0, 'max' : 111.0, 'step' : 1.0, 'labelStep' : 5, 'minX' : 0, 'maxX' : 24, 'stepX': 1, 'labelStepX' : 3, 'llabel' : 'Length (cm)', 'rlabel' : 'Length (cm)', 'blabel' : 'Age (months)', 'tlabel' : 'Age (months)', 'title' : 'Height for age, birth to 24 months'},
-  'height220' : {'min' : 68.0, 'max' : 203.0, 'step' : 1.0, 'labelStep' : 5, 'minX' : 24, 'maxX' : 240, 'stepX': 6, 'labelStepX' : 12, 'ageInYears' : true, 'llabel' : 'Stature (cm)', 'rlabel' : 'Stature (cm)', 'blabel' : 'Age (years)', 'tlabel' : 'Age (years)', 'title' : 'Height for age, 2 to 20 years'},
+  'height220' : {'min' : 67.0, 'max' : 202.0, 'step' : 1.0, 'labelStep' : 5, 'minX' : 24, 'maxX' : 240, 'stepX': 6, 'labelStepX' : 12, 'ageInYears' : true, 'llabel' : 'Stature (cm)', 'rlabel' : 'Stature (cm)', 'blabel' : 'Age (years)', 'tlabel' : 'Age (years)', 'title' : 'Height for age, 2 to 20 years'},
   'hc03' : {'min' : 29.4, 'max' : 56.4, 'step' : 0.2, 'labelStep' : 1, 'minX' : 0, 'maxX' : 36, 'stepX': 1, 'labelStepX' : 3, 'llabel' : 'Head circumference (cm)', 'rlabel' : 'Head circumference (cm)', 'blabel' : 'Age (months)', 'tlabel' : 'Age (months)', 'title' : 'Head circumference for age, birth to 36 months'},
   'bmi03' : {'min' : 9.4, 'max' : 23.8, 'step' : 0.2, 'labelStep' : 1, 'minX' : 0, 'maxX' : 36, 'stepX': 1, 'labelStepX' : 3}
 })
