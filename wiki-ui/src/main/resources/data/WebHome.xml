@@ -518,8 +518,8 @@ $!value
 <value>omim_id</value>
 <value>unaffected</value>
 <value>phenotype</value>
-<value>negative_phenotype</value>
 <value>prenatal_phenotype</value>
+<value>gestation</value>
 <value>family_history</value>
 <value>family_comments</value>
 <value>comments</value>
@@ -565,7 +565,7 @@ $!value
 <patientTemplate>ClinicalInformationCode.PatientTemplate</patientTemplate>
 </property>
 <property>
-<phenotypeMapping>ClinicalInformationCode.PhenotypeMapping</phenotypeMapping>
+<phenotypeMapping>ClinicalInformationCode.FPhenotypeMapping</phenotypeMapping>
 </property>
 <property>
 <relativeReportHint>Patient (FORGE identifier)</relativeReportHint>
@@ -774,15 +774,10 @@ $!value
 <enableForObject></enableForObject>
 </property>
 <property>
-<enableHistoryTool>
-<value>view</value>
-<value>edit</value>
-</enableHistoryTool>
+<enableHistoryTool/>
 </property>
 <property>
-<enablePdfTool>
-<value>view</value>
-</enablePdfTool>
+<enablePdfTool/>
 </property>
 <property>
 <enableTocTool>
