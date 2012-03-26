@@ -2515,7 +2515,7 @@
 <authenticate_view>0</authenticate_view>
 </property>
 <property>
-<colorTheme>ColorThemes.Soft Blue</colorTheme>
+<colorTheme>ColorThemes.Maple leaf</colorTheme>
 </property>
 <property>
 <comment_anonymous>---</comment_anonymous>
@@ -2627,7 +2627,7 @@ $xwiki.ssx.use($xwiki.getSpacePreference('colorTheme'))</meta>
 <showinformation></showinformation>
 </property>
 <property>
-<skin>XWiki.DefaultSkin</skin>
+<skin>ClinicalInformationCode.Skin</skin>
 </property>
 <property>
 <smtp_port></smtp_port>
