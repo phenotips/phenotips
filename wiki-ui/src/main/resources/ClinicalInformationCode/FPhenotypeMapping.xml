@@ -27,7 +27,7 @@
 
     LinkedHashMap&lt;String, LinkedHashMap&lt;String, Object&gt;&gt; phenotype = [
       "Behavior, Cognition and Development"     : [
-        (t.RESTRICTION_FIELD_MARKER) : "HP:0000118",
+        (t.RESTRICTION_FIELD_MARKER) : "HP:0001263,HP:0000708,HP:0001263,HP:0001286",
         (t.CUSTOM_MAPPING_FIELD_MARKER) : "bcd",
         "HP:0007228"                    : "Global development delay",
         "HP:0010862"                    : "Fine motor delay",
@@ -46,20 +46,20 @@
         (t.OTHER_FIELD_MARKER)       : null
       ], 
       "Neurological"     : [
-       (t.RESTRICTION_FIELD_MARKER)   : "HP:0000118",
+       (t.RESTRICTION_FIELD_MARKER)   : "HP:0000707",
        (t.CUSTOM_MAPPING_FIELD_MARKER) : "ne",
         "HP:0001290"                    : "Hypotonia",
-        "HP:0002197"                    : "Seizures",
+        "HP:0001250"                    : "Seizures",
         "HP:0001251"                    : "Ataxia",
         "HP:0001332"                    : "Dystonia",
         "HP:0002072"                    : "Chorea",
         "HP:0001257"                    : "Spasticity",
         "HP:0010301"                    : "Neural tube defect",
-        "HP:0007319"                    : "Malformation of the CNV",
+        "HP:0007319"                    : "Malformation of the CNS",
        (t.OTHER_FIELD_MARKER)      : null
       ],
       "Growth parameters"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000118",
+       (t.RESTRICTION_FIELD_MARKER) : "HP:0001507",
        (t.CUSTOM_MAPPING_FIELD_MARKER) : "gp",
         "Postnatal growth parameters:"     : [
         "Weight for age"     : [
@@ -75,11 +75,11 @@
           "HP:0000256"                    : "&gt;97th",
         ],
         ],
-        "HP:0001535"                    : "Hemihypertrophy",
+        "HP:0001528"                    : "Hemihypertrophy",
        (t.OTHER_FIELD_MARKER)      : null
       ],
       "Cardiac"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000118",
+       (t.RESTRICTION_FIELD_MARKER) : "HP:0001627",
        (t.CUSTOM_MAPPING_FIELD_MARKER) : "ca",
         "HP:0001631"                    : "ASD",
         "HP:0001629"                    : "VSD",
@@ -91,7 +91,7 @@
        (t.OTHER_FIELD_MARKER)      : null
       ],
       "Craniofacial"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000118",
+       (t.RESTRICTION_FIELD_MARKER) : "HP:0000152",
        (t.CUSTOM_MAPPING_FIELD_MARKER) : "cf",
         "HP:0001363"                    : "Craniosynostosis",
         "HP:0000204"                    : "Cleft lip",
@@ -101,8 +101,9 @@
        (t.OTHER_FIELD_MARKER)      : null
       ],
       "Eye Defects"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000118",
+       (t.RESTRICTION_FIELD_MARKER) : "HP:0000478",
        (t.CUSTOM_MAPPING_FIELD_MARKER) : "ey",
+        "HP:0000505"                    : "Impaired vision",
         "HP:0000481"                    : "Abnormality of the cornea",
         "HP:0000589"                    : "Coloboma",
         "HP:0000593"                    : "Abnormality of the anterior chamber",
@@ -115,7 +116,7 @@
        (t.OTHER_FIELD_MARKER)      : null
       ],
       "Ear Defects"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000118",
+       (t.RESTRICTION_FIELD_MARKER) : "HP:0000598",
        (t.CUSTOM_MAPPING_FIELD_MARKER) : "ea",
         "Deafness" : [
            "HP:0008538"                    : "Sensorineural",
@@ -128,22 +129,23 @@
        (t.OTHER_FIELD_MARKER)      : null
       ],
       "Cutaneous"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000118",
+       (t.RESTRICTION_FIELD_MARKER) : "HP:0000951",
        (t.CUSTOM_MAPPING_FIELD_MARKER) : "cu",
         "HP:0000953"                    : "Hyperpigmentation",
         "HP:0001010"                    : "Hypopigmentation",
         "HP:0005306"                    : "Capillary hemangiomas",
-        "_c_vascmal"                    : "Vascular malformation",
+        "HP:0011276"                    : "Vascular abnormality",
        (t.OTHER_FIELD_MARKER)      : null
       ],
       "Respiratory"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000118",
+       (t.RESTRICTION_FIELD_MARKER) : "HP:0002086,HP:0000765",
+       (t.CUSTOM_MAPPING_FIELD_MARKER) : "re",
         "HP:0000776"                    : "Diaphragmatic hernia",
         "HP:0002088"                    : "Lung abnormality",
        (t.OTHER_FIELD_MARKER)      : null
       ],
       "Musculoskeletal"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000118",
+       (t.RESTRICTION_FIELD_MARKER) : "HP:0000924,HP:0003549",
        (t.CUSTOM_MAPPING_FIELD_MARKER) : "ms",
         "HP:0002652"                    : "Skeletal dysplasia",
         "HP:0002659"                    : "Increased susceptibility to fracture",
@@ -172,7 +174,7 @@
        (t.OTHER_FIELD_MARKER)      : null
       ],
       "Gastrointestinal"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000118",
+       (t.RESTRICTION_FIELD_MARKER) : "HP:0001438",
        (t.CUSTOM_MAPPING_FIELD_MARKER) : "gi",
         "HP:0002032"                    : "Esophageal atresia",
         "HP:0002575"                    : "Tracheoesophageal fistula",
@@ -186,7 +188,7 @@
        (t.OTHER_FIELD_MARKER)      : null
       ],
       "Genitourinary"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000118",
+       (t.RESTRICTION_FIELD_MARKER) : "HP:0000119",
        (t.CUSTOM_MAPPING_FIELD_MARKER) : "gu",
         "HP:0000107"                    : "Renal Cysts",
         "HP:0000085"                    : "Horseshoe Kidney",
@@ -232,12 +234,20 @@
   ];
   LinkedHashMap&lt;String, String&gt; extraMessages = [];
 
+  LinkedHashMap&lt;String, Object&gt; negative_phenotype = [
+    "Phenotypes NOT observed in this patient"     : [
+       (t.OTHER_FIELD_MARKER)      : null
+    ]
+  ];
+
 
 xcontext.get('vcontext').put('mapping__phenotype', phenotype);
 
 xcontext.get('vcontext').put('mapping__prenatal_phenotype', prenatal_history);
 
 xcontext.get('vcontext').put('mapping__family_history', family_history);
+
+xcontext.get('vcontext').put('mapping__negative_phenotype', negative_phenotype);
 
 xcontext.get('vcontext').put('mapping__extraMessages', extraMessages);
 {{/groovy}}</content></xwikidoc>

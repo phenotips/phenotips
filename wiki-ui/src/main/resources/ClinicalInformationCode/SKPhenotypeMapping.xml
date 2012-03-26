@@ -49,7 +49,7 @@
        (t.RESTRICTION_FIELD_MARKER) : "HP:0000707",
        (t.CUSTOM_MAPPING_FIELD_MARKER) : "ne",
         "HP:0001290"                    : "Hypotonia",
-        "HP:0002197"                    : "Seizures",
+        "HP:0001250"                    : "Seizures",
         "HP:0001251"                    : "Ataxia",
         "HP:0001332"                    : "Dystonia",
         "HP:0002072"                    : "Chorea",
@@ -74,7 +74,7 @@
           "HP:0000252"                    : "&lt;3rd",
           "HP:0000256"                    : "&gt;97th",
         ],
-        "HP:0001535"                    : "Hemihypertrophy",
+        "HP:0001528"                    : "Hemihypertrophy",
        (t.OTHER_FIELD_MARKER)      : null
       ],
       "Cardiac"     : [
@@ -126,6 +126,7 @@
       ],
       "Respiratory"     : [
        (t.RESTRICTION_FIELD_MARKER): "HP:0002086,HP:0000765",
+       (t.CUSTOM_MAPPING_FIELD_MARKER) : "re",
         "HP:0000776"                    : "Diaphragmatic hernia",
         "HP:0002088"                    : "Lung abnormality",
        (t.OTHER_FIELD_MARKER)      : null
@@ -211,11 +212,20 @@
         "markers"                       : "abnormalities"
   ];
 
+LinkedHashMap&lt;String, Object&gt; negative_phenotype = [
+    "Phenotypes NOT observed in this patient"     : [
+       (t.OTHER_FIELD_MARKER)      : null
+    ]
+  ];
+
+
 xcontext.get('vcontext').put('mapping__phenotype', phenotype);
 
 xcontext.get('vcontext').put('mapping__prenatal_phenotype', prenatal_history);
 
 xcontext.get('vcontext').put('mapping__family_history', family_history);
+
+xcontext.get('vcontext').put('mapping__negative_phenotype', negative_phenotype);
 
 xcontext.get('vcontext').put('mapping__extraMessages', extraMessages);
 {{/groovy}}</content></xwikidoc>
