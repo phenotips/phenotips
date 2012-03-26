@@ -3363,7 +3363,9 @@ table.extradata-list td.bmi_percentile {
 <use>onDemand</use>
 </property>
 </object>
-<content>{{velocity output=false}}
+<content>{{include document="ClinicalInformationCode.ChartServiceMacros" /}}
+
+{{velocity output=false}}
 #macro (__label $propName $cssClass $text)
    #set($displayedText = "$!{text}")
    #if ($displayedText == '' &amp;&amp; "$!{propName}" != '')
@@ -3570,59 +3572,6 @@ table.extradata-list td.bmi_percentile {
 ## =================================================================
 ## Measurements
 ##
-#macro(__measurementCharts)
-#set ($wMeasurements = [])
-#set ($hMeasurements = [])
-#set ($hcMeasurements = [])
-#set ($ageLimits = {'weight' : {}, 'height' : {}, 'head_circumference' : {}})
-#macro (_updateMeasurements $measurements $o $sourceName $age)
-  #if ("$!{o.getProperty($sourceName).value}" != '')
-    #if (!($ageLimits.get($sourceName).min &lt;= $age))
-      #set ($ageLimits.get($sourceName).min = $age)
-    #end
-    #if (!($ageLimits.get($sourceName).max &gt;= $age))
-      #set ($ageLimits.get($sourceName).max = $age)
-    #end
-    #set ($discard = $measurements.add({'a': $age, 'x' : $o.getProperty($sourceName).value}))
-  #end
-#end
-#set ($bDate = $obj.getProperty('date_of_birth').value.time)
-#foreach ($o in $doc.getObjects($targetClassName))
-  #set ($mDate = $xwiki.jodatime.getMutableDateTime($o.getProperty('date').value.time))
-  #set ($age = $mDate.toInstant().minus($bDate).toDateTime())
-  #set ($age = ($age.year - 1970) * 12 + $age.monthOfYear)
-  #_updateMeasurements($wMeasurements $o 'weight' $age)
-  #_updateMeasurements($hMeasurements $o 'height' $age)
-  #_updateMeasurements($hcMeasurements $o 'head_circumference' $age)
-#end
-#set ($sex = $obj.getProperty('gender').value != 'F')
-#set ($c = $xwiki.getDocument('ClinicalInformationCode.ChartGenerator').getContent())
-##
-#macro (_generateCharts $measurements, $chartName $sourceName $title)
-    #if ($ageLimits.get($sourceName).min &lt; 24 || $ageLimits.get($sourceName).max &lt; 36)
-      #_generateChart($measurements, "${chartName}03" $title)
-    #end
-    #if ($ageLimits.get($sourceName).max &gt;= 36)
-      #_generateChart($measurements, "${chartName}220" $title)
-    #end
-#end
-#macro (_generateChart $measurements, $chartName $title)
-  #if ($measurements.size() &gt; 0)
-    #set ($chart = $chartName)
-    #set ($svg = "#evaluate($c)")
-    #set ($svg = $svg.replaceAll('\{\{/?html.*?}}', '').trim())
-    #set ($src = $xwiki.svg.getSVGImageURL($svg, $chartHeight, $chartWidth))
-    {{html}}&lt;a #if ($xcontext.action == 'edit')target="_blank"#{else}rel="__blank"#end href="$src" style="display:inline-block;width:32%;margin-left:1%"&gt;&lt;img style="width:100%" title="$title" src="$src"/&gt;&lt;/a&gt;{{/html}}##
-  #end
-#end
-#_generateCharts($wMeasurements, 'weight' 'weight' 'Weight for age')
-#_generateCharts($hMeasurements, 'height' 'height' 'Height for age')
-#if ($ageLimits.get('head_circumference').min &lt;= 36)
-  #_generateChart($hcMeasurements, 'hc03' 'Head circumference for age')
-#end
-#end
-##
-##
 #macro(__reportSection__measurements)
 #set ($targetClassName = 'ClinicalInformationCode.MeasurementsClass')
 #if ($config &amp;&amp; $config.getProperty('section__measurements').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
@@ -3632,7 +3581,7 @@ table.extradata-list td.bmi_percentile {
 #if ($xcontext.action != 'export')
 === Charts ===
 (% id="charts"%)(((
-#__measurementCharts()
+#_measurementCharts($targetClassName $obj)
 (% class="clear"%)((()))
 )))##charts
 ###end
