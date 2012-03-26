@@ -1731,7 +1731,7 @@ document.observe('xwiki:dom:loaded', function() {
     })
     if (qs == '') {return;}
     var sex = $(document.documentElement).down('input[name$=gender]:checked');
-    var url = chartService + "?" + qs + createReqParamSex('s', sex);
+    var url = chartService + "?" + qs + createReqParamSex('s', sex) + "&amp;width=" + chartContainer.getDimensions()['width'];
 
     var requestID = ++lastChartRequestID;
 
@@ -3599,10 +3599,10 @@ table.extradata-list td.bmi_percentile {
 #set ($c = $xwiki.getDocument('ClinicalInformationCode.ChartGenerator').getContent())
 ##
 #macro (_generateCharts $measurements, $chartName $sourceName $title)
-    #if ($ageLimits.get($sourceName).min &lt; 2)
+    #if ($ageLimits.get($sourceName).min &lt; 24 || $ageLimits.get($sourceName).max &lt; 36)
       #_generateChart($measurements, "${chartName}03" $title)
     #end
-    #if ($ageLimits.get($sourceName).max &gt; 3)
+    #if ($ageLimits.get($sourceName).max &gt;= 36)
       #_generateChart($measurements, "${chartName}220" $title)
     #end
 #end
@@ -3612,12 +3612,12 @@ table.extradata-list td.bmi_percentile {
     #set ($svg = "#evaluate($c)")
     #set ($svg = $svg.replaceAll('\{\{/?html.*?}}', '').trim())
     #set ($src = $xwiki.svg.getSVGImageURL($svg, $chartHeight, $chartWidth))
-    {{html}}&lt;a rel="_blank" href="$src" style="display:inline-block;width:32%;margin-left:1%"&gt;&lt;img style="width:100%" title="$title" src="$src"/&gt;&lt;/a&gt;{{/html}}##
+    {{html}}&lt;a #if ($xcontext.action == 'edit')target="_blank"#{else}rel="__blank"#end href="$src" style="display:inline-block;width:32%;margin-left:1%"&gt;&lt;img style="width:100%" title="$title" src="$src"/&gt;&lt;/a&gt;{{/html}}##
   #end
 #end
 #_generateCharts($wMeasurements, 'weight' 'weight' 'Weight for age')
 #_generateCharts($hMeasurements, 'height' 'height' 'Height for age')
-#if ($ageLimits.get('head_circumference').min &lt;=3)
+#if ($ageLimits.get('head_circumference').min &lt;= 36)
   #_generateChart($hcMeasurements, 'hc03' 'Head circumference for age')
 #end
 #end

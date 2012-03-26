@@ -34,7 +34,17 @@
     #set ($svg = "#evaluate($c)")
     #set ($svg = $svg.replaceAll('\{\{/?html.*?}}', '').trim())
     #set ($src = $xwiki.svg.getSVGImageURL($svg, $chartHeight, $chartWidth))
-    {{html}}&lt;a rel="_blank" href="$src" style="display:inline-block;width:32%;margin-left:1%"&gt;&lt;img style="width:100%" title="$title" src="$src"/&gt;&lt;/a&gt;{{/html}}##
+    #set ($w = $mathtool.idiv($mathtool.toInteger($request.width), 3))
+    #if ($w &gt; 0 &amp;&amp; false)
+      #set ($h = $chartHeight * $w / $chartWidth)
+      #set ($tsrc = $xwiki.svg.getSVGImageURL($svg, $h, $w))
+    #else
+      #set ($tsrc = $src)
+    #end
+    #if (!$tsrc)
+      #set ($tsrc = $src)
+    #end
+    {{html}}&lt;a target="_blank" href="$src" style="display:inline-block;width:32%;margin-left:1%"&gt;&lt;img style="width:100%" title="$title" src="$tsrc"/&gt;&lt;/a&gt;{{/html}}##
   #end
 #end
 #macro (_generateCharts $paramName, $chartName $title)
@@ -51,10 +61,10 @@
       #set ($discard = $measurements.add({'a': $age, 'x' : $mathtool.toDouble($m)}))
     #end
   #end
-  #if ($ageLimits.get($paramName).min &lt; 24 || ($paramName == 'c' &amp;&amp; $ageLimits.get($paramName).min &lt;= 36))
+  #if ($ageLimits.get($paramName).min &lt; 24 || ($paramName == 'c' &amp;&amp; $ageLimits.get($paramName).min &lt;= 36) || $ageLimits.get($paramName).max &lt; 36)
     #_generateChart($measurements, "${chartName}03" $title)
   #end
-  #if ($ageLimits.get($paramName).max &gt; 36 &amp;&amp; ($paramName != 'c'))
+  #if ($ageLimits.get($paramName).max &gt;= 36 &amp;&amp; ($paramName != 'c'))
     #_generateChart($measurements, "${chartName}220" $title)
   #end
 #end
