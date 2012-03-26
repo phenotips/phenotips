@@ -2474,6 +2474,13 @@ document.observe('xwiki:dom:loaded', function() {
 .buttonwrapper, .button {
   text-shadow: none;
 }
+hr {
+  border-bottom: 1px solid $theme.pageContentBackgroundColor;
+  border-left: 0 none;
+  border-right: 0 none;
+  border-top: 1px solid $theme.borderColor;
+  clear: both;
+}
 input[type=text], textarea {
   width: 100%;
   -moz-border-radius: 4px;
@@ -2739,7 +2746,7 @@ input.wrongValue {
 .editbody .clinical-info label.section {
   line-height: 1.4em;
 }
-.editbody .clinical-info label.section:before {
+.editbody .clinical-info .phenotypes-main label.section:before {
   content: "\25bc";
   display: inline-block;
   color: $theme.textSecondaryColor;
@@ -3068,17 +3075,30 @@ table.extradata-list td.date,
 table.extradata-list td.bmi_percentile {
   padding-right: .5em;
 }
+#extradata-list-ClinicalInformationCode\.MeasurementsClass {
+  border-collapse: separate;
+  border-spacing: 0 0;
+}
 #extradata-list-ClinicalInformationCode\.MeasurementsClass tr {
   position: relative;
 }
 #extradata-list-ClinicalInformationCode\.MeasurementsClass td {
   padding-top: 2.5em;
-  padding-bottom: 2em;
+  padding-bottom: .5em;
+  border-top: 1px solid $theme.pageContentBackgroundColor;
+  border-bottom: 1px solid $theme.borderColor;
+}
+#extradata-list-ClinicalInformationCode\\.MeasurementsClass tr:first-child+tr td {
+  border-top: 0 none;
+}
+#extradata-list-ClinicalInformationCode\\.MeasurementsClass tr:last-child td {
+  border-bottom: 0 none;
 }
 #extradata-list-ClinicalInformationCode\.MeasurementsClass td.date {
   position: absolute;
   padding-top: 3px;
   padding-bottom: 0;
+  border-color: transparent;
 }
 #extradata-list-ClinicalInformationCode\.MeasurementsClass td.date label.hint {
   font-size: 1em;
@@ -3093,6 +3113,7 @@ table.extradata-list td.bmi_percentile {
   padding: 3px;
   position: absolute;
   right: 10px;
+  border-color: transparent;
 }
 #extradata-list-ClinicalInformationCode\.MeasurementsClass td.actions a.delete{
   margin: 0;
@@ -3485,6 +3506,7 @@ table.extradata-list td.bmi_percentile {
   #__displayFormatted('2-col' 'health_card' '' '' '')
 
 #if ("$!activeFields.contains('relative')" != 'false' &amp;&amp; ($context.action == 'edit' || ($doc.display('relative') != '' &amp;&amp; $doc.display('relative_of') != '')))
+  ----
   (% class="fieldset family_study" %)(((
   (% class="half-width relative" %)(((
     #__label('' 'section' 'Family study:') ##
@@ -3499,6 +3521,7 @@ table.extradata-list td.bmi_percentile {
 #end
 
 #if ("$!activeFields.contains('onset')" != 'false')
+  ----
   #if ($context.action == 'edit')
     $doc.display('onset')
   #else
@@ -3576,6 +3599,9 @@ table.extradata-list td.bmi_percentile {
 #if ("$!activeFields.contains('prenatal_phenotype')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('prenatal_phenotype')" != ''))
 (% class="twothird-width clear clinical-info prenatal_phenotype-info chapter #__markIfMandatory('prenatal_phenotype')" %)(((
 == $!{class.get('prenatal_phenotype').prettyName} ==
+#__displayFormatted('2-col' 'gestation' '' '' '')
+(% class="clear" %)((()))
+----
 $doc.display('prenatal_phenotype')
 )))##chapter
 #end
