@@ -3581,7 +3581,8 @@ table.extradata-list td.bmi_percentile {
 #if ($xcontext.action != 'export')
 === Charts ===
 (% id="charts"%)(((
-#_measurementCharts($targetClassName $obj)
+#set($chartOptions = {'targetClassName' : $targetClassName, 'obj': $obj, 'link': true})
+#_measurementCharts($chartOptions)
 (% class="clear"%)((()))
 )))##charts
 ###end

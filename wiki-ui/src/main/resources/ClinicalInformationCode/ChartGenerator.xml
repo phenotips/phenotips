@@ -130,7 +130,13 @@
 #set ($xscale = $mathtool.div($xstep, $parameters.stepX))
 {{html clean="false"}}
 ##$response.setContentType('image/svg+xml')
-&lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-60.5 -80.5 $chartWidth $chartHeight" width="$chartWidth" height="$chartHeight" style="overflow: hidden;" text-rendering="optimizeLegibility"&gt;
+&lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-60.5 -80.5 $chartWidth $chartHeight" ##
+#if ("$!{request.standalone}" == '1')
+  width="$chartWidth" height="$chartHeight" ##
+#else
+  width="100%" ##
+#end
+preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="optimizeLegibility"&gt;
   &lt;title&gt;${parameters.title}, #if ($sex)boys#{else}girls#end&lt;/title&gt;
   &lt;style type="text/css"&gt;
 .background {

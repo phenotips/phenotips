@@ -3,27 +3,27 @@
 <web>ClinicalInformationCode</web>
 <name>ChartServiceMacros</name>
 <language></language>
-<defaultLanguage>en</defaultLanguage>
+<defaultLanguage></defaultLanguage>
 <translation>0</translation>
 <parent></parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
 <customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
 <creationDate>1332798937000</creationDate>
-<date>1332802718000</date>
-<contentUpdateDate>1332802718000</contentUpdateDate>
-<version>1.15</version>
+<date>1332860349000</date>
+<contentUpdateDate>1332860349000</contentUpdateDate>
+<version>1.1</version>
 <title></title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
 <comment></comment>
-<minorEdit>true</minorEdit>
+<minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
 <content>{{velocity output=false}}
-#macro (_measurementCharts $targetClassName $obj $vectorial)
+#macro (_measurementCharts $options)
 ## ---------------------------------------------------------
 ## Initialization of 'global' vars
 ## ---------------------------------------------------------
@@ -33,6 +33,7 @@
 #set ($ageLimits = {'weight' : {}, 'height' : {}, 'head_circumference' : {}})
 #set ($sex = false)
 #set ($c = $xwiki.getDocument('ClinicalInformationCode.ChartGenerator').getContent())
+#set ($service = $xwiki.getDocument('ClinicalInformationCode.ChartService'))
 ## ---------------------------------------------------------
 ## Build measurements data from objects
 ## ---------------------------------------------------------
@@ -86,42 +87,87 @@
 ## ---------------------------------------------------------
 ## Generate charts for a specific measurement
 ## ---------------------------------------------------------
-#macro (_generateCharts $measurements $chartName $sourceName $title)
+#macro (_generateCharts $measurements $chartName $sourceName $paramName $title)
   #if ($ageLimits.get($sourceName).min &lt; 24 || $ageLimits.get($sourceName).max &lt; 36)
-    #_generateChart($measurements, "${chartName}03" $title)
+    #_generateChart($measurements, "${chartName}03" $paramName $title)
   #end
   #if ($ageLimits.get($sourceName).max &gt;= 36)
-    #_generateChart($measurements, "${chartName}220" $title)
+    #_generateChart($measurements, "${chartName}220" $paramName $title)
   #end
 #end
 ## ---------------------------------------------------------
 ## Generate chart for a specific measurement and age span
 ## ---------------------------------------------------------
-#macro (_generateChart $measurements, $chartName $title)
+#macro (_generateChart $measurements $chartName $paramName $title)
   #if ($measurements.size() &gt; 0)
     #set ($chart = $chartName)
     #set ($svg = "#evaluate($c)")
-    #set ($svg = $svg.replaceAll('\{\{/?html.*?}}', '').trim())
-    #set ($src = $xwiki.svg.getSVGImageURL($svg, $chartHeight, $chartWidth))
-    {{html}}&lt;a #if ($xcontext.action == 'edit')target="_blank"#{else}rel="__blank"#end href="$src" style="display:inline-block;width:32%;margin-left:1%"&gt;&lt;img style="width:100%" title="$title" src="$src"/&gt;&lt;/a&gt;{{/html}}##
+    #set ($queryString = "n=${chartName}&amp;s=$!{request.s}")
+    #foreach ($m in $measurements)
+      #set ($queryString = "${queryString}&amp;a=${m.a}&amp;${paramName}=${m.x}")
+    #end
+    #if ($options.format == 'raster')
+      #set ($svg = $svg.replaceAll('\{\{/?html.*?}}', '').trim())
+      #set ($src = $xwiki.svg.getSVGImageURL($svg, $chartHeight, $chartWidth))
+    #else
+      #set ($src = $service.getURL('get', "${queryString}&amp;standalone=1"))
+    #end
+    #if ($options.standalone)
+      #if ($options.format == 'raster')
+        $response.sendRedirect($src)
+      #elseif($doc != $service || $xcontext.action != 'get')
+        $response.sendRedirect($service.getURL('get', $queryString))
+      #else
+        $response.setContentType('image/svg+xml')
+        $svg
+      #end
+    #else
+      #if ($options.format == 'raster')
+        #set ($img = "&lt;img style='width:100%' title='$title' src='$src'/&gt;")
+      #else
+        #set ($img = $svg.replaceAll('\{\{/?html.*?}}', '').trim())
+      #end
+      #if ($options.link)
+        {{html clean="false"}}&lt;a target="_blank" href="$src" style="display:inline-block;width:32%;margin-left:1%"&gt;$img&lt;/a&gt;{{/html}}##
+      #else
+        {{html clean="false"}}&lt;div style="display:inline-block;width:32%;margin-left:1%"&gt;$img&lt;/div&gt;{{/html}}##
+      #end
+    #end
   #end
 #end
 ## ---------------------------------------------------------
 ## Decide which method to use for building measurement data
 ## ---------------------------------------------------------
-#if ($targetClassName &amp;&amp; $obj)
-  #_buildMeasurementsFromObjects($targetClassName $obj)
+#if ($options.targetClassName &amp;&amp; $options.obj)
+  #_buildMeasurementsFromObjects($options.targetClassName $options.obj)
 #else
   #_buildMeasurementsFromRequest()
 #end
 ## ---------------------------------------------------------
-## Generate all the charts for all the available data
+## Decide what charts to display and in which format
 ## ---------------------------------------------------------
-#_generateCharts($wMeasurements, 'weight' 'weight' 'Weight for age')
-#_generateCharts($hMeasurements, 'height' 'height' 'Height for age')
-#if ($ageLimits.get('head_circumference').min &lt;= 36)
-  #_generateChart($hcMeasurements, 'hc03' 'Head circumference for age')
+#if ($options.chartName)
+  ## ---------------------------------------------------------
+  ## Generate the selected chart
+  ## ---------------------------------------------------------
+  #if ($options.chartName.startsWith('weight'))
+    #_generateChart($wMeasurements, $options.chartName 'w' '')
+  #elseif ($options.chartName.startsWith('height'))
+    #_generateChart($hMeasurements, $options.chartName 'h' '')
+  #elseif ($options.chartName.startsWith('hc'))
+    #_generateChart($hcMeasurements, $options.chartName 'c' '')
+  #end
+#else
+  ## ---------------------------------------------------------
+  ## Generate all the charts for all the available data
+  ## ---------------------------------------------------------
+  #_generateCharts($wMeasurements, 'weight' 'weight' 'w' 'Weight for age')
+  #_generateCharts($hMeasurements, 'height' 'height' 'h' 'Height for age')
+  #if ($ageLimits.get('head_circumference').min &lt;= 36)
+    #_generateChart($hcMeasurements, 'hc03' 'c' 'Head circumference for age')
+  #end
 #end
+
 ## ---------------------------------------------------------
 ## All done
 ## ---------------------------------------------------------

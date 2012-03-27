@@ -25,6 +25,20 @@
 <content>{{include document="ClinicalInformationCode.ChartServiceMacros" /}}
 
 {{velocity}}
-#_measurementCharts()
-(% class="clear"%)((()))
+#set ($format = "$!{request.f}")
+#if ($format != 'raster')
+  #set ($format = 'vector')
+#end
+#set ($standalone = ($format != '' &amp;&amp; "$!{request.standalone}" != '' &amp;&amp; "$!{request.standalone}" != '0' &amp;&amp; "$!{request.standalone}" != 'false'))
+#set ($link = ("$!{request.n}" == '' &amp;&amp; !$standalone))
+#set ($chartOptions = {
+   'format' : $format,
+   'chartName' : $!{request.n},
+   'standalone' : $standalone,
+   'link' : $link
+})
+#_measurementCharts($chartOptions)
+#if (!$chartOptions.standalone)
+  (% class="clear"%)((()))
+#end
 {{/velocity}}</content></xwikidoc>
