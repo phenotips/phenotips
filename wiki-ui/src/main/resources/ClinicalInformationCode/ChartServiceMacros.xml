@@ -53,7 +53,7 @@
   #foreach ($o in $doc.getObjects($targetClassName))
     #set ($mDate = $xwiki.jodatime.getMutableDateTime($o.getProperty('date').value.time))
     #set ($age = $mDate.toInstant().minus($bDate).toDateTime())
-    #set ($age = ($age.year - 1970) * 12 + $age.monthOfYear)
+    #set ($age = ($age.year - 1970) * 12 + $age.monthOfYear - 1)
     #_updateMeasurements($wMeasurements $o 'weight' $age)
     #_updateMeasurements($hMeasurements $o 'height' $age)
     #_updateMeasurements($hcMeasurements $o 'head_circumference' $age)
