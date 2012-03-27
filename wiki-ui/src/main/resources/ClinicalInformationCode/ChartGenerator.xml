@@ -141,7 +141,7 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
   &lt;style type="text/css"&gt;
 .background {
   fill: white;
-  stroke: black;
+  stroke: none;
 }
 .border {
   stroke: #000;
@@ -222,7 +222,7 @@ tspan.girl {
       &lt;rect x="0" y="0.5" width="$graphWidth" height="$graphHeight" class="border" /&gt;
     &lt;/clipPath&gt;
   &lt;/defs&gt;
-&lt;rect x="-1000" y="-400" width="2000" height="3000" class="background" /&gt;
+  &lt;rect x="-60" y="-80" width="$mathtool.sub($chartWidth, 1)" height="$mathtool.sub($chartHeight, 1)" class="background" /&gt;
   ##&lt;rect x="0" y="0" width="500" height="500" class="background"/&gt;
   ##&lt;use xlink:href="#doc-text" transform="translate(250, 250)" /&gt;
   &lt;g transform="translate(0, 10)" class="#if ($sex)boy#{else}girl#{end}"&gt;
