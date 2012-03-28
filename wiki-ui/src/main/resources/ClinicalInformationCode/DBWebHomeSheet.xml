@@ -14,7 +14,7 @@
 <date>1323888731000</date>
 <contentUpdateDate>1323888731000</contentUpdateDate>
 <version>1.1</version>
-<title></title>
+<title>Phenotype database</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
@@ -361,7 +361,7 @@ h1 {
 </object>
 <content>{{html wiki=false clean=false}}&lt;div class="general-tools"&gt;&lt;a href="#patients"&gt;Browse patients&lt;/a&gt; · &lt;label for="create-patient-record"&gt;New patient record&lt;/label&gt;&lt;/div&gt;{{/html}}
 
-= Phenotype database =
+= Phenotype  database =
 
 {{velocity}} 
 $xwiki.ssx.use('ClinicalInformationCode.DBWebHomeSheet')##
