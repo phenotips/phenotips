@@ -295,7 +295,7 @@
 .value-cloud-box .instructions {
   background-color: $theme.backgroundSecondaryColor;
   font-size: 0.875em;
-  line-height: 1.1ex;
+  line-height: 1.1em;
   margin: -10px -10px 0;
   padding: 10px 10px;
   text-shadow: 0 1px 1px $theme.pageContentBackgroundColor;
