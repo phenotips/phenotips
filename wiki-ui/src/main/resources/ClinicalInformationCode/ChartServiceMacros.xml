@@ -102,7 +102,7 @@
   #if ($measurements.size() &gt; 0)
     #set ($chart = $chartName)
     #set ($svg = "#evaluate($c)")
-    #set ($queryString = "n=${chartName}&amp;s=$!{request.s}")
+    #set ($queryString = "n=${chartName}#if(!$sex)&amp;s=F#end")
     #foreach ($m in $measurements)
       #set ($queryString = "${queryString}&amp;a=${m.a}&amp;${paramName}=${m.x}")
     #end
