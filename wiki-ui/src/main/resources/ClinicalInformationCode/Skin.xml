@@ -1005,7 +1005,7 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
 <parse>1</parse>
 </property>
 <property>
-<use>onDemand</use>
+<use>always</use>
 </property>
 </object>
 <object>
