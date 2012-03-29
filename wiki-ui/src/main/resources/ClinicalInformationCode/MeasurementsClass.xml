@@ -31,6 +31,43 @@
 <defaultWeb></defaultWeb>
 <nameField></nameField>
 <validationScript></validationScript>
+<age>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #if ("$!value" == '')
+    #set ($dValue = '-')
+  #else
+    #set ($dValue = '')
+    #if ($value &gt;= 0)
+      #set ($y = $mathtool.idiv($value, 12))
+      #set ($m = $mathtool.mod($value, 12))
+    #end
+    #if ($y &gt; 0)
+      #set ($dValue = "${y}y")
+    #end
+    #if ($y &gt; 0)
+      #set ($dValue = "$!dValue ${m}m")
+    #end
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>age</name>
+<number>2</number>
+<numberType>long</numberType>
+<prettyName>Age</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</age>
 <bmi>
 <customDisplay>{{velocity}}
 #if ($xcontext.action != 'edit' || $request.editor != 'object')
@@ -48,7 +85,7 @@
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>bmi</name>
-<number>6</number>
+<number>7</number>
 <numberType>float</numberType>
 <prettyName>BMI</prettyName>
 <size>30</size>
@@ -74,7 +111,7 @@
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>bmi_percentile</name>
-<number>7</number>
+<number>8</number>
 <numberType>integer</numberType>
 <prettyName>Percentile</prettyName>
 <size>30</size>
@@ -98,7 +135,7 @@
 <name>date</name>
 <number>1</number>
 <picker>1</picker>
-<prettyName>Date of measurement</prettyName>
+<prettyName>Date</prettyName>
 <size>20</size>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
@@ -122,7 +159,7 @@
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>hc_percentile</name>
-<number>9</number>
+<number>10</number>
 <numberType>integer</numberType>
 <prettyName>Percentile</prettyName>
 <size>30</size>
@@ -135,9 +172,9 @@
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <name>head_circumference</name>
-<number>8</number>
+<number>9</number>
 <numberType>float</numberType>
-<prettyName>Head circumference (cm)</prettyName>
+<prettyName>Head circ. (cm)</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
@@ -148,7 +185,7 @@
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <name>height</name>
-<number>4</number>
+<number>5</number>
 <numberType>float</numberType>
 <prettyName>Height (cm)</prettyName>
 <size>30</size>
@@ -174,7 +211,7 @@
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>height_percentile</name>
-<number>5</number>
+<number>6</number>
 <numberType>integer</numberType>
 <prettyName>Percentile</prettyName>
 <size>30</size>
@@ -187,7 +224,7 @@
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <name>weight</name>
-<number>2</number>
+<number>3</number>
 <numberType>float</numberType>
 <prettyName>Weight (kg)</prettyName>
 <size>30</size>
@@ -213,7 +250,7 @@
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>weight_percentile</name>
-<number>3</number>
+<number>4</number>
 <numberType>integer</numberType>
 <prettyName>Percentile</prettyName>
 <size>30</size>
