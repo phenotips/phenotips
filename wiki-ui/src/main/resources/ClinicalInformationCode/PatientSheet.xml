@@ -32,5 +32,11 @@
 #__reportSection_display($section)
 #end
 
+#if ($xcontext.action == 'export')
+{{html clean=false}}#pagebreak(){{/html}}
+#set($chartOptions = {'targetClassName' : $targetClassName, 'obj': $obj, 'link': false})
+#_measurementCharts($chartOptions)
+#end
+
 #end## class exists
 {{/velocity}}</content></xwikidoc>

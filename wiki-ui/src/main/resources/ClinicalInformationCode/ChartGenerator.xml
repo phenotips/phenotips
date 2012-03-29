@@ -136,7 +136,7 @@
 {{html clean="false"}}
 ##$response.setContentType('image/svg+xml')
 &lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-60.5 -80.5 $chartWidth $chartHeight" ##
-#if ("$!{request.standalone}" == '1')
+#if ("$!{request.standalone}" == '1' || $xcontext.action == 'export')
   width="$chartWidth" height="$chartHeight" ##
 #else
   width="100%" ##
