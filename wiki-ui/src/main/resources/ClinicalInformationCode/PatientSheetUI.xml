@@ -2730,7 +2730,7 @@ input.wrongValue {
   display: inline-block;
   width: 33%;
 }
-.viewbody .family_study .half-width .label {
+.viewbody .family_study .label {
   display: inline;
 }
 .viewbody .family_study .half-width {
@@ -3600,18 +3600,15 @@ table.extradata-list td.bmi_percentile {
 
 #if ("$!activeFields.contains('relative')" != 'false' &amp;&amp; ($context.action == 'edit' || ($doc.display('relative') != '' &amp;&amp; $doc.display('relative_of') != '')))
   ----
-  (% class="fieldset family_study" %)(((##
+  (% class="fieldset family_study" %)(((
   #if ($xcontext.action == 'edit')
-    (% class="half-width relative" %)(((###
+    (% class="half-width relative" %)(((
   #end
     #__label('' 'section' 'Family study:') $doc.display('relative') #__label('relative_of' 'section' 'of')
   #if ($xcontext.action == 'edit')
-    )))(((###
+    )))
   #end
     #__displayFormatted('half-width' 'relative_of' "$!{config.getProperty('relativeReportHint').value}" '' 'hint')##
-  #if ($xcontext.action == 'edit')
-    )))###
-  #end
   )))##fieldset
 #end
 
