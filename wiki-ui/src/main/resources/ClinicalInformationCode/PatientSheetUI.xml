@@ -775,6 +775,8 @@ document.observe('dom:loaded', function() {
            }
         }
         form.select('.phenotype-group').each(__updateNewValues);
+        form.select('.prenatal_phenotype-group').each(__updateNewValues);
+        form.select('.negative_phenotype-group').each(__updateNewValues);
       }
     });
     } catch (error) { /* No form? No problem */ }

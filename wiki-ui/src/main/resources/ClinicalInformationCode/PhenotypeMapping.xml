@@ -214,6 +214,8 @@
 
   LinkedHashMap&lt;String, Object&gt; negative_phenotype = [
     "Phenotypes NOT observed in this patient"     : [
+       (t.RESTRICTION_FIELD_MARKER): "HP:0000118",
+       (t.CUSTOM_MAPPING_FIELD_MARKER) : "neg",
        (t.OTHER_FIELD_MARKER)      : null
     ]
   ];
