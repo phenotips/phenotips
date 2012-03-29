@@ -128,6 +128,11 @@
 #set ($ystep = $mathtool.div($graphHeight, $ylines))
 #set ($yscale = $mathtool.div($ystep, $parameters.step))
 #set ($xscale = $mathtool.div($xstep, $parameters.stepX))
+#if (!$chartCounter)
+  #set ($chartCounter = 0)
+#else
+  #set ($chartCounter = $chartCounter + 1)
+#end
 {{html clean="false"}}
 ##$response.setContentType('image/svg+xml')
 &lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-60.5 -80.5 $chartWidth $chartHeight" ##
@@ -218,7 +223,7 @@ tspan.girl {
 }
   &lt;/style&gt;
   &lt;defs&gt;
-    &lt;clipPath id="border"&gt;
+    &lt;clipPath id="border${chartCounter}"&gt;
       &lt;rect x="0" y="0.5" width="$graphWidth" height="$graphHeight" class="border" /&gt;
     &lt;/clipPath&gt;
   &lt;/defs&gt;
@@ -261,7 +266,7 @@ tspan.girl {
   #end
   #foreach ($p in [3, 10, 25, 50, 75, 90, 97])
     #getPercentileValue($parameters.minX $p)
-    &lt;path clip-path="url(#border)" class="percentile-curve#if ($p == 3 || $p == 50 || $p == 97) bold#end" d="M$mathtool.mul(0.5, $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))L##
+    &lt;path clip-path="url(#border${chartCounter})" class="percentile-curve#if ($p == 3 || $p == 50 || $p == 97) bold#end" d="M$mathtool.mul(0.5, $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))L##
     #foreach ($i in [1..$xlines])
       #set ($age = $mathtool.add($mathtool.mul($i, $parameters.stepX), $parameters.minX))
       #getPercentileValue($age $p)
@@ -284,7 +289,7 @@ tspan.girl {
     #end
     "/&gt;
   #end
-&lt;g clip-path="url(#border)"&gt;
+&lt;g clip-path="url(#border${chartCounter})"&gt;
   #foreach ($m in $measurements)
     #getValuePercentile($m.a $m.x)
     #getPercentileValue($parameters.minX $p)
