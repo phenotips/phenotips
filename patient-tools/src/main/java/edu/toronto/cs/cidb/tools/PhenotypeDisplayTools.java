@@ -40,6 +40,7 @@ import org.apache.solr.common.SolrDocument;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.script.service.ScriptService;
+import org.xwiki.xml.XMLUtils;
 
 import com.xpn.xwiki.api.Document;
 
@@ -363,7 +364,7 @@ public class PhenotypeDisplayTools implements ScriptService
     {
         SolrDocument doc = ((SolrScriptService) this.ontologyService).get(value);
         if (!"edit".equals(getMode())) {
-            return "<div class='value-checked'>" + label + "</div>";
+            return "<div class='value-checked'>" + XMLUtils.escapeElementContent(label) + "</div>";
         }
         String cssClass = "term-label" + (enableDropdown(value) ? " dropdown-root" : "")
             + (BooleanUtils.isTrue(getValuesWithSelectedSubterms().get(value)) ? " subterm-selected" : "");
