@@ -250,16 +250,16 @@
 #end
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
-<displayType>select</displayType>
+<displayType>input</displayType>
 <idField></idField>
-<multiSelect>0</multiSelect>
+<multiSelect>1</multiSelect>
 <name>negative_phenotype</name>
 <number>13</number>
 <picker>0</picker>
-<prettyName>Phenotypes NOT observed in this patient</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators></separators>
+<prettyName>Symptoms NOT observed in this patient</prettyName>
+<relationalStorage>1</relationalStorage>
+<separator>, </separator>
+<separators>|, </separators>
 <size>1</size>
 <sort>none</sort>
 <sql></sql>
@@ -372,7 +372,7 @@
 <name>phenotype</name>
 <number>12</number>
 <picker>0</picker>
-<prettyName>Phenotypic description (Clinical symptoms)</prettyName>
+<prettyName>Clinical symptoms</prettyName>
 <relationalStorage>1</relationalStorage>
 <separator> </separator>
 <separators></separators>
