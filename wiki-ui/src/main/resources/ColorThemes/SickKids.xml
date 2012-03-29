@@ -1230,6 +1230,257 @@ JB+c1NM62E24I6RhRDBxq0NfFDe4ClSsv8TDMIzfoQ0Tt+s6Zh8AAAAASUVORK5CYII=
 </object>
 <object>
 <class>
+<name>XWiki.PDFClass</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<fopxsl>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<editor>---</editor>
+<name>fopxsl</name>
+<number>3</number>
+<picker>0</picker>
+<prettyName>fopxsl</prettyName>
+<rows>5</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</fopxsl>
+<style>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<editor>---</editor>
+<name>style</name>
+<number>1</number>
+<picker>0</picker>
+<prettyName>style</prettyName>
+<rows>5</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</style>
+<xhtmlxsl>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<editor>---</editor>
+<name>xhtmlxsl</name>
+<number>2</number>
+<picker>0</picker>
+<prettyName>xhtmlxsl</prettyName>
+<rows>5</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</xhtmlxsl>
+</class>
+<name>ColorThemes.SickKids</name>
+<number>0</number>
+<className>XWiki.PDFClass</className>
+<guid>af93cea9-ef63-4a84-9011-5b255a4959f2</guid>
+<property>
+<fopxsl>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;xsl:stylesheet version="1.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:fo="http://www.w3.org/1999/XSL/Format"
+    xmlns:html="http://www.w3.org/1999/xhtml"&gt;
+
+  &lt;xsl:output method="xml"/&gt;
+
+  &lt;xsl:template match="@*|node()"&gt;
+    &lt;xsl:copy&gt;
+      &lt;xsl:apply-templates select="@*|node()"/&gt;
+    &lt;/xsl:copy&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;!-- Skip fo:table-and-caption because Fop won't render tables otherwise --&gt;
+  &lt;xsl:template match="fo:table-and-caption"&gt;
+    &lt;xsl:apply-templates/&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;!-- Ignore fo:table-caption because it is not supported --&gt;
+  &lt;xsl:template match="fo:table-caption" /&gt;
+
+  &lt;!-- Change the page dimensions to Letter --&gt;
+  &lt;xsl:template match="fo:simple-page-master/@page-height"&gt;
+    &lt;xsl:attribute name="page-height"&gt;
+      &lt;xsl:value-of select="'11in'"/&gt;
+    &lt;/xsl:attribute&gt;
+  &lt;/xsl:template&gt;
+  &lt;xsl:template match="fo:simple-page-master/@page-width"&gt;
+    &lt;xsl:attribute name="page-width"&gt;
+      &lt;xsl:value-of select="'8.5in'"/&gt;
+    &lt;/xsl:attribute&gt;
+  &lt;/xsl:template&gt;
+  &lt;!-- Change the font to FreeSans --&gt;
+  &lt;xsl:template match="fo:root/@font-family"&gt;
+    &lt;xsl:attribute name="font-family"&gt;
+      &lt;xsl:value-of select="'FreeSans'"/&gt;
+    &lt;/xsl:attribute&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;!-- Change the header --&gt;
+  &lt;xsl:template match="fo:static-content[@flow-name='page-header']"&gt;
+    &lt;xsl:copy&gt;
+      &lt;xsl:attribute name="precedence"&gt;true&lt;/xsl:attribute&gt;
+      &lt;xsl:apply-templates select="@*"/&gt;
+      &lt;fo:block&gt;
+        &lt;fo:instream-foreign-object content-width="scale-to-fit" content-height="scale-to-fit"
+            inline-progression-dimension.minimum="auto" inline-progression-dimension.maximum="100%"
+            block-progression-dimension.minimum="auto" block-progression-dimension.maximum="700px"&gt;
+          &lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" text-rendering="geometricPrecision" viewBox="-0.5 5.5 301 80" width="150"&gt;
+            &lt;title&gt;SickKids&lt;/title&gt;
+            &lt;text x="0" y="50" font-family="Impact" font-size="50" letter-spacing="3%"&gt;
+              &lt;tspan fill="#00b6de"&gt;Sick&lt;/tspan&gt;&lt;tspan fill="#0068b3"&gt;Kids&lt;/tspan&gt;
+            &lt;/text&gt;
+            &lt;rect x="0" y="55" width="300" height="30"  fill="#0068b3" /&gt;
+            &lt;text x="10" y="75" font-family="Arial" font-size="15" fill="#FFF" font-weight="bold"&gt;
+              &lt;tspan&gt;&amp;lt;Your Department/Lab Name&amp;gt;&lt;/tspan&gt;
+            &lt;/text&gt;
+          &lt;/svg&gt;
+        &lt;/fo:instream-foreign-object&gt;
+      &lt;/fo:block&gt;
+    &lt;/xsl:copy&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;!-- Change the footer --&gt;
+  &lt;xsl:template match="fo:static-content[@flow-name='page-footer']"&gt;
+    &lt;xsl:copy&gt;
+      &lt;xsl:apply-templates select="@*"/&gt;
+&lt;fo:table&gt;&lt;fo:table-body&gt;&lt;fo:table-row&gt;&lt;fo:table-cell&gt;
+      &lt;fo:block font-size="small" space-after="0.5in" space-after.conditionality="retain" text-align="left"&gt;&lt;xsl:value-of select="//fo:block[@role='html:h1']"/&gt;&lt;/fo:block&gt;
+     &lt;/fo:table-cell&gt;&lt;fo:table-cell&gt;
+      &lt;fo:block font-size="small" space-after="0.5in" space-after.conditionality="retain" text-align="right"&gt;Page &lt;fo:page-number/&gt; of &lt;fo:page-number-citation-last ref-id="x-page-sequence"/&gt;&lt;/fo:block&gt;
+ &lt;/fo:table-cell&gt;&lt;/fo:table-row&gt;&lt;/fo:table-body&gt;&lt;/fo:table&gt;
+    &lt;/xsl:copy&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;!-- Move gallery images to the end --&gt;
+  &lt;!-- Step one, copy them at the end of the body --&gt;
+  &lt;xsl:template match="fo:flow[@flow-name='xsl-region-body']"&gt;
+    &lt;xsl:copy&gt;
+      &lt;xsl:apply-templates select="@*|node()"/&gt;
+      &lt;xsl:for-each select=".//*[text()='Facial dysmorphism photos:']/parent::*"&gt;
+        &lt;xsl:copy&gt;
+          &lt;xsl:apply-templates select="@*|node()"/&gt;
+        &lt;/xsl:copy&gt;
+      &lt;/xsl:for-each&gt;
+      &lt;fo:block id="last-page"/&gt;
+    &lt;/xsl:copy&gt;
+  &lt;/xsl:template&gt;
+  &lt;!-- Step two, ignore them in the body --&gt;
+  &lt;xsl:template match="*[*/text()='Facial dysmorphism photos:']"&gt;
+    &lt;xsl:text&gt;See attached images&lt;/xsl:text&gt;
+  &lt;/xsl:template&gt;
+  &lt;xsl:template match="*[text()='Facial dysmorphism photos:']"/&gt;
+
+  &lt;!-- Ignore some elements --&gt;
+  &lt;xsl:template match="fo:block[@id='document-actions']" /&gt;
+  &lt;xsl:template match="fo:block[@role='html:h1']" /&gt;
+
+  &lt;!-- Add an ID to the whole page sequence, to be able to get the total number of pages --&gt;
+  &lt;xsl:template match="fo:page-sequence"&gt;
+    &lt;xsl:copy&gt;
+      &lt;xsl:attribute name="id"&gt;&lt;xsl:text&gt;x-page-sequence&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;
+      &lt;xsl:apply-templates select="@*|node()"/&gt;
+    &lt;/xsl:copy&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+</fopxsl></property><property><style>#template('colorThemeInit.vm')
+h2 {
+  color: $theme.linkColor;
+  font-family: serif;
+  margin-top: 0;
+}
+h3 {
+  text-transform: uppercase;
+  font-weight: normal;
+  font-size: 1em;
+}
+hr {
+  display: none;
+}
+.phenotypes-main {
+  margin: 0 2%;
+}
+.chapter {
+  clear: both;
+  font-family: sans-serif;
+  border: 1px solid $theme.borderColor;
+  margin: .5em 0;
+  width: 96%;
+  padding: .5em 2%;
+}
+.patient-info {
+  width: 46%;
+  margin-left: 50%;
+}
+.patient-info h2 {
+  display: none;
+}
+.patient-info p {
+  margin: 0 !important;
+  padding: 0 !important;
+  text-indent: 0 !important;
+}
+.patient-info .label, .patient-info label {
+  color: $theme.linkColor;
+  font-weight: bold;
+}
+.family_study * {
+  display: inline !important;
+}
+.viewbody .family_study .half-width * {
+  margin: 0 !important;
+}
+.negative_phenotype-group h3 {
+  color: $theme.notificationErrorColor;
+}
+.negative_phenotype-group .selected .value, .negative_phenotype-group .value-checked , .negative_phenotype-group .section{
+  color: $theme.notificationErrorColor;
+  text-decoration: line-through;
+}
+.extradata-list {
+  border-collapse: collapse;
+}
+.extradata-list th, .extradata-list td {
+  border: 0 none;
+  border-top: 1px solid $theme.backgroundSecondaryColor;
+  border-bottom: 1px solid $theme.backgroundSecondaryColor;
+  text-align: center;
+}
+.extradata-list th {
+  background-color: $theme.backgroundSecondaryColor;
+}
+.extradata-list .bmi, .extradata-list .hc_percentile {
+  min-width: 4em;
+}
+.extradata-list .normal {
+  color: $theme.notificationSuccessColor;
+}
+.extradata-list .extreme-below-normal, .extradata-list .extreme-above-normal {
+  color: $theme.notificationErrorColor;
+}
+.extradata-list .below-normal, .extradata-list .above-normal {
+  color: $theme.notificationWarningColor;
+}</style>
+</property>
+<property>
+<xhtmlxsl></xhtmlxsl>
+</property>
+</object>
+<object>
+<class>
 <name>XWiki.StyleSheetExtension</name>
 <customClass></customClass>
 <customMapping></customMapping>

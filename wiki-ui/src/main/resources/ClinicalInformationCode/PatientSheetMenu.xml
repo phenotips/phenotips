@@ -40,7 +40,7 @@
     #documentAction($doc.getURL('view', 'viewer=history') 'tmHistory' 'Browse modification history')
   #end
   #if ($menuconfig.getProperty('enablePdfTool').value.contains($xcontext.action))
-    #documentAction($doc.getURL('export', 'format=pdf') 'tmExportPdf' 'Export PDF')
+    #documentAction($doc.getURL('export', "format=pdf&amp;pdfcover=0&amp;pdftoc=0&amp;pdftemplate=$xwiki.getSpacePreference('colorTheme')") 'tmExportPdf' 'Export PDF')
   #end
   #if ($menuconfig.getProperty('enableTocTool').value.contains($xcontext.action))
     #documentAction('#table-of-contents' 'tmToC' 'Table of contents')
