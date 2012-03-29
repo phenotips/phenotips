@@ -77,5 +77,6 @@
   </build>
   <properties>
     <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
   </properties>
 </project>

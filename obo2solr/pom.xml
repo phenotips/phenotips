@@ -53,4 +53,7 @@
       <version>1.6.4</version>
     </dependency>
   </dependencies>
+  <properties>
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+  </properties>
 </project>

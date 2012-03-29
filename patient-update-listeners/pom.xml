@@ -81,4 +81,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <properties>
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+  </properties>
 </project>
