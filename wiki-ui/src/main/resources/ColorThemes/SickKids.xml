@@ -1334,22 +1334,38 @@ JB+c1NM62E24I6RhRDBxq0NfFDe4ClSsv8TDMIzfoQ0Tt+s6Zh8AAAAASUVORK5CYII=
     &lt;xsl:copy&gt;
       &lt;xsl:attribute name="precedence"&gt;true&lt;/xsl:attribute&gt;
       &lt;xsl:apply-templates select="@*"/&gt;
-      &lt;fo:block&gt;
+      &lt;fo:table margin-top="2em"&gt;&lt;fo:table-body&gt;&lt;fo:table-row&gt;&lt;fo:table-cell&gt;
+      &lt;fo:block text-align="leftl"&gt;
         &lt;fo:instream-foreign-object content-width="scale-to-fit" content-height="scale-to-fit"
             inline-progression-dimension.minimum="auto" inline-progression-dimension.maximum="100%"
             block-progression-dimension.minimum="auto" block-progression-dimension.maximum="700px"&gt;
-          &lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" text-rendering="geometricPrecision" viewBox="-0.5 5.5 301 80" width="150"&gt;
+          &lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" text-rendering="geometricPrecision" viewBox="-0.5 9.5 301 60" width="100" height="20"&gt;
             &lt;title&gt;SickKids&lt;/title&gt;
             &lt;text x="0" y="50" font-family="Impact" font-size="50" letter-spacing="3%"&gt;
               &lt;tspan fill="#00b6de"&gt;Sick&lt;/tspan&gt;&lt;tspan fill="#0068b3"&gt;Kids&lt;/tspan&gt;
             &lt;/text&gt;
-            &lt;rect x="0" y="55" width="300" height="30"  fill="#0068b3" /&gt;
-            &lt;text x="10" y="75" font-family="Arial" font-size="15" fill="#FFF" font-weight="bold"&gt;
+          &lt;/svg&gt;
+        &lt;/fo:instream-foreign-object&gt;
+      &lt;/fo:block&gt;
+     &lt;/fo:table-cell&gt;&lt;fo:table-cell&gt;
+      &lt;fo:block font-size="large" space-after="0.5in" space-after.conditionality="retain" text-align="right"&gt;&lt;xsl:value-of select="//fo:block[@role='html:h1']"/&gt;&lt;/fo:block&gt;
+     &lt;/fo:table-cell&gt;&lt;/fo:table-row&gt;&lt;/fo:table-body&gt;&lt;/fo:table&gt;
+&lt;!--      &lt;fo:block margin-top="-2em"&gt;
+        &lt;fo:instream-foreign-object content-width="scale-to-fit" content-height="scale-to-fit"
+            inline-progression-dimension.minimum="auto" inline-progression-dimension.maximum="100%"
+            block-progression-dimension.minimum="auto" block-progression-dimension.maximum="700px"&gt;
+          &lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" text-rendering="geometricPrecision" viewBox="-0.5 5.5 261 80" width="220"&gt;
+            &lt;title&gt;SickKids&lt;/title&gt;
+            &lt;text x="0" y="50" font-family="Impact" font-size="50" letter-spacing="3%"&gt;
+              &lt;tspan fill="#00b6de"&gt;Sick&lt;/tspan&gt;&lt;tspan fill="#0068b3"&gt;Kids&lt;/tspan&gt;
+            &lt;/text&gt;
+            &lt;rect x="0" y="55" width="300" height="20"  fill="#0068b3" /&gt;
+            &lt;text x="10" y="69" font-family="Arial" font-size="11" fill="#FFF" font-weight="bold"&gt;
               &lt;tspan&gt;&amp;lt;Your Department/Lab Name&amp;gt;&lt;/tspan&gt;
             &lt;/text&gt;
           &lt;/svg&gt;
         &lt;/fo:instream-foreign-object&gt;
-      &lt;/fo:block&gt;
+      &lt;/fo:block&gt;--&gt;
     &lt;/xsl:copy&gt;
   &lt;/xsl:template&gt;
 
@@ -1357,11 +1373,7 @@ JB+c1NM62E24I6RhRDBxq0NfFDe4ClSsv8TDMIzfoQ0Tt+s6Zh8AAAAASUVORK5CYII=
   &lt;xsl:template match="fo:static-content[@flow-name='page-footer']"&gt;
     &lt;xsl:copy&gt;
       &lt;xsl:apply-templates select="@*"/&gt;
-&lt;fo:table&gt;&lt;fo:table-body&gt;&lt;fo:table-row&gt;&lt;fo:table-cell&gt;
-      &lt;fo:block font-size="small" space-after="0.5in" space-after.conditionality="retain" text-align="left"&gt;&lt;xsl:value-of select="//fo:block[@role='html:h1']"/&gt;&lt;/fo:block&gt;
-     &lt;/fo:table-cell&gt;&lt;fo:table-cell&gt;
-      &lt;fo:block font-size="small" space-after="0.5in" space-after.conditionality="retain" text-align="right"&gt;Page &lt;fo:page-number/&gt; of &lt;fo:page-number-citation-last ref-id="x-page-sequence"/&gt;&lt;/fo:block&gt;
- &lt;/fo:table-cell&gt;&lt;/fo:table-row&gt;&lt;/fo:table-body&gt;&lt;/fo:table&gt;
+      &lt;fo:block font-size="small" space-after="0.5in" space-after.conditionality="retain" text-align="center"&gt;Page &lt;fo:page-number/&gt; of &lt;fo:page-number-citation-last ref-id="x-page-sequence"/&gt;&lt;/fo:block&gt;
     &lt;/xsl:copy&gt;
   &lt;/xsl:template&gt;
 
@@ -1395,6 +1407,32 @@ JB+c1NM62E24I6RhRDBxq0NfFDe4ClSsv8TDMIzfoQ0Tt+s6Zh8AAAAASUVORK5CYII=
       &lt;xsl:apply-templates select="@*|node()"/&gt;
     &lt;/xsl:copy&gt;
   &lt;/xsl:template&gt;
+
+  &lt;!-- Change the header --&gt;
+  &lt;xsl:template match="fo:block[@id='xwikicontent']/fo:block[3]/fo:block-container"&gt;
+      &lt;fo:table&gt;&lt;fo:table-body&gt;&lt;fo:table-row&gt;&lt;fo:table-cell&gt;
+      &lt;fo:block block-progression-dimension="1pt" inline-progression-dimension="1pt" content-height="1pt"&gt;
+        &lt;fo:instream-foreign-object content-width="scale-to-fit" content-height="scale-to-fit"
+            inline-progression-dimension.minimum="auto" inline-progression-dimension.maximum="100%"
+            block-progression-dimension.minimum="auto" block-progression-dimension.maximum="700px"&gt;
+          &lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" text-rendering="geometricPrecision" viewBox="-0.5 5.5 301 80" width="150"&gt;
+            &lt;title&gt;SickKids&lt;/title&gt;
+            &lt;text x="0" y="50" font-family="Impact" font-size="50" letter-spacing="3%"&gt;
+              &lt;tspan fill="#00b6de"&gt;Sick&lt;/tspan&gt;&lt;tspan fill="#0068b3"&gt;Kids&lt;/tspan&gt;
+            &lt;/text&gt;
+            &lt;rect x="0" y="55" width="300" height="30"  fill="#0068b3" /&gt;
+            &lt;text x="10" y="75" font-family="Arial" font-size="15" fill="#FFF" font-weight="bold"&gt;
+              &lt;tspan&gt;&amp;lt;Your Department/Lab Name&amp;gt;&lt;/tspan&gt;
+            &lt;/text&gt;
+          &lt;/svg&gt;
+        &lt;/fo:instream-foreign-object&gt;
+      &lt;/fo:block&gt;
+     &lt;/fo:table-cell&gt;&lt;fo:table-cell&gt;
+      &lt;xsl:copy&gt;
+        &lt;xsl:apply-templates select="@*|node()"/&gt;
+      &lt;/xsl:copy&gt;
+     &lt;/fo:table-cell&gt;&lt;/fo:table-row&gt;&lt;/fo:table-body&gt;&lt;/fo:table&gt;
+  &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;
 </fopxsl></property><property><style>#template('colorThemeInit.vm')
 h2 {
@@ -1420,10 +1458,6 @@ hr {
   margin: .5em 0;
   width: 96%;
   padding: .5em 2%;
-}
-.patient-info {
-  width: 46%;
-  margin-left: 50%;
 }
 .patient-info h2 {
   display: none;

@@ -144,77 +144,74 @@
 preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="optimizeLegibility"&gt;
   &lt;title&gt;${parameters.title}, #if ($sex)boys#{else}girls#end&lt;/title&gt;
   &lt;style type="text/css"&gt;
-.background {
+.chart-background {
   fill: white;
   stroke: none;
 }
-.border {
+.chart-border {
   stroke: #000;
   stroke-width: 1px;
   fill: none;
 }
-.grid {
+.chart-grid {
   stroke: #AAA;
   stroke-width: 0.5px;
   fill: none;
   shape-rendering: geometricPrecision;
 }
-.grid.bold {
+.chart-grid.bold {
   stroke-width: 1px;
   stroke: #AAA;
 }
-.percentile-curve {
+.chart-percentile-curve {
   stroke: #000;
   stroke-width: 1px;
   stroke-linejoin: round;
   fill: none;
 }
-.boy .percentile-curve {
+.boy .chart-percentile-curve {
   stroke: #1059A0;
 }
-.girl .percentile-curve {
+.girl .chart-percentile-curve {
   stroke: #C44;
   stroke: #D05;
 }
-.percentile-curve.bold {
+.chart-percentile-curve.bold {
   stroke-width: 2px;
 }
-.percentile-curve.guideline {
+.chart-percentile-curve.guideline {
   stroke: #AAA;
   stroke-width: 1px;
   stroke-dasharray: 3px 3px;
 }
-.title {
+.chart-title {
   text-anchor: middle;
   font-size: 28px;
   font-family: sans-serif;
 }
-.label {
+.chart-label {
   text-anchor: middle;
   font-size: 14px;
   font-family: monospace;
 }
-.label.left {
+.chart-label.left {
   text-anchor: end;
 }
-.label.right {
+.chart-label.right {
   text-anchor: start;
 }
-.label.bold {
+.chart-label.bold {
   font-weight: 900;
 }
-.label.side {
+.chart-label.side {
   font-family: sans-serif;
   font-size: 20px;
   text-anchor: middle;
 }
-.label.percentile {
-##  stroke: white;
-}
 tspan.boy {
   fill: #1059A0;
 }
-.percentile.background {
+.chart-percentile.background {
   stroke: none;
   fill: white;
 }
@@ -224,49 +221,49 @@ tspan.girl {
   &lt;/style&gt;
   &lt;defs&gt;
     &lt;clipPath id="border${chartCounter}"&gt;
-      &lt;rect x="0" y="0.5" width="$graphWidth" height="$graphHeight" class="border" /&gt;
+      &lt;rect x="0" y="0.5" width="$graphWidth" height="$graphHeight" class="chart-border" /&gt;
     &lt;/clipPath&gt;
   &lt;/defs&gt;
-  &lt;rect x="-60" y="-80" width="$mathtool.sub($chartWidth, 1)" height="$mathtool.sub($chartHeight, 1)" class="background" /&gt;
-  ##&lt;rect x="0" y="0" width="500" height="500" class="background"/&gt;
+  &lt;rect x="-60" y="-80" width="$mathtool.sub($chartWidth, 1)" height="$mathtool.sub($chartHeight, 1)" class="chart-background" /&gt;
+  ##&lt;rect x="0" y="0" width="500" height="500" class="chart-background"/&gt;
   ##&lt;use xlink:href="#doc-text" transform="translate(250, 250)" /&gt;
   &lt;g transform="translate(0, 10)" class="#if ($sex)boy#{else}girl#{end}"&gt;
   #foreach ($i in [0..$xlines])
     #set ($age = $mathtool.add($mathtool.mul($i, $parameters.stepX), $parameters.minX))
     #set ($isMajorLine = $mathtool.abs($mathtool.sub($mathtool.div($age, $parameters.labelStepX), $mathtool.round($mathtool.div($age, $parameters.labelStepX)))) &lt;= 0.0001)
     #set ($x = $mathtool.mul($i, $xstep))
-    &lt;line x1="$x" y1="0" x2="$x" y2="$graphHeight" class="grid#if ($isMajorLine) bold#end" /&gt;
+    &lt;line x1="$x" y1="0" x2="$x" y2="$graphHeight" class="chart-grid#if ($isMajorLine) bold#end" /&gt;
     #if ($age == 0)
-      &lt;text x="$x" y="$mathtool.add($graphHeight, 5)" class="bottom label bold" dy="1ex"&gt;Birth&lt;/text&gt;
-      &lt;text x="$x" y="-4" class="top label bold"&gt;Birth&lt;/text&gt;
+      &lt;text x="$x" y="$mathtool.add($graphHeight, 5)" class="bottom chart-label bold" dy="1ex"&gt;Birth&lt;/text&gt;
+      &lt;text x="$x" y="-4" class="top chart-label bold"&gt;Birth&lt;/text&gt;
     #elseif ($isMajorLine)
       #if ($parameters.ageInYears)
         #set ($age = $age / 12)
       #end
-      &lt;text x="$x" y="$mathtool.add($graphHeight, 5)" class="bottom label#if (!$parameters.ageInYears &amp;&amp; $age % 12 == 0) bold#end" dy="1ex"&gt;$age&lt;/text&gt;
-      &lt;text x="$x" y="-4" class="top label#if (!$parameters.ageInYears &amp;&amp; $age % 12 == 0) bold#end"&gt;$age&lt;/text&gt;
+      &lt;text x="$x" y="$mathtool.add($graphHeight, 5)" class="bottom chart-label#if (!$parameters.ageInYears &amp;&amp; $age % 12 == 0) bold#end" dy="1ex"&gt;$age&lt;/text&gt;
+      &lt;text x="$x" y="-4" class="top chart-label#if (!$parameters.ageInYears &amp;&amp; $age % 12 == 0) bold#end"&gt;$age&lt;/text&gt;
     #end
   #end
   #if (($chart.startsWith('height') || $chart.startsWith('bmi')) &amp;&amp; $parameters.minX &lt; 24 &amp;&amp; $parameters.maxX &gt; 24)
     #set ($x = $mathtool.mul(24, $xstep))
-    &lt;line x1="$x" y1="0" x2="$x" y2="$graphHeight" class="border" /&gt;
+    &lt;line x1="$x" y1="0" x2="$x" y2="$graphHeight" class="chart-border" /&gt;
   #end
   #foreach ($i in [0..$ylines])
     #set ($value = $mathtool.roundTo(1, $mathtool.add($mathtool.mul($i, $parameters.step), $parameters.min)))
     #set ($isMajorLine = $mathtool.abs($mathtool.sub($mathtool.div($value, $parameters.labelStep), $mathtool.round($mathtool.div($value, $parameters.labelStep)))) &lt;= 0.0001)
     #set ($y = $mathtool.sub($graphHeight, $mathtool.mul($i, $ystep)))
-    &lt;line x1="0" y1="$y" x2="$graphWidth" y2="$y" class="grid#if ($isMajorLine) bold#end" /&gt;
+    &lt;line x1="0" y1="$y" x2="$graphWidth" y2="$y" class="chart-grid#if ($isMajorLine) bold#end" /&gt;
     #if ($isMajorLine)
       #if ($mathtool.floor($parameters.labelStep) == $parameters.labelStep)
         #set ($value = $mathtool.toInteger($value))
       #end
-      &lt;text x="-4" y="$y" class="left label" dy="0.5ex"&gt;$value&lt;/text&gt;
-      &lt;text x="$mathtool.add($graphWidth, 4)" y="$y" class="right label" dy="0.5ex"&gt;$value&lt;/text&gt;
+      &lt;text x="-4" y="$y" class="left chart-label" dy="0.5ex"&gt;$value&lt;/text&gt;
+      &lt;text x="$mathtool.add($graphWidth, 4)" y="$y" class="right chart-label" dy="0.5ex"&gt;$value&lt;/text&gt;
     #end
   #end
   #foreach ($p in [3, 10, 25, 50, 75, 90, 97])
     #getPercentileValue($parameters.minX $p)
-    &lt;path clip-path="url(#border${chartCounter})" class="percentile-curve#if ($p == 3 || $p == 50 || $p == 97) bold#end" d="M$mathtool.mul(0.5, $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))L##
+    &lt;path clip-path="url(#border${chartCounter})" class="chart-percentile-curve#if ($p == 3 || $p == 50 || $p == 97) bold#end" d="M$mathtool.mul(0.5, $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))L##
     #foreach ($i in [1..$xlines])
       #set ($age = $mathtool.add($mathtool.mul($i, $parameters.stepX), $parameters.minX))
       #getPercentileValue($age $p)
@@ -293,7 +290,7 @@ tspan.girl {
   #foreach ($m in $measurements)
     #getValuePercentile($m.a $m.x)
     #getPercentileValue($parameters.minX $p)
-    &lt;path class="percentile-curve guideline" d="M$mathtool.add($mathtool.mul(0, 20), 10) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))L##
+    &lt;path class="chart-percentile-curve guideline" d="M$mathtool.add($mathtool.mul(0, 20), 10) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))L##
     #foreach ($i in [1..$xlines])
       #set ($age = $mathtool.add($mathtool.mul($i, $parameters.stepX), $parameters.minX))
       #getPercentileValue($age $p)
@@ -318,8 +315,8 @@ tspan.girl {
   #end
   #foreach ($p in [3, 10, 25, 50, 75, 90, 97])
     #getPercentileValue($mathtool.sub($parameters.maxX, 1) $p)
-    &lt;circle cx="$mathtool.mul($mathtool.sub($xlines, 0.5), $xstep)" cy="$mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))" r="#if ($p == 3)0.5#{else}0.7#{end}em" class="percentile background"/&gt;
-    &lt;text x="$mathtool.mul($mathtool.sub($xlines, 0.5), $xstep)" y="$mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))" class="percentile label" dy="0.5ex"&gt;$p&lt;/text&gt;
+    &lt;circle cx="$mathtool.mul($mathtool.sub($xlines, 0.5), $xstep)" cy="$mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))" r="#if ($p == 3)0.5#{else}0.7#{end}em" class="chart-percentile chart-background"/&gt;
+    &lt;text x="$mathtool.mul($mathtool.sub($xlines, 0.5), $xstep)" y="$mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))" class="chart-percentile chart-label" dy="0.5ex"&gt;$p&lt;/text&gt;
   #end
   #foreach ($m in $measurements)
     #set ($x = $mathtool.mul($mathtool.add(0.5, $mathtool.sub($m.a, $parameters.minX)), $xscale))
@@ -328,12 +325,12 @@ tspan.girl {
     &lt;circle cx="$x" cy="$y" fill="#getPercentileColor($p)" stroke="black" stroke-width="4" r="7" /&gt;
   #end
   &lt;/g&gt;
-  &lt;rect x="0" y="0" width="$graphWidth" height="$graphHeight" class="border" /&gt;
-  &lt;text x="$mathtool.div($graphWidth, 2)" y="-55" class="title"&gt;${parameters.title}, &lt;tspan class="#if ($sex)boy#{else}girl#end"&gt;#if ($sex)boys#{else}girls#end&lt;/tspan&gt;&lt;/text&gt;
-  &lt;text y="$mathtool.div($graphHeight, 2)" x="-33" class="left side label" transform="rotate(270 -33 $mathtool.div($graphHeight, 2))"&gt;${parameters.llabel}&lt;/text&gt;
-  &lt;text y="$mathtool.div($graphHeight, 2)" x="$mathtool.add($graphWidth, 33)" class="right side label" transform="rotate(90 $mathtool.add($graphWidth, 33) $mathtool.div($graphHeight, 2))"&gt;${parameters.rlabel}&lt;/text&gt;
-  &lt;text y="-20" x="$mathtool.div($graphWidth, 2)" class="top side label"&gt;${parameters.tlabel}&lt;/text&gt;
-  &lt;text y="$mathtool.add($graphHeight, 20)" x="$mathtool.div($graphWidth, 2)" class="bottom side label" dy="0.7em"&gt;${parameters.blabel}&lt;/text&gt;
+  &lt;rect x="0" y="0" width="$graphWidth" height="$graphHeight" class="chart-border" /&gt;
+  &lt;text x="$mathtool.div($graphWidth, 2)" y="-55" class="chart-title"&gt;${parameters.title}, &lt;tspan class="#if ($sex)boy#{else}girl#end"&gt;#if ($sex)boys#{else}girls#end&lt;/tspan&gt;&lt;/text&gt;
+  &lt;text y="$mathtool.div($graphHeight, 2)" x="-33" class="left side chart-label" transform="rotate(270 -33 $mathtool.div($graphHeight, 2))"&gt;${parameters.llabel}&lt;/text&gt;
+  &lt;text y="$mathtool.div($graphHeight, 2)" x="$mathtool.add($graphWidth, 33)" class="right side chart-label" transform="rotate(90 $mathtool.add($graphWidth, 33) $mathtool.div($graphHeight, 2))"&gt;${parameters.rlabel}&lt;/text&gt;
+  &lt;text y="-20" x="$mathtool.div($graphWidth, 2)" class="top side chart-label"&gt;${parameters.tlabel}&lt;/text&gt;
+  &lt;text y="$mathtool.add($graphHeight, 20)" x="$mathtool.div($graphWidth, 2)" class="bottom side chart-label" dy="0.7em"&gt;${parameters.blabel}&lt;/text&gt;
   &lt;/g&gt;
 &lt;/svg&gt;
 {{/html}}</content></xwikidoc>
