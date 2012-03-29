@@ -478,7 +478,7 @@ var unselectPhenotype = function (id) {
 };
 
 document.observe('dom:loaded', function() {
-    $$('.negative_phenotype-group .phenotypes-main').invoke('insert', {'before' : new Element('div', {'class' : 'infomessage'}).update("Add here any relevant phenotypic description that was verified and proved absent for this patient.")});
+    $$('.editbody .negative_phenotype-group .phenotypes-main').invoke('insert', {'before' : new Element('div', {'class' : 'infomessage'}).update("Add here any relevant phenotypic description that was verified and proved absent for this patient.")});
     $$('.negative_phenotype-group h3').each(function(title) {
       title.update(title.innerHTML.replace(" NOT ", " &lt;em&gt;NOT&lt;/em&gt; "));
     });
@@ -2692,14 +2692,29 @@ input.wrongValue {
 .patient-info .fieldset {
   margin: .3em 0 !important;
 }
-.patient-info .family_study {
+.editbody .patient-info .family_study {
   margin-top: 1.2em ! important;
 }
 .patient-info .side {
   padding-top: .3em;
 }
-.patient-info label.section {
+.editbody .patient-info label.section {
   font-weight: bold;
+}
+.viewbody .patient-info .label, .viewbody .patient-info label {
+  color: $theme.linkColor;
+  font-weight: bold;
+  display: inline-block;
+  width: 33%;
+}
+.viewbody .family_study .half-width .label {
+  display: inline;
+}
+.viewbody .family_study .half-width {
+  width: 33%;
+}
+.viewbody .family_study .half-width * {
+  margin: 0 !important;
 }
 /** ----------------------------------------------------------- */
 /** Quick search box &amp; suggest */
@@ -2903,10 +2918,11 @@ input.wrongValue {
 /** -------------------------------------------- **/
 /** Negative phenotypes **/
 
+.negative_phenotype-group h3 {
+  color: $theme.notificationErrorColor;
+}
 .negative_phenotype-group h3 em {
-  color: $theme.linkColor;
   font-weight: bold;
-  font-style: normal;
 }
 .negative_phenotype-group .infomessage {
   margin-left: -4px;
@@ -2917,7 +2933,7 @@ input.wrongValue {
 .negative_phenotype-group .label-other {
   display: none;
 }
-.negative_phenotype-group .selected .value {
+.negative_phenotype-group .selected .value, .viewbody .negative_phenotype-group .value-checked , .viewbody .negative_phenotype-group .section {
   text-decoration: line-through;
   color: $theme.notificationErrorColor;
 }
@@ -3373,11 +3389,15 @@ table.extradata-list td.bmi_percentile {
    #if ($displayedText == '' &amp;&amp; "$!{propName}" != '')
      #set($displayedText = "$!{class.get($propName).prettyName}:")
    #end
-   #set($for = '')
-   #if ("$!{propName}" != '')
-     #set($for = "for='$!{class.name}_$!{obj.number}_$!{propName}'")
+   #if ($xcontext.action != 'edit')
+     (% class="label $!{cssClass}" %)${displayedText}(%%)##
+   #else
+     #set($for = '')
+     #if ("$!{propName}" != '')
+       #set($for = "for='$!{class.name}_$!{obj.number}_$!{propName}'")
+     #end
+     {{html clean="false" wiki="false"}}&lt;label class="$!{cssClass}" $!{for}&gt;${displayedText}&lt;/label&gt;{{/html}}##
    #end
-  {{html clean="false" wiki="false"}}&lt;label class="${cssClass}" $!{for}&gt;${displayedText}&lt;/label&gt;{{/html}}##
 #end
 
 #macro (__display $propName)
@@ -3404,7 +3424,7 @@ table.extradata-list td.bmi_percentile {
 
 #macro (__displayIfNotEmpty2Col $propName $label $groupCssClass $labelCssClass)
 #if ($context.action == 'edit' || $doc.display(${propName}) != '')
-#__display2Col($propName $label $groupCssClass $labelCssClass)
+#__display2Col($propName $label "$!{groupCssClass}" "$!{labelCssClass}")
 #end
 #end
 
@@ -3418,18 +3438,26 @@ table.extradata-list td.bmi_percentile {
 #end 
 
 #macro (__displayFormatted $mode $propName $label $groupCssClass $labelCssClass)
-#if ("$!activeFields.contains($propName)" != 'false' &amp;&amp; ($context.action == 'edit' || $doc.display(${propName}) != ''))
-  #set($_groupCssClass = "$!{groupCssClass} #__markIfMandatory($propName)")
-  #if ($mode == 'half-width')
-    #__displayHalfWidth($propName $label $_groupCssClass $labelCssClass)
-  #elseif ($mode == '2-col')
-    #__display2Col($propName $label $_groupCssClass $labelCssClass)
+#if ("$!activeFields.contains($propName)" != 'false' &amp;&amp; ($xcontext.action == 'edit' || $doc.display(${propName}) != ''))
+  #if ($xcontext.action != 'edit')
+    #if ($mode == 'half-width')
+      (% class="displayed-value"%)#if ($propName == 'first_name'),#end ${doc.display($propName)}(%%)##
+    #else
+      #__label($propName $labelCssClass $label) (% class="displayed-value"%)#if ("$!{doc.display($propName)}" == '')-#else${doc.display($propName)}#end(%%)
+    #end
   #else
-  (% class="$groupCssClass ${propName}" %)(((
-   #__label($propName $labelCssClass $label)
-   #__display($propName)
-  )))
-  #end
+    #set($_groupCssClass = "$!{groupCssClass} #__markIfMandatory($propName)")
+    #if ($mode == 'half-width')
+      #__displayHalfWidth($propName $label $_groupCssClass $labelCssClass)
+    #elseif ($mode == '2-col')
+      #__display2Col($propName $label $_groupCssClass $labelCssClass)
+    #else
+    (% class="$groupCssClass ${propName}" %)(((
+      #__label($propName $labelCssClass $label)
+      #__display($propName)
+    )))
+    #end
+  #end## export
 #end## field not configured as inactive, field not empty in view mode
 #end
 
@@ -3489,20 +3517,23 @@ table.extradata-list td.bmi_percentile {
 #macro (__extradata_displayTable $dataClassName $options)
   #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
   #if ($dataClass)
-    #if ($context.action == 'view' &amp;&amp; $doc.getObjects($dataClassName).size() == 0)
+    #if ($xcontext.action != 'edit' &amp;&amp; $doc.getObjects($dataClassName).size() == 0)
       (% class="hint" %)None specified
     #else
       (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}" %)
-      #if ("$!{options.counter}" == 'true')|=(% class="col-label" %)# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name" %)$prop.prettyName#end#if ($context.action == 'edit')|=(% class="actions" %)
+      #if ("$!{options.counter}" == 'true')|=(% class="col-label" %)# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name" %)$prop.prettyName#end#if ($xcontext.action == 'edit')|=(% class="actions" %)
+      #else
+
       #end
+      #if ($xcontext.action == 'export')#set ($disableLabels = true)#end
       #foreach ($o in $doc.getObjects($dataClassName))
-        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name" %)#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="hint" &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $o)#end#if ($context.action == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
+        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="hint" &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $o)#end#if ($xcontext.action == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
 
       #end## foreach object
 
-      #if ($context.action == 'edit')(% class="list-actions" %)(((#__extradata_addTool($dataClassName "extradata-${dataClassName}"))))
+      #if ($xcontext.action == 'edit')(% class="list-actions" %)(((#__extradata_addTool($dataClassName "extradata-${dataClassName}"))))
       #end
-    #end## if context.action
+    #end## if xcontext.action
   #end## if dataclass
 #end
 
@@ -3541,27 +3572,29 @@ table.extradata-list td.bmi_percentile {
   )))##fieldset
   #end## display first name / last name
   #__displayFormatted('2-col' 'date_of_birth' '' 'date' '')
-  #__displayFormatted('2-col' 'gender' 'Sex' 'gender' 'group-title')
+  #__displayFormatted('2-col' 'gender' 'Sex:' 'gender' 'group-title')
   #__displayFormatted('2-col' 'health_card' '' '' '')
 
 #if ("$!activeFields.contains('relative')" != 'false' &amp;&amp; ($context.action == 'edit' || ($doc.display('relative') != '' &amp;&amp; $doc.display('relative_of') != '')))
   ----
-  (% class="fieldset family_study" %)(((
-  (% class="half-width relative" %)(((
-    #__label('' 'section' 'Family study:') ##
-    $doc.display('relative') ##
-    #__label('relative_of' 'section' 'of')##
-  )))
-  (% class="half-width relative_of" %)(((
-    #__label('relative_of' 'hint' "$!{config.getProperty('relativeReportHint').value}")
-    #__display('relative_of')
-  )))
+  (% class="fieldset family_study" %)(((##
+  #if ($xcontext.action == 'edit')
+    (% class="half-width relative" %)(((###
+  #end
+    #__label('' 'section' 'Family study:') $doc.display('relative') #__label('relative_of' 'section' 'of')
+  #if ($xcontext.action == 'edit')
+    )))(((###
+  #end
+    #__displayFormatted('half-width' 'relative_of' "$!{config.getProperty('relativeReportHint').value}" '' 'hint')##
+  #if ($xcontext.action == 'edit')
+    )))###
+  #end
   )))##fieldset
 #end
 
 #if ("$!activeFields.contains('onset')" != 'false')
-  ----
   #if ($context.action == 'edit')
+  ----
     $doc.display('onset')
   #else
     #__displayFormatted('2-col' 'onset' '' '' 'section')
@@ -3578,7 +3611,7 @@ table.extradata-list td.bmi_percentile {
 #set ($targetClassName = 'ClinicalInformationCode.MeasurementsClass')
 #if ($config &amp;&amp; $config.getProperty('section__measurements').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
 (% class="twothird-width clear measurement-info chapter" %)(((
-== Growth parameters ==
+== Measurements ==
 #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
 #if ($xcontext.action != 'export')
 === Charts ===
@@ -3708,7 +3741,7 @@ $doc.display('family_history')
 #if ("$!{request.xaction}" == 'lastentry')
   #__extradata_displayLastEntry($request.dataClassName $request.withLabel)
 #else
-#if ($context.action != 'export')
+#if ($xcontext.action != 'export')
 (% id="table-of-contents" %)(((
 {{toc /}}
 
