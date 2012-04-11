@@ -1644,7 +1644,7 @@ document.observe('xwiki:dom:loaded', function() {
 <property>
 <code>document.observe('xwiki:dom:loaded', function() {
   var dataTable = $('extradata-list-ClinicalInformationCode.MeasurementsClass');
-  if (!dataTable || !dataTable.down('input[type=text]')) {return;}
+  if (!dataTable || !dataTable.down('.actions')) {return;}
 
   var measurementsService = "$xwiki.getURL('ClinicalInformationCode.PatientToolsService', 'get')";
   var chartService = "$xwiki.getURL('ClinicalInformationCode.ChartService', 'get')";
