@@ -3647,10 +3647,12 @@ table.extradata-list td.bmi_percentile {
 == Measurements ==
 #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
 #if ($xcontext.action != 'export')
+(((
 === Charts ===
 (% id="charts"%)(((
 #set($chartOptions = {'targetClassName' : $targetClassName, 'obj': $obj, 'link': true})
 #_measurementCharts($chartOptions)
+)))
 (% class="clear"%)((()))
 )))##charts
 ###end
