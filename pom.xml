@@ -30,6 +30,7 @@
     <artifactId>xwiki-platform-core</artifactId>
     <version>3.5</version>
   </parent>
+  <groupId>org.xwiki.contrib</groupId>
   <artifactId>xwiki-platform-cloud</artifactId>
   <packaging>pom</packaging>
 

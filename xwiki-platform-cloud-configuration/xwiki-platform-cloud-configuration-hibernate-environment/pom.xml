@@ -26,7 +26,7 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.xwiki.platform</groupId>
+    <groupId>org.xwiki.contrib</groupId>
     <artifactId>xwiki-platform-cloud-configuration</artifactId>
     <version>3.5</version>
   </parent>
@@ -41,7 +41,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
+      <groupId>org.xwiki.contrib</groupId>
       <artifactId>xwiki-platform-cloud-configuration-hibernate-api</artifactId>
       <version>3.5</version>
     </dependency>
