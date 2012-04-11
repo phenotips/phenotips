@@ -32,7 +32,7 @@
 #__reportSection_display($section)
 #end
 
-#if ($xcontext.action == 'export')
+#if ($xcontext.action == 'export' &amp;&amp; $config.getProperty('section__measurements').value.contains('growth-charts'))
 {{html clean=false}}#pagebreak(){{/html}}
 #set($chartOptions = {'targetClassName' : $targetClassName, 'obj': $obj, 'link': false})
 #_measurementCharts($chartOptions)

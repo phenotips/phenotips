@@ -364,8 +364,7 @@ $!value
 <section__measurements>
 <cache>0</cache>
 <customDisplay>{{velocity output=false}}
-#set($customClassName = "ClinicalInformationCode.MeasurementsClass")
-#set($customClassTableName = "measurements")
+#set($customValues = {"ClinicalInformationCode.MeasurementsClass" : "measurements table", "growth-charts" : "charts"})
 #set($hideClassFields = true)
 {{/velocity}}
 
@@ -460,8 +459,7 @@ $!value
 <section__variant-info>
 <cache>0</cache>
 <customDisplay>{{velocity output=false}}
-#set($customClassName = "ClinicalInformationCode.VariantClass")
-#set($customClassTableName = "variants")
+#set($customValues = {"ClinicalInformationCode.VariantClass" : "variants table"})
 #set($hideClassFields = true)
 {{/velocity}}
 

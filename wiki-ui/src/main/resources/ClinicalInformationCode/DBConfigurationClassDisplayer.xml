@@ -24,14 +24,16 @@
 <hidden>false</hidden>
 <content>{{velocity output=false}}
 #macro(__xclass__displayCustomClassOption)
-  #if("$!{customClassName}" != '' &amp;&amp; "$!{customClassTableName}" != '')
+  #if ($customValues &amp;&amp; $customValues.size() &gt; 0)
   &lt;ul class="custom-display-list"&gt;
+  #foreach($customVal in $customValues.keySet())
   &lt;li&gt;
-    &lt;label for="${prefix}${name}_${customClassName}"&gt;
-    &lt;input type="checkbox" name="${prefix}${name}" id="${prefix}${name}_${customClassName}" value="$customClassName"#if ($value.contains($customClassName)) checked="checked"#end/&gt;
-    Display ${customClassTableName} table
+    &lt;label for="${prefix}${name}_${customVal}"&gt;
+    &lt;input type="checkbox" name="${prefix}${name}" id="${prefix}${name}_${customVal}" value="$customVal"#if ($value.contains($customVal)) checked="checked"#end/&gt;
+    Display ${customValues.get($customVal)}
     &lt;/label&gt;
   &lt;/li&gt;
+  #end
   &lt;/ul&gt;
   #end
 #end
