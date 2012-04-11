@@ -1708,6 +1708,19 @@ document.observe('xwiki:dom:loaded', function() {
     return (sourceInput &amp;&amp; sourceInput.value &amp;&amp; ('&amp;' + name + '=' + encodeURIComponent(sourceInput.value))) || '';
   }
 
+  var getMostRecentEntry = function() {
+    var mostRecentEntry;
+    var mostRecentDate;
+    dataTable.select('tr input.xwiki-date').each(function(element) {
+      if (!mostRecentDate || mostRecentDate &lt; date) {
+         mostRecentDate = date;
+         mostRecentEntry = element.up('tr');
+      }
+      var date = Date.parseISO_8601(element.alt.strip());
+    })
+    return mostRecentEntry;
+  }
+
   var updateValue = function (target, value, fuzzyValue) {
     var input = target.down('input[type=hidden]');
     var displayed = target.down('.displayed-value');
@@ -1727,7 +1740,7 @@ document.observe('xwiki:dom:loaded', function() {
         if (values[p] &amp;&amp; values[p][value] &amp;&amp; targets[p] &amp;&amp; targets[p][value]) {
            updateValue(targets[p][value], values[p][value], (value == 'percentile') &amp;&amp; values[p]['valCategory']);
            var target = targets[p];
-           if (value == 'percentile' &amp;&amp; target['valueHooks']) {
+           if (value == 'percentile' &amp;&amp; target['valueHooks'] &amp;&amp; getMostRecentEntry() == targets[p][value].up('tr')) {
              var targetElt = values[p]['valCategory'] &amp;&amp; target['valueHooks'][values[p]['valCategory']];
              if (targetElt &amp;&amp; !targetElt.checked) {
                  targetElt.checked = true;
