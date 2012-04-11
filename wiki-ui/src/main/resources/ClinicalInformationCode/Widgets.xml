@@ -713,7 +713,7 @@
 
     this.container.__targetField = this.fld;
     if (this.options.enableHideButton &amp;&amp; !this.container.down('.hide-button')) {
-      var hideButton = new Element('span', {'class' : 'hide-button'}).update('hide-suggestions');
+      var hideButton = new Element('span', {'class' : 'hide-button'}).update('hide suggestions');
       hideButton.observe('click', this.clearSuggestions.bindAsEventListener(this));
       this.container.insert({top : new Element('div', {'class' : 'hide-button-wrapper'}).update(hideButton)});
       
@@ -788,6 +788,13 @@
        }
     });
 
+    if (this.fld.hasClassName('accept-value')) {
+       list.addItem(this.generateListItem({
+         id: this.fld.value,
+         value: this.fld.value,
+         info: new Element('div', {'class' : 'hint'}).update('(your text, not a standard term)')
+       }, 'custom-value'));
+    }
     // loop throught arr of suggestions
     // creating an XlistItem for each suggestion
     //
@@ -805,7 +812,7 @@
     return list.getElement();
   },
 
-  generateListItem : function(data) {
+  generateListItem : function(data, cssClass) {
     var displayNode = new Element("div");
     // If the search result contains an icon information, we insert this icon in the result entry.
     if (data.icon) {
@@ -819,7 +826,7 @@
             .insert(new Element('div', {'class':'suggestCategory'}).update(data.category));
 
     var item = new MS.widgets.XListItem( displayNode , {
-        containerClasses: 'suggestItem',
+        containerClasses: 'suggestItem ' + (cssClass || ''),
         value: valueNode,
         noHighlight: true // we do the highlighting ourselves
     });
@@ -3187,6 +3194,9 @@ div.suggestItems li {
 
 div.suggestItems .suggestItem .value {
   display: block !important;
+}
+div.suggestItems .suggestItem.custom-value .suggestId {
+  display: none !important;
 }
 div.suggestItems * {
   line-height:1.2em !important;
