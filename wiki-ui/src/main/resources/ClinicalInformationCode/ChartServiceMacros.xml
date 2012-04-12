@@ -128,11 +128,11 @@
         #set ($img = $svg.replaceAll('\{\{/?html.*?}}', '').trim())
       #end
       #if ($options.link)
-        {{html clean="false"}}&lt;a target="_blank" href="$src" style="display:inline-block;width:32%;margin-left:1%"&gt;$img&lt;/a&gt;{{/html}}##
+        {{html clean="false"}}&lt;a target="_blank" href="$src" class="chart-wrapper"&gt;$img&lt;/a&gt;{{/html}}##
       #elseif ($options.fullscreen || $xcontext.action == 'export')
         {{html clean="false"}}&lt;div style="width:100%;"&gt;$img&lt;/div&gt;{{/html}}##
       #else
-        {{html clean="false"}}&lt;div style="display:inline-block;width:32%;margin-left:1%"&gt;$img&lt;/div&gt;{{/html}}##
+        {{html clean="false"}}&lt;div class="chart-wrapper"&gt;$img&lt;/div&gt;{{/html}}##
       #end
     #end
   #end
