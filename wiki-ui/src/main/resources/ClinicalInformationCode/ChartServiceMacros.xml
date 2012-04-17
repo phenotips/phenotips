@@ -85,6 +85,18 @@
   #set ($sex = ($request.getParameter('s') != 'F'))
 #end
 ## ---------------------------------------------------------
+## Detect compatible image "format" based on the crt browser
+## ---------------------------------------------------------
+#macro(_detectChartFormat)
+  #set($userAgentStr = $request.getHeader("User-Agent"))
+  #if ($userAgentStr.contains('MSIE'))
+    #set($format = 'raster')
+  #else
+    #set($format = 'vector')
+  #end
+$format##
+#end
+## ---------------------------------------------------------
 ## Generate charts for a specific measurement
 ## ---------------------------------------------------------
 #macro (_generateCharts $measurements $chartName $sourceName $paramName $title)
@@ -106,7 +118,7 @@
     #foreach ($m in $measurements)
       #set ($queryString = "${queryString}&amp;a=${m.a}&amp;${paramName}=${m.x}")
     #end
-    #if ($options.format == 'raster')
+    #if ($options.format == 'raster' || "#_detectChartFormat()" == 'raster')
       #set ($svg = $svg.replaceAll('\{\{/?html.*?}}', '').trim())
       #set ($src = $xwiki.svg.getSVGImageURL($svg, $chartHeight, $chartWidth))
     #else
