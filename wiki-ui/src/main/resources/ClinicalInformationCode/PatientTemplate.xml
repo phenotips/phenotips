@@ -1237,7 +1237,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>comments</name>
-<number>17</number>
+<number>18</number>
 <picker>0</picker>
 <prettyName>Additional comments</prettyName>
 <rows>5</rows>
@@ -1315,7 +1315,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>family_comments</name>
-<number>16</number>
+<number>17</number>
 <picker>0</picker>
 <prettyName>List health conditions found in family (describe the relationship with proband)</prettyName>
 <rows>5</rows>
@@ -1339,7 +1339,7 @@
 <displayType>select</displayType>
 <multiSelect>1</multiSelect>
 <name>family_history</name>
-<number>15</number>
+<number>16</number>
 <picker>0</picker>
 <prettyName>Family History</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -1387,6 +1387,19 @@
 <values>M=Male|F=Female</values>
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </gender>
+<gestation>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>gestation</name>
+<number>15</number>
+<numberType>integer</numberType>
+<prettyName>Gestation at delivery (weeks)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</gestation>
 <health_card>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -1438,16 +1451,16 @@
 #end
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
-<displayType>select</displayType>
+<displayType>input</displayType>
 <idField></idField>
-<multiSelect>0</multiSelect>
+<multiSelect>1</multiSelect>
 <name>negative_phenotype</name>
 <number>13</number>
 <picker>0</picker>
-<prettyName>Phenotypes NOT observed in this patient</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators></separators>
+<prettyName>Symptoms NOT observed in this patient</prettyName>
+<relationalStorage>1</relationalStorage>
+<separator>, </separator>
+<separators>|, </separators>
 <size>1</size>
 <sort>none</sort>
 <sql></sql>
@@ -1560,7 +1573,7 @@
 <name>phenotype</name>
 <number>12</number>
 <picker>0</picker>
-<prettyName>Phenotypic description (Clinical symptoms)</prettyName>
+<prettyName>Clinical symptoms</prettyName>
 <relationalStorage>1</relationalStorage>
 <separator> </separator>
 <separators></separators>
@@ -1668,5 +1681,59 @@
 <number>0</number>
 <className>ClinicalInformationCode.PatientClass</className>
 <guid>86e10e1d-4b3a-458d-a1af-64736877af38</guid>
+<property>
+<comments></comments>
+</property>
+<property>
+<date_of_birth>2012-04-11 14:24:24.510</date_of_birth>
+</property>
+<property>
+<family_comments></family_comments>
+</property>
+<property>
+<family_history/>
+</property>
+<property>
+<first_name></first_name>
+</property>
+<property>
+<gender></gender>
+</property>
+<property>
+<gestation></gestation>
+</property>
+<property>
+<health_card></health_card>
+</property>
+<property>
+<identifier></identifier>
+</property>
+<property>
+<last_name></last_name>
+</property>
+<property>
+<negative_phenotype/>
+</property>
+<property>
+<omim_id/>
+</property>
+<property>
+<onset></onset>
+</property>
+<property>
+<phenotype/>
+</property>
+<property>
+<prenatal_phenotype/>
+</property>
+<property>
+<relative></relative>
+</property>
+<property>
+<relative_of></relative_of>
+</property>
+<property>
+<unaffected>0</unaffected>
+</property>
 </object>
 <content></content></xwikidoc>
