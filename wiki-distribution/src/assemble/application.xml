@@ -73,4 +73,10 @@
       </unpackOptions>
     </dependencySet>
   </dependencySets>
+  <files>
+    <file>
+      <source>${basedir}/src/main/resources/xhtml2fo.xsl</source>
+      <outputDirectory>webapps/xwiki/WEB-INF/classes</outputDirectory>
+    </file>
+  </files>
 </assembly>
