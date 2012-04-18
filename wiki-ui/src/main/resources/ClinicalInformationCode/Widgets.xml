@@ -788,13 +788,6 @@
        }
     });
 
-    if (this.fld.hasClassName('accept-value')) {
-       list.addItem(this.generateListItem({
-         id: this.fld.value,
-         value: this.fld.value,
-         info: new Element('div', {'class' : 'hint'}).update('(your text, not a standard term)')
-       }, 'custom-value'));
-    }
     // loop throught arr of suggestions
     // creating an XlistItem for each suggestion
     //
@@ -808,6 +801,13 @@
       list.addItem( new MS.widgets.XListItem(this.options.noresults, {
                           'classes' : 'noSuggestion',
                           noHighlight :true }) );
+    }
+    if (this.fld.hasClassName('accept-value')) {
+       list.addItem(this.generateListItem({
+         id: this.fld.value,
+         value: this.fld.value,
+         info: new Element('div', {'class' : 'hint'}).update('(your text, not a standard term)')
+       }, 'custom-value'));
     }
     return list.getElement();
   },
@@ -1402,7 +1402,12 @@
         elt.__categoryArray.push(c.value); 
       });
     }
-    Event.fire(document, "custom:selection:changed", {'categories' : elt.__categoryArray, 'fieldName' : this.inputName, customElement : elt});
+    Event.fire(document, "custom:selection:changed", {
+       'categories' : elt.__categoryArray,
+       'trigger'    : this.input,
+       'fieldName'  : this.inputName,
+       'customElement' : elt
+    });
   }
 });
   return MS;
@@ -2148,6 +2153,7 @@ return MS;
          this._hideEntryInfo(event);
        }
     }.bindAsEventListener(this));
+    this._obrowserExpandEventHandler = this._obrowserExpandEventHandler.bindAsEventListener(this);
   },
 
   load : function(id) {
@@ -2164,7 +2170,6 @@ return MS;
         method: this.options.method,
         requestHeaders: headers,
         onSuccess: function (response) {
-          //var tree = this.buildTree(this._getDataFromResponse(response));
           this.setContent(this.buildTree(this._getDataFromResponse(response)));
           this.__crtRoot = id;
         }.bind(this),
@@ -2173,6 +2178,43 @@ return MS;
           this.__crtRoot = '';
         }.bind(this)
       });
+  },
+
+  expandTo : function (termId, categories) {
+    //alert ("start expanding " + termId + " " + categories);
+    if (categories.indexOf(this.__crtRoot) == -1) {
+      // not in the right tree, nothing to do 
+      return;
+    }
+    this._expandToStep(termId, categories.without(this.__crtRoot, termId));
+  },
+
+  _expandToStep : function (termId, categories) {
+    var _this = this;
+    //alert ("expanding " + termId + " " + categories);
+    var target = this.container.contentContainer.down('li.entry input.select-tool[value=' + termId + ']');
+    if (target) {
+       return;
+    }
+    var finishedStep = false;
+    categories.each(function(category) {
+      if (finishedStep) {return}
+      var categoryInput = _this.container.contentContainer.down('li.entry input.select-tool[value=' + category + ']');
+      if (categoryInput) {
+        //alert ("start expanding " + category + " " + categories);
+        var categoryEntry = categoryInput.up('li');
+        if (categoryEntry.hasClassName('collapsed') || !categoryEntry.down('.descendents')) {
+          Event.observe(categoryEntry, "obrowser:expand:finished", function(event) {
+            Event.stopObserving(categoryEntry, "obrowser:expand:finished");
+console.log(termId);
+console.log(categories);
+            _this._expandToStep(termId, categories.without(category));
+          });
+          _this._toggleExpandState(categoryEntry);
+          finishedStep = true;
+        }
+      }
+    });
   },
 
   expand : function (element, doPopulate) {
@@ -2192,17 +2234,32 @@ return MS;
         onSuccess: function (response) {
           var memo = {};
           if (doPopulate) {
-            memo.data = this.buildDescendentsList(this._getDataFromResponse(response));
+            element.insert({'bottom': this.buildDescendentsList(this._getDataFromResponse(response))});
+            Event.fire(element, "obrowser:expand:finished");
+            Event.fire(this.container.contentContainer, "obrowser:expand:finished");
+            //memo.data = this.buildDescendentsList(this._getDataFromResponse(response));
+            //Event.fire(element, 'obrowser:expand:done', memo);
           } else {
             memo.count = this.countDescendents(this._getDataFromResponse(response));
+            //Event.fire(element, 'obrowser:count:done', memo);
           }
-          Event.fire(element, 'obrowser:expand:done', memo);
+          if ((memo.count === 0) || (doPopulate &amp;&amp; !element.hasClassName('root') &amp;&amp; !element.down('.descendents .entry, .error'))) {
+            element.addClassName('collapsed');
+            var expandTool = element.down('.expand-tool');
+            if (expandTool) {
+              expandTool.update(this._getExpandCollapseSymbol(true)).addClassName('disabled');
+              expandTool.stopObserving('click');
+            }
+          }
+          this._unlockExpandTool(element);
+          Event.fire(document, "ms:popup:content-updated", {popup: this.container});
         }.bind(this),
         onFailure: function (response) {
           Event.fire(element, 'obrowser:expand:failed', {data: new Element('div', {'class' : 'error'}).update("Failed to retrieve data : " + respose.statusText), count: -1});
         }
       });
   },
+
   _getDataFromResponse : function(response) {
     if (this.options.json) {
       return response.responseJSON;
@@ -2286,7 +2343,7 @@ return MS;
     }
     var root = this._createRoot(data);
     newContent.insert({'bottom' : root});
-    this._toggleExpandState(root);
+    //this._toggleExpandState(root);
     return newContent;
   },
 
@@ -2357,8 +2414,9 @@ return MS;
       }.bindAsEventListener(this));
       wrapper.insert({'top': expandTool});
       this.expand(element, element.hasClassName('root'));
-      element.observe('obrowser:expand:done', this._obrowserExpandEventHandler.bindAsEventListener(this));
-      element.observe('obrowser:expand:failed', this._obrowserExpandEventHandler.bindAsEventListener(this));
+      //element.observe('obrowser:expand:done', this._obrowserExpandEventHandler);
+      //element.observe('obrowser:count:done', this._obrowserExpandEventHandler);
+      //element.observe('obrowser:expand:failed', this._obrowserExpandEventHandler);
     }
     return element;
   },
@@ -2430,14 +2488,13 @@ return MS;
     if (target) {
       if (target.down('.descendents')) {
         target.toggleClassName('collapsed');
+        Event.fire(target, "obrowser:expand:finished");
       } else {
         target.removeClassName('collapsed');
         if (target.down(".error")) {
           target.down(".error").remove();
         }
         this.expand(target, true);
-        target.observe('obrowser:expand:done', this._obrowserExpandEventHandler.bindAsEventListener(this));
-        target.observe('obrowser:expand:failed', this._obrowserExpandEventHandler.bindAsEventListener(this));
       }
       target.down('.expand-tool').update(this._getExpandCollapseSymbol(target.hasClassName("collapsed")));
     }
@@ -2450,7 +2507,11 @@ return MS;
     }
     if (event.memo.data) {
        element.insert({'bottom': event.memo.data});
+       element.stopObserving('obrowser:expand:done', this._obrowserExpandEventHandler);
+    } else if (typeof (event.memo.count) != "undefined") {
+       element.stopObserving('obrowser:count:done', this._obrowserExpandEventHandler);
     }
+    element.stopObserving('obrowser:expand:failed', this._obrowserExpandEventHandler);
     if ((event.memo.count == "0") || (!element.hasClassName('root') &amp;&amp; event.memo.data &amp;&amp; !element.down('.descendents .entry, .error'))) {
       element.addClassName('collapsed');
       var expandTool = element.down('.expand-tool');
@@ -2459,10 +2520,11 @@ return MS;
         expandTool.stopObserving('click');
       }
     }
-    element.stopObserving('obrowser:expand:done');
-    element.stopObserving('obrowser:expand:failed');
     this._unlockExpandTool(element);
     Event.fire(document, "ms:popup:content-updated", {popup: this.container});
+    if (event.memo.data) {
+      Event.fire(element, "obrowser:expand:finished");
+    }
   },
 
   _lockExpandTool : function(element) {
@@ -2580,6 +2642,8 @@ return MS;
       this.container.show();
       if (this.__crtRoot != id) {
         this.load (id);
+      } else {
+        Event.fire(this.container.contentContainer || document, 'obrowser:expand:finished');
       }
     }
   },
@@ -3683,6 +3747,7 @@ div.resultContainer div.sourceContent.loading {
   margin: 0 2px;
   cursor: pointer;
   opacity: .5;
+  text-shadow: 1px 1px 0 #333;
 }
 .ontology-tree .entry-tool:hover {
   opacity: 1;
@@ -3692,12 +3757,12 @@ div.resultContainer div.sourceContent.loading {
   font-style: italic;
 }
 .ontology-tree .browse-tool {
-    -moz-border-radius: 0.875em;
-    -webkit-border-radius: 0.875em;
-    border-radius: 0.875em;
-    letter-spacing: -1px;
-    /*font-size: 0.8em;
-    min-width: 1.75em;*/
+  -moz-border-radius: 0.875em;
+  -webkit-border-radius: 0.875em;
+  border-radius: 0.875em;
+  letter-spacing: -1px;
+  /*font-size: 0.8em;
+  min-width: 1.75em;*/
 }
 .ontology-tree .accept-tool {
   background-color: #292;

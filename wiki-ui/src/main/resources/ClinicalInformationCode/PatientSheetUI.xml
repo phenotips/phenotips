@@ -1147,7 +1147,10 @@ document.observe('dom:loaded', function() {
               field._trigger._root._expanded = true;
               var sourceInput = source &amp;&amp; source.down('input[type=checkbox]');
               if (sourceInput &amp;&amp; sourceInput.checked) {
-                field._ontologyBrowser.expandTo(sourceInput.value, categories);
+                Event.observe(field._ontologyBrowser.container.contentContainer, 'obrowser:expand:finished', function(event) {
+                  Event.stopObserving(field._ontologyBrowser.container.contentContainer, 'obrowser:expand:finished');
+                  field._ontologyBrowser.expandTo(sourceInput.value, categories);
+                });
               }
             }
           } else {
