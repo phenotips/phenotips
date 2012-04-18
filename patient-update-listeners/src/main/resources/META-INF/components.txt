@@ -1,2 +1,3 @@
 edu.toronto.cs.cidb.listeners.PatientOnsetUpdater
 edu.toronto.cs.cidb.listeners.PatientBirthdateUpdater
+edu.toronto.cs.cidb.listeners.MeasurementAgeUpdater
