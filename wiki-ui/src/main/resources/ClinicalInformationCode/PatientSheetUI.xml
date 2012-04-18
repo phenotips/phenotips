@@ -1715,11 +1715,11 @@ document.observe('xwiki:dom:loaded', function() {
     var mostRecentEntry;
     var mostRecentDate;
     dataTable.select('tr input.xwiki-date').each(function(element) {
+      var date = Date.parseISO_8601(element.alt.strip());
       if (!mostRecentDate || mostRecentDate &lt; date) {
          mostRecentDate = date;
          mostRecentEntry = element.up('tr');
       }
-      var date = Date.parseISO_8601(element.alt.strip());
     })
     return mostRecentEntry;
   }
