@@ -365,8 +365,7 @@ $!value
 <section__measurements>
 <cache>0</cache>
 <customDisplay>{{velocity output=false}}
-#set($customClassName = "ClinicalInformationCode.MeasurementsClass")
-#set($customClassTableName = "measurements")
+#set($customValues = {"ClinicalInformationCode.MeasurementsClass" : "measurements table", "growth-charts" : "charts"})
 #set($hideClassFields = true)
 {{/velocity}}
 
@@ -461,8 +460,7 @@ $!value
 <section__variant-info>
 <cache>0</cache>
 <customDisplay>{{velocity output=false}}
-#set($customClassName = "ClinicalInformationCode.VariantClass")
-#set($customClassTableName = "variants")
+#set($customValues = {"ClinicalInformationCode.VariantClass" : "variants table"})
 #set($hideClassFields = true)
 {{/velocity}}
 
@@ -511,6 +509,8 @@ $!value
 <guid>380d3252-75ab-4be3-8b4b-d212e9939b6f</guid>
 <property>
 <activeFields>
+<value>first_name</value>
+<value>last_name</value>
 <value>date_of_birth</value>
 <value>gender</value>
 <value>onset</value>
@@ -518,6 +518,7 @@ $!value
 <value>omim_id</value>
 <value>unaffected</value>
 <value>phenotype</value>
+<value>negative_phenotype</value>
 <value>prenatal_phenotype</value>
 <value>gestation</value>
 <value>family_history</value>
@@ -528,35 +529,34 @@ $!value
 <property>
 <activeSections>
 <value>patient-info</value>
-<value>prenatal_phenotype-info</value>
 <value>measurements</value>
 <value>phenotype-info</value>
+<value>prenatal_phenotype-info</value>
 <value>family-history</value>
 <value>diagnosis-info</value>
+<value>variant-info</value>
 </activeSections>
 </property>
 <property>
-<dateOfBirthFormat>MMMM yyyy</dateOfBirthFormat>
+<dateOfBirthFormat>MM/dd/yyyy</dateOfBirthFormat>
 </property>
 <property>
 <idField>identifier</idField>
 </property>
 <property>
-<idPrefix>F</idPrefix>
+<idPrefix>SK</idPrefix>
 </property>
 <property>
 <livetableColumns>
 <value>doc.name</value>
-<value>onset</value>
+<value>doc.creator</value>
+<value>doc.author</value>
+<value>doc.creationDate</value>
 <value>phenotype</value>
 </livetableColumns>
 </property>
 <property>
-<mandatoryFields>
-<value>date_of_birth</value>
-<value>gender</value>
-<value>phenotype</value>
-</mandatoryFields>
+<mandatoryFields/>
 </property>
 <property>
 <patientClass>ClinicalInformationCode.PatientClass</patientClass>
@@ -565,10 +565,10 @@ $!value
 <patientTemplate>ClinicalInformationCode.PatientTemplate</patientTemplate>
 </property>
 <property>
-<phenotypeMapping>ClinicalInformationCode.FPhenotypeMapping</phenotypeMapping>
+<phenotypeMapping>ClinicalInformationCode.SKPhenotypeMapping</phenotypeMapping>
 </property>
 <property>
-<relativeReportHint>Patient (FORGE identifier)</relativeReportHint>
+<relativeReportHint>Patient (MRN)</relativeReportHint>
 </property>
 <property>
 <section__diagnosis-info>
@@ -583,6 +583,7 @@ $!value
 <property>
 <section__measurements>
 <value>ClinicalInformationCode.MeasurementsClass</value>
+<value>growth-charts</value>
 </section__measurements>
 </property>
 <property>
@@ -774,10 +775,15 @@ $!value
 <enableForObject></enableForObject>
 </property>
 <property>
-<enableHistoryTool/>
+<enableHistoryTool>
+<value>view</value>
+<value>edit</value>
+</enableHistoryTool>
 </property>
 <property>
-<enablePdfTool/>
+<enablePdfTool>
+<value>view</value>
+</enablePdfTool>
 </property>
 <property>
 <enableTocTool>
