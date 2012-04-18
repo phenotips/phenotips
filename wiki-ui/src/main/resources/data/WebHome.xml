@@ -515,6 +515,7 @@ $!value
 <value>gender</value>
 <value>onset</value>
 <value>relative</value>
+<value>relative_of</value>
 <value>omim_id</value>
 <value>unaffected</value>
 <value>phenotype</value>
