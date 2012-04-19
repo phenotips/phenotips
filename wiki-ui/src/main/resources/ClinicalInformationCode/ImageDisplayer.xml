@@ -476,8 +476,9 @@
       enablePreview : true,
       enableFileInfo : true,
       enableProgressInfo : true,
+      progressAutohide : true,
+      autoUpload : true
     },
-    PROGRESS_BAR_FULL_WIDTH_PERCENTAGE: 0.92,
 
     initialize : function(form, options) {
       this.options = Object.extend(Object.clone(this.options), options || { });
@@ -493,6 +494,10 @@
       }
       this.form.select('input[type=file]').invoke('observe', 'change', this.fileSelected.bindAsEventListener(this));
       this.form.observe('submit', this.startUploading.bindAsEventListener(this));
+      if (this.options.autoUpload) {
+        // Hide submit buttons 
+        this.form.select('input[type=submit]').invoke('setStyle', {'display' : 'none'});
+      }
 
       //initialize messages
       this.initFeedbackMessages();
@@ -542,6 +547,7 @@
 
       if (this.options.enableProgressInfo) {
         this.PROGRESS_INFO       = _getElt('progress-info');
+        this.PROGRESS_CONTAINER  = _getElt('progress-container');
         this.PROGRESS            = _getElt('progress');
         this.PROGRESS_PERCENTAGE = _getElt('progress-percentage', '&amp;nbsp;');
         this.PROGRESS_SPEED      = _getElt('progress-speed', '&amp;nbsp;');
@@ -550,7 +556,7 @@
         this.UPLOAD_RESPONSE     = _getElt('upload-response');
 
         this.PROGRESS_INFO.insert({
-             top: this.PROGRESS,
+             top: this.PROGRESS_CONTAINER.insert(this.PROGRESS),
              bottom: this.PROGRESS_PERCENTAGE
            }).insert({
              bottom: new Element('div', {'class' : 'clear'})
@@ -569,13 +575,12 @@
 
         this.PROGRESS_HIDE = _getElt('progress-hide', 'hide');
         this.PROGRESS_INFO.insert({bottom: this.PROGRESS_HIDE}).insert({bottom: new Element('div', {'class' : 'clear'})});
-        this.PROGRESS_HIDE.observe('click', function (event) {
-          this.PROGRESS_HIDE.style.display = 'none';
+        this._hideProgressInfo = function() {
           this.PROGRESS_INFO.style.display = 'none';
-        }.bindAsEventListener(this));
-
-        this.PROGRESS_HIDE.style.display = 'none';
-        this.PROGRESS_INFO.style.display = 'none';
+          this.PROGRESS_HIDE.style.display = 'none';
+        }.bind(this);
+        this.PROGRESS_HIDE.observe('click', this._hideProgressInfo);
+        this._hideProgressInfo()
         this.form.insert({bottom : this.PROGRESS_INFO});
       }
 
@@ -656,10 +661,15 @@
 
     // read selected file as DataURL
     fileReader.readAsDataURL(lFile);
+    if (this.options.autoUpload) {
+      this.startUploading();
+    }
   },
 
   startUploading : function (event) {
-    event.stop();
+    if (event) {
+      event.stop();
+    }
     var fileExists = false;
     this.form.select('input[type=file]').each(function(item) {
       if (item.value != '') {
@@ -675,7 +685,7 @@
     if (this.options.enableProgressInfo) {
       this.UPLOAD_RESPONSE.update('');
       this.PROGRESS_INFO.style.display = 'block';
-      this.PROGRESS.style.display = 'block';
+      this.PROGRESS_CONTAINER.style.display = 'block';
       this.PROGRESS.style.width = '0px';
     }
     // get form data for POSTing
@@ -730,7 +740,7 @@
         var iBytesTransfered = this.bytesToSize(this.bytesUploaded);
 
         this.PROGRESS_PERCENTAGE.update(iPercentComplete.toString() + '%');
-        this.PROGRESS.style.width = (iPercentComplete * this.PROGRESS_BAR_FULL_WIDTH_PERCENTAGE).toString() + '%';
+        this.PROGRESS.style.width = (iPercentComplete).toString() + '%';
         this.PROGRESS_TRANSFERED.update(iBytesTransfered);
         if (iPercentComplete == 100) {
           this.UPLOAD_RESPONSE.update('Processing...');
@@ -748,12 +758,16 @@
       this.UPLOAD_RESPONSE.style.display = 'block';
 
       this.PROGRESS_PERCENTAGE.update('100%');
-      this.PROGRESS.style.width = (this.PROGRESS_BAR_FULL_WIDTH_PERCENTAGE * 100) + "%";
+      this.PROGRESS.style.width = "100%";
       if (this.options.enableFileInfo) {
         this.FILE_SIZE.update(this.resultFileSize);
       }
       this.PROGRESS_REMAINING.update('| 00:00:00');
-      this.PROGRESS_HIDE.style.display = '';
+      if (this.options.progressAutohide) {
+        setTimeout(this._hideProgressInfo, 5000);
+      } else {
+        this.PROGRESS_HIDE.style.display = '';
+      }
     }
     clearInterval(this.timer);
 
@@ -1088,18 +1102,15 @@
     opacity: .5;
     float:right;
 }
-.progress-info .progress {
-    border:1px solid #ccc;
-    display:none;
-    float:left;
-    height:14px;
-
+.progress-info .progress, .progress-info .progress-container {
+    height:6px;
     border-radius:10px;
     -moz-border-radius:10px;
     -ms-border-radius:10px;
     -o-border-radius:10px;
     -webkit-border-radius:10px;
-
+}
+.progress-info .progress {
     background: -moz-linear-gradient(#66cc00, #4b9500);
     background: -ms-linear-gradient(#66cc00, #4b9500);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #66cc00), color-stop(100%, #4b9500));
@@ -1109,29 +1120,35 @@
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#66cc00', endColorstr='#4b9500')";
     background: linear-gradient(#66cc00, #4b9500);
 }
+.progress-info .progress-container {
+    border:1px solid #fff;
+    display:none;
+    float:left;
+    background: -moz-linear-gradient(#f9f9f9, #ddd);
+    background: -ms-linear-gradient(#f9f9f9, #ddd);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #66cc00), color-stop(100%, #4b9500));
+    background: -webkit-linear-gradient(#f9f9f9, #ddd);
+    background: -o-linear-gradient(#f9f9f9, #ddd);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f9f9f9', endColorstr='#ddd');
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#f9f9f9', endColorstr='#ddd')";
+    background: linear-gradient(#f9f9f9, #ddd);
+    width: 92%;
+}
 .progress-info /*.upload-response*/ {
     margin-top: .5em;
-    padding: 10px;
+    padding: 5px 10px;
     overflow: hidden;
     display: none;
-    border: 1px solid #ccc;
+    border: 1px solid #fff;
 
-    border-radius:10px;
-    -moz-border-radius:10px;
-    -ms-border-radius:10px;
-    -o-border-radius:10px;
-    -webkit-border-radius:10px;
+    border-radius:4px;
+    -moz-border-radius:4px;
+    -ms-border-radius:4px;
+    -o-border-radius:4px;
+    -webkit-border-radius:4px;
 
     box-shadow: 0 0 5px #ccc;
-    background: -moz-linear-gradient(#bbb, #eee);
-    background: -ms-linear-gradient(#bbb, #eee);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #bbb), color-stop(100%, #eee));
-    background: -webkit-linear-gradient(#bbb, #eee);
-    background: -o-linear-gradient(#bbb, #eee);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#bbb', endColorstr='#eee');
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#bbb', endColorstr='#eee')";
-    background: linear-gradient(#bbb, #eee);
-}*/</code>
+}</code>
 </property>
 <property>
 <name>HTML5 file upload UI</name>
