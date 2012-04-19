@@ -278,6 +278,7 @@
         var label = item.down('label');
         var input = label.down('input');
         var image = item.down('.attachment-preview img');
+        var viewlink = item.down('a.view.hidden');
         var id = input.id.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length);
         var lItem = new Element('div', {'class' : item.className});
         lItem.insert({
@@ -290,7 +291,12 @@
                                         'value' : input.value
                                     })
                    }),
-                  'bottom': image &amp;&amp; new Element ('div', {'class' : 'attachment-preview'}).update(image) || ''
+                  'bottom': image &amp;&amp; new Element ('div', {'class' : 'attachment-preview'}).update(image) ||
+                                 viewlink &amp;&amp; new Element('a', {
+                                       'class' : 'view',
+                                       'href': viewlink.href,
+                                       'title' : viewlink.title,
+                                       'target' : '_blank'}).update(viewlink.innerHTML) || ''
         });
         newList.insert({bottom: lItem});
       });
@@ -931,9 +937,9 @@
 }
 .attachment-item.pdf {
   position: relative;
-  width: 49%;
+  width: 31%;
   float: left;
-  margin: .5em 1% .5em 0;
+  margin: .5em 2% .5em 0;
   overflow: hidden;
 }
 .attachment-item:hover {
@@ -945,6 +951,10 @@
     white-space: nowrap;
     padding: 0 5px;
 }
+.attachment-item .size {
+  font-size: 0.9em;
+  opacity: 0.7;
+}
 .attachment-item.pdf label, .attachment-link.pdf {
   background-image: url("$xwiki.getSkinFile('icons/silk/page_white_acrobat.png')");
   background-position: left center;
@@ -953,7 +963,8 @@
   padding: 0 0 0 20px;
 }
 .attachment-item label input{
-    margin-left: 0px;
+  margin-left: 0px;
+  vertical-align: middle;
 }
 .attachment-item .action {
     background-position: center center;
@@ -965,6 +976,14 @@
     width: 18px;
 }
 .attachment-item:hover .action {
+  display: inline-block;
+}
+.attachment-item .view {
+    display: none;
+    position: absolute;
+    right: 0;
+}
+.attachment-item:hover .view {
   display: inline-block;
 }
 .attachment-item .attachment-preview {
@@ -1234,11 +1253,12 @@
 #macro (__displaySelectableAttachment $attachment $targetDocument $selection)
   {{html wiki=true clean=false}}&lt;div class="attachment-item #if($options.isImage) image #else #__getExtension(${attachment.filename})#end"&gt;
   &lt;label for='${fieldName}_${attachment.filename}' title='${attachment.filename}'&gt; 
-  {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='${options.inputType}' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename}&lt;/label&gt;##
+  {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='${options.inputType}' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
   #if ($options.manage)
   &lt;a class='action delete' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($context.action, $request.queryString))}")" title="Delete"&gt;Delete&lt;/a&gt;##
   #end
-  #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||width="100" title="${attachment.filename}"]])))#end##
+  #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||width="100" title="${attachment.filename}"]])))#else##
+ &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="Open $!{attachment.filename}"&gt; [open]&lt;/a&gt;#end##
   &lt;/div&gt;{{/html}}##
 #end
 
