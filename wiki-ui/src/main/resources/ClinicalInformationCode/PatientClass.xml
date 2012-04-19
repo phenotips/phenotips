@@ -36,7 +36,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>comments</name>
-<number>18</number>
+<number>21</number>
 <picker>0</picker>
 <prettyName>Additional comments</prettyName>
 <rows>5</rows>
@@ -114,7 +114,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>family_comments</name>
-<number>17</number>
+<number>19</number>
 <picker>0</picker>
 <prettyName>List health conditions found in family (describe the relationship with proband)</prettyName>
 <rows>5</rows>
@@ -138,7 +138,7 @@
 <displayType>select</displayType>
 <multiSelect>1</multiSelect>
 <name>family_history</name>
-<number>16</number>
+<number>18</number>
 <picker>0</picker>
 <prettyName>Family History</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -190,7 +190,7 @@
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <name>gestation</name>
-<number>15</number>
+<number>17</number>
 <numberType>integer</numberType>
 <prettyName>Gestation at delivery (weeks)</prettyName>
 <size>30</size>
@@ -225,6 +225,21 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </identifier>
+<indication_for_referral>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<editor>PureText</editor>
+<name>indication_for_referral</name>
+<number>11</number>
+<picker>0</picker>
+<prettyName>Indication for referral</prettyName>
+<rows>2</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</indication_for_referral>
 <last_name>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -238,6 +253,21 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
 </last_name>
+<medical_developmental_history>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<editor>---</editor>
+<name>medical_developmental_history</name>
+<number>22</number>
+<picker>0</picker>
+<prettyName>Medical and developmental history</prettyName>
+<rows>5</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</medical_developmental_history>
 <negative_phenotype>
 <cache>0</cache>
 <classname></classname>
@@ -254,7 +284,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>negative_phenotype</name>
-<number>13</number>
+<number>14</number>
 <picker>0</picker>
 <prettyName>Symptoms NOT observed in this patient</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -354,6 +384,30 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </onset>
+<pedigree>
+<cache>0</cache>
+<classname></classname>
+<customDisplay>{{include document="ClinicalInformationCode.ImageDisplayer" /}}</customDisplay>
+<disabled>0</disabled>
+<displayType>radio</displayType>
+<idField></idField>
+<multiSelect>0</multiSelect>
+<name>pedigree</name>
+<number>20</number>
+<picker>0</picker>
+<prettyName>Pedigree</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators></separators>
+<size>1</size>
+<sort>none</sort>
+<sql></sql>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<valueField></valueField>
+<classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+</pedigree>
 <phenotype>
 <cache>0</cache>
 <classname></classname>
@@ -370,9 +424,9 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>phenotype</name>
-<number>12</number>
+<number>13</number>
 <picker>0</picker>
-<prettyName>Clinical symptoms</prettyName>
+<prettyName>Clinical symptoms &amp; physical findings</prettyName>
 <relationalStorage>1</relationalStorage>
 <separator> </separator>
 <separators></separators>
@@ -385,6 +439,21 @@
 <valueField></valueField>
 <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
 </phenotype>
+<prenatal_comments>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<editor>---</editor>
+<name>prenatal_comments</name>
+<number>16</number>
+<picker>0</picker>
+<prettyName>Notes</prettyName>
+<rows>5</rows>
+<size>40</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</prenatal_comments>
 <prenatal_phenotype>
 <cache>0</cache>
 <classname></classname>
@@ -401,7 +470,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>prenatal_phenotype</name>
-<number>14</number>
+<number>15</number>
 <picker>0</picker>
 <prettyName>Prenatal and Perinatal History</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -461,6 +530,30 @@
 <valueField></valueField>
 <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
 </relative_of>
+<reports_history>
+<cache>0</cache>
+<classname></classname>
+<customDisplay>{{include document="ClinicalInformationCode.ImageDisplayer" /}}</customDisplay>
+<disabled>0</disabled>
+<displayType>checkbox</displayType>
+<idField></idField>
+<multiSelect>1</multiSelect>
+<name>reports_history</name>
+<number>23</number>
+<picker>0</picker>
+<prettyName>Reports</prettyName>
+<relationalStorage>1</relationalStorage>
+<separator> </separator>
+<separators></separators>
+<size>1</size>
+<sort>none</sort>
+<sql></sql>
+<unmodifiable>0</unmodifiable>
+<validationMessage>pdf</validationMessage>
+<validationRegExp>^application\/pdf$</validationRegExp>
+<valueField></valueField>
+<classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+</reports_history>
 <unaffected>
 <customDisplay></customDisplay>
 <defaultValue></defaultValue>
@@ -468,7 +561,7 @@
 <displayFormType>checkbox</displayFormType>
 <displayType></displayType>
 <name>unaffected</name>
-<number>11</number>
+<number>12</number>
 <prettyName>This patient is clinically normal</prettyName>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>

@@ -327,7 +327,7 @@ $!value
 <displayType>checkbox</displayType>
 <multiSelect>1</multiSelect>
 <name>section__diagnosis-info</name>
-<number>18</number>
+<number>19</number>
 <picker>0</picker>
 <prettyName>Diagnosis</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -394,6 +394,27 @@ $!value
 <values></values>
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </section__measurements>
+<section__medical_history>
+<cache>0</cache>
+<customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+<disabled>0</disabled>
+<displayType>checkbox</displayType>
+<multiSelect>1</multiSelect>
+<name>section__medical_history</name>
+<number>18</number>
+<picker>0</picker>
+<prettyName>Medical history</prettyName>
+<relationalStorage>1</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<sort>none</sort>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<values></values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</section__medical_history>
 <section__patient-info>
 <cache>0</cache>
 <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
@@ -475,7 +496,7 @@ $!value
 <displayType>checkbox</displayType>
 <multiSelect>1</multiSelect>
 <name>section__variant-info</name>
-<number>19</number>
+<number>20</number>
 <picker>0</picker>
 <prettyName>Variants</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -517,25 +538,30 @@ $!value
 <value>relative</value>
 <value>relative_of</value>
 <value>omim_id</value>
+<value>indication_for_referral</value>
 <value>unaffected</value>
 <value>phenotype</value>
 <value>negative_phenotype</value>
 <value>prenatal_phenotype</value>
+<value>prenatal_comments</value>
 <value>gestation</value>
 <value>family_history</value>
 <value>family_comments</value>
+<value>pedigree</value>
 <value>comments</value>
+<value>medical_developmental_history</value>
+<value>reports_history</value>
 </activeFields>
 </property>
 <property>
 <activeSections>
 <value>patient-info</value>
+<value>prenatal_phenotype-info</value>
+<value>medical_history</value>
+<value>family-history</value>
 <value>measurements</value>
 <value>phenotype-info</value>
-<value>prenatal_phenotype-info</value>
-<value>family-history</value>
 <value>diagnosis-info</value>
-<value>variant-info</value>
 </activeSections>
 </property>
 <property>

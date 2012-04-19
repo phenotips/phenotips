@@ -3662,6 +3662,7 @@ table.extradata-list td.bmi_percentile {
   #end
 #end
 (% class="clear" %)((()))
+#__displayIfNotEmpty('indication_for_referral')
 )))##chapter
 #end
 
@@ -3736,13 +3737,14 @@ table.extradata-list td.bmi_percentile {
 ## Prenatal information
 ##
 #macro(__reportSection__prenatal_phenotype_info)
-#if ("$!activeFields.contains('prenatal_phenotype')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('prenatal_phenotype')" != ''))
+#if ("$!activeFields.contains('prenatal_phenotype')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('prenatal_phenotype')$doc.display('gestation')$doc.display('prenatal_comments')" != ''))
 (% class="twothird-width clear clinical-info prenatal_phenotype-info chapter #__markIfMandatory('prenatal_phenotype')" %)(((
 == $!{class.get('prenatal_phenotype').prettyName} ==
 #__displayFormatted('2-col' 'gestation' '' '' '')
-(% class="clear" %)((()))
-----
+(% class="clear" %)(((----)))
 $doc.display('prenatal_phenotype')
+(% class="clear" %)(((----)))
+(((#__displayIfNotEmpty('prenatal_comments'))))
 )))##chapter
 #end
 #end
@@ -3751,12 +3753,32 @@ $doc.display('prenatal_phenotype')
 ## Family history
 ##
 #macro(__reportSection__family_history)
-#if ("$!activeFields.contains('family_history')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('family_history')$doc.display('family_comments')" != ''))
+#if ("$!activeFields.contains('family_history')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('family_history')$doc.display('family_comments')$doc.display('pedigree')" != ''))
 (% class="twothird-width clear clinical-info family_history-info chapter #__markIfMandatory('family_history')" %)(((
 == $!{class.get('family_history').prettyName} ==
 (((
 $doc.display('family_history')
 #__displayIfNotEmpty('family_comments')
+$doc.display('pedigree')
+)))
+)))##chapter
+#end
+#end
+
+## =================================================================
+## Medical history
+##
+#macro(__reportSection__medical_history)
+#if ("$!activeFields.contains('medical_developmental_history')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('medical_developmental_history')$doc.display('reports_history')" != ''))
+(% class="twothird-width clear clinical-info medical_history-info chapter #__markIfMandatory('medical_history')" %)(((
+== $!{class.get('medical_developmental_history').prettyName} ==
+(((
+#__displayIfNotEmpty('medical_developmental_history')
+#if ($xcontext.action != 'export' &amp;&amp; "$doc.display('reports_history')" != '')
+
+=== Previous medical reports ===
+$doc.display('reports_history')
+#end
 )))
 )))##chapter
 #end
@@ -3766,7 +3788,7 @@ $doc.display('family_history')
 ## Diagnosis information
 ##
 #macro(__reportSection__diagnosis_info)
-#if ("$!activeFields.contains('omim_id')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('omim_id')" != ''))
+#if ("$!activeFields.contains('omim_id')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('omim_id')$!doc.display('comments')" != ''))
 (% class="clear chapter twothird-width" %)(((
 ##(% class="diagnosis-info"%)(((
 == Diagnosis ==
