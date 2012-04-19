@@ -828,7 +828,7 @@ label.create-button-label, .add-data-button:before {
   position: absolute;
   top: .24em;
   left: .4em;
-  width: .8em;
+  width: .8em !important;
   height: .8em;
   color: $theme.buttonPrimaryTextColor;
   text-align: center;
@@ -838,6 +838,7 @@ label.create-button-label, .add-data-button:before {
   line-height: .9em;
   vertical-align: middle;
   z-index: 2;
+  text-shadow: none;
 }
 body .xwiki-livetable-topfilters-container, body .xwiki-livetable-tagcloud-container {
   border-color: $theme.buttonPrimaryBackgroundColor;

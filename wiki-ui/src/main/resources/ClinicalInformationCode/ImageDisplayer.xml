@@ -905,6 +905,9 @@
 }
 .image-gallery .attachment-list {
 }
+.actions {
+  position: relative;
+}
 .image-gallery .attachment-list label.selected {
   background-color: transparent; ##$theme.pageContentBackgroundColor; ##$theme.highlightColor;
   margin: 0;
@@ -1321,7 +1324,7 @@ $content
         #__displayUploadForm($targetDoc)
       #else
         #set ($actionURL = $displayer.getURL('view', "$!{qString}&amp;mode=edit&amp;manage=true"))
-        {{html wiki=false clean=false}}&lt;div class="actions"&gt;&lt;span class="buttonwrapper"&gt;&lt;a class="add-data-button button manage-images-button" href="${actionURL}"&gt;Upload and manage&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;{{/html}}
+        {{html wiki=false clean=false}}&lt;div class="actions"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;span class="buttonwrapper"&gt;&lt;a class="add-data-button button manage-images-button" href="${actionURL}"&gt;Upload and manage&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;{{/html}}
       #end
       #__displaySelectableAttachmentList($targetDoc $propValue)
       )))
