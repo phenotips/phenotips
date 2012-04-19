@@ -131,7 +131,7 @@
     filterFormUpload : function() {
       this.form = this.gallery.down('form');
       // Make sure unsaved selections are not lost 
-      this.gallery.select('.attachment-item input[type=checkbox]').each(function(item) {
+      this.gallery.select('.attachment-item input[type=checkbox], .attachment-item input[type=radio]').each(function(item) {
           var twin = $(item.id.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length));
           if (twin) {item.checked = twin.checked;}
       });
@@ -150,10 +150,10 @@
         this.form.observe('xwiki:ajaxupload:finish', function(event) {
            var responseContainer = this.gallery.down('.progress-info .upload-response');
            if (responseContainer) {
-             var attachmentField = responseContainer.down('.attachment-item input[type=checkbox]');
+             var attachmentField = responseContainer.down('.attachment-item input[type=checkbox], .attachment-item input[type=radio]');
              if (attachmentField) {
-               // is this just another verson of another attachment that already exists?
-               this.gallery.select('.attachment-list .attachment-item input[type=checkbox][value=' + attachmentField.value + ']').each(function (item) {
+               // is this just another version of another attachment that already exists?
+               this.gallery.select('.attachment-list .attachment-item input[type=' + attachmentField.type + '][value=' + attachmentField.value + ']').each(function (item) {
                  item.up('.attachment-item').remove();
                })
                // if the attachment list contained some "Empty list" message, make sure to remove it
@@ -279,18 +279,18 @@
         var input = label.down('input');
         var image = item.down('.attachment-preview img');
         var id = input.id.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length);
-        var lItem = new Element('div', {'class' : 'attachment-item'});
+        var lItem = new Element('div', {'class' : item.className});
         lItem.insert({
                   'top' : new Element('label', {'for' : id, 'title' : input.value}).update(input.value).insert({
                               top : new Element('input', {
-                                        'type' : 'checkbox',
+                                        'type' : input.type,
                                         'checked' : input.checked,
                                         'id' : id,
                                         'name' : input.name.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length),
                                         'value' : input.value
                                     })
                    }),
-                  'bottom': new Element ('div', {'class' : 'attachment-preview'}).update(image)
+                  'bottom': image &amp;&amp; new Element ('div', {'class' : 'attachment-preview'}).update(image) || ''
         });
         newList.insert({bottom: lItem});
       });
@@ -487,6 +487,10 @@
 
       // attach listeners
       this.form = form;
+      var customFilter = this.form.down('input[name=filter]');
+      if (customFilter &amp;&amp; customFilter.value != '') {
+         this.options.fileFilter = new RegExp(customFilter.value, "i");
+      }
       this.form.select('input[type=file]').invoke('observe', 'change', this.fileSelected.bindAsEventListener(this));
       this.form.observe('submit', this.startUploading.bindAsEventListener(this));
 
@@ -576,7 +580,7 @@
       }
 
       this.MESSAGE_CONTAINER      = _getElt('');
-      this.INVALID_FILE_MESSAGE   = _getElt('errormessage', 'The selected file is not acceptable. Please select only image files');
+      this.INVALID_FILE_MESSAGE   = _getElt('errormessage', 'The selected file has an unsuported format.');
       this.UNKNOWN_ERROR_MESSAGE  = _getElt('errormessage', 'An error occurred while uploading the file');
       this.UPLOAD_ABORTED_MESSAGE = _getElt('errormessage' , 'The upload has been canceled by the user or the browser dropped the connection');
       this.UPLOAD_SIZE_MESSAGE    = _getElt('errormessage' , 'The selected file is too large. Please choose files under ' + this.bytesToSize(this.options.maxFilesize));
@@ -895,7 +899,7 @@
 }
 .image-gallery .xGallery {
 }
-.attachment-item {
+.attachment-item.image {
   position: relative;
   width: 110px;
   float: left;
@@ -908,6 +912,13 @@
   -webkit-box-shadow: 0 0 4px #aaa;
   box-shadow: 0 0 4px #aaa;
 }
+.attachment-item.pdf {
+  position: relative;
+  width: 49%;
+  float: left;
+  margin: .5em 1% .5em 0;
+  overflow: hidden;
+}
 .attachment-item:hover {
   background-color: $theme.pageContentBackgroundColor; ##$theme.highlightColor
 }
@@ -916,6 +927,13 @@
     overflow: hidden;
     white-space: nowrap;
     padding: 0 5px;
+}
+.attachment-item.pdf label, .attachment-link.pdf {
+  background-image: url("$xwiki.getSkinFile('icons/silk/page_white_acrobat.png')");
+  background-position: left center;
+  background-repeat: no-repeat;
+  display: inline-block;
+  padding: 0 0 0 20px;
 }
 .attachment-item label input{
     margin-left: 0px;
@@ -1131,12 +1149,14 @@
 #set($options = {
   'fieldName' : "",
   'filter' : ['png', 'jpg', 'gif'],
-  'manage' : false
+  'manage' : false,
+  'inputType' : 'checkbox',
+  'isImage' : true
 })
 
 #set($options.mode = "$!{context.action}")
 
-#if ("$!{name}" != '' &amp;&amp; "$!{prefix}" != '' &amp;&amp; "$!{value}" != '' &amp;&amp; "$!{object}" != '')
+#if ("$!{name}" != '' &amp;&amp; "$!{prefix}" != '' &amp;&amp; "$!{object}" != '')
   ## In displayer mode
   #set ($targetDoc = $doc)
   #set ($property = "$!{name}")
@@ -1161,7 +1181,23 @@
     #set($options.manage = true)
   #end
 #end
-
+#if ($object.getxWikiClass().get($property).getProperty('multiSelect').value == 0)
+  #set($options.inputType = 'radio')
+  #if ("$!{value}" == '')
+    #set ($propValue = [])
+  #else
+    #set ($propValue = [$value])
+  #end
+#end
+## TODO: This is a workaround. Find a better way to specify accepted file formats.
+#set($options.html5Filter = "$!{object.getxWikiClass().get($property).getProperty('validationRegExp').value}")
+#set($formats = "$!{object.getxWikiClass().get($property).getProperty('validationMessage').value}")
+#if ($formats != '')
+  #set ($options.filter = $formats.split('\\s*[,| ]\\s*'))
+  #if (!$options.html5Filter.contains('image'))
+    #set ($options.isImage = false)
+  #end
+#end
 #set ($qString = "doc=$!escapetool.url($!{targetDoc.fullName})&amp;property=$!{property}&amp;classname=$!escapetool.url($!{object.xWikiClass.name})&amp;object=${object.number}")
 
 #if ($options.filter &amp;&amp; $options.filter.size() &gt; 0)
@@ -1173,29 +1209,30 @@
   #end
 #end
 
+#macro (__getExtension $filename)$!{filename.substring($mathtool.add($filename.lastIndexOf('.'), 1)).toLowerCase()}#end
+
 #macro (__displaySelectableAttachment $attachment $targetDocument $selection)
-  {{html wiki=true clean=false}}&lt;div class="attachment-item"&gt;
+  {{html wiki=true clean=false}}&lt;div class="attachment-item #if($options.isImage) image #else #__getExtension(${attachment.filename})#end"&gt;
   &lt;label for='${fieldName}_${attachment.filename}' title='${attachment.filename}'&gt; 
-  {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='checkbox' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename}&lt;/label&gt;##
+  {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='${options.inputType}' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename}&lt;/label&gt;##
   #if ($options.manage)
   &lt;a class='action delete' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($context.action, $request.queryString))}")" title="Delete"&gt;Delete&lt;/a&gt;##
   #end
-  (% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||width="100" title="${attachment.filename}"]])))##
+  #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||width="100" title="${attachment.filename}"]])))#end##
   &lt;/div&gt;{{/html}}##
 #end
 
 #macro (__displaySelectableAttachmentList $targetDocument $selection)
-  {{html wiki=false clean=false}}&lt;input type='hidden' name='${fieldName}' value=''/&gt;{{/html}}##
   (% class="attachment-list" %)(((
   #set ($sortedAttachments = $sorttool.sort($targetDocument.getAttachmentList(), 'date:desc') )
-  #if ($sortedAttachments.size() == 0)(% class="hint" %)No photos available(%%)#end
+  #if ($sortedAttachments.size() == 0)(% class="hint" %)None available(%%)#end
   #foreach ($attachment in $sortedAttachments)
-    #set ($extension = $attachment.getFilename())
-    #set ($extension = $extension.substring($mathtool.add($extension.lastIndexOf('.'), 1)).toLowerCase())
+    #set ($extension = "#__getExtension($attachment.getFilename())")
     #if ($options.filter.size() == 0 || $options.filter.contains($extension))
       #__displaySelectableAttachment($attachment $targetDocument $selection)
     #end
   #end
+  {{html wiki=false clean=false}}&lt;input type='hidden' name='${fieldName}' value=''/&gt;{{/html}}##
   )))(% class="clear" %)((()))###
 #end
 
@@ -1203,8 +1240,7 @@
   #set ($sortedAttachments = $sorttool.sort($targetDocument.getAttachmentList(), 'date:desc') )
   #if ($sortedAttachments.size() &gt; 0)
     #set ($attachment = $sortedAttachments.get(0))
-    #set ($extension = $attachment.getFilename())
-    #set ($extension = $extension.substring($mathtool.add($extension.lastIndexOf('.'), 1)).toLowerCase())
+    #set ($extension = "#__getExtension($attachment.getFilename())")
     #if ($options.filter.size() == 0 || $options.filter.contains($extension))
       #__displaySelectableAttachment($attachment $targetDocument [${attachment.filename}])
     #end
@@ -1219,6 +1255,7 @@
       &lt;span class="xHint"&gt;Accepted file formats: ${options.rawfilter}&lt;/span&gt;
     #end
     &lt;input type="file" name="filepath" id="attachfile2" class="attachment" size="30" title="$!{escapetool.xml($options.rawfilter)}"/&gt;
+    &lt;input type="hidden" name="filter" value="$!{escapetool.xml($options.html5Filter)}" /&gt;
     &lt;input type="hidden" name="xredirect" value="$!{escapetool.xml($doc.getURL($context.action, $request.queryString))}" /&gt;
     &lt;input type="hidden" name="ajaxxredirect" value="$!{escapetool.xml($displayer.getURL('get', "$!{qString}&amp;xaction=lastatt" ))}" /&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
@@ -1232,14 +1269,22 @@
   #set ($content = '')
   #foreach ($name in  $selection)
     #if ("$!{targetDocument.getAttachment(${name})}" != '')
-      #set ($content = "$!{content}image:${targetDocument.fullName}@${name}${util.newline}")
+      #if ($options.isImage)
+        #set ($content = "$!{content}[[image:${targetDocument.fullName}@${name}||style=""max-width:100%""]]${util.newline}")
+      #else
+        #set ($content = "$!{content}(% class='attachment-link #__getExtension($name)' %)attach:${targetDocument.fullName}@${name} (%%)${util.newline}")
+      #end
     #end
   #end
-  #if ($content != '')
+  #if ($content != '')  
+#if ($options.isImage &amp;&amp; $options.inputType == 'checkbox')
 {{gallery}}
 $content
 {{/gallery}}
 
+#else
+$content
+#end
   #end
 #end
 
@@ -1268,5 +1313,4 @@ $content
     #end## context action check
   #end## target object &amp; property exist and are valid
 #end## not a custom action
-{{/velocity}}
-</content></xwikidoc>
+{{/velocity}}</content></xwikidoc>
