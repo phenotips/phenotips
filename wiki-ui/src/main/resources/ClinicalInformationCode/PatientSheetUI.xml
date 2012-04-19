@@ -2692,6 +2692,12 @@ h1, h2, h3, h4 {
 .chapter h2+.hint {
   margin: 1em 0;
 }
+.chapter h3 {
+  font-size: 1.2em;
+  text-transform: uppercase;
+  margin: 1em 0;
+  padding: 0 20px 0 0;
+}
 .chapter .phenotype-group,
 .chapter .negative_phenotype-group {
   padding: 0 1em;
@@ -3340,10 +3346,6 @@ table.extradata-list td.bmi_percentile {
   margin-top: 2em;
 }
 .ncbi-search-box h3 {
-  font-size: 1.2em;
-  text-transform: uppercase;
-  margin: 1em 0;
-  padding: 0 20px 0 0;
   cursor: pointer;
 }
 .ncbi-search-box.collapsed h3 {
@@ -3676,10 +3678,13 @@ table.extradata-list td.bmi_percentile {
 == Measurements ==
 #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
 #if ($xcontext.action != 'export' &amp;&amp; $config.getProperty('section__measurements').value.contains('growth-charts'))
+(((
+=== Growth charts ===
 (% id="charts"%)(((
 #set($chartOptions = {'targetClassName' : $targetClassName, 'obj': $obj, 'link': true})
 #_measurementCharts($chartOptions)
 )))##charts
+)))
 (% class="clear"%)((()))
 #end
 )))##chapter
@@ -3759,6 +3764,8 @@ $doc.display('prenatal_phenotype')
 (((
 $doc.display('family_history')
 #__displayIfNotEmpty('family_comments')
+
+=== Pedigree ===
 $doc.display('pedigree')
 )))
 )))##chapter
