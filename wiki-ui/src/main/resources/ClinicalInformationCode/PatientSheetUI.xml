@@ -3664,7 +3664,9 @@ table.extradata-list td.bmi_percentile {
   #end
 #end
 (% class="clear" %)((()))
+#if ("$!activeFields.contains('indication_for_referral')" != 'false')
 #__displayIfNotEmpty('indication_for_referral')
+#end
 )))##chapter
 #end
 
@@ -3748,8 +3750,10 @@ table.extradata-list td.bmi_percentile {
 #__displayFormatted('2-col' 'gestation' '' '' '')
 (% class="clear" %)(((----)))
 $doc.display('prenatal_phenotype')
+#if ("$!activeFields.contains('prenatal_comments')" != 'false')
 (% class="clear" %)(((----)))
 (((#__displayIfNotEmpty('prenatal_comments'))))
+#end
 )))##chapter
 #end
 #end
@@ -3764,9 +3768,11 @@ $doc.display('prenatal_phenotype')
 (((
 $doc.display('family_history')
 #__displayIfNotEmpty('family_comments')
+#if ("$!activeFields.contains('pedigree')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('pedigree')" != ''))
 
 === Pedigree ===
 $doc.display('pedigree')
+#end
 )))
 )))##chapter
 #end
@@ -3781,7 +3787,7 @@ $doc.display('pedigree')
 == $!{class.get('medical_developmental_history').prettyName} ==
 (((
 #__displayIfNotEmpty('medical_developmental_history')
-#if ($xcontext.action != 'export' &amp;&amp; "$doc.display('reports_history')" != '')
+#if ($xcontext.action != 'export' &amp;&amp; "$!activeFields.contains('reports_history')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('reports_history')" != ''))
 
 === Previous medical reports ===
 $doc.display('reports_history')
