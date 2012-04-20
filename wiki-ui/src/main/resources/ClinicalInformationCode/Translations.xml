@@ -45,7 +45,7 @@ patient.livetable.onset=Onset
 patient.livetable.phenotype=Phenotype
 
 admin.clinicalinformationcode=Clinical information application code
-admin.dbconfig=Database and form configuraion
+admin.dbconfig=Database and form configuration
 admin.menuconfig=Menu configuration
 admin.ontology=Ontology index
 
