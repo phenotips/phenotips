@@ -2226,11 +2226,10 @@ console.log(categories);
       var headers = {};
       headers.Accept = this.options.responseFormat;
 
-      this._lockExpandTool(element);
-
       var ajx = new Ajax.Request(url, {
         method: this.options.method,
         requestHeaders: headers,
+        onCreate: function() {this._lockExpandTool(element)}.bind(this),
         onSuccess: function (response) {
           var memo = {};
           if (doPopulate) {
@@ -2251,12 +2250,12 @@ console.log(categories);
               expandTool.stopObserving('click');
             }
           }
-          this._unlockExpandTool(element);
           Event.fire(document, "ms:popup:content-updated", {popup: this.container});
         }.bind(this),
         onFailure: function (response) {
           Event.fire(element, 'obrowser:expand:failed', {data: new Element('div', {'class' : 'error'}).update("Failed to retrieve data : " + respose.statusText), count: -1});
-        }
+        },
+        onComplete: function() {this._unlockExpandTool(element)}.bind(this)
       });
   },
 
