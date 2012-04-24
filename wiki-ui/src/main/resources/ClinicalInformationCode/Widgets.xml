@@ -2080,7 +2080,7 @@ return MS;
   var widgets = MS.widgets = MS.widgets || {};
   widgets.OntologyBrowser = Class.create({
   options : {
-    script : "$xwiki.getURL('ClinicalInformationCode.SolrService', 'get', 'sort=id asc&amp;start=0&amp;rows=10000')&amp;",
+    script : "$xwiki.getURL('ClinicalInformationCode.SolrService', 'get', 'sort=nameSort asc&amp;start=0&amp;rows=10000')&amp;",
     varname: "q",
     method : "post",
     json : true,

@@ -564,6 +564,8 @@
         is added to the index.  It's used either to index the same field differently,
         or to add multiple fields to the same field for easier/faster searching.  -->
 
+   <copyField source="name" dest="nameSort"/>
+   <copyField source="name" dest="alphaNameSort"/>
    <copyField source="*" dest="text"/>
    <copyField source="*" dest="phonetic"/>
    <copyField source="*" dest="textSpell"/>
