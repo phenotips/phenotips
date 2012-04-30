@@ -35,7 +35,7 @@
   <description>ZIP packaging of the XWiki-based phenotype database interface, stored as an HSQLDB database dump.</description>
   <properties>
     <xwiki.db.connection.url>jdbc:hsqldb:file:${project.build.directory}/database/xwiki_db;shutdown=true</xwiki.db.connection.url>
-    <commons.version>3.5</commons.version>
+    <commons.version>3.5.1</commons.version>
   </properties>
   <!-- Required for the exec:exec plugin execution below. Doesn't seem to work as an exec plugin
        dependency -->
