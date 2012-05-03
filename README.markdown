@@ -1,3 +1,25 @@
+# About #
+
+This project mainly aims at providing **an easy way to collect clinical phenotypes using a standardized vocabulary**, thus alllowing for **straight-forward cross-referencing with gene and disease databases**.
+
+The patient data being managed includes:
+* demographic information (name, date of birth, ...)
+* family information and history (including pedigree)
+* medical history
+* prenatal and perinatal history
+* measurements (with support for instant computation of percentiles and generation of growth charts)
+* **clinical symptoms & physical findings**, with all phenotypic descriptions being mapped to a standardized vocabulary (the [Human Phenotype Ontology (HPO)](http://www.human-phenotype-ontology.org/))
+* diagnosis (mapped to [OMIM](http://omim.org/))
+* genetic variants found in the patient
+
+The application provides a **web interface** accessible from any device equipped with a web browser and a secure connection to the application server. The complexity and technical codification of standardized phenotyping and disease vocabularies is hidden under the friendly UI allowing for error-tolerant, predictive search of phenotypic descriptions and providing instant suggestions of phenotypes, diseases matching the current phenotype selection, and relevant readings in scientific jurnals for further information.,
+
+## Major tools and resources involved used by this project ##
+* The [Human Phenotype Ontology (HPO)](http://www.human-phenotype-ontology.org/) - a standardized vocabulary of phenotypic abnormalities encountered in human disease; contains approximately 10,000 terms and is being developed using information from [OMIM](http://omim.org/) and the medical literature
+* [Apache Solr](http://lucene.apache.org/solr/) - an enterprise search platform
+* [XWiki](http://xwiki.org) - and enterprise web application development framework
+
+
 # Building instructions #
 
 This project uses [Apache Maven](http://maven.apache.org/) for the whole lifecycle management. From the project's description:
