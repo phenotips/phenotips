@@ -17,7 +17,7 @@ The application provides a **web interface** accessible from any device equipped
 ## Major tools and resources involved used by this project ##
 * The [Human Phenotype Ontology (HPO)](http://www.human-phenotype-ontology.org/) - a standardized vocabulary of phenotypic abnormalities encountered in human disease; contains approximately 10,000 terms and is being developed using information from [OMIM](http://omim.org/) and the medical literature
 * [Apache Solr](http://lucene.apache.org/solr/) - an enterprise search platform
-* [XWiki](http://xwiki.org) - and enterprise web application development framework
+* [XWiki](http://xwiki.org) - an enterprise web application development framework
 
 
 # Building instructions #
