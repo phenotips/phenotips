@@ -1646,12 +1646,29 @@ document.observe('xwiki:dom:loaded', function() {
 </property>
 <property>
 <code>document.observe('xwiki:dom:loaded', function() {
+ 
+  var chartContainer = $('charts');
+  // ----------------------------------------------------------------------------
+  // Workaround for webkit bug https://bugs.webkit.org/show_bug.cgi?id=68995
+  // Inspired by http://www.brichards.co.uk/blog/webkit-svg-height-bug-workaround
+  // (adapted from jQuery to Prototype.js)
+  var __adjustSVGHeight = function(svgElt) {
+     // Original width/height of the svg graphic: 952 X 1225
+     svgElt.setStyle({ 'height' : (1225 / 952 * svgElt.getWidth()) + 'px'});
+
+  }
+  var __adjustAllSVGHeights = function() {
+     chartContainer &amp;&amp; chartContainer.select('.chart-wrapper').each(__adjustSVGHeight);
+  }
+  __adjustAllSVGHeights();
+  Event.observe(window, 'resize', __adjustAllSVGHeights);
+  // ----------------------------------------------------------------------------
+
   var dataTable = $('extradata-list-ClinicalInformationCode.MeasurementsClass');
   if (!dataTable || !dataTable.down('.actions')) {return;}
 
   var measurementsService = "$xwiki.getURL('ClinicalInformationCode.PatientToolsService', 'get')";
   var chartService = "$xwiki.getURL('ClinicalInformationCode.ChartService', 'get')";
-  var chartContainer = $('charts')
 
   var createRowQueryString = function (row, forceParam) {
     var weight = row.down('td.weight input');
@@ -1787,20 +1804,6 @@ document.observe('xwiki:dom:loaded', function() {
     });
   }
 
-  // ----------------------------------------------------------------------------
-  // Workaround for webkit bug https://bugs.webkit.org/show_bug.cgi?id=68995
-  // Inspired by http://www.brichards.co.uk/blog/webkit-svg-height-bug-workaround
-  // (adapted from jQuery to Prototype.js)
-  var __adjustSVGHeight = function(svgElt) {
-     // Original width/height of the svg graphic: 952 X 1225
-     svgElt.setStyle({ 'height' : (1225 / 952 * svgElt.getWidth()) + 'px'});
-
-  }
-  var __adjustAllSVGHeights = function() {
-     chartContainer.select('.chart-wrapper').each(__adjustSVGHeight);
-  }
-  __adjustAllSVGHeights();
-  Event.observe(window, 'resize', __adjustAllSVGHeights);
   // ----------------------------------------------------------------------------
 
   var valueChanged = function(event) {
