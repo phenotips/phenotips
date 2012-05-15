@@ -1,2 +1,10 @@
+.idea/*
 
-.idea/workspace.xml
+.metadata/*
+
+.DS*
+
+.project*
+PedigreeGraph/.idea/scopes/scope_settings.xml
+
+PedigreeGraph/.idea/workspace.xml
