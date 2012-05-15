@@ -10,13 +10,11 @@ document.observe("dom:loaded",function() {
         //mother: null,
         //siblings: [],
         //connections: [],
-        _diseases: [],
         _paper: null,
         _age: null,
         _ageLabel: null,
         _isDead: false,
         _shape: null,
-        _diseaseShapes: [],
         _deadShape: null,
         _diseaseMap: null,
         _radius: 40,
@@ -29,6 +27,8 @@ document.observe("dom:loaded",function() {
          */
         initialize: function(canvas, xPosition, yPosition, diseaseMap, radius) {
             this._radius = radius;
+            this._diseases = [];
+            this._diseaseShapes = [];
             this._xPos = xPosition;
             this._yPos = yPosition;
             this._paper = canvas;
