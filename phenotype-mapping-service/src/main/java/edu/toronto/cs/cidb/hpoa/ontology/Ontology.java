@@ -89,7 +89,12 @@ public class Ontology extends DAG<OntologyTerm> {
 			// TODO Auto-generated catch block
 			ex.printStackTrace();
 		}
+		cleanArcs();
+		// How much did we load:
+		return size();
+	}
 
+	private void cleanArcs() {
 		Set<IDAGNode> roots = new HashSet<IDAGNode>();
 		// Redo all links
 		for (DAGNode n : getNodes()) {
@@ -122,8 +127,6 @@ public class Ontology extends DAG<OntologyTerm> {
 				n.addParent(this.root);
 			}
 		}
-		// How much did we load:
-		return size();
 	}
 
 	protected void createOntologyTerm(TermData data) {
