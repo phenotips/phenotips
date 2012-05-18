@@ -25,15 +25,19 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+
 import edu.toronto.cs.cidb.hpoa.utils.graph.DAG;
 import edu.toronto.cs.cidb.hpoa.utils.graph.DAGNode;
 import edu.toronto.cs.cidb.hpoa.utils.graph.IDAGNode;
-
+import edu.toronto.cs.cidb.solr.SolrScriptService;
 
 public class Ontology extends DAG<OntologyTerm> {
 	public final static String PARENT_ID_REGEX = "^([A-Z]{2}\\:[0-9]{7})\\s*!\\s*.*";
@@ -47,6 +51,33 @@ public class Ontology extends DAG<OntologyTerm> {
 	private IDAGNode root;
 
 	private Map<String, Set<String>> ancestorCache = new HashMap<String, Set<String>>();
+
+	public int load(SolrScriptService source) {
+		// Make sure we can read the data
+		if (source == null) {
+			return -1;
+		}
+		// Load data
+		clear();
+		TermData data = new TermData();
+		SolrDocumentList results = source.search("*:*");
+		for (SolrDocument result : results) {
+			for (String name : result.getFieldNames()) {
+				Object val = result.get(name);
+				if (val instanceof Collection<?>) {
+					data.put(name, (Collection) val);
+				} else {
+					data.addTo(name, (String) val);
+				}
+			}
+			if (data.isValid()) {
+				this.createOntologyTerm(data);
+			}
+		}
+		cleanArcs();
+		// How much did we load:
+		return size();
+	}
 
 	public int load(File source) {
 		// Make sure we can read the data

@@ -19,18 +19,30 @@
  */
 package edu.toronto.cs.cidb.hpoa.ontology;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import edu.toronto.cs.cidb.hpoa.utils.io.IOUtils;
+import edu.toronto.cs.cidb.solr.SolrScriptService;
 
 public class HPO extends Ontology {
 	private static Ontology instance;
 
+	@Inject
+	@Named("solr")
+	private SolrScriptService service;
+
 	private HPO() {
 		super();
-		this
-				.load(IOUtils
-						.getInputFileHandler(
-								"http://compbio.charite.de/svn/hpo/trunk/src/ontology/human-phenotype-ontology.obo",
-								false));
+		if (this.service != null) {
+			this.load(this.service);
+		} else {
+			this
+					.load(IOUtils
+							.getInputFileHandler(
+									"http://compbio.charite.de/svn/hpo/trunk/src/ontology/human-phenotype-ontology.obo",
+									false));
+		}
 	}
 
 	public static Ontology getInstance() {
