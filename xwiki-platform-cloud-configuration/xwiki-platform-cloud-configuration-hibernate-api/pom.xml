@@ -28,7 +28,7 @@
   <parent>
     <groupId>org.xwiki.contrib</groupId>
     <artifactId>xwiki-platform-cloud-configuration</artifactId>
-    <version>3.5</version>
+    <version>4.0</version>
   </parent>
   <artifactId>xwiki-platform-cloud-configuration-hibernate-api</artifactId>
 

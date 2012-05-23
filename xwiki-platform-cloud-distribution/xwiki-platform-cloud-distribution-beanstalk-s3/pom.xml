@@ -28,7 +28,7 @@
   <parent>
     <groupId>org.xwiki.contrib</groupId>
     <artifactId>xwiki-platform-cloud-distribution</artifactId>
-    <version>3.5</version>
+    <version>4.0</version>
   </parent>
   <artifactId>xwiki-platform-cloud-distribution-beanstalk-s3</artifactId>
   <packaging>war</packaging>
@@ -39,7 +39,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
     <!-- Disable enforcer checks because we declare a dependency on a legacy module -->
-    <enforcer.skip>true</enforcer.skip>
+    <xwiki.enforcer.skip>true</xwiki.enforcer.skip>
   </properties>
 
   <dependencies>

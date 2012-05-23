@@ -28,7 +28,7 @@
   <parent>
     <groupId>org.xwiki.contrib</groupId>
     <artifactId>xwiki-platform-cloud-configuration</artifactId>
-    <version>3.5</version>
+    <version>4.0</version>
   </parent>
   <artifactId>xwiki-platform-cloud-configuration-hibernate-environment</artifactId>
 
@@ -43,12 +43,12 @@
     <dependency>
       <groupId>org.xwiki.contrib</groupId>
       <artifactId>xwiki-platform-cloud-configuration-hibernate-api</artifactId>
-      <version>3.5</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-environment-api</artifactId>
-      <version>3.5</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>

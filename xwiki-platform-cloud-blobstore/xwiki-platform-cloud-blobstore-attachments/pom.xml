@@ -28,7 +28,7 @@
   <parent>
     <groupId>org.xwiki.contrib</groupId>
     <artifactId>xwiki-platform-cloud-blobstore</artifactId>
-    <version>3.5</version>
+    <version>4.0</version>
   </parent>
   <artifactId>xwiki-platform-cloud-blobstore-attachments</artifactId>
 
