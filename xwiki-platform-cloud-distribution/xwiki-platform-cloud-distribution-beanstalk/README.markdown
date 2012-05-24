@@ -1,7 +1,7 @@
 Introduction
 ============
 
-This module build a WAR that can be deployed on Amazon Beanstalk. It uses the MySQL driver for storing data in the database.
+This module builds a WAR that can be deployed on Amazon Beanstalk. It uses the MySQL driver for storing data in the database.
 
 When starting the Beanstalk environment you need to allocate an `xwiki` database on Amazon RDS and define the following properties in the Beanstalk panel:
 
