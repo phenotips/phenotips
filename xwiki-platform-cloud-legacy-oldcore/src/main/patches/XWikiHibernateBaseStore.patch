@@ -1,5 +1,5 @@
 diff --git com/xpn/xwiki/store/XWikiHibernateBaseStore.java com/xpn/xwiki/store/XWikiHibernateBaseStore.java
-index e4522e2..d7beda1 100644
+index 6577246..996856f 100644
 --- com/xpn/xwiki/store/XWikiHibernateBaseStore.java
 +++ com/xpn/xwiki/store/XWikiHibernateBaseStore.java
 @@ -29,6 +29,7 @@
@@ -10,36 +10,38 @@ index e4522e2..d7beda1 100644
  
  import org.hibernate.FlushMode;
  import org.hibernate.HibernateException;
-@@ -45,8 +46,11 @@
+@@ -46,8 +47,10 @@
  import org.hibernate.tool.hbm2ddl.DatabaseMetadata;
  import org.slf4j.Logger;
  import org.slf4j.LoggerFactory;
 +import org.w3c.dom.Document;
-+import org.xwiki.component.manager.ComponentLookupException;
  import org.xwiki.component.phase.Initializable;
  import org.xwiki.component.phase.InitializationException;
 +import org.xwiki.configuration.HibernateConfigurator;
  import org.xwiki.context.Execution;
+ import org.xwiki.logging.LoggerManager;
  
- import com.xpn.xwiki.XWiki;
-@@ -164,7 +168,19 @@ public DatabaseProduct getDatabaseProductName(XWikiContext context)
+@@ -80,6 +83,9 @@
+     @Named("hibernate")
+     private DataMigrationManager dataMigrationManager;
+ 
++    @Inject
++    private Provider<HibernateConfigurator> hibernateConfiguratorProvider;
++
+     private String hibpath = "/WEB-INF/hibernate.cfg.xml";
+ 
+     /**
+@@ -201,7 +207,12 @@ public DatabaseProduct getDatabaseProductName(XWikiContext context)
       */
      private synchronized void initHibernate(XWikiContext context) throws HibernateException
      {
 -        getConfiguration().configure(getPath());
-+        try {
-+            Provider<HibernateConfigurator> hibernateConfiguratorProvider =
-+                Utils.getComponentManager().lookup(Provider.class, "hibernate");
++        HibernateConfigurator hibernateConfigurator = hibernateConfiguratorProvider.get();
 +
-+            HibernateConfigurator hibernateConfigurator = hibernateConfiguratorProvider.get();
++        LOGGER.debug("Configuring Hibernate using configurator '{}'", hibernateConfigurator.getClass().getName());
 +
-+            LOGGER.debug("Configuring Hibernate using configurator '{}'", hibernateConfigurator.getClass().getName());
-+
-+            Document hibernateConfiguration = hibernateConfigurator.getConfiguration();
-+            getConfiguration().configure(hibernateConfiguration);
-+        } catch (ComponentLookupException e) {
-+            throw new HibernateException(e);
-+        }
++        Document hibernateConfiguration = hibernateConfigurator.getConfiguration();
++        getConfiguration().configure(hibernateConfiguration);
  
          XWiki wiki = context.getWiki();
          if (wiki != null && wiki.Param("xwiki.db") != null && !wiki.isVirtualMode()) {

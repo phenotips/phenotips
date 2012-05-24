@@ -1,1 +1,1 @@
-org.xwiki.configuration.internal.DefaultHibernateConfigurationProvider
+org.xwiki.configuration.internal.DefaultHibernateConfiguratorProvider

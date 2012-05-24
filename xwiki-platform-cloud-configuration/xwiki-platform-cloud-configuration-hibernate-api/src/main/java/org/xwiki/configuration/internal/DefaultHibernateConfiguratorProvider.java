@@ -36,8 +36,7 @@ import org.xwiki.configuration.HibernateConfigurator;
  * 
  * @version $Id$
  */
-@Named("hibernate")
-public class DefaultHibernateConfigurationProvider implements Provider<HibernateConfigurator>, Initializable
+public class DefaultHibernateConfiguratorProvider implements Provider<HibernateConfigurator>, Initializable
 {
     /**
      * The property for selecting the hibernate configurator.
