@@ -19,50 +19,51 @@
  */
 package edu.toronto.cs.cidb.hpoa.prediction;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import edu.toronto.cs.cidb.hpoa.annotation.HPOAnnotation;
 import edu.toronto.cs.cidb.hpoa.annotation.SearchResult;
 import edu.toronto.cs.cidb.hpoa.utils.maps.CounterMap;
 import edu.toronto.cs.cidb.hpoa.utils.maps.SumMap;
 
+public abstract class AbstractPredictor implements Predictor
+{
+    protected HPOAnnotation annotations;
 
-public abstract class AbstractPredictor implements Predictor {
-	protected HPOAnnotation annotations;
+    @Override
+    public void setAnnotation(HPOAnnotation annotations)
+    {
+        this.annotations = annotations;
+    }
 
-	public AbstractPredictor(HPOAnnotation annotations) {
-		this.annotations = annotations;
-	}
-
-	public abstract List<SearchResult> getMatches(Set<String> phenotypes);
-
-	@Override
-	public List<SearchResult> getDifferentialPhenotypes(Set<String> phenotypes) {
-		List<SearchResult> result = new LinkedList<SearchResult>();
-		SumMap<String> cummulativeScore = new SumMap<String>();
-		CounterMap<String> matchCounter = new CounterMap<String>();
-		List<SearchResult> matches = getMatches(phenotypes);
-		for (SearchResult r : matches) {
-			String omimId = r.getId();
-			for (String hpoId : this.annotations.getPhenotypesWithAnnotation(
-					omimId).keySet()) {
-				if (phenotypes.contains(hpoId)) {
-					continue;
-				}
-				cummulativeScore.addTo(hpoId, r.getScore());
-				matchCounter.addTo(hpoId);
-			}
-		}
-		if (matchCounter.getMinValue() <= matches.size() / 2) {
-			for (String hpoId : cummulativeScore.keySet()) {
-				result.add(new SearchResult(hpoId, cummulativeScore.get(hpoId)
-						/ (matchCounter.get(hpoId) * matchCounter.get(hpoId))));
-			}
-			Collections.sort(result);
-		}
-		return result;
-	}
+    @Override
+    public List<SearchResult> getDifferentialPhenotypes(Collection<String> phenotypes)
+    {
+        List<SearchResult> result = new LinkedList<SearchResult>();
+        SumMap<String> cummulativeScore = new SumMap<String>();
+        CounterMap<String> matchCounter = new CounterMap<String>();
+        List<SearchResult> matches = getMatches(phenotypes);
+        for (SearchResult r : matches) {
+            String omimId = r.getId();
+            for (String hpoId : this.annotations.getPhenotypesWithAnnotation(omimId).keySet()) {
+                if (phenotypes.contains(hpoId)) {
+                    continue;
+                }
+                cummulativeScore.addTo(hpoId, r.getScore());
+                matchCounter.addTo(hpoId);
+            }
+        }
+        if (matchCounter.getMinValue() <= matches.size() / 2) {
+            for (String hpoId : cummulativeScore.keySet()) {
+                result.add(new SearchResult(hpoId, annotations.getOntology().getTerm(hpoId).getName(), cummulativeScore
+                    .get(hpoId)
+                    / (matchCounter.get(hpoId) * matchCounter.get(hpoId))));
+            }
+            Collections.sort(result);
+        }
+        return result;
+    }
 }

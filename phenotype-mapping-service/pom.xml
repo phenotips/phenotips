@@ -45,6 +45,11 @@
       <version>${commons.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-environment-api</artifactId>
+      <version>${commons.version}</version>
+    </dependency>
+    <dependency>
       <groupId>edu.toronto.cs.cidb</groupId>
       <artifactId>solr-access-service</artifactId>
       <version>${project.version}</version>

@@ -24,25 +24,28 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.xwiki.component.annotation.ComponentRole;
+
 import edu.toronto.cs.cidb.hpoa.ontology.Ontology;
 
+@ComponentRole
+public interface HPOAnnotation
+{
+    public int load(File source);
 
-public interface HPOAnnotation {
-	public int load(File source);
+    public Ontology getOntology();
 
-	public Ontology getOntology();
+    public Set<String> getAnnotationIds();
 
-	public Set<String> getAnnotationIds();
+    public Set<String> getHPONodesIds();
 
-	public Set<String> getHPONodesIds();
+    public Collection<AnnotationTerm> getAnnotations();
 
-	public Collection<AnnotationTerm> getAnnotations();
+    public Collection<AnnotationTerm> getHPONodes();
 
-	public Collection<AnnotationTerm> getHPONodes();
+    public AnnotationTerm getAnnotationNode(String annId);
 
-	public AnnotationTerm getAnnotationNode(String annId);
+    public AnnotationTerm getHPONode(String id);
 
-	public AnnotationTerm getHPONode(String id);
-
-	public Map<String, String> getPhenotypesWithAnnotation(String annId);
+    public Map<String, String> getPhenotypesWithAnnotation(String annId);
 }

@@ -19,7 +19,6 @@
  */
 package edu.toronto.cs.cidb.hpoa.ontology;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,33 +29,31 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import edu.toronto.cs.cidb.hpoa.utils.io.IOUtils;
-
-
-public class DAG {
+public class DAG
+{
     public final static String PARENT_ID_REGEX = "^([A-Z]{2}\\:[0-9]{7})\\s*!\\s*.*";
-    
+
     private final static String TERM_MARKER = "[Term]";
 
     private final static String FIELD_NAME_VALUE_SEPARATOR = "\\s*:\\s+";
-    
-	private TreeMap<String, Node> nodes = new TreeMap<String, Node>();
-	
-	public int load(String sourcePath) {
-		// Make sure we can read the data
-		File source = IOUtils.getInputFileHandler(sourcePath);
-		if (source == null) {
-			return -1;
-		}
-		// Load data
-		nodes.clear();
-		TermData data = new TermData();
-		try {
+
+    private final TreeMap<String, Node> nodes = new TreeMap<String, Node>();
+
+    public int load(File source)
+    {
+        // Make sure we can read the data
+        if (source == null) {
+            return -1;
+        }
+        // Load data
+        nodes.clear();
+        TermData data = new TermData();
+        try {
             BufferedReader in = new BufferedReader(new FileReader(source));
             String line;
             while ((line = in.readLine()) != null) {
                 if (line.trim().equalsIgnoreCase(TERM_MARKER)) {
-                    if (data.getId() != null) { 
+                    if (data.getId() != null) {
                         this.nodes.put(data.getId(), new Node(data));
                         data.clear();
                     }
@@ -69,9 +66,9 @@ public class DAG {
                 String name = pieces[0], value = pieces[1];
                 data.addTo(name, value);
             }
-			if (data.getId() != null) {
-				this.nodes.put(data.getId(), new Node(data));
-			}
+            if (data.getId() != null) {
+                this.nodes.put(data.getId(), new Node(data));
+            }
         } catch (NullPointerException ex) {
             ex.printStackTrace();
             System.err.println("File does not exist");
@@ -82,33 +79,40 @@ public class DAG {
             // TODO Auto-generated catch block
             ex.printStackTrace();
         }
-		
-		// Redo all links
-		for (Node n : nodes.values()) {
-			for (String parentId : n.getParents()) {
-				Node p = nodes.get(parentId);
-				if (p != null) {
-				  p.addChild(n);
-				} else {
-					System.err.println("[WARNING] Node with id " + n.getId() + " has parent " + parentId +
-							", but no node " + parentId + "exists in the graph!\n");
-				}
-			}
-		}
-		// How much did we load:
-		return nodes.size(); 
-	}
-	
-	public Map<String, Node> getNodesMap() {
-		return this.nodes;
-	}
-	public Set<String> getNodesIds() {
-		return this.nodes.keySet();
-	}
-	public Collection<Node> getNodes() {
-		return this.nodes.values();
-	}
-	public Node getNode(String id) {
-		return this.nodes.get(id);
-	}
+
+        // Redo all links
+        for (Node n : nodes.values()) {
+            for (String parentId : n.getParents()) {
+                Node p = nodes.get(parentId);
+                if (p != null) {
+                    p.addChild(n);
+                } else {
+                    System.err.println("[WARNING] Node with id " + n.getId() + " has parent " + parentId
+                        + ", but no node " + parentId + "exists in the graph!\n");
+                }
+            }
+        }
+        // How much did we load:
+        return nodes.size();
+    }
+
+    public Map<String, Node> getNodesMap()
+    {
+        return this.nodes;
+    }
+
+    public Set<String> getNodesIds()
+    {
+        return this.nodes.keySet();
+    }
+
+    public Collection<Node> getNodes()
+    {
+        return this.nodes.values();
+    }
+
+    public Node getNode(String id)
+    {
+        return this.nodes.get(id);
+    }
 }

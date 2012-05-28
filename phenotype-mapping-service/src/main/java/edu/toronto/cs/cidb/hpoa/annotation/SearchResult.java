@@ -19,70 +19,86 @@
  */
 package edu.toronto.cs.cidb.hpoa.annotation;
 
-public class SearchResult implements Comparable<SearchResult> {
-	private final String id;
-	private final double score;
+public class SearchResult implements Comparable<SearchResult>
+{
+    private final String id;
 
-	public SearchResult(String id, double score) {
-		this.id = id;
-		this.score = score;
-	}
+    private final String name;
 
-	public String getId() {
-		return this.id;
-	}
+    private final double score;
 
-	public double getScore() {
-		return this.score;
-	}
+    public SearchResult(String id, String name, double score)
+    {
+        this.id = id;
+        this.name = name;
+        this.score = score;
+    }
 
-	@Override
-	public int compareTo(SearchResult other) {
-		if (other == null) {
-			return 0;
-		}
-		return (int) -Math.signum(this.score - (other).getScore());
-	}
+    public String getId()
+    {
+        return this.id;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(this.score);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		return result;
-	}
+    public String getName()
+    {
+        return this.name;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		SearchResult other = (SearchResult) obj;
-		if (this.id == null) {
-			if (other.id != null) {
-				return false;
-			}
-		} else if (!this.id.equals(other.id)) {
-			return false;
-		}
-		if (Double.doubleToLongBits(this.score) != Double
-				.doubleToLongBits(other.score)) {
-			return false;
-		}
-		return true;
-	}
+    public double getScore()
+    {
+        return this.score;
+    }
 
-	@Override
-	public String toString() {
-		return this.id + "\t" + this.score;
-	}
+    @Override
+    public int compareTo(SearchResult other)
+    {
+        if (other == null) {
+            return 0;
+        }
+        return (int) -Math.signum(this.score - (other).getScore());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+        long temp;
+        temp = Double.doubleToLongBits(this.score);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        SearchResult other = (SearchResult) obj;
+        if (this.id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!this.id.equals(other.id)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.score) != Double.doubleToLongBits(other.score)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.id + '\t' + this.name + '\t' + this.score;
+    }
 }

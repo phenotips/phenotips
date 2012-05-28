@@ -29,75 +29,89 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+
 import edu.toronto.cs.cidb.hpoa.ontology.Ontology;
 import edu.toronto.cs.cidb.hpoa.utils.graph.BGraph;
 
+@Component
+@Named("omim-hpo")
+@Singleton
+public class OmimHPOAnnotations extends AbstractHPOAnnotation
+{
+    public static final Side OMIM = BGraph.Side.L;
 
-public class OmimHPOAnnotations extends AbstractHPOAnnotation {
-	public static final Side OMIM = BGraph.Side.L;
+    private static final String OMIM_ANNOTATION_MARKER = "OMIM";
 
-	private static final String OMIM_ANNOTATION_MARKER = "OMIM";
-	private static final String SEPARATOR = "\t";
-	private static final int MIN_EXPECTED_FIELDS = 8;
+    private static final String SEPARATOR = "\t";
 
-	public OmimHPOAnnotations(Ontology hpo) {
-		super(hpo);
-	}
+    private static final int MIN_EXPECTED_FIELDS = 8;
 
-	@Override
-	public int load(File source) {
-		// Make sure we can read the data
-		if (source == null) {
-			return -1;
-		}
-		clear();
-		// Load data
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(source));
-			String line;
-			Map<Side, AnnotationTerm> connection = new HashMap<Side, AnnotationTerm>();
-			while ((line = in.readLine()) != null) {
-				if (!line.startsWith(OMIM_ANNOTATION_MARKER)) {
-					continue;
-				}
-				String pieces[] = line.split(SEPARATOR, MIN_EXPECTED_FIELDS);
-				if (pieces.length != MIN_EXPECTED_FIELDS) {
-					continue;
-				}
-				final String omimId = OMIM_ANNOTATION_MARKER + ":" + pieces[1], omimName = pieces[2], hpoId = this.hpo
-						.getRealId(pieces[4]), rel = pieces[3];
-				if (!"NOT".equals(rel)) {
-					connection.clear();
-					connection.put(OMIM, new AnnotationTerm(omimId, omimName));
-					connection.put(HPO, new AnnotationTerm(hpoId));
-					this.addConnection(connection);
-				}
-			}
-			in.close();
-			propagateHPOAnnotations();
-		} catch (NullPointerException ex) {
-			ex.printStackTrace();
-			System.err.println("File does not exist");
-		} catch (FileNotFoundException ex) {
-			ex.printStackTrace();
-			System.err.println("Could not locate source file: "
-					+ source.getAbsolutePath());
-		} catch (IOException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
-		}
-		return size();
-	}
+    public OmimHPOAnnotations(Ontology hpo)
+    {
+        super(hpo);
+    }
 
-	public Set<String> getOMIMNodesIds() {
-		return this.getNodesIds(OMIM);
-	}
+    @Override
+    public int load(File source)
+    {
+        // Make sure we can read the data
+        if (source == null) {
+            return -1;
+        }
+        clear();
+        // Load data
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(source));
+            String line;
+            Map<Side, AnnotationTerm> connection = new HashMap<Side, AnnotationTerm>();
+            while ((line = in.readLine()) != null) {
+                if (!line.startsWith(OMIM_ANNOTATION_MARKER)) {
+                    continue;
+                }
+                String pieces[] = line.split(SEPARATOR, MIN_EXPECTED_FIELDS);
+                if (pieces.length != MIN_EXPECTED_FIELDS) {
+                    continue;
+                }
+                final String omimId = OMIM_ANNOTATION_MARKER + ":" + pieces[1], omimName = pieces[2], hpoId =
+                    this.hpo.getRealId(pieces[4]), rel = pieces[3];
+                if (!"NOT".equals(rel)) {
+                    connection.clear();
+                    connection.put(OMIM, new AnnotationTerm(omimId, omimName));
+                    connection.put(HPO, new AnnotationTerm(hpoId));
+                    this.addConnection(connection);
+                }
+            }
+            in.close();
+            propagateHPOAnnotations();
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+            System.err.println("File does not exist");
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+            System.err.println("Could not locate source file: " + source.getAbsolutePath());
+        } catch (IOException ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
+        return size();
+    }
 
-	public Collection<AnnotationTerm> getOMIMNodes() {
-		return this.getNodes(OMIM);
-	}
+    public Set<String> getOMIMNodesIds()
+    {
+        return this.getNodesIds(OMIM);
+    }
 
-	public AnnotationTerm getOMIMNode(String omimId) {
-		return this.getNode(omimId, OMIM);
-	}
+    public Collection<AnnotationTerm> getOMIMNodes()
+    {
+        return this.getNodes(OMIM);
+    }
+
+    public AnnotationTerm getOMIMNode(String omimId)
+    {
+        return this.getNode(omimId, OMIM);
+    }
 }

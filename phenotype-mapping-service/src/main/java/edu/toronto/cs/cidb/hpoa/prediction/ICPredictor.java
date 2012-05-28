@@ -19,6 +19,7 @@
  */
 package edu.toronto.cs.cidb.hpoa.prediction;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,98 +28,103 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+
 import edu.toronto.cs.cidb.hpoa.annotation.AnnotationTerm;
-import edu.toronto.cs.cidb.hpoa.annotation.HPOAnnotation;
 import edu.toronto.cs.cidb.hpoa.annotation.SearchResult;
 import edu.toronto.cs.cidb.hpoa.ontology.OntologyTerm;
 
+@Component
+@Named("ic")
+@Singleton
+public class ICPredictor extends AbstractPredictor
+{
+    private final Map<String, Double> icCache = new HashMap<String, Double>();
 
-public class ICPredictor extends AbstractPredictor {
+    public double getIC(String hpoId)
+    {
+        return getIC(this.annotations.getHPONode(hpoId));
+    }
 
-	private Map<String, Double> icCache = new HashMap<String, Double>();
+    private double getIC(AnnotationTerm hpoNode)
+    {
+        return hpoNode == null ? 0 : getCachedIC(hpoNode);
+    }
 
-	public ICPredictor(HPOAnnotation annotations) {
-		super(annotations);
-	}
+    private double getCachedIC(AnnotationTerm hpoNode)
+    {
+        Double result = this.icCache.get(hpoNode.getId());
+        if (result == null) {
+            result = -Math.log((double) hpoNode.getNeighborsCount() / this.annotations.getAnnotations().size());
+            this.icCache.put(hpoNode.getId(), result);
+        }
+        return result;
+    }
 
-	public double getIC(String hpoId) {
-		return getIC(this.annotations.getHPONode(hpoId));
-	}
+    public OntologyTerm getMICA(String hpoId1, String hpoId2)
+    {
+        String micaId = getMICAId(hpoId1, hpoId2);
+        if (micaId != null) {
+            return this.annotations.getOntology().getTerm(micaId);
+        }
+        return null;
+    }
 
-	private double getIC(AnnotationTerm hpoNode) {
-		return hpoNode == null ? 0 : getCachedIC(hpoNode);
-	}
+    public String getMICAId(String hpoId1, String hpoId2)
+    {
+        // TODO: implement more efficiently!
+        Set<String> common = new HashSet<String>();
+        common.addAll(this.annotations.getOntology().getAncestors(hpoId1));
+        common.retainAll(this.annotations.getOntology().getAncestors(hpoId2));
+        double max = -1;
+        String micaId = this.annotations.getOntology().getRootId();
+        for (String a : common) {
+            double ic = this.getIC(a);
+            if (ic >= max) {
+                max = ic;
+                micaId = a;
+            }
+        }
+        return micaId;
+    }
 
-	private double getCachedIC(AnnotationTerm hpoNode) {
-		Double result = this.icCache.get(hpoNode.getId());
-		if (result == null) {
-			result = -Math.log((double) hpoNode.getNeighborsCount()
-					/ this.annotations.getAnnotations().size());
-			this.icCache.put(hpoNode.getId(), result);
-		}
-		return result;
-	}
+    public double asymmetricPhenotypeSimilarity(Collection<String> query, Collection<String> reference)
+    {
+        double result = 0.0;
+        for (String q : query) {
+            double bestMatchIC = 0;
+            for (String r : reference) {
+                double ic = this.getIC(this.getMICAId(q, r));
+                if (ic > bestMatchIC) {
+                    bestMatchIC = ic;
+                }
+            }
+            result += bestMatchIC;
+        }
+        return result / (query.size() > 0 ? query.size() : 1);
+    }
 
-	public OntologyTerm getMICA(String hpoId1, String hpoId2) {
-		String micaId = getMICAId(hpoId1, hpoId2);
-		if (micaId != null) {
-			return this.annotations.getOntology().getTerm(micaId);
-		}
-		return null;
-	}
+    public double symmetricPhenotypeSimilarity(Collection<String> query, Collection<String> reference)
+    {
+        return .5 * asymmetricPhenotypeSimilarity(query, reference) + .5
+            * asymmetricPhenotypeSimilarity(reference, query);
+    }
 
-	public String getMICAId(String hpoId1, String hpoId2) {
-		// TODO: implement more efficiently!
-		Set<String> common = new HashSet<String>();
-		common.addAll(this.annotations.getOntology().getAncestors(hpoId1));
-		common.retainAll(this.annotations.getOntology().getAncestors(hpoId2));
-		double max = -1;
-		String micaId = this.annotations.getOntology().getRootId();
-		for (String a : common) {
-			double ic = this.getIC(a);
-			if (ic >= max) {
-				max = ic;
-				micaId = a;
-			}
-		}
-		return micaId;
-	}
-
-	public double asymmetricPhenotypeSimilarity(Set<String> query,
-			Set<String> reference) {
-		double result = 0.0;
-		for (String q : query) {
-			double bestMatchIC = 0;
-			for (String r : reference) {
-				double ic = this.getIC(this.getMICAId(q, r));
-				if (ic > bestMatchIC) {
-					bestMatchIC = ic;
-				}
-			}
-			result += bestMatchIC;
-		}
-		return result / (query.size() > 0 ? query.size() : 1);
-	}
-
-	public double symmetricPhenotypeSimilarity(Set<String> query,
-			Set<String> reference) {
-		return .5 * asymmetricPhenotypeSimilarity(query, reference) + .5
-				* asymmetricPhenotypeSimilarity(reference, query);
-	}
-
-	@Override
-	public List<SearchResult> getMatches(Set<String> phenotypes) {
-		List<SearchResult> result = new LinkedList<SearchResult>();
-		for (AnnotationTerm o : this.annotations.getAnnotations()) {
-			Set<String> annPhenotypes = this.annotations
-					.getPhenotypesWithAnnotation(o.getId()).keySet();
-			double matchScore = this.asymmetricPhenotypeSimilarity(phenotypes,
-					annPhenotypes);
-			if (matchScore > 0) {
-				result.add(new SearchResult(o.getId(), matchScore));
-			}
-		}
-		Collections.sort(result);
-		return result;
-	}
+    @Override
+    public List<SearchResult> getMatches(Collection<String> phenotypes)
+    {
+        List<SearchResult> result = new LinkedList<SearchResult>();
+        for (AnnotationTerm o : this.annotations.getAnnotations()) {
+            Set<String> annPhenotypes = this.annotations.getPhenotypesWithAnnotation(o.getId()).keySet();
+            double matchScore = this.asymmetricPhenotypeSimilarity(phenotypes, annPhenotypes);
+            if (matchScore > 0) {
+                result.add(new SearchResult(o.getId(), o.getName(), matchScore));
+            }
+        }
+        Collections.sort(result);
+        return result;
+    }
 }

@@ -19,21 +19,25 @@
  */
 package edu.toronto.cs.cidb.hpoa.prediction;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
-import edu.toronto.cs.cidb.hpoa.annotation.HPOAnnotation;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+
 import edu.toronto.cs.cidb.hpoa.annotation.SearchResult;
 
-
-public class WPredictor extends AbstractPredictor {
-	public WPredictor(HPOAnnotation annotations) {
-		super(annotations);
-	}
-
-	@Override
-	public List<SearchResult> getMatches(Set<String> phenotypes) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+@Component
+@Named("bn")
+@Singleton
+public class BNPredictor extends AbstractPredictor
+{
+    @Override
+    public List<SearchResult> getMatches(Collection<String> phenotypes)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

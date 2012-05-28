@@ -31,85 +31,99 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+
 import edu.toronto.cs.cidb.hpoa.ontology.Ontology;
 import edu.toronto.cs.cidb.hpoa.utils.graph.BGraph;
 
+@Component
+@Named("gene-hpo")
+@Singleton
+public class GeneHPOAnnotations extends AbstractHPOAnnotation
+{
+    public static final Side GENE = BGraph.Side.L;
 
-public class GeneHPOAnnotations extends AbstractHPOAnnotation {
-	public static final Side GENE = BGraph.Side.L;
+    private static final String COMMENT_MARKER = "#";
 
-	private static final String COMMENT_MARKER = "#";
-	private static final Pattern GENE_REG_EXP = Pattern
-			.compile("([A-Z0-9]+)\\(([0-9]+)\\)");
-	private static final Pattern ANNOTATION_REG_EXP = Pattern
-			.compile("^(.*)\\s\\((HP:[0-9]{7})\\)\t\\[("
-					+ GENE_REG_EXP.pattern() + "(,\\s" + GENE_REG_EXP.pattern()
-					+ ")*)\\]$");
-	private static final int NAME_IDX = 1;
-	private static final int ID_IDX = 2;
-	private static final int LIST_IDX = 3;
+    private static final Pattern GENE_REG_EXP = Pattern.compile("([A-Z0-9]+)\\(([0-9]+)\\)");
 
-	public GeneHPOAnnotations(Ontology hpo) {
-		super(hpo);
-	}
+    private static final Pattern ANNOTATION_REG_EXP =
+        Pattern.compile("^(.*)\\s\\((HP:[0-9]{7})\\)\t\\[(" + GENE_REG_EXP.pattern() + "(,\\s" + GENE_REG_EXP.pattern()
+            + ")*)\\]$");
 
-	@Override
-	public int load(File source) {
-		// Make sure we can read the data
-		if (source == null) {
-			return -1;
-		}
-		// Load data
-		clear();
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(source));
-			String line;
-			Map<Side, AnnotationTerm> connection = new HashMap<Side, AnnotationTerm>();
-			while ((line = in.readLine()) != null) {
-				if (line.startsWith(COMMENT_MARKER)) {
-					continue;
-				}
-				Matcher m = ANNOTATION_REG_EXP.matcher(line);
-				if (m.find()) {
-					// String hpoName = m.group(NAME_IDX);
-					final String hpoId = this.hpo.getRealId(m.group(ID_IDX));
-					String geneList = m.group(LIST_IDX);
-					if (geneList != null) {
-						final Matcher mi = GENE_REG_EXP.matcher(geneList);
-						while (mi.find()) {
-							connection.clear();
-							connection.put(GENE, new AnnotationTerm(mi
-									.group(ID_IDX), mi.group(NAME_IDX)));
-							connection.put(HPO, new AnnotationTerm(hpoId));
-						}
-					}
-				}
-			}
-			in.close();
-			propagateHPOAnnotations();
-		} catch (NullPointerException ex) {
-			ex.printStackTrace();
-			System.err.println("File does not exist");
-		} catch (FileNotFoundException ex) {
-			ex.printStackTrace();
-			System.err.println("Could not locate source file: "
-					+ source.getAbsolutePath());
-		} catch (IOException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
-		}
-		return size();
-	}
+    private static final int NAME_IDX = 1;
 
-	public Set<String> getGeneIds() {
-		return this.getNodesIds(GENE);
-	}
+    private static final int ID_IDX = 2;
 
-	public Collection<AnnotationTerm> getGeneodes() {
-		return this.getNodes(GENE);
-	}
+    private static final int LIST_IDX = 3;
 
-	public AnnotationTerm getGeneNode(String geneId) {
-		return this.getNode(geneId, GENE);
-	}
+    public GeneHPOAnnotations(Ontology hpo)
+    {
+        super(hpo);
+    }
+
+    @Override
+    public int load(File source)
+    {
+        // Make sure we can read the data
+        if (source == null) {
+            return -1;
+        }
+        // Load data
+        clear();
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(source));
+            String line;
+            Map<Side, AnnotationTerm> connection = new HashMap<Side, AnnotationTerm>();
+            while ((line = in.readLine()) != null) {
+                if (line.startsWith(COMMENT_MARKER)) {
+                    continue;
+                }
+                Matcher m = ANNOTATION_REG_EXP.matcher(line);
+                if (m.find()) {
+                    // String hpoName = m.group(NAME_IDX);
+                    final String hpoId = this.hpo.getRealId(m.group(ID_IDX));
+                    String geneList = m.group(LIST_IDX);
+                    if (geneList != null) {
+                        final Matcher mi = GENE_REG_EXP.matcher(geneList);
+                        while (mi.find()) {
+                            connection.clear();
+                            connection.put(GENE, new AnnotationTerm(mi.group(ID_IDX), mi.group(NAME_IDX)));
+                            connection.put(HPO, new AnnotationTerm(hpoId));
+                        }
+                    }
+                }
+            }
+            in.close();
+            propagateHPOAnnotations();
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+            System.err.println("File does not exist");
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+            System.err.println("Could not locate source file: " + source.getAbsolutePath());
+        } catch (IOException ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+        }
+        return size();
+    }
+
+    public Set<String> getGeneIds()
+    {
+        return this.getNodesIds(GENE);
+    }
+
+    public Collection<AnnotationTerm> getGeneodes()
+    {
+        return this.getNodes(GENE);
+    }
+
+    public AnnotationTerm getGeneNode(String geneId)
+    {
+        return this.getNode(geneId, GENE);
+    }
 }

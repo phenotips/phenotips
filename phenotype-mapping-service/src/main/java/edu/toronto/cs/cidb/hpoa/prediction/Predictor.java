@@ -19,35 +19,34 @@
  */
 package edu.toronto.cs.cidb.hpoa.prediction;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
+import org.xwiki.component.annotation.ComponentRole;
+
+import edu.toronto.cs.cidb.hpoa.annotation.HPOAnnotation;
 import edu.toronto.cs.cidb.hpoa.annotation.SearchResult;
 
+@ComponentRole
+public interface Predictor
+{
+    /**
+     * Obtains the list of OMIM diseases that fit a set of phenotypes, ordered descending by a "matching" score.
+     * 
+     * @param phenotypes A set of HPO ids
+     * @return A list of {@link SearchResult}s which map OMIM ids to fitness scores, ordered descending by score.
+     */
+    public List<SearchResult> getMatches(Collection<String> phenotypes);
 
-public interface Predictor {
+    /**
+     * Obtains a list of phenotypes that are likely to be useful in a differential diagnosis. These are basically
+     * phenotypes present only in some of the diseases matching the input phenotypes. The score reflects the reliability
+     * of the differentiation.
+     * 
+     * @param phenotypes A set of HPO ids
+     * @return A list of {@link SearchResult}s which map HPO ids to fitness scores, ordered descending by score.
+     */
+    public List<SearchResult> getDifferentialPhenotypes(Collection<String> phenotypes);
 
-	/**
-	 * Obtains the list of OMIM diseases that fit a set of phenotypes, ordered
-	 * descending by a "matching" score.
-	 * 
-	 * @param phenotypes
-	 *            A set of HPO ids
-	 * @return A list of {@link SearchResult}s which map OMIM ids to fitness
-	 *         scores, ordered descending by score.
-	 */
-	public List<SearchResult> getMatches(Set<String> phenotypes);
-
-	/**
-	 * Obtains a list of phenotypes that are likely to be useful in a
-	 * differential diagnosis. These are basically phenotypes present only in
-	 * some of the diseases matching the input phenotypes. The score reflects
-	 * the reliability of the differentiation.
-	 * 
-	 * @param phenotypes
-	 *            A set of HPO ids
-	 * @return A list of {@link SearchResult}s which map HPO ids to fitness
-	 *         scores, ordered descending by score.
-	 */
-	public List<SearchResult> getDifferentialPhenotypes(Set<String> phenotypes);
+    public void setAnnotation(HPOAnnotation annotation);
 }
