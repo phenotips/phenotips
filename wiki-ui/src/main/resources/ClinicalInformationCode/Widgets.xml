@@ -2936,9 +2936,14 @@ console.log(categories);
         top = top || (this.stickyAreaElement.getHeight() - this.stickyElement.getHeight());
         this.stickyElement.style.top = top + 'px';
         this.stickyElement.style.right = '';
+        var originalPosition = this.stickyElement.getStyle('position');
         this.stickyElement.style.position = 'absolute';
-        this.stickyElement.style.left = (this.boxRelativeLeft - this.stickyElement.getOffsetParent().viewportOffset().left + 2) + 'px';
-      }       
+        if (originalPosition == 'fixed') {
+          this.stickyElement.style.left = (this.boxRelativeLeft - this.stickyElement.getOffsetParent().viewportOffset().left + 2) + 'px';
+        } else {
+          this.stickyElement.style.left = this.boxRelativeLeft + 'px';
+        }
+      }
     },
     makeDefault : function() {
       if (this.stickyElement.style.position != ''){
@@ -2947,7 +2952,7 @@ console.log(categories);
         this.stickyElement.style.left = '';
         this.stickyElement.style.right = '';
         this.stickyElement.style.width = '';
-      }       
+      }
     },
     isFixed: function() {
       return (this.stickyElement.style.position == 'fixed');
