@@ -502,7 +502,7 @@
       for (var section in this.options.resultInfo) {
         var sOptions = this.options.resultInfo[section];
             
-        sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/, '').replace(/\s+/, "-");
+        sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/gi, '').replace(/\s+/gi, "-");
             
         var sectionState = ""
         if (sOptions.collapsed) {
@@ -1038,8 +1038,8 @@
       if (!event.stopped) {
         if (!silent) {
           this.sInput = selection;
-          this.fld.value = newFieldValue;
-          this.fld.focus();
+          this.fld.value = newFieldValue || this.fld.defaultValue || '';
+          //this.fld.focus();
           this.clearSuggestions();
         }
         // pass selected object to callback function, if exists
@@ -1262,14 +1262,14 @@
   },
 
   ensureVisible : function (element, force) {
-    if (this.silent || (!force &amp;&amp; this.options.silent)) {return;}
-    var section = element.up('.collapsed');
+    if (this.silent || (!force &amp;&amp; this.options.silent) || element.up('.hidden')) {return;}
+    var section = element.up('.collapsed:not(.force-collapse)');
     while (section) {
       section.removeClassName('collapsed');
       if (section.down('.expand-tool')) {
         section.down('.expand-tool').update('▼');
       }
-      section = section.up('.collapsed');
+      section = section.up('.collapsed:not(.force-collapse)');
     }
     if (element.viewportOffset().top &gt; this.input.viewportOffset().top) { 
       if (element.viewportOffset().top &gt; document.viewport.getHeight()) {
@@ -1290,7 +1290,7 @@
     if (this.acceptAddItem(obj.id || obj.value)) {
       this.addItem(obj.id || obj.value, obj.value, obj.info, obj.category);
     }
-    this.input.value = "";
+    this.input.value = this.input.defaultValue || "";
     return false;
   },
 
@@ -1350,7 +1350,7 @@
     });
     item.remove();
     this.notifySelectionChange(item);
-    this.input.value = "";
+    this.input.value = this.input.defaultValue || "";
     this.updateListTools();
   },
 
@@ -2233,7 +2233,9 @@ console.log(categories);
         onSuccess: function (response) {
           var memo = {};
           if (doPopulate) {
-            element.insert({'bottom': this.buildDescendentsList(this._getDataFromResponse(response))});
+            var newAdditions = this.buildDescendentsList(this._getDataFromResponse(response));
+            element.insert({'bottom': newAdditions});
+            Event.fire(document, "obrowser:content:added", {added: newAdditions});
             Event.fire(element, "obrowser:expand:finished");
             Event.fire(this.container.contentContainer, "obrowser:expand:finished");
             //memo.data = this.buildDescendentsList(this._getDataFromResponse(response));
@@ -2569,7 +2571,7 @@ console.log(categories);
         var value = elt.down('.value').firstChild.nodeValue;
         this.suggest.acceptEntry({'id':id, 'value':value, 'category' : elt.__termCategory}, value, '', true);
         elt.addClassName('accepted');
-        if (prevPosition &amp;&amp; typeof (this.container.positionDialogInViewport) == 'function') {
+        if (prevPosition &amp;&amp; (typeof (this.container.positionDialogInViewport) == 'function')) {
           this.container.positionDialogInViewport(prevPosition.left, prevPosition.top);
         }
       }
@@ -2888,14 +2890,16 @@ console.log(categories);
     },
     
     resetPosition : function() {
-      if (!this.options.isSticky(this.stickyElement)) {
+      if (!this.options.isSticky(this.stickyElement) || this.stickyElement.getHeight() &gt;= this.stickyAreaElement.getHeight()) {
         return;
       }
       this.boxHeight = this.stickyElement.getHeight();
       this.boxWidth = this.stickyElement.getWidth();
       this.boxMinTop = this.stickyAreaElement.cumulativeOffset().top + this.options.shadowSize ;
-      this.boxMaxTop = this.stickyAreaElement.cumulativeOffset().top + this.stickyAreaElement.getHeight();
+      this.boxMaxTop = this.stickyAreaElement.cumulativeOffset().top + this.stickyAreaElement.getHeight() - this.boxHeight;
       this.boxLeft = this.stickyElement.cumulativeOffset().left;
+//      this.boxRelativeLeft = this.stickyElement.positionedOffset().left;
+      this.boxRelativeLeft = this.boxLeft - this.stickyElement.getOffsetParent().viewportOffset().left;
       var relativeContentPosition = this.stickyAreaElement.viewportOffset().top;
       this.direction = 0;
       if (this.stickyAreaElement._prevPosition) {
@@ -2928,12 +2932,12 @@ console.log(categories);
       }
     },
     makeAbsolute : function(top) {
-      if (this.stickyElement.style.position != 'absolute' || this.stickyElement.style.top != top + 'px'){
-        top = top || this.stickyAreaElement.getHeight();
+      if (this.stickyElement.style.position != 'absolute') { // || top &amp;&amp; this.stickyElement.style.top != top + 'px'){
+        top = top || (this.stickyAreaElement.getHeight() - this.stickyElement.getHeight());
         this.stickyElement.style.top = top + 'px';
-        this.stickyElement.style.left = '';
         this.stickyElement.style.right = '';
         this.stickyElement.style.position = 'absolute';
+        this.stickyElement.style.left = (this.boxRelativeLeft - this.stickyElement.getOffsetParent().viewportOffset().left + 2) + 'px';
       }       
     },
     makeDefault : function() {

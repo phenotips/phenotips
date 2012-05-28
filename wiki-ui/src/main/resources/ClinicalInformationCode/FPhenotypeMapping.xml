@@ -41,7 +41,6 @@
         ],
         "HP:0007018"                    : "Attention deficit hyperactivity disorder",
         "HP:0000717"                    : "Autism",
-        "HP:0000729"                    : "Pervasive developmental delay",
         "HP:0000708"                    : "Psychiatric disorders",
         (t.OTHER_FIELD_MARKER)       : null
       ], 

@@ -1125,7 +1125,7 @@
 <className>XWiki.XWikiPreferences</className>
 <guid>5beafe7d-e2ce-4083-9d30-b4fed593c513</guid>
 <property>
-<colorTheme>ColorThemes.SickKids</colorTheme>
+<colorTheme></colorTheme>
 </property>
 <property>
 <leftPanels></leftPanels>

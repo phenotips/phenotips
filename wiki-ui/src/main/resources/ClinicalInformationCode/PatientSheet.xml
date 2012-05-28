@@ -22,7 +22,7 @@
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
-<content>{{include document="ClinicalInformationCode.PatientSheetUI" /}}
+<content>{{include document="ClinicalInformationCode.PatientSheetCode" /}}
 
 {{velocity filter="indent"}}
 #if ("$!{class}" != '')
