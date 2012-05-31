@@ -43,6 +43,8 @@ public class HPO extends AbstractOntology implements Initializable
     @Inject
     private Environment environment;
 
+    private static HPO instance;
+
     // @Inject
     // @Named("solr")
     // private ScriptService service;
@@ -55,6 +57,7 @@ public class HPO extends AbstractOntology implements Initializable
         this.load(getInputFileHandler(
             "http://compbio.charite.de/svn/hpo/trunk/src/ontology/human-phenotype-ontology.obo", false));
         // }
+        instance = this;
     }
 
     public File getInputFileHandler(String inputLocation, boolean forceUpdate)
@@ -87,10 +90,15 @@ public class HPO extends AbstractOntology implements Initializable
 
     protected File getInternalFile(String name, String dir)
     {
-        File parent = new File(environment.getTemporaryDirectory(), dir);
+        File parent = new File(this.environment.getTemporaryDirectory(), dir);
         if (!parent.exists()) {
             parent.mkdirs();
         }
         return new File(parent, name);
+    }
+
+    public static HPO getInstance()
+    {
+        return instance;
     }
 }

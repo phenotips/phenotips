@@ -68,6 +68,13 @@
     </dependency>
     <dependency>
       <groupId>edu.toronto.cs.cidb</groupId>
+      <artifactId>phenotype-mapping-service</artifactId>
+      <version>${project.version}</version>
+      <type>jar</type>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>edu.toronto.cs.cidb</groupId>
       <artifactId>patient-update-listeners</artifactId>
       <version>${project.version}</version>
       <type>jar</type>
