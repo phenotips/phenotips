@@ -19,6 +19,10 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
         };
 
     if (gen === 'female') {
+        if(endAngle-startAngle == 360)
+        {
+            return paper.circle(cx, cy, r).attr(shapeAttributes);
+        }
         var x1 = circleCoordinate(startAngle)[0],
             x2 = circleCoordinate(endAngle)[0],
             y1 = circleCoordinate(startAngle)[1],
