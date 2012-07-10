@@ -139,7 +139,7 @@ $response.setContentType('text/csv')##
     #set ($discard = $displayedFields.add($field))
   #end
 #end
-#if ($enabledFields.contains('doc.name'))ID,#end
+#if ($enabledFields.contains('doc.name'))Report ID,#end
 #if ($enabledFields.contains('referrer'))Referrer,#end
 #if ($enabledFields.contains('creationDate'))Date,#end
 #foreach ($field in $displayedFields)
@@ -178,7 +178,12 @@ $response.setContentType('text/csv')##
         "##
         #foreach ($code in $!patientObj.getProperty($field).value)
           #if ($field.endsWith('phenotype'))
-            ${services.solr.get($code).name.replace('"', '""')}##
+            #set ($name = $!{services.solr.get($code).name})
+            #if ($name)
+              ${name.replace('"', '""')}##
+            #else
+              ${code.replace('"', '""')}##
+            #end
           #else
             ${services.omim.getName($code).replace('"', '""')}##
           #end
@@ -197,8 +202,22 @@ $response.setContentType('text/csv')##
           #set ($format = $classFormat)
         #end
         "$!{xwiki.formatDate($value, $format)}"##
+      #elseif ("$!value.size()" != '')
+        "##
+        #foreach ($line in $value)
+          $!{line.replace('"', '""')}##
+          #if ($foreach.hasNext)
+
+          #end
+        #end
+        "##
       #else
-        "$!{value.toString().replace('"', '""')}"##
+        #set($displayedValue = "$!{patientObj.display($field, 'view')}")
+        #if ($displayedValue.startsWith('{{html'))
+          "$!{value.replace('"', '""')}"##
+        #else
+          "$!{displayedValue.replace('"', '""')}"##
+        #end
       #end
     #end
     #if ($foreach.hasNext)##
