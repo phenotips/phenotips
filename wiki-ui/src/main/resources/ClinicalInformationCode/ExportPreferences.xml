@@ -44,7 +44,7 @@
 #end
 ##
 #macro (__export_dateField $label $field_name $value)
-{{html}}&lt;label&gt;$label&lt;input class="xwiki-date" type="text" alt="#if($value)#formatdateISO($value)#end" value="$!xwiki.formatDate($value, $definedFormat)" name="${field_name}" title="${dateFormat}" /&gt;&lt;/label&gt;{{/html}}
+{{html}}&lt;label&gt;$label &lt;span class="xHint"&gt;(empty means no constraint)&lt;/span&gt;&lt;input class="xwiki-date" type="text" alt="#if($value)#formatdateISO($value)#end" value="$!xwiki.formatDate($value, $definedFormat)" name="${field_name}" title="${dateFormat}" /&gt;&lt;/label&gt;{{/html}}
 #end
 
 #macro(__export__displayFieldList $xclassName $targetFieldName $customValues $ignored $codeFields $valueList)
@@ -82,24 +82,24 @@
 {{/velocity}}
 
 {{velocity}}
-{{html clean="false" filter="indent"}}&lt;form action="$xwiki.getURL('ClinicalInformationCode.Export', 'get', "space=${targetSpace}&amp;outputSyntax=plain")" method="post"&gt;&lt;div&gt;{{/html}}
+{{html clean="false" filter="indent"}}&lt;form class="xform" action="$xwiki.getURL('ClinicalInformationCode.Export', 'get', "space=${targetSpace}&amp;outputSyntax=plain")" method="post"&gt;&lt;div&gt;{{/html}}
 (% class="section filters"%)(((
 === (% class="step" %)1(%%) Filter records you wish to export ===
 
 (% class="export-filters" %)
-* By **referrer**: {{html}}&lt;input type="text" class="suggestUsers" name="export_referrer" value=""/&gt;{{/html}}
+* By **referrer**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all referrers are considered)&lt;/p&gt;&lt;input type="text" class="suggestUsers" name="export_referrer" value=""/&gt;{{/html}}
 * By **creation date**: #__export_dateRange("creation_date")
 #if ($activeFields.contains('date_of_birth'))
   * By **date of birth** of the patient: #__export_dateRange("date_of_birth")
 #end
 #if ($activeFields.contains('omim_id'))
-  * By **disease**: {{html}}&lt;input type="text" class="suggest multi suggest-omim generateCheckboxes" name="export_disease" value=""/&gt;{{/html}}
+  * By **disease**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all diseases are considered)&lt;/p&gt;&lt;input type="text" class="suggest multi suggest-omim generateCheckboxes" name="export_disease" value=""/&gt;{{/html}}
   ** Export records presenting {{html}}&lt;label&gt;&lt;input type="radio" name="export_disease_combine" value="all"/&gt;all&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="export_disease_combine" value="any" checked="checked"/&gt;at least one&lt;/label&gt;{{/html}} of the selected diseases.
 #end
 #if ($activeFields.contains('phenotype'))
-  * By **phenotype**: {{html}}&lt;input type="text" class="suggest multi suggest-hpo generateCheckboxes" name="export_phenotype" value=""/&gt;{{/html}}
+  * By **phenotype**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all phenotypes are considered)&lt;/p&gt;&lt;input type="text" class="suggest multi suggest-hpo generateCheckboxes" name="export_phenotype" value=""/&gt;{{/html}}
   ** Export records presenting {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_combine" value="all"/&gt;all&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_combine" value="any" checked="checked"/&gt;at least one&lt;/label&gt;{{/html}} of the selected phenotypes.
-  ** Export reports {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_subterms" value="yes" checked="checked"/&gt;with all subcategories of&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_subterms" value="no"/&gt;only matching exactlty &lt;/label&gt;{{/html}} the selected phenotypes.
+  ** Export records {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_subterms" value="yes" checked="checked"/&gt;with all subcategories of&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_subterms" value="no"/&gt;only matching exactly &lt;/label&gt;{{/html}} the selected phenotypes.
 #end
 
 {{info}}**(% id="filter-match-count"%) (%%)** matching records {{/info}}
@@ -110,7 +110,7 @@
 
 #set($ignored = {
   'fields' : ['reports_history', 'pedigree'],
-  'types'  : ['TextAreaClass']
+  'types'  : []
 })
 #set($customValues = {
        'doc.name' : "Report identifier",
