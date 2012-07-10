@@ -35,6 +35,11 @@
   <name>Phenotype Database - Listeners for updating computed Patient fields</name>
   <dependencies>
     <dependency>
+      <groupId>edu.toronto.cs.cidb</groupId>
+      <artifactId>solr-access-service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-api</artifactId>
       <version>${commons.version}</version>
