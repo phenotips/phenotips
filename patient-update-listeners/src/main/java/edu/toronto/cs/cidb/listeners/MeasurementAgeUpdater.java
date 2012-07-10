@@ -81,8 +81,12 @@ public class MeasurementAgeUpdater implements EventListener
             return;
         }
         String targetPropertyName = "age";
-        for (BaseObject measurement : doc.getXObjects(new DocumentReference(
-            doc.getDocumentReference().getRoot().getName(), CODE_SPACE, "MeasurementsClass"))) {
+        List<BaseObject> objects = doc.getXObjects(new DocumentReference(
+            doc.getDocumentReference().getRoot().getName(), CODE_SPACE, "MeasurementsClass"));
+        if (objects == null || objects.isEmpty()) {
+            return;
+        }
+        for (BaseObject measurement : objects) {
             Date measurementDate = measurement.getDateValue("date");
             if (measurementDate == null) {
                 PropertyInterface prop = null;
