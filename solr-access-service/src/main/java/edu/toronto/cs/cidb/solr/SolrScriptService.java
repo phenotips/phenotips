@@ -24,7 +24,11 @@ import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -67,6 +71,11 @@ public class SolrScriptService implements ScriptService, Initializable
      * Delimiter between the field name and the searched value used in the Lucene query language.
      */
     private static final String FIELD_VALUE_SEPARATOR = ":";
+
+    /**
+     * The name of the ID field.
+     */
+    private static final String ID_FIELD_NAME = "id";
 
     /** Logging helper object. */
     @Inject
@@ -226,12 +235,42 @@ public class SolrScriptService implements ScriptService, Initializable
     public SolrDocument get(final String id)
     {
         Map<String, String> queryParameters = new HashMap<String, String>();
-        queryParameters.put("id", id);
+        queryParameters.put(ID_FIELD_NAME, id);
         SolrDocumentList all = search(queryParameters, 1, 0);
         if (!all.isEmpty()) {
             return all.get(0);
         }
         return null;
+    }
+
+    /**
+     * Get the HPO IDs of the specified phenotype and all its ancestors.
+     *
+     * @param id the HPO identifier to search for, in the {@code HP:1234567} format
+     * @return the full set of ancestors-or-self IDs, or an empty set if the requested ID was not found in the index
+     */
+    public Set<String> getAllAncestorsAndSelfIDs(final String id)
+    {
+        Set<String> results = new HashSet<String>();
+        Queue<SolrDocument> nodes = new LinkedList<SolrDocument>();
+        SolrDocument crt = this.get(id);
+        if (crt == null) {
+            return results;
+        }
+        nodes.add(crt);
+        while (!nodes.isEmpty()) {
+            crt = nodes.poll();
+            results.add(String.valueOf(crt.get(ID_FIELD_NAME)));
+            @SuppressWarnings("unchecked")
+            List<String> parents = (List<String>) crt.get("is_a");
+            if (parents == null) {
+                continue;
+            }
+            for (String pid : parents) {
+                nodes.add(this.get(StringUtils.substringBefore(pid, " ")));
+            }
+        }
+        return results;
     }
 
     /**
