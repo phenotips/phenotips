@@ -127,9 +127,6 @@
   $patients.size()
   #break
 #end
-#if ($patients.size() == 0)
-  #break
-#end
 $response.addHeader("Content-disposition", "attachment; filename=cidb_${xwiki.formatDate($util.date, 'yyyy-MM-dd_HH-mm')}.csv")##
 $response.setContentType('text/csv')##
 #set ($codeProperties = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
@@ -163,7 +160,7 @@ $response.setContentType('text/csv')##
   #set ($patientObj = $patientDoc.getObject($targetClassName))
   #if ($enabledFields.contains('doc.name'))${patientDoc.documentReference.name},#end
   #if ($enabledFields.contains('referrer'))${xwiki.getUserName($patientDoc.creator, false)},#end
-  #if ($enabledFields.contains('creationDate'))${patientDoc.creationDate},#end
+  #if ($enabledFields.contains('creationDate'))$!{xwiki.formatDate($patientDoc.creationDate, 'MM/dd/yyyy')},#end
   #foreach ($field in $displayedFields)
     #if ($codeProperties.contains($field))
       #if ($enabledFields.contains("${field}_code"))
@@ -194,9 +191,14 @@ $response.setContentType('text/csv')##
     #else
       #set ($value = $!patientObj.getProperty($field).value)
       #if ("$!value.getTime()" != '')
-        "${dateFormat.print($xwiki.jodatime.getDateTime($value.getTime()))}"##
+        #set ($classFormat = "$!patientObj.xWikiClass.get($field).getProperty('dateFormat').value")
+        #set ($format = "$!{preferencesObject.getProperty('dateOfBirthFormat').value}")
+        #if ("$!format" == '')
+          #set ($format = $classFormat)
+        #end
+        "$!{xwiki.formatDate($value, $format)}"##
       #else
-        "${value.toString().replace('"', '""')}"##
+        "$!{value.toString().replace('"', '""')}"##
       #end
     #end
     #if ($foreach.hasNext)##
