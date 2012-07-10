@@ -589,7 +589,7 @@
       var div = new Element("div", { 'class': "suggestItems "+ this.options.className });
 
       // Get position of target textfield
-      var pos = this.fld.cumulativeOffset();
+      var pos = $(this.options.parentContainer).tagName.toLowerCase() == 'body' ? this.fld.cumulativeOffset() : this.fld.positionedOffset();
 
       // Container width is passed as an option, or field width if no width provided.
       // The 2px substracted correspond to one pixel of border on each side of the field,
@@ -1560,6 +1560,9 @@ widgets.ModalPopup = Class.create({
     this.dialog.update(this.screen);
     // The dialog chrome
     this.dialogBox = new Element('div', {'class': 'msdialog-box', 'id' : this.getBoxId()});
+    if (this.options.extraClassName) {
+      this.dialogBox.addClassName(this.options.extraClassName);
+    }
     // Insert the content
     this.dialogBox._x_contentPlug = new Element('div', {'class' : 'content'});
     this.dialogBox.update(this.dialogBox._x_contentPlug);
