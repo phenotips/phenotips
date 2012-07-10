@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>ClinicalInformationCode</web>
+<name>ExportPreferences</name>
+<language></language>
+<defaultLanguage></defaultLanguage>
+<translation>0</translation>
+<parent></parent>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+<creationDate>1341762326000</creationDate>
+<date>1341921560000</date>
+<contentUpdateDate>1341921560000</contentUpdateDate>
+<version>1.1</version>
+<title></title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>false</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>false</hidden>
+<content>{{velocity output=false}}
+#set ($targetSpace = "$!{request.space}")
+#if (!$targetSpace || $targetSpace == 'ClinicalInformationCode')
+  #break
+#end
+#set ($preferencesObject = $xwiki.getDocument("${targetSpace}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))
+#if (!$preferencesObject)
+  #break
+#end
+#set ($activeFields = $preferencesObject.getProperty('activeFields').value)
+#set ($dateFormat = "MM/dd/yyyy")
+##
+##
+#macro (__export_dateRange $field_name $dateStart $dateEnd)
+(% class="date-range" %)(((
+#__export_dateField ("after: " "export_${field_name}_after" $dateStart)
+
+#__export_dateField ("before: " "export_${field_name}_before" $dateEnd)
+)))
+#end
+##
+#macro (__export_dateField $label $field_name $value)
+{{html}}&lt;label&gt;$label&lt;input class="xwiki-date" type="text" alt="#if($value)#formatdateISO($value)#end" value="$!xwiki.formatDate($value, $definedFormat)" name="${field_name}" title="${dateFormat}" /&gt;&lt;/label&gt;{{/html}}
+#end
+
+#macro(__export__displayFieldList $xclassName $targetFieldName $customValues $ignored $codeFields $valueList)
+  {{html}}
+    #set($xclass = $xwiki.getDocument($xclassName).getxWikiClass())
+    &lt;ul class="field-list"&gt;
+      #foreach($customVal in $customValues.keySet())
+        &lt;li&gt;
+          &lt;label for="${targetFieldName}_${customVal}"&gt;
+            &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${customVal}" value="$customVal"#if ($valueList.contains($customVal)) checked="checked"#end/&gt;
+            ${customValues.get($customVal)}
+          &lt;/label&gt;
+        &lt;/li&gt;
+      #end
+      #foreach ($field in $xclass.properties)
+        #if (($activeFields.size() == 0 || $activeFields.contains(${field.name})) &amp;&amp; !$ignored.fields.contains(${field.name}) &amp;&amp; !$ignored.types.contains(${field.type}))
+        &lt;li&gt;
+          &lt;label for="${targetFieldName}_${field.name}"&gt; 
+          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}" value="${field.name}" #if($valueList.contains(${field.name})) checked="checked" #end /&gt;
+          ${field.prettyName}
+        &lt;/li&gt;
+        #if ($codeFields.contains(${field.name}))
+        &lt;li&gt;
+          &lt;label for="${targetFieldName}_${field.name}_code"&gt;
+          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code" value="${field.name}_code" #if($valueList.contains("${field.name}_code")) checked="checked" #end /&gt;
+          ${field.prettyName} (ontology term id)
+        &lt;/li&gt;
+        #end
+        #end
+      #end
+    &lt;/ul&gt;
+    &lt;input type="hidden" name="${targetFieldName}" value="" /&gt;
+  {{/html}}
+#end
+{{/velocity}}
+
+{{velocity}}
+{{html clean="false" filter="indent"}}&lt;form action="$xwiki.getURL('ClinicalInformationCode.Export', 'get', "space=${targetSpace}&amp;outputSyntax=plain")" method="post"&gt;&lt;div&gt;{{/html}}
+(% class="section filters"%)(((
+=== (% class="step" %)1(%%) Filter records you wish to export ===
+
+(% class="export-filters" %)
+* By **referrer**: {{html}}&lt;input type="text" class="suggestUsers" name="export_referrer" value=""/&gt;{{/html}}
+* By **creation date**: #__export_dateRange("creation_date")
+#if ($activeFields.contains('date_of_birth'))
+  * By **date of birth** of the patient: #__export_dateRange("date_of_birth")
+#end
+#if ($activeFields.contains('omim_id'))
+  * By **disease**: {{html}}&lt;input type="text" class="suggest multi suggest-omim generateCheckboxes" name="export_disease" value=""/&gt;{{/html}}
+  ** Export records presenting {{html}}&lt;label&gt;&lt;input type="radio" name="export_disease_combine" value="all"/&gt;all&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="export_disease_combine" value="any"/&gt;at least one&lt;/label&gt;{{/html}} of the selected diseases.
+#end
+#if ($activeFields.contains('phenotype'))
+  * By **phenotype**: {{html}}&lt;input type="text" class="suggest multi suggest-hpo generateCheckboxes" name="export_phenotype" value=""/&gt;{{/html}}
+  ** Export records presenting {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_combine" value="all"/&gt;all&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_combine" value="any"/&gt;at least one&lt;/label&gt;{{/html}} of the selected phenotypes.
+  ** Export reports {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_subterms" value="yes"/&gt;with all subcategories of&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_subterms" value="no"/&gt;only matching exactlty &lt;/label&gt;{{/html}} the selected phenotypes.
+#end
+
+{{info}}**(% id="filter-match-count"%) (%%)** matching records {{/info}}
+)))##section filters
+
+(% class="section columns"%)(((
+=== (% class="step" %)2(%%) Select the fields to be exported ===
+
+#set($ignored = {
+  'fields' : ['reports_history', 'pedigree'],
+  'types'  : ['TextAreaClass']
+})
+#set($customValues = {
+       'doc.name' : "Report identifier",
+       'referrer' : "Referrer (report creator)",
+       'creationDate' : "Report creation date"
+})
+#set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
+#set($selectedValues = ['phenotype'])
+#__export__displayFieldList( "$!{preferencesObject.getProperty('patientClass').value}" 'columns' $customValues $ignored $codeFields $selectedValues)
+)))##section columns
+
+(% class="buttons"%)(((
+{{html}}&lt;input type="hidden" name="space" value="$!request.space"/&gt;&lt;input type="hidden" name="outputSyntax" value="plain"/&gt;&lt;span class="buttonwrapper"&gt;&lt;input type="submit" value="Export" class="button" id="export_submit"/&gt;&lt;/span&gt; &lt;span class="buttonwrapper"&gt;&lt;input type="button" value="Cancel" class="button secondary" id="export_cancel"/&gt;&lt;/span&gt;{{/html}}
+{{html clean="false"}}&lt;/div&gt;&lt;/form&gt;{{/html}}
+)))
+{{/velocity}}</content></xwikidoc>
