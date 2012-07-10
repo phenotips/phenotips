@@ -54,7 +54,7 @@
       #foreach($customVal in $customValues.keySet())
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${customVal}"&gt;
-            &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${customVal}" value="$customVal"#if ($valueList.contains($customVal)) checked="checked"#end/&gt;
+            &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${customVal}" value="$customVal"#if ($valueList.contains($customVal) || true) checked="checked"#end/&gt;
             ${customValues.get($customVal)}
           &lt;/label&gt;
         &lt;/li&gt;
@@ -63,13 +63,13 @@
         #if (($activeFields.size() == 0 || $activeFields.contains(${field.name})) &amp;&amp; !$ignored.fields.contains(${field.name}) &amp;&amp; !$ignored.types.contains(${field.type}))
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${field.name}"&gt; 
-          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}" value="${field.name}" #if($valueList.contains(${field.name})) checked="checked" #end /&gt;
+          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}" value="${field.name}" #if($valueList.contains(${field.name}) || true) checked="checked" #end /&gt;
           ${field.prettyName}
         &lt;/li&gt;
         #if ($codeFields.contains(${field.name}))
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${field.name}_code"&gt;
-          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code" value="${field.name}_code" #if($valueList.contains("${field.name}_code")) checked="checked" #end /&gt;
+          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code" value="${field.name}_code" #if($valueList.contains("${field.name}_code") || true) checked="checked" #end /&gt;
           ${field.prettyName} (ontology term id)
         &lt;/li&gt;
         #end
@@ -94,12 +94,12 @@
 #end
 #if ($activeFields.contains('omim_id'))
   * By **disease**: {{html}}&lt;input type="text" class="suggest multi suggest-omim generateCheckboxes" name="export_disease" value=""/&gt;{{/html}}
-  ** Export records presenting {{html}}&lt;label&gt;&lt;input type="radio" name="export_disease_combine" value="all"/&gt;all&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="export_disease_combine" value="any"/&gt;at least one&lt;/label&gt;{{/html}} of the selected diseases.
+  ** Export records presenting {{html}}&lt;label&gt;&lt;input type="radio" name="export_disease_combine" value="all"/&gt;all&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="export_disease_combine" value="any" checked="checked"/&gt;at least one&lt;/label&gt;{{/html}} of the selected diseases.
 #end
 #if ($activeFields.contains('phenotype'))
   * By **phenotype**: {{html}}&lt;input type="text" class="suggest multi suggest-hpo generateCheckboxes" name="export_phenotype" value=""/&gt;{{/html}}
-  ** Export records presenting {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_combine" value="all"/&gt;all&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_combine" value="any"/&gt;at least one&lt;/label&gt;{{/html}} of the selected phenotypes.
-  ** Export reports {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_subterms" value="yes"/&gt;with all subcategories of&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_subterms" value="no"/&gt;only matching exactlty &lt;/label&gt;{{/html}} the selected phenotypes.
+  ** Export records presenting {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_combine" value="all"/&gt;all&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_combine" value="any" checked="checked"/&gt;at least one&lt;/label&gt;{{/html}} of the selected phenotypes.
+  ** Export reports {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_subterms" value="yes" checked="checked"/&gt;with all subcategories of&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="export_phenotype_subterms" value="no"/&gt;only matching exactlty &lt;/label&gt;{{/html}} the selected phenotypes.
 #end
 
 {{info}}**(% id="filter-match-count"%) (%%)** matching records {{/info}}
