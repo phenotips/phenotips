@@ -350,6 +350,9 @@ public class SolrScriptService implements ScriptService, Initializable
             SolrDocumentList results = response.getResults();
             if (results.size() == 0 && !response.getSpellCheckResponse().isCorrectlySpelled()) {
                 String suggestedQuery = response.getSpellCheckResponse().getCollatedResult();
+                if (StringUtils.isEmpty(suggestedQuery)) {
+                    return new SolrDocumentList();
+                }
                 // The spellcheck doesn't preserve the identifiers, manually
                 // correct this
                 suggestedQuery = suggestedQuery.replaceAll("term_category:hip", "term_category:HP");
