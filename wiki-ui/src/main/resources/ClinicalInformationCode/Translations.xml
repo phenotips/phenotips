@@ -43,6 +43,7 @@ patient.livetable.age_of_onset_years=Age of onset (years)
 patient.livetable.age_of_onset_months=(months)
 patient.livetable.onset=Onset
 patient.livetable.phenotype=Phenotype
+patient.livetable.omim_id=Disorder
 
 admin.clinicalinformationcode=Clinical information application code
 admin.dbconfig=Database and form configuration
