@@ -1,7 +1,12 @@
-function getAge(birth)
+function getAge(birth, death)
 {
-
-    var now = new Date();
+    var now;
+    if (death == null){
+    now = new Date();
+    }
+    else {
+    now = death;
+    }
 
 
     var aSecond = 1000;
@@ -38,15 +43,15 @@ function getAge(birth)
 
         if(days <30)
         {
-            agestr = days + ' d';
+            agestr = days + 'd';
         }
         else
         {
-            agestr = months + ' mo';
+            agestr = months + 'mo';
         }
     }else{
         agestr = agestr + years;
-        agestr = agestr + " y";
+        agestr = agestr + "y";
     }
     return agestr;
 }

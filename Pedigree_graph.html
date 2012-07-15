@@ -3,16 +3,17 @@
     <head>
         <meta charset="utf-8">
         <title>Pedigree Graph</title>
-        <script src="raphael.js"></script>
-        <script src="prototype.js"></script>
-        <script src="scriptaculous.js"></script>
-        <script src="raphael.free_transform.js"></script>
-        <script src="hashMap.js"></script>
+        <script src = "raphael.js"></script>
+        <script src = "prototype.js"></script>
+        <script src = "scriptaculous.js"></script>
+        <script src = "effects.js"></script>
+        <script src ="hashMap.js"></script>
         <script src = "ageCalc.js"></script>
         <script src = "sector.js"></script>
         <script src = "nodeVisuals.js"></script>
         <script src = "hoverbox.js"></script>
         <script src = "PedigreeNode.js"></script>
+        <script src = "connection.js"></script>
         <script src = "pedigree.js"></script>
         <style media="screen">
             body {
@@ -25,10 +26,9 @@
                 height: 5%;
             }
             #canvas {
-                height: 480px;
                 margin: 0 auto;
                 text-align: left;
-                width: 640px;
+
             }
             #code {
                 font-family: Consolas, Monaco, "Lucida Console", monospace;
@@ -44,5 +44,6 @@
     </head>
     <body>
         <h1>Le Graph!</h1>
+        <div id= "canvas"></div>
             </body>
         </html>
