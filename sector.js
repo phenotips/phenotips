@@ -1,6 +1,5 @@
 
 function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAngle, color) {
-
     var sectorPath,
         gen = gender,
         cx = xPosition,
@@ -8,8 +7,7 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
         r = radius,
         paper = canvas,
         rad = Math.PI / 180,
-            shapeAttributes = {fill: color, stroke: "none"};
-
+        shapeAttributes = {fill: color, 'stroke-width':.5 };
 
     //returns coordinates of the point on the circle (with radius = _radius) at angle alpha
     var circleCoordinate = function(alpha) {
@@ -18,7 +16,7 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
             return [x,y];
         };
 
-    if (gen === 'female') {
+    if (gen === 'F') {
         if(endAngle-startAngle == 360)
         {
             return paper.circle(cx, cy, r).attr(shapeAttributes);
@@ -30,7 +28,7 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
 
         return paper.path(["M", cx, cy, "L", x1, y1, "A", r, r, 0, +(endAngle - startAngle > 180), 0, x2, y2, "z"]).attr(shapeAttributes);
     }
-    else if(gen === 'male') {
+    else if(gen === 'M') {
         //returns the side of the square on which the coordinate exists. Sides are numbered 0-3 counter-clockwise,
         //starting with the right side
         function sideAtAngle(angle) {
@@ -90,7 +88,8 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
         return paper.path(sectorPathData).attr(shapeAttributes);
     }
     else {
-        return sector(paper, cx, cy, r, "male", startAngle, endAngle).rotate(-45, cx, cy).attr(shapeAttributes);
+        var shape = sector(paper, cx, cy, r, "M", startAngle, endAngle);
+        shape.transform(["...s", (Math.sqrt(3.5))/2, xPosition, yPosition, "r-45,", cx , cy]).attr(shapeAttributes);
+        return shape;
     }
-
 }

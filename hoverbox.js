@@ -1,12 +1,12 @@
 
     /**
-     * A box with options for a PedigreeNode
+     * A box with options for a Person
      */
     var Hoverbox = Class.create( {
         
         /**
          * Constructor for Hoverbox
-         * @param pedigree_node the PedigreeNode around which the box is drawn
+         * @param pedigree_node the Person around which the box is drawn
          */
         initialize: function(pedigree_node) {
             this._node = pedigree_node;
@@ -15,6 +15,7 @@
             var me = this;
             this._optionsBtn = this.generateOptionsBtn();
             this._handles = this.generateHandles();
+            this._currentHandles = this._handles;
             this._backElements = this.generateBackElements();
             this._frontElements = this.generateFrontElements();
             this._isHovered = false;
@@ -25,17 +26,29 @@
             this.enable();
 
             document.observe('click', function(event) {
-                if (me._isOptionsToggled && ['menu-trigger', 'menu', 'menu-item', 'menu-label'].indexOf(event.element().getAttribute('class')) < 0) {
-                    editor.nodeMenu.hide();
-                    me._isOptionsToggled =  !me._isOptionsToggled;
-                    me.animateHideHoverZone();
+                if (me._isOptionsToggled) {
+                    if (event.element().getAttribute('class') != 'menu-trigger' &&
+                        (!event.element().ancestors || !event.findElement('.menu-box, .calendar_date_select'))) {
+                        editor.nodeMenu.hide();
+                        me._isOptionsToggled =  !me._isOptionsToggled;
+                        me.animateHideHoverZone();
+                    }
                 }
             });
 
        },
+        getCurrentHandles: function() {
+            return this._currentHandles;
+        },
+
+        setCurrentHandles: function(set){
+            this._currentHandles = set;
+        },
+
         getNode: function() {
             return this._node;
         },
+
         getHandles: function() {
             return this._handles;
         },
@@ -80,6 +93,24 @@
 
         getBackElements: function() {
             return this._backElements;
+        },
+
+        hidePartnerHandles: function() {
+            var crtHandles = editor.paper.set();
+            crtHandles.push(this.getHandles()[2]);
+            this.getHandles()[0].hide();
+            this.getHandles()[1].hide();
+            this.getHandles()[3].hide();
+            this.setCurrentHandles(crtHandles);
+        },
+
+        unhidePartnerHandles: function() {
+            this.setCurrentHandles(this.getHandles());
+            if(this.isHovered()) {
+                this.getHandles()[0].show();
+                this.getHandles()[1].show();
+                this.getHandles()[3].show();
+            }
         },
 
         //The options button sitting in the top right corner of the hover zone
@@ -172,7 +203,7 @@
                 editor.currentDraggable.node = me.node;
                 editor.currentDraggable.handle = handle.type;
                 isDrag = false;
-                me.getNode().draw();
+                me.getNode().drawShapes();
                 editor.enterHoverMode(me.getNode());
                 //TODO: right click behavior
 //                document.observe('contextmenu',
@@ -207,22 +238,23 @@
                         }
                     });
                 editor.exitHoverMode();
-                if(editor.currentHoveredNode && editor.currentHoveredNode.validPartnerSelected)
-                {
-                    editor.addPartnerConnection(me.getNode(), editor.currentHoveredNode);
-                    editor.currentHoveredNode = null;
-                }
-                editor.currentHoveredNode && editor.currentHoveredNode.getHoverBox().getBoxOnHover().attr(editor.graphics._attributes.boxOnHover);
+//                if(editor.currentHoveredNode && editor.currentHoveredNode.validPartnerSelected)
+//                {
+//                    alert("adding partner");
+//                    editor.addPartnerConnection(me.getNode(), editor.currentHoveredNode);
+//                    editor.currentHoveredNode = null;
+//                }
+//                editor.currentHoveredNode && editor.currentHoveredNode.getHoverBox().getBoxOnHover().attr(editor.graphics._attributes.boxOnHover);
                 connection.oPath[1][1] = connection.ox;
                 connection.oPath[1][2] = connection.oy;
                 connection.animate({"path": connection.oPath},1000, "elastic");
-
-                if(isDrag == false)
-                {
-                    me.handleClickAction(editor.currentDraggable.handle);
-                }
-                editor.currentDraggable.node = null;
-                editor.currentDraggable.handle = null;
+//
+//                if(isDrag == false)
+//                {
+//                    me.handleClickAction(editor.currentDraggable.handle);
+//                }
+//                editor.currentDraggable.node = null;
+//                editor.currentDraggable.handle = null;
             };
 
             rightCirc.drag(move, function() {start(rightHandle)},end);
@@ -242,7 +274,7 @@
             }
             else if(relationship == "child")
             {
-                var child = editor.addNode(this.getNode().getX() + 150, this.getNode().getY() + 200, 'unknown');
+                var child = editor.addNode(this.getNode().getX() + 150, this.getNode().getY() + 200, 'U');
                 var otherParent = editor.addPlaceHolder(this.getNode().getX() + 300, this.getNode().getY(), editor.getOppositeGender(this.getNode()));
                 this.getNode().addChild(child);
                 child.addParent(this.getNode());
@@ -269,8 +301,8 @@
         animateDrawHoverZone: function() {
             this.getBoxOnHover().stop().animate({opacity:0.7}, 300);
             this.getOptionsBtnIcon().stop().animate({opacity:1}, 300);
-            this._handles.show();
-            var labels = this.getNode()._labels;
+            this.getCurrentHandles().show();
+            var labels = this.getNode().getLabels().compact().flatten();
             for (var i = 0; i < labels.length; i++)
             {
                 labels[i].stop().animate({"y": labels[i].oy + 50}, 300,">");
@@ -282,14 +314,14 @@
          */
         animateHideHoverZone: function() {
             if(!this._isOptionsToggled && !this.isHovered()) {
-            this.getBoxOnHover().stop().animate({opacity:0}, 200);
-            this.getOptionsBtnIcon().stop().animate({opacity:0}, 200);
-            this._handles.hide();
-            var labels = this.getNode()._labels;
-            for (var i = 0; i < labels.length; i++)
-            {
-                labels[i].stop().animate({"y": labels[i].oy}, 300,">");
-            }
+                this.getBoxOnHover().stop().animate({opacity:0}, 200);
+                this.getOptionsBtnIcon().stop().animate({opacity:0}, 200);
+                this.getCurrentHandles().hide();
+                var labels = this.getNode().getLabels().compact().flatten();
+                for (var i = 0; i < labels.length; i++)
+                {
+                    labels[i].stop().animate({"y": labels[i].oy}, 300,">");
+                }
             }
         },
 
@@ -312,66 +344,11 @@
                 var optBBox = this.getBoxOnHover().getBBox();
                 var x = optBBox.x2;
                 var y = optBBox.y;
-                editor.nodeMenu.show({}, x+5,y);
+                editor.nodeMenu.show(this.getNode().generateMenuData(), x+5,y);
             }
             else {
                 editor.nodeMenu.hide();
             }
-        },
-
-        /*
-         * The menu function for removing a node
-         */
-        menuDeletePerson: function(node) {
-            confirm("are you sure") && alert("Person Removed");
-        },
-
-        /*
-         * The menu function for changing gender of the node
-         */
-        menuSetGender: function(node) {
-            var gender = prompt("Please input gender (male, female or unknown)");
-            node.setGender(gender);
-        },
-
-        /*
-         * The menu function for changing the birth date of the node
-         */
-        menuSetDOB: function(node) {
-            var input = prompt("Please type in the date of birth (DDMMYYYY)");
-            var birthDate = new Date(input.substr(4), input.substr(2,2), input.substr(0,2));
-            node.setAge(birthDate);
-        },
-
-        /*
-         * The menu function for changing the death date of the node
-         */
-        menuSetDOD: function(node) {
-            var input = prompt("Please type in the date of death (DDMMYYYY)");
-            var deathDate = new Date(input.substr(4), input.substr(2,2), input.substr(0,2));
-            var isDead;
-            deathDate && (isDead = true);
-            node.setDead(isDead, deathDate);
-        },
-
-        menuToggleDead: function(node)  {
-            node.setDead(!node.isDead());
-        },
-
-        /*
-         * The menu function for managing disorders of the node
-         */
-        menuEditDisorders: function(node) {
-            var k = prompt("are you sure");
-            alert(k);
-        },
-
-        menuToggleAdopt: function(node) {
-            node.toggleAdoption();
-        },
-
-        menuToggleSB: function(node) {
-            node.toggleSB();
         },
 
         /*

@@ -12,7 +12,9 @@ var NodeVisuals = Class.create( {
             "url(patterns/lines.gif)", "url(patterns/pluses.jpg)", "url(patterns/triangles.jpg)",
             "url(patterns/zebra.jpg)"];
         this._attributes = {
-            nodeShape: {fill: "white", stroke: "black"},
+            //TODO: fix fetusShape attributes
+            fetusShape: {'font-size': 50, 'font-family': 'Cambria'},
+            nodeShape: {fill: "0-#ffffff:0-#F7F7F7:100", stroke: "#595959"},
             boxOnHover : {fill: "gray", stroke: "none",opacity: 1, "fill-opacity":.25},
             //boxOnHover : {fill: "gray", stroke: "#8F8F8F",opacity: 1, "fill-opacity":.1},
             optionsBtnIcon : {fill: "#1F1F1F", stroke: "none"},
@@ -23,7 +25,8 @@ var NodeVisuals = Class.create( {
             orbRadius: this._radius/8,
             phShape: {fill: "white","fill-opacity": 0, "stroke": 'black', "stroke-dasharray": "- "},
             dragMeLabel: {'font-size': 14, 'font-family': 'Tahoma'},
-            label: {'font-size': 18, 'font-family': 'Cambria'}
+            label: {'font-size': 18, 'font-family': 'Cambria'},
+            disorderShapes: {}
         };
     },
 
@@ -34,7 +37,7 @@ var NodeVisuals = Class.create( {
 
     /*
      * Draws and hides square brackets around the 'node' based on the value of 'isAdopted'
-     * @param node an instance of PedigreeNode
+     * @param node an instance of Person
      * @param isAdopted is a boolean value that specifies whether the node is adopted
      */
 

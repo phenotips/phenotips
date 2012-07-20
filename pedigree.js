@@ -8,11 +8,6 @@ var PedigreeEditor = Class.create({
         this.width = screenDimensions.width;
         this.height = screenDimensions.height;
         this.paper = Raphael("canvas", this.width, this.height);
-        var myrect = this.paper.rect(0,0,this.width,this.height);
-        myrect.node.setAttribute('class', 'background');
-        myrect.attr({fill: "r(.5,.9)hsb(" +.5 + ", 1, .75)-hsb(" +.3 + ", .5, .25)"});
-        this.paper.circle(this.width/2, this.height/2, (Math.sqrt(this.height * this.height + this.width * this.width))/2).attr({fill: "r(.5,.5)hsb(" +.4 + ", 0, 1)-hsb(" +.2 + ", 0, .75)", stroke: "none"});
-
         this.nodes = [[],[]];
         this.idCount = 1;
         this.hoverModeZones = this.paper.set();
@@ -21,6 +16,7 @@ var PedigreeEditor = Class.create({
 
         this.initMenu();
         this.nodeMenu = this.generateNodeMenu();
+        this._legend = new Legend();
 
 
 
@@ -38,6 +34,10 @@ var PedigreeEditor = Class.create({
         };
     },
 
+    getLegend: function() {
+        return this._legend;
+    },
+
     generateID: function() {
         return this.idCount++;
     },
@@ -49,6 +49,18 @@ var PedigreeEditor = Class.create({
                 'type'  : 'hidden'
             },
             {
+                'name' : 'first_name',
+                'label': 'First name',
+                'type' : 'text',
+                'function' : 'setFirstName'
+            },
+            {
+                'name' : 'last_name',
+                'label': 'Last name',
+                'type' : 'text',
+                'function' : 'setLastName'
+            },
+            {
                 'name' : 'gender',
                 'label' : 'Gender',
                 'type' : 'radio',
@@ -57,7 +69,8 @@ var PedigreeEditor = Class.create({
                     { 'actual' : 'F', 'displayed' : 'Female' },
                     { 'actual' : 'U', 'displayed' : 'Unknown' }
                 ],
-                'default' : 'U'
+                'default' : 'U',
+                'function' : 'setGender'
             },
             {
                 'name' : 'date_of_birth',
@@ -74,7 +87,8 @@ var PedigreeEditor = Class.create({
             {
                 'name' : 'adopted',
                 'label' : 'Adopted',
-                'type' : 'checkbox'
+                'type' : 'checkbox',
+                'function' : 'setAdopted'
             },
             {
                 'name' : 'state',
@@ -86,7 +100,15 @@ var PedigreeEditor = Class.create({
                     { 'actual' : 'stillborn', 'displayed' : 'Stillborn' },
                     { 'actual' : 'aborted', 'displayed' : 'Aborted' }
                 ],
-                'default' : 'alive'
+                'default' : 'alive',
+                'function' : 'setLifeStatus'
+            },
+            {
+                'name' : 'gestation_age',
+                'label' : 'Gestation age',
+                'type' : 'select',
+                'range' : {'start': 0, 'end': 50, 'item' : ['week', 'weeks']},
+                'function' : 'setGestationAge'
             },
             {
                 'name' : 'date_of_death',
@@ -96,17 +118,6 @@ var PedigreeEditor = Class.create({
             }
         ],$('canvas'));
     },
-    getOppositeGender : function(node){
-        if (node.getGender() == "unknown") {
-            return "unknown"
-        }
-        else if(node.getGender() == "male") {
-            return "female"
-        }
-        else {
-            return "male"
-        }
-    },
 
     initMenu : function() {
         var el = $("action-new");
@@ -115,7 +126,7 @@ var PedigreeEditor = Class.create({
 
     addNode: function(x, y, gender)
     {
-        var node = new PedigreeNode(x, y, gender);
+        var node = new Person(x, y, gender);
         this.nodes[0].push(node);
         return node;
     },
@@ -138,18 +149,18 @@ var PedigreeEditor = Class.create({
 
     addPartnerConnection : function(node1, node2)
     {
-        if(node1._partners.indexOf(node2) == -1)
+        if(node1._partnerConnections.indexOf(node2) == -1)
         {
             var connection = new Connection("partner", node1, node2);
-            node1._partners.push(node2);
-            node2._partners.push(node1);
+            node1._partnerConnections.push(node2);
+            node2._partnerConnections.push(node1);
         }
     },
 
     addParentsConnection : function(node, leftParent, rightParent)
     {
-        leftParent._partners.push(rightParent);
-        rightParent._partners.push(leftParent);
+        leftParent._partnerConnections.push(rightParent);
+        rightParent._partnerConnections.push(leftParent);
         leftParent._children.push(node);
         node._parents.push(leftParent,rightParent);
         var connection = new Connection("partner", leftParent, rightParent);
@@ -203,36 +214,54 @@ var PedigreeEditor = Class.create({
     exitHoverMode: function() {
         this.hoverModeZones.remove();
     }
-
-
-
-
-
-
-
 });
 
 var editor,
     disorderMap;
 
 document.observe("dom:loaded",function() {
+
     editor = new PedigreeEditor();
+    //alert(Raphael.color('blue'));
 
-    var patientNode = editor.addNode(editor.width/2, editor.height/2, 'male');
-    var otherPatient = editor.addNode(editor.width/3, editor.height/3, 'male');
 
-    patientNode.setBirthDate(10, 6, 2011);
-    patientNode.setDead(true);
+    var patientNode = editor.addNode(editor.width/2, editor.height/2, 'M');
+    patientNode.setBirthDate(new Date(1999,9,2));
+    patientNode.setDeceased();
+//    patientNode.setAlive();
+//    patientNode.setAborted();
+//   patientNode.setAlive();
+//    patientNode.setSB();
+   patientNode.setAlive();
+//    patientNode.setFetus(true);
+    patientNode.setFirstName("peter");
+    patientNode.setLastName("panovitch");
+    patientNode.updateNameLabel();
+//    patientNode.setSB();
+//    patientNode.setConceptionDate(new Date(2002,8,2));
+    patientNode.setDeathDate(new Date(2002,9,2));
+//
 
-//        patientNode.setGender('male');
-//        patientNode.addDisorder("Down Syndrome");
-//        patientNode.addDisorder("Up Syndrome");
+
+
+
+      patientNode.addDisorder("DS1","1 Syndrome");
+
+        patientNode.addDisorder("DS2","2 Syndrome");
+    patientNode.addDisorder("DS3","3 Syndrome");
+    patientNode.addDisorder("DS4","4 Syndrome");
+//
+//
+//    patientNode.setDeathDate(new Date(2002, 9, 2));
+//
+//    patientNode.setGender("M");
+    //alert(Object.keys(editor.getLegend().getDisorders());
 //        patientNode.addDisorder("Left Disorder");
 //        patientNode.setAdopted(false);
-      //patientNode.setGender('female');
-//        //patientNode.removeDisorder("Down Syndrome");
+      //patientNode.setGender('F');
+     //   patientNode.removeDisorder("DS1");
 //        //patientNode.addDisorder("Down Syndrome");
-//        patientNode.setGender('female');
+//        patientNode.setGender('F');
         //var nodeElement = patientNode._graphics.draw(patientNode);
         //alert(nodeElement.transform());
 
@@ -244,14 +273,14 @@ document.observe("dom:loaded",function() {
         };
    // ani();
 
-//    var ph = new PlaceHolder(editor.width/2, editor.height/2, editor.graphics, 'female');
-//    var dad = editor.addNode(editor.width/2, editor.height/2, 'unknown');
-//    var mom = editor.addNode(editor.width/2, editor.height/2, 'unknown');
-//    var son = editor.addNode(editor.width/2, editor.height/2, 'female');
+//    var ph = new PlaceHolder(editor.width/2, editor.height/2, editor.graphics, 'F');
+//    var dad = editor.addNode(editor.width/2, editor.height/2, 'U');
+//    var mom = editor.addNode(editor.width/2, editor.height/2, 'U');
+//    var son = editor.addNode(editor.width/2, editor.height/2, 'F');
 //    ph._father = dad;
 //    son._mother = mom;
 
-      //var pn = new PedigreeNode(0,0,'female');
+      //var pn = new Person(0,0,'F');
 
 
 

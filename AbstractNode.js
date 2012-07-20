@@ -9,30 +9,30 @@ var AbstractNode = Class.create( {
         this._father = null;
         this._phMother = null;
         this._phFather = null;
-        this._partners = [[/*nodes*/],[/*placeHolders*/]];
+        this._partnerConnections = [[/*nodes*/],[/*placeHolders*/]];
         this._children = [[/*nodes*/],[/*placeHolders*/]];
         this._siblings = [[/*nodes*/],[/*placeHolders*/]];
         this._drawing = this.generateDrawing();
     },
 
     generateGenderShape: function() {
+
         var radius = editor.graphics.getRadius(),
             shape;
-        if (this.getGender() == 'male') {
-            shape = editor.paper.rect(this.getX() - radius, this.getY() - radius, radius * 2, radius * 2);
+        if (this.getGender() == 'M') {
+            shape = editor.paper.rect(this.getX() - radius, this.getY() - radius, radius * 2, radius * 2, 2);
         }
-        else if (this.getGender() == 'female') {
+        else if (this.getGender() == 'F') {
             shape = editor.paper.circle(this.getX(), this.getY(), radius);
         }
         else {
-            shape = editor.paper.rect(this.getX() - radius * (Math.sqrt(2.5)/2), this.getY() - radius * (Math.sqrt(2.5)/2),
-                radius * Math.sqrt(2.5), radius * Math.sqrt(2.5)).transform("...r45");
-        }
-        return shape.attr(editor.graphics._attributes.nodeShape);
-    },
+            shape = editor.paper.rect(this.getX() - radius * (Math.sqrt(3.5)/2), this.getY() - radius * (Math.sqrt(3.5)/2),
+                radius * Math.sqrt(3.5), radius * Math.sqrt(3.5));
+            shape.attr(editor.graphics._attributes.nodeShape);
 
-    generateDrawing: function() {
-        return editor.paper.set(this.generateGenderShape());
+        }
+        shape.attr(editor.graphics._attributes.nodeShape);
+        return (this.getGender() == 'U') ? shape.transform("...r45") : shape;
     },
 
     getDrawing: function() {
@@ -44,7 +44,7 @@ var AbstractNode = Class.create( {
     },
 
     parseGender: function(gender) {
-        return (gender == 'male' || gender == 'female')?gender:'unknown';
+        return (gender == 'M' || gender == 'F')?gender:'U';
     },
 
     getID: function() {
@@ -123,20 +123,20 @@ var AbstractNode = Class.create( {
     },
 
     addPhParent: function(node) {
-        if(node.getGender() == 'female') {
+        if(node.getGender() == 'F') {
             if(this.getPhMother() == null && this.getMother() == null) {
                 this.setPhMother(node);
             }
-            else if(this.getMother().getGender() == 'unknown' && this.getFather() == null) {
+            else if(this.getMother().getGender() == 'U' && this.getFather() == null) {
                 this.setFather(this.getMother());
                 this.setPhMother(node);
             }
         }
-        else if(node.getGender() == 'male') {
+        else if(node.getGender() == 'M') {
             if(this.getFather() == null && this.getPhFather() == null) {
                 this.setPhFather(node);
             }
-            else if(this.getFather().getGender() == 'unknown' && this.getMother() == null) {
+            else if(this.getFather().getGender() == 'U' && this.getMother() == null) {
                 this.setMother(this.getFather());
                 this.setPhFather(node);
             }
@@ -163,24 +163,24 @@ var AbstractNode = Class.create( {
     },
 
     addPersonParent: function(node) {
-        if(node.getGender() == 'female') {
+        if(node.getGender() == 'F') {
             if(this.getMother() == null) {
                 this.setMother(node);
                 this.getPhMother() && this.getPhMother().remove();
             }
-            else if(this.getMother().getGender() == 'unknown' && this.getFather() == null) {
+            else if(this.getMother().getGender() == 'U' && this.getFather() == null) {
                 this.setFather(this.getMother());
                 this.setMother(node);
                 this.getPhMother() && this.getPhMother().remove();
                 this.getPhFather() && this.getPhFather().remove();
             }
         }
-        else if(node.getGender() == 'male') {
+        else if(node.getGender() == 'M') {
             if(this.getFather() == null) {
                 this.setFather(node);
                 this.getPhFather() && this.getPhFather().remove();
             }
-            else if(this.getFather().getGender() == 'unknown' && this._mother == null) {
+            else if(this.getFather().getGender() == 'U' && this._mother == null) {
                 this.setMother(this.getFather());
                 this.setFather(node);
                 this.getPhMother() && this.getPhMother().remove();
@@ -219,27 +219,54 @@ var AbstractNode = Class.create( {
     },
 
     getPartners: function() {
-        return this._partners;
+        return this._partnerConnections;
     },
 
     getPersonPartners: function() {
-        return this._partners[0];
+        return this._partnerConnections[0];
     },
 
     setPersonPartners: function(partnersArray) {
-        this._partners[0] = partnersArray;
+        this._partnerConnections[0] = partnersArray;
     },
 
     getPhPartners: function() {
-        return this._partners[1];
+        return this._partnerConnections[1];
     },
 
     setPhPartners: function(partnersArray) {
-        this._partners[1] = partnersArray;
+        this._partnerConnections[1] = partnersArray;
+    },
+
+    getOppositeGender : function(){
+        if (this.getGender() == "U") {
+            return "U";
+        }
+        else if(this.getGender() == "M") {
+            return "F";
+        }
+        else {
+            return "M";
+        }
     },
 
     addPartner: function(node) {
-        this.addRelativeToList(this.getPartners(), node);
+        var partner;
+        if(node && (this.getGender() == 'U' || node.getGender() == 'U' || node.getGender() == this.getOppositeGender())) {
+            partner = node;
+        }
+        else if(!node) {
+            //TODO: set x and y using positioning algorithm
+            var x = this.getX() + 300;
+            var y = this.getY();
+            partner = editor.addNode(x, y, this.getOppositeGender());
+        }
+
+        if(partner) {
+        partner && partner.addRelativeToList(partner.getPartners(), this);
+        partner && this.addRelativeToList(this.getPartners(), partner);
+        //TODO: editor.addConnection(this, partner);
+        }
     },
 
     removePartner: function(node) {
@@ -333,7 +360,7 @@ var AbstractNode = Class.create( {
     },
 
     isPartnerOf: function(node) {
-        return this._partners.flatten().indexOf(node) > -1;
+        return this._partnerConnections.flatten().indexOf(node) > -1;
     },
 
     getGenderShape: function() {
@@ -344,18 +371,26 @@ var AbstractNode = Class.create( {
         this._genderShape && this._genderShape.remove();
         this._genderShape = shape;
     },
-    getAllGraphics: function() {
+
+    getAllShapes: function() {
         return this.getDrawing();
     },
-    draw: function() {
-        this.getAllGraphics() && this.getAllGraphics().toFront()
+
+    drawShapes: function() {
+        this.getAllShapes().toFront();
     },
 
     remove: function(isRecursive) {
-        this._mother && this._mother.removeChild(this);
-        this._father && this._father.removeChild(this);
+        var me = this;
+        this.getMother() && this.getMother().removeChild(this);
+        this.getFather() && this.getFather().removeChild(this);
+        this.getPhMother() && this.getPhMother().removeChild(this);
+        this.getPhFather() && this.getPhFather().removeChild(this);
+        this.getPartners().flatten().each( function(partner) {
+            me.removePartner(partner);
+        });
         if(isRecursive) {
-            this._children.flatten().each(function(child) {
+            this.getChildren().flatten().each(function(child) {
                 child.remove(true);
             });
         }
