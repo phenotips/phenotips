@@ -1,10 +1,10 @@
+var Legend = Class.create( {
+
+
 /*
  * Class responsible for keeping track of disorders on canvas and their properties.
  * This information is graphically displayed in a 'Legend' box
  */
-
-var Legend = Class.create( {
-
     initialize: function() {
         this._disorders = {};
         this._evaluations = {};
