@@ -29,7 +29,7 @@ import org.xwiki.test.annotation.MockingRequirement;
 /**
  * Tests for the {@link DefaultCSRFToken} component.
  * 
- * @version $Id: 62f81d2705cfef5b9315c7bcaff5fe3d15aa82b3 $
+ * @version $Id$
  * @since 2.5M2
  */
 public class PercentileToolsTest extends AbstractMockingComponentTestCase
