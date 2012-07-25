@@ -300,7 +300,9 @@ var Person = Class.create(AbstractNode, {
     },
 
     /*
-     * Returns an array of IDs of this Person's disorders
+     * Returns an array of objects with fields 'id' and 'value', where id is the id number
+     * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
+     * eg. [{id: 33244, value: 'Down Syndrome'}, {id: 13241, value: 'Huntington's Disease'}, ...]
      */
     getDisorders: function() {
         return this._disorders;
@@ -309,7 +311,9 @@ var Person = Class.create(AbstractNode, {
     /*
      * Replaces the list of disorder IDs of this person with disorderArray
      *
-     * @param disorderArray should be an array of disorder IDs as recorded in the OMIM database
+     * @param disorderArray should be an array of objects with fields 'id' and 'value', where id is the id number
+     * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
+     * eg. [{id: 33244, value: 'Down Syndrome'}, {id: 13241, value: 'Huntington's Disease'}, ...]
      */
     setDisorders: function(disorderArray) {
         this._disorders = disorderArray;
@@ -319,14 +323,15 @@ var Person = Class.create(AbstractNode, {
      * Adds disorder to the list of this node's disorders and updates the Legend.
      * (Optionally) updates the graphics of this node
      *
-     * @param disorderID the id number for the disorder, taken from the OMIM database
-     * @param name a string representing the name of the disorder e.g. "Down Syndrome"
+     * @param disorder an object with fields 'id' and 'value', where id is the id number
+     * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
+     * eg. {id: 33244, value: 'Down Syndrome'}
      * @param forceDisplay set to true if you want to display the change on the canvas
      */
-    addDisorder: function(disorderID, disorderName, forceDisplay) {
-        if(this.getDisorders().indexOf(disorderID) < 0) {
-            editor.getLegend().addCase(disorderID, disorderName);
-            this.getDisorders().push(disorderID);
+    addDisorder: function(disorder, forceDisplay) {
+        if(this.getDisorders().indexOf(disorder) < 0) {
+            editor.getLegend().addCase(disorder);
+            this.getDisorders().push(disorder);
         }
         else {
             alert("This disorder was already registered");
@@ -338,13 +343,15 @@ var Person = Class.create(AbstractNode, {
      * Removes disorder to the list of this node's disorders and updates the Legend.
      * (Optionally) updates the graphics of this node
      *
-     * @param disorderID the id number for the disorder, taken from the OMIM database
+     * @param disorder an object with fields 'id' and 'value', where id is the id number
+     * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
+     * eg. {id: 33244, value: 'Down Syndrome'}
      * @param forceDisplay set to true if you want to display the change on the canvas
      */
-    removeDisorder: function(disorderID, forceDisplay) {
-        if(this.getDisorders().indexOf(disorderID) >= 0) {
-            editor.getLegend().removeCase(disorderID);
-            this.setDisorders(this.getDisorders().without(disorderID));
+    removeDisorder: function(disorder, forceDisplay) {
+        if(this.getDisorders().indexOf(disorder) >= 0) {
+            editor.getLegend().removeCase(disorder);
+            this.setDisorders(this.getDisorders().without(disorder));
         }
         else {
             alert("This person doesn't have the specified disorder");
@@ -352,6 +359,22 @@ var Person = Class.create(AbstractNode, {
         forceDisplay && this.getGraphics().drawShapes();
     },
 
+    updateDisorders: function(disorders, forceDisplay) {
+        var updatedDisorders = [],
+            me = this;
+        disorders.each(function(disorder) {
+            me.addDisorder(disorder, forceDisplay);
+            updatedDisorders.push(disorder);
+        });
+        var toRemove = me.getDisorders();
+        disorders.each(function(disorder) {
+           toRemove = toRemove.without(disorder);
+        });
+        toRemove.each(function(disorder) {
+            me.removeDisorder(disorder, forceDisplay);
+        });
+
+    },
     /**
      * Changes the adoption status of this Person to isAdopted and (optionally) updates the
      * graphics of this node

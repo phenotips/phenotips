@@ -178,7 +178,8 @@ var PedigreeEditor = Class.create({
             {
                 'name' : 'disorders',
                 'label' : 'Known disorders of this individual',
-                'type' : 'disease-picker'
+                'type' : 'disease-picker',
+                'function' : 'updateDisorders'
             },
             {
                 'name' : 'adopted',
@@ -337,17 +338,17 @@ document.observe("dom:loaded",function() {
     var patientNode = editor.addNode(editor.width/2, editor.height/2, 'M');
     var patientNodesFriend = editor.addNode(editor.width/3, editor.height/2, 'F');
   patientNode.setBirthDate(new Date(1999,9,2), true);
-   patientNode.setDeceased(true);
-    patientNode.setGender("F", true);
-patientNode.setAlive(true);
-    patientNode.setAborted(true);
-  //patientNode.setAlive(true);
-    //patientNode.setSB(true);
-   // patientNode.setAlive(true);
-    patientNode.setFetus(true, true);
-    patientNode.setFirstName("peter", true);
-  patientNode.setLastName("panovitch", true);
-    patientNode.setAdopted(true,true);
+//   patientNode.setDeceased(true);
+//    patientNode.setGender("F", true);
+//patientNode.setAlive(true);
+//    patientNode.setAborted(true);
+//  //patientNode.setAlive(true);
+//    //patientNode.setSB(true);
+//   // patientNode.setAlive(true);
+//    patientNode.setFetus(true, true);
+//    patientNode.setFirstName("peter", true);
+//  patientNode.setLastName("panovitch", true);
+//    patientNode.setAdopted(true,true);
 
    // patientNode.setSB(true);
 ////    patientNode.setConceptionDate(new Date(2002,8,2));
@@ -357,7 +358,7 @@ patientNode.setAlive(true);
 
 
 
-//    patientNode.addDisorder("DS1","1 Syndrome", true);
+    patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
 //
 //    patientNode.addDisorder("DS2","2 Syndrome", true);
 //    patientNode.addDisorder("DS3","3 Syndrome", true);

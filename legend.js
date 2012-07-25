@@ -71,29 +71,32 @@ var Legend = Class.create( {
      * Registers an occurrence of a disorder. If disorder hasn't been documented yet,
      * designates a color for it.
      *
-     * @param disorderID the id number for the disorder, taken from the OMIM database
-     * @param disorderName the name of the disorder, taken from the OMIM database
+     * @param disorder an object with fields 'id' and 'value', where id is the id number
+     * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
+     * eg. {id: 33244, value: 'Down Syndrome'}
      */
-    addCase: function(disorderID, disorderName) {
-        if (!this.containsDisorder(disorderID)) {
-            this.setDisorder(disorderID, new Disorder(disorderID, disorderName, null, 0));
-            this.addUsedColor(this.getDisorder(disorderID).getColor());
+    addCase: function(disorder) {
+        if (!this.containsDisorder(disorder['id'])) {
+            this.setDisorder(disorder['id'], new Disorder(disorder['id'], disorder['value'], null, 0));
+            this.addUsedColor(this.getDisorder(disorder['id']).getColor());
             //TODO: this.buildLegend
         }
-            this.getDisorder(disorderID).incrementNumAffected();
+            this.getDisorder(disorder['id']).incrementNumAffected();
     },
 
     /*
      * Removes an occurrence of a disorder if there are any. Removes the disorder
      * from the 'Legend' box if this disorder is not registered in any individual.
      *
-     * @param disorderID the id number for the disorder, taken from the OMIM database
+     * @param disorder an object with fields 'id' and 'value', where id is the id number
+     * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
+     * eg. {id: 33244, value: 'Down Syndrome'}
      */
-    removeCase: function(disorderID) {
-        if (this.containsDisorder(disorderID)) {
-            this.getDisorder(disorderID).decrementNumAffected();
-            if(this.getDisorder(disorderID).getNumAffected() < 1) {
-                delete this.getDisorder(disorderID);
+    removeCase: function(disorder) {
+        if (this.containsDisorder(disorder['id'])) {
+            this.getDisorder(disorder['id']).decrementNumAffected();
+            if(this.getDisorder(disorder['id']).getNumAffected() < 1) {
+                delete this.getDisorder(disorder['id']);
                 //TODO: this.buildLegend
             }
         }
