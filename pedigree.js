@@ -1,13 +1,11 @@
 var PedigreeEditor = Class.create({
     initialize: function(graphics) {
+        this.generateViewControls();
+        (this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this))();
 
         //create canvas
-        var screenDimensions = document.viewport.getDimensions();
-        var titleHeight = $('document-title');
-
-        this.width = screenDimensions.width;
-        this.height = screenDimensions.height;
         this.paper = Raphael("canvas", this.width, this.height);
+        this.adjustSizeToScreen();
         this.nodes = [[],[]];
         this.idCount = 1;
         this.hoverModeZones = this.paper.set();
@@ -22,7 +20,8 @@ var PedigreeEditor = Class.create({
 
         //TODO: for each connection: draw, for each node: draw
 
-        //TODO: capture resize events
+        // Capture resize events
+        Event.observe (window, 'resize', this.adjustSizeToScreen);
 
         //Generate a map of Disorders and patterns
         disorderMap = {};
@@ -34,6 +33,89 @@ var PedigreeEditor = Class.create({
         };
     },
 
+    adjustSizeToScreen : function() {
+        var canvas = $('canvas');
+        var screenDimensions = document.viewport.getDimensions();
+        this.width = screenDimensions.width;
+        this.height = screenDimensions.height - canvas.cumulativeOffset().top - 4;
+        if (this.paper) {
+            // TODO : pan to center?... set viewbox instead of size?
+            this.paper.setSize(this.width, this.height);
+        }
+        if (!this.__sizeLabel) {
+            this.__sizeLabel = new Element('span', {'class' : 'size-label'});
+            canvas.insert({'after' : this.__sizeLabel});
+        }
+        this.__sizeLabel.update(this.width + " × " + this.height);
+        if (this.__controls) {
+            this.__controls.style.top = canvas.cumulativeOffset().top + 10 + "px";
+        }
+    },
+
+    generateViewControls : function() {
+        var _this = this;
+        this.__controls = new Element('div', {'class' : 'view-controls'});
+        // Pan controls
+        this.__pan = new Element('div', {'class' : 'view-controls-pan', title : 'Pan'});
+        this.__controls.insert(this.__pan);
+        ['up', 'right', 'down', 'left'].each(function (direction) {
+            _this.__pan[direction] = new Element('span', {'class' : 'view-control-pan pan-' + direction, 'title' : 'Pan ' + direction});
+            _this.__pan.insert(_this.__pan[direction]);
+            _this.__pan[direction].observe('click', function(event) {
+                // TODO : Pan
+                alert('Panning ' + direction + '!');
+            })
+        });
+        // Zoom controls
+        var trackLength = 200;
+        this.__zoom = new Element('div', {'class' : 'view-controls-zoom', title : 'Zoom'});
+        this.__controls.insert(this.__zoom);
+        this.__zoom.track = new Element('div', {'class' : 'zoom-track'});
+        this.__zoom.handle = new Element('div', {'class' : 'zoom-handle', title : 'Drag to zoom'});
+        this.__zoom.in = new Element('div', {'class' : 'zoom-button zoom-in', title : 'Zoom in'});
+        this.__zoom.out = new Element('div', {'class' : 'zoom-button zoom-out', title : 'Zoom out'});
+        this.__zoom.label = new Element('div', {'class' : 'zoom-crt-value'});
+        this.__zoom.insert(this.__zoom.in);
+        this.__zoom.insert(this.__zoom.track);
+        this.__zoom.track.insert(this.__zoom.handle);
+        this.__zoom.track.style.height = trackLength + 'px';
+        this.__zoom.insert(this.__zoom.out);
+        this.__zoom.insert(this.__zoom.label);
+        // Scriptaculous slider
+        // see also http://madrobby.github.com/scriptaculous/slider/
+        this.__zoom.__crtValue = 0;
+        this.zoomSlider = new Control.Slider(this.__zoom.handle, this.__zoom.track, {
+            axis:'vertical',
+            minimum: 60,
+            maximum: trackLength + 60,
+            increment : trackLength / 100,
+            alignY: 6,
+            onSlide : function (value) {
+                // Called whenever the Slider is moved by dragging.
+                // The called function gets the slider value (or array if slider has multiple handles) as its parameter.
+                _this.__zoom.__crtValue = 1 - value;
+                _this.__zoom.label.update(new Number(_this.__zoom.__crtValue  * 100).toPrecision(3) + "%");
+                // TODO: Zoom
+            },
+            onChange : function (value) {
+                // Called whenever the Slider has finished moving or has had its value changed via the setSlider Value function.
+                // The called function gets the slider value (or array if slider has multiple handles) as its parameter.
+                _this.__zoom.__crtValue = 1 - value;
+                _this.__zoom.label.update(new Number(_this.__zoom.__crtValue  * 100).toPrecision(3) + "%");
+                // TODO: Zoom
+            }
+        });
+        this.zoomSlider.setValue(.5); // TODO : set initial value
+        this.__zoom.in.observe('click', function(event) {
+            _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue + .01))
+        });
+        this.__zoom.out.observe('click', function(event) {
+            _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue - .01))
+        });
+        // Insert all controls in the document
+        $('canvas').insert({'after' : this.__controls});
+    },
+
     getLegend: function() {
         return this._legend;
     },
@@ -42,6 +124,21 @@ var PedigreeEditor = Class.create({
         return this.idCount++;
     },
     generateNodeMenu: function() {
+        document.observe('click', function(event) {
+            if (this.nodeMenu.isVisible()) {
+                if (event.element().getAttribute('class') != 'menu-trigger' &&
+                    (!event.element().up || !event.element().up('.menu-box, .calendar_date_select') && event.element().up('body'))) {
+                    this.nodeMenu.hide();
+                }
+            }
+        });
+        document.observe('nodemenu:hiding', function(event) {
+            if (event.memo && event.memo.node) {
+                var nodeBox = event.memo.node.getHoverBox();
+                nodeBox.toggleMenu(!nodeBox.isMenuToggled());
+                nodeBox.animateHideHoverZone();
+            }
+        });
         return new NodeMenu([
             {
                 'name' : 'identifier',
@@ -89,6 +186,12 @@ var PedigreeEditor = Class.create({
                 'label' : 'Adopted',
                 'type' : 'checkbox',
                 'function' : 'setAdopted'
+            },
+            {
+                'name' : 'fetus',
+                'label' : 'Fetus',
+                'type' : 'checkbox',
+                'function' : 'setFetus'
             },
             {
                 'name' : 'state',
@@ -222,34 +325,53 @@ var editor,
 document.observe("dom:loaded",function() {
 
     editor = new PedigreeEditor();
+//    var a = editor.paper.circle(0,20,20);
+//    a.transform("t150");
+//    a.translate(10);
+////
+////    var b = editor.paper.rect(100,100,100);
+////    var g = editor.paper.set(a,b);
+////    a.transform('t400');
+////    b.transform('t0,33');
+////    var k = g.transform();
+////    var me = "hahaha";
+////    var b = editor.paper.rect(120,20,20,20);
+////    var arr = [a,b];
+////    var se2 = editor.paper.set(editor.paper.circle(20,120,40));
+////    var se = editor.paper.set(arr);
+////    se.push(se2);
+////
+////    se.hide();
+////    se.show();
     //alert(Raphael.color('blue'));
 
-
     var patientNode = editor.addNode(editor.width/2, editor.height/2, 'M');
-    patientNode.setBirthDate(new Date(1999,9,2));
-    patientNode.setDeceased();
-//    patientNode.setAlive();
-//    patientNode.setAborted();
-//   patientNode.setAlive();
-//    patientNode.setSB();
-   patientNode.setAlive();
-//    patientNode.setFetus(true);
-    patientNode.setFirstName("peter");
-    patientNode.setLastName("panovitch");
-    patientNode.updateNameLabel();
-//    patientNode.setSB();
-//    patientNode.setConceptionDate(new Date(2002,8,2));
-    patientNode.setDeathDate(new Date(2002,9,2));
+  patientNode.setBirthDate(new Date(1999,9,2), true);
+   patientNode.setDeceased(true);
+    patientNode.setGender("F", true);
+patientNode.setAlive(true);
+    patientNode.setAborted(true);
+  //patientNode.setAlive(true);
+    //patientNode.setSB(true);
+   // patientNode.setAlive(true);
+    patientNode.setFetus(true, true);
+    patientNode.setFirstName("peter", true);
+  patientNode.setLastName("panovitch", true);
+    patientNode.setAdopted(true,true);
+
+   // patientNode.setSB(true);
+////    patientNode.setConceptionDate(new Date(2002,8,2));
+//    patientNode.setDeathDate(new Date(2002,9,2));
+////
 //
 
 
 
-
-      patientNode.addDisorder("DS1","1 Syndrome");
-
-        patientNode.addDisorder("DS2","2 Syndrome");
-    patientNode.addDisorder("DS3","3 Syndrome");
-    patientNode.addDisorder("DS4","4 Syndrome");
+//    patientNode.addDisorder("DS1","1 Syndrome", true);
+//
+//    patientNode.addDisorder("DS2","2 Syndrome", true);
+//    patientNode.addDisorder("DS3","3 Syndrome", true);
+//    patientNode.addDisorder("DS4","4 Syndrome", true);
 //
 //
 //    patientNode.setDeathDate(new Date(2002, 9, 2));
@@ -258,20 +380,20 @@ document.observe("dom:loaded",function() {
     //alert(Object.keys(editor.getLegend().getDisorders());
 //        patientNode.addDisorder("Left Disorder");
 //        patientNode.setAdopted(false);
-      //patientNode.setGender('F');
-     //   patientNode.removeDisorder("DS1");
+    //patientNode.setGender('F');
+    //   patientNode.removeDisorder("DS1");
 //        //patientNode.addDisorder("Down Syndrome");
 //        patientNode.setGender('F');
-        //var nodeElement = patientNode._graphics.draw(patientNode);
-        //alert(nodeElement.transform());
+    //var nodeElement = patientNode._graphics.draw(patientNode);
+    //alert(nodeElement.transform());
 
-        var ani = function() {
-            patientNode._hoverBox.disable();
-            patientNode._xPos += 100;
-            patientNode._yPos += 100;
-            nodeElement.stop().animate({'transform': "t " + 100 + "," + 100+"..."}, 2000, "linear", patientNode._hoverBox.enable.bind(patientNode._hoverBox));
-        };
-   // ani();
+    var ani = function() {
+        patientNode._hoverBox.disable();
+        patientNode._xPos += 100;
+        patientNode._yPos += 100;
+        nodeElement.stop().animate({'transform': "t " + 100 + "," + 100+"..."}, 2000, "linear", patientNode._hoverBox.enable.bind(patientNode._hoverBox));
+    };
+    // ani();
 
 //    var ph = new PlaceHolder(editor.width/2, editor.height/2, editor.graphics, 'F');
 //    var dad = editor.addNode(editor.width/2, editor.height/2, 'U');
@@ -280,7 +402,7 @@ document.observe("dom:loaded",function() {
 //    ph._father = dad;
 //    son._mother = mom;
 
-      //var pn = new Person(0,0,'F');
+    //var pn = new Person(0,0,'F');
 
 
 

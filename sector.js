@@ -7,7 +7,7 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
         r = radius,
         paper = canvas,
         rad = Math.PI / 180,
-        shapeAttributes = {fill: color, 'stroke-width':.5 };
+        shapeAttributes = {fill: color, 'stroke-width':.0 };
 
     //returns coordinates of the point on the circle (with radius = _radius) at angle alpha
     var circleCoordinate = function(alpha) {
@@ -88,8 +88,8 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
         return paper.path(sectorPathData).attr(shapeAttributes);
     }
     else {
-        var shape = sector(paper, cx, cy, r, "M", startAngle, endAngle);
-        shape.transform(["...s", (Math.sqrt(3.5))/2, xPosition, yPosition, "r-45,", cx , cy]).attr(shapeAttributes);
+        var shape = sector(paper, cx, cy, r* (Math.sqrt(3)/2), "M", startAngle, endAngle, color);
+        shape.transform(["...r-45,", cx , cy]).attr(shapeAttributes);
         return shape;
     }
 }

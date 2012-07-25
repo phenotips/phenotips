@@ -1,211 +1,278 @@
+/*
+ * Hoverbox is a class for all the UI elements and graphics surrounding an individual node and
+ * its labels. This includes the box that appears around the node when it's hovered by a mouse, as
+ * well as the handles used for creating connections and creating new nodes.
+ *
+ * @param x the x coordinate on the Raphael canvas at which the node drawing will be centered
+ * @param the y coordinate on the Raphael canvas at which the node drawing will be centered
+ * @param gender either 'M', 'F' or 'U' depending on the gender
+ * @param id a unique numerical ID number
+ */
+
+var Hoverbox = Class.create( {
 
     /**
-     * A box with options for a Person
+     * @param pedigree_node the Person around which the box is drawn
+     * @param x the x coordinate on the Raphael canvas at which the hoverbox will be centered
+     * @param y the y coordinate on the Raphael canvas at which the hoverbox will be centered
      */
-    var Hoverbox = Class.create( {
-        
-        /**
-         * Constructor for Hoverbox
-         * @param pedigree_node the Person around which the box is drawn
-         */
-        initialize: function(pedigree_node) {
-            this._node = pedigree_node;
-            this._width = editor.graphics.getRadius() * 4;
-            this._isOptionsToggled = false;
-            var me = this;
-            this._optionsBtn = this.generateOptionsBtn();
-            this._handles = this.generateHandles();
-            this._currentHandles = this._handles;
-            this._backElements = this.generateBackElements();
-            this._frontElements = this.generateFrontElements();
-            this._isHovered = false;
+    initialize: function(pedigree_node, x, y) {
+        this._node = pedigree_node;
+        this._x = x;
+        this._y = y;
+        this._width = editor.graphics.getRadius() * 4;
+        this._isMenuToggled = false;
+        var me = this;
+        this._optionsBtn = this.generateMenuBtn();
+        this._handles = this.generateHandles();
+        this._currentHandles = this._handles;
+        this._isHovered = false;
+        this._isMenuToggled = false;
 
-            this.animateDrawHoverZone = this.animateDrawHoverZone.bind(this);
-            this.animateHideHoverZone =  this.animateHideHoverZone.bind(this);
-            this.hide();
-            this.enable();
+        var boxOnHover = editor.paper.rect(this.getX()-(this._width/2), this.getY()-(this._width/2),
+                                            this._width, this._width, 5).attr(editor.graphics._attributes.boxOnHover);
+        this._backElements =  editor.paper.set().push(boxOnHover, this.getHandles());
+        var mask = editor.paper.rect(this.getX()-(this._width/2), this.getY()-(this._width/2),this._width, this._width);
+        mask.attr({fill: 'gray', opacity: 0});
 
-            document.observe('click', function(event) {
-                if (me._isOptionsToggled) {
-                    if (event.element().getAttribute('class') != 'menu-trigger' &&
-                        (!event.element().ancestors || !event.findElement('.menu-box, .calendar_date_select'))) {
-                        editor.nodeMenu.hide();
-                        me._isOptionsToggled =  !me._isOptionsToggled;
-                        me.animateHideHoverZone();
-                    }
-                }
+        this._frontElements = editor.paper.set().push(mask, this.showMenuBtn(), this.handleOrbs);
+        this._frontElements.hover(function() {me.setHovered(true)}, function() {me.setHovered(false)});
+        this.animateDrawHoverZone = this.animateDrawHoverZone.bind(this);
+        this.animateHideHoverZone =  this.animateHideHoverZone.bind(this);
+        this.hide();
+        this.enable();
+    },
+
+    /*
+     * Returns the Person which this hoverbox is attached to
+     */
+    getNode: function() {
+        return this._node;
+    },
+
+    /*
+     * Returns the x coordinate on the Raphael canvas at which the hoverbox centered
+     */
+    getX: function() {
+        return this._x;
+    },
+
+    /*
+     * Returns the y coordinate on the Raphael canvas at which the hoverbox centered
+     */
+    getY: function() {
+        return this._y;
+    },
+
+    /*
+     * TODO: get rid of this? As well as the event catcher on top
+     */
+    hideMenu: function() {
+        editor.nodeMenu.hide();
+        this.toggleMenu(!this.isMenuToggled());
+        this.animateHideHoverZone();
+    },
+
+    /*
+     * Returns a Raphael set of the currently visible handles
+     */
+    getCurrentHandles: function() {
+        return this._currentHandles;
+    },
+
+    /*
+     * Replaces the set of currently visible handles with newSet
+     *
+     * @param newSet should be a Raphael set containing handles
+     */
+    setCurrentHandles: function(newSet){
+        this._currentHandles = newSet;
+    },
+
+    /*
+     * Returns the a Raphael set containing the four draggable handles
+     */
+    getHandles: function() {
+        return this._handles;
+    },
+
+    /*
+     * Hides generates the button that shows/hides the menu
+     */
+    generateMenuBtn: function() {
+        var me = this,
+            path = "M2.021,9.748L2.021,9.748V9.746V9.748zM2.022,9.746l5.771,5.773l-5.772,5.771l2.122,2.123l7.894-7.895L4.143,7.623L2.022,9.746zM12.248,23.269h14.419V20.27H12.248V23.269zM16.583,17.019h10.084V14.02H16.583V17.019zM12.248,7.769v3.001h14.419V7.769H12.248z",
+            iconX = this.getX() + editor.graphics.getRadius() * 1.45,
+            iconY = this.getY() - editor.graphics.getRadius() * 1.9,
+            iconScale = editor.graphics.getRadius() * 0.014,
+            optionsBtnIcon = editor.paper.path(path);
+
+        optionsBtnIcon.attr(editor.graphics._attributes.optionsBtnIcon);
+        optionsBtnIcon.transform(["t" , iconX , iconY, "s", iconScale, iconScale, 0, 0]);
+        var optionsBtnMask = editor.paper.rect(optionsBtnIcon.getBBox().x, optionsBtnIcon.getBBox().y,
+            optionsBtnIcon.getBBox().width, optionsBtnIcon.getBBox().height, 1);
+        optionsBtnMask.attr({fill: 'gray', opacity: 0}).transform("s1.5");
+
+        optionsBtnIcon.node.setAttribute('class', 'menu-trigger');
+        optionsBtnMask.node.setAttribute('class', 'menu-trigger');
+
+        var button = editor.paper.set(optionsBtnMask, optionsBtnIcon);
+        button.click(function(){
+            me.toggleMenu(!me.isMenuToggled(), true)
+        });
+        button.mousedown(function(){optionsBtnMask.attr(editor.graphics._attributes.optionsBtnMaskClick)});
+        button.hover(function() {
+                optionsBtnMask.attr(editor.graphics._attributes.optionsBtnMaskHoverOn)
+            },
+            function() {
+                optionsBtnMask.attr(editor.graphics._attributes.optionsBtnMaskHoverOff)
             });
+        return button;
+    },
 
-       },
-        getCurrentHandles: function() {
-            return this._currentHandles;
-        },
+    /*
+     * Returns the icon used for the menu button
+     */
+    getOptionsBtnIcon: function() {
+        return this.showMenuBtn()[1];
+    },
+    /*
+     * Returns a Raphael set containing the button for showing/hiding the menu
+     */
+    showMenuBtn: function() {
+        return this._optionsBtn;
+    },
 
-        setCurrentHandles: function(set){
-            this._currentHandles = set;
-        },
+    /*
+     * Returns the gray box that appears when the Person is hovered
+     */
+    getBoxOnHover: function() {
+        return this.getBackElements()[0];
+    },
 
-        getNode: function() {
-            return this._node;
-        },
+    /*
+     * Returns true if the hover box is currently hovered
+     */
+    isHovered: function() {
+        return this._isHovered;
+    },
 
-        getHandles: function() {
-            return this._handles;
-        },
+    /*
+     * Sets the hovered property to isHovered.
+     *
+     * @param isHovered set to true if the box is hovered
+     */
+    setHovered: function(isHovered) {
+        this._isHovered = isHovered;
+    },
 
-        getOptionsBtn: function() {
-            return this._optionsBtn;
-        },
-        getBoxOnHover: function() {
-            return this.getBackElements()[0];
-        },
+    /*
+     * Returns the invisible layer in front of the hoverbox
+     */
+    getHoverZoneMask: function() {
+        return this.getFrontElements()[0];
+    },
 
-        isHovered: function() {
-            return this._isHovered;
-        },
+    /*
+     * Returns a Raphael set containing all hoverbox elements that are layered
+     * in front of the Person graphics
+     */
+    getFrontElements: function() {
+        return this._frontElements;
+    },
 
-        setHovered: function(isHovered) {
-            this._isHovered = isHovered;
-        },
+    /*
+     * Returns a Raphael set containing all hoverbox elements that are layered
+     * behind of the Person graphics
+     */
+    getBackElements: function() {
+        return this._backElements;
+    },
 
-        generateFrontElements: function() {
-            var mask = editor.paper.rect(this.getNode().getX()-(this._width/2),
-                                         this.getNode().getY()-(this._width/2),this._width, this._width);
-            mask.attr({fill: 'gray', opacity: 0});
-            var me = this,
-                frontElements = editor.paper.set().push(mask, this.getOptionsBtn(), this.handleOrbs);
-            return frontElements.hover(function() {me.setHovered(true)}, function() {me.setHovered(false)});
-        },
+    /*
+     * Hides the partner and children handles
+     */
+    hidePartnerHandles: function() {
+        var crtHandles = editor.paper.set();
+        crtHandles.push(this.getHandles()[2]);
+        this.getHandles()[0].hide();
+        this.getHandles()[1].hide();
+        this.getHandles()[3].hide();
+        this.setCurrentHandles(crtHandles);
+    },
 
-        getHoverZoneMask: function() {
-            return this.getFrontElements()[0];
-        },
+    /*
+     * Shows the partner and children handles
+     */
+    unhidePartnerHandles: function() {
+        this.setCurrentHandles(this.getHandles());
+        if(this.isHovered() || this.isMenuToggled()) {
+            this.getHandles()[0].show();
+            this.getHandles()[1].show();
+            this.getHandles()[3].show();
+        }
+    },
 
-        getFrontElements: function() {
-            return this._frontElements;
-        },
+    /*
+     * Creates and returns a set with four draggable handles for creating new relatives and connections
+     */
+    generateHandles: function() {
+        var rightPath = [["M", this.getX(), this.getY()],["L", this.getX() + (editor.graphics.getRadius() * 1.6), this.getY()]],
+            leftPath = [["M", this.getX(), this.getY()],["L", this.getX() - (editor.graphics.getRadius() * 1.6), this.getY()]],
+            upPath = [["M", this.getX(), this.getY()],["L", this.getX(), this.getY() - (editor.graphics.getRadius() * 1.6)]],
+            downPath = [["M", this.getX(), this.getY()],["L", this.getX(), this.getY() + (editor.graphics.getRadius() * 1.6)]],
 
-        generateBackElements: function() {
-            var boxOnHover = editor.paper.rect(this.getNode().getX()-(this._width/2), this.getNode().getY()-(this._width/2),
-                this._width, this._width, 5).attr(editor.graphics._attributes.boxOnHover);
-            return editor.paper.set().push(boxOnHover, this.getHandles());
-        },
+            connectionAttr = {"stroke-width": 4, stroke: "gray"},
+            rightConnection = editor.paper.path(rightPath).attr(connectionAttr),
+            leftConnection = editor.paper.path(leftPath).attr(connectionAttr),
+            downConnection = editor.paper.path(downPath).attr(connectionAttr),
+            upConnection = editor.paper.path(upPath).attr(connectionAttr),
 
-        getBackElements: function() {
-            return this._backElements;
-        },
+            orbRadius = editor.graphics._attributes.orbRadius,
+            orbHue = editor.graphics._attributes.orbHue,
+            upCirc = editor.graphics.generateOrb(upPath[1][1], upPath[1][2], orbRadius, orbHue),
+            downCirc = editor.graphics.generateOrb(downPath[1][1], downPath[1][2], orbRadius, orbHue),
+            leftCirc = editor.graphics.generateOrb(leftPath[1][1], leftPath[1][2], orbRadius, orbHue),
+            rightCirc = editor.graphics.generateOrb(rightPath[1][1], rightPath[1][2], orbRadius, orbHue),
 
-        hidePartnerHandles: function() {
-            var crtHandles = editor.paper.set();
-            crtHandles.push(this.getHandles()[2]);
-            this.getHandles()[0].hide();
-            this.getHandles()[1].hide();
-            this.getHandles()[3].hide();
-            this.setCurrentHandles(crtHandles);
-        },
+            rightHandle = editor.paper.set().push(rightConnection, rightCirc),
+            leftHandle = editor.paper.set().push(leftConnection, leftCirc),
+            upHandle = editor.paper.set().push(upConnection, upCirc),
+            downHandle = editor.paper.set().push(downConnection, downCirc);
 
-        unhidePartnerHandles: function() {
-            this.setCurrentHandles(this.getHandles());
-            if(this.isHovered()) {
-                this.getHandles()[0].show();
-                this.getHandles()[1].show();
-                this.getHandles()[3].show();
-            }
-        },
-
-        //The options button sitting in the top right corner of the hover zone
-        generateOptionsBtn: function() {
-            var me = this,
-                path = "M2.021,9.748L2.021,9.748V9.746V9.748zM2.022,9.746l5.771,5.773l-5.772,5.771l2.122,2.123l7.894-7.895L4.143,7.623L2.022,9.746zM12.248,23.269h14.419V20.27H12.248V23.269zM16.583,17.019h10.084V14.02H16.583V17.019zM12.248,7.769v3.001h14.419V7.769H12.248z",
-                iconX = this.getNode().getX() + editor.graphics.getRadius() * 1.45,
-                iconY = this.getNode().getY() - editor.graphics.getRadius() * 1.9,
-                iconScale = editor.graphics.getRadius() * 0.014,
-                optionsBtnIcon = editor.paper.path(path);
-
-            optionsBtnIcon.attr(editor.graphics._attributes.optionsBtnIcon);
-            optionsBtnIcon.transform(["t" , iconX , iconY, "s", iconScale, iconScale, 0, 0]);
-            var optionsBtnMask = editor.paper.rect(optionsBtnIcon.getBBox().x, optionsBtnIcon.getBBox().y,
-                optionsBtnIcon.getBBox().width, optionsBtnIcon.getBBox().height, 1);
-            optionsBtnMask.attr({fill: 'gray', opacity: 0}).transform("s1.5");
-
-            optionsBtnIcon.node.setAttribute('class', 'menu-trigger');
-            optionsBtnMask.node.setAttribute('class', 'menu-trigger');
-
-            var button = editor.paper.set(optionsBtnMask, optionsBtnIcon).click(function(){me.toggleOptions()});
-            button.mousedown(function(){optionsBtnMask.attr(editor.graphics._attributes.optionsBtnMaskClick)});
-            button.hover(function() {
-                            optionsBtnMask.attr(editor.graphics._attributes.optionsBtnMaskHoverOn)
-                        },
-                        function() {
-                            optionsBtnMask.attr(editor.graphics._attributes.optionsBtnMaskHoverOff)
-                        });
-            return button;
-        },
-
-        getOptionsBtnIcon: function() {
-            return this.getOptionsBtn()[1];
-        },
-
-        /*
-         * Creates a set with four Handles
-         */
-        generateHandles: function() {
-            var rightPath = [["M", this.getNode().getX(), this.getNode().getY()],["L", this.getNode().getX() + (editor.graphics.getRadius() * 1.6), this.getNode().getY()]],
-                leftPath = [["M", this.getNode().getX(), this.getNode().getY()],["L", this.getNode().getX() - (editor.graphics.getRadius() * 1.6), this.getNode().getY()]],
-                upPath = [["M", this.getNode().getX(), this.getNode().getY()],["L", this.getNode().getX(), this.getNode().getY() - (editor.graphics.getRadius() * 1.6)]],
-                downPath = [["M", this.getNode().getX(), this.getNode().getY()],["L", this.getNode().getX(), this.getNode().getY() + (editor.graphics.getRadius() * 1.6)]],
-
-                connectionAttr = {"stroke-width": 4, stroke: "gray"},
-                rightConnection = editor.paper.path(rightPath).attr(connectionAttr),
-                leftConnection = editor.paper.path(leftPath).attr(connectionAttr),
-                downConnection = editor.paper.path(downPath).attr(connectionAttr),
-                upConnection = editor.paper.path(upPath).attr(connectionAttr),
-
-                orbRadius = editor.graphics._attributes.orbRadius,
-                orbHue = editor.graphics._attributes.orbHue,
-                upCirc = editor.graphics.generateOrb(upPath[1][1], upPath[1][2], orbRadius, orbHue),
-                downCirc = editor.graphics.generateOrb(downPath[1][1], downPath[1][2], orbRadius, orbHue),
-                leftCirc = editor.graphics.generateOrb(leftPath[1][1], leftPath[1][2], orbRadius, orbHue),
-                rightCirc = editor.graphics.generateOrb(rightPath[1][1], rightPath[1][2], orbRadius, orbHue),
-
-                rightHandle = editor.paper.set().push(rightConnection, rightCirc),
-                leftHandle = editor.paper.set().push(leftConnection, leftCirc),
-                upHandle = editor.paper.set().push(upConnection, upCirc),
-                downHandle = editor.paper.set().push(downConnection, downCirc);
-
-            rightHandle.type = leftHandle.type = 'partner';
-            upHandle.type = 'parent';
-            downHandle.type = 'child';
+        rightHandle.type = leftHandle.type = 'partner';
+        upHandle.type = 'parent';
+        downHandle.type = 'child';
 
 
-            rightConnection.oPath = rightPath;
-            leftConnection.oPath = leftPath;
-            upConnection.oPath = upPath;
-            downConnection.oPath = downPath;
-            this.enable =  this.enable.bind(this);
-            this.disable =  this.disable.bind(this);
-            this.handleOrbs = editor.paper.set().push(rightCirc, leftCirc, upCirc, downCirc);
-            var me = this,
-                orb,
-                connection,
-                isDrag,
-                movingHandles = 0;
+        rightConnection.oPath = rightPath;
+        leftConnection.oPath = leftPath;
+        upConnection.oPath = upPath;
+        downConnection.oPath = downPath;
+        this.enable =  this.enable.bind(this);
+        this.disable =  this.disable.bind(this);
+        this.handleOrbs = editor.paper.set().push(rightCirc, leftCirc, upCirc, downCirc);
+        var me = this,
+            orb,
+            connection,
+            isDrag,
+            movingHandles = 0;
 
-            var start = function(handle) {
-                me.disable();
-                orb = handle[1];
-                connection = handle[0];
-                orb.ox = orb[0].attr("cx");
-                orb.oy = orb[0].attr("cy");
-                connection.ox = connection.oPath[1][1];
-                connection.oy = connection.oPath[1][2];
-                movingHandles++;
-                editor.currentDraggable.node = me.node;
-                editor.currentDraggable.handle = handle.type;
-                isDrag = false;
-                me.getNode().drawShapes();
-                editor.enterHoverMode(me.getNode());
-                //TODO: right click behavior
+        var start = function(handle) {
+            me.disable();
+            orb = handle[1];
+            connection = handle[0];
+            orb.ox = orb[0].attr("cx");
+            orb.oy = orb[0].attr("cy");
+            connection.ox = connection.oPath[1][1];
+            connection.oy = connection.oPath[1][2];
+            movingHandles++;
+            editor.currentDraggable.node = me.node;
+            editor.currentDraggable.handle = handle.type;
+            isDrag = false;
+            me.getNode().drawShapes();
+            editor.enterHoverMode(me.getNode());
+            //TODO: right click behavior
 //                document.observe('contextmenu',
 //                    function(ev) {
 //                            ev.preventDefault();
@@ -215,29 +282,27 @@
 //                            ev.stop();
 //                            }
 //                    , false);
-            };
-            var move = function(dx, dy) {
-                orb.attr("cx", orb.ox + dx);
-                orb.attr("cy", orb.oy + dy);
-                connection.oPath[1][1] = connection.ox + dx;
-                connection.oPath[1][2] = connection.oy + dy;
-                connection.attr("path", connection.oPath);
-                if(dx > 5 || dx < -5 || dy > 5 || dy < -5 )
-                {
-                    isDrag = true;
-                }
-            };
-            var end = function() {
-                orb.animate({"cx": orb.ox, "cy": orb.oy}, +isDrag * 1000, "elastic",
-                    function() {
-                        movingHandles--;
-                        if(movingHandles == 0)
-                        {
-                            me.enable();
-                            me.animateHideHoverZone();
-                        }
-                    });
-                editor.exitHoverMode();
+        };
+        var move = function(dx, dy) {
+            orb.attr("cx", orb.ox + dx);
+            orb.attr("cy", orb.oy + dy);
+            connection.oPath[1][1] = connection.ox + dx;
+            connection.oPath[1][2] = connection.oy + dy;
+            connection.attr("path", connection.oPath);
+            if(dx > 5 || dx < -5 || dy > 5 || dy < -5 ) {
+                isDrag = true;
+            }
+        };
+        var end = function() {
+            orb.animate({"cx": orb.ox, "cy": orb.oy}, +isDrag * 1000, "elastic",
+                function() {
+                    movingHandles--;
+                    if(movingHandles == 0) {
+                        me.enable();
+                        me.animateHideHoverZone();
+                    }
+                });
+            editor.exitHoverMode();
 //                if(editor.currentHoveredNode && editor.currentHoveredNode.validPartnerSelected)
 //                {
 //                    alert("adding partner");
@@ -245,9 +310,9 @@
 //                    editor.currentHoveredNode = null;
 //                }
 //                editor.currentHoveredNode && editor.currentHoveredNode.getHoverBox().getBoxOnHover().attr(editor.graphics._attributes.boxOnHover);
-                connection.oPath[1][1] = connection.ox;
-                connection.oPath[1][2] = connection.oy;
-                connection.animate({"path": connection.oPath},1000, "elastic");
+            connection.oPath[1][1] = connection.ox;
+            connection.oPath[1][2] = connection.oy;
+            connection.animate({"path": connection.oPath},1000, "elastic");
 //
 //                if(isDrag == false)
 //                {
@@ -255,125 +320,122 @@
 //                }
 //                editor.currentDraggable.node = null;
 //                editor.currentDraggable.handle = null;
-            };
+        };
 
-            rightCirc.drag(move, function() {start(rightHandle)},end);
-            leftCirc.drag(move, function() {start(leftHandle)},end);
-            upCirc.drag(move, function() {start(upHandle)},end);
-            downCirc.drag(move, function() {start(downHandle)},end);
+        rightCirc.drag(move, function() {start(rightHandle)},end);
+        leftCirc.drag(move, function() {start(leftHandle)},end);
+        upCirc.drag(move, function() {start(upHandle)},end);
+        downCirc.drag(move, function() {start(downHandle)},end);
 
-            return editor.paper.set().push(rightHandle, leftHandle, upHandle, downHandle);
-        },
+        return editor.paper.set().push(rightHandle, leftHandle, upHandle, downHandle);
+    },
 
-        handleClickAction : function(relationship)
-        {
-            if(relationship == "partner")
-            {
-                var partner = editor.addNode(this.getNode().getX() + 300, this.getNode().getY(), editor.getOppositeGender(this.getNode()));
-                editor.addPartnerConnection(this.getNode(), partner);
+    /*
+     * Performs the appropriate action for clicking on the handle of type handleType
+     *
+     * @param handleType can be either "child", "partner" or "parent"
+     */
+    handleClickAction : function(handleType)
+    {
+        if(handleType == "partner") {
+            var partner = editor.addNode(this.getX() + 300, this.getY(), this.getNode().getOppositeGender());
+            editor.addPartnerConnection(this.getNode(), partner);
+        }
+        else if(handleType == "child") {
+            var child = editor.addNode(this.getX() + 150, this.getY() + 200, 'U');
+            var otherParent = editor.addPlaceHolder(this.getX() + 300, this.getY(), this.getNode().getOppositeGender());
+            this.getNode().addChild(child);
+            child.addParent(this.getNode());
+            child.addParent(otherParent);
+            otherParent.addChild(child);
+            this.getNode().addPartner(otherParent);
+            otherParent.addPartner(this.getNode());
+        }
+        else if(handleType == "parent") {
+            if(this.getNode().getMother() == null) {
+                var mother = editor.addNode(this.getX() + 100, this.getY() - 260, "female");
+                this.getNode().addParent(mother);
             }
-            else if(relationship == "child")
-            {
-                var child = editor.addNode(this.getNode().getX() + 150, this.getNode().getY() + 200, 'U');
-                var otherParent = editor.addPlaceHolder(this.getNode().getX() + 300, this.getNode().getY(), editor.getOppositeGender(this.getNode()));
-                this.getNode().addChild(child);
-                child.addParent(this.getNode());
-                child.addParent(otherParent);
-                otherParent.addChild(child);
-                this.getNode().addPartner(otherParent);
-                otherParent.addPartner(this.getNode());
+            if(this.getNode().getFather() == null) {
+                var father = editor.addNode(this.getX() - 100, this.getY() - 260, "male");
+                this.getNode().addParent(father);
             }
-            else if(relationship == "parent") {
-                if(this.getNode().getMother() == null) {
-                    var mother = editor.addNode(this.getNode().getX() + 100, this.getNode().getY() - 260, "female");
-                    this.getNode().addParent(mother);
-                }
-                if(this.getNode().getFather() == null) {
-                    var father = editor.addNode(this.getNode().getX() - 100, this.getNode().getY() - 260, "male");
-                    this.getNode().addParent(father);
-                }
-            }
-        },
+        }
+    },
 
-        /*
-         * Draws the hover box elements with a fade in animation
-         */
-        animateDrawHoverZone: function() {
-            this.getBoxOnHover().stop().animate({opacity:0.7}, 300);
-            this.getOptionsBtnIcon().stop().animate({opacity:1}, 300);
-            this.getCurrentHandles().show();
-            var labels = this.getNode().getLabels().compact().flatten();
-            for (var i = 0; i < labels.length; i++)
-            {
-                labels[i].stop().animate({"y": labels[i].oy + 50}, 300,">");
-            }
-        },
+    /*
+     * Draws the hoverbox with a "fade in" animation effect
+     */
+    animateDrawHoverZone: function() {
+        this.getNode().getGraphics().setSelected(true);
+        this.getBoxOnHover().stop().animate({opacity:0.7}, 300);
+        this.getOptionsBtnIcon().stop().animate({opacity:1}, 300);
+        this.getCurrentHandles().show();
+    },
 
-        /*
-         * Hides the hover box elements with a fade out animation
-         */
-        animateHideHoverZone: function() {
-            if(!this._isOptionsToggled && !this.isHovered()) {
-                this.getBoxOnHover().stop().animate({opacity:0}, 200);
-                this.getOptionsBtnIcon().stop().animate({opacity:0}, 200);
-                this.getCurrentHandles().hide();
-                var labels = this.getNode().getLabels().compact().flatten();
-                for (var i = 0; i < labels.length; i++)
-                {
-                    labels[i].stop().animate({"y": labels[i].oy}, 300,">");
-                }
-            }
-        },
+    /*
+     * Hides the hover box elements with a "fade out" animation effect
+     */
+    animateHideHoverZone: function() {
+        if(!this.isMenuToggled() && !this.isHovered()) {
+            this.getNode().getGraphics().setSelected(false);
+            this.getBoxOnHover().stop().animate({opacity:0}, 200);
+            this.getOptionsBtnIcon().stop().animate({opacity:0}, 200);
+            this.getCurrentHandles().hide();
+        }
+    },
 
-        /*
-         * Hides the hover zone without a fade out animation
-         */
-        hide: function() {
-            this.getBoxOnHover().attr({opacity:0});
-            this.getOptionsBtnIcon().attr({opacity:0});
-            this._handles.hide();
-        },
+    /*
+     * Returns true if the menu for this node is open
+     */
+    isMenuToggled: function() {
+        return this._isMenuToggled;
+    },
 
-        /*
-         * Changes the toggle state of the options button and shows or hides the menu
-         */
-        toggleOptions: function() {
-            this._isOptionsToggled = !this._isOptionsToggled;
-            this.getOptionsBtn()[0].attr(editor.graphics._attributes.optionsBtnMaskHoverOn);
-            if(this._isOptionsToggled) {
-                var optBBox = this.getBoxOnHover().getBBox();
-                var x = optBBox.x2;
-                var y = optBBox.y;
-                editor.nodeMenu.show(this.getNode().generateMenuData(), x+5,y);
+    /*
+     * Shows/hides the menu for this node
+     */
+    toggleMenu: function(isMenuToggled) {
+        this._isMenuToggled = isMenuToggled;
+        if(isMenuToggled) {
+            var optBBox = this.getBoxOnHover().getBBox();
+            var x = optBBox.x2;
+            var y = optBBox.y;
+            editor.nodeMenu.show(this.getNode(), x+5, y);
+        }
+        else {
+            editor.nodeMenu.hide();
+        }
+    },
+
+    /*
+     * Hides the hover zone without a fade out animation
+     */
+    hide: function() {
+        this.getBoxOnHover().attr({opacity:0});
+        this.getOptionsBtnIcon().attr({opacity:0});
+        this._handles.hide();
+    },
+
+    /*
+     * Stops responding to mouseovers
+     */
+    disable: function() {
+        this._frontElements.unhover(this.animateDrawHoverZone, this.animateHideHoverZone);
+    },
+
+    /*
+     * Starts responding to mouseovers
+     */
+    enable: function() {
+        var me = this;
+        this._frontElements.hover(function() {
+            if(editor.currentDraggable.handle != null && editor.currentDraggable.node == me.getNode()) {
+                alert("drag with handle");
             }
             else {
-                editor.nodeMenu.hide();
+                me.animateDrawHoverZone()
             }
-        },
-
-        /*
-         * Removes the hover properties of the hover box
-         */
-        disable: function() {
-            this._frontElements.unhover(this.animateDrawHoverZone, this.animateHideHoverZone);
-        },
-
-        /*
-         * Enables the hover properties of the hover box
-         */
-        enable: function() {
-            var me = this;
-            this._frontElements.hover(function() {
-
-                if(editor.currentDraggable.handle != null && editor.currentDraggable.node == me.getNode())
-                {
-                    alert("drag with handle");
-                }
-                else
-                {
-                    //alert(editor.currentDraggable.handle);
-                    me.animateDrawHoverZone()
-                }
-            }, me.animateHideHoverZone);
-        }
-    });
+        }, me.animateHideHoverZone);
+    }
+});
