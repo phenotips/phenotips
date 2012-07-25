@@ -97,6 +97,7 @@ var PersonVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     updateDisorderShapes: function() {
+        this._disorderShapes && this._disorderShapes.remove();
         var gradient = function(color, angle) {
             var hsb = Raphael.rgb2hsb(color),
                 darker = Raphael.hsb2rgb(hsb['h'],hsb['s'],hsb['b']-.25)['hex'];
@@ -120,7 +121,7 @@ var PersonVisuals = Class.create(AbstractNodeVisuals, {
                     corner = ["L", this.getX(), this.getY()-height];
                 }
                 var slice = editor.paper.path(["M", x1, y1, corner,"L", x2, y2, 'L',this.getX(), this.getY(),'z']),
-                    color = gradient(editor.getLegend().getDisorder(this.getDisorders()[k]).getColor());
+                    color = gradient(editor.getLegend().getDisorder(this.getNode().getDisorders()[k]['id']).getColor(), 70);
                 slice.attr({fill: color, 'stroke-width':.5 });
                 disorderShapes.push(slice.attr({fill: color, 'stroke-width':.5 }));
                 x1 = x2;
@@ -132,7 +133,7 @@ var PersonVisuals = Class.create(AbstractNodeVisuals, {
             var delta = (360/(person.getDisorders().length))/2;
 
             for(var i = 0; i < person.getDisorders().length; i++) {
-                var color = gradient(editor.getLegend().getDisorder(person.getDisorders()[i]).getColor(), (i * disorderAngle)+delta);
+                var color = gradient(editor.getLegend().getDisorder(person.getDisorders()[i]['id']).getColor(), (i * disorderAngle)+delta);
                 disorderShapes.push(sector(editor.paper, this.getX(), this.getY(), editor.graphics.getRadius(),
                     person.getGender(), i * disorderAngle, (i+1) * disorderAngle, color));
             }
