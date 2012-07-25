@@ -16,8 +16,6 @@ var PedigreeEditor = Class.create({
         this.nodeMenu = this.generateNodeMenu();
         this._legend = new Legend();
 
-
-
         //TODO: for each connection: draw, for each node: draw
 
         // Capture resize events
@@ -228,22 +226,19 @@ var PedigreeEditor = Class.create({
         el.observe("click", function() {alert("new node has been created! WHOAH!")});
     },
 
-    addNode: function(x, y, gender)
-    {
+    addNode: function(x, y, gender) {
         var node = new Person(x, y, gender);
         this.nodes[0].push(node);
         return node;
     },
 
-    addPlaceHolder: function(x,y, gender)
-    {
+    addPlaceHolder: function(x,y, gender) {
         var ph = new PlaceHolder(x,y, gender);
         this.nodes[1].push(ph);
         return ph;
     },
 
-    removeNode: function(node)
-    {
+    removeNode: function(node) {
         //TODO: optimize (check whether node is a placeholder or a person)
         this.nodes[0] = this.nodes[0].without(node);
         this.nodes[1] = this.nodes[1].without(node);
@@ -251,18 +246,15 @@ var PedigreeEditor = Class.create({
     },
 
 
-    addPartnerConnection : function(node1, node2)
-    {
-        if(node1._partnerConnections.indexOf(node2) == -1)
-        {
+    addPartnerConnection : function(node1, node2) {
+        if(node1._partnerConnections.indexOf(node2) == -1) {
             var connection = new Connection("partner", node1, node2);
             node1._partnerConnections.push(node2);
             node2._partnerConnections.push(node1);
         }
     },
 
-    addParentsConnection : function(node, leftParent, rightParent)
-    {
+    addParentsConnection : function(node, leftParent, rightParent) {
         leftParent._partnerConnections.push(rightParent);
         rightParent._partnerConnections.push(leftParent);
         leftParent._children.push(node);
@@ -270,7 +262,7 @@ var PedigreeEditor = Class.create({
         var connection = new Connection("partner", leftParent, rightParent);
     },
 
-    enterHoverMode: function(sourceNode){
+    enterHoverMode: function(sourceNode) {
         var hoverNodes = this.nodes[0].without(sourceNode);
         var me = this;
         hoverNodes.each(function(s) {
@@ -347,6 +339,7 @@ document.observe("dom:loaded",function() {
     //alert(Raphael.color('blue'));
 
     var patientNode = editor.addNode(editor.width/2, editor.height/2, 'M');
+    var patientNodesFriend = editor.addNode(editor.width/3, editor.height/2, 'F');
   patientNode.setBirthDate(new Date(1999,9,2), true);
    patientNode.setDeceased(true);
     patientNode.setGender("F", true);
