@@ -271,27 +271,23 @@ var PedigreeEditor = Class.create({
                 function() {
                     me.currentHoveredNode = s;
                     s.getHoverBox().setHovered(true);
-                    if(me.currentDraggable.placeholder != null)
-                    {
+                    if(me.currentDraggable.placeholder != null) {
                         if(me.currentDraggable.placeholder.canMergeWith(s)) {
                             s.getHoverBox().getBoxOnHover().attr(me.graphics._attributes.boxOnHover);
                             s.getHoverBox().getBoxOnHover().attr({"fill": "green", opacity: 1, "fill-opacity": 1});
                             me.validPlaceholderNode = true;
                         }
-                        else
-                        {
+                        else {
                             s.getHoverBox().getBoxOnHover().attr(me.graphics._attributes.boxOnHover);
                             s.getHoverBox().getBoxOnHover().attr("fill", "red");
                         }
                     }
                     else if(me.currentDraggable.handle == "partner" && ((sourceNode.getGender() && sourceNode.getGender() == "male" && s.getGender() == "female") ||
-                        (sourceNode.getGender() == "female" && s.getGender() == "male")))
-                    {
+                        (sourceNode.getGender() == "female" && s.getGender() == "male"))) {
                         s.validPartnerSelected = true;
                         s.getHoverBox().getBoxOnHover().attr(me.graphics._attributes.boxOnHover);
                     }
-                    else
-                    {
+                    else {
                         s.getHoverBox().getBoxOnHover().attr(me.graphics._attributes.boxOnHover);
                         s.getHoverBox().getBoxOnHover().attr("fill", "red");
                     }
