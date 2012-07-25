@@ -118,7 +118,7 @@ var Hoverbox = Class.create( {
 
         var button = editor.paper.set(optionsBtnMask, optionsBtnIcon);
         button.click(function(){
-            me.toggleMenu(!me.isMenuToggled(), true)
+            me.toggleMenu(!me.isMenuToggled());
         });
         button.mousedown(function(){optionsBtnMask.attr(editor.graphics._attributes.optionsBtnMaskClick)});
         button.hover(function() {
@@ -398,12 +398,14 @@ var Hoverbox = Class.create( {
     toggleMenu: function(isMenuToggled) {
         this._isMenuToggled = isMenuToggled;
         if(isMenuToggled) {
+            this.disable();
             var optBBox = this.getBoxOnHover().getBBox();
             var x = optBBox.x2;
             var y = optBBox.y;
             editor.nodeMenu.show(this.getNode(), x+5, y);
         }
         else {
+            this.enable();
             editor.nodeMenu.hide();
         }
     },
