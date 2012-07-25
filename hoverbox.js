@@ -262,6 +262,7 @@ var Hoverbox = Class.create( {
             me.disable();
             orb = handle[1];
             connection = handle[0];
+            me.getNode().getGraphics().getAllGraphics().toFront();
             orb.ox = orb[0].attr("cx");
             orb.oy = orb[0].attr("cy");
             connection.ox = connection.oPath[1][1];
