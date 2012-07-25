@@ -407,7 +407,7 @@ var Person = Class.create(AbstractNode, {
             date_of_birth: {value : this.getBirthDate(), inactive : (this.getLifeStatus() == 'stillborn' || this.getLifeStatus() == 'aborted')},
             disorders:     {value : this.getDisorders()},
             adopted:       {value : this.isAdopted(), inactive: (this.getLifeStatus() == 'alive' || this.getLifeStatus() == 'deceased')},
-            //fetus:         {value : this.isFetus(), inactive: (this.getLifeStatus() == 'deceased')},
+            fetus:         {value : this.isFetus(), inactive: (this.getLifeStatus() == 'deceased')},
             state:         {value : this.getLifeStatus(), inactive : [this.getDeathDate() ? 'alive' : '', this.isFetus() ? 'deceased': '', this.isAdopted() ? ['stillborn', 'aborted'].flatten() : '']},
             date_of_death: {value : this.getDeathDate()},
             gestation_age: {value : this.getGestationAge(), inactive : (this.getLifeStatus() == 'alive' || this.getLifeStatus() == 'deceased')}
