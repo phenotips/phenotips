@@ -14,7 +14,7 @@ var NodeVisuals = Class.create( {
         this._attributes = {
             //TODO: fix fetusShape attributes
             fetusShape: {'font-size': 50, 'font-family': 'Cambria'},
-            nodeShape: {fill: "0-#ffffff:0-#F7F7F7:100", stroke: "#595959"},
+            nodeShape: {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
             boxOnHover : {fill: "gray", stroke: "none",opacity: 1, "fill-opacity":.25},
             //boxOnHover : {fill: "gray", stroke: "#8F8F8F",opacity: 1, "fill-opacity":.1},
             optionsBtnIcon : {fill: "#1F1F1F", stroke: "none"},

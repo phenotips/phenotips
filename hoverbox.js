@@ -18,8 +18,8 @@ var Hoverbox = Class.create( {
      */
     initialize: function(pedigree_node, x, y) {
         this._node = pedigree_node;
-        this._x = x;
-        this._y = y;
+        this._relativeX = x;
+        this._relativeY = y;
         this._width = editor.graphics.getRadius() * 4;
         this._isMenuToggled = false;
         var me = this;
@@ -54,14 +54,14 @@ var Hoverbox = Class.create( {
      * Returns the x coordinate on the Raphael canvas at which the hoverbox centered
      */
     getX: function() {
-        return this._x;
+        return this._relativeX;
     },
 
     /*
      * Returns the y coordinate on the Raphael canvas at which the hoverbox centered
      */
     getY: function() {
-        return this._y;
+        return this._relativeY;
     },
 
     /*
@@ -432,13 +432,6 @@ var Hoverbox = Class.create( {
      */
     enable: function() {
         var me = this;
-        this._frontElements.hover(function() {
-            if(editor.currentDraggable.handle != null && editor.currentDraggable.node == me.getNode()) {
-                alert("drag with handle");
-            }
-            else {
-                me.animateDrawHoverZone()
-            }
-        }, me.animateHideHoverZone);
+        this._frontElements.hover(me.animateDrawHoverZone, me.animateHideHoverZone);
     }
 });

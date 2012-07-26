@@ -292,11 +292,11 @@ var PersonVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     getLabels: function() {
-        var labels = [];
+        var labels = editor.paper.set();
         this.getNameLabel() && labels.push(this.getNameLabel());
         this.getSBLabel() && labels.push(this.getSBLabel());
         this.getAgeLabel() && labels.push(this.getAgeLabel());
-        this.getEvaluationLabels() && labels.concat(this.getEvaluationLabels());
+        this.getEvaluationLabels() && this.getEvaluationLabels().each(function(l) {labels.push(l); });
         return labels;
     },
 
@@ -347,5 +347,16 @@ var PersonVisuals = Class.create(AbstractNodeVisuals, {
     draw: function($super) {
         this.drawLabels();
         $super();
+    },
+
+    move: function(x, y) {
+        var xDisplacement = x - this.getAbsX();
+        var yDisplacement = y - this.getAbsY();
+        var displacement = Math.sqrt(xDisplacement * xDisplacement + yDisplacement * yDisplacement);
+        this.getHoverBox().disable();
+        this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getAbsX()) + "," +(y-this.getAbsY()) + "..."},
+            displacement /.4, "<>", this.getHoverBox().enable.bind(this.getHoverBox()));
+        this.setAbsX(x);
+        this.setAbsY(y);
     }
 });

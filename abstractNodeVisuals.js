@@ -7,8 +7,10 @@ var AbstractNodeVisuals = Class.create( {
 
     initialize: function(node, x, y) {
         this._node = node;
-        this._x= x;
-        this._y = y;
+        this._relativeX= x;
+        this._relativeY = y;
+        this._absoluteX = x;
+        this._absoluteY = y;
         this._genderShape = null;
         this.draw();
     },
@@ -21,17 +23,45 @@ var AbstractNodeVisuals = Class.create( {
     },
 
     /*
-     * Returns the x coordinate at which the node was originally drawn. Disregards transformation data.
+     * Returns the current X coordinate of this node on the canvas, taking into consideration transformation data.
      */
     getX: function() {
-        return this._x;
+        return this._relativeX;
     },
-    
+
     /*
      * Returns the y coordinate at which the node was originally drawn. Disregards transformation data.
      */
     getY: function() {
-        return this._y;
+        return this._relativeY;
+    },
+
+    /*
+     * Returns the current X coordinate of this node on the canvas, taking into consideration transformation data.
+     */
+    getAbsX: function() {
+        return this._relativeX;
+    },
+
+    /*
+     * Replaces the current X coordinate of this node on the canvas, taking into consideration transformation data.
+     */
+    setAbsX: function(x) {
+        this._relativeX = x;
+    },
+
+    /*
+     * Returns the y coordinate at which the node was originally drawn. Disregards transformation data.
+     */
+    getAbsY: function() {
+        return this._relativeY;
+    },
+
+    /*
+     * Replaces the current Y coordinate of this node on the canvas, taking into consideration transformation data.
+     */
+    setAbsY: function(y) {
+        this._relativeY = y;
     },
 
     /*
@@ -112,6 +142,12 @@ var AbstractNodeVisuals = Class.create( {
      */
     draw: function() {
         this.drawShapes();
+    },
+
+    move: function(x, y) {
+        this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getAbsX()) + "," +(y-this.getAbsY()) + "..."}, 2000, "linear");
+        this.setAbsX(x);
+        this.setAbsY(y);
     },
 
     /*

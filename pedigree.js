@@ -359,6 +359,7 @@ document.observe("dom:loaded",function() {
 
 
     patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
+   patientNode.getGraphics().move(20, 20);
 //
 //    patientNode.addDisorder("DS2","2 Syndrome", true);
 //    patientNode.addDisorder("DS3","3 Syndrome", true);
