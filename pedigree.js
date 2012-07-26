@@ -315,6 +315,11 @@ var editor,
 document.observe("dom:loaded",function() {
 
     editor = new PedigreeEditor();
+//    var iconPath = Raphael.pathToRelative("M16,1.466C7.973,1.466,1.466,7.973,1.466,16c0,8.027,6.507,14.534,14.534,14.534c8.027,0,14.534-6.507,14.534-14.534C30.534,7.973,24.027,1.466,16,1.466zM16,28.792c-1.549,0-2.806-1.256-2.806-2.806s1.256-2.806,2.806-2.806c1.55,0,2.806,1.256,2.806,2.806S17.55,28.792,16,28.792zM16,21.087l-7.858-6.562h3.469V5.747h8.779v8.778h3.468L16,21.087z");
+//    iconPath[0][1] = 0;
+//    iconPath[0][2] = 0;
+//    var duude = editor.paper.path(iconPath);
+
 //    var a = editor.paper.circle(0,20,20);
 //    a.transform("t150");
 //    a.translate(10);
@@ -338,6 +343,7 @@ document.observe("dom:loaded",function() {
     var patientNode = editor.addNode(editor.width/2, editor.height/2, 'M');
     var patientNodesFriend = editor.addNode(editor.width/3, editor.height/2, 'F');
   patientNode.setBirthDate(new Date(1999,9,2), true);
+    var myconn = new PartnerConnection(patientNode, patientNodesFriend);
 //   patientNode.setDeceased(true);
 //    patientNode.setGender("F", true);
 //patientNode.setAlive(true);
@@ -358,8 +364,8 @@ document.observe("dom:loaded",function() {
 
 
 
-    patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
-   patientNode.getGraphics().move(20, 20);
+ //   patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
+//   patientNode.getGraphics().move(20, 20);
 //
 //    patientNode.addDisorder("DS2","2 Syndrome", true);
 //    patientNode.addDisorder("DS3","3 Syndrome", true);
