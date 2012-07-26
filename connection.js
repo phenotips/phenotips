@@ -30,6 +30,8 @@ var PartnerConnection = Class.create( {
     getNode2: function() {
         return this.node2;
     }
+
+
 });
 
 
