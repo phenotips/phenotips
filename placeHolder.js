@@ -30,7 +30,7 @@ var PlaceHolder = Class.create(AbstractNode, {
     removeIfDisconnected: function(removeGraphics) {
         var hasNoParents = !this.getMother && !this.getPhMother() && !this.getFather() && !this.getPhFather();
         var hasNoKids = this.getChildren().flatten().length == 0;
-        var isSingleParent = (this.getChildren().flatten().length > 0 && this.getPartners().flatten().length == 0);
+        var isSingleParent = (this.getChildren().flatten().length > 0 && this.getPartnerConnections().flatten().length == 0);
         if (hasNoParents &&  (hasNoKids || isSingleParent)) {
             this.remove(false,removeGraphics);
         }

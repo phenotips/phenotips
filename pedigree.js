@@ -343,7 +343,8 @@ document.observe("dom:loaded",function() {
     var patientNode = editor.addNode(editor.width/2, editor.height/2, 'M');
     var patientNodesFriend = editor.addNode(editor.width/3, editor.height/2, 'F');
   patientNode.setBirthDate(new Date(1999,9,2), true);
-    var myconn = new PartnerConnection(patientNode, patientNodesFriend);
+    patientNode.addPartner(patientNodesFriend);
+    patientNode.addPartner();
 //   patientNode.setDeceased(true);
 //    patientNode.setGender("F", true);
 //patientNode.setAlive(true);

@@ -13,7 +13,7 @@ var AbstractNode = Class.create( {
         this._father = null;
         this._phMother = null;
         this._phFather = null;
-        this._partnerConnections = [[/*nodes*/],[/*placeHolders*/]];
+        this._partnerConnections = [];//[[/*nodes*/],[/*placeHolders*/]];
         this._children = [[/*nodes*/],[/*placeHolders*/]];
         this._siblings = [[/*nodes*/],[/*placeHolders*/]];
         this._graphics = this.generateGraphics(x, y);
@@ -208,8 +208,22 @@ var AbstractNode = Class.create( {
             array[+(node.getType() != 'pn')].push(node);
     },
 
-    getPartners: function() {
+    getPartnerConnections: function() {
         return this._partnerConnections;
+    },
+
+    getPartners: function() {
+        var partners = [];
+        var me = this;
+        this.getPartnerConnections().each(function(conn) {
+            var partner = conn.getPartnerOf(me);
+            partner && partners.push(partner);
+        });
+        return partners;
+    },
+
+    addPartnerConnection: function(connection) {
+        this._partnerConnections.push(connection);
     },
 
     getPersonPartners: function() {
@@ -246,25 +260,29 @@ var AbstractNode = Class.create( {
 
     addPartner: function(node) {
         var partner;
-        if(node && (this.getGender() == 'U' || node.getGender() == 'U' || node.getGender() == this.getOppositeGender())) {
+        if(node && this.getPartners().indexOf(node) == -1 &&
+            (this.getGender() == 'U' || node.getGender() == 'U' || node.getGender() == this.getOppositeGender())) {
             partner = node;
         }
         else if(!node) {
             //TODO: set x and y using positioning algorithm
-            var x = this.getX() + 300;
-            var y = this.getY();
+            var x = this.getGraphics().getAbsX() + 300;
+            var y = this.getGraphics().getAbsY();
             partner = editor.addNode(x, y, this.getOppositeGender());
         }
 
         if(partner) {
-        partner && partner.addRelativeToList(partner.getPartners(), this);
-        partner && this.addRelativeToList(this.getPartners(), partner);
-        //TODO: editor.addConnection(this, partner);
+            var connection = new PartnerConnection(this, partner);
+            this.getPartnerConnections().push(connection);
+            partner.addPartnerConnection(connection);
+//            partner && partner.addRelativeToList(partner.getPartnerConnections(), this);
+//            partner && this.addRelativeToList(this.getPartnerConnections(), partner);
+            //TODO: editor.addConnection(this, partner);
         }
     },
 
     removePartner: function(node) {
-        this.removeRelativeFromList(this.getPartners(), node);
+        //this.removeRelativeFromList(this.getPartners(), node);
     },
 
     getChildren: function() {
@@ -386,12 +404,12 @@ var AbstractNode = Class.create( {
         this.getFather() && this.getFather().removeChild(this);
         this.getPhMother() && this.getPhMother().removeChild(this);
         this.getPhFather() && this.getPhFather().removeChild(this);
-        this.getPartners().flatten().each( function(partner) {
+        this.getPartnerConnections().flatten().each( function(partner) {
             me.removePartner(partner);
         });
         if(isRecursive) {
             this.getChildren().flatten().each(function(child) {
-                child.getPartners().flatten().each(function(partner) {
+                child.getPartnerConnections().flatten().each(function(partner) {
                    partner.remove(false, removeVisuals);
                 });
                 child.remove(true, removeVisuals);
