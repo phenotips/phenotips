@@ -251,7 +251,7 @@ var Hoverbox = Class.create( {
         downConnection.oPath = downPath;
         this.enable =  this.enable.bind(this);
         this.disable =  this.disable.bind(this);
-        this.handleOrbs = editor.paper.set().push(rightCirc, leftCirc, upCirc, downCirc);
+        this.handleOrbs = editor.paper.set().push(rightCirc, leftCirc, upCirc, downCirc).attr("cursor", "pointer");
         var me = this,
             orb,
             connection,
@@ -271,7 +271,6 @@ var Hoverbox = Class.create( {
             editor.currentDraggable.node = me.node;
             editor.currentDraggable.handle = handle.type;
             isDrag = false;
-            me.getNode().drawShapes();
             editor.enterHoverMode(me.getNode());
             //TODO: right click behavior
 //                document.observe('contextmenu',
@@ -304,23 +303,21 @@ var Hoverbox = Class.create( {
                     }
                 });
             editor.exitHoverMode();
-//                if(editor.currentHoveredNode && editor.currentHoveredNode.validPartnerSelected)
-//                {
-//                    alert("adding partner");
-//                    editor.addPartnerConnection(me.getNode(), editor.currentHoveredNode);
-//                    editor.currentHoveredNode = null;
-//                }
-//                editor.currentHoveredNode && editor.currentHoveredNode.getHoverBox().getBoxOnHover().attr(editor.graphics._attributes.boxOnHover);
+                if(editor.currentHoveredNode && editor.currentHoveredNode.validPartnerSelected) {
+                me.getNode().addPartner(editor.currentHoveredNode);
+                editor.currentHoveredNode = null;
+            }
+            editor.currentHoveredNode && editor.currentHoveredNode.getGraphics().getHoverBox().getBoxOnHover().attr(editor.graphics._attributes.boxOnHover);
+
             connection.oPath[1][1] = connection.ox;
             connection.oPath[1][2] = connection.oy;
             connection.animate({"path": connection.oPath},1000, "elastic");
-//
-//                if(isDrag == false)
-//                {
-//                    me.handleClickAction(editor.currentDraggable.handle);
-//                }
-//                editor.currentDraggable.node = null;
-//                editor.currentDraggable.handle = null;
+
+                if(isDrag == false) {
+                    me.handleClickAction(editor.currentDraggable.handle);
+                }
+                editor.currentDraggable.node = null;
+                editor.currentDraggable.handle = null;
         };
 
         rightCirc.drag(move, function() {start(rightHandle)},end);
@@ -339,28 +336,13 @@ var Hoverbox = Class.create( {
     handleClickAction : function(handleType)
     {
         if(handleType == "partner") {
-            var partner = editor.addNode(this.getX() + 300, this.getY(), this.getNode().getOppositeGender());
-            editor.addPartnerConnection(this.getNode(), partner);
+            this.getNode().createPartner(false);
         }
         else if(handleType == "child") {
-            var child = editor.addNode(this.getX() + 150, this.getY() + 200, 'U');
-            var otherParent = editor.addPlaceHolder(this.getX() + 300, this.getY(), this.getNode().getOppositeGender());
-            this.getNode().addChild(child);
-            child.addParent(this.getNode());
-            child.addParent(otherParent);
-            otherParent.addChild(child);
-            this.getNode().addPartner(otherParent);
-            otherParent.addPartner(this.getNode());
+            this.getNode().createChild(false);
         }
         else if(handleType == "parent") {
-            if(this.getNode().getMother() == null) {
-                var mother = editor.addNode(this.getX() + 100, this.getY() - 260, "female");
-                this.getNode().addParent(mother);
-            }
-            if(this.getNode().getFather() == null) {
-                var father = editor.addNode(this.getX() - 100, this.getY() - 260, "male");
-                this.getNode().addParent(father);
-            }
+            this.getNode().createParents();
         }
     },
 

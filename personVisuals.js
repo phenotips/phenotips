@@ -173,10 +173,10 @@ var PersonVisuals = Class.create(AbstractNodeVisuals, {
         var text,
             person = this.getNode();
         if (person.isFetus() && person.getLifeStatus() == 'alive') {
-            person.getConceptionDate() && (text = getAge(person.getConceptionDate()));
+            person.getConceptionDate() && (text = getAge(person.getConceptionDate(), null));
         }
         else if(person.getLifeStatus() == 'alive') {
-            person.getBirthDate() && (text = getAge(person.getBirthDate()));
+            person.getBirthDate() && (text = getAge(person.getBirthDate(), null));
         }
         else {
             var prefix = (person.getConceptionDate()) ? '' : "d. ";

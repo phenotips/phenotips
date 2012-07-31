@@ -117,7 +117,7 @@ var AbstractNodeVisuals = Class.create( {
      * Returns a Raphael set or element that contains the graphics associated with this node, excluding the labels.
      */
     getShapes: function() {
-        return this.getGenderShape();
+        return editor.paper.set(this.getGenderShape());
     },
 
     /*

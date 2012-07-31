@@ -133,7 +133,7 @@ var PedigreeEditor = Class.create({
         });
         document.observe('nodemenu:hiding', function(event) {
             if (event.memo && event.memo.node) {
-                var nodeBox = event.memo.node.getGraphics().getHoverBox();
+                var nodeBox = event.memo.node.getGraphics().getGraphics().getHoverBox();
                 nodeBox._isMenuToggled = false;
                 nodeBox.animateHideHoverZone();
             }
@@ -227,9 +227,9 @@ var PedigreeEditor = Class.create({
         el.observe("click", function() {alert("new node has been created! WHOAH!")});
     },
 
-    addNode: function(x, y, gender) {
-        var node = new Person(x, y, gender);
-        this.nodes[0].push(node);
+    addNode: function(x, y, gender, isPlaceHolder) {
+        var node = (isPlaceHolder) ? (new PlaceHolder(x, y, gender, this.generateID())) : (new Person(x, y, gender, this.generateID()));
+        this.nodes[+(isPlaceHolder)].push(node);
         return node;
     },
 
@@ -243,21 +243,20 @@ var PedigreeEditor = Class.create({
         //TODO: optimize (check whether node is a placeholder or a person)
         this.nodes[0] = this.nodes[0].without(node);
         this.nodes[1] = this.nodes[1].without(node);
-        this._graphics.remove(node);
     },
 
 
-    addPartnerConnection : function(node1, node2) {
-        if(node1._partnerConnections.indexOf(node2) == -1) {
+    addPartnership : function(node1, node2) {
+        if(node1._partnerships.indexOf(node2) == -1) {
             var connection = new Connection("partner", node1, node2);
-            node1._partnerConnections.push(node2);
-            node2._partnerConnections.push(node1);
+            node1._partnerships.push(node2);
+            node2._partnerships.push(node1);
         }
     },
 
     addParentsConnection : function(node, leftParent, rightParent) {
-        leftParent._partnerConnections.push(rightParent);
-        rightParent._partnerConnections.push(leftParent);
+        leftParent._partnerships.push(rightParent);
+        rightParent._partnerships.push(leftParent);
         leftParent._children.push(node);
         node._parents.push(leftParent,rightParent);
         var connection = new Connection("partner", leftParent, rightParent);
@@ -265,37 +264,41 @@ var PedigreeEditor = Class.create({
 
     enterHoverMode: function(sourceNode) {
         var hoverNodes = this.nodes[0].without(sourceNode);
-        var me = this;
+        var me = this,
+            color;
         hoverNodes.each(function(s) {
-            var hoverModeZone = s.getHoverBox().getHoverZoneMask().clone().toFront();
+            var hoverModeZone = s.getGraphics().getHoverBox().getHoverZoneMask().clone().toFront();
+            hoverModeZone.attr("cursor", "pointer");
             hoverModeZone.hover(
                 function() {
                     me.currentHoveredNode = s;
-                    s.getHoverBox().setHovered(true);
-                    if(me.currentDraggable.placeholder != null) {
-                        if(me.currentDraggable.placeholder.canMergeWith(s)) {
-                            s.getHoverBox().getBoxOnHover().attr(me.graphics._attributes.boxOnHover);
-                            s.getHoverBox().getBoxOnHover().attr({"fill": "green", opacity: 1, "fill-opacity": 1});
-                            me.validPlaceholderNode = true;
-                        }
-                        else {
-                            s.getHoverBox().getBoxOnHover().attr(me.graphics._attributes.boxOnHover);
-                            s.getHoverBox().getBoxOnHover().attr("fill", "red");
-                        }
+                    s.getGraphics().getHoverBox().setHovered(true);
+                    s.getGraphics().getHoverBox().getBoxOnHover().attr(me.graphics._attributes.boxOnHover);
+
+                    if(me.currentDraggable.placeholder && me.currentDraggable.placeholder.canMergeWith(s)) {
+                        me.validPlaceholderNode = true;
+                        color = "green";
                     }
-                    else if(me.currentDraggable.handle == "partner" && ((sourceNode.getGender() && sourceNode.getGender() == "male" && s.getGender() == "female") ||
-                        (sourceNode.getGender() == "female" && s.getGender() == "male"))) {
+                    else if(me.currentDraggable.handle == "partner" && sourceNode.canPartnerWith(s)) {
                         s.validPartnerSelected = true;
-                        s.getHoverBox().getBoxOnHover().attr(me.graphics._attributes.boxOnHover);
+                        color = "green";
+                    }
+                    else if(me.currentDraggable.handle == "child" && sourceNode.canBeParentOf(s)) {
+                        s.validChildSelected = true;
+                        color = "green";
+                    }
+                    else if(me.currentDraggable.handle == "parent" && s.canBeParentOf(sourceNode)) {
+                        s.validParentSelected = true;
+                        color = "green";
                     }
                     else {
-                        s.getHoverBox().getBoxOnHover().attr(me.graphics._attributes.boxOnHover);
-                        s.getHoverBox().getBoxOnHover().attr("fill", "red");
+                        color = "red";
                     }
+                    s.getGraphics().getHoverBox().getBoxOnHover().attr("fill", color);
                 },
                 function() {
-                    s.getHoverBox().setHovered(false);
-                    s.getHoverBox().getBoxOnHover().attr(me.graphics._attributes.boxOnHover).attr('opacity', 0);
+                    s.getGraphics().getHoverBox().setHovered(false);
+                    s.getGraphics().getHoverBox().getBoxOnHover().attr(me.graphics._attributes.boxOnHover).attr('opacity', 0);
                     me.currentHoveredNode.validPartnerSelected = false;
                     me.currentHoveredNode = null;
                     me.validPlaceholderNode = false;
@@ -340,11 +343,15 @@ document.observe("dom:loaded",function() {
 ////    se.show();
     //alert(Raphael.color('blue'));
 
-    var patientNode = editor.addNode(editor.width/2, editor.height/2, 'M');
-    var patientNodesFriend = editor.addNode(editor.width/3, editor.height/2, 'F');
+    var patientNode = editor.addNode(editor.width/2, editor.height/2, 'M', false);
+    var patientNodesFriend = editor.addNode(editor.width/3, editor.height/2, 'F', false);
+    var nodesSon = editor.addNode(editor.width/2.5, editor.height/1.5, 'F', false);
   patientNode.setBirthDate(new Date(1999,9,2), true);
     patientNode.addPartner(patientNodesFriend);
-    patientNode.addPartner();
+    patientNode.getPartnerships()[0].addChild(nodesSon);
+
+    var randomNode = editor.addNode(300, 500, 'M', false);
+  //  patientNode.remove(true, true);
 //   patientNode.setDeceased(true);
 //    patientNode.setGender("F", true);
 //patientNode.setAlive(true);
@@ -365,12 +372,13 @@ document.observe("dom:loaded",function() {
 
 
 
- //   patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
-//   patientNode.getGraphics().move(20, 20);
-//
-//    patientNode.addDisorder("DS2","2 Syndrome", true);
-//    patientNode.addDisorder("DS3","3 Syndrome", true);
-//    patientNode.addDisorder("DS4","4 Syndrome", true);
+    patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
+
+
+    patientNode.addDisorder({id: "DS2",value: "1 Syndrome"}, true);
+    patientNode.addDisorder({id: "DS3",value: "1 Syndrome"}, true);
+    patientNode.addDisorder({id: "DS4",value: "1 Syndrome"}, true);
+    //patientNode.getGraphics().move(20, 20);
 //
 //
 //    patientNode.setDeathDate(new Date(2002, 9, 2));

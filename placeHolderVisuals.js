@@ -11,6 +11,7 @@ var PlaceHolderVisuals = Class.create(AbstractNodeVisuals, {
         var text = editor.paper.text(this.getX(), this.getY() - editor.graphics.getRadius()/20, "DRAG ME\nOR\nCLICK ME");
         text.attr(editor.graphics._attributes.dragMeLabel);
         shape.push(text);
+        shape.attr("cursor", "pointer");
         shape.ox = shape.getBBox().x;
         shape.oy = shape.getBBox().y;
     },
@@ -20,30 +21,42 @@ var PlaceHolderVisuals = Class.create(AbstractNodeVisuals, {
             isDragged,
             draggable = true;
 
+        var ox = 0;
+        var oy = 0;
+
         var start = function() {
             //editor.paper.ZPD({ zoom: false, pan: false, drag: false });
             isDragged = false;
             me.getShapes().toFront();
-            editor.enterHoverMode(this);
+            editor.enterHoverMode(me.getNode());
         };
 
         var move = function(dx, dy) {
-            me.getGenderShape().stop().transform("t" + dx +"," + dy);
+
+            me.getGenderShape().stop().transform("...T" + (dx - ox) + "," + (dy - oy));
+            ox = dx;
+            oy = dy;
             if(dx > 5 || dx < -5 || dy > 5 || dy < -5 ) {
                 isDragged = true;
-                editor.currentDraggable.placeholder = me;
+                editor.currentDraggable.placeholder = me.getNode();
             }
         };
 
         var end = function() {
-            //editor.paper.ZPD({ zoom: true, pan: true, drag: false });
+
+//            //editor.paper.ZPD({ zoom: true, pan: true, drag: false });
             if(isDragged) {
                 draggable = false;
-                editor.currentHoveredNode && editor.validPlaceholderNode && me.merge(editor.currentHoveredNode);
-                var originalPos = "t" + me.getGenderShape().ox +"," + me.getGenderShape().oy;
-                me.getGenderShape()[0].stop().animate({"transform": originalPos}, 2000, "elastic", function() {
+                var node = editor.currentHoveredNode;
+                var vp = editor.validPlaceholderNode;
+                if(node && vp) {
+                    me.getNode().merge(node);
+                }
+                me.getGenderShape().stop().animate({"transform": "...T" + (-1 * ox)  + "," + (-1 * oy)}, 2000, "elastic", function() {
                     draggable = true;
                 });
+                ox = 0;
+                oy = 0;
             }
             else {
                 me.getNode().convertToPerson();

@@ -9,13 +9,8 @@ var AbstractNode = Class.create( {
     initialize: function(x, y, gender, id) {
         this._id = (id != null) ? id : editor.generateID();
         this._gender = this.parseGender(gender);
-        this._mother = null;
-        this._father = null;
-        this._phMother = null;
-        this._phFather = null;
-        this._partnerConnections = [];//[[/*nodes*/],[/*placeHolders*/]];
-        this._children = [[/*nodes*/],[/*placeHolders*/]];
-        this._siblings = [[/*nodes*/],[/*placeHolders*/]];
+        this._parents = null;
+        this._partnerships = [];
         this._graphics = this.generateGraphics(x, y);
       },
 
@@ -72,181 +67,80 @@ var AbstractNode = Class.create( {
         forceDraw && this.getGraphics().drawShapes();
     },
 
-    getMother: function() {
-        return this._mother;
+    /*
+     * Returns an array of Partnership objects of this node
+     */
+    getPartnerships: function() {
+        return this._partnerships;
     },
 
-    setMother: function(node) {
-        this._mother = node;
-    },
-
-    getPhMother: function() {
-        return this._phMother;
-    },
-
-    setPhMother: function(node) {
-        this._phMother = node;
-    },
-
-    getFather: function() {
-        return this._father;
-    },
-
-    setFather: function(node) {
-        this._father = node;
-    },
-
-    getPhFather: function() {
-        return this._phFather;
-    },
-
-    setPhFather: function(node) {
-        this._phFather = node;
-    },
-
-    addParent: function(node) {
-        var funct = (node.getType() == 'pn') ? this.addPersonParent(node) : this.addPhParent(node);
-    },
-
-    removeParent: function(node) {
-        var funct = (node.getType() == 'pn') ? this.removePersonParent(node) : this.removePhParent(node);
-    },
-
-    addPhParent: function(node) {
-        if(node.getGender() == 'F') {
-            if(this.getPhMother() == null && this.getMother() == null) {
-                this.setPhMother(node);
-            }
-            else if(this.getMother().getGender() == 'U' && this.getFather() == null) {
-                this.setFather(this.getMother());
-                this.setPhMother(node);
-            }
-        }
-        else if(node.getGender() == 'M') {
-            if(this.getFather() == null && this.getPhFather() == null) {
-                this.setPhFather(node);
-            }
-            else if(this.getFather().getGender() == 'U' && this.getMother() == null) {
-                this.setMother(this.getFather());
-                this.setPhFather(node);
-            }
-        }
-        else {
-            if(this.getPhMother() == null && this.getMother() == null) {
-                this.setPhMother(node);
-            }
-            else if(this.getFather() == null && this.getPhFather() == null) {
-                this.setPhFather(node);
-            }
-        }
-    },
-
-    removePhParent: function(node) {
-        if(this.getPhMother() == node) {
-            this.getPhMother().remove();
-            this.setPhMother(null);
-        }
-        if(this.getPhFather() == node) {
-            this.getPhFather().remove();
-            this.setPhFather(null);
-        }
-    },
-
-    addPersonParent: function(node) {
-        if(node.getGender() == 'F') {
-            if(this.getMother() == null) {
-                this.setMother(node);
-                this.getPhMother() && this.getPhMother().remove();
-            }
-            else if(this.getMother().getGender() == 'U' && this.getFather() == null) {
-                this.setFather(this.getMother());
-                this.setMother(node);
-                this.getPhMother() && this.getPhMother().remove();
-                this.getPhFather() && this.getPhFather().remove();
-            }
-        }
-        else if(node.getGender() == 'M') {
-            if(this.getFather() == null) {
-                this.setFather(node);
-                this.getPhFather() && this.getPhFather().remove();
-            }
-            else if(this.getFather().getGender() == 'U' && this._mother == null) {
-                this.setMother(this.getFather());
-                this.setFather(node);
-                this.getPhMother() && this.getPhMother().remove();
-                this.getPhFather() && this.getPhFather().remove();
-            }
-        }
-        else {
-            if(this.getMother() == null) {
-                this.setMother(node);
-                this.getPhMother() && this.getPhMother().remove();
-            }
-            else if(this.getFather() == null) {
-                this.setFather(node);
-                this.getPhFather() && this.getPhFather().remove();
-            }
-        }
-    },
-
-    removePersonParent: function(node) {
-        if(this.getMother() == node) {
-            this.getMother().remove();
-            this.setMother(null);
-        }
-        if(this.getFather() == node) {
-            this.getFather().remove();
-            this.setFather(null);
-        }
-    },
-
-    removeRelativeFromList: function(array, node) {
-            array[+(node.getType() != 'pn')] = array[+(node.getType() != 'pn')].without(node);
-    },
-
-    addRelativeToList: function(array, node) {
-            array[+(node.getType() != 'pn')].push(node);
-    },
-
-    getPartnerConnections: function() {
-        return this._partnerConnections;
-    },
-
+    /*
+     * Returns an array nodes that share a Partnership with this node
+     */
     getPartners: function() {
         var partners = [];
         var me = this;
-        this.getPartnerConnections().each(function(conn) {
-            var partner = conn.getPartnerOf(me);
+        this.getPartnerships().each(function(partnership) {
+            var partner = partnership.getPartnerOf(me);
             partner && partners.push(partner);
         });
         return partners;
     },
 
-    addPartnerConnection: function(connection) {
-        this._partnerConnections.push(connection);
+    /*
+     * Adds a new partnership to the list of partnerships of this node
+     *
+     * @param partnership is a Partnership object with this node as one of the partners
+     */
+    addPartnership: function(partnership) {
+        this._partnerships.push(partnership);
     },
 
-    getPersonPartners: function() {
-        return this._partnerConnections[0];
+    /*
+     * Removes a partnership from the list of partnerships
+     *
+     * @param partnership is a Partnership object with this node as one of the partners
+     */
+    removePartnership: function(partnership) {
+        this._partnerships = this._partnerships.without(partnership);
     },
 
-    setPersonPartners: function(partnersArray) {
-        this._partnerConnections[0] = partnersArray;
+    /*
+     * Returns a Vertical containing this node and the parent nodes
+     */
+    getParents: function() {
+        return this._parents;
     },
 
-    getPhPartners: function() {
-        return this._partnerConnections[1];
+    /*
+     * Replaces the parents Vertical with the one passed in the parameter
+     *
+     * @param vertical is a Vertical object that contains this node and its parents
+     */
+    setParents: function(vertical) {
+        this._parents = vertical;
     },
 
-    setPhPartners: function(partnersArray) {
-        this._partnerConnections[1] = partnersArray;
+    createParents: function() {
+        if(this.getParents() == null) {
+            var mother = editor.addNode(this.getGraphics().getAbsX() + 100, this.getGraphics().getAbsY() - 260, "F", false),
+                father = editor.addNode(this.getGraphics().getAbsX() - 100, this.getGraphics().getAbsY() - 260, "M", false),
+                partnership = new Partnership(mother, father);
+            this.addParents(partnership);
+        }
+    },
+
+    addParents: function(partnership) {
+        if(this.getParents() == null) {
+            partnership.addChild(this);
+        }
     },
 
     /*
      * Returns a string representing the opposite gender of this node ("M" or "F"). Returns "U"
      * if the gender of this node is unknown
      */
-    getOppositeGender : function(){
+    getOppositeGender : function() {
         if (this.getGender() == "U") {
             return "U";
         }
@@ -257,96 +151,64 @@ var AbstractNode = Class.create( {
             return "M";
         }
     },
+    /*
+     * Creates a new node and generates a Partnership with this node.
+     * Returns the Partnership.
+     *
+     * @param isPlaceHolder set to true if the new partner should be a PlaceHolder
+     */
+    createPartner: function(isPlaceHolder) {
+        //TODO: set x and y using positioning algorithm
+        var x = this.getGraphics().getAbsX() + 300,
+            y = this.getGraphics().getAbsY(),
+            partner = editor.addNode(x, y, this.getOppositeGender(), isPlaceHolder);
+        return this.addPartner(partner);
+    },
 
-    addPartner: function(node) {
-        var partner;
-        if(node && this.getPartners().indexOf(node) == -1 &&
-            (this.getGender() == 'U' || node.getGender() == 'U' || node.getGender() == this.getOppositeGender())) {
-            partner = node;
-        }
-        else if(!node) {
-            //TODO: set x and y using positioning algorithm
-            var x = this.getGraphics().getAbsX() + 300;
-            var y = this.getGraphics().getAbsY();
-            partner = editor.addNode(x, y, this.getOppositeGender());
-        }
-
-        if(partner) {
-            var connection = new PartnerConnection(this, partner);
-            this.getPartnerConnections().push(connection);
-            partner.addPartnerConnection(connection);
-//            partner && partner.addRelativeToList(partner.getPartnerConnections(), this);
-//            partner && this.addRelativeToList(this.getPartnerConnections(), partner);
+    /*
+     * Creates a new Partnership with the partner passed in the parameter.
+     * Returns the new Partnership
+     *
+     * @param partner a Person or PlaceHolder.
+     */
+    addPartner: function(partner) {
+        if(partner && this.getPartners().indexOf(partner) == -1 && this.canPartnerWith(partner)) {
+            var connection = new Partnership(this, partner);
+            this.getPartnerships().push(connection);
+            partner.addPartnership(connection);
             //TODO: editor.addConnection(this, partner);
+            connection.createChild(true);
+            return connection;
         }
     },
 
-    removePartner: function(node) {
-        //this.removeRelativeFromList(this.getPartners(), node);
-    },
-
+    /*
+     * Returns an array of nodes that are children from all of this node's Partnerships.
+     * The array includes PlaceHolders.
+     */
     getChildren: function() {
-        return this._children;
+        var children = [];
+        this.getPartnerships().each(function(partnership) {
+            children = children.concat(partnership.getChildren())
+        });
+        return children;
     },
 
-    getPersonChildren: function() {
-        return this._children[0];
-    },
-
-    getPhChildren: function() {
-        return this._children[1];
-    },
-
-    setPersonChildren: function(childrenArray) {
-        this._children[0] = childrenArray;
-    },
-
-    setPhChildren: function(childrenArray) {
-        this._children[1] = childrenArray;
+    createChild: function(isPlaceHolder) {
+        //TODO: set x and y using positioning algorithm
+        var x = this.getGraphics().getAbsX() + 150,
+            y = this.getGraphics().getAbsY() + 200,
+            child = editor.addNode(x, y, "U", isPlaceHolder);
+        return this.addChild(child);
     },
 
     addChild: function(node) {
-        this.addRelativeToList(this.getChildren(), node);
-    },
-
-    removeChild: function(node) {
-        this.removeRelativeFromList(this.getChildren(), node);
-    },
-
-    addSibling: function(node) {
-        this.addRelativeToList(this.getSiblings(), node);
-    },
-
-    removeSibling: function(node) {
-        this.removeRelativeFromList(this.getSiblings(), node);
-    },
-
-    getSiblings: function() {
-        return this._siblings;
-    },
-
-    setSiblings: function(siblingsArray) {
-        this._siblings = siblingsArray;
-    },
-
-    getPersonSiblings: function() {
-        return this.getSiblings()[0];
-    },
-
-    getPhSiblings: function() {
-        return this.getSiblings()[1];
-    },
-
-    setPersonSiblings: function(childrenArray) {
-        this._children[0] = childrenArray;
-    },
-
-    setPhSiblings: function(childrenArray) {
-        this._children[1] = childrenArray;
+        var partnership = this.createPartner(true);
+        partnership.addChild(node);
     },
 
     isParentOf: function(node) {
-        return (this._children.flatten().indexOf(node) > -1);
+        return (this.getChildren().indexOf(node) > -1);
     },
 
     /*
@@ -360,7 +222,7 @@ var AbstractNode = Class.create( {
         }
         else {
             var found = false,
-                children = otherNode._children.flatten(),
+                children = otherNode.getChildren(),
                 i = 0;
             while((i < children.length) && !found) {
                 found = this.isDescendantOf(children[i]);
@@ -385,37 +247,120 @@ var AbstractNode = Class.create( {
      * @param otherNode can be a Person or a PlaceHolder
      */
     isPartnerOf: function(otherNode) {
-        return this._partnerConnections.flatten().indexOf(otherNode) > -1;
+        return this.getPartners().indexOf(otherNode) > -1;
+    },
+
+    /*
+     * Returns true if this node is related to otherNode
+     *
+     * @param otherNode can be a Person or a PlaceHolder
+     */
+    isRelatedTo: function(otherNode) {
+        var getNeighbors = function(node) {
+            var neighbors = [];
+            node.getParents() && neighbors.push(node.getParents().getPartner1(), node.getParents().getPartner2());
+            neighbors = neighbors.concat(node.getChildren());
+            neighbors = neighbors.concat(node.getPartners());
+            return neighbors;
+        };
+
+        var front = [this],
+            next = [],
+            visited = {};
+        visited[this.getID()] = true;
+        while(front.length > 0) {
+            for(var i = 0; i<front.length; i++) {
+                var neighbors = getNeighbors(front[i]);
+                for(var k = 0; i<neighbors.length; k++) {
+                    if(neighbors[k] == otherNode) {
+                        return true;
+                    }
+                    else if(!visited[neighbors[k].getID()]) {
+                        next.push(neighbors[k]);
+                        visited[neighbors[k].getID()] = true;
+                    }
+                }
+            }
+            front.clear();
+            front = next;
+            next.clear();
+        }
+        return false;
+    },
+
+    canPartnerWith: function(node) {
+        return (this.getOppositeGender() == node.getGender() || this.getGender() == "U" || node.getGender() == "U");
+    },
+
+    canBeParentOf: function(node) {
+        var incompatibleParents = node.getParents();
+        var incompatibleBirthDate = this.getBirthDate() && node.getBirthDate() && this.getBirthDate() < node.getBirthDate();
+        var incompatibleDeathDate = this.getDeathDate() && node.getBirthDate() && this.getDeathDate() < node.getBirthDate().clone().setDate(node.getBirthDate().getDate()-700);
+        var incompatibleState = this.isFetus();
+
+        return !incompatibleParents && !incompatibleBirthDate && !incompatibleDeathDate && !incompatibleState;
+
     },
 
     /*
      * Breaks connections with all related nodes and removes this node from
      * the record.
-     * (Optional) Removes all descendants of this node as well
+     * (Optional) Removes all descendant nodes and their relatives that will become unrelated to the proband as a result
      * (Optional) Removes all the graphics for this node and (optionally)
      * his descendants
      *
-     * @param isRecursive set to true if you want to remove all descendants as well
+     * @param isRecursive set to true if you want to remove all unrelated descendants as well
      * @param removeVisuals set to true if you want to remove the graphics as well
      */
     remove: function(isRecursive, removeVisuals) {
-        var me = this;
-        this.getMother() && this.getMother().removeChild(this);
-        this.getFather() && this.getFather().removeChild(this);
-        this.getPhMother() && this.getPhMother().removeChild(this);
-        this.getPhFather() && this.getPhFather().removeChild(this);
-        this.getPartnerConnections().flatten().each( function(partner) {
-            me.removePartner(partner);
-        });
-        if(isRecursive) {
-            this.getChildren().flatten().each(function(child) {
-                child.getPartnerConnections().flatten().each(function(partner) {
-                   partner.remove(false, removeVisuals);
-                });
-                child.remove(true, removeVisuals);
+        var me = this,
+            toRemove = [];
+        this.getPartnerships().each(function(partnership) {
+            partnership.getVerticals().each(function(vertical) {
+                toRemove.push(vertical.getChild());
+                vertical.remove();
             });
-        }
+            toRemove.push(partnership.getPartnerOf(me));
+            partnership.remove();
+        });
+
+        isRecursive && toRemove.each(function(node) {
+            !(node.isRelatedTo(me)) && node.remove(true, true);
+        });
+        this.getParents() && this.getParents().removeChild(me);
         editor.removeNode(this);
         removeVisuals && this.getGraphics().remove();
+    },
+
+    getX: function() {
+        return this.getGraphics().getAbsX();
+    },
+
+    setX: function(x) {
+        this.getGraphics().setAbsX(x)
+    },
+
+    getY: function() {
+        return this.getGraphics().getAbsY();
+    },
+
+    setY: function(y) {
+        this.getGraphics().setAbsX(y)
+    },
+
+    getPos: function() {
+        return [this.getX(), this.getY()];
+    },
+
+    move: function(x,y) {
+        this.getGraphics().move(x,y);
+    },
+
+    moveX: function(x) {
+        this.move(x, this.getY());
+    },
+
+    moveY: function(y) {
+        this.move(this.getX(), y);
     }
 });
