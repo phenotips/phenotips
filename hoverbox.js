@@ -303,21 +303,13 @@ var Hoverbox = Class.create( {
                     }
                 });
             editor.exitHoverMode();
-                if(editor.currentHoveredNode && editor.currentHoveredNode.validPartnerSelected) {
-                me.getNode().addPartner(editor.currentHoveredNode);
-                editor.currentHoveredNode = null;
-            }
-            editor.currentHoveredNode && editor.currentHoveredNode.getGraphics().getHoverBox().getBoxOnHover().attr(editor.graphics._attributes.boxOnHover);
+            me.handleAction(editor.currentDraggable.handle, isDrag);
 
             connection.oPath[1][1] = connection.ox;
             connection.oPath[1][2] = connection.oy;
             connection.animate({"path": connection.oPath},1000, "elastic");
 
-                if(isDrag == false) {
-                    me.handleClickAction(editor.currentDraggable.handle);
-                }
-                editor.currentDraggable.node = null;
-                editor.currentDraggable.handle = null;
+
         };
 
         rightCirc.drag(move, function() {start(rightHandle)},end);
@@ -333,18 +325,37 @@ var Hoverbox = Class.create( {
      *
      * @param handleType can be either "child", "partner" or "parent"
      */
-    handleClickAction : function(handleType)
+    handleAction : function(handleType, isDrag)
     {
-        if(handleType == "partner") {
-            var partnership = this.getNode().createPartner(false);
-            partnership.createChild(true);
+        if(isDrag) {
+            if(editor.currentHoveredNode && editor.currentHoveredNode.validPartnerSelected) {
+                this.getNode().addPartner(editor.currentHoveredNode);
+            }
+            else if(editor.currentHoveredNode && editor.currentHoveredNode.validChildSelected) {
+                var partnership = this.getNode().createPartner(true);
+                partnership.addChild(editor.currentHoveredNode);
+            }
+            else if(editor.currentHoveredNode && editor.currentHoveredNode.validParentSelected) {
+                var partnership = editor.currentHoveredNode.createPartner(true);
+                partnership.addChild(this.getNode());
+            }
+            editor.currentHoveredNode = null;
         }
-        else if(handleType == "child") {
-            var partnership = this.getNode().createPartner(true);
-            partnership.createChild(false);
-        }
-        else if(handleType == "parent") {
-            this.getNode().createParents();
+        else {
+            if(handleType == "partner") {
+                var partnership = this.getNode().createPartner(false);
+                partnership.createChild(true);
+            }
+            else if(handleType == "child") {
+                var partnership = this.getNode().createPartner(true);
+                partnership.createChild(false);
+            }
+            else if(handleType == "parent") {
+                this.getNode().createParents();
+            }
+            editor.currentHoveredNode && editor.currentHoveredNode.getGraphics().getHoverBox().getBoxOnHover().attr(editor.graphics._attributes.boxOnHover);
+            editor.currentDraggable.node = null;
+            editor.currentDraggable.handle = null;
         }
     },
 
