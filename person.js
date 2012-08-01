@@ -10,7 +10,7 @@
  * @param id a unique numerical ID number
  */
 
-var Person = Class.create(AbstractNode, {
+var Person = Class.create(AbstractPerson, {
 
     initialize: function($super, x, y, gender, id) {
         this._firstName = null;

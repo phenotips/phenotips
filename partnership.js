@@ -1,11 +1,15 @@
-var Partnership = Class.create( {
+var Partnership = Class.create(AbstractNode, {
 
-    initialize: function(node1, node2) {
+    initialize: function(x, y, node1, node2) {
         if(node1.getType() != 'ph' || node2.getType() != 'ph') {
             this._partner1 = node1;
             this._partner2 = node2;
-            this._verticals = [];
+            this._children = [];
         }
+    },
+
+    generateGraphics: function(x, y) {
+        return new PartnershipVisuals(this, x, y);
     },
 
     getPartner1: function() {
@@ -52,33 +56,16 @@ var Partnership = Class.create( {
         }
     },
 
-//    replacePartner: function(partner, replacement) {
-//        if(replacement.getType() == "ph" && this.getPartnerOf(partner).getType() == "ph") {
-//            this.remove(false);
-//        }
-//        else if(this.getPartner1() == partner) {
-//                this.setPartner1(replacement);
-//            }
-//        else if(this.getPartner2() == partner) {
-//            this.setPartner2(replacement);
-//        }
-//    },
-
     contains: function(node) {
         return (this.getPartner1() == node || this.getPartner2() == node);
     },
 
-    getVerticals: function() {
-        return this._verticals;
+    getChildren: function() {
+        return this._children;
     },
 
-    getChildren: function() {
-        var children = [];
-        this.getVerticals().each(function(vertical) {
-            var child = vertical.getChild();
-            child && children.push(child);
-        });
-        return children;
+    setChildren: function(arrayOfChildren) {
+        this._children = arrayOfChildren;
     },
 
     createChild: function(isPlaceHolder) {
@@ -91,37 +78,36 @@ var Partnership = Class.create( {
 
     addChild: function(child) {
         //TODO: elaborate on restrictions for adding parents to existing node
-        if(child && this.getChildren().indexOf(child) == -1 && (child.getParents() == null)) {
-            var connection = new Vertical(this, child);
-            this.getVerticals().push(connection);
-            child.setParents(this);
-            //TODO: editor.addVertical(this, child);
+        if(child && this.getChildren().indexOf(child) == -1 && (child.getParentPartnership() == null)) {
+            this.getChildren().push(child);
+            child.setParentPartnership(this);
         }
         return child;
     },
 
-    getVertical: function(child) {
-        for(var i = 0; i < this.getVerticals().length; i++) {
-            if(this.getVerticals()[i].getChild() == child) {
-                return this.getVerticals()[i];
-            }
-        }
-    },
-
     removeChild: function(child) {
-        this.removeVertical(this.getVertical(child));
-    },
-
-    removeVertical: function(vertical) {
-        this._verticals = this._verticals.without(vertical);
-        vertical.remove();
+        this.setChildren(this.getChildren().without(child));
     },
 
     remove: function() {
-        this.getVerticals().each(function(vertical) {
-           vertical.remove();
+        this.getChildren().each(function(child) {
+            child.setParentPartnership(null);
         });
         this.getPartner1().removePartnership(this);
         this.getPartner2().removePartnership(this);
+    },
+
+    /*
+     * Returns the children nodes of this partnership
+     */
+    getLowerNeighbors: function() {
+        return this.getChildren();
+    },
+
+    /*
+     * Returns an array containing partner1 and partner2
+     */
+    getSideNeighbors: function() {
+        return [this.getPartner1(), this.getPartner2()];
     }
 });

@@ -2,7 +2,7 @@
  *  The class responsible for
  */
 
-var PersonVisuals = Class.create(AbstractNodeVisuals, {
+var PersonVisuals = Class.create(AbstractPersonVisuals, {
     
     initialize: function($super, node, x, y) {
         this._nameLabel = null;
@@ -349,7 +349,7 @@ var PersonVisuals = Class.create(AbstractNodeVisuals, {
         $super();
     },
 
-    move: function(x, y) {
+    moveTo: function(x, y) {
         var xDisplacement = x - this.getAbsX();
         var yDisplacement = y - this.getAbsY();
         var displacement = Math.sqrt(xDisplacement * xDisplacement + yDisplacement * yDisplacement);

@@ -1,4 +1,4 @@
-var PlaceHolderVisuals = Class.create(AbstractNodeVisuals, {
+var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
 
     initialize: function($super, x, y, gender) {
         $super(x, y, gender);

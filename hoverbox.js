@@ -336,10 +336,12 @@ var Hoverbox = Class.create( {
     handleClickAction : function(handleType)
     {
         if(handleType == "partner") {
-            this.getNode().createPartner(false);
+            var partnership = this.getNode().createPartner(false);
+            partnership.createChild(true);
         }
         else if(handleType == "child") {
-            this.getNode().createChild(false);
+            var partnership = this.getNode().createPartner(true);
+            partnership.createChild(false);
         }
         else if(handleType == "parent") {
             this.getNode().createParents();

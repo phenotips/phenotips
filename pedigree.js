@@ -258,7 +258,7 @@ var PedigreeEditor = Class.create({
         leftParent._partnerships.push(rightParent);
         rightParent._partnerships.push(leftParent);
         leftParent._children.push(node);
-        node._parents.push(leftParent,rightParent);
+        node._parentPartnership.push(leftParent,rightParent);
         var connection = new Connection("partner", leftParent, rightParent);
     },
 

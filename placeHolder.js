@@ -1,4 +1,4 @@
-var PlaceHolder = Class.create(AbstractNode, {
+var PlaceHolder = Class.create(AbstractPerson, {
 
     initialize: function($super, x, y, gender, id) {
         $super(x, y, gender, id);
@@ -19,31 +19,33 @@ var PlaceHolder = Class.create(AbstractNode, {
 
     merge: function(node) {
         if(this.canMergeWith(node)) {
-
-            var parents = this.getParents();
+            var parents = this.getParentPartnership();
             parents && parents.removeChild(this);
             parents && (parents.getChildren().indexOf(node) == -1) && parents.addChild(node);
             var partnerships = this.getPartnerships();
             var me = this;
 
             partnerships.each(function(partnership){
-                var newPartnership = node.addPartner(partnership.getPartnerOf(me));
-                partnership.getVerticals().each(function(vertical){
-                    var child = vertical.getChild();
-                    vertical.remove();
-                    child.addParents(newPartnership);
-                });
+                var partner = partnership.getPartnerOf(me);
+                if(node.getPartners().indexOf(partner) == -1) {
+                    var newPartnership = node.addPartner(partnership.getPartnerOf(me));
+                    partnership.getChildren().each(function(child){
+                        child.addParents(newPartnership);
+                    });
+                }
+                else {
+                    var redundantPartnership = node.getPartnership(partner),
+                        existingChildren = redundantPartnership.getChildren();
+                    partnership.getChildren().each(function(child){
+                        if(existingChildren.indexOf(child) == -1) {
+                            redundantPartnership.addChild(child);
+                        }
+                    });
                 partnership.remove();
+                }
             });
             me && me.remove(false, true);
         }
-
-        //this._child && node.addChild(this._child);
-        //this._phChild && node.addPhChild(this._phChild);
-        //this.
-
-        //should merge parent/children placeholders
-        //build an array of non null values from placeholder and replace/push them on to the node
     },
 
     canMergeWith: function(node) {
@@ -55,7 +57,7 @@ var PlaceHolder = Class.create(AbstractNode, {
     },
 
     hasConflictingParents: function(node) {
-        return (this.getParents() != null && node.getParents() != null && this.getParents() != node.getParents());
+        return (this.getParentPartnership() != null && node.getParentPartnership() != null && this.getParentPartnership() != node.getParentPartnership());
 //        var hasConflictingDads = this._father && node._father && this._father != node._father;
 //        var hasConflictingMoms = this._mother && node._mother && this._mother != node._mother;
 //        var notReversedParents = (this._mother && this._mother._gender != 'U') ||

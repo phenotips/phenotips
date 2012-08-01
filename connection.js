@@ -21,32 +21,45 @@ var PartnerConnection = Class.create( {
 //        this.icon = editor.paper.path(iconPath).attr({fill: 'gray', stroke: "none"});
 //        this.connection = editor.paper.set(this.connect1, this.connect2, this,lineToIcon, circle, this.icon);
 //        this.connection.toBack();
+
         var x1 = node1.getGraphics().getAbsX();
         var y1 = node1.getGraphics().getAbsY();
         var x2 = node2.getGraphics().getAbsX();
         var y2 = node2.getGraphics().getAbsY();
-        editor.paper.path(["M", x1, y1, "L", x2, y2]).toBack();
+        this._graphics = editor.paper.path(["M", x1, y1, "L", x2, y2]).attr("stroke","#800000").toBack();
     },
 
-    getNode1: function() {
+    getPartner1: function() {
         return this.node1;
     },
 
-    getNode2: function() {
+    getPartner2: function() {
         return this.node2;
     },
 
     getPartnerOf: function(node) {
-        if(this.getNode1() == node) {
-            return this.getNode2();
+        if(this.getPartner1() == node) {
+            return this.getPartner2();
         }
-        else if(this.getNode2() == node) {
-            return this.getNode1();
+        else if(this.getPartner2() == node) {
+            return this.getPartner1();
         }
         else {
             return null;
         }
+    },
+
+    remove: function() {
+        this.getPartner1() && this.getPartner1().removePartnership(this);
+        this.getPartner2() && this.getPartner2().removePartnership(this);
+        this.getGraphics().remove();
+    },
+
+    setGraphics: function(set) {
+        this._graphics = set;
     }
+
+
 
 
 });
