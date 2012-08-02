@@ -14,24 +14,13 @@ var Legend = Class.create( {
 
         this._legendBox = new Element('div', {'class' : 'legend-box', id: 'legend-box'});
         canvas.insert({'after' : this._legendBox});
-
-//        this._legendTab = new Element('div', {'class' : 'legend-tab'});
-//        this._legendBox.insert(this._legendTab);
         this._legendBox.setOpacity(0);
-        //(new Effect.Opacity('legend-box', {to:0, duration: 0}));
-
 
         var legendTitle= new Element('h2', {'class' : 'legend-title'}).update('Key');
         this._legendBox.insert(legendTitle);
 
         this._disorderList = new Element('ul', {'class' : 'disorder-list'});
         this._legendBox.insert(this._disorderList);
-
-
-
-        //this._legendBox.setOpacity(0);
-
-
     },
 
     /*
