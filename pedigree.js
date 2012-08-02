@@ -1,4 +1,5 @@
 var PedigreeEditor = Class.create({
+
     initialize: function(graphics) {
         this.generateViewControls();
         (this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this))();
@@ -10,7 +11,6 @@ var PedigreeEditor = Class.create({
         this.idCount = 1;
         this.hoverModeZones = this.paper.set();
         this.graphics = new NodeVisuals(this.paper);
-        this.globalSet = [];
 
         this.initMenu();
         this.nodeMenu = this.generateNodeMenu();
@@ -36,17 +36,11 @@ var PedigreeEditor = Class.create({
         var screenDimensions = document.viewport.getDimensions();
         this.width = screenDimensions.width;
         this.height = screenDimensions.height - canvas.cumulativeOffset().top - 4;
+        console.log("top : " + canvas.cumulativeOffset().top);
+        console.log("height: " + screenDimensions.height);
         if (this.paper) {
             // TODO : pan to center?... set viewbox instead of size?
             this.paper.setSize(this.width, this.height);
-        }
-        if (!this.__sizeLabel) {
-            this.__sizeLabel = new Element('span', {'class' : 'size-label'});
-            canvas.insert({'after' : this.__sizeLabel});
-        }
-        this.__sizeLabel.update(this.width + " × " + this.height);
-        if (this.__controls) {
-            this.__controls.style.top = canvas.cumulativeOffset().top + 10 + "px";
         }
     },
 
@@ -316,7 +310,6 @@ var editor,
     disorderMap;
 
 document.observe("dom:loaded",function() {
-
     editor = new PedigreeEditor();
 //    var iconPath = Raphael.pathToRelative("M16,1.466C7.973,1.466,1.466,7.973,1.466,16c0,8.027,6.507,14.534,14.534,14.534c8.027,0,14.534-6.507,14.534-14.534C30.534,7.973,24.027,1.466,16,1.466zM16,28.792c-1.549,0-2.806-1.256-2.806-2.806s1.256-2.806,2.806-2.806c1.55,0,2.806,1.256,2.806,2.806S17.55,28.792,16,28.792zM16,21.087l-7.858-6.562h3.469V5.747h8.779v8.778h3.468L16,21.087z");
 //    iconPath[0][1] = 0;
@@ -332,7 +325,6 @@ document.observe("dom:loaded",function() {
 ////    a.transform('t400');
 ////    b.transform('t0,33');
 ////    var k = g.transform();
-////    var me = "hahaha";
 ////    var b = editor.paper.rect(120,20,20,20);
 ////    var arr = [a,b];
 ////    var se2 = editor.paper.set(editor.paper.circle(20,120,40));
@@ -351,8 +343,7 @@ document.observe("dom:loaded",function() {
     patientNode.getPartnerships()[0].addChild(nodesSon);
 
     var randomNode = editor.addNode(300, 500, 'M', false);
-  //  patientNode.remove(true, true);
-//   patientNode.setDeceased(true);
+   patientNode.setDeceased(true);
 //    patientNode.setGender("F", true);
 //patientNode.setAlive(true);
 //    patientNode.setAborted(true);
@@ -370,15 +361,33 @@ document.observe("dom:loaded",function() {
 ////
 //
 
+//
+//
+   patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
+    //nodesSon.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
 
-
-    patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
-
-
+//
+//
     patientNode.addDisorder({id: "DS2",value: "1 Syndrome"}, true);
     patientNode.addDisorder({id: "DS3",value: "1 Syndrome"}, true);
     patientNode.addDisorder({id: "DS4",value: "1 Syndrome"}, true);
-    //patientNode.getGraphics().move(20, 20);
+    patientNode.addDisorder({id: "DS5",value: "1 Syndrome"}, true);
+    patientNode.addDisorder({id: "DS6",value: "1 Syndrome"}, true);
+    patientNode.addDisorder({id: "DS7",value: "1 Syndrome"}, true);
+    patientNode.addDisorder({id: "DS8",value: "1 Syndrome"}, true);
+    patientNode.addDisorder({id: "DS9",value: "1 Syndrome"}, true);
+    patientNode.setAborted(true);
+    patientNode.setAlive(true);
+    patientNode.setDeceased(true);
+
+
+
+
+
+
+
+
+//    //patientNode.getGraphics().move(20, 20);
 //
 //
 //    patientNode.setDeathDate(new Date(2002, 9, 2));
@@ -410,7 +419,6 @@ document.observe("dom:loaded",function() {
 //    son._mother = mom;
 
     //var pn = new Person(0,0,'F');
-
 
 
 

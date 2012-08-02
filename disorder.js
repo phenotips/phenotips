@@ -9,11 +9,11 @@
 
 var Disorder = Class.create( {
 
-    initialize: function(disorderID, name, color, numAffected) {
+    initialize: function(disorderID, name, color, affectedNodes) {
         this._disorderID = disorderID;
         this._name = name;
         this._color = (color) ? color : this.generateColor();
-        this._numAffected = (numAffected) ? numAffected : 0;
+        this._affectedNodes = (affectedNodes) ? affectedNodes : [];
     },
 
     /*
@@ -68,7 +68,15 @@ var Disorder = Class.create( {
      * Returns the number of registered individuals carrying the disorder.
      */
     getNumAffected: function() {
-        return this._numAffected;
+        return this.getAffectedNodes().length;
+    },
+
+    getAffectedNodes: function() {
+        return this._affectedNodes;
+    },
+
+    setAffectedNodes: function(nodes) {
+        this._affectedNodes = nodes;
     },
 
     /*
@@ -76,30 +84,23 @@ var Disorder = Class.create( {
      *
      * @param numAffected is an integer greater than or equal to 0
      */
-    setNumAffected: function(numAffected) {
-        this._numAffected = numAffected;
-    },
-
-    /*
-     * Adds one to the count of registered individuals carrying the disorder. Does not update Legend!
-     */
-    incrementNumAffected: function() {
-        this.setNumAffected(this.getNumAffected() + 1);
+    addAffectedNode: function(node) {
+        this._affectedNodes.indexOf(node) == -1 && this._affectedNodes.push(node);
     },
 
     /*
      * Subtracts one from the count of registered individuals carrying the disorder. Does not update Legend!
      */
-    decrementNumAffected: function() {
-        this.setNumAffected(this.getNumAffected() - 1);
+    removeAffectedNode: function(node) {
+        this._affectedNodes.indexOf(node) > -1 && (this._affectedNodes = this._affectedNodes.without(node));
     },
 
     /*
-     * Generates a CSS color. Has preference for 6 colors that can be distinguished in gray-scale.
+     * Generates a CSS color. Has preference for 5 colors that can be distinguished in gray-scale.
      */
     generateColor: function() {
         var usedColors = editor.getLegend().getUsedColors(),
-            prefColors = ['#D73027', "#FC8D59", "#FEE090", '#E0F3F8', '#91BFDB', '#4575B4'];
+            prefColors = ["#FEE090", '#E0F3F8', '#91BFDB', '#4575B4'];
         usedColors.each( function(color) {
             prefColors = prefColors.without(color);
         });

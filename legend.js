@@ -6,10 +6,32 @@ var Legend = Class.create( {
  * This information is graphically displayed in a 'Legend' box
  */
     initialize: function() {
-        this._disorders = {};
+        this._disorders = new Hash({});
         this._evaluations = {};
         this._usedColors = [];
-        //TODO: this.buildLegend
+
+        var canvas = $('canvas');
+
+        this._legendBox = new Element('div', {'class' : 'legend-box', id: 'legend-box'});
+        canvas.insert({'after' : this._legendBox});
+
+//        this._legendTab = new Element('div', {'class' : 'legend-tab'});
+//        this._legendBox.insert(this._legendTab);
+        this._legendBox.setOpacity(0);
+        //(new Effect.Opacity('legend-box', {to:0, duration: 0}));
+
+
+        var legendTitle= new Element('h2', {'class' : 'legend-title'}).update('Key');
+        this._legendBox.insert(legendTitle);
+
+        this._disorderList = new Element('ul', {'class' : 'disorder-list'});
+        this._legendBox.insert(this._disorderList);
+
+
+
+        //this._legendBox.setOpacity(0);
+
+
     },
 
     /*
@@ -20,13 +42,13 @@ var Legend = Class.create( {
     },
 
     /*
-     * Replaces the disorder map with the map passed in the parameter, and updates
+     * Replaces the disorder Hash with the Hash passed in the parameter, and updates
      * the graphical 'Legend' to represent the new information
      *
-     * @param map is an object that has disorder IDs as keys and Disorder objects as values
+     * @param hash is a Hash object that has disorder IDs as keys and Disorder objects as values
      */
-    setDisorders: function(map) {
-        this._disorders = map;
+    setDisorders: function(hash) {
+        this._disorders = hash;
         //TODO: this.buildLegend
     },
 
@@ -54,7 +76,7 @@ var Legend = Class.create( {
      * @param disorderID the id number for the disorder, taken from the OMIM database
      */
     getDisorder: function(disorderID) {
-        return this.getDisorders()[disorderID];
+        return this.getDisorders().get(disorderID);
     },
 
     /*
@@ -64,7 +86,7 @@ var Legend = Class.create( {
      * @param disorder a Disorder object
      */
     setDisorder: function(disorderID, disorder) {
-        this.getDisorders()[disorderID] = disorder;
+        this.getDisorders().set(disorderID, disorder);
     },
 
     /*
@@ -75,13 +97,16 @@ var Legend = Class.create( {
      * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
      * eg. {id: 33244, value: 'Down Syndrome'}
      */
-    addCase: function(disorder) {
+    addCase: function(disorder, node) {
         if (!this.containsDisorder(disorder['id'])) {
-            this.setDisorder(disorder['id'], new Disorder(disorder['id'], disorder['value'], null, 0));
-            this.addUsedColor(this.getDisorder(disorder['id']).getColor());
-            //TODO: this.buildLegend
+            this.setDisorder(disorder['id'], new Disorder(disorder['id'], disorder['value'], null, []));
+            var color = this.getDisorder(disorder['id']).getColor();
+            this.addUsedColor(color);
+            var listElement = this.generateDisorderElement(disorder['id'], disorder['value'], color);
+            this._disorderList.insert(listElement);
         }
-            this.getDisorder(disorder['id']).incrementNumAffected();
+        (new Effect.Opacity('legend-box', { from: 0, to:.9, duration: 0.5 }));
+        this.getDisorder(disorder['id']).addAffectedNode(node);
     },
 
     /*
@@ -92,12 +117,19 @@ var Legend = Class.create( {
      * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
      * eg. {id: 33244, value: 'Down Syndrome'}
      */
-    removeCase: function(disorder) {
+    removeCase: function(disorder, node) {
+        var wasntEmpty = this.getDisorders().keys().length > 0;
         if (this.containsDisorder(disorder['id'])) {
-            this.getDisorder(disorder['id']).decrementNumAffected();
+            this.getDisorder(disorder['id']).removeAffectedNode(node);
             if(this.getDisorder(disorder['id']).getNumAffected() < 1) {
-                delete this.getDisorder(disorder['id']);
-                //TODO: this.buildLegend
+                var removeFromLegend = function() {$('disorder-' + disorder['id']).remove()};
+                this.getDisorders().unset(disorder['id']);
+                if(this.getDisorders().keys().length == 0) {
+                    new Effect.Opacity('legend-box', { from:.9, to:0, duration: 0.5, afterFinish: removeFromLegend});
+                }
+                else {
+                    removeFromLegend();
+                }
             }
         }
     },
@@ -108,7 +140,7 @@ var Legend = Class.create( {
      * @param disorderID the id number for the disorder, taken from the OMIM database
      */
     containsDisorder: function(disorderID) {
-        return disorderID in this._disorders;
+        return this.getDisorders().keys().indexOf(disorderID)  > -1;
     },
 
     /*
@@ -145,5 +177,26 @@ var Legend = Class.create( {
      */
     removeUsedColor: function(color) {
         this.setUsedColors(this.getUsedColors().without(color));
+    },
+
+    generateDisorderElement: function(id, name, color) {
+        var item = new Element('li', {'class' : 'disorder', 'id' : 'disorder-' + id}).update(name);
+        var bubble = new Element('span', {'class' : 'disorder-color'});
+        bubble.style.backgroundColor = color;
+        item.insert({'top' : bubble});
+        var me = this;
+        Element.observe(item, 'mouseover', function() {
+            item.setStyle({'text-decoration':'underline', 'cursor' : 'default'});
+            me.getDisorder(id).getAffectedNodes().each(function(node) {
+                node.getGraphics().highlight();
+            });
+        });
+        Element.observe(item, 'mouseout', function() {
+            item.setStyle({'text-decoration':'none'});
+            me.getDisorder(id).getAffectedNodes().each(function(node) {
+                node.getGraphics().unHighlight();
+            });
+        });
+        return item;
     }
 });

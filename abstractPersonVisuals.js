@@ -7,7 +7,12 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, node, x, y) {
         this._genderShape = null;
+        this._width = editor.graphics.getRadius() * 4;
         $super(node, x, y);
+        this._highlightBox = editor.paper.rect(this.getX()-(this._width/2), this.getY()-(this._width/2),
+            this._width, this._width, 5).attr(editor.graphics._attributes.boxOnHover);
+        this._highlightBox.attr({fill: 'black', opacity: 0, 'fill-opacity': 0});
+        this.draw();
     },
 
     /*
@@ -57,11 +62,23 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         this.setGenderShape(editor.paper.set(shadow, shape));
     },
 
+    getHighlightBox: function() {
+        return this._highlightBox;
+    },
+
+    highlight: function() {
+        this.getHighlightBox().attr({"opacity": .5, 'fill-opacity':.5});
+    },
+
+    unHighlight: function() {
+        this.getHighlightBox().attr({"opacity": 0, 'fill-opacity':0});
+    },
+
     /*
      * Returns a Raphael set or element that contains the graphics associated with this node, excluding the labels.
      */
     getShapes: function() {
-        return editor.paper.set(this.getGenderShape());
+        return editor.paper.set(this.getHighlightBox(), this.getGenderShape());
     },
 
     /*

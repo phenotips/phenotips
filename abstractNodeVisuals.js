@@ -11,7 +11,6 @@ var AbstractNodeVisuals = Class.create( {
         this._relativeY = y;
         this._absoluteX = x;
         this._absoluteY = y;
-        this.draw();
     },
 
     /*

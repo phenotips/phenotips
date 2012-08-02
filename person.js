@@ -330,7 +330,7 @@ var Person = Class.create(AbstractPerson, {
      */
     addDisorder: function(disorder, forceDisplay) {
         if(this.getDisorders().indexOf(disorder) < 0) {
-            editor.getLegend().addCase(disorder);
+            editor.getLegend().addCase(disorder, this);
             this.getDisorders().push(disorder);
         }
         else {
@@ -350,7 +350,7 @@ var Person = Class.create(AbstractPerson, {
      */
     removeDisorder: function(disorder, forceDisplay) {
         if(this.getDisorders().indexOf(disorder) >= 0) {
-            editor.getLegend().removeCase(disorder);
+            editor.getLegend().removeCase(disorder, this);
             this.setDisorders(this.getDisorders().without(disorder));
         }
         else {
@@ -373,8 +373,17 @@ var Person = Class.create(AbstractPerson, {
         toRemove.each(function(disorder) {
             me.removeDisorder(disorder, forceDisplay);
         });
-
     },
+
+    hasDisorder: function(id) {
+        for(var i = 0; i < this.getDisorders().length; i++) {
+            if(this.getDisorders()[i].id == id) {
+                return true;
+            }
+        }
+        return false;
+    },
+
     /**
      * Changes the adoption status of this Person to isAdopted and (optionally) updates the
      * graphics of this node
@@ -412,8 +421,8 @@ var Person = Class.create(AbstractPerson, {
      * @param removeVisuals set to true if you want to remove the graphics as well
      */
     remove: function($super, isRecursive, removeGraphics) {
-        this.getDisorders().each(function(disorderID) {
-            editor.getLegend().removeCase(disorderID);
+        this.getDisorders().each(function(disorder) {
+            editor.getLegend().removeCase(disorder, this);
         });
         $super(isRecursive, removeGraphics);
     },

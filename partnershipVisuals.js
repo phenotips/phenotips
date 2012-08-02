@@ -7,5 +7,6 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, node, x, y) {
         $super(node, x, y);
+        this.draw();
     }
 });

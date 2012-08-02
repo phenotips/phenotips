@@ -70,8 +70,11 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
         }
 
         var startSide = sideAtAngle(startAngle),
-            endSide = sideAtAngle(endAngle),
-            numSides = (endSide - startSide > 0) ? (endSide - startSide) : (4 + (endSide - startSide));
+            endSide = sideAtAngle(endAngle);
+            if(endSide == 0 && endAngle > startAngle) {
+                endSide = (startAngle >= 315) ? 0 : 4;
+            }
+            var numSides = endSide - startSide;
 
         var startCoord = getCoord(startAngle),
             endCoord = getCoord(endAngle),
