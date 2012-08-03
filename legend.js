@@ -8,7 +8,7 @@ var Legend = Class.create( {
     initialize: function() {
         this._disorders = new Hash({});
         this._evaluations = {};
-        this._usedColors = [];
+        this._disorderColors = new Hash({});
 
         var canvas = $('canvas');
 
@@ -21,6 +21,13 @@ var Legend = Class.create( {
 
         this._disorderList = new Element('ul', {'class' : 'disorder-list'});
         this._legendBox.insert(this._disorderList);
+
+        Element.observe(this._legendBox, 'mouseover', function() {
+            $$('.menu-box').invoke('setOpacity', .5);
+        });
+        Element.observe(this._legendBox, 'mouseout', function() {
+            $$('.menu-box').invoke('setOpacity', 1);
+        });
     },
 
     /*
@@ -38,7 +45,6 @@ var Legend = Class.create( {
      */
     setDisorders: function(hash) {
         this._disorders = hash;
-        //TODO: this.buildLegend
     },
 
     /*
@@ -90,7 +96,7 @@ var Legend = Class.create( {
         if (!this.containsDisorder(disorder['id'])) {
             this.setDisorder(disorder['id'], new Disorder(disorder['id'], disorder['value'], null, []));
             var color = this.getDisorder(disorder['id']).getColor();
-            this.addUsedColor(color);
+            this.addUsedColor(disorder['id'], color);
             var listElement = this.generateDisorderElement(disorder['id'], disorder['value'], color);
             this._disorderList.insert(listElement);
         }
@@ -133,55 +139,34 @@ var Legend = Class.create( {
     },
 
     /*
-     * Returns an array of colors associated with disorders in the Legend
-     *
-     * @param disorderID the id number for the disorder, taken from the OMIM database
-     */
-    getUsedColors: function() {
-        return this._usedColors;
-    },
-
-    /*
-     * Replaces the array of colors associated with disorders in the Legend
-     *
-     * @param colors an array of strings representing CSS colors. e.g. ['blue', '#DADADA']
-     */
-    setUsedColors: function(colors) {
-        this._usedColors = colors;
-    },
-
-    /*
      * Adds color to the list of colors used in the Legend
      *
      * @param color is a string representing a CSS color e.g. 'blue' or '#DADADA'
      */
-    addUsedColor: function(color) {
-        this.getUsedColors().push(color);
+    addUsedColor: function(disorderID, color) {
+        this.getDisorderColors().set(disorderID, color);
     },
 
-    /*
-     * Removes color from the list of colors used in the Legend
-     *
-     * @param color is a string representing a CSS color e.g. 'blue' or '#DADADA'
-     */
-    removeUsedColor: function(color) {
-        this.setUsedColors(this.getUsedColors().without(color));
+    getDisorderColors: function() {
+        return this._disorderColors;
     },
 
     generateDisorderElement: function(id, name, color) {
-        var item = new Element('li', {'class' : 'disorder', 'id' : 'disorder-' + id}).update(name);
+        var item = new Element('li', {'class' : 'disorder', 'id' : 'disorder-' + id}).update(new Element('span', {'class' : 'disorder-name'}).update(name));
         var bubble = new Element('span', {'class' : 'disorder-color'});
         bubble.style.backgroundColor = color;
         item.insert({'top' : bubble});
         var me = this;
         Element.observe(item, 'mouseover', function() {
-            item.setStyle({'text-decoration':'underline', 'cursor' : 'default'});
+            //item.setStyle({'text-decoration':'underline', 'cursor' : 'default'});
+            item.down('.disorder-name').setStyle({'background': color, 'cursor' : 'default'});
             me.getDisorder(id).getAffectedNodes().each(function(node) {
                 node.getGraphics().highlight();
             });
         });
         Element.observe(item, 'mouseout', function() {
-            item.setStyle({'text-decoration':'none'});
+            //item.setStyle({'text-decoration':'none'});
+            item.down('.disorder-name').setStyle({'background':'', 'cursor' : 'default'});
             me.getDisorder(id).getAffectedNodes().each(function(node) {
                 node.getGraphics().unHighlight();
             });

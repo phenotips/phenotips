@@ -99,12 +99,14 @@ var Disorder = Class.create( {
      * Generates a CSS color. Has preference for 5 colors that can be distinguished in gray-scale.
      */
     generateColor: function() {
-        var usedColors = editor.getLegend().getUsedColors(),
+        if(editor.getLegend().getDisorderColors().keys().indexOf(this.getDisorderID()) > -1) {
+            return editor.getLegend().getDisorderColors().get(this.getDisorderID());
+        }
+        var usedColors = editor.getLegend().getDisorderColors().values(),
             prefColors = ["#FEE090", '#E0F3F8', '#91BFDB', '#4575B4'];
         usedColors.each( function(color) {
             prefColors = prefColors.without(color);
         });
-
         if(prefColors.length > 0) {
             return prefColors[0];
         }

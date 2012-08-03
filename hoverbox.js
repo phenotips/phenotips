@@ -258,7 +258,18 @@ var Hoverbox = Class.create( {
             isDrag,
             movingHandles = 0;
 
+        var hasEnded = true;
+
         var start = function(handle) {
+            if(!hasEnded) {
+                //isDrag = true;
+                //end();
+                return;
+            }
+            hasEnded = false;
+ //           document.observe('mousedown', catchRightClick);
+//            editor.zpd.opts['zoom'] = false;
+//            editor.zpd.opts['pan'] = false;
             me.disable();
             orb = handle[1];
             connection = handle[0];
@@ -272,16 +283,6 @@ var Hoverbox = Class.create( {
             editor.currentDraggable.handle = handle.type;
             isDrag = false;
             editor.enterHoverMode(me.getNode());
-            //TODO: right click behavior
-//                document.observe('contextmenu',
-//                    function(ev) {
-//                            ev.preventDefault();
-//                            //alert("rclick");
-//                            isDrag = true;
-//                            end();
-//                            ev.stop();
-//                            }
-//                    , false);
         };
         var move = function(dx, dy) {
             orb.attr("cx", orb.ox + dx);
@@ -294,12 +295,19 @@ var Hoverbox = Class.create( {
             }
         };
         var end = function() {
+            if(hasEnded) {
+                return;
+            }
+            //document.stopObserving('mousedown', catchRightClick);
+//            editor.zpd.opts['zoom'] = true;
+//            editor.zpd.opts['pan'] = true;
             orb.animate({"cx": orb.ox, "cy": orb.oy}, +isDrag * 1000, "elastic",
                 function() {
                     movingHandles--;
                     if(movingHandles == 0) {
                         me.enable();
                         me.animateHideHoverZone();
+                        hasEnded = true;
                     }
                 });
             editor.exitHoverMode();
@@ -308,6 +316,7 @@ var Hoverbox = Class.create( {
             connection.oPath[1][1] = connection.ox;
             connection.oPath[1][2] = connection.oy;
             connection.animate({"path": connection.oPath},1000, "elastic");
+            isDrag = false;
 
 
         };
@@ -398,10 +407,14 @@ var Hoverbox = Class.create( {
             var optBBox = this.getBoxOnHover().getBBox();
             var x = optBBox.x2;
             var y = optBBox.y;
+//            editor.zpd.opts['pan'] = false;
+//            editor.zpd.opts['zoom'] = false;
             editor.nodeMenu.show(this.getNode(), x+5, y);
         }
         else {
-            this.enable();
+            //this.enable();
+//            editor.zpd.opts['pan'] = true;
+//            editor.zpd.opts['zoom'] = true;
             editor.nodeMenu.hide();
         }
     },
@@ -426,7 +439,6 @@ var Hoverbox = Class.create( {
      * Starts responding to mouseovers
      */
     enable: function() {
-        var me = this;
-        this._frontElements.hover(me.animateDrawHoverZone, me.animateHideHoverZone);
+        this._frontElements.hover(this.animateDrawHoverZone, this.animateHideHoverZone);
     }
 });

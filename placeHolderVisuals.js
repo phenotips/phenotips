@@ -25,7 +25,8 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
         var oy = 0;
 
         var start = function() {
-            //editor.paper.ZPD({ zoom: false, pan: false, drag: false });
+//            editor.zpd.opts['zoom'] = false;
+//            editor.zpd.opts['pan'] = false;
             isDragged = false;
             me.getShapes().toFront();
             editor.enterHoverMode(me.getNode());
@@ -43,8 +44,10 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
         };
 
         var end = function() {
+//
+//            editor.zpd.opts['zoom'] = true;
+//            editor.zpd.opts['pan'] = true;
 
-//            //editor.paper.ZPD({ zoom: true, pan: true, drag: false });
             if(isDragged) {
                 draggable = false;
                 var node = editor.currentHoveredNode;

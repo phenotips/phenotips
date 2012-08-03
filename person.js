@@ -329,12 +329,9 @@ var Person = Class.create(AbstractPerson, {
      * @param forceDisplay set to true if you want to display the change on the canvas
      */
     addDisorder: function(disorder, forceDisplay) {
-        if(this.getDisorders().indexOf(disorder) < 0) {
+        if(!this.hasDisorder(disorder['id'])) {
             editor.getLegend().addCase(disorder, this);
             this.getDisorders().push(disorder);
-        }
-        else {
-            alert("This disorder was already registered");
         }
         forceDisplay && this.getGraphics().drawShapes();
     },
@@ -360,18 +357,18 @@ var Person = Class.create(AbstractPerson, {
     },
 
     updateDisorders: function(disorders, forceDisplay) {
-        var updatedDisorders = [],
-            me = this;
-        disorders.each(function(disorder) {
-            me.addDisorder(disorder, forceDisplay);
-            updatedDisorders.push(disorder);
+        var me = this;
+        this.getDisorders().each(function(disorder) {
+            var found = false;
+            disorders.each(function(newDisorder) {
+                disorder['id'] == newDisorder['id'] && (found = true);
+            });
+            !found && me.removeDisorder(disorder, forceDisplay);
         });
-        var toRemove = me.getDisorders();
-        disorders.each(function(disorder) {
-           toRemove = toRemove.without(disorder);
-        });
-        toRemove.each(function(disorder) {
-            me.removeDisorder(disorder, forceDisplay);
+        disorders.each(function(newDisorder) {
+            if (!me.hasDisorder(newDisorder.id)) {
+                me.addDisorder(newDisorder, forceDisplay);
+            }
         });
     },
 

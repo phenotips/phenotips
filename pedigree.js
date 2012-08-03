@@ -6,6 +6,7 @@ var PedigreeEditor = Class.create({
 
         //create canvas
         this.paper = Raphael("canvas", this.width, this.height);
+//        this.zpd = new RaphaelZPD(this.paper, { zoom: true, pan: true, drag: false });
         this.adjustSizeToScreen();
         this.nodes = [[],[]];
         this.idCount = 1;
@@ -41,6 +42,9 @@ var PedigreeEditor = Class.create({
         if (this.paper) {
             // TODO : pan to center?... set viewbox instead of size?
             this.paper.setSize(this.width, this.height);
+        }
+        if (this.nodeMenu) {
+            this.nodeMenu.reposition();
         }
     },
 
@@ -127,9 +131,10 @@ var PedigreeEditor = Class.create({
         });
         document.observe('nodemenu:hiding', function(event) {
             if (event.memo && event.memo.node) {
-                var nodeBox = event.memo.node.getGraphics().getGraphics().getHoverBox();
+                var nodeBox = event.memo.node.getGraphics().getHoverBox();
                 nodeBox._isMenuToggled = false;
-                nodeBox.animateHideHoverZone();
+                !nodeBox.isHovered() && nodeBox.animateHideHoverZone();
+                nodeBox.enable();
             }
         });
         return new NodeMenu([
@@ -310,7 +315,8 @@ var editor,
     disorderMap;
 
 document.observe("dom:loaded",function() {
-    editor = new PedigreeEditor();
+   editor = new PedigreeEditor();
+
 //    var iconPath = Raphael.pathToRelative("M16,1.466C7.973,1.466,1.466,7.973,1.466,16c0,8.027,6.507,14.534,14.534,14.534c8.027,0,14.534-6.507,14.534-14.534C30.534,7.973,24.027,1.466,16,1.466zM16,28.792c-1.549,0-2.806-1.256-2.806-2.806s1.256-2.806,2.806-2.806c1.55,0,2.806,1.256,2.806,2.806S17.55,28.792,16,28.792zM16,21.087l-7.858-6.562h3.469V5.747h8.779v8.778h3.468L16,21.087z");
 //    iconPath[0][1] = 0;
 //    iconPath[0][2] = 0;
@@ -364,23 +370,21 @@ document.observe("dom:loaded",function() {
 //
 //
    patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
-    //nodesSon.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
+    patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
+    patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
+    patientNode.updateDisorders([{id: "DS1",value: "1 Syndrome"},{id: "DS1",value: "1 Syndrome"}], true);
 
 //
 //
-    patientNode.addDisorder({id: "DS2",value: "1 Syndrome"}, true);
-    patientNode.addDisorder({id: "DS3",value: "1 Syndrome"}, true);
-    patientNode.addDisorder({id: "DS4",value: "1 Syndrome"}, true);
-    patientNode.addDisorder({id: "DS5",value: "1 Syndrome"}, true);
-    patientNode.addDisorder({id: "DS6",value: "1 Syndrome"}, true);
-    patientNode.addDisorder({id: "DS7",value: "1 Syndrome"}, true);
-    patientNode.addDisorder({id: "DS8",value: "1 Syndrome"}, true);
-    patientNode.addDisorder({id: "DS9",value: "1 Syndrome"}, true);
-    patientNode.setAborted(true);
-    patientNode.setAlive(true);
-    patientNode.setDeceased(true);
-
-
+//    patientNode.addDisorder({id: "DS2",value: "1 Syndrome"}, true);
+//    patientNode.addDisorder({id: "DS3",value: "1 Syndrome"}, true);
+//    patientNode.addDisorder({id: "DS4",value: "1 Syndrome"}, true);
+//
+//    patientNode.setAborted(true);
+//    patientNode.setAlive(true);
+//    patientNode.setDeceased(true);
+//
+//
 
 
 

@@ -49,7 +49,7 @@ RaphaelZPD = function(raphaelPaper, o) {
 	me.initialized = false;
 	me.opts = { 
 		zoom: true, pan: true, drag: true, // Enable/disable core functionalities.
-		zoomThreshold: null, // Zoom [out, in] boundaries. E.g [-100, 10].
+		zoomThreshold: [-10,10] // Zoom [out, in] boundaries. E.g [-100, 10].
 	};
 
     me.id   = ++raphaelZPDId;
@@ -96,7 +96,7 @@ RaphaelZPD = function(raphaelPaper, o) {
 		return evt;
 	}
 
-	var events = ['click', 'dblclick', 'mousedown', 'mousemove', 'mouseout', 'mouseover', 'mouseup', 'touchstart', 'touchmove', 'touchend', 'orientationchange', 'touchcancel', 'gesturestart', 'gesturechange', 'gestureend'];
+	var events = ['click', 'dblclick', 'mousemove', 'mouseup', 'touchstart', 'touchmove', 'touchend', 'orientationchange', 'touchcancel', 'gesturestart', 'gesturechange', 'gestureend'];
 
 	events.forEach(function(eventName) {
 		var oldFunc = Raphael.el[eventName];
@@ -232,7 +232,9 @@ RaphaelZPD = function(raphaelPaper, o) {
 	 * Handle mouse move event.
 	 */
 	me.handleMouseMove = function(evt) {
-		if (evt.preventDefault)
+        if (!me.opts.zoom || !me.opts.pan) return;
+
+        if (evt.preventDefault)
 			evt.preventDefault();
 
 		evt.returnValue = false;
@@ -264,9 +266,10 @@ RaphaelZPD = function(raphaelPaper, o) {
 	 * Handle click event.
 	 */
 	me.handleMouseDown = function(evt) {
-		if (evt.preventDefault)
-			evt.preventDefault();
+        if (!me.opts.zoom || !me.opts.pan) return;
 
+        if (evt.preventDefault)
+			evt.preventDefault();
 		evt.returnValue = false;
 
 		var svgDoc = evt.target.ownerDocument;
@@ -300,7 +303,9 @@ RaphaelZPD = function(raphaelPaper, o) {
 	 * Handle mouse button release event.
 	 */
 	me.handleMouseUp = function(evt) {
-		if (evt.preventDefault)
+        if (!me.opts.zoom || !me.opts.pan) return;
+
+        if (evt.preventDefault)
 			evt.preventDefault();
 
 		evt.returnValue = false;
