@@ -11,14 +11,14 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1340918250000</creationDate>
-<date>1344019411000</date>
-<contentUpdateDate>1344019411000</contentUpdateDate>
-<version>4.3</version>
+<date>1344035422000</date>
+<contentUpdateDate>1344035422000</contentUpdateDate>
+<version>35.6</version>
 <title>Pedigree editor#if ($request.id): $request.id#end</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Imported from XAR</comment>
+<comment></comment>
 <minorEdit>true</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
@@ -298,7 +298,8 @@ _this.reposition();
       return !!this.targetNode;
     },
     hide : function() {
-      if (!this.menuBox.hasClassName('hidden')) {
+      if (!this.menuBox.hasClassName('hidden')) { 
+        this.targetNode &amp;&amp; delete this.targetNode;
         Event.fire(document, 'nodemenu:hiding', {node : this.targetNode});
         this.menuBox.addClassName('hidden');
         this._clearCrtData();
