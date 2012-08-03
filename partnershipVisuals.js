@@ -116,7 +116,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         me.getNode().getPartner2().connectionPath[0][2] = y;
         this.getConnection2().stop().animate({path: me.getNode().getPartner2().connectionPath}, displacement /.4, "<>");
 
-        this.getNode().getChildren.each(function(child) {
+        this.getNode().getChildren().each(function(child) {
             var yDistance = (child.getGraphics().getUpCoordinate().y - y)/2;
             var xDistance = (child.getX() - x);
             child.parentConnectionPath = [["M", x, y],["l",0, yDistance],["l",xDistance,0], ["L", child.getX(), child.getGraphics().getUpCoordinate().y]];
