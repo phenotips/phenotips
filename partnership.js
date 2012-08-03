@@ -1,13 +1,15 @@
 var Partnership = Class.create(AbstractNode, {
 
-    initialize: function($super, x, y, node1, node2) {
-        if(node1.getType() != 'ph' || node2.getType() != 'ph') {
-            this._partner1 = node1;
-            this._partner2 = node2;
-            this._children = [];
-            $super(x,y);
-        }
-    },
+   initialize: function($super, x, y, node1, node2) {
+       if(node1.getType() != 'ph' || node2.getType() != 'ph') {
+           this._partner1 = node1;
+           this._partner2 = node2;
+           this._children = [];
+           this._partner1.addPartnership(this);
+           this._partner2.addPartnership(this);
+           $super(x,y);
+       }
+   },
 
     generateGraphics: function(x, y) {
         return new PartnershipVisuals(this, x, y);

@@ -101,7 +101,9 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @param partnership is a Partnership object with this node as one of the partners
      */
     addPartnership: function(partnership) {
-        this._partnerships.push(partnership);
+       if(this._partnerships.indexOf(partnership) == -1) {
+           this._partnerships.push(partnership);
+       }
     },
 
     /*
