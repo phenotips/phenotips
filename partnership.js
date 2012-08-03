@@ -77,8 +77,8 @@ var Partnership = Class.create(AbstractNode, {
 
     createChild: function(isPlaceHolder) {
         //TODO: set x and y using positioning algorithm
-        var x = this.getPartner1().getGraphics().getAbsX() + 150,
-            y = this.getPartner1().getGraphics().getAbsY() + 300,
+        var x = this.getPartner1().getGraphics().getAbsX() + 100,
+            y = this.getPartner1().getGraphics().getAbsY() + 200,
             child = editor.addNode(x, y, "U", isPlaceHolder);
         return this.addChild(child);
     },

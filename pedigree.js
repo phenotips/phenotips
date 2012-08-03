@@ -1,6 +1,7 @@
 var PedigreeEditor = Class.create({
 
     initialize: function(graphics) {
+      this.nodeIndex = new NodeIndex();
         this.generateViewControls();
         (this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this))();
 
@@ -230,6 +231,7 @@ var PedigreeEditor = Class.create({
     addNode: function(x, y, gender, isPlaceHolder) {
         var node = (isPlaceHolder) ? (new PlaceHolder(x, y, gender, this.generateID())) : (new Person(x, y, gender, this.generateID()));
         this.nodes[+(isPlaceHolder)].push(node);
+	this.nodeIndex.add(node);
         return node;
     },
 
@@ -343,13 +345,15 @@ document.observe("dom:loaded",function() {
     //alert(Raphael.color('blue'));
 
     var patientNode = editor.addNode(editor.width/2, editor.height/2, 'M', false);
-    var patientNodesFriend = editor.addNode(editor.width/3, editor.height/2, 'F', false);
-    var nodesSon = editor.addNode(editor.width/2.5, editor.height/1.5, 'F', false);
+    var patientNodesFriend = editor.addNode(patientNode.getX() + 200, patientNode.getY(), 'F', false);
+    var nodesSon = editor.addNode(patientNode.getX() + 100, patientNode.getY() + 200, 'F', false);
     patientNode.setBirthDate(new Date(1999,9,2), true);
     patientNode.addPartner(patientNodesFriend);
     patientNode.getPartnerships()[0].addChild(nodesSon);
+    
+    patientNode.addDisorder({id: "190685",value: "Down syndrome"}, true);
 
-    var randomNode = editor.addNode(300, 500, 'M', false);
+    //var randomNode = editor.addNode(300, 500, 'M', false);
    patientNode.setDeceased(true);
    // patientNode.remove(true,true);
    // nodesSon.removeParents();
