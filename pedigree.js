@@ -216,7 +216,8 @@ var PedigreeEditor = Class.create({
                 'name' : 'date_of_death',
                 'label' : 'Date of death',
                 'type' : 'date-picker',
-                'format' : 'dd/MM/yyyy'
+                'format' : 'dd/MM/yyyy',
+                'function' : 'setDeathDate'
             }
         ],$('canvas'));
     },
@@ -350,6 +351,7 @@ document.observe("dom:loaded",function() {
 
     var randomNode = editor.addNode(300, 500, 'M', false);
    patientNode.setDeceased(true);
+   // patientNode.remove(true,true);
    // nodesSon.removeParents();
 //    patientNode.setGender("F", true);
 //patientNode.setAlive(true);
@@ -371,7 +373,7 @@ document.observe("dom:loaded",function() {
 //
 //
 
-    patientNode.updateDisorders([{id: "DS1",value: "1 Syndrome"},{id: "DS2",value: "2 Syndrome"}], true);
+    //patientNode.updateDisorders([{id: "DS1",value: "1 Syndrome"},{id: "DS2",value: "2 Syndrome"}], true);
 
 //
 //
