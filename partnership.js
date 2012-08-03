@@ -1,10 +1,11 @@
 var Partnership = Class.create(AbstractNode, {
 
-    initialize: function(x, y, node1, node2) {
+    initialize: function($super, x, y, node1, node2) {
         if(node1.getType() != 'ph' || node2.getType() != 'ph') {
             this._partner1 = node1;
             this._partner2 = node2;
             this._children = [];
+            $super(x,y);
         }
     },
 
@@ -64,37 +65,48 @@ var Partnership = Class.create(AbstractNode, {
         return this._children;
     },
 
-    setChildren: function(arrayOfChildren) {
-        this._children = arrayOfChildren;
+    setChildren: function(children) {
+        this._children = children;
+    },
+
+    hasChild: function(child) {
+        return this.getChildren().indexOf(child) > -1;
     },
 
     createChild: function(isPlaceHolder) {
         //TODO: set x and y using positioning algorithm
         var x = this.getPartner1().getGraphics().getAbsX() + 150,
-            y = this.getPartner1().getGraphics().getAbsY() + 200,
+            y = this.getPartner1().getGraphics().getAbsY() + 300,
             child = editor.addNode(x, y, "U", isPlaceHolder);
         return this.addChild(child);
     },
 
     addChild: function(child) {
         //TODO: elaborate on restrictions for adding parents to existing node
-        if(child && this.getChildren().indexOf(child) == -1 && (child.getParentPartnership() == null)) {
+        if(child && !this.hasChild(child) && (child.getParentPartnership() == null)) {
             this.getChildren().push(child);
+            child.parentConnection = this.getGraphics().updateChildConnection(child);
             child.setParentPartnership(this);
         }
         return child;
     },
 
     removeChild: function(child) {
+        child.setParentPartnership(null);
         this.setChildren(this.getChildren().without(child));
+        child.parentConnection.remove();
+        child.parentConnection = null;
     },
 
     remove: function() {
+        var me = this;
         this.getChildren().each(function(child) {
             child.setParentPartnership(null);
+            me.removeChild(child);
         });
         this.getPartner1().removePartnership(this);
         this.getPartner2().removePartnership(this);
+        this.getGraphics().remove();
     },
 
     /*

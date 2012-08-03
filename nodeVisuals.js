@@ -6,7 +6,7 @@
 var NodeVisuals = Class.create( {
 
     initialize: function(canvas) {
-        this._radius = 50;
+        this._radius = 40;
         this._paper = canvas;
         this._patterns = ["black", "url(patterns/1.jpg)", "url(patterns/circles.jpg)", "url(patterns/deltoyds.jpg)",
             "url(patterns/lines.gif)", "url(patterns/pluses.jpg)", "url(patterns/triangles.jpg)",

@@ -32,6 +32,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 y = this.getY();
             var shape = editor.paper.path(["M",x, y, 'l', height, -height, 'l', height, height,"z"]);
             shape.attr(editor.graphics._attributes.nodeShape);
+            this._bareGenderShape = shape;
             shape = editor.paper.set(shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3), shape);
             x = this.getX() - 2 * height/ 3;
             y = this.getY() + height/ 3;

@@ -30,7 +30,8 @@ var PlaceHolder = Class.create(AbstractPerson, {
                 if(node.getPartners().indexOf(partner) == -1) {
                     var newPartnership = node.addPartner(partnership.getPartnerOf(me));
                     partnership.getChildren().each(function(child){
-                        child.addParents(newPartnership);
+                        partnership.removeChild(child);
+                        newPartnership.addChild(child);
                     });
                 }
                 else {

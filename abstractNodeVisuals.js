@@ -55,6 +55,10 @@ var AbstractNodeVisuals = Class.create( {
         return this._absoluteY;
     },
 
+    setAbsPos: function(x, y) {
+        this.setAbsX(x);
+        this.setAbsY(y);
+    },
     /*
      * Replaces the current Y coordinate of this node on the canvas, taking into consideration transformation data.
      */
@@ -66,6 +70,7 @@ var AbstractNodeVisuals = Class.create( {
      * Returns a Raphael set or element that contains all the graphics and labels associated with this node.
      */
     getAllGraphics: function() {
+        return editor.paper.set();
     },
 
     /*
@@ -79,11 +84,10 @@ var AbstractNodeVisuals = Class.create( {
     moveTo: function(x, y) {
         var xDisplacement = x - this.getAbsX();
         var yDisplacement = y - this.getAbsY();
+        var me = this;
         var displacement = Math.sqrt(xDisplacement * xDisplacement + yDisplacement * yDisplacement);
-        this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getAbsX()) + "," +(y-this.getAbsY()) + "..."},
-            displacement /.4, "<>");
-        this.setAbsX(x);
-        this.setAbsY(y);
+        this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getAbsX()) + "," + (y-this.getAbsY()) + "..."},
+            displacement /.4, "<>", function() {me.setAbsPos(x,y);});
     },
 
     /*

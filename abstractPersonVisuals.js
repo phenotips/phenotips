@@ -7,6 +7,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, node, x, y) {
         this._genderShape = null;
+        this._bareGenderShape = null;
         this._width = editor.graphics.getRadius() * 4;
         $super(node, x, y);
         this._highlightBox = editor.paper.rect(this.getX()-(this._width/2), this.getY()-(this._width/2),
@@ -33,6 +34,31 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         this._genderShape = shape;
     },
 
+    setAbsPos: function($super, x, y) {
+        $super(x,y);
+        var me = this;
+        this.getNode().getPartnerships().each(function(partnership) {
+            partnership.getGraphics().updatePartnerConnection(me.getNode());
+        });
+        this.getNode().getParentPartnership() && this.getNode().getParentPartnership().getGraphics().updateChildConnection(this.getNode());
+    },
+
+    moveTo: function(x, y) {
+        var xDisplacement = x - this.getAbsX();
+        var yDisplacement = y - this.getAbsY();
+        var me = this;
+        var displacement = Math.sqrt(xDisplacement * xDisplacement + yDisplacement * yDisplacement);
+        this.getNode().getPartnerships().each(function(partnership) {
+            partnership.getGraphics().movePartnerConnectionTo(me.getNode(), x, y);
+        });
+        this.getNode().getParentPartnership() && this.getNode().getParentPartnership().getGraphics().moveChildConnectionTo(this.getNode(), x, y);
+        this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getAbsX()) + "," +(y-this.getAbsY()) + "..."},
+            displacement /.4, "<>", function() {me.setAbsPos(x,y);});
+    },
+
+    getBareGenderShape: function() {
+        return this._bareGenderShape;
+    },
     /*
      * Returns a Raphael set containing a shape that represents the gender of the node and a
      * shadow behind it
@@ -57,6 +83,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         }
         shape.attr(editor.graphics._attributes.nodeShape);
         shape = (this.getNode().getGender() == 'U') ? shape.transform("...r45") : shape;
+        this._bareGenderShape = shape;
 
         var shadow = shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3);
         this.setGenderShape(editor.paper.set(shadow, shape));
@@ -103,5 +130,26 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      */
     draw: function() {
         this.drawShapes();
+    },
+
+    getLeftCoordinate: function() {
+        var yDistance = (this.getBareGenderShape().getBBox().y2 - this.getBareGenderShape().getBBox().y)/2;
+        return {x: this.getBareGenderShape().getBBox().x, y: this.getBareGenderShape().getBBox().y2 - yDistance};
+    },
+
+    getRightCoordinate: function() {
+        var yDistance = (this.getBareGenderShape().getBBox().y2 - this.getBareGenderShape().getBBox().y)/2;
+        return {x: this.getBareGenderShape().getBBox().x2, y: this.getBareGenderShape().getBBox().y2 - yDistance};
+    },
+
+    getUpCoordinate: function() {
+        var xDistance = (this.getBareGenderShape().getBBox().x2 - this.getBareGenderShape().getBBox().x)/2;
+        return {x: this.getBareGenderShape().getBBox().x2- xDistance, y: this.getBareGenderShape().getBBox().y};
+    },
+
+    getDownCoordinate: function() {
+        var xDistance = (this.getBareGenderShape().getBBox().x1 - this.getBareGenderShape().getBBox().x)/2;
+        return {x: this.getBareGenderShape().getBBox().x2- xDistance, y: this.getBareGenderShape().getBBox().y2};
     }
+
 });

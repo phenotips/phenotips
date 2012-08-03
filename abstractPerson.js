@@ -143,9 +143,9 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     createParents: function() {
         if(this.getParentPartnership() == null) {
-            var mother = editor.addNode(this.getGraphics().getAbsX() + 100, this.getGraphics().getAbsY() - 260, "F", false),
-                father = editor.addNode(this.getGraphics().getAbsX() - 100, this.getGraphics().getAbsY() - 260, "M", false),
-                partnership = new Partnership(0, 0, mother, father);
+            var mother = editor.addNode(this.getGraphics().getAbsX() + 100, this.getGraphics().getAbsY() - 250, "F", false),
+                father = editor.addNode(this.getGraphics().getAbsX() - 100, this.getGraphics().getAbsY() - 250, "M", false),
+                partnership = new Partnership(this.getX(), this.getY() - 250, mother, father);
             this.addParents(partnership);
         }
     },
@@ -156,6 +156,12 @@ var AbstractPerson = Class.create(AbstractNode, {
     addParents: function(partnership) {
         if(this.getParentPartnership() == null) {
             partnership.addChild(this);
+        }
+    },
+
+    removeParents: function() {
+        if(this.getParentPartnership()) {
+            this.getParentPartnership().remove();
         }
     },
 
@@ -197,7 +203,12 @@ var AbstractPerson = Class.create(AbstractNode, {
     addPartner: function(partner) {
         if(partner && this.getPartners().indexOf(partner) == -1 && this.canPartnerWith(partner)) {
             //TODO: calculate partnership x and y
-            var partnership = new Partnership(0, 0, this, partner);
+            var distanceX = Math.abs(partner.getX() - this.getX())/2;
+            var distanceY = Math.abs(partner.getY() - this.getY())/2;
+            var x = (partner.getX() > this.getX()) ? distanceX + this.getX() : distanceX + partner.getX();
+            var y = (partner.getY() > this.getY()) ? distanceY + this.getY() : distanceY + partner.getY();
+
+            var partnership = new Partnership(x, y, this, partner);
             this.getPartnerships().push(partnership);
             partner.addPartnership(partnership);
             return partnership;
@@ -317,13 +328,8 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @param otherNode is a Person
      */
     canBeParentOf: function(otherNode) {
-        var incompatibleParents = otherNode.getParentPartnership();
-        var incompatibleBirthDate = this.getBirthDate() && otherNode.getBirthDate() && this.getBirthDate() < otherNode.getBirthDate();
-        var incompatibleDeathDate = this.getDeathDate() && otherNode.getBirthDate() && this.getDeathDate() < otherNode.getBirthDate().clone().setDate(otherNode.getBirthDate().getDate()-700);
-        var incompatibleState = this.isFetus();
-
-        return !incompatibleParents && !incompatibleBirthDate && !incompatibleDeathDate && !incompatibleState;
-
+        var isDescendant = this.isDescendantOf(otherNode);
+        return otherNode.getParentPartnership() == null && this.getChildren().indexOf(otherNode) == -1 && !isDescendant;
     },
 
     /*

@@ -213,6 +213,19 @@ var Hoverbox = Class.create( {
         }
     },
 
+    hideParentHandle: function() {
+        var crtHandles = editor.paper.set();
+        crtHandles.push(this.getHandles()[0], this.getHandles()[1], this.getHandles()[3]);
+        this.getHandles()[2].hide();
+        this.setCurrentHandles(crtHandles);
+    },
+
+    unHideParentHandle: function() {
+        this.setCurrentHandles(this.getHandles());
+        if(this.isHovered() || this.isMenuToggled()) {
+            this.getHandles()[2].show();
+        }
+    },
     /*
      * Creates and returns a set with four draggable handles for creating new relatives and connections
      */
@@ -338,13 +351,18 @@ var Hoverbox = Class.create( {
     {
         if(isDrag) {
             if(editor.currentHoveredNode && editor.currentHoveredNode.validPartnerSelected) {
+                editor.currentHoveredNode.validPartnerSelected = false;
                 this.getNode().addPartner(editor.currentHoveredNode);
             }
             else if(editor.currentHoveredNode && editor.currentHoveredNode.validChildSelected) {
-                var partnership = this.getNode().createPartner(true);
-                partnership.addChild(editor.currentHoveredNode);
+                if(this.getNode().getChildren().indexOf(editor.currentHoveredNode) == -1) {
+                    editor.currentHoveredNode.validChildSelected = false;
+                    var partnership = this.getNode().createPartner(true);
+                    partnership.addChild(editor.currentHoveredNode);
+                }
             }
             else if(editor.currentHoveredNode && editor.currentHoveredNode.validParentSelected) {
+                editor.currentHoveredNode.validParentSelected = false;
                 var partnership = editor.currentHoveredNode.createPartner(true);
                 partnership.addChild(this.getNode());
             }

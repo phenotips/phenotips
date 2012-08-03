@@ -344,12 +344,13 @@ document.observe("dom:loaded",function() {
     var patientNode = editor.addNode(editor.width/2, editor.height/2, 'M', false);
     var patientNodesFriend = editor.addNode(editor.width/3, editor.height/2, 'F', false);
     var nodesSon = editor.addNode(editor.width/2.5, editor.height/1.5, 'F', false);
-  patientNode.setBirthDate(new Date(1999,9,2), true);
+    patientNode.setBirthDate(new Date(1999,9,2), true);
     patientNode.addPartner(patientNodesFriend);
     patientNode.getPartnerships()[0].addChild(nodesSon);
 
     var randomNode = editor.addNode(300, 500, 'M', false);
    patientNode.setDeceased(true);
+   // nodesSon.removeParents();
 //    patientNode.setGender("F", true);
 //patientNode.setAlive(true);
 //    patientNode.setAborted(true);
@@ -369,10 +370,8 @@ document.observe("dom:loaded",function() {
 
 //
 //
-   patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
-    patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
-    patientNode.addDisorder({id: "DS1",value: "1 Syndrome"}, true);
-    patientNode.updateDisorders([{id: "DS1",value: "1 Syndrome"},{id: "DS1",value: "1 Syndrome"}], true);
+
+    patientNode.updateDisorders([{id: "DS1",value: "1 Syndrome"},{id: "DS2",value: "2 Syndrome"}], true);
 
 //
 //

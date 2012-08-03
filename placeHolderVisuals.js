@@ -23,8 +23,13 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
 
         var ox = 0;
         var oy = 0;
+        var absOx;
+        var absOy;
 
         var start = function() {
+            absOx = me.getAbsX();
+            //alert(absOx);
+            absOy = me.getAbsY();
 //            editor.zpd.opts['zoom'] = false;
 //            editor.zpd.opts['pan'] = false;
             isDragged = false;
@@ -34,7 +39,8 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
 
         var move = function(dx, dy) {
 
-            me.getGenderShape().stop().transform("...T" + (dx - ox) + "," + (dy - oy));
+            me.getGenderShape().stop().transform("T" + (dx - ox) + "," + (dy - oy) + "...");
+            me.setAbsPos(absOx + dx, absOy + dy);
             ox = dx;
             oy = dy;
             if(dx > 5 || dx < -5 || dy > 5 || dy < -5 ) {
@@ -44,6 +50,7 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
         };
 
         var end = function() {
+
 //
 //            editor.zpd.opts['zoom'] = true;
 //            editor.zpd.opts['pan'] = true;
@@ -52,15 +59,16 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
                 draggable = false;
                 var node = editor.currentHoveredNode;
                 var vp = editor.validPlaceholderNode;
+                editor.validPlaceholderNode = false;
                 if(node && vp) {
                     me.getNode().merge(node);
                 }
-                me.getGenderShape().stop().animate({"transform": "...T" + (-1 * ox)  + "," + (-1 * oy)}, 2000, "elastic", function() {
-                    draggable = true;
-                });
-                ox = 0;
-                oy = 0;
-            }
+                else {
+                    me.moveTo(absOx, absOy);
+                    ox = 0;
+                    oy = 0;
+               }}
+
             else {
                 me.getNode().convertToPerson();
             }

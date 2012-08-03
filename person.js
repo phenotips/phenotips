@@ -363,13 +363,14 @@ var Person = Class.create(AbstractPerson, {
             disorders.each(function(newDisorder) {
                 disorder['id'] == newDisorder['id'] && (found = true);
             });
-            !found && me.removeDisorder(disorder, forceDisplay);
+            !found && me.removeDisorder(disorder, false);
         });
         disorders.each(function(newDisorder) {
             if (!me.hasDisorder(newDisorder.id)) {
-                me.addDisorder(newDisorder, forceDisplay);
+                me.addDisorder(newDisorder, false);
             }
         });
+        forceDisplay && this.getGraphics().draw();
     },
 
     hasDisorder: function(id) {
@@ -422,6 +423,32 @@ var Person = Class.create(AbstractPerson, {
             editor.getLegend().removeCase(disorder, this);
         });
         $super(isRecursive, removeGraphics);
+    },
+
+    /*
+     * Returns true if this node can be a parent of otherNode
+     *
+     * @param otherNode is a Person
+     */
+    canBeParentOf: function($super, otherNode) {
+        var preliminary = $super(otherNode);
+        var incompatibleBirthDate = this.getBirthDate() && otherNode.getBirthDate() && this.getBirthDate() < otherNode.getBirthDate();
+        var incompatibleDeathDate = this.getDeathDate() && otherNode.getBirthDate() && this.getDeathDate() < otherNode.getBirthDate().clone().setDate(otherNode.getBirthDate().getDate()-700);
+        var incompatibleState = this.isFetus();
+
+        return preliminary && !incompatibleBirthDate && !incompatibleDeathDate && !incompatibleState;
+
+    },
+
+
+    setParentPartnership: function($super, partnership) {
+        $super(partnership);
+        if(partnership) {
+            this.getGraphics().getHoverBox().hideParentHandle();
+        }
+        else {
+            this.getGraphics().getHoverBox().unHideParentHandle();
+        }
     },
 
     /*
