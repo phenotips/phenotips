@@ -31,6 +31,7 @@ var PedigreeEditor = Class.create({
             handle: null,
             placeholder: null
         };
+        Droppables.add($('canvas'), {accept: 'disorder', onDrop: this._onDropDisorder.bind(this)});
     },
 
     adjustSizeToScreen : function() {
@@ -233,6 +234,20 @@ var PedigreeEditor = Class.create({
         this.nodes[+(isPlaceHolder)].push(node);
 	this.nodeIndex.add(node);
         return node;
+    },
+    
+    _onDropDisorder: function(disorder, target, event) {
+      var position = {};
+      var x = event.pointerX() - target.cumulativeOffset().left;
+      var y = event.pointerY() - target.cumulativeOffset().top;
+      // TODO transform coordinates to real coordinates on the raphael paper once zoom & pan are implemented
+      var node = this.nodeIndex.getNodeNear(x, y);
+      if (node) {
+	var disorderObj = {};
+        disorderObj.id = disorder.id.substring( disorder.id.indexOf('-') + 1);
+        disorderObj.name = disorder.down('.disorder-name').firstChild.nodeValue;
+        node.addDisorder(disorderObj, true);
+      }
     },
 
     addPlaceHolder: function(x,y, gender) {

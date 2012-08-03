@@ -171,6 +171,21 @@ var Legend = Class.create( {
                 node.getGraphics().unHighlight();
             });
         });
+        new Draggable(item, {
+          revert: true,
+          reverteffect: function(segment) {
+          // Reset the in-line style.
+            segment.setStyle({
+              height: '',
+              left: '',
+              position: '',
+              top: '',
+              zIndex: '',
+              width: ''
+            });
+          },
+          ghosting: true
+        });
         return item;
     }
 });
