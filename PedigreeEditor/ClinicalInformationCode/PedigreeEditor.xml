@@ -1,0 +1,1202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>ClinicalInformationCode</web>
+<name>PedigreeEditor</name>
+<language></language>
+<defaultLanguage>en</defaultLanguage>
+<translation>0</translation>
+<parent></parent>
+<creator>XWiki.Admin</creator>
+<author>XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>XWiki.Admin</contentAuthor>
+<creationDate>1340918250000</creationDate>
+<date>1344019411000</date>
+<contentUpdateDate>1344019411000</contentUpdateDate>
+<version>4.3</version>
+<title>Pedigree editor#if ($request.id): $request.id#end</title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment>Imported from XAR</comment>
+<minorEdit>true</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>false</hidden>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PedigreeEditor</name>
+<number>0</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>31af41a2-b430-4b66-824d-c79399f68874</guid>
+<property>
+<cache>forbid</cache>
+</property>
+<property>
+<code>//document.observe('dom:loaded', function() {
+NodeMenu = Class.create({
+    initialize : function(data, canvas) {
+        this.canvas = canvas || $('body');
+        this.menuBox = new Element('div', {'class' : 'menu-box'});
+
+        this.closeButton = new Element('span', {'class' : 'close-button'}).update('×');
+        this.menuBox.insert({'top': this.closeButton});
+        this.closeButton.observe('click', this.hide.bindAsEventListener(this));
+
+        this.form = new Element('form', {'method' : 'get', 'action' : ''});
+        this.menuBox.insert({'bottom' : this.form});
+
+        this.fieldMap = {};
+
+        // Generate fields
+        var _this = this;
+        data.each(function(d) {
+            if (typeof (_this._generateField[d.type]) == 'function') {
+                _this.form.insert(_this._generateField[d.type].call(_this, d));
+            }
+        });
+
+        // Insert in document
+        this.hide();
+        $('body').insert({'bottom' : this.menuBox});
+
+        // Attach pickers
+        // date
+        var crtYear = new Date().getFullYear();
+        window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
+        // disease
+        this.form.select('input.suggest-omim').each(function(item) {
+            if (!item.hasClassName('initialized')) {
+                // Create the Suggest.
+                item._suggest = new MS.widgets.Suggest(item, {
+                    script: "$xwiki.getURL('ClinicalInformationCode.OmimService', 'get')?outputSyntax=plain&amp;",
+                    varname: "q",
+                    noresults: "No matching terms",
+                    json: true,
+                    resultsParameter : "rows",
+                    resultId : "id",
+                    resultValue : "Title",
+                    resultInfo : {
+                        "Locus"      : {"selector"  : "Locus"}
+                    },
+                    enableHierarchy: false,
+                    fadeOnClear : false,
+                    timeout : 30000,
+                    parentContainer : $('body')
+                });
+                if (item.hasClassName('multi') &amp;&amp; typeof(MS.widgets.SuggestPicker) != "undefined") {
+                    var suggestPicker = new MS.widgets.SuggestPicker(item, item._suggest, {
+                        'showKey' : false,
+                        'showTooltip' : false,
+                        'showDeleteTool' : true,
+                        'enableSort' : false,
+                        'showClearTool' : true,
+                        'inputType': 'hidden',
+                        'listInsertionElt' : '.label-other',
+                        'listInsertionPosition' : 'after',
+                        'acceptFreeText' : true
+                    });
+                    item._suggestPicker = suggestPicker;
+                }
+                item.addClassName('initialized');
+            }
+        });
+    },
+
+    _generateEmptyField : function (data) {
+        var result = new Element('div', {'class' : 'field-box field-' + data.name});
+        var label = new Element('label', {'class' : 'field-name'}).update(data.label);
+        result.insert(label);
+        this.fieldMap[data.name] = {
+            'type' : data.type,
+            'element' : result,
+            'default' : data["default"] || '',
+            'crtValue' : data["default"] || '',
+            'function' : data['function']
+        };
+        return result;
+    },
+
+    _attachFieldEventListeners : function (field, eventNames, values) {
+      var _this = this;
+      eventNames.each(function(eventName) {
+        field.observe(eventName, function(event) {
+          var target = _this.targetNode;
+          var method = _this.fieldMap[field.name]['function'];
+          if (target &amp;&amp; typeof(target[method]) == 'function') {
+            target[method].apply(target, field._getValue &amp;&amp; field._getValue());
+          }
+        });
+      });
+    },
+
+    _generateField : {
+        'radio' : function (data) {
+            var result = this._generateEmptyField(data);
+            var values = new Element('div', {'class' : 'field-values'});
+            result.insert(values);
+            var _this = this;
+            var _generateRadioButton = function(v) {
+                var radioLabel = new Element('label', {'class' : data.name + '_' + v.actual}).update(v.displayed);
+                var radioButton = new Element('input', {type: 'radio', name: data.name, value: v.actual});
+                radioLabel.insert({'top': radioButton});
+                radioButton._getValue = function() { return [this.value, true]; }.bind(radioButton);
+                values.insert(radioLabel);
+                _this._attachFieldEventListeners(radioButton, ['click']);
+            };
+            data.values.each(_generateRadioButton);
+            
+            return result;
+        },
+        'checkbox' : function (data) {
+            var result = this._generateEmptyField(data);
+            var checkbox = new Element('input', {type: 'checkbox', name: data.name, value: '1'});
+            result.down('label').insert({'top': checkbox});
+            checkbox._getValue = function() { return [this.checked, true];}.bind(checkbox);
+            this._attachFieldEventListeners(checkbox, ['click']);
+            return result;
+        },
+
+        'text' : function (data) {
+            var result = this._generateEmptyField(data);
+            var text = new Element('input', {type: 'text', name: data.name});
+            result.insert(text);
+            text._getValue = function() { return [this.value, true]; }.bind(text);
+            this._attachFieldEventListeners(text, ['keypress', 'keyup'], [true]);
+            return result;
+        },
+
+        'date-picker' : function (data) {
+            var result = this._generateEmptyField(data);
+            var datePicker = new Element('input', {type: 'text', 'class': 'xwiki-date', name: data.name, 'title': data.format, alt : '' });
+            result.insert(datePicker);
+            datePicker._getValue = function() { return [this.alt &amp;&amp; Date.parseISO_8601(this.alt), true]; }.bind(datePicker);
+            this._attachFieldEventListeners(datePicker, ['xwiki:date:changed']);
+            return result;
+        },
+        'disease-picker' : function (data) {
+            var result = this._generateEmptyField(data);
+            var diseasePicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-omim', name: data.name});
+            result.insert(diseasePicker);
+            diseasePicker._getValue = function() {
+              var results = [];
+              var container = this.up('.field-box');
+              if (container) {
+                container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
+                  results.push({'id' : item.value, 'value' : item.next('.value') &amp;&amp; item.next('.value').firstChild.nodeValue || item.value});
+                });
+              }
+              return [results, true];
+            }.bind(diseasePicker);
+var _this = this;
+document.observe('custom:selection:changed', function(event) {
+if (event.memo &amp;&amp; event.memo.trigger &amp;&amp; !event.memo.trigger._silent) {
+Event.fire(event.memo.trigger, 'custom:selection:changed');
+_this.reposition();
+}
+});
+            this._attachFieldEventListeners(diseasePicker, ['custom:selection:changed']);
+            return result;
+        },
+        'select' : function (data) {
+            var result = this._generateEmptyField(data);
+            var select = new Element('select', {'name' : data.name});
+            result.insert(select);
+            var _generateSelectOption = function(v) {
+              var option = new Element('option', {'value' : v.actual}).update(v.displayed);
+              select.insert(option);
+            };
+            _generateSelectOption({'actual' : '', displayed : '-'});
+            if (data.values) {
+                data.values.each(_generateSelectOption);
+            } else if (data.range) {
+                $A($R(data.range.start, data.range.end)).each(function(i) {_generateSelectOption({'actual': i, 'displayed' : i + ' ' + data.range.item[+(i!=1)]})});
+            }
+            select._getValue = function() { return [(this.selectedIndex &gt;= 0) &amp;&amp; this.options[this.selectedIndex] || '', true]; }.bind(select);
+            this._attachFieldEventListeners(select, ['change']);
+            return result;
+        },
+        'hidden' : function (data) {
+            var result = this._generateEmptyField(data);
+            result.addClassName('hidden');
+            var input = new Element('input', {type: 'hidden', name: data.name, value: ''});
+            result.update(input);
+            return result;
+        }
+    },
+
+    isActive : function() {
+      return !!this.targetNode;
+    },
+    hide : function() {
+      if (!this.menuBox.hasClassName('hidden')) {
+        Event.fire(document, 'nodemenu:hiding', {node : this.targetNode});
+        this.menuBox.addClassName('hidden');
+        this._clearCrtData();
+        this.menuBox.style.height = '';
+        this.menuBox.style.overflow = '';
+        delete this._x; delete this._y;
+      }
+    },
+    _clearCrtData : function () {
+        var _this = this;
+        Object.keys(this.fieldMap).each(function (name) {
+            _this.fieldMap[name].crtValue = _this.fieldMap[name]["default"];
+            _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
+        });
+    },
+    reposition : function() {
+      if (typeof(this._x) == 'undefined') {
+        return;
+      }
+      this.menuBox.style.height = '';
+      this.menuBox.style.overflow = '';
+      this.menuBox.style.left = ((this.canvas &amp;&amp; this.canvas.cumulativeOffset().left || 0) + this._x) + 'px';
+      // Make sure the menu fits inside the screen
+      if (this.canvas &amp;&amp; this.menuBox.getHeight() &gt;= this.canvas.getHeight()) {
+        this.menuBox.style.top = this.canvas.cumulativeOffset().top + 'px';
+        this.menuBox.style.height = this.canvas.getHeight() + 'px';
+        this.menuBox.style.overflow = 'auto';
+      } else if (this.canvas.getHeight() &lt; this._y + this.menuBox.getHeight()) {
+        var diff = this._y + this.menuBox.getHeight() - this.canvas.getHeight();
+        this.menuBox.style.top = ((this.canvas &amp;&amp; this.canvas.cumulativeOffset().top || 0) + this._y - diff) + 'px';
+      } else {
+        this.menuBox.style.top = ((this.canvas &amp;&amp; this.canvas.cumulativeOffset().top || 0) + this._y) + 'px';
+      }
+    },
+    show : function(node, x, y) {
+        this.hide();
+        this.targetNode = node;
+        this._setCrtData(node.getSummary());
+        this.menuBox.removeClassName('hidden');
+        this._x = x; this._y = y;
+        this.reposition();
+    },
+
+    update : function (node, data) {
+        if (this.targetNode === node) {
+           this._setCrtData(data);
+        }
+        this.reposition();
+    },
+
+    _setCrtData : function (data) {
+        var _this = this;
+        Object.keys(this.fieldMap).each(function (name) {
+            _this.fieldMap[name].crtValue = data &amp;&amp; data[name] &amp;&amp; data[name].value || _this.fieldMap[name].crtValue || _this.fieldMap[name]["default"];
+            _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
+            _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, data &amp;&amp; data[name] &amp;&amp; data[name].inactive);
+        });
+    },
+    _setFieldValue : {
+        'radio' : function (container, value) {
+            var target = container.down('input[type=radio][value=' + value + ']');
+            if (target) {
+                target.checked = true;
+            }
+        },
+        'checkbox' : function (container, values) {
+        //    container.select('input[type=checkbox]').each(function (input) {
+        //        input.checked = (values.indexOf(input.value) &gt;= 0);
+        //    });
+        },
+        'text' : function (container, value) {
+            var target = container.down('input[type=text]');
+            if (target) {
+                target.value = value;
+            }
+        },
+        'date-picker' : function (container, value) {
+            var target = container.down('input[type=text].xwiki-date');
+            if (target) {
+                target.value = value &amp;&amp; value.toFormattedString({'format_mask' : target.title}) || '';
+                target.alt = value &amp;&amp; value.toISO8601() || '';
+                Event.fire(target, 'xwiki:date:changed');
+            }
+        },
+        'disease-picker' : function (container, values) {
+            var target = container.down('input[type=text].suggest-omim');
+            if (target &amp;&amp; target._suggestPicker) {
+                target._silent = true;
+                target._suggestPicker.clearAcceptedList();
+                if (values) {
+                    values.each(function(v) {
+                        target._suggestPicker.addItem(v.id, v.value, '');
+                    })
+                }
+                target._silent = false;
+            }
+        },
+        'select' : function (container, value) {
+            var target = container.down('select option[value=' + value + ']');
+            if (target) {
+                target.selected = 'selected';
+            }
+        },
+        'hidden' : function (container, value) {
+            var target = container.down('input[type=hidden]');
+            if (target) {
+                target.value = value;
+            }
+        }
+    },
+    _toggleFieldVisibility : function(container, doHide) {
+        if (doHide) {
+          container.addClassName('hidden');
+        } else {
+          container.removeClassName('hidden');
+        }
+    },
+    _setFieldInactive : {
+        'radio' : function (container, inactive) {
+            if (inactive === true) {
+              container.addClassName('hidden');
+            } else {
+              container.removeClassName('hidden');
+              var hasInactiveList = inactive &amp;&amp; (typeof(inactive.indexOf) == 'function');
+              container.select('input[type=radio]').each(function(item) {
+                  item.disabled = hasInactiveList &amp;&amp; (inactive.indexOf(item.value) &gt;= 0);
+              });
+            }
+        },
+        'checkbox' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
+        'text' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
+        'date-picker' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
+        'disease-picker' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
+        'select' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
+        'hidden' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
+    }
+});
+//})</code>
+</property>
+<property>
+<name>Node Menu</name>
+</property>
+<property>
+<parse>1</parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.StyleSheetExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PedigreeEditor</name>
+<number>0</number>
+<className>XWiki.StyleSheetExtension</className>
+<guid>e0b07af0-2d16-4d42-adba-f620daeadd7f</guid>
+<property>
+<cache>forbid</cache>
+</property>
+<property>
+<code>#template("colorThemeInit.vm")
+
+/* =========================================
+ * GENERAL
+ */
+#mainContentArea, .main {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 none !important;
+}
+#headerglobal, #menuview, #footerglobal {
+  display: none !important;
+}
+#hierarchy {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+/* =========================================
+ * NOTIFICATIONS
+ */
+#body .xnotification-container {
+    right: 0 !important;
+    left: auto !important;
+    width: 250px;
+}
+#body .xnotification {
+    background: $theme.pageContentBackgroundColor none 2px .7em no-repeat !important;
+    border: 2px solid $theme.borderColor;
+    box-shadow: 0 0 6px #AAA, 0 0 25px #DDD inset;
+    color: $theme.textColor !important;
+    display: block;
+    font-weight: normal;
+    margin: 2px;
+    padding: 0.5em 22px;
+    text-align: left;
+    width: 200px;
+}
+#body .xnotification-inprogress {
+    background-image: url("$xwiki.getSkinFile('icons/xwiki/spinner.gif')") !important;
+}
+#body .xnotification-error {
+    background-image: url("$xwiki.getSkinFile('icons/silk/delete.png')") !important;
+    color: $theme.notificationErrorColor !important;
+    border-color: $theme.notificationErrorColor !important;
+}
+#body .xnotification-warning {
+    background-image: url("$xwiki.getSkinFile('icons/silk/error.png')") !important;
+    color: $theme.notificationWarningColor !important;
+    border-color: $theme.notificationWarningColor !important;
+}
+#body .xnotification-info {
+    background-image: url("$xwiki.getSkinFile('icons/silk/information.png')") !important;
+    color: $theme.notificationInfoColor !important;
+    border-color: $theme.notificationInfoColor !important;
+}
+#body .xnotification-done {
+    background-image: url("$xwiki.getSkinFile('icons/silk/tick.png')") !important;
+    color: $theme.notificationSuccessColor !important;
+    border-color: $theme.notificationSuccessColor !important;
+}
+/* =========================================
+ * TITLE
+ */
+#document-title h1 {
+    border: 0 none;
+    color: #000000;
+    font-size: 1.2em;
+    font-weight: bold;
+    letter-spacing: 0.2em;
+    margin: 0;
+    padding: 0.5em;
+    text-shadow: 0 0 6px #AAAAAA;
+    text-transform: uppercase;
+}
+/* =========================================
+ * MENU
+ */
+#editor-menu {
+  background: #444;
+  padding: 6px;
+}
+#editor-menu .action-group {
+  display: inline-block;
+}
+#editor-menu .external-actions {
+  float: right;
+}
+#editor-menu .menu-item {
+  border: 1px solid #333;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  background: #444 none .2em center no-repeat;
+  color: #fff;
+  padding: .2em .2em .2em 22px;
+  margin: 0 .7em 0 0;
+  box-shadow: #222222 0 0 6px 0;
+  cursor: pointer;
+  display: inline-block;
+  white-space: nowrap;
+}
+#editor-menu .new {
+  background-image: url("$xwiki.getSkinFile('icons/silk/add.png')");
+}
+#editor-menu .undo {
+  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_undo.png')");
+}
+#editor-menu .redo {
+  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_redo.png')");
+}
+#editor-menu .layout {
+  background-image: url("$xwiki.getSkinFile('icons/silk/chart_organisation.png')");
+}
+#editor-menu .clear {
+  background-image: url("$xwiki.getSkinFile('icons/silk/cancel.png')");
+}
+#editor-menu .print {
+  background-image: url("$xwiki.getSkinFile('icons/silk/printer.png')");
+}
+#editor-menu .save {
+  background-image: url("$xwiki.getSkinFile('icons/silk/disk.png')");
+}
+#editor-menu .export {
+  background-image: url("$xwiki.getSkinFile('icons/silk/package.png')");
+}
+#editor-menu .close {
+  background-image: url("$xwiki.getSkinFile('icons/silk/bullet_go.png')");
+}
+#editor-menu .menu-item:hover {
+  box-shadow: #fff 0 0 6px 0;
+}
+/* =========================================
+ * CONTROLS
+ */
+.view-controls {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 4px;
+  opacity: .8;
+  z-index: 100000;
+}
+.view-controls:hover {
+  ##opacity: 1;
+}
+/* ----------------------------------------
+ * Pan
+ */
+.view-controls-pan {
+  width: 60px;
+  height: 60px;
+  left: 0;
+  top: 0;
+  position: absolute;
+  border: 1px solid #aaa;
+  background: #FFF;
+  -moz-border-radius: 30px;
+  -webkit-border-radius: 30px;
+  border-radius: 30px;
+  box-shadow: 0 0 6px #AAAAAA;
+}
+.view-controls-pan * {
+  width: 16px;
+  height: 16px;
+  background: transparent none center center no-repeat;
+  position: absolute;
+  cursor: pointer;
+}
+.view-controls-pan .pan-up {
+  top: 4px;
+  left: 22px;
+  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_up.png')");
+}
+.view-controls-pan .pan-right {
+  top: 22px;
+  right: 4px;
+  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_right.png')");
+}
+.view-controls-pan .pan-down {
+  bottom: 4px;
+  left: 22px;
+  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_down.png')");
+}
+.view-controls-pan .pan-left {
+  top: 22px;
+  left: 4px;
+  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_left.png')");
+}
+/* ----------------------------------------
+ * Zoom
+ */
+.view-controls-zoom {
+  width: 60px;
+  left: 0;
+  top: 70px;
+  position: absolute;
+  text-align: center;
+}
+.view-controls-zoom * {
+  background: #FFF none center center no-repeat;
+  border: 1px solid #aaa;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  box-shadow: 0 0 6px #AAAAAA;
+  margin: auto;
+}
+.view-controls-zoom .zoom-track {
+  width: 4px;
+  height: 200px;
+  position: relative;
+}
+.view-controls-zoom .zoom-button {
+  width: 20px;
+  height: 20px;
+}
+.view-controls-zoom .zoom-out {
+  background-image: url("$xwiki.getSkinFile('icons/silk/zoom_out.png')");
+}
+.view-controls-zoom .zoom-in {
+  background-image: url("$xwiki.getSkinFile('icons/silk/zoom_in.png')");
+}
+.view-controls-zoom .zoom-handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 10px;
+  margin-left: -9px;
+}
+.view-controls-zoom .zoom-crt-value {
+  background: transparent;
+  border: 0 none;
+  box-shadow: none;
+}
+/* =========================================
+ * CANVAS
+ */
+#canvas { 
+  overflow: hidden;
+
+  /* fallback */
+  background-color: #FAFAFA;
+  background-position: center center; background-repeat: no-repeat;
+
+  /* Safari 4-5, Chrome 1-9 */
+  /* Can't specify a percentage size? Laaaaaame. */
+  background: -webkit-gradient(radial, center center, 0, center center, 460, from(#FFFFFF), to(#D2D2D2));
+
+  /* Safari 5.1+, Chrome 10+ */
+  background: -webkit-radial-gradient(circle, #FFFFFF, #D2D2D2);
+
+  /* Firefox 3.6+ */
+  background: -moz-radial-gradient(circle, #FFFFFF, #D2D2D2);
+
+  /* IE 10 */ 
+  background: -ms-radial-gradient(circle, #FFFFFF, #D2D2D2);
+
+  /* Opera cannot do radial gradients yet */ 
+}
+/* =========================================
+ * OTHER
+ */
+.size-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 4px;
+  background: #FFF;
+  z-index: 100000;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}</code>
+</property>
+<property>
+<name>General UI of the editor</name>
+</property>
+<property>
+<parse>1</parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.StyleSheetExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PedigreeEditor</name>
+<number>1</number>
+<className>XWiki.StyleSheetExtension</className>
+<guid>b751bbfa-fb1f-4265-926f-106224be18c5</guid>
+<property>
+<cache>forbid</cache>
+</property>
+<property>
+<code>.menu-box {
+  position: absolute;
+  width: 300px;
+}
+/*.menu-box:before, .menu-box:after {
+  content: "";
+  display: block;
+  border: 10px solid transparent;
+  border-left: 0 none;
+  position: absolute;
+  top: .4em;
+  width: 0;
+  height: 0;
+}
+.menu-box:before {
+  border-right-color: #F5F5F5;
+  left: -8px;
+}
+.menu-box:after {
+  border-right-color: #F5F5F5;
+  left: -7px;
+}*/
+
+.menu-box:hover {
+  box-shadow: 0 0 6px #FF9, 0 0 25px #DDDDDD inset;
+}
+.menu-box form {
+  padding: .5em 1.5em 1em;
+  border: 1px solid #F5F5F5;
+  border-radius: 0 .75em .75em .75em;
+  background: #EEE;
+  box-shadow: 0 0 6px #DDD, 0 0 25px #DDDDDD inset;
+}
+.menu-box .close-button {
+  cursor: pointer;
+  float: right;
+  font-size: 13px;
+  font-weight: bold;
+  height: 12px;
+  line-height: 8px;
+  margin: .3em .2em;
+  text-align: center;
+  width: 12px;
+}
+.menu-box .field-box {
+  padding: .5em 0;
+}
+.menu-box .field-box input[type=text]{
+  width: 99%;;
+}
+.menu-box .field-box input[type=text]:focus {
+  border: 1px solif #333;
+}
+.menu-box .field-name {
+  display: block;
+  font-weight: bold;
+}
+.menu-box .accepted-suggestions li {
+  line-height: 1em;
+  padding: .2em 1em .2em 0;
+}
+.menu-box .accepted-suggestions li:hover {
+  background-color: #FFEE99;
+}
+.menu-box .accepted-suggestions li .delete-tool {
+  position: absolute;
+  top: .4em;
+  right: 0;
+  display: inline !important;
+}
+.field-values label {
+  display: block;
+}
+.field-values {
+  -moz-column-count: 2;
+  -webkit-column-count: 2;
+  column-count: 2;
+}
+
+.menu-box .field-first_name {
+  width: 50%;
+  float: left;
+}
+.menu-box .field-last_name {
+  width: 50%;
+  float: right;
+}</code>
+</property>
+<property>
+<name>Node Menu</name>
+</property>
+<property>
+<parse>1</parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.StyleSheetExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.PedigreeEditor</name>
+<number>2</number>
+<className>XWiki.StyleSheetExtension</className>
+<guid>fa6b7a35-be80-4a89-b3e5-d163bce894b3</guid>
+<property>
+<cache>forbid</cache>
+</property>
+<property>
+<code>#workspace {
+  position: relative;
+}
+.legend-box {
+  position: absolute;
+  top: 5px;
+  right: 0;
+  padding: 4px;
+  background: #FFF;
+  z-index: 100000;
+  -moz-border-radius: 0 0 0 4px;
+  -webkit-border-radius: 0 0 0 4px;
+  border-radius: 0 0 0 4px;
+  padding: .5em 1em;
+  width: auto;
+}
+
+.legend-box .legend-tab {
+  display: block;
+  height: 28px;
+  width: 28px;
+  background: #FFF url("$xwiki.getSkinFile('icons/silk/information.png')") center center no-repeat;
+  -moz-border-radius: 4px 0 0 4px;
+  -webkit-border-radius: 4px 0 0 4px;
+  border-radius: 4px 0 0 4px;
+  position: absolute;
+  top: 0;
+  left: -28px;
+  
+}
+.legend-box .legend-title {
+  font-size: 1.1em;
+  margin: 0 0 0.3em;
+}
+
+.legend-box .disorder-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.legend-box .disorder .disorder-color {
+  display: inline-block;
+  width: .8em;
+  height: .8em;
+  margin: 0 .5em .2em 0;
+  -moz-border-radius: .4em;
+  -webkit-border-radius: .4em;
+  border-radius: .4em;
+  background-color: #DDD;
+  vertical-align: middle;
+}</code>
+</property>
+<property>
+<name>Legend</name>
+</property>
+<property>
+<parse>1</parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<content>{{velocity output=false}}
+$xwiki.jsfx.use("js/pedigree/raphael.js")##
+$xwiki.jsx.use('XWiki.DateTimePicker')##
+$xwiki.ssx.use('XWiki.DateTimePicker')##
+$xwiki.jsx.use('ClinicalInformationCode.Widgets', {'minify' : false})##
+$xwiki.ssx.use('ClinicalInformationCode.Widgets')##
+$xwiki.jsx.use('ClinicalInformationCode.PedigreeEditor', {'minify' : false})##
+$xwiki.ssx.use('ClinicalInformationCode.PedigreeEditor')##
+$xwiki.jsfx.use("js/pedigree/raphaelzpd.js")##
+$xwiki.jsfx.use("js/pedigree/ageCalc.js")##
+$xwiki.jsfx.use("js/pedigree/sector.js")##
+$xwiki.jsfx.use("js/pedigree/disorder.js")##
+$xwiki.jsfx.use("js/pedigree/legend.js")##
+$xwiki.jsfx.use("js/pedigree/hoverbox.js")##
+$xwiki.jsfx.use("js/pedigree/nodeVisuals.js")##
+$xwiki.jsfx.use("js/pedigree/abstractNode.js")##
+$xwiki.jsfx.use("js/pedigree/abstractNodeVisuals.js")##
+$xwiki.jsfx.use("js/pedigree/abstractPerson.js")##
+$xwiki.jsfx.use("js/pedigree/abstractPersonVisuals.js")##
+$xwiki.jsfx.use("js/pedigree/partnership.js")##
+$xwiki.jsfx.use("js/pedigree/partnershipVisuals.js")##
+$xwiki.jsfx.use("js/pedigree/person.js")##
+$xwiki.jsfx.use("js/pedigree/personVisuals.js")##
+$xwiki.jsfx.use("js/pedigree/placeHolder.js")##
+$xwiki.jsfx.use("js/pedigree/placeHolderVisuals.js")##
+$xwiki.jsfx.use("js/pedigree/kdTree.js")##
+$xwiki.jsfx.use("js/pedigree/nodeIndex.js", {'minify' : false})##
+$xwiki.jsfx.use("js/pedigree/pedigree.js", {'minify' : false})##
+{{/velocity}}
+
+{{html}}
+&lt;div id="editor-menu"&gt;
+&lt;div class="action-group internal-actions"&gt;
+&lt;span class="menu-item new" id="action-new"&gt;New node&lt;/span&gt;
+&lt;span class="menu-item undo" id="action-undo"&gt;Undo&lt;/span&gt;
+&lt;span class="menu-item redo" id="action-redo"&gt;Redo&lt;/span&gt;
+&lt;span class="menu-item layout" id="action-layout"&gt;Automatic layout&lt;/span&gt;
+&lt;span class="menu-item clear" id="action-clear"&gt;Clear all&lt;/span&gt;
+&lt;/div&gt;
+&lt;div class="action-group external-actions"&gt;
+&lt;span class="menu-item print" id="action-print"&gt;Printable version&lt;/span&gt;
+&lt;span class="menu-item save" id="action-save"&gt;Save&lt;/span&gt;
+&lt;!--&lt;span class="menu-item export" id="action-export"&gt;Export&lt;/span&gt;--&gt;
+&lt;span class="menu-item close" id="action-close"&gt;Close&lt;/span&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="workspace"&gt;
+&lt;div id="canvas"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="clearfloats"&gt;&lt;/div&gt;
+{{/html}}
+
+</content></xwikidoc>
