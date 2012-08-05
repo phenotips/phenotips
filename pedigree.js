@@ -173,7 +173,8 @@ var PedigreeEditor = Class.create({
                 'name' : 'date_of_birth',
                 'label' : 'Date of birth',
                 'type' : 'date-picker',
-                'format' : 'dd/MM/yyyy'
+                'format' : 'dd/MM/yyyy',
+                'function' : 'setBirthDate'
             },
 
             {

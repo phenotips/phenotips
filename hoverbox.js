@@ -30,7 +30,7 @@ var Hoverbox = Class.create( {
         this._isMenuToggled = false;
 
         var boxOnHover = editor.paper.rect(this.getX()-(this._width/2), this.getY()-(this._width/2),
-                                            this._width, this._width, 5).attr(editor.graphics._attributes.boxOnHover);
+            this._width, this._width, 5).attr(editor.graphics._attributes.boxOnHover);
         this._backElements =  editor.paper.set().push(boxOnHover, this.getHandles());
         var mask = editor.paper.rect(this.getX()-(this._width/2), this.getY()-(this._width/2),this._width, this._width);
         mask.attr({fill: 'gray', opacity: 0});
@@ -280,7 +280,7 @@ var Hoverbox = Class.create( {
                 return;
             }
             hasEnded = false;
- //           document.observe('mousedown', catchRightClick);
+            //           document.observe('mousedown', catchRightClick);
 //            editor.zpd.opts['zoom'] = false;
 //            editor.zpd.opts['pan'] = false;
             me.disable();
