@@ -2196,7 +2196,7 @@ CalendarDateSelect = Class.create({
     this.callback("after_close");
   },
   closeIfClickedOut: function(e) {
-    if (! $(Event.element(e)).descendantOf(this.calendar_div) ) this.close();
+    if (! ($(Event.element(e)).descendantOf && $(Event.element(e)).descendantOf(this.calendar_div)) ) this.close();
   },
   keyPress: function(e) {
     if (e.keyCode==Event.KEY_ESC) this.close();
