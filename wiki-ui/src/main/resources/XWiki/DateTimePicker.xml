@@ -2115,7 +2115,7 @@ CalendarDateSelect = Class.create({
     if (this.selection_made) {
       this.updateValue();
     }
-    if (this.closeOnClick()) {
+    if (via_click &amp;&amp; this.closeOnClick()) {
       this.close();
     }
     if (via_click &amp;&amp; !this.options.embedded) {
@@ -2196,7 +2196,7 @@ CalendarDateSelect = Class.create({
     this.callback("after_close");
   },
   closeIfClickedOut: function(e) {
-    if (! $(Event.element(e)).descendantOf(this.calendar_div) ) this.close();
+    if (! ($(Event.element(e)).descendantOf &amp;&amp; $(Event.element(e)).descendantOf(this.calendar_div)) ) this.close();
   },
   keyPress: function(e) {
     if (e.keyCode==Event.KEY_ESC) this.close();
@@ -2332,7 +2332,7 @@ CalendarDateSelect = Class.create({
         Event.fire(target, 'xwiki:date:changed');
       }
       target.addClassName('initialized');
-      new CalendarDateSelect(target, cOptions);
+      target._selector = new CalendarDateSelect(target, cOptions);
     }
   });
   return XWiki;
