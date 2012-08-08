@@ -195,8 +195,8 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     createPartner: function(isPlaceHolder) {
         //TODO: set x and y using positioning algorithm
-        var x = this.getGraphics().getX() + 200,
-            y = this.getGraphics().getY(),
+        var x = this.getX() + 200,
+            y = this.getY(),
             partner = editor.addNode(x, y, this.getOppositeGender(), isPlaceHolder);
         return this.addPartner(partner);
     },
