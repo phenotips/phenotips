@@ -132,7 +132,12 @@ NodeMenu = Class.create({
         // Attach pickers
         // date
         var crtYear = new Date().getFullYear();
-        window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
+        window.dateTimePicker = new XWiki.widgets.DateTimePicker({
+           year_range: [crtYear - 99, crtYear + 1],
+           after_navigate : function(date) {
+             this._selector.updateSelectedDate({day: date.getDate(), month: date.getMonth(), year : date.getYear() + 1900}, false);
+           }
+        });
         // disease
         this.form.select('input.suggest-omim').each(function(item) {
             if (!item.hasClassName('initialized')) {
