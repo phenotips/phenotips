@@ -1,103 +1,151 @@
+/*
+ * Partnership is a class that represents the relationship between two AbstractNodes
+ * and their children.
+ *
+ * @param x the x coordinate at which the partnership junction will be placed
+ * @param y the y coordinate at which the partnership junction will be placed
+ * @param partner1 an AbstractPerson who's one of the partners in the relationship.
+ * @param partner2 an AbstractPerson who's the other partner in the relationship. The order of partners is irrelevant.
+ */
+
 var Partnership = Class.create(AbstractNode, {
 
-   initialize: function($super, x, y, node1, node2) {
-       if(node1.getType() != 'ph' || node2.getType() != 'ph') {
-           this._partner1 = node1;
-           this._partner2 = node2;
+   initialize: function($super, x, y, partner1, partner2) {
+       if(partner1.getType() != 'ph' || partner2.getType() != 'ph') {
+           this._partners = [partner1, partner2];
            this._children = [];
-           this._partner1.addPartnership(this);
-           this._partner2.addPartnership(this);
+           this._partners[0].addPartnership(this);
+           this._partners[1].addPartnership(this);
            $super(x,y);
        }
    },
 
+    /*
+     * Generates and returns an instance of PartnershipVisuals
+     */
     generateGraphics: function(x, y) {
         return new PartnershipVisuals(this, x, y);
     },
 
-    getPartner1: function() {
-        return this._partner1;
+    /*
+     * Returns an array containing the two partners. Partners are AbstractPerson objects
+     */
+    getPartners: function() {
+        return this._partners;
     },
 
-    setPartner1: function(node) {
-        this._partner1 = node;
-    },
-
-    getPartner2: function() {
-        return this._partner2;
-    },
-
-    setPartner2: function(node) {
-        this._partner2 = node;
-    },
-
+    /*
+     * Returns the female partner in the partnership. Returns null if none of the parents are female
+     */
     getMother: function() {
-        if(this.getPartner1().getGender() == "F") {
-            return this.getPartner1();
+        if(this.getPartners()[0].getGender() == "F") {
+            return this.getPartners()[0];
         }
-        else if(this.getPartner2().getGender() == "F") {
-            return this.getPartner2();
+        else if(this.getPartners()[1].getGender() == "F") {
+            return this.getPartners()[1];
         }
         else {
             return null;
         }
     },
 
+    /*
+     * Returns the male partner in the partnership. Returns null if none of the parents are male
+     */
     getFather: function() {
-        return this.getPartnerOf(this.getMother());
-    },
-
-    getPartnerOf: function(node) {
-        if(node == this.getPartner1()) {
-            return this.getPartner2();
+        if(this.getPartners()[0].getGender() == "M") {
+            return this.getPartners()[0];
         }
-        else if(node == this.getPartner2()) {
-            return this.getPartner1();
+        else if(this.getPartners()[1].getGender() == "M") {
+            return this.getPartners()[1];
         }
         else {
             return null;
         }
     },
 
-    contains: function(node) {
-        return (this.getPartner1() == node || this.getPartner2() == node);
+    /*
+     * Returns the partner of someNode if someNode is a partner in this relationship. Otherwise, returns null.
+     *
+     * @param someNode is an AbstractPerson
+     */
+    getPartnerOf: function(someNode) {
+        if(someNode == this.getPartners()[0]) {
+            return this.getPartners()[1];
+        }
+        else if(someNode == this.getPartners()[1]) {
+            return this.getPartners()[0];
+        }
+        else {
+            return null;
+        }
     },
 
+    /*
+     * Returns true if someNode is a partner in this relationship.
+     *
+     * @param someNode is an AbstractPerson
+     */
+    contains: function(someNode) {
+        return (this.getPartners()[0] == someNode || this.getPartners()[1] == someNode);
+    },
+
+    /*
+     * Returns an array of AbstractNodes that are children of this partnership
+     */
     getChildren: function() {
         return this._children;
     },
 
-    setChildren: function(children) {
-        this._children = children;
+    /*
+     * Returns true if someNode is a child of this partnership.
+     *
+     * @param someNode is an AbstractPerson
+     */
+    hasChild: function(someNode) {
+        return this.getChildren().indexOf(someNode) > -1;
     },
 
-    hasChild: function(child) {
-        return this.getChildren().indexOf(child) > -1;
-    },
-
+    /*
+     * Creates a new AbstractNode and sets it as a child of this partnership. Returns the child.
+     *
+     * @param isPlaceHolder set to true if the child is a placeholder
+     */
     createChild: function(isPlaceHolder) {
         //TODO: set x and y using positioning algorithm
-        var x = this.getPartner1().getGraphics().getAbsX() + 100,
-            y = this.getPartner1().getGraphics().getAbsY() + 200,
+        var x = this.getPartners()[0].getGraphics().getX() + 100,
+            y = this.getPartners()[0].getGraphics().getY() + 200,
             child = editor.addNode(x, y, "U", isPlaceHolder);
         return this.addChild(child);
     },
 
-    addChild: function(child) {
+    /*
+     * Adds someNode to the list of children of this partnership, and stores this partnership
+     * as it's parent partnership. Returns someNode.
+     *
+     * @param someNode is an AbstractPerson
+     */
+    addChild: function(someNode) {
         //TODO: elaborate on restrictions for adding parents to existing node
-        if(child && !this.hasChild(child) && (child.getParentPartnership() == null)) {
-            this.getChildren().push(child);
-            child.parentConnection = this.getGraphics().updateChildConnection(child);
-            child.setParentPartnership(this);
+        if(someNode && !this.hasChild(someNode) && (someNode.getParentPartnership() == null)) {
+            this.getChildren().push(someNode);
+            someNode.parentConnection = this.getGraphics().updateChildConnection(someNode);
+            someNode.setParentPartnership(this);
         }
-        return child;
+        return someNode;
     },
-
-    removeChild: function(child) {
-        child.setParentPartnership(null);
-        this.setChildren(this.getChildren().without(child));
-        child.parentConnection.remove();
-        child.parentConnection = null;
+    
+    /*
+     * Removes someNode from the list of children of this partnership, and removes this partnership as its parents
+     * reference. Returns someNode.
+     *
+     * @param someNode is an AbstractPerson
+     */
+    removeChild: function(someNode) {
+        someNode.setParentPartnership(null);
+        this._children = this._children.without(someNode);
+        someNode.parentConnection.remove();
+        someNode.parentConnection = null;
     },
 
     remove: function() {
@@ -106,22 +154,22 @@ var Partnership = Class.create(AbstractNode, {
             child.setParentPartnership(null);
             me.removeChild(child);
         });
-        this.getPartner1().removePartnership(this);
-        this.getPartner2().removePartnership(this);
+        this.getPartners()[0].removePartnership(this);
+        this.getPartners()[1].removePartnership(this);
         this.getGraphics().remove();
     },
 
     /*
-     * Returns the children nodes of this partnership
+     * Returns an array of children nodes of this partnership
      */
     getLowerNeighbors: function() {
         return this.getChildren();
     },
 
     /*
-     * Returns an array containing partner1 and partner2
+     * Returns an array containing the two partners of this relationship
      */
     getSideNeighbors: function() {
-        return [this.getPartner1(), this.getPartner2()];
+        return this.getPartners();
     }
 });

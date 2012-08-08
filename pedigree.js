@@ -366,7 +366,7 @@ document.observe("dom:loaded",function() {
     patientNode.setBirthDate(new Date(1999,9,2), true);
     patientNode.addPartner(patientNodesFriend);
     patientNode.getPartnerships()[0].addChild(nodesSon);
-    
+
     patientNode.addDisorder({id: "190685",value: "Down syndrome"}, true);
 
     //var randomNode = editor.addNode(300, 500, 'M', false);
@@ -432,7 +432,7 @@ document.observe("dom:loaded",function() {
         patientNode._hoverBox.disable();
         patientNode._xPos += 100;
         patientNode._yPos += 100;
-        nodeElement.stop().animate({'transform': "t " + 100 + "," + 100+"..."}, 2000, "linear", patientNode._hoverBox.enable.bind(patientNode._hoverBox));
+       // nodeElement.stop().animate({'transform': "t " + 100 + "," + 100+"..."}, 2000, "linear", patientNode._hoverBox.enable.bind(patientNode._hoverBox));
     };
     // ani();
 

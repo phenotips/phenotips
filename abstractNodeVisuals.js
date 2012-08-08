@@ -1,9 +1,9 @@
 /*
- * A general superclass for the a graphic engine used by nodes on the Pedigree graph. Can display
- * a shape representing the gender of the attached node.
+ * A general superclass for the a graphic engine used by nodes on the Pedigree graph. Contains
+ * information about positioning of the graphical elements of the node
  */
 
-var AbstractNodeVisuals = Class.create( {
+var AbstractNodeVisuals = Class.create({
 
     initialize: function(node, x, y) {
         this._node = node;
@@ -21,49 +21,62 @@ var AbstractNodeVisuals = Class.create( {
     },
 
     /*
-     * Returns the current X coordinate of this node on the canvas, taking into consideration transformation data.
+     * Returns the x coordinate at which the node was originally drawn. Disregards transformation data.
      */
-    getX: function() {
+    getRelativeX: function() {
         return this._relativeX;
     },
 
     /*
      * Returns the y coordinate at which the node was originally drawn. Disregards transformation data.
      */
-    getY: function() {
+    getRelativeY: function() {
         return this._relativeY;
     },
 
     /*
      * Returns the current X coordinate of this node on the canvas, taking into consideration transformation data.
      */
-    getAbsX: function() {
+    getX: function() {
         return this._absoluteX;
     },
 
     /*
-     * Replaces the current X coordinate of this node on the canvas, taking into consideration transformation data.
+     * Transitions the node along the x axis to the x coordinate passed in the parameter
+     *
+     * @x the x coordinate on the canvas
      */
-    setAbsX: function(x) {
-        this._absoluteX = x;
+    setX: function(x) {
+        this.setPos(x, this.getY());
     },
 
     /*
-     * Returns the y coordinate at which the node was originally drawn. Disregards transformation data.
+     * Returns the current Y coordinate of this node on the canvas, taking into consideration transformation data.
      */
-    getAbsY: function() {
+    getY: function() {
         return this._absoluteY;
     },
 
-    setAbsPos: function(x, y) {
-        this.setAbsX(x);
-        this.setAbsY(y);
-    },
     /*
-     * Replaces the current Y coordinate of this node on the canvas, taking into consideration transformation data.
+     * Transitions the node along the y axis to the y coordinate passed in the parameter
+     *
+     * @y the y coordinate on the canvas
      */
-    setAbsY: function(y) {
-        this._absoluteY = y;
+    setY: function(y) {
+        this.setPos(y, this.getX());
+    },
+
+    /*
+     * Returns an array containing the x and y coordinates of the node on canvas.
+     */
+    getPos: function() {
+        return [this.getX(), this.getY()];
+    },
+
+    /*
+     * [Abstract Method] repositions the node to the coordinate (x,y)
+     */
+    setPos: function(x, y) {
     },
 
     /*
@@ -79,15 +92,6 @@ var AbstractNodeVisuals = Class.create( {
      */
     draw: function() {
         this.getAllGraphics().toFront();
-    },
-
-    moveTo: function(x, y) {
-        var xDisplacement = x - this.getAbsX();
-        var yDisplacement = y - this.getAbsY();
-        var me = this;
-        var displacement = Math.sqrt(xDisplacement * xDisplacement + yDisplacement * yDisplacement);
-        this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getAbsX()) + "," + (y-this.getAbsY()) + "..."},
-            displacement /.4, "<>", function() {me.setAbsPos(x,y);});
     },
 
     /*

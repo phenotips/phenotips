@@ -1,14 +1,27 @@
+/*
+ * A class responsible for the graphic representation of a placeholder object.
+ * Also handles dragging and clicking behavior of placeholders.
+ *
+ * @param node the PlaceHolder object for which this graphics are handled
+ * @param x the x coordinate on the canvas
+ * @param x the y coordinate on the canvas
+ */
+
 var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
 
-    initialize: function($super, x, y, gender) {
-        $super(x, y, gender);
+    initialize: function($super, node, x, y) {
+        $super(node, x, y);
         this.setDraggable();
     },
 
-    updateGenderShape: function($super) {
+    /*
+     * Sets/replaces the gender symbol with the symbol appropriate for the gender. Returns raphael set containing
+     * the genderShape, a shadow behind it, and the text "drag me or click me".
+     */
+    setGenderSymbol: function($super) {
         $super();
-        var shape = this.getGenderShape().attr(editor.graphics._attributes.phShape);
-        var text = editor.paper.text(this.getX(), this.getY() - editor.graphics.getRadius()/20, "DRAG ME\nOR\nCLICK ME");
+        var shape = this.getGenderSymbol().attr(editor.graphics._attributes.phShape);
+        var text = editor.paper.text(this.getRelativeX(), this.getRelativeY() - editor.graphics.getRadius()/20, "DRAG ME\nOR\nCLICK ME");
         text.attr(editor.graphics._attributes.dragMeLabel);
         shape.push(text);
         shape.attr("cursor", "pointer");
@@ -16,31 +29,31 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
         shape.oy = shape.getBBox().y;
     },
 
+    /*
+     * Handles the dragging and clicking behavior of the placeholder
+     */
     setDraggable: function() {
         var me = this,
             isDragged,
-            draggable = true;
+            draggable = true,
+            ox = 0,
+            oy = 0,
+            absOx,
+            absOy;
 
-        var ox = 0;
-        var oy = 0;
-        var absOx;
-        var absOy;
-
+        //Action on mouse click
         var start = function() {
-            absOx = me.getAbsX();
-            //alert(absOx);
-            absOy = me.getAbsY();
-//            editor.zpd.opts['zoom'] = false;
-//            editor.zpd.opts['pan'] = false;
+            absOx = me.getX();
+            absOy = me.getY();
             isDragged = false;
             me.getShapes().toFront();
             editor.enterHoverMode(me.getNode());
         };
 
+        //Called when the placeholder is dragged
         var move = function(dx, dy) {
-
-            me.getGenderShape().stop().transform("T" + (dx - ox) + "," + (dy - oy) + "...");
-            me.setAbsPos(absOx + dx, absOy + dy);
+            me.getGenderSymbol().stop().transform("T" + (dx - ox) + "," + (dy - oy) + "...");
+            me.updatePositionData(absOx + dx, absOy + dy);
             ox = dx;
             oy = dy;
             if(dx > 5 || dx < -5 || dy > 5 || dy < -5 ) {
@@ -49,12 +62,8 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
             }
         };
 
+        //Called when the mouse button is released
         var end = function() {
-
-//
-//            editor.zpd.opts['zoom'] = true;
-//            editor.zpd.opts['pan'] = true;
-
             if(isDragged) {
                 draggable = false;
                 var node = editor.currentHoveredNode;
@@ -64,11 +73,11 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
                     me.getNode().merge(node);
                 }
                 else {
-                    me.moveTo(absOx, absOy);
+                    me.setPos(absOx, absOy);
                     ox = 0;
                     oy = 0;
-               }}
-
+                }
+            }
             else {
                 me.getNode().convertToPerson();
             }
@@ -76,7 +85,7 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
             editor.currentDraggable.placeholder = null;
         };
 
-        me.getGenderShape().drag(move, start, end);
+        //Adds dragging capability to the genderSymbols
+        me.getGenderSymbol().drag(move, start, end);
     }
-
 });

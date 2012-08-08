@@ -2,6 +2,11 @@
 /*
  * A general superclass for nodes on the Pedigree graph. Contains connections
  * and basic information about gender, ID and a graphics element.
+ *
+ * @param x the x coordinate on the canvas
+ * @param x the y coordinate on the canvas
+ * @param gender should be "U", "F", or "M" depending on the gender
+ * @param id the unique ID number of this node
  */
 
 var AbstractPerson = Class.create(AbstractNode, {
@@ -68,7 +73,7 @@ var AbstractPerson = Class.create(AbstractNode, {
     },
 
     /*
-     * Returns the partnership affiliated with partner
+     * Returns the Partnership affiliated with partner
      *
      * @partner can be a Person or a PlaceHolder
      */
@@ -145,8 +150,8 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     createParents: function() {
         if(this.getParentPartnership() == null) {
-            var mother = editor.addNode(this.getGraphics().getAbsX() + 100, this.getGraphics().getAbsY() - 250, "F", false),
-                father = editor.addNode(this.getGraphics().getAbsX() - 100, this.getGraphics().getAbsY() - 250, "M", false),
+            var mother = editor.addNode(this.getGraphics().getX() + 100, this.getGraphics().getY() - 250, "F", false),
+                father = editor.addNode(this.getGraphics().getX() - 100, this.getGraphics().getY() - 250, "M", false),
                 partnership = new Partnership(this.getX(), this.getY() - 250, mother, father);
             this.addParents(partnership);
         }
@@ -190,8 +195,8 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     createPartner: function(isPlaceHolder) {
         //TODO: set x and y using positioning algorithm
-        var x = this.getGraphics().getAbsX() + 200,
-            y = this.getGraphics().getAbsY(),
+        var x = this.getGraphics().getX() + 200,
+            y = this.getGraphics().getY(),
             partner = editor.addNode(x, y, this.getOppositeGender(), isPlaceHolder);
         return this.addPartner(partner);
     },
@@ -219,7 +224,7 @@ var AbstractPerson = Class.create(AbstractNode, {
 
     /*
      * Returns an array of nodes that are children from all of this node's Partnerships.
-     * The array includes PlaceHolders.
+     * The array can include PlaceHolders.
      */
     getChildren: function() {
         var children = [];
