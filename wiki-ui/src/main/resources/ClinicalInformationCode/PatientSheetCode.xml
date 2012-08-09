@@ -2332,10 +2332,16 @@ document.observe('xwiki:dom:loaded', function() {
        'script' : "$xwiki.getURL('ClinicalInformationCode.PubMedService', 'get', 'format=html&amp;q=')",
        'source' : [customSearchTermsInput, defaultSearchTermsInput],
        'target' : $('pubmed-search-results')
+    },
+    'diffDiagnosis' : {
+       'script' : "$xwiki.getURL('ClinicalInformationCode.DiffDiagnosisService', 'get', 'format=html&amp;q=')",
+       'source' : [defaultSearchTermIDsInput],
+       'target' : $('diffDiagnosis-search-results'),
+       'suggestFor' : $('quick-phenotype-search')
     }
   };
 
-  if (!defaultSearchTerms || !defaultSearchTermsInput || (!services.omim.target &amp;&amp; !services.pubmed.target)) {return;}
+  if (!defaultSearchTerms || !defaultSearchTermsInput || (!services.omim.target &amp;&amp; !services.pubmed.target &amp;&amp; !services.diffDiagnosis.target)) {return;}
 
   var cache = {'all' : {}, 'displayed' : {}};
 
@@ -2350,6 +2356,7 @@ document.observe('xwiki:dom:loaded', function() {
     if (defaultSearchTermsInput.value != prevValue) {
       doSearch('omim');
       doSearch('pubmed');
+      doSearch('diffDiagnosis');
     }
   }
 
@@ -2395,7 +2402,7 @@ document.observe('xwiki:dom:loaded', function() {
           if (item.down('input[type=checkbox]')) {return;}
           var idElt = item.down('.id');
           var id = idElt &amp;&amp; idElt.title;
-          var name = item.down('.title a') &amp;&amp; item.down('.title a').innerHTML;
+          var name = item.down('.title a') &amp;&amp; item.down('.title a').innerHTML || item.down('.title') &amp;&amp; item.down('.title').innerHTML;
           if (id &amp;&amp; name) {
             var trigger = new Element('input', {'type' :  'checkbox', 'value' : id, 'title' : 'Select'});
             var existingValue = $(service.suggestFor.id + '_' + id);
@@ -2411,7 +2418,7 @@ document.observe('xwiki:dom:loaded', function() {
                  service.suggestFor._suggestPicker.silent = true;
                  service.suggestFor._suggestPicker.acceptSuggestion(input.__suggestion);
                  service.suggestFor._suggestPicker.silent = false;
-                 new XWiki.widgets.Notification('The OMIM disease "' + input.__suggestion.value + '" was added to the patient\'s diagnosis.', 'done');
+                 new XWiki.widgets.Notification('Added "' + input.__suggestion.value + '"', 'done');
                } else {
                  var existingValue = $(service.suggestFor.id + '_' + input.value);
                  if (existingValue) {
@@ -2466,6 +2473,7 @@ document.observe('xwiki:dom:loaded', function() {
     customSearchTermsInput.observe('keyup', function(event) {
        doSearch('omim');
        doSearch('pubmed');
+       doSearch('diffDiagnosis');
     });
   }
 });</code>
@@ -3800,30 +3808,10 @@ table.extradata-list td.bmi_percentile {
 }
 /** ----------------------------------------------------------- */
 /** PubMed &amp; OMIM suggestions */
-.background-suggestions {
-  max-height: 15em;
-  overflow: auto;
-  padding: 0 0.5em;
-##  overflow: hidden;
-##  padding: 0 16px 0 0.5em;
-  border: 1px solid $theme.pageContentBackgroundColor;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.15) inset;
-}
-##.background-suggestions:hover {
-##  overflow: auto;
-##  padding-right: 0;
-##}
-.background-suggestions ul {
-  list-style-type: none;
-  margin: .5em 0;
-}
 .background-suggestions li {
   margin: .7em 0;
-  font-size: .8em;
+  font-size: .85em;
   line-height: 1.2em;
-  padding-left: 20px;
-  background-position: left 2px;
-  background-repeat: no-repeat;
 }
 .background-suggestions .journal {
   font-style: italic;
@@ -3836,12 +3824,9 @@ table.extradata-list td.bmi_percentile {
 }
 #pubmed-search-results ul li {
   background-image: url("$xwiki.getSkinFile('icons/silk/page.gif')");
-}
-#omim-search-results ul li {
-  ##background-image: url("$xwiki.getSkinFile('icons/silk/chart_line.gif')");
-}
-#omim-search-results ul li label {
-  margin-left: -20px;
+  padding-left: 20px;
+  background-position: left 2px;
+  background-repeat: no-repeat;
 }
 #omim-search-results ul li label input {
   vertical-align: middle;
@@ -3857,6 +3842,35 @@ table.extradata-list td.bmi_percentile {
 }
 .background-search.loading, .plainmessage.loading {
   background-image: url("$xwiki.getSkinFile('icons/xwiki/spinner.gif')");
+}
+
+.background-search h3 {
+  font-weight: bold !important;
+  margin-top: 0;
+}
+.diffDiagnosis-search {
+  background-color: $theme.highlightColor;;
+  border: 10px solid $theme.highlightColor;;
+  border-radius: 4px 4px 4px 4px;
+  margin-left: -10px;
+  margin-right: -10px;
+}
+#diffDiagnosis-search-results ul li {
+  margin: 0;
+}
+#diffDiagnosis-search-results ul .id {
+  display: none;
+}
+.background-suggestions ul {
+  list-style-type: none;
+  margin: 0;
+  padding-left: 0.8em;
+  -moz-column-count: 2;
+  -moz-column-gap: 1em;
+  -webkit-column-count: 2;
+  -webkit-column-gap: 1em;
+  column-count: 2;
+  column-gap: 1em;
 }</code>
 </property>
 <property>
@@ -4147,6 +4161,11 @@ table.extradata-list td.bmi_percentile {
           (% class="twothird-width selector-panel browser browse-phenotype-categories force-collapse"%)(((
           (% class="browser-title"%)
           === **Browse categories** ===
+(% class="background-search diffDiagnosis-search phenotype-group collapsible-group" title="Phenotypes that are likely to help improve differential diagnosis"%)(((
+=== You might want to check for... ===
+(% class="hint" %)Phenotypes that are likely to help improve differential diagnosis
+(% id="diffDiagnosis-search-results" class="background-suggestions" %)((()))
+)))
         #end
           (% class="phenotype  #__markIfMandatory('phenotype')" %)(((
             $doc.display('phenotype')##
