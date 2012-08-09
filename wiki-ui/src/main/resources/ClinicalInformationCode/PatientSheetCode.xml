@@ -2427,7 +2427,7 @@ document.observe('xwiki:dom:loaded', function() {
 
   var doSearch = function(service) {
     var data = services[service];
-    if (!data) {return;}
+    if (!data || !data.target || !data.script) {return;}
     if (!data.expectedReqNo) {
       data.expectedReqNo = 0;
     }
@@ -3979,14 +3979,14 @@ table.extradata-list td.bmi_percentile {
 )))
 (% class="hint"%)Include the following custom terms in your search:(%%)
 {{html wiki=false clean=false}}&lt;input type="text" id="customSearchTermsInput" value="" /&gt;{{/html}}
-(% class="half-width background-search omim-search" %)(((
+(% class="background-search omim-search" %)(((
 ==== Matching disorders in OMIM ====
 (% id="omim-search-results" class="background-suggestions" %)((()))
 )))
-(% class="half-width background-search pubmed-search" %)(((
-==== Suggested reading on PubMed ====
-(% id="pubmed-search-results" class="background-suggestions" %)((()))
-)))
+##(% class="half-width background-search pubmed-search" %)(((
+##==== Suggested reading on PubMed ====
+##(% id="pubmed-search-results" class="background-suggestions" %)((()))
+##)))
 )))
 )))
 #end
