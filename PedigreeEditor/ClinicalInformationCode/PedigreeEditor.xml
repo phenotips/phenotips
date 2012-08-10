@@ -1162,7 +1162,7 @@ $xwiki.jsx.use('ClinicalInformationCode.PedigreeEditor', {'minify' : false})##
 $xwiki.ssx.use('ClinicalInformationCode.PedigreeEditor')##
 $xwiki.jsfx.use("js/pedigree/raphaelzpd.js")##
 $xwiki.jsfx.use("js/pedigree/ageCalc.js")##
-$xwiki.jsfx.use("js/pedigree/sector.js")##
+$xwiki.jsfx.use("js/pedigree/graphicHelpers.js")##
 $xwiki.jsfx.use("js/pedigree/disorder.js")##
 $xwiki.jsfx.use("js/pedigree/legend.js")##
 $xwiki.jsfx.use("js/pedigree/hoverbox.js")##

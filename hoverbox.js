@@ -20,7 +20,7 @@ var Hoverbox = Class.create( {
         this._node = pedigree_node;
         this._relativeX = x;
         this._relativeY = y;
-        this._width = editor.graphics.getRadius() * 4;
+        this._width = editor.attributes.radius * 4;
         this._isMenuToggled = false;
         var me = this;
         this._optionsBtn = this.generateMenuBtn();
@@ -29,13 +29,13 @@ var Hoverbox = Class.create( {
         this._isHovered = false;
         this._isMenuToggled = false;
 
-        var boxOnHover = editor.paper.rect(this.getX()-(this._width/2), this.getY()-(this._width/2),
-            this._width, this._width, 5).attr(editor.graphics._attributes.boxOnHover);
-        this._backElements =  editor.paper.set().push(boxOnHover, this.getHandles());
-        var mask = editor.paper.rect(this.getX()-(this._width/2), this.getY()-(this._width/2),this._width, this._width);
+        var boxOnHover = editor.getPaper().rect(this.getX()-(this._width/2), this.getY()-(this._width/2),
+            this._width, this._width, 5).attr(editor.attributes.boxOnHover);
+        this._backElements =  editor.getPaper().set().push(boxOnHover, this.getHandles());
+        var mask = editor.getPaper().rect(this.getX()-(this._width/2), this.getY()-(this._width/2),this._width, this._width);
         mask.attr({fill: 'gray', opacity: 0});
 
-        this._frontElements = editor.paper.set().push(mask, this.showMenuBtn(), this.handleOrbs);
+        this._frontElements = editor.getPaper().set().push(mask, this.showMenuBtn(), this.handleOrbs);
         this._frontElements.hover(function() {me.setHovered(true)}, function() {me.setHovered(false)});
         this.animateDrawHoverZone = this.animateDrawHoverZone.bind(this);
         this.animateHideHoverZone =  this.animateHideHoverZone.bind(this);
@@ -102,30 +102,30 @@ var Hoverbox = Class.create( {
     generateMenuBtn: function() {
         var me = this,
             path = "M2.021,9.748L2.021,9.748V9.746V9.748zM2.022,9.746l5.771,5.773l-5.772,5.771l2.122,2.123l7.894-7.895L4.143,7.623L2.022,9.746zM12.248,23.269h14.419V20.27H12.248V23.269zM16.583,17.019h10.084V14.02H16.583V17.019zM12.248,7.769v3.001h14.419V7.769H12.248z",
-            iconX = this.getX() + editor.graphics.getRadius() * 1.45,
-            iconY = this.getY() - editor.graphics.getRadius() * 1.9,
-            iconScale = editor.graphics.getRadius() * 0.014,
-            optionsBtnIcon = editor.paper.path(path);
+            iconX = this.getX() + editor.attributes.radius * 1.45,
+            iconY = this.getY() - editor.attributes.radius * 1.9,
+            iconScale = editor.attributes.radius * 0.014,
+            optionsBtnIcon = editor.getPaper().path(path);
 
-        optionsBtnIcon.attr(editor.graphics._attributes.optionsBtnIcon);
+        optionsBtnIcon.attr(editor.attributes.optionsBtnIcon);
         optionsBtnIcon.transform(["t" , iconX , iconY, "s", iconScale, iconScale, 0, 0]);
-        var optionsBtnMask = editor.paper.rect(optionsBtnIcon.getBBox().x, optionsBtnIcon.getBBox().y,
+        var optionsBtnMask = editor.getPaper().rect(optionsBtnIcon.getBBox().x, optionsBtnIcon.getBBox().y,
             optionsBtnIcon.getBBox().width, optionsBtnIcon.getBBox().height, 1);
         optionsBtnMask.attr({fill: 'gray', opacity: 0}).transform("s1.5");
 
         optionsBtnIcon.node.setAttribute('class', 'menu-trigger');
         optionsBtnMask.node.setAttribute('class', 'menu-trigger');
 
-        var button = editor.paper.set(optionsBtnMask, optionsBtnIcon);
+        var button = editor.getPaper().set(optionsBtnMask, optionsBtnIcon);
         button.click(function(){
             me.toggleMenu(!me.isMenuToggled());
         });
-        button.mousedown(function(){optionsBtnMask.attr(editor.graphics._attributes.optionsBtnMaskClick)});
+        button.mousedown(function(){optionsBtnMask.attr(editor.attributes.optionsBtnMaskClick)});
         button.hover(function() {
-                optionsBtnMask.attr(editor.graphics._attributes.optionsBtnMaskHoverOn)
+                optionsBtnMask.attr(editor.attributes.optionsBtnMaskHoverOn)
             },
             function() {
-                optionsBtnMask.attr(editor.graphics._attributes.optionsBtnMaskHoverOff)
+                optionsBtnMask.attr(editor.attributes.optionsBtnMaskHoverOff)
             });
         return button;
     },
@@ -193,7 +193,7 @@ var Hoverbox = Class.create( {
      * Hides the partner and children handles
      */
     hidePartnerHandles: function() {
-        var crtHandles = editor.paper.set();
+        var crtHandles = editor.getPaper().set();
         crtHandles.push(this.getHandles()[2]);
         this.getHandles()[0].hide();
         this.getHandles()[1].hide();
@@ -214,7 +214,7 @@ var Hoverbox = Class.create( {
     },
 
     hideParentHandle: function() {
-        var crtHandles = editor.paper.set();
+        var crtHandles = editor.getPaper().set();
         crtHandles.push(this.getHandles()[0], this.getHandles()[1], this.getHandles()[3]);
         this.getHandles()[2].hide();
         this.setCurrentHandles(crtHandles);
@@ -230,28 +230,28 @@ var Hoverbox = Class.create( {
      * Creates and returns a set with four draggable handles for creating new relatives and connections
      */
     generateHandles: function() {
-        var rightPath = [["M", this.getX(), this.getY()],["L", this.getX() + (editor.graphics.getRadius() * 1.6), this.getY()]],
-            leftPath = [["M", this.getX(), this.getY()],["L", this.getX() - (editor.graphics.getRadius() * 1.6), this.getY()]],
-            upPath = [["M", this.getX(), this.getY()],["L", this.getX(), this.getY() - (editor.graphics.getRadius() * 1.6)]],
-            downPath = [["M", this.getX(), this.getY()],["L", this.getX(), this.getY() + (editor.graphics.getRadius() * 1.6)]],
+        var rightPath = [["M", this.getX(), this.getY()],["L", this.getX() + (editor.attributes.radius * 1.6), this.getY()]],
+            leftPath = [["M", this.getX(), this.getY()],["L", this.getX() - (editor.attributes.radius * 1.6), this.getY()]],
+            upPath = [["M", this.getX(), this.getY()],["L", this.getX(), this.getY() - (editor.attributes.radius * 1.6)]],
+            downPath = [["M", this.getX(), this.getY()],["L", this.getX(), this.getY() + (editor.attributes.radius * 1.6)]],
 
             connectionAttr = {"stroke-width": 4, stroke: "gray"},
-            rightConnection = editor.paper.path(rightPath).attr(connectionAttr),
-            leftConnection = editor.paper.path(leftPath).attr(connectionAttr),
-            downConnection = editor.paper.path(downPath).attr(connectionAttr),
-            upConnection = editor.paper.path(upPath).attr(connectionAttr),
+            rightConnection = editor.getPaper().path(rightPath).attr(connectionAttr),
+            leftConnection = editor.getPaper().path(leftPath).attr(connectionAttr),
+            downConnection = editor.getPaper().path(downPath).attr(connectionAttr),
+            upConnection = editor.getPaper().path(upPath).attr(connectionAttr),
 
-            orbRadius = editor.graphics._attributes.orbRadius,
-            orbHue = editor.graphics._attributes.orbHue,
-            upCirc = editor.graphics.generateOrb(upPath[1][1], upPath[1][2], orbRadius, orbHue),
-            downCirc = editor.graphics.generateOrb(downPath[1][1], downPath[1][2], orbRadius, orbHue),
-            leftCirc = editor.graphics.generateOrb(leftPath[1][1], leftPath[1][2], orbRadius, orbHue),
-            rightCirc = editor.graphics.generateOrb(rightPath[1][1], rightPath[1][2], orbRadius, orbHue),
+            orbRadius = editor.attributes.radius/7,
+            orbHue = editor.attributes.orbHue,
+            upCirc = generateOrb(editor.getPaper(), upPath[1][1], upPath[1][2], orbRadius, orbHue),
+            downCirc = generateOrb(editor.getPaper(), downPath[1][1], downPath[1][2], orbRadius, orbHue),
+            leftCirc = generateOrb(editor.getPaper(), leftPath[1][1], leftPath[1][2], orbRadius, orbHue),
+            rightCirc = generateOrb(editor.getPaper(), rightPath[1][1], rightPath[1][2], orbRadius, orbHue),
 
-            rightHandle = editor.paper.set().push(rightConnection, rightCirc),
-            leftHandle = editor.paper.set().push(leftConnection, leftCirc),
-            upHandle = editor.paper.set().push(upConnection, upCirc),
-            downHandle = editor.paper.set().push(downConnection, downCirc);
+            rightHandle = editor.getPaper().set().push(rightConnection, rightCirc),
+            leftHandle = editor.getPaper().set().push(leftConnection, leftCirc),
+            upHandle = editor.getPaper().set().push(upConnection, upCirc),
+            downHandle = editor.getPaper().set().push(downConnection, downCirc);
 
         rightHandle.type = leftHandle.type = 'partner';
         upHandle.type = 'parent';
@@ -264,7 +264,7 @@ var Hoverbox = Class.create( {
         downConnection.oPath = downPath;
         this.enable =  this.enable.bind(this);
         this.disable =  this.disable.bind(this);
-        this.handleOrbs = editor.paper.set().push(rightCirc, leftCirc, upCirc, downCirc).attr("cursor", "pointer");
+        this.handleOrbs = editor.getPaper().set().push(rightCirc, leftCirc, upCirc, downCirc).attr("cursor", "pointer");
         var me = this,
             orb,
             connection,
@@ -339,7 +339,7 @@ var Hoverbox = Class.create( {
         upCirc.drag(move, function() {start(upHandle)},end);
         downCirc.drag(move, function() {start(downHandle)},end);
 
-        return editor.paper.set().push(rightHandle, leftHandle, upHandle, downHandle);
+        return editor.getPaper().set().push(rightHandle, leftHandle, upHandle, downHandle);
     },
 
     /*
@@ -380,7 +380,7 @@ var Hoverbox = Class.create( {
             else if(handleType == "parent") {
                 this.getNode().createParents();
             }
-            editor.currentHoveredNode && editor.currentHoveredNode.getGraphics().getHoverBox().getBoxOnHover().attr(editor.graphics._attributes.boxOnHover);
+            editor.currentHoveredNode && editor.currentHoveredNode.getGraphics().getHoverBox().getBoxOnHover().attr(editor.attributes.boxOnHover);
             editor.currentDraggable.node = null;
             editor.currentDraggable.handle = null;
         }

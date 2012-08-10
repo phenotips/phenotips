@@ -83,7 +83,7 @@ var AbstractNodeVisuals = Class.create({
      * Returns a Raphael set or element that contains all the graphics and labels associated with this node.
      */
     getAllGraphics: function() {
-        return editor.paper.set();
+        return editor.getPaper().set();
     },
 
     /*

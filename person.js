@@ -1,5 +1,5 @@
 /*
- * Person is a class representing any node that has sufficient information to be
+ * Person is a class representing any AbstractPerson that has sufficient information to be
  * displayed on the final pedigree graph (printed or exported). Person objects
  * contain information about disorders, age and other relevant properties, as well
  * as graphical data to visualize this information.
@@ -7,7 +7,7 @@
  * @param x the x coordinate on the Raphael canvas at which the node drawing will be centered
  * @param the y coordinate on the Raphael canvas at which the node drawing will be centered
  * @param gender either 'M', 'F' or 'U' depending on the gender
- * @param id a unique numerical ID number
+ * @param id a unique ID number
  */
 
 var Person = Class.create(AbstractPerson, {
@@ -28,7 +28,7 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /*
-     * Initializes the object responsible for creating graphics for this node
+     * Initializes the object responsible for creating graphics for this Person
      *
      * @param x the x coordinate on the canvas at which the node is centered
      * @param y the y coordinate on the canvas at which the node is centered

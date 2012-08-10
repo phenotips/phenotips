@@ -96,3 +96,11 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
         return shape;
     }
 }
+
+function generateOrb(canvas, x, y, r, hue) {
+    hue = hue || 0;
+    return canvas.set(
+        canvas.ellipse(x, y, r, r).attr({fill: "r(.5,.9)hsb(" + hue + ", 1, .75)-hsb(" + hue + ", .5, .25)", stroke: "none"}),
+        canvas.ellipse(x, y, r - r / 5, r - r / 20).attr({stroke: "none", fill: "r(.5,.1)#ccc-#ccc", opacity: 0})
+    );
+}

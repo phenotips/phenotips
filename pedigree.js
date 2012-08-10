@@ -1,37 +1,54 @@
 var PedigreeEditor = Class.create({
 
+    attributes: {
+        radius: 40,
+        fetusShape: {'font-size': 50, 'font-family': 'Cambria'},
+        nodeShape: {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
+        boxOnHover : {fill: "gray", stroke: "none",opacity: 1, "fill-opacity":.25},
+        optionsBtnIcon : {fill: "#1F1F1F", stroke: "none"},
+        optionsBtnMaskHoverOn : {opacity:.6, stroke: 'none'},
+        optionsBtnMaskHoverOff : {opacity:0},
+        optionsBtnMaskClick: {opacity:1},
+        orbHue : .53,
+        phShape: {fill: "white","fill-opacity": 0, "stroke": 'black', "stroke-dasharray": "- "},
+        dragMeLabel: {'font-size': 14, 'font-family': 'Tahoma'},
+        label: {'font-size': 18, 'font-family': 'Cambria'},
+        disorderShapes: {}
+    },
+
     initialize: function(graphics) {
-      this.nodeIndex = new NodeIndex();
+        window.editor = this;
+        this._paper = Raphael("canvas", this.width, this.height);
+        this.nodeIndex = new NodeIndex();
         this.generateViewControls();
         (this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this))();
 
-        //create canvas
-        this.paper = Raphael("canvas", this.width, this.height);
-//        this.zpd = new RaphaelZPD(this.paper, { zoom: true, pan: true, drag: false });
         this.adjustSizeToScreen();
         this.nodes = [[],[]];
         this.idCount = 1;
-        this.hoverModeZones = this.paper.set();
-        this.graphics = new NodeVisuals(this.paper);
+        this.hoverModeZones = this._paper.set();
 
         this.initMenu();
         this.nodeMenu = this.generateNodeMenu();
         this._legend = new Legend();
 
-        //TODO: for each connection: draw, for each node: draw
-
         // Capture resize events
         Event.observe (window, 'resize', this.adjustSizeToScreen);
 
-        //Generate a map of Disorders and patterns
-        disorderMap = {};
-        this._disorderMap = disorderMap;
         this.currentHoveredNode = null;
         this.currentDraggable = {
             handle: null,
             placeholder: null
         };
         Droppables.add($('canvas'), {accept: 'disorder', onDrop: this._onDropDisorder.bind(this)});
+        this._proband = this.addNode(this.width/2, this.height/2, 'M', false);
+    },
+
+    getPaper: function() {
+        return this._paper;
+    },
+    getProband: function() {
+        return this._proband;
     },
 
     adjustSizeToScreen : function() {
@@ -41,9 +58,9 @@ var PedigreeEditor = Class.create({
         this.height = screenDimensions.height - canvas.cumulativeOffset().top - 4;
         console.log("top : " + canvas.cumulativeOffset().top);
         console.log("height: " + screenDimensions.height);
-        if (this.paper) {
+        if (this.getPaper()) {
             // TODO : pan to center?... set viewbox instead of size?
-            this.paper.setSize(this.width, this.height);
+            this.getPaper().setSize(this.width, this.height);
         }
         if (this.nodeMenu) {
             this.nodeMenu.reposition();
@@ -272,12 +289,8 @@ var PedigreeEditor = Class.create({
         }
     },
 
-    addParentsConnection : function(node, leftParent, rightParent) {
-        leftParent._partnerships.push(rightParent);
-        rightParent._partnerships.push(leftParent);
-        leftParent._children.push(node);
-        node._parentPartnership.push(leftParent,rightParent);
-        var connection = new Connection("partner", leftParent, rightParent);
+    addParentsPartnership : function(node, leftParent, rightParent) {
+        //TODO:
     },
 
     enterHoverMode: function(sourceNode) {
@@ -291,7 +304,7 @@ var PedigreeEditor = Class.create({
                 function() {
                     me.currentHoveredNode = s;
                     s.getGraphics().getHoverBox().setHovered(true);
-                    s.getGraphics().getHoverBox().getBoxOnHover().attr(me.graphics._attributes.boxOnHover);
+                    s.getGraphics().getHoverBox().getBoxOnHover().attr(editor.attributes.boxOnHover);
 
                     if(me.currentDraggable.placeholder && me.currentDraggable.placeholder.canMergeWith(s)) {
                         me.validPlaceholderNode = true;
@@ -316,7 +329,7 @@ var PedigreeEditor = Class.create({
                 },
                 function() {
                     s.getGraphics().getHoverBox().setHovered(false);
-                    s.getGraphics().getHoverBox().getBoxOnHover().attr(me.graphics._attributes.boxOnHover).attr('opacity', 0);
+                    s.getGraphics().getHoverBox().getBoxOnHover().attr(me.attributes.boxOnHover).attr('opacity', 0);
                     me.currentHoveredNode.validPartnerSelected = false;
                     me.currentHoveredNode = null;
                     me.validPlaceholderNode = false;
@@ -330,37 +343,36 @@ var PedigreeEditor = Class.create({
     }
 });
 
-var editor,
-    disorderMap;
+var editor;
 
 document.observe("dom:loaded",function() {
-   editor = new PedigreeEditor();
+    editor = new PedigreeEditor();
 
 //    var iconPath = Raphael.pathToRelative("M16,1.466C7.973,1.466,1.466,7.973,1.466,16c0,8.027,6.507,14.534,14.534,14.534c8.027,0,14.534-6.507,14.534-14.534C30.534,7.973,24.027,1.466,16,1.466zM16,28.792c-1.549,0-2.806-1.256-2.806-2.806s1.256-2.806,2.806-2.806c1.55,0,2.806,1.256,2.806,2.806S17.55,28.792,16,28.792zM16,21.087l-7.858-6.562h3.469V5.747h8.779v8.778h3.468L16,21.087z");
 //    iconPath[0][1] = 0;
 //    iconPath[0][2] = 0;
-//    var duude = editor.paper.path(iconPath);
+//    var duude = editor.getPaper().path(iconPath);
 
-//    var a = editor.paper.circle(0,20,20);
+//    var a = editor.getPaper().circle(0,20,20);
 //    a.transform("t150");
 //    a.translate(10);
 ////
-////    var b = editor.paper.rect(100,100,100);
-////    var g = editor.paper.set(a,b);
+////    var b = editor.getPaper().rect(100,100,100);
+////    var g = editor.getPaper().set(a,b);
 ////    a.transform('t400');
 ////    b.transform('t0,33');
 ////    var k = g.transform();
-////    var b = editor.paper.rect(120,20,20,20);
+////    var b = editor.getPaper().rect(120,20,20,20);
 ////    var arr = [a,b];
-////    var se2 = editor.paper.set(editor.paper.circle(20,120,40));
-////    var se = editor.paper.set(arr);
+////    var se2 = editor.getPaper().set(editor.getPaper().circle(20,120,40));
+////    var se = editor.getPaper().set(arr);
 ////    se.push(se2);
 ////
 ////    se.hide();
 ////    se.show();
     //alert(Raphael.color('blue'));
 
-    var patientNode = editor.addNode(editor.width/2, editor.height/2, 'M', false);
+    var patientNode = editor.getProband();
     var patientNodesFriend = editor.addNode(patientNode.getX() + 200, patientNode.getY(), 'F', false);
     var nodesSon = editor.addNode(patientNode.getX() + 100, patientNode.getY() + 200, 'F', false);
     patientNode.setBirthDate(new Date(1999,9,2), true);
@@ -428,13 +440,7 @@ document.observe("dom:loaded",function() {
     //var nodeElement = patientNode._graphics.draw(patientNode);
     //alert(nodeElement.transform());
 
-    var ani = function() {
-        patientNode._hoverBox.disable();
-        patientNode._xPos += 100;
-        patientNode._yPos += 100;
-       // nodeElement.stop().animate({'transform': "t " + 100 + "," + 100+"..."}, 2000, "linear", patientNode._hoverBox.enable.bind(patientNode._hoverBox));
-    };
-    // ani();
+
 
 //    var ph = new PlaceHolder(editor.width/2, editor.height/2, editor.graphics, 'F');
 //    var dad = editor.addNode(editor.width/2, editor.height/2, 'U');

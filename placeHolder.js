@@ -68,6 +68,7 @@ var PlaceHolder = Class.create(AbstractPerson, {
                         existingChildren = redundantPartnership.getChildren();
                     partnership.getChildren().each(function(child){
                         if(existingChildren.indexOf(child) == -1) {
+                            partnership.removeChild(child);
                             redundantPartnership.addChild(child);
                         }
                     });

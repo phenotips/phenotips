@@ -12,10 +12,10 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     initialize: function($super, node, x, y) {
         this._genderSymbol = null;
         this._genderShape = null;
-        this._width = editor.graphics.getRadius() * 4;
+        this._width = editor.attributes.radius * 4;
         $super(node, x, y);
-        this._highlightBox = editor.paper.rect(this.getRelativeX()-(this._width/2), this.getRelativeY()-(this._width/2),
-            this._width, this._width, 5).attr(editor.graphics._attributes.boxOnHover);
+        this._highlightBox = editor.getPaper().rect(this.getRelativeX()-(this._width/2), this.getRelativeY()-(this._width/2),
+            this._width, this._width, 5).attr(editor.attributes.boxOnHover);
         this._highlightBox.attr({fill: 'black', opacity: 0, 'fill-opacity': 0});
         this.draw();
     },
@@ -80,29 +80,27 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      */
     setGenderSymbol: function() {
         this._genderSymbol && this._genderSymbol.remove();
-        var radius = editor.graphics.getRadius(),
+        var radius = editor.attributes.radius,
             shape,
             x = this.getRelativeX(),
             y = this.getRelativeY();
         if (this.getNode().getGender() == 'M') {
-            shape = editor.paper.rect(x - radius, y - radius, radius * 2, radius * 2, 2);
+            shape = editor.getPaper().rect(x - radius, y - radius, radius * 2, radius * 2, 2);
         }
         else if (this.getNode().getGender() == 'F') {
-            shape = editor.paper.circle(x, y, radius);
+            shape = editor.getPaper().circle(x, y, radius);
         }
         else {
-            shape = editor.paper.rect(x - radius * (Math.sqrt(3)/2), y - radius * (Math.sqrt(3)/2),
+            shape = editor.getPaper().rect(x - radius * (Math.sqrt(3)/2), y - radius * (Math.sqrt(3)/2),
                 radius * Math.sqrt(3), radius * Math.sqrt(3));
-            shape.attr(editor.graphics._attributes.nodeShape);
-
         }
-        shape.attr(editor.graphics._attributes.nodeShape);
+        shape.attr(editor.attributes.nodeShape);
         shape = (this.getNode().getGender() == 'U') ? shape.transform("...r45") : shape;
         this._genderShape = shape;
 
         var shadow = shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3);
         this.getGenderSymbol() && this.getGenderSymbol().remove();
-        this._genderSymbol = editor.paper.set(shadow, shape);
+        this._genderSymbol = editor.getPaper().set(shadow, shape);
     },
 
     /*
@@ -130,7 +128,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * Returns a Raphael set or element that contains the graphics associated with this node, excluding the labels.
      */
     getShapes: function() {
-        return editor.paper.set(this.getHighlightBox(), this.getGenderSymbol());
+        return editor.getPaper().set(this.getHighlightBox(), this.getGenderSymbol());
     },
 
     /*

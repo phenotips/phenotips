@@ -11,7 +11,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, partnership, x, y) {
         $super(partnership, x,y);
-        this._junctionShape = editor.paper.circle(x, y, 2).attr("fill", "black");
+        this._junctionShape = editor.getPaper().circle(x, y, 2).attr("fill", "black");
         //TODO: find out whether there is an arc
         this._connections = [null, null];
         this.updatePartnerConnection(this.getPartnership().getPartners()[0]);
@@ -55,7 +55,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             this.getConnections()[connectionIndex].attr({path: path});
         }
         else {
-            this.getConnections()[connectionIndex] = editor.paper.path(path).attr(this.getConnectionAttributes(partner, 'partner')).toBack();
+            this.getConnections()[connectionIndex] = editor.getPaper().path(path).attr(this.getConnectionAttributes(partner, 'partner')).toBack();
         }
     },
 
@@ -92,7 +92,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             child.parentConnection.attr({path: path});
         }
         else {
-            return editor.paper.path(path).attr(this.getConnectionAttributes(child, 'child')).toBack();
+            return editor.getPaper().path(path).attr(this.getConnectionAttributes(child, 'child')).toBack();
         }
     },
 

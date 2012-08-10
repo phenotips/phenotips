@@ -141,7 +141,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     getParents: function() {
         if(this.getParentPartnership()){
-            return [this.getParentPartnership().getPartner1(), this.getParentPartnership().getPartner2()]
+            return [this.getParentPartnership().getPartners()[0], this.getParentPartnership().getPartners()[1]]
         }
     },
 
@@ -208,7 +208,10 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @param partner a Person or PlaceHolder.
      */
     addPartner: function(partner) {
-        if(partner && this.getPartners().indexOf(partner) == -1 && this.canPartnerWith(partner)) {
+        if(this.getPartners().indexOf(partner) != -1){
+            return this.getPartnership(partner);
+        }
+        else if(this.canPartnerWith(partner)) {
             //TODO: calculate partnership x and y
             var distanceX = Math.abs(partner.getX() - this.getX())/2;
             var distanceY = Math.abs(partner.getY() - this.getY())/2;
