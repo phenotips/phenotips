@@ -3982,7 +3982,7 @@ table.extradata-list td.bmi_percentile {
 #macro(__ncbiSBox $fieldName $cssClass)
 #if ($xcontext.action == 'edit')
 (% class="ncbi-search-box $!{cssClass}" %)(((
-=== Instant OMIM / PubMed search ===
+=== Instant OMIM search ===
 (% class="expand-tools" %)(((
 (% class="tool show" %)Show(%%) (% class="tool hide" %)Hide(%%)
 )))
@@ -3991,8 +3991,8 @@ table.extradata-list td.bmi_percentile {
 {{html wiki=false clean=false}}&lt;input type="hidden" id="defaultSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="defaultSearchTermIDsInput" value="" /&gt;{{/html}}
 (% id="defaultSearchTerms" %)(((
 )))
-(% class="hint"%)Include the following custom terms in your search:(%%)
-{{html wiki=false clean=false}}&lt;input type="text" id="customSearchTermsInput" value="" /&gt;{{/html}}
+##(% class="hint"%)Include the following custom terms in your search:(%%)
+## {{html wiki=false clean=false}}&lt;input type="text" id="customSearchTermsInput" value="" /&gt;{{/html}}
 (% class="background-search omim-search" %)(((
 ==== Matching disorders in OMIM ====
 (% id="omim-search-results" class="background-suggestions" %)((()))
