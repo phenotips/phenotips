@@ -2430,11 +2430,20 @@ document.observe('xwiki:dom:loaded', function() {
           } 
         });
     }
+    if (service.target.__hiddenParent) {
+      if (service.target.down('li')) {
+         //has results
+         service.target.__hiddenParent.removeClassName('hidden');
+      } else {
+         service.target.__hiddenParent.addClassName('hidden');
+      }
+    }
   };
 
   var doSearch = function(service) {
     var data = services[service];
     if (!data || !data.target || !data.script) {return;}
+    data.target.__initiailzed || (data.target.__initiailzed = true) &amp;&amp; (data.target.__hiddenParent = data.target.up('.background-search.hidden'));
     if (!data.expectedReqNo) {
       data.expectedReqNo = 0;
     }
@@ -3993,7 +4002,7 @@ table.extradata-list td.bmi_percentile {
 )))
 ##(% class="hint"%)Include the following custom terms in your search:(%%)
 ## {{html wiki=false clean=false}}&lt;input type="text" id="customSearchTermsInput" value="" /&gt;{{/html}}
-(% class="background-search omim-search" %)(((
+(% class="background-search omim-search hidden" %)(((
 ==== Matching disorders in OMIM ====
 (% id="omim-search-results" class="background-suggestions" %)((()))
 )))
@@ -4161,7 +4170,7 @@ table.extradata-list td.bmi_percentile {
           (% class="twothird-width selector-panel browser browse-phenotype-categories force-collapse"%)(((
           (% class="browser-title"%)
           === **Browse categories** ===
-(% class="background-search diffDiagnosis-search phenotype-group collapsible-group" title="Phenotypes that are likely to help improve differential diagnosis"%)(((
+(% class="background-search diffDiagnosis-search phenotype-group collapsible-group hidden" title="Phenotypes that are likely to help improve differential diagnosis"%)(((
 === You might want to check for... ===
 (% class="hint" %)Phenotypes that are likely to help improve differential diagnosis
 (% id="diffDiagnosis-search-results" class="background-suggestions" %)((()))
