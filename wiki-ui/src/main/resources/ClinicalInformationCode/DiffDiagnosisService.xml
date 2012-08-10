@@ -25,22 +25,23 @@
 <content>{{include document="ClinicalInformationCode.JSONMacros" /}}
 
 {{velocity filter="indent"}}
-#if ($xcontext.action == 'get' &amp;&amp; "$!request.q" != '')##
-  #set ($_service = $services.hpoa)
-  #set ($limit = $mathtool.toInteger("$!{request.limit}"))
-  #if (!($limit &gt; 0))
-    #set ($limit = 20)
-  #end
-  #if ("$!{request.format}" == 'html')
+#if ($xcontext.action == 'get')
+  $response.setHeader("X-ReqNo", "$!request.reqNo")##
+  #if ("$!request.q" != '')##
+    #set ($_service = $services.hpoa)
+    #set ($limit = $mathtool.toInteger("$!{request.limit}"))
+    #if (!($limit &gt; 0))
+      #set ($limit = 20)
+    #end
     #set ($data = [])
     #set ($pieces = $!request.q.split(' '))
     #foreach ($piece in $pieces)
       #set($discard = $data.add($piece))
     #end
-$response.setHeader("X-ReqNo", "$!request.reqNo")##
-{{html clean="false"  wiki="false"}}##
+    #if ("$!{request.format}" == 'html')
 #set ($results = $_service.getDifferentialPhenotypes($data, $limit))
-#if ($results.size() &gt; 0) 
+#if ($results.size() &gt; 0)
+{{html clean="false"  wiki="false"}}##
 &lt;ul&gt;
 #foreach($item in $results)
   #if ("$!item.id"!= '' &amp;&amp; "$!item.name" != '')
@@ -50,11 +51,19 @@ $response.setHeader("X-ReqNo", "$!request.reqNo")##
   &lt;/li&gt;
   #end
 #end## foreach item
-&lt;ul&gt;
+&lt;/ul&gt;
+{{/html}}
+   #set ($hasOutput = true)
 #else
-&lt;div class="hint"&gt;No matches found.&lt;/div&gt;
-#end
-  {{/html}}
-  #end
+   #set ($hasOutput = false)
+#end ## results.size() &gt; 0
+    #end## html format
+  #else
+    #set ($hasOutput = false)
+  #end## non-empty query
+#end## get action
+##
+#if (!$hasOutput)
+(% class="hint" %)No matches found
 #end
 {{/velocity}}</content></xwikidoc>
