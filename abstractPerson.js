@@ -219,7 +219,8 @@ var AbstractPerson = Class.create(AbstractNode, {
 
     /*
      * Creates a new Partnership with the partner passed in the parameter.
-     * Returns the new Partnership
+     * Does not duplicate a partnership if one already exists.
+     * Returns the new Partnership or the preexisting partnership
      *
      * @param partner a Person or PlaceHolder.
      */
@@ -340,12 +341,15 @@ var AbstractPerson = Class.create(AbstractNode, {
     },
 
     /*
-     * Returns true if this node can have a legitimate Partnership with otherNode
+     * Returns true if this node can have a heterosexual Partnership with otherNode
      *
      * @param otherNode is a Person
      */
     canPartnerWith: function(otherNode) {
-        return (this.getOppositeGender() == otherNode.getGender() || this.getGender() == "U" || otherNode.getGender() == "U");
+        var oppositeGender = (this.getOppositeGender() == otherNode.getGender() || this.getGender() == "U" || otherNode.getGender() == "U");
+        var numSteps = this.getStepsToNode(otherNode)[0];
+        var oddStepsAway = (numSteps == null || numSteps%2 == 1);
+        return oppositeGender && oddStepsAway;
     },
 
     /*
@@ -396,5 +400,34 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     getSideNeighbors: function() {
         return this.getPartnerships();
+    },
+
+    /*
+     * Returns an array with the number of partnerships between this node and otherNode, and the nodes visited
+     * in the process of the traversal
+     *
+     * @param otherNode an AbstractNode whose distance (in partnerships) from this node you're trying to calculate
+     * @param visitedNodes an array of nodes that were visited in the result of the traversal. This parameter is used
+     * internally so omit it when calling the function
+     */
+    getStepsToNode: function(otherNode, visitedNodes) {
+        var visited = (visitedNodes) ? visitedNodes : [];
+        visited.push(this);
+        if(this === otherNode) {
+            return [0, visited];
+        }
+        else {
+            var numSteps = null;
+            this.getPartners().each(function(partner) {
+                if(visited.indexOf(partner) == -1) {
+                    numSteps = partner.getStepsToNode(otherNode, visited)[0];
+                    if(numSteps != null) {
+                        numSteps = 1 + numSteps;
+                        throw $break;
+                    }
+                }
+            });
+            return [numSteps, visited];
+        }
     }
 });
