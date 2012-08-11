@@ -161,6 +161,7 @@ var AbstractPerson = Class.create(AbstractNode, {
         if(this.getParentPartnership()){
             return [this.getParentPartnership().getPartners()[0], this.getParentPartnership().getPartners()[1]]
         }
+        return null;
     },
 
     /*
@@ -384,10 +385,16 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     remove: function(isRecursive, removeVisuals) {
         var me = this,
-            toRemove = [];
+            toRemove = [],
+            parents = this.getParents();
+        if(parents) {
+            (parents[0].getType() == 'ph') && parents[0].remove(false, true);
+            (parents[1].getType() == 'ph') && parents[1].remove(false, true);
+        }
         this.getPartnerships().each(function(partnership) {
-            toRemove = toRemove.concat(partnership.getChildren());
-            toRemove.push(partnership.getPartnerOf(me));
+            partnership.getChildren().each(function(child) {
+                (child.getType() == 'ph') ? child.remove(false, true) : toRemove.push(child);
+            });
             partnership.remove();
         });
         isRecursive && toRemove.each(function(node) {
