@@ -6,9 +6,9 @@ var PedigreeEditor = Class.create({
         nodeShape: {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
         boxOnHover : {fill: "gray", stroke: "none",opacity: 1, "fill-opacity":.25},
         optionsBtnIcon : {fill: "#1F1F1F", stroke: "none"},
-        optionsBtnMaskHoverOn : {opacity:.6, stroke: 'none'},
-        optionsBtnMaskHoverOff : {opacity:0},
-        optionsBtnMaskClick: {opacity:1},
+        btnMaskHoverOn : {opacity:.6, stroke: 'none'},
+        btnMaskHoverOff : {opacity:0},
+        btnMaskClick: {opacity:1},
         orbHue : .53,
         phShape: {fill: "white","fill-opacity": 0, "stroke": 'black', "stroke-dasharray": "- "},
         dragMeLabel: {'font-size': 14, 'font-family': 'Tahoma'},
@@ -248,7 +248,8 @@ var PedigreeEditor = Class.create({
     },
 
     addNode: function(x, y, gender, isPlaceHolder) {
-        var node = (isPlaceHolder) ? (new PlaceHolder(x, y, gender, this.generateID())) : (new Person(x, y, gender, this.generateID()));
+        var isProband = (!isPlaceHolder && this.nodes[0].length == 0);
+        var node = (isPlaceHolder) ? (new PlaceHolder(x, y, gender, this.generateID())) : (new Person(x, y, gender, this.generateID(), isProband));
         this.nodes[+(isPlaceHolder)].push(node);
 	this.nodeIndex.add(node);
         return node;

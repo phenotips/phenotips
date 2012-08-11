@@ -12,7 +12,7 @@
 
 var Person = Class.create(AbstractPerson, {
 
-    initialize: function($super, x, y, gender, id) {
+    initialize: function($super, x, y, gender, id, isProband) {
         this._firstName = null;
         this._lastName = null;
         this._birthDate = null;
@@ -21,6 +21,7 @@ var Person = Class.create(AbstractPerson, {
         this._isAdopted = false;
         this._isFetus = false; //TODO: implement pregnancy
         this._lifeStatus = 'alive';
+        this._isProband = isProband;
         this._patientStatus = null;//TODO: implement proband/consultand
         this._disorders = [];
         this._evaluations = [];
@@ -42,6 +43,10 @@ var Person = Class.create(AbstractPerson, {
      */
     getType: function() {
         return "pn";
+    },
+
+    isProband: function() {
+        return this._isProband;
     },
 
     getEvaluations: function() {

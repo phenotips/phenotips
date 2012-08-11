@@ -38,7 +38,13 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             var shape = editor.getPaper().path(["M",x, y, 'l', height, -height, 'l', height, height,"z"]);
             shape.attr(editor.attributes.nodeShape);
             this._genderShape = shape;
-            shape = editor.getPaper().set(shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3), shape);
+            shape = editor.getPaper().set(shape.glow({width: 5, fill: true, opacity: 0.1}).transform(["t",3,3,"..."]), shape);
+
+            if(this.getNode().isProband()) {
+                shape.transform(["...s", 1.07]);
+                shape.attr("stroke-width", 5);
+            }
+
             x = this.getRelativeX() - 2 * height/ 3;
             y = this.getRelativeY() + height/ 3;
             var deadShape = editor.getPaper().path(["M", x, y, 'l', height + height/3, -(height+ height/3), "z"]);
@@ -58,6 +64,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         else {
             $super();
+            if(this.getNode().isProband()) {
+                this.getGenderShape().transform(["...s", 1.07]);
+                this.getGenderShape().attr("stroke-width", 5);
+            }
         }
     },
 

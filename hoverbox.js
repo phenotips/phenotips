@@ -23,7 +23,8 @@ var Hoverbox = Class.create( {
         this._width = editor.attributes.radius * 4;
         this._isMenuToggled = false;
         var me = this;
-        this._optionsBtn = this.generateMenuBtn();
+        this._menuBtn = this.generateMenuBtn();
+        this._deleteBtn = this.generateDeleteBtn();
         this._handles = this.generateHandles();
         this._currentHandles = [this._handles[0], this._handles[1], this._handles[2], this._handles[3]];
         this._isHovered = false;
@@ -35,7 +36,7 @@ var Hoverbox = Class.create( {
         var mask = editor.getPaper().rect(this.getX()-(this._width/2), this.getY()-(this._width/2),this._width, this._width);
         mask.attr({fill: 'gray', opacity: 0});
 
-        this._frontElements = editor.getPaper().set().push(mask, this.showMenuBtn(), this.handleOrbs);
+        this._frontElements = editor.getPaper().set().push(mask, this.getMenuBtn(), this.getDeleteBtn(), this.handleOrbs);
         this._frontElements.hover(function() {me.setHovered(true)}, function() {me.setHovered(false)});
         this.animateDrawHoverZone = this.animateDrawHoverZone.bind(this);
         this.animateHideHoverZone =  this.animateHideHoverZone.bind(this);
@@ -120,27 +121,75 @@ var Hoverbox = Class.create( {
         button.click(function(){
             me.toggleMenu(!me.isMenuToggled());
         });
-        button.mousedown(function(){optionsBtnMask.attr(editor.attributes.optionsBtnMaskClick)});
+        button.mousedown(function(){optionsBtnMask.attr(editor.attributes.btnMaskClick)});
         button.hover(function() {
-                optionsBtnMask.attr(editor.attributes.optionsBtnMaskHoverOn)
+                optionsBtnMask.attr(editor.attributes.btnMaskHoverOn)
             },
             function() {
-                optionsBtnMask.attr(editor.attributes.optionsBtnMaskHoverOff)
+                optionsBtnMask.attr(editor.attributes.btnMaskHoverOff)
             });
+        return button;
+    },
+
+    generateDeleteBtn: function() {
+        if(this.getNode().isProband()) {
+            var button = editor.getPaper().set(editor.getPaper().set(), editor.getPaper().set())
+        }
+        else {
+            var me = this,
+                path = "M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z",
+                iconX = this.getX() + (editor.attributes.radius * -1.95),
+                iconY = this.getY() - editor.attributes.radius * 1.9,
+                iconScale = editor.attributes.radius * 0.014,
+                deleteBtnIcon = editor.getPaper().path(path).attr({"fill": "#990000", stroke: 'none'});
+
+            deleteBtnIcon.transform(["t" , iconX , iconY, "s", iconScale, iconScale, 0, 0]);
+            var deleteBtnMask = editor.getPaper().rect(deleteBtnIcon.getBBox().x, deleteBtnIcon.getBBox().y,
+                deleteBtnIcon.getBBox().width, deleteBtnIcon.getBBox().height, 1);
+            deleteBtnMask.attr({fill: 'gray', opacity: 0}).transform("s1.5");
+
+            var button = editor.getPaper().set(deleteBtnMask, deleteBtnIcon);
+            button.click(function(){
+                var confirmation = confirm("Are you sure you want to delete this node?");
+                confirmation && me.getNode().remove(false, true)
+            });
+            button.mousedown(function(){deleteBtnMask.attr(editor.attributes.btnMaskClick)});
+            button.hover(function() {
+                    deleteBtnMask.attr(editor.attributes.btnMaskHoverOn)
+                },
+                function() {
+                    deleteBtnMask.attr(editor.attributes.btnMaskHoverOff)
+                });
+        }
         return button;
     },
 
     /*
      * Returns the icon used for the menu button
      */
-    getOptionsBtnIcon: function() {
-        return this.showMenuBtn()[1];
+    getMenuBtnIcon: function() {
+        return this.getMenuBtn()[1];
     },
+
     /*
      * Returns a Raphael set containing the button for showing/hiding the menu
      */
-    showMenuBtn: function() {
-        return this._optionsBtn;
+    getMenuBtn: function() {
+        return this._menuBtn;
+    },
+
+    /*
+     * Returns the icon used for the menu button
+     */
+    getDeleteBtnIcon: function() {
+        return this.getDeleteBtn()[1];
+    },
+
+    /*
+     * Returns a Raphael set containing the button for deleting the node
+     */
+    getDeleteBtn: function() {
+        return this._deleteBtn;
     },
 
     /*
@@ -389,7 +438,8 @@ var Hoverbox = Class.create( {
     animateDrawHoverZone: function() {
         this.getNode().getGraphics().setSelected(true);
         this.getBoxOnHover().stop().animate({opacity:0.7}, 300);
-        this.getOptionsBtnIcon().stop().animate({opacity:1}, 300);
+        this.getMenuBtnIcon().stop().animate({opacity:1}, 300);
+        this.getDeleteBtnIcon().stop().animate({opacity:1}, 300);
         this.getCurrentHandles().each(function(handle) {
             handle.show();
         });
@@ -402,7 +452,8 @@ var Hoverbox = Class.create( {
         if(!this.isMenuToggled() && !this.isHovered()) {
             this.getNode().getGraphics().setSelected(false);
             this.getBoxOnHover().stop().animate({opacity:0}, 200);
-            this.getOptionsBtnIcon().stop().animate({opacity:0}, 200);
+            this.getMenuBtnIcon().stop().animate({opacity:0}, 200);
+            this.getDeleteBtnIcon().stop().animate({opacity:0}, 200);
             this.getCurrentHandles().each(function(handle) {
                 handle.hide();
             });
@@ -443,7 +494,8 @@ var Hoverbox = Class.create( {
      */
     hide: function() {
         this.getBoxOnHover().attr({opacity:0});
-        this.getOptionsBtnIcon().attr({opacity:0});
+        this.getMenuBtnIcon().attr({opacity:0});
+        this.getDeleteBtnIcon().attr({opacity:0});
         this._handles.hide();
     },
 
