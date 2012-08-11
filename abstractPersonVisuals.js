@@ -145,6 +145,11 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     drawShapes: function() {
         this.setGenderSymbol();
         this.getShapes().toFront();
+        var me = this;
+        this.getNode().getPartnerships().each(function(partnership) {
+            partnership.getGraphics().updatePartnerConnection(me.getNode());
+        });
+        this.getNode().getParentPartnership() && this.getNode().getParentPartnership().getGraphics().updateChildConnection(this.getNode());
     },
 
     /*

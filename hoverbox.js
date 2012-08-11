@@ -25,7 +25,7 @@ var Hoverbox = Class.create( {
         var me = this;
         this._optionsBtn = this.generateMenuBtn();
         this._handles = this.generateHandles();
-        this._currentHandles = this._handles;
+        this._currentHandles = [this._handles[0], this._handles[1], this._handles[2], this._handles[3]];
         this._isHovered = false;
         this._isMenuToggled = false;
 
@@ -193,39 +193,36 @@ var Hoverbox = Class.create( {
      * Hides the partner and children handles
      */
     hidePartnerHandles: function() {
-        var crtHandles = editor.getPaper().set();
-        crtHandles.push(this.getHandles()[2]);
         this.getHandles()[0].hide();
         this.getHandles()[1].hide();
         this.getHandles()[3].hide();
-        this.setCurrentHandles(crtHandles);
+        this.setCurrentHandles(this.getCurrentHandles().without(this.getHandles()[0], this.getHandles()[1], this.getHandles()[3]));
     },
 
     /*
      * Shows the partner and children handles
      */
     unhidePartnerHandles: function() {
-        this.setCurrentHandles(this.getHandles());
         if(this.isHovered() || this.isMenuToggled()) {
             this.getHandles()[0].show();
             this.getHandles()[1].show();
             this.getHandles()[3].show();
         }
+        this.getCurrentHandles().push(this.getHandles()[0], this.getHandles()[1], this.getHandles()[3]);
     },
 
     hideParentHandle: function() {
-        var crtHandles = editor.getPaper().set();
-        crtHandles.push(this.getHandles()[0], this.getHandles()[1], this.getHandles()[3]);
         this.getHandles()[2].hide();
-        this.setCurrentHandles(crtHandles);
+        this.setCurrentHandles(this.getCurrentHandles().without(this.getHandles()[2]));
     },
 
     unHideParentHandle: function() {
-        this.setCurrentHandles(this.getHandles());
         if(this.isHovered() || this.isMenuToggled()) {
             this.getHandles()[2].show();
         }
+        this.getCurrentHandles().push(this.getHandles()[2]);
     },
+
     /*
      * Creates and returns a set with four draggable handles for creating new relatives and connections
      */
@@ -393,7 +390,9 @@ var Hoverbox = Class.create( {
         this.getNode().getGraphics().setSelected(true);
         this.getBoxOnHover().stop().animate({opacity:0.7}, 300);
         this.getOptionsBtnIcon().stop().animate({opacity:1}, 300);
-        this.getCurrentHandles().show();
+        this.getCurrentHandles().each(function(handle) {
+            handle.show();
+        });
     },
 
     /*
@@ -404,7 +403,9 @@ var Hoverbox = Class.create( {
             this.getNode().getGraphics().setSelected(false);
             this.getBoxOnHover().stop().animate({opacity:0}, 200);
             this.getOptionsBtnIcon().stop().animate({opacity:0}, 200);
-            this.getCurrentHandles().hide();
+            this.getCurrentHandles().each(function(handle) {
+                handle.hide();
+            });
         }
     },
 
