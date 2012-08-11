@@ -55,30 +55,32 @@ var AbstractPerson = Class.create(AbstractNode, {
 
     /*
      * Updates the gender of this node and (optionally) updates the
-     * graphics
+     * graphics. Updates gender of all partners if it is unknown.
+     * Returns an array of nodes visited during the partner traversal.
      *
      * @param gender should be "U", "F", or "M" depending on the gender
      * @param forceDraw set to true if you want to update the graphics
+     * @param visitedNodes an array of nodes that were visited during the traversal up until
+     *  this node. OMIT this parameter. It is used for internal functionality.
      */
     setGender: function(gender, forceDraw, visitedNodes) {
+        var visited = (visitedNodes) ? visitedNodes : [];
+        visited.push(this);
         if(this.getPartners().length == 0) {
             this._gender = this.parseGender(gender);
             forceDraw && this.getGraphics().drawShapes();
         }
-        else if(this.getPartners().length > 0 && this.getGender() == "U") {
+        else if(this.getGender() == "U") {
             var me = this;
-            var visited = (visitedNodes) ? visitedNodes : [];
-            visited.push(this);
             this._gender = this.parseGender(gender);
             forceDraw && this.getGraphics().drawShapes();
-
             this.getPartners().each(function(partner) {
                 if(visited.indexOf(partner) == -1) {
                     visited = partner.setGender(me.getOppositeGender(), forceDraw, visited);
                 }
             });
-            return visited;
         }
+        return visited;
     },
 
     /*
@@ -238,6 +240,14 @@ var AbstractPerson = Class.create(AbstractNode, {
             var partnership = new Partnership(x, y, this, partner);
             this.getPartnerships().push(partnership);
             partner.addPartnership(partnership);
+
+            if(this.getGender() == 'U' && partner.getGender() != 'U') {
+                this.setGender(partner.getOppositeGender(), true, null);
+            }
+            else if(this.getGender() != 'U' && partner.getGender() == 'U') {
+                partner.setGender(this.getOppositeGender(), true, null);
+            }
+
             return partnership;
         }
     },
