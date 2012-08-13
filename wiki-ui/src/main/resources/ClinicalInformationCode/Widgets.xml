@@ -3991,7 +3991,7 @@ div.resultContainer div.sourceContent.loading {
   display: inline-block;
   margin-top: -0.5em;
 }
-.dropdown + br {
+.dropdown:not(.invisible) + br {
   display: none;
 }</code>
 </property>
