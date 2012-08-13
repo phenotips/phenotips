@@ -370,10 +370,11 @@ _this.reposition();
                 target.checked = true;
             }
         },
-        'checkbox' : function (container, values) {
-        //    container.select('input[type=checkbox]').each(function (input) {
-        //        input.checked = (values.indexOf(input.value) &gt;= 0);
-        //    });
+        'checkbox' : function (container, value) {
+            var target = container.down('input[type=checkbox]');
+            if (target) {
+                target.checked = value;
+            }
         },
         'text' : function (container, value) {
             var target = container.down('input[type=text]');
