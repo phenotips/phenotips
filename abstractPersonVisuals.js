@@ -12,7 +12,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     initialize: function($super, node, x, y) {
         this._genderSymbol = null;
         this._genderShape = null;
-        this._radius = (node.getGender() == 'U') ? editor.attributes.radius * (Math.sqrt(3)/2) : editor.attributes.radius;
+        this._radius = editor.attributes.radius;
         $super(node, x, y);
         this._width = editor.attributes.radius * 4;
         this._highlightBox = editor.getPaper().rect(this.getRelativeX()-(this._width/2), this.getRelativeY()-(this._width/2),
@@ -88,7 +88,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         var shape,
             x = this.getRelativeX(),
             y = this.getRelativeY(),
-            radius = this.getRadius();
+            radius = this._radius = this._radius = (this.getNode().getGender() == 'U') ? editor.attributes.radius * (Math.sqrt(3)/2) : editor.attributes.radius;
 
         if (this.getNode().getGender() == 'F') {
             shape = editor.getPaper().circle(x, y, editor.attributes.radius);
@@ -103,6 +103,14 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         var shadow = shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3);
         this.getGenderSymbol() && this.getGenderSymbol().remove();
         this._genderSymbol = editor.getPaper().set(shadow, shape);
+
+        var p = this.getNode().getParentPartnership();
+        p && p.getGraphics().updateChildConnection(this.getNode(), this.getX(), this.getY(), p.getX(), p.getY());
+
+        var me = this;
+        this.getNode().getPartnerships().each(function(partnership) {
+            partnership.getGraphics().updatePartnerConnection(me.getNode(), me.getX(), me.getY(), partnership.getX(), partnership.getY());
+        })
     },
 
     /*

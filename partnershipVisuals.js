@@ -53,10 +53,10 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      * @animate set to true if you want to animate a transition to the new location
      */
     updatePartnerConnection: function(partner, partnerX, partnerY, junctionX, junctionY, animate) {
+        var radius = (partner.getGender() == 'U') ? partner.getGraphics().getRadius() * Math.sqrt(2) : partner.getGraphics().getRadius();
         var connectionIndex = +(partner == this.getPartnership().getPartners()[1]);
-        var currentSide = (this.getX() < partner.getX()) ? -1 : 1;
         var newSide = (junctionX < partnerX) ? -1 : 1;
-        var x2 = partnerX + partner.getGraphics().getRadius() * newSide;
+        var x2 = partnerX + radius * newSide;
         var path = [["M", junctionX, junctionY], ["L", x2, partnerY]];
         if(this.getConnections()[connectionIndex]) {
             if(animate) {
