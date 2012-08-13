@@ -124,7 +124,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @param partnership is a Partnership object with this node as one of the partners
      */
     addPartnership: function(partnership) {
-       if(this._partnerships.indexOf(partnership) == -1) {
+       if(this.getPartners().indexOf(partnership.getPartnerOf(this)) == -1) {
            this._partnerships.push(partnership);
        }
     },
@@ -239,8 +239,6 @@ var AbstractPerson = Class.create(AbstractNode, {
             var y = (partner.getY() > this.getY()) ? distanceY + this.getY() : distanceY + partner.getY();
 
             var partnership = new Partnership(x, y, this, partner);
-            this.getPartnerships().push(partnership);
-            partner.addPartnership(partnership);
 
             if(this.getGender() == 'U' && partner.getGender() != 'U') {
                 this.setGender(partner.getOppositeGender(), true, null);

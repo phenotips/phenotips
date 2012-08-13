@@ -14,8 +14,10 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         this._junctionShape = editor.getPaper().circle(x, y, 2).attr("fill", "black");
         //TODO: find out whether there is an arc
         this._connections = [null, null];
-        this.updatePartnerConnection(this.getPartnership().getPartners()[0]);
-        this.updatePartnerConnection(this.getPartnership().getPartners()[1]);
+        var me = this;
+        me.getNode().getPartners().each(function(partner) {
+            me.updatePartnerConnection(partner, partner.getX(), partner.getY(), x, y);
+        });
     },
 
     /*
@@ -40,19 +42,29 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     /*
-     * Updates the path of the connection for the given partner based on the partner's location
+     * Updates the path of the connection for the given partner or creates a new
+     * connection if it doesn't exist.
      *
      * @param partner an AbstractPerson who's a partner in this Partnership
+     * @param partnerX X coordinate of the partner
+     * @param partnerY Y coordinate of the partner
+     * @junctionX the X coordinate of the junction
+     * @junctionY Y coordinate of the junction
+     * @animate set to true if you want to animate a transition to the new location
      */
-    updatePartnerConnection: function(partner) {
+    updatePartnerConnection: function(partner, partnerX, partnerY, junctionX, junctionY, animate) {
         var connectionIndex = +(partner == this.getPartnership().getPartners()[1]);
-        var x2 = (this.getX() < partner.getX()) ? partner.getGraphics().getLeftCoordinate().x :
-            partner.getGraphics().getRightCoordinate().x;
-        var y2 = partner.getGraphics().getLeftCoordinate().y;
-        var path = [["M", this.getX(), this.getY()], ["L", x2, y2]];
-        partner.connectionPath = path;
+        var currentSide = (this.getX() < partner.getX()) ? -1 : 1;
+        var newSide = (junctionX < partnerX) ? -1 : 1;
+        var x2 = partnerX + partner.getGraphics().getRadius() * newSide;
+        var path = [["M", junctionX, junctionY], ["L", x2, partnerY]];
         if(this.getConnections()[connectionIndex]) {
-            this.getConnections()[connectionIndex].attr({path: path});
+            if(animate) {
+                this.getConnections()[connectionIndex].stop().animate({path: path}, 1000, "easeInOut");
+            }
+            else {
+                this.getConnections()[connectionIndex].attr({path: path});
+            }
         }
         else {
             this.getConnections()[connectionIndex] = editor.getPaper().path(path).attr(this.getConnectionAttributes(partner, 'partner')).toBack();
@@ -60,36 +72,30 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     /*
-     * Animates the connection for the given partner by 'pulling' the junction end to the coordinate (x, y)
+     * Updates the path of the connection for the given child or creates a new
+     * connection if it doesn't exist.
      *
-     * @param partner an AbstractPerson who's a partner in this Partnership
-     * @param x the x coordinate towards which the connection is animated
-     * @param y the y coordinate towards which the connection is animated
+     * @param child an AbstractPerson who's a child in this Partnership
+     * @param childX X coordinate of the child
+     * @param childY Y coordinate of the child
+     * @junctionX the X coordinate of the junction
+     * @junctionY Y coordinate of the junction
+     * @animate set to true if you want to animate a transition to the new location
      */
-    translatePartnerConnection: function(partner, x, y) {
-        var connectionIndex = +(partner == this.getPartnership().getPartners()[1]);
-        var xDisplacement = x - partner.getX();
-        var yDisplacement = y - partner.getY();
-        var x2 = (this.getX() < x) ? partner.getGraphics().getLeftCoordinate().x + xDisplacement :
-            partner.getGraphics().getRightCoordinate().x + xDisplacement;
-        var y2 = partner.getGraphics().getLeftCoordinate().y + yDisplacement;
-        var path = [["M", this.getX(), this.getY()], ["L", x2, y2]];
-        partner.connectionPath = path;
-        this.getConnections()[connectionIndex].stop().animate({path: path}, 1000, "easeInOut")
-    },
-
-    /*
-     * Updates the path of the connection for the given child based on the child's location
-     *
-     * @param child an AbstractPerson who's a child of this Partnership
-     */
-    updateChildConnection: function(child) {
-        var yDistance = (child.getGraphics().getTopCoordinate().y - this.getY())/2;
-        var xDistance = (child.getX() - this.getX());
-        var path = [["M", this.getX(), this.getY()],["l",0, yDistance],["l",xDistance,0], ["L", child.getX(), child.getGraphics().getTopCoordinate().y]];
+    updateChildConnection: function(child, childX, childY, junctionX, junctionY, animate) {
+        var radius = (child.getGender() == "U") ? editor.attributes.radius * (Math.sqrt(6)/2): child.getRadius();
+        var topCoordinate = childY - radius;
+        var xDistance = (childX - junctionX);
+        var yDistance = (topCoordinate - junctionY)/2;
+        var path = [["M", junctionX, junctionY],["l",0, yDistance],["l",xDistance,0], ["L", childX, topCoordinate]];
         child.parentConnectionPath = path;
         if(this.getPartnership().hasChild(child) && child.parentConnection) {
-            child.parentConnection.attr({path: path});
+            if(animate) {
+                child.parentConnection.animate({path: path}, 1000, "<>")
+            }
+            else {
+                child.parentConnection.attr({path: path});
+            }
         }
         else {
             return editor.getPaper().path(path).attr(this.getConnectionAttributes(child, 'child')).toBack();
@@ -97,54 +103,35 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     /*
-     * Animates the connection for the given partner by 'pulling' the junction end to the coordinate (x, y)
+     * Changes the position of the junction to the coordinate (x,y) and updates all surrounding connections.
      *
-     * @param partner an AbstractPerson who's a partner in this Partnership
-     * @param x the x coordinate towards which the connection is animated
-     * @param y the y coordinate towards which the connection is animated
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param animate set to true if you want to animate the transition
      */
-    translateChildConnection: function(child, x, y) {
-        var xDisplacement = x - child.getX();
-        var yDisplacement = y - child.getY();
-        var yDistance = (child.getGraphics().getTopCoordinate().y + yDisplacement - this.getY())/2;
-        var xDistance = (child.getX() + xDisplacement - this.getX());
-        var path = [["M", this.getX(), this.getY()],["l",0, yDistance],["l",xDistance,0], ["L", child.getX() + xDisplacement, child.getGraphics().getTopCoordinate().y + yDisplacement]];
-        child.parentConnection.stop().animate({path: path}, 1000, "<>");
-    },
-
-    /*
-     * Animates the junction to the coordinate (x,y) and animates all the connections to follow the junction.
-     *
-     * @param x the x coordinate towards which the junction is animated
-     * @param y the y coordinate towards which the junction is animated
-     */
-    setPos: function(x,y) {
+    setPos: function(x,y, animate) {
         var me = this;
-        me.getNode().getPartners()[0].connectionPath[0][1] = x;
-        me.getNode().getPartners()[0].connectionPath[0][2] = y;
-        this.getConnections()[0].stop().animate({path: me.getNode().getPartners()[0].connectionPath}, 1000, "<>");
-
-        me.getNode().getPartners()[1].connectionPath[0][1] = x;
-        me.getNode().getPartners()[1].connectionPath[0][2] = y;
-        this.getConnections()[1].stop().animate({path: me.getNode().getPartners()[1].connectionPath}, 1000, "<>");
+        var junctionCallback = function () {
+            me._absoluteX = x;
+            me._absoluteY = y;
+        };
 
         this.getNode().getChildren().each(function(child) {
-            var yDistance = (child.getGraphics().getTopCoordinate().y - y)/2;
-            var xDistance = (child.getX() - x);
-            child.parentConnectionPath = [["M", x, y],["l",0, yDistance],["l",xDistance,0], ["L", child.getX(), child.getGraphics().getTopCoordinate().y]];
-            child.parentConnection.stop().animate({path: child.parentConnectionPath}, 1000, "<>");
+            me.updateChildConnection(child, child.getX(), child.getY(), x, y,  animate)
         });
 
-        this.getJunctionShape().stop().animate({'transform': "t " + (x-this.getX()) + "," + (y-this.getY()) + "..."},
-            1000, "<>", function() {
-                me._absoluteX = x;
-                me._absoluteY = y;
-                this.updatePartnerConnection(me.getNode().getPartners()[0]);
-                this.updatePartnerConnection(me.getNode().getPartners()[1]);
-                me.getNode().getChildren().each(function(child) {
-                    me.updateChildConnection(child);
-                });
+        me.getNode().getPartners().each(function(partner) {
+            me.updatePartnerConnection(partner, partner.getX(), partner.getY(), x, y, animate);
         });
+
+        if(animate) {
+            this.getJunctionShape().stop().animate({'transform': "t " + (x-this.getX()) + "," + (y-this.getY()) + "..."},
+                1000, "easeInOut", junctionCallback);
+        }
+        else {
+            this.getJunctionShape().transform("t " + (x-this.getX()) + "," + (y-this.getY()) + "...");
+            junctionCallback();
+        }
     },
 
     /*

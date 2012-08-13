@@ -42,12 +42,13 @@ var AbstractNodeVisuals = Class.create({
     },
 
     /*
-     * Transitions the node along the x axis to the x coordinate passed in the parameter
+     * Changes the X coordinate of the node
      *
-     * @x the x coordinate on the canvas
+     * @param x the x coordinate on the canvas
+     * @param animate set to true if you want to animate the transition
      */
-    setX: function(x) {
-        this.setPos(x, this.getY());
+    setX: function(x, animate) {
+        this.setPos(x, this.getY(), animate);
     },
 
     /*
@@ -58,12 +59,13 @@ var AbstractNodeVisuals = Class.create({
     },
 
     /*
-     * Transitions the node along the y axis to the y coordinate passed in the parameter
+     * Changes the Y coordinate of the node
      *
-     * @y the y coordinate on the canvas
+     * @param y the y coordinate on the canvas
+     * @param animate set to true if you want to animate the transition
      */
-    setY: function(y) {
-        this.setPos(y, this.getX());
+    setY: function(y, animate) {
+        this.setPos(y, this.getX(), animate);
     },
 
     /*
@@ -74,9 +76,14 @@ var AbstractNodeVisuals = Class.create({
     },
 
     /*
-     * [Abstract Method] repositions the node to the coordinate (x,y)
+     * [Abstract Method]
+     * Changes the position of the node to (X,Y)
+     *
+     * @param x the x coordinate on the canvas
+     * @param y the y coordinate on the canvas
+     * @param animate set to true if you want to animate the transition
      */
-    setPos: function(x, y) {
+    setPos: function(x, y, animate) {
     },
 
     /*

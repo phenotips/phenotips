@@ -129,7 +129,7 @@ var Partnership = Class.create(AbstractNode, {
         //TODO: elaborate on restrictions for adding parents to existing node
         if(someNode && !this.hasChild(someNode) && (someNode.getParentPartnership() == null)) {
             this.getChildren().push(someNode);
-            someNode.parentConnection = this.getGraphics().updateChildConnection(someNode);
+            someNode.parentConnection = this.getGraphics().updateChildConnection(someNode, someNode.getX(), someNode.getY(), this.getX(), this.getY());
             someNode.setParentPartnership(this);
         }
         return someNode;

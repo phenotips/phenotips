@@ -12,8 +12,9 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     initialize: function($super, node, x, y) {
         this._genderSymbol = null;
         this._genderShape = null;
-        this._width = editor.attributes.radius * 4;
+        this._radius = (node.getGender() == 'U') ? editor.attributes.radius * (Math.sqrt(3)/2) : editor.attributes.radius;
         $super(node, x, y);
+        this._width = editor.attributes.radius * 4;
         this._highlightBox = editor.getPaper().rect(this.getRelativeX()-(this._width/2), this.getRelativeY()-(this._width/2),
             this._width, this._width, 5).attr(editor.attributes.boxOnHover);
         this._highlightBox.attr({fill: 'black', opacity: 0, 'fill-opacity': 0});
@@ -35,19 +36,28 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      */
 
     /*
-     * Transitions the node to the coordinate (x,y)
+     * Changes the position of the node to (X,Y)
      *
      * @param x the x coordinate
      * @param y the y coordinate
+     * @param animate set to true if you want to animate the transition
      */
-    setPos: function(x, y) {
+    setPos: function(x, y, animate) {
         var me = this;
         this.getNode().getPartnerships().each(function(partnership) {
-            partnership.getGraphics().translatePartnerConnection(me.getNode(), x, y);
+            partnership.getGraphics().updatePartnerConnection(me.getNode(), x, y, partnership.getX(), partnership.getY(),  animate);
         });
-        this.getNode().getParentPartnership() && this.getNode().getParentPartnership().getGraphics().translateChildConnection(this.getNode(), x, y);
-        this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getX()) + "," +(y-this.getY()) + "..."},
-            1000, "easeInOut", function() {me.updatePositionData(x, y)});
+        var p = this.getNode().getParentPartnership();
+        p && p.getGraphics().updateChildConnection(this.getNode(), x, y, p.getX(), p.getY(), animate);
+
+        if(animate){
+            this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getX()) + "," +(y-this.getY()) + "..."},
+                1000, "easeInOut", function() {me.updatePositionData(x, y)});
+        }
+        else {
+            this.getAllGraphics().transform("t " + (x-this.getX()) + "," +(y-this.getY()) + "...");
+            me.updatePositionData(x, y);
+        }
     },
 
     /*
@@ -60,11 +70,6 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         var me = this;
         me._absoluteX = x;
         me._absoluteY = y;
-        me.getNode().getPartnerships().each(function(partnership) {
-            partnership.getGraphics().updatePartnerConnection(me.getNode());
-        });
-        me.getNode().getParentPartnership() && me.getNode().getParentPartnership().getGraphics().updateChildConnection(me.getNode());
-
     },
 
     /*
@@ -80,19 +85,16 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      */
     setGenderSymbol: function() {
         this._genderSymbol && this._genderSymbol.remove();
-        var radius = editor.attributes.radius,
-            shape,
+        var shape,
             x = this.getRelativeX(),
-            y = this.getRelativeY();
-        if (this.getNode().getGender() == 'M') {
-            shape = editor.getPaper().rect(x - radius, y - radius, radius * 2, radius * 2, 2);
-        }
-        else if (this.getNode().getGender() == 'F') {
-            shape = editor.getPaper().circle(x, y, radius);
+            y = this.getRelativeY(),
+            radius = this.getRadius();
+
+        if (this.getNode().getGender() == 'F') {
+            shape = editor.getPaper().circle(x, y, editor.attributes.radius);
         }
         else {
-            shape = editor.getPaper().rect(x - radius * (Math.sqrt(3)/2), y - radius * (Math.sqrt(3)/2),
-                radius * Math.sqrt(3), radius * Math.sqrt(3));
+            shape = editor.getPaper().rect(x - radius, y - radius, radius * 2, radius * 2);
         }
         shape.attr(editor.attributes.nodeShape);
         shape = (this.getNode().getGender() == 'U') ? shape.transform("...r45") : shape;
@@ -101,6 +103,13 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         var shadow = shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3);
         this.getGenderSymbol() && this.getGenderSymbol().remove();
         this._genderSymbol = editor.getPaper().set(shadow, shape);
+    },
+
+    /*
+     * Returns the distance from the center of the genderSymbol to the rightmost point of the shape.
+     */
+    getRadius: function() {
+        return this._radius;
     },
 
     /*
@@ -145,11 +154,6 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     drawShapes: function() {
         this.setGenderSymbol();
         this.getShapes().toFront();
-        var me = this;
-        this.getNode().getPartnerships().each(function(partnership) {
-            partnership.getGraphics().updatePartnerConnection(me.getNode());
-        });
-        this.getNode().getParentPartnership() && this.getNode().getParentPartnership().getGraphics().updateChildConnection(this.getNode());
     },
 
     /*
@@ -158,38 +162,5 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      */
     draw: function() {
         this.drawShapes();
-    },
-
-    /*
-     * Returns and object containing the current y coordinate of the node and the leftmost x coordinate of
-     * the genderShape
-     */
-    getLeftCoordinate: function() {
-        return {x: this.getGenderShape().getBBox().x, y: this.getY()};
-    },
-
-    /*
-     * Returns and object containing the current y coordinate of the node and the rightmost x coordinate of
-     * the genderShape
-     */
-    getRightCoordinate: function() {
-        return {x: this.getGenderShape().getBBox().x2, y: this.getY()};
-    },
-
-    /*
-     * Returns and object containing the current x coordinate of the node and the top y coordinate of
-     * the genderShape
-     */
-    getTopCoordinate: function() {
-        return {x: this.getX(), y: this.getGenderShape().getBBox().y};
-    },
-
-    /*
-     * Returns and object containing the current x coordinate of the node and the bottom y coordinate of
-     * the genderShape
-     */
-    getBottomCoordinate: function() {
-        return {x: this.getX(), y: this.getGenderShape().getBBox().y2};
     }
-
 });

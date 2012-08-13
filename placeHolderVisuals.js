@@ -52,8 +52,14 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
 
         //Called when the placeholder is dragged
         var move = function(dx, dy) {
-            me.getGenderSymbol().stop().transform("T" + (dx - ox) + "," + (dy - oy) + "...");
-            me.updatePositionData(absOx + dx, absOy + dy);
+            me.setPos(absOx + dx, absOy + dy);
+//            me.getGenderSymbol().stop().transform("T" + (dx - ox) + "," + (dy - oy) + "...");
+//            me.updatePositionData(absOx + dx, absOy + dy);
+//            me.getNode().getPartnerships().each(function(partnership) {
+//                partnership.getGraphics().updatePartnerConnection(me.getNode(), absOx + dx, absOy + dy, partnership.getX(), partnership.getY());
+//            });
+//            me.getNode().getParentPartnership() && me.getNode().getParentPartnership().getGraphics().updateChildConnection(me.getNode());
+
             ox = dx;
             oy = dy;
             if(dx > 5 || dx < -5 || dy > 5 || dy < -5 ) {
@@ -73,7 +79,7 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
                     me.getNode().merge(node);
                 }
                 else {
-                    me.setPos(absOx, absOy);
+                    me.setPos(absOx, absOy, true);
                     ox = 0;
                     oy = 0;
                 }

@@ -35,12 +35,13 @@ var AbstractNode = Class.create( {
     },
 
     /*
-     * Transitions the node along the x axis to the x coordinate passed in the parameter
+     * Changes the X coordinate of the node
      *
-     * @x the x coordinate on the canvas
+     * @param x the x coordinate on the canvas
+     * @param animate set to true if you want to animate the transition
      */
-    setX: function(x) {
-        this.getGraphics().setX(x)
+    setX: function(x, animate) {
+        this.getGraphics().setX(x, animate)
     },
 
     /*
@@ -51,12 +52,13 @@ var AbstractNode = Class.create( {
     },
 
     /*
-     * Transitions the node along the y axis to the y coordinate passed in the parameter
+     * Changes the Y coordinate of the node
      *
-     * @y the y coordinate on the canvas
+     * @param y the y coordinate on the canvas
+     * @param animate set to true if you want to animate the transition
      */
-    setY: function(y) {
-        this.getGraphics().setX(y)
+    setY: function(y, animate) {
+        this.getGraphics().setX(y, animate)
     },
 
     /*
@@ -67,13 +69,14 @@ var AbstractNode = Class.create( {
     },
 
     /*
-     * Transitions the node to the coordinate (x,y)
+     * Changes the position of the node to (X,Y)
      *
-     * @x the x coordinate
-     * @y the y coordinate
+     * @param x the x coordinate on the canvas
+     * @param y the y coordinate on the canvas
+     * @param animate set to true if you want to animate the transition
      */
-    setPos: function(x,y) {
-        this.getGraphics().setPos(x, y);
+    setPos: function(x,y, animate) {
+        this.getGraphics().setPos(x, y, animate);
     },
 
     /*

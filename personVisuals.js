@@ -275,14 +275,23 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
     },
 
+    /*
+     * Returns the raphael element or set containing the adoption shape
+     */
     getAdoptedShape: function() {
         return this._adoptedShape;
     },
 
+    /*
+     * Returns true if this node is hovered
+     */
     isSelected: function() {
         return this._isSelected;
     },
 
+    /*
+     * Marks this node as hovered, and moves the labels out of the way
+     */
     setSelected: function(isSelected) {
         this._isSelected = isSelected;
         if(isSelected) {
@@ -293,13 +302,18 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
     },
 
+    /*
+     * Moves the labels down to make space for the hoverbox
+     */
     shiftLabels: function() {
         var labels = this.getLabels();
         for(var i = 0; i<labels.length; i++) {
             labels[i].stop().animate({"y": labels[i].oy + 50}, 200,">");
         }
     },
-
+    /*
+     * Animates the labels of this node to their original position under the node
+     */
     unshiftLabels: function() {
         var labels = this.getLabels();
         for(var i = 0; i<labels.length; i++) {
@@ -307,6 +321,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
     },
 
+    /*
+     * Returns a Raphael set or element that contains the labels
+     */
     getLabels: function() {
         var labels = editor.getPaper().set();
         this.getNameLabel() && labels.push(this.getNameLabel());
@@ -316,6 +333,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         return labels;
     },
 
+    /*
+     * Updates the labels, and brings them to front in the correct layering order.
+     */
     drawLabels: function() {
         this.updateAgeLabel();
         this.updateNameLabel();
@@ -335,6 +355,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.getHoverBox().getFrontElements().toFront();
     },
 
+    /*
+     * Returns a Raphael set or element that contains the graphics associated with this node, excluding the labels.
+     */
     getShapes: function() {
         var lifeStatusShapes = editor.getPaper().set();
         this.getFetusShape() && lifeStatusShapes.push(this.getFetusShape());
@@ -344,6 +367,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             lifeStatusShapes, this.getHoverBox().getFrontElements());
     },
 
+    /*
+     * Updates the graphical elements of this node excluding labels, and brings them to front in the correct
+     * layering order.
+     */
     drawShapes: function($super) {
         this.updateFetusShape();
         this.updateLifeStatusShapes();
@@ -353,6 +380,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         $super();
     },
 
+    /*
+     * Returns a Raphael set or element that contains all the graphics and labels associated with this node.
+     */
     getAllGraphics: function() {
         var graphics = editor.getPaper().set(this.getShapes());
         graphics.push(this.getLabels());
@@ -360,16 +390,33 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         return graphics;
     },
 
+    /*
+     * Updates the graphical elements of this node including labels, and brings them to front in the correct
+     * layering order.
+     */
     draw: function($super) {
         this.drawLabels();
         $super();
     },
 
-    setPos: function($super, x, y) {
+    /*
+     * Changes the position of the node to (X,Y)
+     *
+     * @param x the x coordinate on the canvas
+     * @param y the y coordinate on the canvas
+     * @param animate set to true if you want to animate the transition
+     */
+    setPos: function($super, x, y, animate) {
         this.getHoverBox().disable();
-        $super(x, y);
+        $super(x, y, animate);
     },
 
+    /*
+     * [Helper for setPos] Saves the x and y values as current coordinates and updates connections with the new position
+     *
+     * @param x the new x coordinate
+     * @param y the new y coordinate
+     */
     updatePositionData: function($super, x, y) {
         this.getHoverBox().enable.bind(this.getHoverBox());
         $super(x, y)
