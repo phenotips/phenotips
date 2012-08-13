@@ -83,7 +83,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      * @animate set to true if you want to animate a transition to the new location
      */
     updateChildConnection: function(child, childX, childY, junctionX, junctionY, animate) {
-        var radius = (child.getGender() == "U") ? editor.attributes.radius * (Math.sqrt(6)/2): child.getRadius();
+        var radius = (child.getGender() == "U") ? editor.attributes.radius * (Math.sqrt(6)/2) : child.getGraphics().getRadius();
         var topCoordinate = childY - radius;
         var xDistance = (childX - junctionX);
         var yDistance = (topCoordinate - junctionY)/2;
