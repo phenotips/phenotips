@@ -264,7 +264,7 @@ var PedigreeEditor = Class.create({
       if (node) {
 	var disorderObj = {};
         disorderObj.id = disorder.id.substring( disorder.id.indexOf('-') + 1);
-        disorderObj.name = disorder.down('.disorder-name').firstChild.nodeValue;
+        disorderObj.value = disorder.down('.disorder-name').firstChild.nodeValue;
         node.addDisorder(disorderObj, true);
       }
     },
