@@ -1,3 +1,4 @@
+
 var PedigreeEditor = Class.create({
 
     attributes: {
@@ -19,6 +20,8 @@ var PedigreeEditor = Class.create({
     initialize: function(graphics) {
         window.editor = this;
         this._paper = Raphael("canvas", this.width, this.height);
+        this.viewBoxX = 0;
+        this.viewBoxY = 0;
         this.nodeIndex = new NodeIndex();
         this.generateViewControls();
         (this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this))();
@@ -56,8 +59,6 @@ var PedigreeEditor = Class.create({
         var screenDimensions = document.viewport.getDimensions();
         this.width = screenDimensions.width;
         this.height = screenDimensions.height - canvas.cumulativeOffset().top - 4;
-        console.log("top : " + canvas.cumulativeOffset().top);
-        console.log("height: " + screenDimensions.height);
         if (this.getPaper()) {
             // TODO : pan to center?... set viewbox instead of size?
             this.getPaper().setSize(this.width, this.height);
@@ -77,8 +78,19 @@ var PedigreeEditor = Class.create({
             _this.__pan[direction] = new Element('span', {'class' : 'view-control-pan pan-' + direction, 'title' : 'Pan ' + direction});
             _this.__pan.insert(_this.__pan[direction]);
             _this.__pan[direction].observe('click', function(event) {
-                // TODO : Pan
-                alert('Panning ' + direction + '!');
+                var duration = 300;
+                if(direction == 'up') {
+                    editor.panTo(editor.viewBoxX, editor.viewBoxY - 200, duration);
+                }
+                else if(direction == 'down') {
+                    editor.panTo(editor.viewBoxX, editor.viewBoxY + 200, duration);
+                }
+                else if(direction == 'left') {
+                    editor.panTo(editor.viewBoxX - 200, editor.viewBoxY, duration);
+                }
+                else {
+                    editor.panTo(editor.viewBoxX + 200, editor.viewBoxY, duration);
+                }
             })
         });
         // Zoom controls
@@ -129,6 +141,37 @@ var PedigreeEditor = Class.create({
         });
         // Insert all controls in the document
         $('canvas').insert({'after' : this.__controls});
+    },
+
+    getPositionInViewBox: function(x,y) {
+        return {
+            x: x - editor.viewBoxX,
+            y: y - editor.viewBoxY
+        }
+    },
+
+    panTo: function(x, y, duration, callback, callbackObject, args) {
+        var oX = editor.viewBoxX,
+            oY = editor.viewBoxY,
+            xDisplacement = x - oX,
+            yDisplacement = y - oY,
+            start = Date.now();
+
+        function step(timestamp) {
+            var timePassed = (timestamp - start);
+            var progress = (timePassed)/duration;
+            editor.viewBoxX = oX + xDisplacement * (progress);
+            editor.viewBoxY = oY + yDisplacement * (progress);
+            console.log("x: " + editor.viewBoxX + " y: " + editor.viewBoxY);
+            editor.getPaper().setViewBox(editor.viewBoxX, editor.viewBoxY, editor.width, editor.height);
+            if (timePassed < duration) {
+                window.requestAnimFrame(step);
+            }
+            else {
+                callback && callback.apply(callbackObject, args);
+            }
+        }
+        window.requestAnimFrame(step);
     },
 
     getLegend: function() {
@@ -220,7 +263,8 @@ var PedigreeEditor = Class.create({
                     { 'actual' : 'alive', 'displayed' : 'Alive' },
                     { 'actual' : 'deceased', 'displayed' : 'Deceased' },
                     { 'actual' : 'stillborn', 'displayed' : 'Stillborn' },
-                    { 'actual' : 'aborted', 'displayed' : 'Aborted' }
+                    { 'actual' : 'aborted', 'displayed' : 'Aborted' },
+                    { 'actual' : 'unborn', 'displayed' : 'Unborn' }
                 ],
                 'default' : 'alive',
                 'function' : 'setLifeStatus'
@@ -377,13 +421,15 @@ document.observe("dom:loaded",function() {
     var patientNodesFriend = editor.addNode(patientNode.getX() + 200, patientNode.getY(), 'F', false);
     var nodesSon = editor.addNode(patientNode.getX() + 100, patientNode.getY() + 200, 'F', false);
     patientNode.setBirthDate(new Date(1999,9,2), true);
-    patientNode.addPartner(patientNodesFriend);
-    patientNode.getPartnerships()[0].addChild(nodesSon);
+    var partnership = patientNode.addPartner(patientNodesFriend);
+    partnership.addChild(nodesSon);
 
     patientNode.addDisorder({id: "190685",value: "Down syndrome"}, true);
 
     //var randomNode = editor.addNode(300, 500, 'M', false);
    patientNode.setDeceased(true);
+    //patientNode.setPos(patientNode.getX(),patientNode.getY()-200,true);
+    //patientNode.setPos(20,20,true);
    // patientNode.remove(true,true);
    // nodesSon.removeParents();
 //    patientNode.setGender("F", true);

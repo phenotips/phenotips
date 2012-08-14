@@ -119,9 +119,13 @@ var Hoverbox = Class.create( {
 
         var button = editor.getPaper().set(optionsBtnMask, optionsBtnIcon);
         button.click(function(){
+            //Dearest Michael, here's an example for you:
+            //editor.panTo(me.getNode().getX() - editor.width/2, me.getNode().getY() - editor.height/2, 200, me.toggleMenu, me, [!me.isMenuToggled()]);
             me.toggleMenu(!me.isMenuToggled());
         });
-        button.mousedown(function(){optionsBtnMask.attr(editor.attributes.btnMaskClick)});
+        button.mousedown(function(){
+            optionsBtnMask.attr(editor.attributes.btnMaskClick);
+        });
         button.hover(function() {
                 optionsBtnMask.attr(editor.attributes.btnMaskHoverOn)
             },
@@ -479,7 +483,8 @@ var Hoverbox = Class.create( {
             var y = optBBox.y;
 //            editor.zpd.opts['pan'] = false;
 //            editor.zpd.opts['zoom'] = false;
-            editor.nodeMenu.show(this.getNode(), x+5, y);
+            var position = editor.getPositionInViewBox(x+5, y);
+            editor.nodeMenu.show(this.getNode(), position.x, position.y);
         }
         else {
             //this.enable();
