@@ -393,6 +393,8 @@ var AbstractPerson = Class.create(AbstractNode, {
             partnership.getChildren().each(function(child) {
                 (child.getType() == 'ph') ? child.remove(false, true) : toRemove.push(child);
             });
+            var partner = partnership.getPartnerOf(me);
+            partner.getType() == 'ph' && partner.remove(false, true);
             partnership.remove();
         });
         isRecursive && toRemove.each(function(node) {
