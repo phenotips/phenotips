@@ -159,10 +159,13 @@ var Person = Class.create(AbstractPerson, {
      * Returns the number of weeks passed since conception
      */
     getGestationAge: function() {
-        if(this.getConceptionDate()) {
+        if(this.getLifeStatus() == 'unborn' && this.getConceptionDate()) {
             var oneWeek = 1000 * 60 * 60 * 24 * 7,
-                lastDay = this.getDeathDate() || new Date();
+            lastDay = new Date();
             return Math.round((lastDay.getTime()- this.getConceptionDate().getTime())/oneWeek)
+        }
+        else if(this.isFetus()){
+            return this._gestationAge;
         }
         else {
             return null;
@@ -177,7 +180,8 @@ var Person = Class.create(AbstractPerson, {
      * @param forceDisplay set to true if you want to display the change on the canvas
      */
     setGestationAge: function(numWeeks, forceDisplay) {
-        if(numWeeks && Object.isNumber(numWeeks)){
+        if(numWeeks){
+            this._gestationAge = numWeeks;
             var daysAgo = numWeeks * 7,
                 d = new Date();
             d.setDate(d.getDate() - daysAgo);

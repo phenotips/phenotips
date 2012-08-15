@@ -189,7 +189,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         var text,
             person = this.getNode();
         if (person.isFetus()) {
-            person.getConceptionDate() && (text = getAge(person.getConceptionDate(), null));
+            var date = person.getGestationAge();
+            text = (date) ? date + " weeks" : null;
         }
         else if(person.getLifeStatus() == 'alive') {
             person.getBirthDate() && (text = getAge(person.getBirthDate(), null));
