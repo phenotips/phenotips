@@ -402,7 +402,8 @@ var Hoverbox = Class.create( {
         if(isDrag) {
             if(editor.currentHoveredNode && editor.currentHoveredNode.validPartnerSelected) {
                 editor.currentHoveredNode.validPartnerSelected = false;
-                this.getNode().addPartner(editor.currentHoveredNode);
+                var partnership = this.getNode().addPartner(editor.currentHoveredNode);
+                partnership.createChild(true);
             }
             else if(editor.currentHoveredNode && editor.currentHoveredNode.validChildSelected) {
                 if(this.getNode().getChildren().indexOf(editor.currentHoveredNode) == -1) {
