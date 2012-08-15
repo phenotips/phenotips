@@ -53,16 +53,9 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
         //Called when the placeholder is dragged
         var move = function(dx, dy) {
             me.setPos(absOx + dx, absOy + dy);
-//            me.getGenderSymbol().stop().transform("T" + (dx - ox) + "," + (dy - oy) + "...");
-//            me.updatePositionData(absOx + dx, absOy + dy);
-//            me.getNode().getPartnerships().each(function(partnership) {
-//                partnership.getGraphics().updatePartnerConnection(me.getNode(), absOx + dx, absOy + dy, partnership.getX(), partnership.getY());
-//            });
-//            me.getNode().getParentPartnership() && me.getNode().getParentPartnership().getGraphics().updateChildConnection(me.getNode());
-
             ox = dx;
             oy = dy;
-            if(dx > 5 || dx < -5 || dy > 5 || dy < -5 ) {
+            if(dx > 2 || dx < -2 || dy > 2 || dy < -2 ) {
                 isDragged = true;
                 editor.currentDraggable.placeholder = me.getNode();
             }
