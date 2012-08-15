@@ -19,10 +19,8 @@ var Person = Class.create(AbstractPerson, {
         this._deathDate = null;
         this._conceptionDate = null;
         this._isAdopted = false;
-        this._isFetus = false; //TODO: implement pregnancy
         this._lifeStatus = 'alive';
         this._isProband = isProband;
-        this._patientStatus = null;//TODO: implement proband/consultand
         this._disorders = [];
         this._evaluations = [];
         $super(x,y,gender, id);
@@ -103,107 +101,39 @@ var Person = Class.create(AbstractPerson, {
         return this._lifeStatus;
     },
 
+    isFetus: function() {
+        return (this.getLifeStatus() == 'unborn' || this.getLifeStatus() == 'stillborn' || this.getLifeStatus() == 'aborted');
+    },
+
     /*
-     * Changes the status of this Person to newStatus and (optionally) updates
+     * Changes the status of this Person to newStatus, updates the menu and (optionally) updates
      * the graphics
      *
-     * @param newStatus can be "alive", "deceased", "stillborn" or "aborted"
+     * @param newStatus can be "alive", "deceased", "stillborn", "unborn" or "aborted"
      * @param forceDisplay set to true if you want to display the change on the canvas
      */
     setLifeStatus: function(newStatus, forceDisplay) {
-        if (newStatus == 'deceased') {
-            this.setDeceased(forceDisplay);
-        }
-        else if (newStatus == 'aborted') {
-            this.setAborted(forceDisplay);
-        }
-        else if (newStatus == 'stillborn') {
-            this.setSB(forceDisplay)
-        }
-        else {
-            this.setAlive(forceDisplay);
-        }
-    },
-
-    /*
-     * Changes the status of this Person to "aborted", marks the Person as a fetus, erases the birth date
-     * and (optionally) updates the graphics
-     *
-     * @param forceDisplay set to true if you want to display the change on the canvas
-     */
-    setAborted: function(forceDisplay) {
-        if (!this.isAdopted()) {
-            //TODO: update menu with set fetus: true and inactive, set adopted inactive
-            this._lifeStatus = 'aborted';
-            this.setFetus(true, false);
-            this.setBirthDate(null, false);
+        if(newStatus == 'unborn' || newStatus == 'stillborn' || newStatus == 'aborted' || newStatus == 'alive' || newStatus == 'deceased'){
+            this._lifeStatus = newStatus;
             forceDisplay && this.getGraphics().draw();
-        }
-    },
 
-    /*
-     * Changes the status of this Person to "alive", marks the Person as not a fetus, erases the death date
-     * and (optionally) updates the graphics
-     *
-     * @param forceDisplay set to true if you want to display the change on the canvas
-     */
-    setAlive: function(forceDisplay) {
-        this._lifeStatus = 'alive';
-        this.setDeathDate(null,false);
-        this.setFetus(false, false);
-        editor.nodeMenu.update(this, {gestation_age: {value: this.getGestationAge(), inactive: true}, adopted: {value: false, inactive: true}});
-        forceDisplay && this.getGraphics().draw();
-    },
+            if(newStatus != 'deceased') {
+                this.setDeathDate(null, false);
+            }
 
-    /*
-     * Changes the status of this Person to "deceased", marks the Person as not a fetus
-     * and (optionally) updates the graphics
-     *
-     * @param forceDisplay set to true if you want to display the change on the canvas
-     */
-    setDeceased: function(forceDisplay) {
-        if(!this.isFetus()) {
-            //TODO: update menu with set fetus: true and inactive, set adopted inactive
-            this._lifeStatus = 'deceased';
-            this.setFetus(false,false);
-            editor.nodeMenu.update(this, {name: 'gestation_age', inactive: true});
+            if(this.isFetus()) {
+                this.setBirthDate(null, false);
+            }
+
             forceDisplay && this.getGraphics().draw();
+            editor.nodeMenu.update(this,
+                {
+                    'gestation_age': {value : this.getGestationAge(), inactive : !this.isFetus()},
+                    'date_of_birth': {value : this.getBirthDate(), inactive : this.isFetus()},
+                    'adopted':       {value : this.isAdopted(), inactive: this.isFetus()},
+                    'date_of_death': {value : this.getDeathDate(), inactive: this.isFetus()}
+                });
         }
-    },
-
-    /*
-     * Changes the status of this Person to "stillborn", marks the Person as a fetus, erases the birth date
-     * and (optionally) updates the graphics
-     *
-     * @param forceDisplay set to true if you want to display the change on the canvas
-     */
-    setSB: function(forceDisplay) {
-        if (!this.isAdopted()) {
-            //TODO: update menu with set fetus: true and inactive, set adopted inactive
-            this._lifeStatus = 'stillborn';
-            this.setFetus(true, false);
-            this.setBirthDate(null, false);
-            forceDisplay && this.getGraphics().draw();
-        }
-    },
-
-    /*
-     * Returns true if the Person is marked as a Fetus
-     */
-    isFetus: function() {
-        return this._isFetus;
-    },
-
-    /*
-     * Changes whether the person is marked as a Fetus, depending on the value passed in the parameter
-     * and (optionally) updates the graphics
-     *
-     * @param isFetus set to true if you want to mark the Person as a fetus
-     * @param forceDisplay set to true if you want to display the change on the canvas
-     */
-    setFetus: function(isFetus, forceShape) {
-        this._isFetus = isFetus;
-        forceShape && this.getGraphics().drawShapes();
     },
 
     /*
@@ -221,9 +151,7 @@ var Person = Class.create(AbstractPerson, {
      * @param forceDisplay set to true if you want to display the change on the canvas
      */
     setConceptionDate: function(newDate, forceDisplay) {
-        if(this.isFetus()) {
-            this._conceptionDate = newDate;
-        }
+        this._conceptionDate = newDate;
         forceDisplay && this.getGraphics().drawLabels();
     },
 
@@ -276,7 +204,7 @@ var Person = Class.create(AbstractPerson, {
      * @param forceDisplay set to true if you want to display the change on the canvas
      */
     setBirthDate: function(newDate, forceDraw) {
-        if (!this.isFetus() && (!newDate || newDate && !this.getDeathDate() || newDate.getDate() < this.getDeathDate())) {
+        if (!newDate || newDate && !this.getDeathDate() || newDate.getDate() < this.getDeathDate()) {
             this._birthDate = newDate;
             forceDraw && this.getGraphics().drawLabels();
         }
@@ -299,7 +227,7 @@ var Person = Class.create(AbstractPerson, {
     setDeathDate: function(deathDate, forceDraw) {
         if(!deathDate || deathDate && !this.getBirthDate() || deathDate.getDate()>this.getBirthDate().getDate()) {
             this._deathDate =  deathDate;
-            this._deathDate && (this.getLifeStatus() == 'alive') && this.setDeceased(forceDraw);
+            this._deathDate && (this.getLifeStatus() == 'alive') && this.setLifeStatus('deceased', forceDraw);
         }
         forceDraw && this.getGraphics().drawLabels();
     },
@@ -439,9 +367,8 @@ var Person = Class.create(AbstractPerson, {
         var preliminary = $super(otherNode);
         var incompatibleBirthDate = this.getBirthDate() && otherNode.getBirthDate() && this.getBirthDate() < otherNode.getBirthDate();
         var incompatibleDeathDate = this.getDeathDate() && otherNode.getBirthDate() && this.getDeathDate() < otherNode.getBirthDate().clone().setDate(otherNode.getBirthDate().getDate()-700);
-        var incompatibleState = this.isFetus();
 
-        return preliminary && !incompatibleBirthDate && !incompatibleDeathDate && !incompatibleState;
+        return preliminary && !incompatibleBirthDate && !incompatibleDeathDate && !this.isFetus();
 
     },
 
@@ -465,13 +392,12 @@ var Person = Class.create(AbstractPerson, {
             first_name:    {value : this.getFirstName()},
             last_name:     {value : this.getLastName()},
             gender:        {value : this.getGender(), inactive: (this.getGender() != 'U' && this.getPartners().length > 0)},
-            date_of_birth: {value : this.getBirthDate(), inactive: (this.getLifeStatus() == 'stillborn' || this.getLifeStatus() == 'aborted')},
+            date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus()},
             disorders:     {value : this.getDisorders()},
-            adopted:       {value : this.isAdopted(), inactive: (this.getLifeStatus() == 'alive' || this.getLifeStatus() == 'deceased')},
-            fetus:         {value : this.isFetus(), inactive: (this.getLifeStatus() == 'deceased')},
-            state:         {value : this.getLifeStatus(), inactive : [this.getDeathDate() ? 'alive' : '', this.isFetus() ? 'deceased': '', this.isAdopted() ? ['stillborn', 'aborted'].flatten() : '']},
-            date_of_death: {value : this.getDeathDate()},
-            gestation_age: {value : this.getGestationAge(), inactive : (this.getLifeStatus() == 'alive' || this.getLifeStatus() == 'deceased')}
+            adopted:       {value : this.isAdopted(), inactive: this.isFetus()},
+            state:         {value : this.getLifeStatus(), inactive: [(this.getPartnerships().length > 0) ? ['unborn','aborted','stillborn'] : ''].flatten()},
+            date_of_death: {value : this.getDeathDate(), inactive: this.isFetus()},
+            gestation_age: {value : this.getGestationAge(), inactive : !this.isFetus()}
         };
     }
 });

@@ -3,7 +3,7 @@ var PedigreeEditor = Class.create({
 
     attributes: {
         radius: 40,
-        fetusShape: {'font-size': 50, 'font-family': 'Cambria'},
+        unbornShape: {'font-size': 50, 'font-family': 'Cambria'},
         nodeShape: {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
         boxOnHover : {fill: "gray", stroke: "none",opacity: 1, "fill-opacity":.25},
         optionsBtnIcon : {fill: "#1F1F1F", stroke: "none"},
@@ -250,12 +250,6 @@ var PedigreeEditor = Class.create({
                 'function' : 'setAdopted'
             },
             {
-                'name' : 'fetus',
-                'label' : 'Fetus',
-                'type' : 'checkbox',
-                'function' : 'setFetus'
-            },
-            {
                 'name' : 'state',
                 'label' : 'Individual is',
                 'type' : 'radio',
@@ -417,17 +411,16 @@ document.observe("dom:loaded",function() {
 ////    se.show();
     //alert(Raphael.color('blue'));
 
-    var patientNode = editor.getProband();
-    var patientNodesFriend = editor.addNode(patientNode.getX() + 200, patientNode.getY(), 'F', false);
-    var nodesSon = editor.addNode(patientNode.getX() + 100, patientNode.getY() + 200, 'F', false);
-    patientNode.setBirthDate(new Date(1999,9,2), true);
-    var partnership = patientNode.addPartner(patientNodesFriend);
-    partnership.addChild(nodesSon);
-
-    patientNode.addDisorder({id: "190685",value: "Down syndrome"}, true);
+//    var patientNode = editor.getProband();
+//    var patientNodesFriend = editor.addNode(patientNode.getX() + 200, patientNode.getY(), 'F', false);
+//    var nodesSon = editor.addNode(patientNode.getX() + 100, patientNode.getY() + 200, 'F', false);
+//    patientNode.setBirthDate(new Date(1999,9,2), true);
+//    var partnership = patientNode.addPartner(patientNodesFriend);
+//    partnership.addChild(nodesSon);
+//
+//    patientNode.addDisorder({id: "190685",value: "Down syndrome"}, true);
 
     //var randomNode = editor.addNode(300, 500, 'M', false);
-   patientNode.setDeceased(true);
     //patientNode.setPos(patientNode.getX(),patientNode.getY()-200,true);
     //patientNode.setPos(20,20,true);
    // patientNode.remove(true,true);

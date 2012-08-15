@@ -17,7 +17,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._disorderShapes = null;
         this._deadShape = null;
         this._adoptedShape = null;
-        this._fetusShape = null;
+        this._unbornShape = null;
         this._patientShape = null;
         this._isSelected = false;
         this._hoverBox = new Hoverbox(node, x, y);
@@ -188,7 +188,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     updateAgeLabel: function() {
         var text,
             person = this.getNode();
-        if (person.isFetus() && person.getLifeStatus() == 'alive') {
+        if (person.isFetus()) {
             person.getConceptionDate() && (text = getAge(person.getConceptionDate(), null));
         }
         else if(person.getLifeStatus() == 'alive') {
@@ -213,23 +213,15 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.setAgeLabel(text);
     },
 
-    getFetusShape: function() {
-        return this._fetusShape;
+    getUnbornShape: function() {
+        return this._unbornShape;
     },
 
-    setFetusShape: function(shape) {
-        this._fetusShape && this._fetusShape.remove();
-        this._fetusShape = shape;
-    },
-
-    updateFetusShape: function() {
-        var fetusShape,
-            person = this.getNode();
-        if(person.isFetus() && person.getLifeStatus() == 'alive') {
-            fetusShape = editor.getPaper().text(this.getRelativeX(), this.getRelativeY(), "P");
-            fetusShape.attr(editor.attributes.fetusShape);
+    updateUnbornShape: function() {
+        this._unbornShape && this._unbornShape.remove();
+        if(this.getNode().getLifeStatus() == 'unborn') {
+            this._unbornShape = editor.getPaper().text(this.getRelativeX(), this.getRelativeY(), "P").attr(editor.attributes.unbornShape);
         }
-        this.setFetusShape(fetusShape);
     },
 
     getSBLabel: function() {
@@ -360,7 +352,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     getShapes: function() {
         var lifeStatusShapes = editor.getPaper().set();
-        this.getFetusShape() && lifeStatusShapes.push(this.getFetusShape());
+        this.getUnbornShape() && lifeStatusShapes.push(this.getUnbornShape());
         this.getDeadShape() && lifeStatusShapes.push(this.getDeadShape());
         this.getAdoptedShape() && lifeStatusShapes.push(this.getAdoptedShape());
         return editor.getPaper().set(this.getHoverBox().getBackElements(), this.getGenderSymbol(), this.getDisorderShapes(),
@@ -372,7 +364,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * layering order.
      */
     drawShapes: function($super) {
-        this.updateFetusShape();
+        this.updateUnbornShape();
         this.updateLifeStatusShapes();
         this.setGenderSymbol();
         this.updateDisorderShapes();
