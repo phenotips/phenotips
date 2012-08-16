@@ -288,7 +288,7 @@ _this.reposition();
             } else if (data.range) {
                 $A($R(data.range.start, data.range.end)).each(function(i) {_generateSelectOption({'actual': i, 'displayed' : i + ' ' + data.range.item[+(i!=1)]})});
             }
-            select._getValue = function() { return [(this.selectedIndex &gt;= 0) &amp;&amp; this.options[this.selectedIndex] || '', true]; }.bind(select);
+            select._getValue = function() { return [(this.selectedIndex &gt;= 0) &amp;&amp; this.options[this.selectedIndex].value || '', true]; }.bind(select);
             this._attachFieldEventListeners(select, ['change']);
             return result;
         },
