@@ -191,6 +191,13 @@ var AbstractPerson = Class.create(AbstractNode, {
         }
     },
 
+    addParent: function(parent) {
+        if(parent.canBeParentOf(this)) {
+            var partnership = parent.createPartner(true, false);
+            partnership.addChild(this);
+        }
+    },
+
     /*
      * Returns a string representing the opposite gender of this node ("M" or "F"). Returns "U"
      * if the gender of this node is unknown
@@ -212,12 +219,12 @@ var AbstractPerson = Class.create(AbstractNode, {
      *
      * @param isPlaceHolder set to true if the new partner should be a PlaceHolder
      */
-    createPartner: function(isPlaceHolder) {
+    createPartner: function(isPlaceHolder, noChild) {
         //TODO: set x and y using positioning algorithm
         var x = this.getX() + 200,
             y = this.getY(),
             partner = editor.addNode(x, y, this.getOppositeGender(), isPlaceHolder);
-        return this.addPartner(partner);
+        return this.addPartner(partner, noChild);
     },
 
     /*
@@ -227,7 +234,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      *
      * @param partner a Person or PlaceHolder.
      */
-    addPartner: function(partner) {
+    addPartner: function(partner, noChild) {
         if(this.getPartners().indexOf(partner) != -1){
             return this.getPartnership(partner);
         }
@@ -247,6 +254,10 @@ var AbstractPerson = Class.create(AbstractNode, {
                 partner.setGender(this.getOppositeGender(), true, null);
             }
 
+            if(partnership.getChildren().length == 0 && !noChild) {
+                partnership.createChild(true);
+            }
+
             return partnership;
         }
     },
@@ -261,6 +272,23 @@ var AbstractPerson = Class.create(AbstractNode, {
             children = children.concat(partnership.getChildren())
         });
         return children;
+    },
+
+    createChild: function(isPlaceHolder) {
+        //TODO: set x and y using positioning algorithm
+        var x = this.getX() + 100,
+            y = this.getY() + 300,
+            child = editor.addNode(x, y, 'U', isPlaceHolder);
+        return this.addChild(child);
+    },
+
+    addChild: function(child) {
+        if(this.canBeParentOf(child)) {
+            var partnership = this.createPartner(true, true);
+            partnership.addChild(child);
+            return child;
+        }
+        return null;
     },
 
     /*
