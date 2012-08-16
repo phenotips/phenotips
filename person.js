@@ -123,6 +123,7 @@ var Person = Class.create(AbstractPerson, {
 
             if(this.isFetus()) {
                 this.setBirthDate(null, false);
+                this.setAdopted(false, false);
             }
 
             forceDisplay && this.getGraphics().draw();
@@ -359,6 +360,7 @@ var Person = Class.create(AbstractPerson, {
         this.getDisorders().each(function(disorder) {
             editor.getLegend().removeCase(disorder, this);
         });
+        this.getGraphics().getHoverBox().remove();
         $super(isRecursive, removeGraphics);
     },
 
