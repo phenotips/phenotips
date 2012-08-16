@@ -197,6 +197,7 @@ NodeMenu = Class.create({
       eventNames.each(function(eventName) {
         field.observe(eventName, function(event) {
           var target = _this.targetNode;
+          _this.fieldMap[field.name].crtValue = field._getValue &amp;&amp; field._getValue()[0];
           var method = _this.fieldMap[field.name]['function'];
           if (target &amp;&amp; typeof(target[method]) == 'function') {
             target[method].apply(target, field._getValue &amp;&amp; field._getValue());
