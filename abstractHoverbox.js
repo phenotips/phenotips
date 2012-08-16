@@ -11,6 +11,7 @@
 var AbstractHoverbox = Class.create({
 
     initialize: function(node, x, y, width, height) {
+        var me = this;
         this._node = node;
         this._relativeX = x;
         this._relativeY = y;
@@ -19,20 +20,32 @@ var AbstractHoverbox = Class.create({
         this._isHovered = false;
         this._orbs = editor.getPaper().set();
         this._handles = this.generateHandles();
-
-        var boxOnHover = editor.getPaper().rect(this.getX()-(this._width/2), this.getY()-(this._height/2),
+        this._buttons = this.generateButtons();
+        this._boxOnHover = editor.getPaper().rect(this.getX()-(this._width/2), this.getY()-(this._height/2),
             this._width, this._height, 5).attr(editor.attributes.boxOnHover);
-        this._backElements =  editor.getPaper().set().push(boxOnHover, this.getHandles());
+        this._backElements = editor.getPaper().set(this._boxOnHover, this._handles);
         var mask = editor.getPaper().rect(this.getX()-(this._width/2), this.getY()-(this._height/2),this._width, this._height);
         mask.attr({fill: 'gray', opacity: 0});
-
-        var me = this;
-        this._frontElements = editor.getPaper().set().push(mask, this.getDeleteBtn(), this._orbs);
+        this._frontElements = editor.getPaper().set().push(mask, this._buttons, this._orbs);
         this._frontElements.hover(function() {me.setHovered(true)}, function() {me.setHovered(false)});
         this.animateDrawHoverZone = this.animateDrawHoverZone.bind(this);
         this.animateHideHoverZone =  this.animateHideHoverZone.bind(this);
         this.hide();
         this.enable();
+    },
+
+    /*
+     * [Abstract] Creates the buttons used in this hoverbox. Returns a set of handles.
+     */
+    generateButtons: function() {
+        return editor.getPaper().set();
+    },
+
+    /*
+     * Returns Raphael set of the buttons in this hoverbox
+     */
+    getButtons: function() {
+        return this._buttons;
     },
 
     /*
@@ -70,35 +83,29 @@ var AbstractHoverbox = Class.create({
         return this._handles;
     },
 
-    /*
-     * Creates a Delete button with a red X. Returns a Raphael set.
-     */
-    generateDeleteBtn: function(x, y) {
-        var me = this,
-            path = "M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z",
-            iconScale = editor.attributes.radius * 0.014,
-            deleteBtnIcon = editor.getPaper().path(path).attr(editor.attributes.deleteBtnIcon);
+    createButton: function(x, y, svgPath, attributes, onClick, className) {
+        var iconScale = editor.attributes.radius * 0.014,
+            icon = editor.getPaper().path(svgPath).attr(attributes);
 
-        deleteBtnIcon.transform(["t" , x , y, "s", iconScale, iconScale, 0, 0]);
-        var deleteBtnMask = editor.getPaper().rect(deleteBtnIcon.getBBox().x, deleteBtnIcon.getBBox().y,
-            deleteBtnIcon.getBBox().width, deleteBtnIcon.getBBox().height, 1);
-        deleteBtnMask.attr({fill: 'gray', opacity: 0}).transform("s1.5");
+        icon.transform(["t" , x , y, "s", iconScale, iconScale, 0, 0]);
+        var mask = editor.getPaper().rect(icon.getBBox().x, icon.getBBox().y,
+            icon.getBBox().width, icon.getBBox().height, 1);
+        mask.attr({fill: 'gray', opacity: 0}).transform("s1.5");
 
-        var button = editor.getPaper().set(deleteBtnMask, deleteBtnIcon);
-        button.click(function(){
-            var confirmation = confirm("Are you sure you want to delete this node?");
-            confirmation && me.getPartnership().remove(false, true)
-        });
-        button.mousedown(function(){deleteBtnMask.attr(editor.attributes.btnMaskClick)});
+        var button = editor.getPaper().set(mask, icon).click(onClick);
+        button.mousedown(function(){mask.attr(editor.attributes.btnMaskClick)});
         button.hover(function() {
-                deleteBtnMask.attr(editor.attributes.btnMaskHoverOn)
+                mask.attr(editor.attributes.btnMaskHoverOn)
             },
             function() {
-                deleteBtnMask.attr(editor.attributes.btnMaskHoverOff)
+                mask.attr(editor.attributes.btnMaskHoverOff)
             });
-
+        className && button.forEach(function(element) {
+            element.node.setAttribute('class', className);
+        });
+        button.icon = icon;
+        return button;
     },
-
     /*
      * Returns a Raphael set containing the button for deleting the node
      */
@@ -117,7 +124,7 @@ var AbstractHoverbox = Class.create({
      * Returns the gray box that appears when the node is hovered
      */
     getBoxOnHover: function() {
-        return this.getBackElements()[0];
+        return this._boxOnHover;
     },
 
     /*
@@ -279,19 +286,25 @@ var AbstractHoverbox = Class.create({
      * Fades the hoverbox graphics in
      */
     animateDrawHoverZone: function() {
-        this.getPartnership().getGraphics().setSelected(true);
+        this.getNode().getGraphics().setSelected(true);
         this.getBoxOnHover().stop().animate({opacity:0.7}, 300);
-        this.getDeleteBtnIcon().stop().animate({opacity:1}, 300);
+        this.getButtons().forEach(function(button) {
+            button.icon.stop().animate({opacity:1}, 300);
+        });
+        this.getCurrentHandles().show();
     },
 
     /*
      * Fades the hoverbox graphics out
      */
     animateHideHoverZone: function() {
-        if(!this.isHovered()) {
-            this.getPartnership().getGraphics().setSelected(false);
+        if(!this.isMenuToggled() && !this.isHovered()) {
+            this.getNode().getGraphics().setSelected(false);
             this.getBoxOnHover().stop().animate({opacity:0}, 200);
-            this.getDeleteBtnIcon().stop().animate({opacity:0}, 200);
+            this.getButtons().forEach(function(button) {
+                button.icon.stop().animate({opacity:0}, 200);
+            });
+            this.getCurrentHandles().hide();
         }
     },
 
@@ -300,7 +313,9 @@ var AbstractHoverbox = Class.create({
      */
     hide: function() {
         this.getBoxOnHover().attr({opacity:0});
-        this.getDeleteBtnIcon().attr({opacity:0});
+        this.getButtons().forEach(function(button) {
+            button.icon.hide();
+        });
         this.getHandles().hide();
     },
 
