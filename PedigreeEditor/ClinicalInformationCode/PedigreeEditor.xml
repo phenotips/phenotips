@@ -264,13 +264,14 @@ NodeMenu = Class.create({
               }
               return [results, true];
             }.bind(diseasePicker);
-var _this = this;
-document.observe('custom:selection:changed', function(event) {
-if (event.memo &amp;&amp; event.memo.trigger &amp;&amp; !event.memo.trigger._silent) {
-Event.fire(event.memo.trigger, 'custom:selection:changed');
-_this.reposition();
-}
-});
+            var _this = this;
+            // Forward the 'custom:selection:changed' to the input
+            document.observe('custom:selection:changed', function(event) {
+              if (event.memo &amp;&amp; event.memo.trigger &amp;&amp; event.findElement() != event.memo.trigger &amp;&amp; !event.memo.trigger._silent) {
+                Event.fire(event.memo.trigger, 'custom:selection:changed');
+                _this.reposition();
+              }
+            });
             this._attachFieldEventListeners(diseasePicker, ['custom:selection:changed']);
             return result;
         },
