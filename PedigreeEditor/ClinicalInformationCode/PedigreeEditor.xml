@@ -186,7 +186,8 @@ NodeMenu = Class.create({
             'element' : result,
             'default' : data["default"] || '',
             'crtValue' : data["default"] || '',
-            'function' : data['function']
+            'function' : data['function'],
+            'inactive' : false
         };
         return result;
     },
@@ -318,6 +319,7 @@ _this.reposition();
         Object.keys(this.fieldMap).each(function (name) {
             _this.fieldMap[name].crtValue = _this.fieldMap[name]["default"];
             _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
+            _this.fieldMap[name].inactive = false;
         });
     },
     reposition : function() {
@@ -359,8 +361,9 @@ _this.reposition();
         var _this = this;
         Object.keys(this.fieldMap).each(function (name) {
             _this.fieldMap[name].crtValue = data &amp;&amp; data[name] &amp;&amp; data[name].value || _this.fieldMap[name].crtValue || _this.fieldMap[name]["default"];
+            _this.fieldMap[name].inactive = (data &amp;&amp; data[name] &amp;&amp; (typeof(data[name].inactive) == 'boolean' || typeof(data[name].inactive) == 'object')) ? data[name].inactive : _this.fieldMap[name].inactive;
             _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
-            _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, data &amp;&amp; data[name] &amp;&amp; data[name].inactive);
+            _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
         });
     },
     _setFieldValue : {
