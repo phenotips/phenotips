@@ -1109,7 +1109,8 @@ NodeMenu = Class.create({
   -webkit-border-radius: 0 0 0 4px;
   border-radius: 0 0 0 4px;
   padding: .5em 1em;
-  width: auto;
+  width: 15%;
+  min-width: 100px;
 }
 
 .legend-box .legend-tab {
