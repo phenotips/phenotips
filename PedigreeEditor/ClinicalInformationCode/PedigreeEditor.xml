@@ -375,10 +375,10 @@ _this.reposition();
             }
         },
         'checkbox' : function (container, value) {
-            var target = container.down('input[type=checkbox]');
-            if (target) {
-                target.checked = value;
-            }
+          var checkbox = container.down('input[type=checkbox]');
+          if (checkbox) {
+           checkbox.checked = value;
+          }
         },
         'text' : function (container, value) {
             var target = container.down('input[type=text]');
