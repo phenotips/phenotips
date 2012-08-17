@@ -32,9 +32,12 @@ var NodeIndex = Class.create({
       // Finding positions for children...
       var id = relativePosition.below;
       var node = this.nodes[id];
-      var i = node.getLowerNeighbors().length, total = i + identifiers.length;
+      var i = 1, total = identifiers.length;
+      var crtSize = this.findLowerNeighborGroupsSize(node);
+      var newSize = crtSize + total * 2 * this.gridUnit.x;
+      var start = node.getX() - newSize / 2 + crtSize;
       identifiers.each(function(item) {
-        result[item] = { x: node.getX() + (2 * i - total + 1) * _this.gridUnit.x, y: node.getY() + _this.gridUnit.y}
+        result[item] = { x: start + (2 * i) * _this.gridUnit.x, y: node.getY() + _this.gridUnit.y}
         ++i;
       });
     } else if (relativePosition.join) {
@@ -118,5 +121,42 @@ var NodeIndex = Class.create({
   },
   exists : function(id) {
     return !!this.nodes[id];
+  },
+  
+  findHorizontalGroupLimits : function (node, _visited, _limits) {
+    var visited = _visited || {};
+    var limits = {};
+    if (_limits)  {
+      limits.low  = Math.min(_limits.low,  item.getX());
+      limits.high = Math.min(_limits.high, item.getX());
+    } else {
+      limits = _limits || {low : node.getX(), high : node.getX()}
+    }
+    visited[node.getID()] = true;
+    var _this = this;
+    node.getSideNeighbors().each(function (item) {
+      if (item.getY() == node.getY() && !visited[item.getID]) {
+        _this.findHorizontalGroupLimits(item, visited, limits);
+      }
+    });
+    return limits;
+  },
+  
+  findHorizontalGroupSize :  function (node) {
+    var limits = this.findHorizontalGroupLimits(node);
+    return limits.high - limits.low;
+  },
+  
+  findLowerNeighborGroupsSize : function(node) {
+    var list = node.getLowerNeighbors();
+    if (list.length == 0) {
+      return -2*this.gridUnit.x;
+    }
+    var i = 0;
+    var size = this.findHorizontalGroupLimits(list[0]).high - list[0].getX();
+    for (var i = 1; i < list.length; ++i) {
+      size += 2*this.gridUnit.x + this.findHorizontalGroupSize(list[i]);
+    }
+    return size;
   }
 });
