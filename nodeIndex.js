@@ -1,7 +1,7 @@
 var NodeIndex = Class.create({
   gridUnit : {
     x: 100,
-    y: 250
+    y: 200
   },
   initialize : function(nodes) {
     var _this = this;
