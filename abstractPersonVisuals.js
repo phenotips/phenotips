@@ -15,10 +15,13 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         this._radius = editor.attributes.radius;
         $super(node, x, y);
         this._width = editor.attributes.radius * 4;
+        this.setGenderSymbol();
         this._highlightBox = editor.getPaper().rect(this.getRelativeX()-(this._width/2), this.getRelativeY()-(this._width/2),
             this._width, this._width, 5).attr(editor.attributes.boxOnHover);
         this._highlightBox.attr({fill: 'black', opacity: 0, 'fill-opacity': 0});
-        this.draw();
+        this._highlightBox.insertBefore(this.getGenderSymbol().flatten());
+
+        //this.draw();
     },
 
     /*
@@ -41,8 +44,9 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * @param x the x coordinate
      * @param y the y coordinate
      * @param animate set to true if you want to animate the transition
+     * @param callback the function called at the end of the animation
      */
-    setPos: function(x, y, animate) {
+    setPos: function(x, y, animate, callback) {
         var me = this;
         this.getNode().getPartnerships().each(function(partnership) {
             partnership.getGraphics().updatePartnerConnection(me.getNode(), x, y, partnership.getX(), partnership.getY(),  animate);
@@ -52,7 +56,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
         if(animate){
             this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getX()) + "," +(y-this.getY()) + "..."},
-                1000, "easeInOut", function() {me.updatePositionData(x, y)});
+                1000, "easeInOut", function() {me.updatePositionData(x, y); callback && callback();});
         }
         else {
             this.getAllGraphics().transform("t " + (x-this.getX()) + "," +(y-this.getY()) + "...");
@@ -100,7 +104,10 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         shape = (this.getNode().getGender() == 'U') ? shape.transform("...r45") : shape;
         this._genderShape = shape;
 
-        var shadow = shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3);
+        //var shadow = shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3);
+        var shadow = shape.clone().attr({stroke: 'none', fill: 'gray', opacity: .3});
+        shadow.translate(3,3);
+        shadow.insertBefore(shape);
         this.getGenderSymbol() && this.getGenderSymbol().remove();
         this._genderSymbol = editor.getPaper().set(shadow, shape);
 

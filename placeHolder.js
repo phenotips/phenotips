@@ -57,7 +57,7 @@ var PlaceHolder = Class.create(AbstractPerson, {
             partnerships.each(function(partnership){
                 var partner = partnership.getPartnerOf(me);
                 if(person.getPartners().indexOf(partner) == -1) {
-                    var newPartnership = person.addPartner(partnership.getPartnerOf(me));
+                    var newPartnership = person.addPartner(partnership.getPartnerOf(me), true);
                     partnership.getChildren().each(function(child){
                         partnership.removeChild(child);
                         newPartnership.addChild(child);

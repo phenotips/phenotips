@@ -169,5 +169,9 @@ var Partnership = Class.create(AbstractNode, {
      */
     getSideNeighbors: function() {
         return this.getPartners();
+    },
+
+    canBeParentOf: function(someNode) {
+        return (this.getPartners()[0].canBeParentOf(someNode) && this.getPartners()[1].canBeParentOf(someNode));
     }
 });

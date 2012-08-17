@@ -20,8 +20,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._unbornShape = null;
         this._patientShape = null;
         this._isSelected = false;
-        this._hoverBox = new Hoverbox(node, x, y);
         $super(node, x, y);
+        this._hoverBox = new PersonHoverbox(node, x, y, this.getGenderSymbol());
     },
 
     getHoverBox: function() {
@@ -64,11 +64,20 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         else {
             $super();
-            if(this.getNode().isProband()) {
-                this.getGenderShape().transform(["...s", 1.07]);
-                this.getGenderShape().attr("stroke-width", 5);
+        }
+        if(this.getNode().isProband()) {
+            this.getGenderShape().transform(["...s", 1.07]);
+            this.getGenderShape().attr("stroke-width", 5);
+        }
+        if(this.getHoverBox()) {
+            this._genderSymbol.flatten().insertAfter(this.getHoverBox().getBackElements().flatten());
+        }
+        else {
+            if (!this.getNode().isProband()) {
+                this._genderSymbol.flatten().insertAfter(editor.getProband().getGraphics().getAllGraphics().flatten());
             }
         }
+
     },
 
     getEvaluationLabels: function() {
@@ -166,6 +175,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             x2 = x + (10/8) * editor.attributes.radius,
             y2 = y - (10/8) * editor.attributes.radius;
         this._deadShape = editor.getPaper().path(["M", x1,y1,"L",x2, y2]).attr("stroke-width", 3);
+        this._deadShape.insertAfter(this.getHoverBox().getFrontElements().flatten());
+        this._deadShape.node.setAttribute("class","deadshape");
     },
 
     getDeadShape: function() {
@@ -218,7 +229,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         return this._unbornShape;
     },
 
-    updateUnbornShape: function() {
+    drawUnbornShape: function() {
         this._unbornShape && this._unbornShape.remove();
         if(this.getNode().getLifeStatus() == 'unborn') {
             this._unbornShape = editor.getPaper().text(this.getRelativeX(), this.getRelativeY(), "P").attr(editor.attributes.unbornShape);
@@ -240,9 +251,12 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         var status = this.getNode().getLifeStatus();
         this.getDeadShape() && this.getDeadShape().remove();
         this.getHoverBox().unhidePartnerHandles();
+        this.getUnbornShape() && this.getUnbornShape().remove();
+        this.setGenderSymbol();
 
         if(status == 'deceased'){
             this.drawDeadShape();
+            alert('done');
         }
         else if(status == 'stillborn') {
             this.getHoverBox().hidePartnerHandles();
@@ -251,12 +265,15 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         else if(status == 'aborted') {
             this.getHoverBox().hidePartnerHandles();
         }
+        else if(status == 'unborn') {
+            this.getHoverBox().hidePartnerHandles();
+            this.drawUnbornShape();
+        }
     },
 
-    updateAdoptedShape: function() {
+    drawAdoptedShape: function() {
         this._adoptedShape && this._adoptedShape.remove();
-        if(this.getNode().isAdopted()) {
-            var r = editor.attributes.radius,
+        var r = editor.attributes.radius,
             x1 = this.getRelativeX() - ((0.8) * r),
             x2 = this.getRelativeX() + ((0.8) * r),
             y = this.getRelativeY() - ((1.3) * r),
@@ -264,8 +281,12 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 " " + 0 + "l0 " + (2.6 * r) + "l" + (r)/2 + " 0M" + x2 +
                 " " + y + "l" + (r)/2 + " 0" + "l0 " + (2.6 * r) + "l" +
                 (r)/(-2) + " 0";
-            this._adoptedShape = editor.getPaper().path(brackets).attr("stroke-width", 3);
-        }
+        this._adoptedShape = editor.getPaper().path(brackets).attr("stroke-width", 3);
+        this._adoptedShape.insertBefore(this.getHoverBox().getFrontElements().flatten());
+    },
+
+    removeAdoptedShape: function() {
+        this._adoptedShape && this._adoptedShape.remove();
     },
 
     /*
@@ -285,8 +306,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     /*
      * Marks this node as hovered, and moves the labels out of the way
      */
-    setSelected: function(isSelected) {
-        this._isSelected = isSelected;
+    setSelected: function($super, isSelected) {
+        $super();
         if(isSelected) {
             this.shiftLabels();
         }
@@ -356,21 +377,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.getUnbornShape() && lifeStatusShapes.push(this.getUnbornShape());
         this.getDeadShape() && lifeStatusShapes.push(this.getDeadShape());
         this.getAdoptedShape() && lifeStatusShapes.push(this.getAdoptedShape());
-        return editor.getPaper().set(this.getHoverBox().getBackElements(), this.getGenderSymbol(), this.getDisorderShapes(),
-            lifeStatusShapes, this.getHoverBox().getFrontElements());
-    },
-
-    /*
-     * Updates the graphical elements of this node excluding labels, and brings them to front in the correct
-     * layering order.
-     */
-    drawShapes: function($super) {
-        this.updateUnbornShape();
-        this.updateLifeStatusShapes();
-        this.setGenderSymbol();
-        this.updateDisorderShapes();
-        this.updateAdoptedShape();
-        $super();
+        return editor.getPaper().set(this.getGenderSymbol(), this.getDisorderShapes(), lifeStatusShapes);
+//        return editor.getPaper().set(this.getHoverBox().getBackElements(), this.getGenderSymbol(), this.getDisorderShapes(),
+//            lifeStatusShapes, this.getHoverBox().getFrontElements());
     },
 
     /*
@@ -388,6 +397,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * layering order.
      */
     draw: function($super) {
+        alert('aha');
         this.drawLabels();
         $super();
     },

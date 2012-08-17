@@ -46,9 +46,10 @@ var AbstractNodeVisuals = Class.create({
      *
      * @param x the x coordinate on the canvas
      * @param animate set to true if you want to animate the transition
+     * @param callback the function called at the end of the animation
      */
-    setX: function(x, animate) {
-        this.setPos(x, this.getY(), animate);
+    setX: function(x, animate, callback) {
+        this.setPos(x, this.getY(), animate, callback);
     },
 
     /*
@@ -63,9 +64,10 @@ var AbstractNodeVisuals = Class.create({
      *
      * @param y the y coordinate on the canvas
      * @param animate set to true if you want to animate the transition
+     * @param callback the function called at the end of the animation
      */
-    setY: function(y, animate) {
-        this.setPos(y, this.getX(), animate);
+    setY: function(y, animate, callback) {
+        this.setPos(y, this.getX(), animate, callback);
     },
 
     /*
@@ -82,8 +84,16 @@ var AbstractNodeVisuals = Class.create({
      * @param x the x coordinate on the canvas
      * @param y the y coordinate on the canvas
      * @param animate set to true if you want to animate the transition
+     * @param callback the function called at the end of the animation
      */
-    setPos: function(x, y, animate) {
+    setPos: function(x, y, animate, callback) {
+    },
+
+    /*
+     * Determines whether this node is selected
+     */
+    setSelected: function(isSelected) {
+        this._isSelected = isSelected;
     },
 
     /*

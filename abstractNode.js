@@ -46,10 +46,11 @@ var AbstractNode = Class.create( {
      * Changes the X coordinate of the node
      *
      * @param x the x coordinate on the canvas
-     * @param animate set to true if you want to animate the transition
+     * @param animate set to true if you want to animate, callback the transition
+     * @param callback the function called at the end of the animation
      */
-    setX: function(x, animate) {
-        this.getGraphics().setX(x, animate)
+    setX: function(x, animate, callback) {
+        this.getGraphics().setX(x, animate, callback)
     },
 
     /*
@@ -64,9 +65,10 @@ var AbstractNode = Class.create( {
      *
      * @param y the y coordinate on the canvas
      * @param animate set to true if you want to animate the transition
+     * @param callback the function called at the end of the animation
      */
-    setY: function(y, animate) {
-        this.getGraphics().setX(y, animate)
+    setY: function(y, animate, callback) {
+        this.getGraphics().setX(y, animate, callback)
     },
 
     /*
@@ -82,9 +84,10 @@ var AbstractNode = Class.create( {
      * @param x the x coordinate on the canvas
      * @param y the y coordinate on the canvas
      * @param animate set to true if you want to animate the transition
+     * @param callback the function called at the end of the animation
      */
-    setPos: function(x,y, animate) {
-        this.getGraphics().setPos(x, y, animate);
+    setPos: function(x,y, animate, callback) {
+        this.getGraphics().setPos(x, y, animate, callback);
     },
     
     /**

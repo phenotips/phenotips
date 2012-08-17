@@ -27,6 +27,13 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
         shape.attr("cursor", "pointer");
         shape.ox = shape.getBBox().x;
         shape.oy = shape.getBBox().y;
+       // var k = editor.getProband().getGraphics().getAllGraphics().flatten();
+
+        //shape.insertAfter(editor.getProband().getGraphics().getAllGraphics().flatten());
+        //k[14].attr({fill: "yellow", opacity: 1});
+//        shape[2].insertAfter(k[14]);
+//        shape[1].insertAfter(k[14]);
+//        shape[0].insertAfter(k[14]);
     },
 
     /*
@@ -43,45 +50,55 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
 
         //Action on mouse click
         var start = function() {
-            absOx = me.getX();
-            absOy = me.getY();
-            isDragged = false;
-            me.getShapes().toFront();
-            editor.enterHoverMode(me.getNode());
+            if(!me.isAnimating) {
+                absOx = me.getX();
+                absOy = me.getY();
+                isDragged = false;
+                me.getShapes().toFront();
+                editor.enterHoverMode(me.getNode());
+            }
         };
 
         //Called when the placeholder is dragged
         var move = function(dx, dy) {
-            me.setPos(absOx + dx, absOy + dy);
-            ox = dx;
-            oy = dy;
-            if(dx > 2 || dx < -2 || dy > 2 || dy < -2 ) {
-                isDragged = true;
-                editor.currentDraggable.placeholder = me.getNode();
+            if(!me.isAnimating) {
+                me.setPos(absOx + dx, absOy + dy);
+                ox = dx;
+                oy = dy;
+                if(dx > 2 || dx < -2 || dy > 2 || dy < -2 ) {
+                    isDragged = true;
+                    editor.currentDraggable.placeholder = me.getNode();
+                }
             }
         };
 
         //Called when the mouse button is released
         var end = function() {
-            if(isDragged) {
-                draggable = false;
-                var node = editor.currentHoveredNode;
-                var vp = editor.validPlaceholderNode;
-                editor.validPlaceholderNode = false;
-                if(node && vp) {
-                    me.getNode().merge(node);
+            if(!me.isAnimating){
+                if(isDragged) {
+                    draggable = false;
+                    var node = editor.currentHoveredNode;
+                    var vp = editor.validPlaceholderNode;
+                    editor.validPlaceholderNode = false;
+                    if(node && vp) {
+                        me.getNode().merge(node);
+                    }
+                    else {
+                        me.isAnimating = true;
+                        me.setPos(absOx, absOy, true, function() {
+                            me.isAnimating = false;
+                        });
+                        ox = 0;
+                        oy = 0;
+                    }
                 }
                 else {
-                    me.setPos(absOx, absOy, true);
-                    ox = 0;
-                    oy = 0;
+                    me.setPos(absOx, absOy, false);
+                    me.getNode().convertToPerson();
                 }
+                editor.exitHoverMode();
+                editor.currentDraggable.placeholder = null;
             }
-            else {
-                me.getNode().convertToPerson();
-            }
-            editor.exitHoverMode();
-            editor.currentDraggable.placeholder = null;
         };
 
         //Adds dragging capability to the genderSymbols

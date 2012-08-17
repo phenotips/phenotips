@@ -112,21 +112,20 @@ var Person = Class.create(AbstractPerson, {
      * @param newStatus can be "alive", "deceased", "stillborn", "unborn" or "aborted"
      * @param forceDisplay set to true if you want to display the change on the canvas
      */
-    setLifeStatus: function(newStatus, forceDisplay) {
+    setLifeStatus: function(newStatus) {
         if(newStatus == 'unborn' || newStatus == 'stillborn' || newStatus == 'aborted' || newStatus == 'alive' || newStatus == 'deceased'){
             this._lifeStatus = newStatus;
-            forceDisplay && this.getGraphics().draw();
 
             if(newStatus != 'deceased') {
-                this.setDeathDate(null, false);
+                this.setDeathDate(null, true);
             }
 
             if(this.isFetus()) {
-                this.setBirthDate(null, false);
-                this.setAdopted(false, false);
+                this.setBirthDate(null, true);
+                this.setAdopted(false);
             }
 
-            forceDisplay && this.getGraphics().draw();
+            this.getGraphics().updateLifeStatusShapes();
             editor.nodeMenu.update(this,
                 {
                     'gestation_age': {value : this.getGestationAge(), inactive : !this.isFetus()},
@@ -327,16 +326,14 @@ var Person = Class.create(AbstractPerson, {
      * @param isAdopted set to true if you want to mark the Person adopted
      * @param forceDisplay set to true if you want to display the change on the canvas
      */
-    setAdopted: function(isAdopted, forceDisplay) {
+    setAdopted: function(isAdopted) {
         //TODO: implement adopted and social parents
-
-        if((this.getLifeStatus() == 'stillborn' || this.getLifeStatus() =='aborted')) {
-            this._isAdopted = false;
+        if(isAdopted) {
+            this.getGraphics().drawAdoptedShape();
         }
         else {
-            this._isAdopted = isAdopted;
+            this.getGraphics().removeAdoptedShape();
         }
-        forceDisplay && this.getGraphics().drawShapes();
     },
 
     /**

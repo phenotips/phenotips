@@ -105,6 +105,31 @@ function generateOrb(canvas, x, y, r, hue) {
     );
 }
 
+
+Raphael.st.flatten = function () {
+    var flattenedSet = new Raphael.st.constructor();
+        this.forEach(function(element) {
+            flattenedSet.concat(element.flatten());
+        });
+    return flattenedSet;
+};
+
+Raphael.el.flatten = function () {
+    return this.paper.set(this);
+};
+
+Raphael.st.concat = function (set) {
+    var _this = this;
+    if(typeof(set.forEach) == 'function') {
+        set.forEach(function(element) {
+            _this.push(element);
+        });
+    }
+    else {
+        _this.push(set);
+    }
+};
+
 window.requestAnimFrame = (function(){
     return  window.requestAnimationFrame   ||
         window.webkitRequestAnimationFrame ||

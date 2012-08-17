@@ -13,11 +13,17 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         $super(partnership, x,y);
         this._junctionShape = editor.getPaper().circle(x, y, 2).attr("fill", "black");
         //TODO: find out whether there is an arc
-        this._connections = [null, null];
+        this._connections = [null, null]
         var me = this;
         me.getNode().getPartners().each(function(partner) {
             me.updatePartnerConnection(partner, partner.getX(), partner.getY(), x, y);
         });
+        this._hoverbox = new PartnershipHoverbox(partnership, x, y, this.getShapes());
+        //this.draw();
+    },
+
+    getHoverBox: function() {
+        return this._hoverbox;
     },
 
     /*
@@ -108,8 +114,9 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      * @param x the x coordinate
      * @param y the y coordinate
      * @param animate set to true if you want to animate the transition
+     * @param callback the function called at the end of the animation
      */
-    setPos: function(x,y, animate) {
+    setPos: function(x,y, animate, callback) {
         var me = this;
         var junctionCallback = function () {
             me._absoluteX = x;
@@ -126,7 +133,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
         if(animate) {
             this.getJunctionShape().stop().animate({'transform': "t " + (x-this.getX()) + "," + (y-this.getY()) + "..."},
-                1000, "easeInOut", junctionCallback);
+                1000, "easeInOut", function() {junctionCallback(); callback && callback();});
         }
         else {
             this.getJunctionShape().transform("t " + (x-this.getX()) + "," + (y-this.getY()) + "...");
@@ -139,6 +146,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      */
     remove: function() {
         this.getJunctionShape().remove();
+        alert(this.getConnections().length)
         this.getConnections()[0].remove();
         this.getConnections()[1].remove();
     },
@@ -155,5 +163,21 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         (type == 'partner') ? attr.stroke = '#2E2E56' : attr.stroke = '#2E2E56';
         (node.getType() == "ph") && (attr['stroke-dasharray'] = '- ');
         return attr;
+    },
+
+    getShapes: function() {
+        var connections = editor.getPaper().set(this.getConnections()[0], this.getConnections()[1]);
+        this.getNode().getChildren().each(function(child) {
+            connections.push(child.parentConnection);
+        });
+        return editor.getPaper().set(connections, this.getJunctionShape());
+    },
+
+    getAllGraphics: function($super) {
+        var connections = editor.getPaper().set(this.getConnections()[0], this.getConnections()[1]);
+        this.getNode().getChildren().each(function(child) {
+            connections.push(child.parentConnection);
+        });
+        return $super().push(this.getHoverBox().getFrontElements(), this.getHoverBox().getBackElements());
     }
 });

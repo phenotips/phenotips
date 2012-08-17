@@ -6,7 +6,8 @@ var PedigreeEditor = Class.create({
         unbornShape: {'font-size': 50, 'font-family': 'Cambria'},
         nodeShape: {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
         boxOnHover : {fill: "gray", stroke: "none",opacity: 1, "fill-opacity":.25},
-        optionsBtnIcon : {fill: "#1F1F1F", stroke: "none"},
+        menuBtnIcon : {fill: "#1F1F1F", stroke: "none"},
+        deleteBtnIcon : {fill: "#990000", stroke: "none"},
         btnMaskHoverOn : {opacity:.6, stroke: 'none'},
         btnMaskHoverOff : {opacity:0},
         btnMaskClick: {opacity:1},
@@ -288,6 +289,7 @@ var PedigreeEditor = Class.create({
     },
 
     addNode: function(x, y, gender, isPlaceHolder) {
+        !isPlaceHolder && (isPlaceHolder = false);
         var isProband = (!isPlaceHolder && this.nodes[0].length == 0);
         var node = (isPlaceHolder) ? (new PlaceHolder(x, y, gender)) : (new Person(x, y, gender, isProband));
         this.nodes[+(isPlaceHolder)].push(node);
@@ -385,7 +387,6 @@ var PedigreeEditor = Class.create({
                 function() {
                     s.getGraphics().getHoverBox().setHovered(false);
                     s.getGraphics().getHoverBox().getBoxOnHover().attr(me.attributes.boxOnHover).attr('opacity', 0);
-                    me.currentHoveredNode.validPartnerSelected = false;
                     me.currentHoveredNode = null;
                     me.validPlaceholderNode = false;
                 });
@@ -402,6 +403,16 @@ var editor;
 
 document.observe("dom:loaded",function() {
     editor = new PedigreeEditor();
+//    node.getGraphics().getShapes().flatten().insertBefore(editor.getProband().getGraphics().getAllGraphics().flatten());
+//    var el1 = editor.getPaper().circle(20,20,20).attr("fill", "pink");
+//    var el3 = editor.getPaper().circle(30,20,20).attr("fill", "blue");
+//
+//    var el2 = editor.getPaper().circle(20,20,20).attr("fill", "green");
+//    var el4 = editor.getPaper().circle(40,20,20).attr("fill", "yellow");
+//    var el1 = editor.getPaper().circle(10,20,20).attr("fill", "pink");
+    //var set2 = editor.getPaper().set(el4).insertAfter(set1);
+//    set1.push(set2);
+
 
 //    var iconPath = Raphael.pathToRelative("M16,1.466C7.973,1.466,1.466,7.973,1.466,16c0,8.027,6.507,14.534,14.534,14.534c8.027,0,14.534-6.507,14.534-14.534C30.534,7.973,24.027,1.466,16,1.466zM16,28.792c-1.549,0-2.806-1.256-2.806-2.806s1.256-2.806,2.806-2.806c1.55,0,2.806,1.256,2.806,2.806S17.55,28.792,16,28.792zM16,21.087l-7.858-6.562h3.469V5.747h8.779v8.778h3.468L16,21.087z");
 //    iconPath[0][1] = 0;
