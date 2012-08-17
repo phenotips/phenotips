@@ -1,0 +1,387 @@
+#template("colorThemeInit.vm")
+
+/* =========================================
+ * GENERAL
+ */
+#mainContentArea, .main {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 none !important;
+}
+#headerglobal, #menuview, #footerglobal {
+  display: none !important;
+}
+#hierarchy {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+/* =========================================
+ * NOTIFICATIONS
+ */
+#body .xnotification-container {
+    right: 0 !important;
+    left: auto !important;
+    width: 250px;
+}
+#body .xnotification {
+    background: $theme.pageContentBackgroundColor none 2px .7em no-repeat !important;
+    border: 2px solid $theme.borderColor;
+    box-shadow: 0 0 6px #AAA, 0 0 25px #DDD inset;
+    color: $theme.textColor !important;
+    display: block;
+    font-weight: normal;
+    margin: 2px;
+    padding: 0.5em 22px;
+    text-align: left;
+    width: 200px;
+}
+#body .xnotification-inprogress {
+    background-image: url("$xwiki.getSkinFile('icons/xwiki/spinner.gif')") !important;
+}
+#body .xnotification-error {
+    background-image: url("$xwiki.getSkinFile('icons/silk/delete.png')") !important;
+    color: $theme.notificationErrorColor !important;
+    border-color: $theme.notificationErrorColor !important;
+}
+#body .xnotification-warning {
+    background-image: url("$xwiki.getSkinFile('icons/silk/error.png')") !important;
+    color: $theme.notificationWarningColor !important;
+    border-color: $theme.notificationWarningColor !important;
+}
+#body .xnotification-info {
+    background-image: url("$xwiki.getSkinFile('icons/silk/information.png')") !important;
+    color: $theme.notificationInfoColor !important;
+    border-color: $theme.notificationInfoColor !important;
+}
+#body .xnotification-done {
+    background-image: url("$xwiki.getSkinFile('icons/silk/tick.png')") !important;
+    color: $theme.notificationSuccessColor !important;
+    border-color: $theme.notificationSuccessColor !important;
+}
+/* =========================================
+ * TITLE
+ */
+#document-title h1 {
+    border: 0 none;
+    color: #000000;
+    font-size: 1.2em;
+    font-weight: bold;
+    letter-spacing: 0.2em;
+    margin: 0;
+    padding: 0.5em;
+    text-shadow: 0 0 6px #AAAAAA;
+    text-transform: uppercase;
+}
+/* =========================================
+ * MENU
+ */
+#editor-menu {
+  background: #444;
+  padding: 6px;
+}
+#editor-menu .action-group {
+  display: inline-block;
+}
+#editor-menu .external-actions {
+  float: right;
+}
+#editor-menu .menu-item {
+  border: 1px solid #333;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  background: #444 none .2em center no-repeat;
+  color: #fff;
+  padding: .2em .2em .2em 22px;
+  margin: 0 .7em 0 0;
+  box-shadow: #222222 0 0 6px 0;
+  cursor: pointer;
+  display: inline-block;
+  white-space: nowrap;
+}
+#editor-menu .new {
+  background-image: url("$xwiki.getSkinFile('icons/silk/add.png')");
+}
+#editor-menu .undo {
+  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_undo.png')");
+}
+#editor-menu .redo {
+  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_redo.png')");
+}
+#editor-menu .layout {
+  background-image: url("$xwiki.getSkinFile('icons/silk/chart_organisation.png')");
+}
+#editor-menu .clear {
+  background-image: url("$xwiki.getSkinFile('icons/silk/cancel.png')");
+}
+#editor-menu .print {
+  background-image: url("$xwiki.getSkinFile('icons/silk/printer.png')");
+}
+#editor-menu .save {
+  background-image: url("$xwiki.getSkinFile('icons/silk/disk.png')");
+}
+#editor-menu .export {
+  background-image: url("$xwiki.getSkinFile('icons/silk/package.png')");
+}
+#editor-menu .close {
+  background-image: url("$xwiki.getSkinFile('icons/silk/bullet_go.png')");
+}
+#editor-menu .menu-item:hover {
+  box-shadow: #fff 0 0 6px 0;
+}
+/* =========================================
+ * CONTROLS
+ */
+.view-controls {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 4px;
+  opacity: .8;
+  z-index: 100000;
+}
+.view-controls:hover {
+  ##opacity: 1;
+}
+/* ----------------------------------------
+ * Pan
+ */
+.view-controls-pan {
+  width: 60px;
+  height: 60px;
+  left: 0;
+  top: 0;
+  position: absolute;
+  border: 1px solid #aaa;
+  background: #FFF;
+  -moz-border-radius: 30px;
+  -webkit-border-radius: 30px;
+  border-radius: 30px;
+  box-shadow: 0 0 6px #AAAAAA;
+}
+.view-controls-pan * {
+  width: 16px;
+  height: 16px;
+  background: transparent none center center no-repeat;
+  position: absolute;
+  cursor: pointer;
+}
+.view-controls-pan .pan-up {
+  top: 4px;
+  left: 22px;
+  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_up.png')");
+}
+.view-controls-pan .pan-right {
+  top: 22px;
+  right: 4px;
+  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_right.png')");
+}
+.view-controls-pan .pan-down {
+  bottom: 4px;
+  left: 22px;
+  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_down.png')");
+}
+.view-controls-pan .pan-left {
+  top: 22px;
+  left: 4px;
+  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_left.png')");
+}
+/* ----------------------------------------
+ * Zoom
+ */
+.view-controls-zoom {
+  width: 60px;
+  left: 0;
+  top: 70px;
+  position: absolute;
+  text-align: center;
+}
+.view-controls-zoom * {
+  background: #FFF none center center no-repeat;
+  border: 1px solid #aaa;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  box-shadow: 0 0 6px #AAAAAA;
+  margin: auto;
+}
+.view-controls-zoom .zoom-track {
+  width: 4px;
+  height: 200px;
+  position: relative;
+}
+.view-controls-zoom .zoom-button {
+  width: 20px;
+  height: 20px;
+}
+.view-controls-zoom .zoom-out {
+  background-image: url("$xwiki.getSkinFile('icons/silk/zoom_out.png')");
+}
+.view-controls-zoom .zoom-in {
+  background-image: url("$xwiki.getSkinFile('icons/silk/zoom_in.png')");
+}
+.view-controls-zoom .zoom-handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 10px;
+  margin-left: -9px;
+}
+.view-controls-zoom .zoom-crt-value {
+  background: transparent;
+  border: 0 none;
+  box-shadow: none;
+}
+/* =========================================
+ * CANVAS
+ */
+#canvas { 
+  overflow: hidden;
+
+  /* fallback */
+  background-color: #FAFAFA;
+  background-position: center center; background-repeat: no-repeat;
+
+  /* Safari 4-5, Chrome 1-9 */
+  /* Can't specify a percentage size? Laaaaaame. */
+  background: -webkit-gradient(radial, center center, 0, center center, 460, from(#FFFFFF), to(#D2D2D2));
+
+  /* Safari 5.1+, Chrome 10+ */
+  background: -webkit-radial-gradient(circle, #FFFFFF, #D2D2D2);
+
+  /* Firefox 3.6+ */
+  background: -moz-radial-gradient(circle, #FFFFFF, #D2D2D2);
+
+  /* IE 10 */ 
+  background: -ms-radial-gradient(circle, #FFFFFF, #D2D2D2);
+
+  /* Opera cannot do radial gradients yet */ 
+}
+/* ===========================================
+ * LEGEND
+ */
+#workspace {
+  position: relative;
+}
+.legend-box {
+  position: absolute;
+  top: 5px;
+  right: 0;
+  padding: 4px;
+  background: #FFF;
+  z-index: 100000;
+  -moz-border-radius: 0 0 0 4px;
+  -webkit-border-radius: 0 0 0 4px;
+  border-radius: 0 0 0 4px;
+  padding: .5em 1em;
+  width: 15%;
+  min-width: 100px;
+}
+
+.legend-box .legend-tab {
+  display: block;
+  height: 28px;
+  width: 28px;
+  background: #FFF url("$xwiki.getSkinFile('icons/silk/information.png')") center center no-repeat;
+  -moz-border-radius: 4px 0 0 4px;
+  -webkit-border-radius: 4px 0 0 4px;
+  border-radius: 4px 0 0 4px;
+  position: absolute;
+  top: 0;
+  left: -28px;
+  
+}
+.legend-box .legend-title {
+  font-size: 1.1em;
+  margin: 0 0 0.3em;
+}
+
+.legend-box .disorder-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.disorder-color {
+  display: inline-block;
+  width: .8em;
+  height: .8em;
+  margin: 0 .5em .2em 0;
+  -moz-border-radius: .4em;
+  -webkit-border-radius: .4em;
+  border-radius: .4em;
+  background-color: #DDD;
+  vertical-align: middle;
+}
+/* ===========================================
+ * NODE MENU
+ */
+.menu-box {
+  position: absolute;
+  width: 300px;
+}
+.menu-box:hover {
+  box-shadow: 0 0 6px #FF9, 0 0 25px #DDDDDD inset;
+}
+.menu-box form {
+  padding: .5em 1.5em 1em;
+  border: 1px solid #F5F5F5;
+  border-radius: 0 .75em .75em .75em;
+  background: #EEE;
+  box-shadow: 0 0 6px #DDD, 0 0 25px #DDDDDD inset;
+}
+.menu-box .close-button {
+  cursor: pointer;
+  float: right;
+  font-size: 13px;
+  font-weight: bold;
+  height: 12px;
+  line-height: 8px;
+  margin: .3em .2em;
+  text-align: center;
+  width: 12px;
+}
+.menu-box .field-box {
+  padding: .5em 0;
+}
+.menu-box .field-box input[type=text]{
+  width: 99%;;
+}
+.menu-box .field-box input[type=text]:focus {
+  border: 1px solif #333;
+}
+.menu-box .field-name {
+  display: block;
+  font-weight: bold;
+}
+.menu-box .accepted-suggestions li {
+  line-height: 1em;
+  padding: .2em 1em .2em 0;
+}
+.menu-box .accepted-suggestions li:hover {
+  background-color: #FFEE99;
+}
+.menu-box .accepted-suggestions li .delete-tool {
+  position: absolute;
+  top: .4em;
+  right: 0;
+  display: inline !important;
+}
+.field-values label {
+  display: block;
+}
+.field-values {
+  -moz-column-count: 2;
+  -webkit-column-count: 2;
+  column-count: 2;
+}
+
+.menu-box .field-first_name {
+  width: 50%;
+  float: left;
+}
+.menu-box .field-last_name {
+  width: 50%;
+  float: right;
+}
