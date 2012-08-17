@@ -420,7 +420,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Returns the parent's Partnership
      */
     getUpperNeighbors: function() {
-        this.getParentPartnership();
+        return this._parentPartnership ? [this._parentPartnership] : [];
     },
 
     /*
