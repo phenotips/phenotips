@@ -276,7 +276,7 @@ NodeMenu = Class.create({
     _setCrtData : function (data) {
         var _this = this;
         Object.keys(this.fieldMap).each(function (name) {
-            _this.fieldMap[name].crtValue = data && data[name] && data[name].value || _this.fieldMap[name].crtValue || _this.fieldMap[name]["default"];
+            _this.fieldMap[name].crtValue = data && data[name] && typeof(data[name].value) != "undefined" ? data[name].value : _this.fieldMap[name].crtValue || _this.fieldMap[name]["default"];
             _this.fieldMap[name].inactive = (data && data[name] && (typeof(data[name].inactive) == 'boolean' || typeof(data[name].inactive) == 'object')) ? data[name].inactive : _this.fieldMap[name].inactive;
             _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
             _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
