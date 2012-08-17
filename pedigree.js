@@ -143,6 +143,7 @@ var PedigreeEditor = Class.create({
         $('canvas').insert({'after' : this.__controls});
     },
 
+    // VIEWBOX RELATED FUNCTIONS
     getPositionInViewBox: function(x,y) {
         return {
             x: x - editor.viewBoxX,
@@ -174,6 +175,7 @@ var PedigreeEditor = Class.create({
         window.requestAnimFrame(step);
     },
 
+    // EDITOR TOOLS
     getLegend: function() {
         return this._legend;
     },
