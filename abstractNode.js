@@ -11,6 +11,14 @@ var AbstractNode = Class.create( {
 
     initialize: function(x, y) {
         this._graphics = this.generateGraphics(x, y);
+        this._id = editor.generateID();
+    },
+    
+    /*
+     * Returns the unique ID of this node
+     */
+    getID: function() {
+        return this._id;
     },
 
     /*
@@ -77,6 +85,15 @@ var AbstractNode = Class.create( {
      */
     setPos: function(x,y, animate) {
         this.getGraphics().setPos(x, y, animate);
+    },
+    
+    /**
+     * Provides access to the type of the node
+     * 
+     * @return a string expressing the type
+     */
+    getType: function() {
+        return "";
     },
 
     /*

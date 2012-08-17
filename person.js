@@ -12,7 +12,7 @@
 
 var Person = Class.create(AbstractPerson, {
 
-    initialize: function($super, x, y, gender, id, isProband) {
+    initialize: function($super, x, y, gender, isProband) {
         this._firstName = null;
         this._lastName = null;
         this._birthDate = null;
@@ -23,7 +23,7 @@ var Person = Class.create(AbstractPerson, {
         this._isProband = isProband;
         this._disorders = [];
         this._evaluations = [];
-        $super(x,y,gender, id);
+        $super(x, y, gender);
     },
 
     /*

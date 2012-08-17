@@ -40,13 +40,6 @@ var AbstractPerson = Class.create(AbstractNode, {
     },
 
     /*
-     * Returns the unique ID of this node
-     */
-    getID: function() {
-        return this._id;
-    },
-
-    /*
      * Returns "U", "F" or "M" depending on the gender of this node
      */
     getGender: function() {

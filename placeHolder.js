@@ -12,8 +12,8 @@
 
 var PlaceHolder = Class.create(AbstractPerson, {
 
-    initialize: function($super, x, y, gender, id) {
-        $super(x, y, gender, id);
+    initialize: function($super, x, y, gender) {
+        $super(x, y, gender);
     },
 
     /*

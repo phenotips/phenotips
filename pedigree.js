@@ -287,7 +287,7 @@ var PedigreeEditor = Class.create({
 
     addNode: function(x, y, gender, isPlaceHolder) {
         var isProband = (!isPlaceHolder && this.nodes[0].length == 0);
-        var node = (isPlaceHolder) ? (new PlaceHolder(x, y, gender, this.generateID())) : (new Person(x, y, gender, this.generateID(), isProband));
+        var node = (isPlaceHolder) ? (new PlaceHolder(x, y, gender)) : (new Person(x, y, gender, isProband));
         this.nodes[+(isPlaceHolder)].push(node);
 	this.nodeIndex.add(node);
         return node;
@@ -299,7 +299,7 @@ var PedigreeEditor = Class.create({
       var y = event.pointerY() - target.cumulativeOffset().top;
       // TODO transform coordinates to real coordinates on the raphael paper once zoom & pan are implemented
       var node = this.nodeIndex.getNodeNear(x, y);
-      if (node) {
+      if (node && node.getType() == 'pn') {
 	var disorderObj = {};
         disorderObj.id = disorder.id.substring( disorder.id.indexOf('-') + 1);
         disorderObj.value = disorder.down('.disorder-name').firstChild.nodeValue;
