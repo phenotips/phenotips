@@ -175,6 +175,25 @@ NodeMenu = Class.create({
                 item.addClassName('initialized');
             }
         });
+        // Update disorder colors
+        this._updateDisorderColor = function(id, color) {
+          this.menuBox.select('.field-disorders li input[value=' + id + ']').each(function(item) {
+             var colorBubble = item.up('li').down('.disorder-color');
+             if (!colorBubble) {
+               colorBubble = new Element('span', {'class' : 'disorder-color'});
+               item.up('li').insert({top : colorBubble});
+             }
+             colorBubble.setStyle({background : color});
+          });
+        }.bind(this);
+        var _this = this;
+        document.observe('disorder:color', function(event) {
+           if (!event.memo || !event.memo.id || !event.memo.color) {
+             return;
+           }
+           _this._updateDisorderColor(event.memo.id, event.memo.color);
+        });
+        this._setFieldValue['disease-picker'].bind(this);
     },
 
     _generateEmptyField : function (data) {
@@ -396,6 +415,7 @@ NodeMenu = Class.create({
             }
         },
         'disease-picker' : function (container, values) {
+            var _this = this;
             var target = container.down('input[type=text].suggest-omim');
             if (target &amp;&amp; target._suggestPicker) {
                 target._silent = true;
@@ -403,6 +423,7 @@ NodeMenu = Class.create({
                 if (values) {
                     values.each(function(v) {
                         target._suggestPicker.addItem(v.id, v.value, '');
+                        _this._updateDisorderColor(v.id, editor.getLegend().getDisorderColor(v.id));
                     })
                 }
                 target._silent = false;
@@ -1137,7 +1158,7 @@ NodeMenu = Class.create({
   padding: 0;
 }
 
-.legend-box .disorder .disorder-color {
+.disorder-color {
   display: inline-block;
   width: .8em;
   height: .8em;

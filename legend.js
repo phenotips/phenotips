@@ -145,6 +145,17 @@ var Legend = Class.create( {
      */
     addUsedColor: function(disorderID, color) {
         this.getDisorderColors().set(disorderID, color);
+        document.fire('disorder:color', {'id' : disorderID, color: color});
+    },
+
+    /**
+     * Retrieve the color associated to a specific disorder
+     *
+     * @param disorderID the identifier of the disorder
+     * @return the color for that disorder, as a string #rrggbb, or undefined if the disorder is not registered
+     */
+    getDisorderColor: function(disorderID) {
+        return this._disorderColors.get(disorderID);
     },
 
     getDisorderColors: function() {
