@@ -102,6 +102,7 @@ var Legend = Class.create( {
         }
         (new Effect.Opacity('legend-box', { from: 0, to:.9, duration: 0.5 }));
         this.getDisorder(disorder['id']).addAffectedNode(node);
+        this._displayCasesForDisorder(disorder['id']);
     },
 
     /*
@@ -127,6 +128,20 @@ var Legend = Class.create( {
                 }
             }
         }
+        this._displayCasesForDisorder(disorder['id']);
+    },
+    
+    /**
+     * Update the displayed number of affected cases for for a disorder in the legend UI.
+     * 
+     * @param disorderID the identifier of the disorder to update
+     */
+    _displayCasesForDisorder : function(disorderID) {
+      var label = this._legendBox.down('li#disorder-' + disorderID + ' .disorder-cases');
+      if (label) {
+        var cases = this.getDisorder(disorderID).getNumAffected();
+        label.update(cases + " case" + ((cases - 1) && "s" || ""));
+      }
     },
 
     /*
@@ -162,11 +177,22 @@ var Legend = Class.create( {
         return this._disorderColors;
     },
 
+    /**
+     * Generate the element that will display information about the given disorder in the legend
+     * 
+     * @param id the (internal) identifier of the disorder
+     * @param name the human-readable disorder name
+     * @param color the color associated with the disorder, displayed on affected nodes in the pedigree
+     * @return a 'li' element to be insert in the legend's list
+     */
     generateDisorderElement: function(id, name, color) {
         var item = new Element('li', {'class' : 'disorder', 'id' : 'disorder-' + id}).update(new Element('span', {'class' : 'disorder-name'}).update(name));
         var bubble = new Element('span', {'class' : 'disorder-color'});
         bubble.style.backgroundColor = color;
         item.insert({'top' : bubble});
+        var countLabel = new Element('span', {'class' : 'disorder-cases'});
+        var countLabelContainer = new Element('span', {'class' : 'disorder-cases-container'}).insert("(").insert(countLabel).insert(")");
+        item.insert(" ").insert(countLabelContainer);
         var me = this;
         Element.observe(item, 'mouseover', function() {
             //item.setStyle({'text-decoration':'underline', 'cursor' : 'default'});

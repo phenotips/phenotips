@@ -314,6 +314,11 @@
   background-color: #DDD;
   vertical-align: middle;
 }
+.disorder-cases-container {
+  font-size: .8em;
+  font-style: italic;
+  color: #777;
+}
 /* ===========================================
  * NODE MENU
  */
