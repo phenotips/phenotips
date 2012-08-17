@@ -162,9 +162,10 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     createParents: function() {
         if(this.getParentPartnership() == null) {
-            var mother = editor.addNode(this.getGraphics().getX() + 100, this.getGraphics().getY() - 250, "F", false),
-                father = editor.addNode(this.getGraphics().getX() - 100, this.getGraphics().getY() - 250, "M", false),
-                partnership = new Partnership(this.getX(), this.getY() - 250, mother, father);
+            var positions = editor.findPosition ({above : this.getID()}, ['mom', 'dad']);
+            var mother = editor.addNode(positions['mom'].x, positions['mom'].y, "F", false),
+                father = editor.addNode(positions['dad'].x, positions['dad'].y, "M", false);
+            var partnership = editor.addPartnership(mother, father);
             this.addParents(partnership);
         }
     },
@@ -213,10 +214,8 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @param isPlaceHolder set to true if the new partner should be a PlaceHolder
      */
     createPartner: function(isPlaceHolder, noChild) {
-        //TODO: set x and y using positioning algorithm
-        var x = this.getX() + 200,
-            y = this.getY(),
-            partner = editor.addNode(x, y, this.getOppositeGender(), isPlaceHolder);
+        var position = editor.findPosition({side: this.getID()}),
+            partner = editor.addNode(position.x, position.y, this.getOppositeGender(), isPlaceHolder);
         return this.addPartner(partner, noChild);
     },
 
@@ -232,13 +231,7 @@ var AbstractPerson = Class.create(AbstractNode, {
             return this.getPartnership(partner);
         }
         else if(this.canPartnerWith(partner)) {
-            //TODO: calculate partnership x and y
-            var distanceX = Math.abs(partner.getX() - this.getX())/2;
-            var distanceY = Math.abs(partner.getY() - this.getY())/2;
-            var x = (partner.getX() > this.getX()) ? distanceX + this.getX() : distanceX + partner.getX();
-            var y = (partner.getY() > this.getY()) ? distanceY + this.getY() : distanceY + partner.getY();
-
-            var partnership = new Partnership(x, y, this, partner);
+            var partnership = editor.addPartnership(this, partner);
 
             if(this.getGender() == 'U' && partner.getGender() != 'U') {
                 this.setGender(partner.getOppositeGender(), true, null);
@@ -268,11 +261,8 @@ var AbstractPerson = Class.create(AbstractNode, {
     },
 
     createChild: function(isPlaceHolder) {
-        //TODO: set x and y using positioning algorithm
-        var x = this.getX() + 100,
-            y = this.getY() + 300,
-            child = editor.addNode(x, y, 'U', isPlaceHolder);
-        return this.addChild(child);
+      var partnership = this.createPartner(true, true);
+      partnership.createChild(isPlaceHolder);
     },
 
     addChild: function(child) {

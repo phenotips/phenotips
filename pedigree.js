@@ -321,16 +321,30 @@ var PedigreeEditor = Class.create({
 
 
     addPartnership : function(node1, node2) {
-        if(node1._partnerships.indexOf(node2) == -1) {
-            var connection = new Connection("partner", node1, node2);
-            node1._partnerships.push(node2);
-            node2._partnerships.push(node1);
-        }
+      var joinPosition = editor.findPosition({join : [node1.getID(), node2.getID()]});
+      var partnership = new Partnership(joinPosition.x, joinPosition.y, node1, node2);
+      this.nodeIndex.add(partnership);
+      return partnership;
     },
 
     addParentsPartnership : function(node, leftParent, rightParent) {
         //TODO:
     },
+    
+        
+    // WRAPPERS FOR THE NODE INDEX & GRID FUNCITONS
+    getGridUnitX : function () {
+      return this.nodeIndex.gridUnit.x;
+    },
+    
+    getGridUnitY : function () {
+      return this.nodeIndex.gridUnit.y;
+    },
+    findPosition : function (relativeNodePosition, ids) {
+      return this.nodeIndex.findPosition(relativeNodePosition, ids);
+    },
+    
+    // HOVER MODE
 
     enterHoverMode: function(sourceNode) {
         var hoverNodes = this.nodes[0].without(sourceNode);

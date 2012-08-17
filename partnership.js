@@ -112,10 +112,8 @@ var Partnership = Class.create(AbstractNode, {
      * @param isPlaceHolder set to true if the child is a placeholder
      */
     createChild: function(isPlaceHolder) {
-        //TODO: set x and y using positioning algorithm
-        var x = this.getPartners()[0].getGraphics().getX() + 100,
-            y = this.getPartners()[0].getGraphics().getY() + 200,
-            child = editor.addNode(x, y, "U", isPlaceHolder);
+        var position = editor.findPosition({below: this.getID()}, ['child']);
+        var child = editor.addNode(position['child'].x, position['child'].y, "U", isPlaceHolder);
         return this.addChild(child);
     },
 

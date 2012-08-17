@@ -1,7 +1,7 @@
 var NodeIndex = Class.create({
   gridUnit : {
-    x: 150,
-    y: 300
+    x: 100,
+    y: 250
   },
   initialize : function(nodes) {
     var _this = this;
@@ -20,27 +20,41 @@ var NodeIndex = Class.create({
     var result = {};
     var _this = this;
     if (relativePosition.above) {
+      // Finding positions for parents...
       var id = relativePosition.above;
       var node = this.nodes[id];
       var i = 0, total = identifiers.length;
       identifiers.each(function(item) {
-        result[item] = { x: node.getX() + (i - (total - 1) / 2) * _this.gridUnit.x, y: node.getY() - _this.gridUnit.y}
-	++i;
+        result[item] = { x: node.getX() + (2 * i - total + 1) * _this.gridUnit.x, y: node.getY() - _this.gridUnit.y}
+        ++i;
       });
     } else if (relativePosition.below) {
+      // Finding positions for children...
       var id = relativePosition.below;
       var node = this.nodes[id];
-      var i = 0, total = identifiers.length;
+      var i = node.getLowerNeighbors().length, total = i + identifiers.length;
       identifiers.each(function(item) {
         result[item] = { x: node.getX() + (2 * i - total + 1) * _this.gridUnit.x, y: node.getY() + _this.gridUnit.y}
-	++i;
+        ++i;
       });
-    } else {
-       var id = relativePosition.above;
+    } else if (relativePosition.join) {
+       // Finding positions for partnerships...
+       // expecting to join 2 nodes
+       var node1 = this.nodes[relativePosition.join[0]],
+           node2 = this.nodes[relativePosition.join[1]];
+           // TODO
+       result.y = Math.max(node1.getY(), node2.getY());
+       var middleX = (node1.getX() + node2.getX()) / 2;
+       var nearestNode = node1.getY() != node2.getY() ? (node1.getY() == y ? node1 : node2) : (node1.getSideNeighbors().length > node2.getSideNeighbors().length ? node2 : node1);
+       result.x = nearestNode.getX() + this.gridUnit.x * (middleX < nearestNode.getX() ? -1 : 1);
+    } else if (relativePosition.side) {
+       // Finding positions for partners...
+       var id = relativePosition.side;
        var node = this.nodes[id];
        var neighbors = node.getSideNeighbors();
-       //neighbors.each(
-       //if (
+       var side = 2 * (neighbors.length % 2) - 1;
+       result.y = node.getY();
+       result.x = node.getX() + 2 * this.gridUnit.x * side;
     }
     return result;
   },
