@@ -130,6 +130,7 @@ var Partnership = Class.create(AbstractNode, {
             someNode.parentConnection = this.getGraphics().updateChildConnection(someNode, someNode.getX(), someNode.getY(), this.getX(), this.getY());
             someNode.setParentPartnership(this);
         }
+        document.fire("pedigree:child:added", {node: someNode});
         return someNode;
     },
     

@@ -23,7 +23,7 @@ var PedigreeEditor = Class.create({
         this._paper = Raphael("canvas", this.width, this.height);
         this.viewBoxX = 0;
         this.viewBoxY = 0;
-        this.nodeIndex = new NodeIndex();
+        var nodeIndex = this.nodeIndex = new NodeIndex();
         this.generateViewControls();
         (this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this))();
 
@@ -46,6 +46,13 @@ var PedigreeEditor = Class.create({
         };
         Droppables.add($('canvas'), {accept: 'disorder', onDrop: this._onDropDisorder.bind(this)});
         this._proband = this.addNode(this.width/2, this.height/2, 'M', false);
+	
+	
+	document.observe('pedigree:child:added', function(event){
+	  if (event && event.memo && event.memo.node) {
+	    nodeIndex._childAdded(event.memo.node);
+	  }
+	});
     },
 
     getPaper: function() {

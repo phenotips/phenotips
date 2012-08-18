@@ -70,6 +70,17 @@ var NodeIndex = Class.create({
     this.nodes[node.getID()] = node;
     this.positionTree.insert(position);
     this.position2Node[position.x + ',' + position.y] = node;
+   
+  },
+  _childAdded : function(node) {
+    if (node.getUpperNeighbors().length > 0) {
+      var parent = node.getUpperNeighbors()[0];
+     var siblings = parent.getLowerNeighbors().without(node);
+      var _this = this;
+     siblings.each(function(item) {
+       _this.relativeMove(item, -_this.gridUnit.x, 0);
+     });
+    }
   },
   remove : function (node) {
     var node = this.__getActualNode(node);
