@@ -77,17 +77,17 @@ var NodeIndex = Class.create({
       var position = {x: node.getX(), y: node.getY()};
       this.positionTree.remove(position);
       delete this.position2Node[position.x + ',' + position.y];
-      delete this.nodes[id];
+      delete this.nodes[node.getID()];
     }
-    if (positionTree.nearest(position, 0, 0, 'y').size() == 0) {
+    //if (this.positionTree.nearest(position, 0, 0, 'y').size() == 0) {
       // TODO shift neighbors
-    }
+    //}
     return node;
   },
   move : function(node, x, y) {
     var node = this.remove(node) || node;
     if (node) {
-      node.moveTo(x, y);
+      node.setPos(x, y);
       this.add(node);
     }
     return !!node;
@@ -95,7 +95,7 @@ var NodeIndex = Class.create({
   relativeMove : function(node, dx, dy) {
     var node = this.remove(node) || node;
     if (node) {
-      node.moveTo(node.getX() + dx, node.getY() + y);
+      node.setPos(node.getX() + dx, node.getY() + dy);
       this.add(node);
     }
     return !!node;
