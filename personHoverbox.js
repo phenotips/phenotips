@@ -93,6 +93,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
             this._leftHandle.show();
         }
         this.getCurrentHandles().push(this._rightHandle, this._downHandle, this._leftHandle);
+    },
     /*
      * Hides the child handle
      */
