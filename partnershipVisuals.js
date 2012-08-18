@@ -146,7 +146,6 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      */
     remove: function() {
         this.getJunctionShape().remove();
-        alert(this.getConnections().length)
         this.getConnections()[0].remove();
         this.getConnections()[1].remove();
     },
