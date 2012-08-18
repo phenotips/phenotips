@@ -256,7 +256,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
 
         if(status == 'deceased'){
             this.drawDeadShape();
-            alert('done');
         }
         else if(status == 'stillborn') {
             this.getHoverBox().hidePartnerHandles();
@@ -386,20 +385,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * Returns a Raphael set or element that contains all the graphics and labels associated with this node.
      */
     getAllGraphics: function() {
-        var graphics = editor.getPaper().set(this.getShapes());
-        graphics.push(this.getLabels());
-        graphics.push(this.getHoverBox().getFrontElements());
-        return graphics;
-    },
-
-    /*
-     * Updates the graphical elements of this node including labels, and brings them to front in the correct
-     * layering order.
-     */
-    draw: function($super) {
-        alert('aha');
-        this.drawLabels();
-        $super();
+        return editor.getPaper().set(this.getHoverBox().getBackElements(),this.getShapes(), this.getLabels(), this.getHoverBox().getFrontElements());
     },
 
     /*
