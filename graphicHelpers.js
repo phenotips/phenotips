@@ -130,6 +130,16 @@ Raphael.st.concat = function (set) {
     }
 };
 
+Raphael.st.contains= function (target) {
+    var found = false;
+    this.forEach(function(element) {
+        if(element == target) {
+            found = true;
+        }
+    });
+    return found;
+};
+
 window.requestAnimFrame = (function(){
     return  window.requestAnimationFrame   ||
         window.webkitRequestAnimationFrame ||
