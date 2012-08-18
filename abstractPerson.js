@@ -187,7 +187,7 @@ var AbstractPerson = Class.create(AbstractNode, {
 
     addParent: function(parent) {
         if(parent.canBeParentOf(this)) {
-            var partnership = parent.createPartner(true, false);
+            var partnership = parent.createPartner(true, true);
             partnership.addChild(this);
         }
     },
