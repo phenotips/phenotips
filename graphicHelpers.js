@@ -1,4 +1,3 @@
-
 function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAngle, color) {
     var sectorPath,
         gen = gender,
