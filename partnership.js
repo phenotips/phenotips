@@ -112,9 +112,14 @@ var Partnership = Class.create(AbstractNode, {
      * @param isPlaceHolder set to true if the child is a placeholder
      */
     createChild: function(isPlaceHolder) {
-        var position = editor.findPosition({below: this.getID()}, ['child']);
-        var child = editor.addNode(position['child'].x, position['child'].y, "U", isPlaceHolder);
-        return this.addChild(child);
+        if(this.getChildren() && this.getChildren()[0] && this.getChildren()[0].getType() == 'ph') {
+            return this.getChildren()[0].convertToPerson();
+        }
+        else {
+            var position = editor.findPosition({below: this.getID()}, ['child']);
+            var child = editor.addNode(position['child'].x, position['child'].y, "U", isPlaceHolder);
+            return this.addChild(child);
+        }
     },
 
     /*
@@ -126,6 +131,9 @@ var Partnership = Class.create(AbstractNode, {
     addChild: function(someNode) {
         //TODO: elaborate on restrictions for adding parents to existing node
         if(someNode && !this.hasChild(someNode) && (someNode.getParentPartnership() == null)) {
+            this.getChildren().each(function(child){
+                (child.getType() == 'ph') && child.remove();
+            });
             this.getChildren().push(someNode);
             someNode.parentConnection = this.getGraphics().updateChildConnection(someNode, someNode.getX(), someNode.getY(), this.getX(), this.getY());
             someNode.setParentPartnership(this);
@@ -152,6 +160,9 @@ var Partnership = Class.create(AbstractNode, {
         this.getChildren().each(function(child) {
             child.setParentPartnership(null);
             me.removeChild(child);
+            if(child.getType() == 'ph') {
+                child.remove(false, true);
+            }
         });
         this.getPartners()[0].removePartnership(this);
         this.getPartners()[1].removePartnership(this);
