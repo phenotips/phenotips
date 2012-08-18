@@ -410,6 +410,8 @@ var editor;
 
 document.observe("dom:loaded",function() {
     editor = new PedigreeEditor();
+    var p = editor.getProband();
+    p.setPos(500,500, true, function() {alert('sweet peanuts')});
 //    node.getGraphics().getShapes().flatten().insertBefore(editor.getProband().getGraphics().getAllGraphics().flatten());
 //    var el1 = editor.getPaper().circle(20,20,20).attr("fill", "pink");
 //    var el3 = editor.getPaper().circle(30,20,20).attr("fill", "blue");

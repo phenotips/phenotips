@@ -409,9 +409,17 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @param y the y coordinate on the canvas
      * @param animate set to true if you want to animate the transition
      */
-    setPos: function($super, x, y, animate) {
-        this.getHoverBox().disable();
-        $super(x, y, animate);
+    setPos: function($super, x, y, animate, callback) {
+    var funct;
+        if(animate) {
+            var me = this;
+            this.getHoverBox().disable();
+            funct = function () {
+                me.getHoverBox().enable();
+                callback && callback();
+            };
+        }
+        $super(x, y, animate, funct);
     },
 
     /*
