@@ -93,6 +93,21 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
             this._leftHandle.show();
         }
         this.getCurrentHandles().push(this._rightHandle, this._downHandle, this._leftHandle);
+    /*
+     * Hides the child handle
+     */
+    hideChildHandle: function() {
+        this.getCurrentHandles().exclude(this._downHandle.hide());
+    },
+
+    /*
+     * Unhides the child handle
+     */
+    unhideChildHandle: function() {
+        if(this.isHovered() || this.isMenuToggled()) {
+            this._downHandle.show();
+        }
+        (!this.getCurrentHandles().contains(this._downHandle)) && this.getCurrentHandles().push(this._downHandle);
     },
 
     /*

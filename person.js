@@ -47,6 +47,26 @@ var Person = Class.create(AbstractPerson, {
         return this._isProband;
     },
 
+    /*
+     * Adds a new partnership to the list of partnerships of this node
+     *
+     * @param partnership is a Partnership object with this node as one of the partners
+     */
+    addPartnership: function($super, partnership) {
+        this.getGraphics().getHoverBox().hideChildHandle();
+        $super(partnership);
+    },
+
+    /*
+     * Removes a partnership from the list of partnerships
+     *
+     * @param partnership is a Partnership object with this node as one of the partners
+     */
+    removePartnership: function($super, partnership) {
+        this.getGraphics().getHoverBox().unhideChildHandle();
+        $super(partnership);
+    },
+
     getEvaluations: function() {
         return this._evaluations;
     },
