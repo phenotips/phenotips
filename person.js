@@ -8,11 +8,12 @@
  * @param the y coordinate on the Raphael canvas at which the node drawing will be centered
  * @param gender either 'M', 'F' or 'U' depending on the gender
  * @param id a unique ID number
+ * @param isProband set to true if this person is the proband
  */
 
 var Person = Class.create(AbstractPerson, {
 
-    initialize: function($super, x, y, gender, isProband) {
+    initialize: function($super, x, y, gender, id, isProband) {
         this._firstName = null;
         this._lastName = null;
         this._birthDate = null;
@@ -23,7 +24,7 @@ var Person = Class.create(AbstractPerson, {
         this._isProband = isProband;
         this._disorders = [];
         this._evaluations = [];
-        $super(x, y, gender);
+        $super(x, y, gender, id);
     },
 
     /*
