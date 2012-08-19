@@ -68,14 +68,6 @@ var Person = Class.create(AbstractPerson, {
         $super(partnership);
     },
 
-    getEvaluations: function() {
-        return this._evaluations;
-    },
-
-    setEvaluations: function(evaluationsArray) {
-        this._evaluations = evaluationsArray;
-    },
-
     /*
      * Returns the first name of this Person
      */
