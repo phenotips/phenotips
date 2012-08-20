@@ -75,12 +75,32 @@ var NodeIndex = Class.create({
   _childAdded : function(node) {
     if (node.getUpperNeighbors().length > 0) {
       var parent = node.getUpperNeighbors()[0];
-     var siblings = parent.getLowerNeighbors().without(node);
+      var siblings = parent.getLowerNeighbors().without(node);
       var _this = this;
-     siblings.each(function(item) {
-       _this.relativeMove(item, -_this.gridUnit.x, 0);
-     });
+      var ignore = {};
+      ignore[parent.getID()] = true;
+      siblings.each(function(item) {
+        _this._subgraphShift(item, -1, ignore);
+      });
     }
+  },
+  _subgraphShift : function(node, direction, ignore) {
+    if (ignore[node.getID()]) {
+      return;
+    }
+    ignore[node.getID()] = true;
+    this.relativeMove(node, direction * this.gridUnit.x, 0);
+    var _this = this;
+    var neighbors = node.getNeighbors();
+    neighbors.each(function(item) {
+      _this._subgraphShift(item, direction, ignore);
+    });
+  },
+  _rowShift : function(node, direction, ignore) {
+    // TODO
+  },
+  _generationSwap : function() {
+    // TODO
   },
   remove : function (node) {
     var node = this.__getActualNode(node);
@@ -136,10 +156,13 @@ var NodeIndex = Class.create({
   
   findHorizontalGroupLimits : function (node, _visited, _limits) {
     var visited = _visited || {};
+    if (!node || visited[node.getID()]) {
+      return _limits;
+    }
     var limits = {};
     if (_limits)  {
-      limits.low  = Math.min(_limits.low,  item.getX());
-      limits.high = Math.min(_limits.high, item.getX());
+      limits.low  = Math.min(_limits.low,  node.getX());
+      limits.high = Math.max(_limits.high, node.getX());
     } else {
       limits = _limits || {low : node.getX(), high : node.getX()}
     }
@@ -163,11 +186,8 @@ var NodeIndex = Class.create({
     if (list.length == 0) {
       return -2*this.gridUnit.x;
     }
-    var i = 0;
-    var size = this.findHorizontalGroupLimits(list[0]).high - list[0].getX();
-    for (var i = 1; i < list.length; ++i) {
-      size += 2*this.gridUnit.x + this.findHorizontalGroupSize(list[i]);
-    }
-    return size;
+    var start =  list[0].getX();
+    var end = this.findHorizontalGroupLimits(list[list.length - 1]).high;
+    return end - start;
   }
 });
