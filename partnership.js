@@ -10,13 +10,13 @@
 
 var Partnership = Class.create(AbstractNode, {
 
-   initialize: function($super, x, y, partner1, partner2) {
+   initialize: function($super, x, y, partner1, partner2, id) {
        if(partner1.getType() != 'ph' || partner2.getType() != 'ph') {
            this._partners = [partner1, partner2];
            this._children = [];
            this._partners[0].addPartnership(this);
            this._partners[1].addPartnership(this);
-           $super(x,y);
+           $super(x, y, id);
        }
    },
 

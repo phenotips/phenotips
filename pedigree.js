@@ -295,10 +295,10 @@ var PedigreeEditor = Class.create({
         el.observe("click", function() {alert("new node has been created! WHOAH!")});
     },
 
-    addNode: function(x, y, gender, isPlaceHolder) {
+    addNode: function(x, y, gender, id, isPlaceHolder) {
         !isPlaceHolder && (isPlaceHolder = false);
         var isProband = (!isPlaceHolder && this.nodes[0].length == 0);
-        var node = (isPlaceHolder) ? (new PlaceHolder(x, y, gender)) : (new Person(x, y, gender, isProband));
+        var node = (isPlaceHolder) ? (new PlaceHolder(x, y, gender)) : (new Person(x, y, gender, id, isProband));
         this.nodes[+(isPlaceHolder)].push(node);
 	this.nodeIndex.add(node);
         return node;
