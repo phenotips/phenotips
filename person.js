@@ -95,12 +95,11 @@ var Person = Class.create(AbstractPerson, {
      * (optionally) updates all the labels of this node, including the first name
      *
      * @param firstName any string that represents the first name of this Person
-     * @param forceDisplay set to true if you want to display the change on the canvas
      */
-    setFirstName: function(firstName, forceDisplay) {
+    setFirstName: function(firstName) {
         firstName && (firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1));
         this._firstName = firstName;
-        forceDisplay && this.getGraphics().drawLabels();
+        this.getGraphics().updateNameLabel();
     },
 
     /*
@@ -115,12 +114,11 @@ var Person = Class.create(AbstractPerson, {
      * (optionally) updates all the labels of this node, including the last name
      *
      * @param lastName any string that represents the last name of this Person
-     * @param forceDisplay set to true if you want to display the change on the canvas
      */
-    setLastName: function(lastName, forceDisplay) {
+    setLastName: function(lastName) {
         lastName && (lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1));
         this._lastName = lastName;
-        forceDisplay && this.getGraphics().drawLabels();
+        this.getGraphics().updateNameLabel();
     },
     /*
      * Returns the status of this Person, which can be "alive", "deceased", "stillborn" or "aborted"
@@ -147,9 +145,10 @@ var Person = Class.create(AbstractPerson, {
             if(newStatus != 'deceased') {
                 this.setDeathDate(null, true);
             }
+            this.getGraphics().updateSBLabel();
 
             if(this.isFetus()) {
-                this.setBirthDate(null, true);
+                this.setBirthDate(null);
                 this.setAdopted(false);
             }
 
@@ -233,12 +232,11 @@ var Person = Class.create(AbstractPerson, {
      *
      * @param newDate a javascript Date object, that must be an earlier date than deathDate and
      * a later date than conception date
-     * @param forceDisplay set to true if you want to display the change on the canvas
      */
-    setBirthDate: function(newDate, forceDraw) {
+    setBirthDate: function(newDate) {
         if (!newDate || newDate && !this.getDeathDate() || newDate.getDate() < this.getDeathDate()) {
             this._birthDate = newDate;
-            forceDraw && this.getGraphics().drawLabels();
+            this.getGraphics().updateAgeLabel();
         }
     },
 
@@ -254,14 +252,13 @@ var Person = Class.create(AbstractPerson, {
      *
      * @param newDate a javascript Date object, that must be a later date than deathDate and
      * a later date than conception date
-     * @param forceDisplay set to true if you want to display the change on the canvas
      */
-    setDeathDate: function(deathDate, forceDraw) {
+    setDeathDate: function(deathDate) {
         if(!deathDate || deathDate && !this.getBirthDate() || deathDate.getDate()>this.getBirthDate().getDate()) {
             this._deathDate =  deathDate;
-            this._deathDate && (this.getLifeStatus() == 'alive') && this.setLifeStatus('deceased', forceDraw);
+            this._deathDate && (this.getLifeStatus() == 'alive') && this.setLifeStatus('deceased');
         }
-        forceDraw && this.getGraphics().drawLabels();
+        this.getGraphics().updateAgeLabel();
     },
 
     /*
@@ -286,7 +283,6 @@ var Person = Class.create(AbstractPerson, {
 
     /*
      * Adds disorder to the list of this node's disorders and updates the Legend.
-     * (Optionally) updates the graphics of this node
      *
      * @param disorder an object with fields 'id' and 'value', where id is the id number
      * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
@@ -298,7 +294,7 @@ var Person = Class.create(AbstractPerson, {
             editor.getLegend().addCase(disorder, this);
             this.getDisorders().push(disorder);
         }
-        forceDisplay && this.getGraphics().drawShapes();
+        forceDisplay && this.getGraphics().updateDisorderShapes();
     },
 
     /*
@@ -318,24 +314,24 @@ var Person = Class.create(AbstractPerson, {
         else {
             alert("This person doesn't have the specified disorder");
         }
-        forceDisplay && this.getGraphics().drawShapes();
+        forceDisplay && this.getGraphics().updateDisorderShapes();
     },
 
-    updateDisorders: function(disorders, forceDisplay) {
+    updateDisorders: function(disorders) {
         var me = this;
         this.getDisorders().each(function(disorder) {
             var found = false;
             disorders.each(function(newDisorder) {
                 disorder['id'] == newDisorder['id'] && (found = true);
             });
-            !found && me.removeDisorder(disorder, false);
+            !found && me.removeDisorder(disorder);
         });
         disorders.each(function(newDisorder) {
             if (!me.hasDisorder(newDisorder.id)) {
-                me.addDisorder(newDisorder, false);
+                me.addDisorder(newDisorder);
             }
         });
-        forceDisplay && this.getGraphics().draw();
+        this.getGraphics().updateDisorderShapes();
     },
 
     hasDisorder: function(id) {
@@ -352,7 +348,6 @@ var Person = Class.create(AbstractPerson, {
      * graphics of this node
      *
      * @param isAdopted set to true if you want to mark the Person adopted
-     * @param forceDisplay set to true if you want to display the change on the canvas
      */
     setAdopted: function(isAdopted) {
         //TODO: implement adopted and social parents
@@ -467,5 +462,3 @@ var Person = Class.create(AbstractPerson, {
             gestation_age: {value : this.getGestationAge(), inactive : !this.isFetus()}
         };
     }
-});
-

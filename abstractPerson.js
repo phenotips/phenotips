@@ -60,12 +60,12 @@ var AbstractPerson = Class.create(AbstractNode, {
         visited.push(this);
         if(this.getPartners().length == 0) {
             this._gender = this.parseGender(gender);
-            forceDraw && this.getGraphics().drawShapes();
+            this.getGraphics().setGenderSymbol();
         }
         else if(this.getGender() == "U") {
             var me = this;
             this._gender = this.parseGender(gender);
-            forceDraw && this.getGraphics().drawShapes();
+            this.getGraphics().setGenderSymbol();
             this.getPartners().each(function(partner) {
                 if(visited.indexOf(partner) == -1) {
                     visited = partner.setGender(me.getOppositeGender(), forceDraw, visited);
