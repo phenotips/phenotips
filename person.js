@@ -128,8 +128,11 @@ var Person = Class.create(AbstractPerson, {
         return this._lifeStatus;
     },
 
+    /*
+     * Returns true if this node's status is not 'alive' or 'deceased'.
+     */
     isFetus: function() {
-        return (this.getLifeStatus() == 'unborn' || this.getLifeStatus() == 'stillborn' || this.getLifeStatus() == 'aborted');
+        return (this.getLifeStatus() != 'alive' && this.getLifeStatus() != 'deceased');
     },
 
     /*
@@ -141,9 +144,7 @@ var Person = Class.create(AbstractPerson, {
         if(newStatus == 'unborn' || newStatus == 'stillborn' || newStatus == 'aborted' || newStatus == 'alive' || newStatus == 'deceased'){
             this._lifeStatus = newStatus;
 
-            if(newStatus != 'deceased') {
-                this.setDeathDate(null, true);
-            }
+            (newStatus != 'deceased') && this.setDeathDate(null);
             this.getGraphics().updateSBLabel();
 
             if(this.isFetus()) {
@@ -186,7 +187,7 @@ var Person = Class.create(AbstractPerson, {
     getGestationAge: function() {
         if(this.getLifeStatus() == 'unborn' && this.getConceptionDate()) {
             var oneWeek = 1000 * 60 * 60 * 24 * 7,
-            lastDay = new Date();
+                lastDay = new Date();
             return Math.round((lastDay.getTime()- this.getConceptionDate().getTime())/oneWeek)
         }
         else if(this.isFetus()){

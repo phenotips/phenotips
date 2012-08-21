@@ -171,7 +171,6 @@ var PedigreeEditor = Class.create({
             var progress = (timePassed)/duration;
             editor.viewBoxX = oX + xDisplacement * (progress);
             editor.viewBoxY = oY + yDisplacement * (progress);
-            console.log("x: " + editor.viewBoxX + " y: " + editor.viewBoxY);
             editor.getPaper().setViewBox(editor.viewBoxX, editor.viewBoxY, editor.width, editor.height);
             if (timePassed < duration) {
                 window.requestAnimFrame(step);
