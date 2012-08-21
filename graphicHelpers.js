@@ -140,6 +140,14 @@ Raphael.st.contains= function (target) {
     return found;
 };
 
+Raphael.st.copy = function() {
+    var newSet = new Raphael.st.constructor();
+    this.forEach(function(element) {
+        newSet.push(element);
+    });
+    return newSet;
+};
+
 window.requestAnimFrame = (function(){
     return  window.requestAnimationFrame   ||
         window.webkitRequestAnimationFrame ||
