@@ -23,6 +23,8 @@ var PedigreeEditor = Class.create({
         this._paper = Raphael("canvas", this.width, this.height);
         this.viewBoxX = 0;
         this.viewBoxY = 0;
+        this.background = editor.getPaper().rect(0,0, 200, 200).attr({fill: 'blue', stroke: 'none', opacity:0}).toBack();
+
         var nodeIndex = this.nodeIndex = new NodeIndex();
         this.generateViewControls();
         (this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this))();
@@ -35,6 +37,28 @@ var PedigreeEditor = Class.create({
         this.initMenu();
         this.nodeMenu = this.generateNodeMenu();
         this._legend = new Legend();
+
+        var me = this;
+        var start = function() {
+            me.background.ox = me.background.attr("x");
+            me.background.oy = me.background.attr("y");
+            me.background.attr({cursor: 'url(https://mail.google.com/mail/images/2/closedhand.cur)'});
+        };
+        var move = function(dx, dy) {
+            var  deltax = editor.viewBoxX - dx;
+            var deltay = editor.viewBoxY - dy;
+
+            me.background.attr({x: me.background.ox - dx, y: me.background.oy - dy});
+            editor.getPaper().setViewBox(deltax, deltay, editor.width, editor.height);
+            me.background.ovx = deltax;
+            me.background.ovy = deltay;
+        };
+        var end = function() {
+            editor.viewBoxX = me.background.ovx;
+            editor.viewBoxY = me.background.ovy;
+            me.background.attr("cursor", "default");
+        };
+        me.background.drag(move, start, end);
 
         // Capture resize events
         Event.observe (window, 'resize', this.adjustSizeToScreen);
@@ -70,6 +94,7 @@ var PedigreeEditor = Class.create({
         if (this.getPaper()) {
             // TODO : pan to center?... set viewbox instead of size?
             this.getPaper().setSize(this.width, this.height);
+            this.background && this.background.attr({"width": this.width, "height": this.height});
         }
         if (this.nodeMenu) {
             this.nodeMenu.reposition();
