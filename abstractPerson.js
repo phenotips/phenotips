@@ -322,44 +322,6 @@ var AbstractPerson = Class.create(AbstractNode, {
     },
 
     /*
-     * Returns true if this node is related to otherNode
-     *
-     * @param otherNode can be a Person or a PlaceHolder
-     */
-    isRelatedTo: function(otherNode) {
-        var getPersonNeighbors = function(node) {
-            var neighbors = [];
-            node.getParentPartnership() && neighbors.push(node.getParentPartnership().getPartner1(), node.getParentPartnership().getPartner2());
-            neighbors = neighbors.concat(node.getChildren());
-            neighbors = neighbors.concat(node.getPartners());
-            return neighbors;
-        };
-
-        var front = [this],
-            next = [],
-            visited = {};
-        visited[this.getID()] = true;
-        while(front.length > 0) {
-            for(var i = 0; i<front.length; i++) {
-                var neighbors = getPersonNeighbors(front[i]);
-                for(var k = 0; i<neighbors.length; k++) {
-                    if(neighbors[k] == otherNode) {
-                        return true;
-                    }
-                    else if(!visited[neighbors[k].getID()]) {
-                        next.push(neighbors[k]);
-                        visited[neighbors[k].getID()] = true;
-                    }
-                }
-            }
-            front.clear();
-            front = next;
-            next.clear();
-        }
-        return false;
-    },
-
-    /*
      * Returns true if this node can have a heterosexual Partnership with otherNode
      *
      * @param otherNode is a Person
