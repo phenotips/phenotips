@@ -166,8 +166,11 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         return attr;
     },
 
+    getShapes: function($super) {
+        return $super().push(this.getJunctionShape());
     },
 
     getAllGraphics: function($super) {
+        return editor.getPaper().set(this.getHoverBox().getBackElements()).concat($super()).push(this.getHoverBox().getFrontElements());
     }
 });
