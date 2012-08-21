@@ -1,21 +1,68 @@
+var TmpIndex = Class.create({
+  idToOriginalPos : {},
+  initialize : function() {},
+  insert : function(node) {
+    this.idToOriginalPos[node.getID()] = {x : node.getX(), y : node.getY()};
+  },
+  get : function(node) {
+    return this.idToOriginalPos[node.getID()];
+  },
+  remove : function(node) {
+    this.idToOriginalPos[node.getID()] && delete this.idToOriginalPos[node.getID()];
+  },
+  keys : function() {
+    return Object.keys(this.idToOriginalPos);
+  },
+  clear : function() {
+    var keys = this.keys();
+    var _this = this;
+    keys.each(function(item){
+      delete _this.idToOriginalPos[key];
+    });
+  }
+});
+
 var NodeIndex = Class.create({
+  /** The grid unit. Nodes will be placed only at horizontal and vertical distances indicated here. */ 
   gridUnit : {
     x: 100,
     y: 200
   },
+  /**
+   * Initialize the node index
+   * 
+   * @param nodes optional set of nodes to insert in the index upon its creation
+   */
   initialize : function(nodes) {
     var _this = this;
     this.nodes = {};
     this.positionTree = new kdTree([]);
     this.position2Node = {};
-    this.add = this.add.bind(this);
-    nodes && nodes.each(this.add);
+    this.xIndex = {};
+    this.yIndex = {};
+    this._addNode = this._addNode.bind(this);
+    nodes && nodes.each(this._addNode);
+    this.tmpIndex = new TmpIndex();
   },
 
-  __snapToGrid : function(point) {
+  /**
+   * [Internal method] return the closest position in the grid for a 2D point
+   * 
+   * @param point an object with two mandatory numeric fields, x and y
+   * @return an object with two numeric fields, x and y, the point in the grid that is closest to the inpput
+   */ 
+  _snapToGrid : function(point) {
       return {x: Math.round(point.x / this.gridUnit.x) * this.gridUnit.x, y: Math.round(point.y / this.gridUnit.y) * this.gridUnit.y};
   },
   
+  /**
+   * Find the best position to insert one or more new neighbors for an existing node
+   * 
+   * @param relativePosition an object with one field, which can be either 'above', 'below', 'side', or 'join', whose value indicated the id of a node
+   * @param identifiers an array of new ids for which positions must be found
+   * 
+   * @return an object where each field is one of the ids given as input, and the value is the point where that node should be placed
+   */
   findPosition : function (relativePosition, identifiers) {
     var result = {};
     var _this = this;
@@ -33,7 +80,7 @@ var NodeIndex = Class.create({
       var id = relativePosition.below;
       var node = this.nodes[id];
       var i = 1, total = identifiers.length;
-      var crtSize = this.findLowerNeighborGroupsSize(node);
+      var crtSize = this._findLowerNeighborGroupsSize(node);
       var newSize = crtSize + total * 2 * this.gridUnit.x;
       var start = node.getX() - newSize / 2 + crtSize;
       identifiers.each(function(item) {
@@ -55,83 +102,304 @@ var NodeIndex = Class.create({
        var id = relativePosition.side;
        var node = this.nodes[id];
        var neighbors = node.getSideNeighbors();
-       var side = 2 * (neighbors.length % 2) - 1;
-       result.y = node.getY();
-       result.x = node.getX() + 2 * this.gridUnit.x * side;
+       var found = false, dx = 2 * this.gridUnit.x;
+       while (!found) {
+        var leftNode = this.getNodeNear(node.getX() - dx, node.getY());
+        if (!leftNode) {
+          dx = -dx;
+          found = true;
+        } else {
+          var rightNode = this.getNodeNear(node.getX() + dx, node.getY());
+          if (!rightNode) {
+            found = true;
+          } else {
+            if (!node.isPartnerOf(leftNode)) {
+              dx = -dx;
+              found = true;
+            } else if (!node.isPartnerOf(rightNode)) {
+              found = true;
+            } else {
+              dx += 2 * this.gridUnit.x;
+            }
+          }
+        }
+      }
+      result.y = node.getY();
+      result.x = node.getX() + dx;
     }
     return result;
   },
-  add : function(node) {
-    var position = this.__snapToGrid({x: node.getX(), y: node.getY()});
-    //if (this.getNodeAt(position.x, position.y)) {
-      // TODO shift node to the side
-    //}
-    //node.moveTo(position.x, position.y);
+  /**
+   * Registers a new node in the index
+   * 
+   * @param node the node to register
+   * @param source the node that "generated" the node to add
+   */
+  _addNode : function(node,fullAdd) {
+    /*var neighbors = node.getNeighbors();
+    if (neighbors.length > 0) {
+      var n = neighbors[0];
+      if (n.getY() < node.getY()) {
+        // adding a child;
+        // shift siblings and left nodes to the left, others to the right;
+      } else if (n.getY() < node.getY()) {
+        // adding parents
+        
+      } else {
+        
+      }*/
+    
     this.nodes[node.getID()] = node;
-    this.positionTree.insert(position);
-    this.position2Node[position.x + ',' + position.y] = node;
-   
+    if (fullAdd) {
+      var position = this._snapToGrid({x: node.getX(), y: node.getY()});
+      //this._clearPositionFor(node, -1);
+      this._insertInDimensionIndex('x', node);
+      this._insertInDimensionIndex('y', node);
+      this.positionTree.insert(position);
+      this.position2Node[position.x + ',' + position.y] = node;
+    }
   },
-  _childAdded : function(node) {
+  /**
+   * [Internal method] inserts a node in one of the dimension indexes, xIndex or yIndex.
+   *
+   * @param dimension expects 'x' or 'y'
+   * @param node the node to insert 
+   */ 
+  _insertInDimensionIndex : function (dimension, node) {
+    var index = dimension + "Index";
+    var accessorName = "get" + dimension.toUpperCase();
+    if (typeof(this[index]) == "undefined" ||  typeof(node[accessorName]) != "function") {
+      return;
+    }
+    var key = node[accessorName]();
+    if (!this[index][key]) {
+      this[index][key] = [];
+    }
+    this[index][key].push(node);
+  },
+  /**
+   * [Internal method] Retrieves all the nodes on a certain line or column of the grid 
+   * 
+   * @param dimension expects 'x' or 'y'
+   * @param value the value for the given dimension
+   * @return an array of nodes
+   */
+  _getNodesAt : function(dimension, value) {
+    var index = dimension + "Index";
+    return this[index] && this[index][value] || [];
+  },
+  /**
+   * Update the index after having performed node moves
+   */
+  _updateTmpPositions : function() {
+    var ids = this.tmpIndex.keys();
+    var _this = this;
+    ids.each(function(item) {
+      var node = _this.getNode(item);
+      var position = _this._snapToGrid(_this.tmpIndex.get(node));
+      if (_this.position2Node[position.x + ',' + position.y] == node) {
+        _this.positionTree.remove(position);
+        delete _this.position2Node[position.x + ',' + position.y];
+        _this.xIndex[node.getX()] && (_this.xIndex[node.getX()] = _this.xIndex[node.getX()].without(node));
+        _this.yIndex[node.getY()] && (_this.yIndex[node.getY()] = _this.yIndex[node.getY()].without(node));
+      }
+      
+      var position = _this._snapToGrid({x: node.getX(), y: node.getY()});
+      _this.positionTree.insert(position);
+      _this.position2Node[position.x + ',' + position.y] = node;
+      _this._insertInDimensionIndex('x', node);
+      _this._insertInDimensionIndex('y', node);
+      
+      _this.tmpIndex.remove(node);
+    });
+  },
+  _nodeUpgraded : function(node, original) {
+    this.remove(original);
+    this._addNode(node);
+  },
+  /**
+   * [Internal method] Updates the index after adding a new node as another node's child.
+   * 
+   * @param node the added node
+   */
+  _childAdded : function(node, _parent) {
+    this.tmpIndex.clear();
+    this._addNode(node, true);
     if (node.getUpperNeighbors().length > 0) {
       var parent = node.getUpperNeighbors()[0];
       var siblings = parent.getLowerNeighbors().without(node);
       var _this = this;
       var ignore = {};
       ignore[parent.getID()] = true;
+      ignore[node.getID()] = true;
       siblings.each(function(item) {
-        _this._subgraphShift(item, -1, ignore);
+        _this._subgraphShift(item, -_this.gridUnit.x, ignore);
       });
+      var limits = this._findLowerNeighborGroupsLimits(node);
+      this._rowShift(node, limits, this.gridUnit.x, ignore);
+      this._updateTmpPositions();
     }
   },
-  _subgraphShift : function(node, direction, ignore) {
+  /**
+   * [Internal method] Updates the index after adding a new node as another node's partner.
+   * 
+   * @param node the added node
+   */
+  _partnerAdded : function(node, partner) {
+     this.tmpIndex.clear();
+     if (node.getSideNeighbors().length > 0) {
+      var side = node.getSideNeighbors()[0];
+      var _this = this;
+      var ignore = {};
+      ignore[side.getID()] = true;
+      ignore[node.getID()] = true;
+      partner && (ignore[partner.getID()] = true);
+      if (partner && partner.getUpperNeighbors().length > 0) {
+        var parent = partner.getUpperNeighbors()[0];
+        ignore[parent.getID()] = true;
+      }
+      if (partner && partner.getSideNeighbors().length > 0) {
+        var sides = partner.getSideNeighbors();
+        sides.each(function(item) {
+          ignore[item.getID()] = true;
+          item.getSideNeighbors().each(function(item2) {
+            ignore[item2.getID()] = true;
+          });
+        });
+        var parent = partner.getUpperNeighbors()[0];
+        parent && (ignore[parent.getID()] = true);
+      }
+      var limits = this._findHorizontalGroupLimits(node);
+      this._rowShift(node, limits, 2 * this.gridUnit.x, ignore);
+      this._updateTmpPositions();
+      this._addNode(node, true);
+      side && this._addNode(side, true);
+    }
+  },
+  /**
+   * [Internal method] Updates the index after adding a nodes as another node's parents.
+   * 
+   * @param node the added partnerships node
+   */
+  _parentsAdded : function(node, child) {
+    var neighbors = node.getNeighbors();
+    if (neighbors.length > 0) {
+      var _this = this;
+      var ignore = {};
+      neighbors.each(function (item) {
+        ignore[item.getID()] = true;
+      });
+      ignore[node.getID()] = true;
+      this._rowShift(node, 4 * this.gridUnit.x, ignore);
+    }
+  },
+  _partnershipAdded : function() {
+    // TODO
+  },
+  /**
+   * [Internal method] Updates the positions of all the nodes in a row when a node in that row was added or removed.
+   * 
+   * @param node the modified node
+   * @param length the distance to shift with
+   * @param ignore a map of nodes which should not be moved or traversed
+   */
+  _rowShift : function(node, limits, length, ignore) {
+    var row = this._getNodesAt('y', node.getY());
+    var _this = this;
+    var mid = (limits.low + limits.high)/2;
+    row.each(function (item) {
+      if (item.getX() >= limits.low && item.getX() < mid) {
+        _this._subgraphShift(item, -length, ignore);
+      } else if (item.getX() <= limits.high && item.getX() >= mid) {
+        _this._subgraphShift(item, length, ignore);
+      }
+    });
+  },
+  /**
+   * [Internal method] Updates the positions of all the nodes related to a recently moved node
+   * 
+   * @param node the modified node
+   * @param length the distance to shift with
+   * @param ignore a map of nodes which should not be moved or traversed
+   */
+  _subgraphShift : function(node, dx, ignore) {
     if (ignore[node.getID()]) {
       return;
     }
     ignore[node.getID()] = true;
-    this.relativeMove(node, direction * this.gridUnit.x, 0);
+    this.relativeMove(node, dx, 0);
     var _this = this;
     var neighbors = node.getNeighbors();
     neighbors.each(function(item) {
-      _this._subgraphShift(item, direction, ignore);
+      _this._subgraphShift(item, dx, ignore);
     });
   },
-  _rowShift : function(node, direction, ignore) {
+  /**
+   * [Internal method] Updates the vertical ordering of nodes whenever a higher node is becomes the child of a lower one.
+   * 
+   * @param upperNode the parent node
+   * @param lowerNode the child node
+   */
+  _rowConsistencyFix : function(upperNode, lowerNode) {
+    if (upperNode.getY() >= lowerNode.getY()) {
     // TODO
+      
+    }
   },
-  _generationSwap : function() {
-    // TODO
-  },
+  /**
+   * Remove a node from the index
+   * 
+   * @param node the removed node
+   * @return node the removed node
+   */
   remove : function (node) {
-    var node = this.__getActualNode(node);
+    var node = this._getActualNode(node);
     if (node) {
-      var position = {x: node.getX(), y: node.getY()};
+      var position = this._snapToGrid({x: node.getX(), y: node.getY()});
       this.positionTree.remove(position);
       delete this.position2Node[position.x + ',' + position.y];
       delete this.nodes[node.getID()];
+      this.xIndex[node.getX()] && (this.xIndex[node.getX()] = this.xIndex[node.getX()].without(node));
+      this.yIndex[node.getY()] && (this.yIndex[node.getY()] = this.yIndex[node.getY()].without(node));
     }
-    //if (this.positionTree.nearest(position, 0, 0, 'y').size() == 0) {
-      // TODO shift neighbors
-    //}
     return node;
   },
+  /**
+   * Move a node to a diferent position
+   * 
+   * @param node the node to move
+   * @param x the new horizontal coordinate
+   * @param y the new vertical coordinate
+   * @return true if the move was successful, false otherwise
+   */
   move : function(node, x, y) {
-    var node = this.remove(node) || node;
+    this.tmpIndex.insert(node);
+    node.setPos(x, y);
+    /*var node = this.remove(node) || node;
     if (node) {
       node.setPos(x, y);
-      this.add(node);
-    }
+      this._addNode(node);
+    }*/
     return !!node;
   },
+  /**
+   * Move a node to a diferent position, indicated by relative coordinates
+   * 
+   * @param node the node to move
+   * @param dx the horizontal distance to the new position
+   * @param dy the vertical distance to the new position
+   * @return true if the move was successful, false otherwise
+   */
   relativeMove : function(node, dx, dy) {
-    var node = this.remove(node) || node;
-    if (node) {
-      node.setPos(node.getX() + dx, node.getY() + dy);
-      this.add(node);
-    }
-    return !!node;
+    this.move(node, node.getX() + dx, node.getY() + dy);
   },
-  __getActualNode : function(node) {
+  /**
+   * [Internal method] Retrieves the indexed node matching the input
+   * 
+   * @param node the node to search in the index
+   * @return the matching node from the index
+   */
+  _getActualNode : function(node) {
     var id;
     if (typeof(node.getID == 'function')) {
       id = node.getID();
@@ -140,21 +408,52 @@ var NodeIndex = Class.create({
     }
     return this.nodes[id];
   },
+  /**
+   * Retrieves the node indexed for a given id
+   * 
+   * @param id
+   * @return node indexed for id or undefined
+   */
   getNode : function(id) {
     return this.nodes[id];
   },
+   /**
+   * Retrieves the node indexed for a given position
+   * 
+   * @param x
+   * @param y
+   * @return node indexed for the position or undefined
+   */
   getNodeAt : function(x, y) {
     return this.position2Node[x + ',' + y];
   },
+  /**
+   * Retrieves the node in the grid point closest to the input coordinates
+   * 
+   * @param x
+   * @param y
+   * @return node indexed for the position or undefined
+   */
   getNodeNear : function(x, y) {
-    var position = this.__snapToGrid({x: x, y: y});
+    var position = this._snapToGrid({x: x, y: y});
     return this.position2Node[position.x + ',' + position.y];
   },
+  /**
+   * Checks if an id is registered in the index
+   */
   exists : function(id) {
     return !!this.nodes[id];
   },
   
-  findHorizontalGroupLimits : function (node, _visited, _limits) {
+  /**
+   * [Internal method] Find the leftmost and rightmost x coordinate of nodes horizontally connected to a given node
+   * 
+   * @param node the node for which the group is measured
+   * @param _visited optional map of already visited nodes, which should be ignored
+   * @param _limits optional object {high: number, low: number} containg the limits computed so far
+   * @return an object {high: number, low: number} containing the computed limits
+   */
+  _findHorizontalGroupLimits : function (node, _visited, _limits) {
     var visited = _visited || {};
     if (!node || visited[node.getID()]) {
       return _limits;
@@ -170,24 +469,51 @@ var NodeIndex = Class.create({
     var _this = this;
     node.getSideNeighbors().each(function (item) {
       if (item.getY() == node.getY() && !visited[item.getID]) {
-        _this.findHorizontalGroupLimits(item, visited, limits);
+        limits = _this._findHorizontalGroupLimits(item, visited, limits);
       }
     });
     return limits;
   },
   
-  findHorizontalGroupSize :  function (node) {
-    var limits = this.findHorizontalGroupLimits(node);
+  /**
+   * [Internal method] Find the distance between leftmost and rightmost x coordinate of nodes horizontally connected to a given node
+   * 
+   * @param node the node for which the group is measured
+   * @return a number representing the distance between leftmost and rightmost x coordinate of the group
+   */
+  _findHorizontalGroupSize :  function (node) {
+    var limits = this._findHorizontalGroupLimits(node);
     return limits.high - limits.low;
   },
+   /**
+   * [Internal method] Find the leftmost and rightmost x coordinate of the lower neighbors of a node
+   * 
+   * @param node the node for which the group is measured
+   * @return an object {high: number, low: number} containing the computed limits
+   */
+  _findLowerNeighborGroupsLimits : function(node) {
+    var list = node.getLowerNeighbors();
+    if (list.length == 0) {
+      return {low: node.getX(), high: node.getX()};
+    }
+    var start =  this._findHorizontalGroupLimits(list[0]).low;
+    var end = this._findHorizontalGroupLimits(list[list.length - 1]).high;
+    return {low: start, high: end};
+  },
   
-  findLowerNeighborGroupsSize : function(node) {
+  /**
+   * [Internal method] Find the distance between leftmost and rightmost x coordinate of the lower neighbors of a node
+   * 
+   * @param node the node for which the group is measured
+   * @return a number representing the distance between leftmost and rightmost x coordinate of the group
+   */
+  _findLowerNeighborGroupsSize : function(node) {
     var list = node.getLowerNeighbors();
     if (list.length == 0) {
       return -2*this.gridUnit.x;
     }
     var start =  list[0].getX();
-    var end = this.findHorizontalGroupLimits(list[list.length - 1]).high;
+    var end = this._findHorizontalGroupLimits(list[list.length - 1]).high;
     return end - start;
   }
 });

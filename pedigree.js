@@ -71,11 +71,30 @@ var PedigreeEditor = Class.create({
         Droppables.add($('canvas'), {accept: 'disorder', onDrop: this._onDropDisorder.bind(this)});
         this._proband = this.addNode(this.width/2, this.height/2, 'M', false);
 
-
         document.observe('pedigree:child:added', function(event){
-            if (event && event.memo && event.memo.node) {
-                nodeIndex._childAdded(event.memo.node);
-            }
+          if (event && event.memo && event.memo.node) {
+            nodeIndex._childAdded(event.memo.node, event.memo.sourceNode);
+          }
+        });
+        document.observe('pedigree:partner:added', function(event){
+          if (event && event.memo && event.memo.node) {
+            nodeIndex._partnerAdded(event.memo.node, event.memo.sourceNode);
+          }
+        });
+        document.observe('pedigree:parents:added', function(event){
+          if (event && event.memo && event.memo.node) {
+            nodeIndex._parentsAdded(event.memo.node, event.memo.sourceNode);
+          }
+        });
+        document.observe('pedigree:partnership:added', function(event){
+          if (event && event.memo && event.memo.node) {
+            nodeIndex._partnershipAdded(event.memo.node, event.memo.sourceNode);
+          }
+        });
+        document.observe('pedigree:node:upgraded', function(event){
+          if (event && event.memo && event.memo.node) {
+            nodeIndex._nodeUpgraded(event.memo.node, event.memo.sourceNode);
+          }
         });
     },
 
@@ -320,7 +339,7 @@ var PedigreeEditor = Class.create({
 
     addPartnership : function(x, y, node1, node2) {
         var partnership = new Partnership(x, y, node1, node2);
-        this.nodeIndex.add(partnership);
+        this.nodeIndex._addNode(partnership);
         this.nodes[2].push(partnership);
         return partnership;
     },
@@ -334,7 +353,7 @@ var PedigreeEditor = Class.create({
         var isProband = (!isPlaceHolder && this.nodes[0].length == 0);
         var node = (isPlaceHolder) ? (new PlaceHolder(x, y, gender, id)) : (new Person(x, y, gender, id, isProband));
         this.nodes[+(isPlaceHolder)].push(node);
-	this.nodeIndex.add(node);
+        this.nodeIndex._addNode(node, isProband);
         return node;
     },
 

@@ -128,7 +128,9 @@ var Partnership = Class.create(AbstractNode, {
         else {
             var position = editor.findPosition({below: this.getID()}, ['child']);
             var child = editor.addNode(position['child'].x, position['child'].y, "U", isPlaceHolder);
-            return this.addChild(child);
+            var result = this.addChild(child);
+            document.fire("pedigree:child:added", {node: child, 'relatedNodes' : [], 'sourceNode' : this});
+            return result;
         }
     },
 
@@ -148,7 +150,6 @@ var Partnership = Class.create(AbstractNode, {
             someNode.parentConnection = this.getGraphics().updateChildConnection(someNode, someNode.getX(), someNode.getY(), this.getX(), this.getY());
             someNode.setParentPartnership(this);
         }
-        document.fire("pedigree:child:added", {node: someNode});
         return someNode;
     },
     

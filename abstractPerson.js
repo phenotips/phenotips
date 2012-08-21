@@ -167,6 +167,8 @@ var AbstractPerson = Class.create(AbstractNode, {
 
             var joinPosition = editor.findPosition({join : [mother.getID(), father.getID()]});
             var partnership = editor.addPartnership(joinPosition.x, joinPosition.y, mother, father);
+            
+            document.fire('pedigree:parents:added', {'node' : partnership, 'relatedNodes' : [mother, father], 'sourceNode' : this});
             this.addParents(partnership);
         }
     },
@@ -217,7 +219,9 @@ var AbstractPerson = Class.create(AbstractNode, {
     createPartner: function(isPlaceHolder, noChild) {
         var position = editor.findPosition({side: this.getID()}),
             partner = editor.addNode(position.x, position.y, this.getOppositeGender(), isPlaceHolder);
-        return this.addPartner(partner, noChild);
+        var result = this.addPartner(partner, noChild);
+        document.fire('pedigree:partner:added', {'node' : partner, 'relatedNodes' : [result], 'sourceNode' : this});
+        return result;
     },
 
     /*
@@ -245,7 +249,8 @@ var AbstractPerson = Class.create(AbstractNode, {
             if(partnership.getChildren().length == 0 && !noChild) {
                 partnership.createChild(true);
             }
-
+            
+            document.fire('pedigree:partnership:added', {'node' : partnership, 'relatedNodes' : [partner], 'sourceNode' : this});
             return partnership;
         }
     },

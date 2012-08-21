@@ -39,6 +39,7 @@ var PlaceHolder = Class.create(AbstractPerson, {
     convertToPerson: function() {
         var newNode = editor.addNode(this.getGraphics().getX(), this.getGraphics().getY(), this.getGender(), false);
         this.merge(newNode);
+        document.fire('pedigree:node:upgraded', {'node' : newNode, 'relatedNodes' : [], 'sourceNode' : this});
     },
 
     /*
