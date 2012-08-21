@@ -307,7 +307,7 @@ var PedigreeEditor = Class.create({
     addNode: function(x, y, gender, isPlaceHolder, id) {
         !isPlaceHolder && (isPlaceHolder = false);
         var isProband = (!isPlaceHolder && this.nodes[0].length == 0);
-        var node = (isPlaceHolder) ? (new PlaceHolder(x, y, gender)) : (new Person(x, y, gender, id, isProband));
+        var node = (isPlaceHolder) ? (new PlaceHolder(x, y, gender, id)) : (new Person(x, y, gender, id, isProband));
         this.nodes[+(isPlaceHolder)].push(node);
 	this.nodeIndex.add(node);
         return node;
