@@ -357,24 +357,6 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /*
-     * Breaks connections with all related nodes and removes this node and its properties
-     * from the record.
-     * (Optional) Removes all descendants of this node as well
-     * (Optional) Removes all the graphics for this node and (optionally)
-     * his descendants
-     *
-     * @param isRecursive set to true if you want to remove all descendants as well
-     * @param removeVisuals set to true if you want to remove the graphics as well
-     */
-    remove: function($super, isRecursive, removeGraphics) {
-        this.getDisorders().each(function(disorder) {
-            editor.getLegend().removeCase(disorder, this);
-        });
-        this.getGraphics().getHoverBox().remove();
-        $super(isRecursive, removeGraphics);
-    },
-
-    /*
      * Returns true if this node can be a parent of otherNode
      *
      * @param otherNode is a Person
@@ -388,14 +370,68 @@ var Person = Class.create(AbstractPerson, {
 
     },
 
+    /*
+     * Replaces this Person with a placeholder without breaking all the connections.
+     *
+     * @param otherNode is a Person
+     */
+    convertToPlaceholder: function() {
+        var me = this;
+        var placeholder = editor.addNode(this.getX(), this.getY(), this.getGender(), true);
+        var parents = this.getParentPartnership();
+        if(parents) {
+            parents.removeChild(me);
+            parents.addChild(placeholder);
+        }
+        this.getPartnerships().each(function(partnership) {
+            var newPartnership = editor.addPartnership(partnership.getX(), partnership.getY(), partnership.getPartnerOf(me), placeholder);
+            partnership.getChildren().each(function(child) {
+                partnership.removeChild(child);
+                newPartnership.addChild(child);
+            });
+        });
+        me.remove(false);
+        return placeholder;
+    },
 
-    setParentPartnership: function($super, partnership) {
-        $super(partnership);
-        if(partnership) {
-            this.getGraphics().getHoverBox().hideParentHandle();
+    /*
+     * Deletes this node, it's placeholder partners and children and optionally
+     * removes all the other nodes that are unrelated to the proband node.
+     *
+     * @param isRecursive set to true if you want to remove related nodes that are
+     * not connected to the proband
+     */
+    remove: function($super, isRecursive) {
+        if(!isRecursive) {
+            var me = this;
+            var hasPersonPartners = function() {
+                var found = false;
+                me.getPartners().each(function(partner) {
+                    if(partner.getType() == 'pn') {
+                        found = true;
+                        throw $break;
+                    }
+                });
+                return found;
+            };
+            this.getPartners().each(function(partner) {
+                if(partner.getType() == 'ph') {
+                    partner.remove(false);
+                }
+            });
+            if(this.getParentPartnership() || (this.getChildren('pn').length > 0 && hasPersonPartners())) {
+                this.convertToPlaceholder();
+            }
+            else {
+                this.getDisorders().each(function(disorder) {
+                    editor.getLegend().removeCase(disorder, this);
+                });
+                this.getGraphics().getHoverBox().remove();
+                $super(isRecursive);
+            }
         }
         else {
-            this.getGraphics().getHoverBox().unHideParentHandle();
+            $super(isRecursive);
         }
     },
 

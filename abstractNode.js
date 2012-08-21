@@ -134,7 +134,59 @@ var AbstractNode = Class.create( {
      * @param removeVisuals set to true if you want to remove the graphics of this
      * node as well.
      */
-    remove: function(removeVisuals) {
-        removeVisuals && this.getGraphics().remove();
+    remove: function(isRecursive) {
+        var me = this;
+        var toRemove = [];
+        if(isRecursive) {
+            toRemove.push(me);
+            this.getNeighbors().each(function(neighbor) {
+                var result = neighbor.isRelatedTo(editor.getProband(), toRemove.clone());
+                if(!result[0]) {
+                    toRemove = result[1];
+                }
+            });
+            toRemove.each(function(node) {
+                node.getGraphics().getHighlightBox && node.getGraphics().highlight();
+            });
+            var confirmation;
+            if(toRemove.length > 1) {
+                confirmation = confirm("Removing this person will also remove all the highlighted individuals. Are you sure you want to proceed?");
+            }
+            else {
+                confirmation = confirm("Removing this person will also remove all the related connections. Are you sure you want to proceed?");
+            }
+            if(confirmation) {
+                toRemove.reverse().each(function(node) {
+                    node && node.remove(false);
+                });
+            }
+            else {
+                toRemove.each(function(node) {
+                    node && node.getGraphics().getHighlightBox && node.getGraphics().unHighlight();
+                });
+            }
+        }
+    },
+
+    isRelatedTo: function(node, visited) {
+        var visitedNodes = (visited) ? visited : [];
+        if(visitedNodes.indexOf(this) >= 0) {
+            return [false, visitedNodes];
+        }
+        visitedNodes.push(this);
+        if(node == this) {
+            return [true, visitedNodes];
+        }
+        else {
+            var found = false;
+            var neighbors = this.getNeighbors();
+            neighbors = neighbors.without.apply(neighbors, visitedNodes);
+            neighbors.each(function(neighbor) {
+                var result = neighbor.isRelatedTo(node, visitedNodes);
+                visitedNodes = result[1];
+                result[0] && (found = true);
+            });
+            return [found, visitedNodes];
+        }
     }
 });

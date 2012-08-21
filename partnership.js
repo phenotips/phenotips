@@ -155,18 +155,24 @@ var Partnership = Class.create(AbstractNode, {
         someNode.parentConnection = null;
     },
 
-    remove: function() {
-        var me = this;
-        this.getChildren().each(function(child) {
-            child.setParentPartnership(null);
-            me.removeChild(child);
-            if(child.getType() == 'ph') {
-                child.remove(false, true);
-            }
-        });
-        this.getPartners()[0].removePartnership(this);
-        this.getPartners()[1].removePartnership(this);
-        this.getGraphics().remove();
+    remove: function($super, isRecursive) {
+        if(isRecursive) {
+            $super(isRecursive);
+        }
+        else {
+            var me = this;
+            editor.removePartnership(this);
+            this.getChildren().each(function(child) {
+                child.setParentPartnership(null);
+                me.removeChild(child);
+                if(child.getType() == 'ph') {
+                    child.remove(false, true);
+                }
+            });
+            this.getPartners()[0].removePartnership(this);
+            this.getPartners()[1].removePartnership(this);
+            this.getGraphics().remove();
+        }
     },
 
     /*

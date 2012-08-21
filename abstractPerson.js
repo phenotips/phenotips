@@ -386,34 +386,24 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Breaks connections with all related nodes and removes this node from
      * the record.
      * (Optional) Removes all descendant nodes and their relatives that will become unrelated to the proband as a result
-     * (Optional) Removes all the graphics for this node and (optionally)
-     * his descendants
      *
      * @param isRecursive set to true if you want to remove all unrelated descendants as well
-     * @param removeVisuals set to true if you want to remove the graphics as well
      */
-    remove: function(isRecursive, removeVisuals) {
-        var me = this,
-            toRemove = [],
-            parents = this.getParents();
-        if(parents) {
-            (parents[0].getType() == 'ph') && parents[0].remove(false, true);
-            (parents[1].getType() == 'ph') && parents[1].remove(false, true);
+    remove: function($super, isRecursive) {
+        if(isRecursive) {
+            $super(true)
         }
-        this.getPartnerships().each(function(partnership) {
-            partnership.getChildren().each(function(child) {
-                (child.getType() == 'ph') ? child.remove(false, true) : toRemove.push(child);
+        else {
+            var me = this,
+                toRemove = [],
+                parents = this.getParentPartnership();
+            parents && parents.removeChild(me);
+            this.getPartnerships().each(function(partnership) {
+                partnership.remove(false);
             });
-            var partner = partnership.getPartnerOf(me);
-            partner.getType() == 'ph' && partner.remove(false, true);
-            partnership.remove();
-        });
-        isRecursive && toRemove.each(function(node) {
-            !(node.isRelatedTo(me)) && node.remove(true, removeVisuals);
-        });
-        this.getParentPartnership() && this.getParentPartnership().removeChild(me);
-        editor.removeNode(this);
-        removeVisuals && this.getGraphics().remove();
+            editor.removeNode(this);
+            this.getGraphics().remove();
+        }
     },
 
     /*
