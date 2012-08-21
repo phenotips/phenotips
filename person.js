@@ -44,6 +44,9 @@ var Person = Class.create(AbstractPerson, {
         return "pn";
     },
 
+    /*
+     * Returns true if this node is the proband (i.e. the main patient)
+     */
     isProband: function() {
         return this._isProband;
     },
@@ -91,8 +94,7 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /*
-     * Replaces the first name of this Person with firstName, and
-     * (optionally) updates all the labels of this node, including the first name
+     * Replaces the first name of this Person with firstName, and displays the label
      *
      * @param firstName any string that represents the first name of this Person
      */
@@ -110,8 +112,7 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /*
-     * Replaces the last name of this Person with lastName, and
-     * (optionally) updates all the labels of this node, including the last name
+     * Replaces the last name of this Person with lastName, and displays the label
      *
      * @param lastName any string that represents the last name of this Person
      */
@@ -121,7 +122,7 @@ var Person = Class.create(AbstractPerson, {
         this.getGraphics().updateNameLabel();
     },
     /*
-     * Returns the status of this Person, which can be "alive", "deceased", "stillborn" or "aborted"
+     * Returns the status of this Person, which can be "alive", "deceased", "stillborn", "unborn" or "aborted"
      */
     getLifeStatus: function() {
         return this._lifeStatus;
@@ -132,11 +133,9 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /*
-     * Changes the status of this Person to newStatus, updates the menu and (optionally) updates
-     * the graphics
+     * Changes the life status of this Person to newStatus
      *
      * @param newStatus can be "alive", "deceased", "stillborn", "unborn" or "aborted"
-     * @param forceDisplay set to true if you want to display the change on the canvas
      */
     setLifeStatus: function(newStatus) {
         if(newStatus == 'unborn' || newStatus == 'stillborn' || newStatus == 'aborted' || newStatus == 'alive' || newStatus == 'deceased'){
@@ -164,15 +163,14 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /*
-     * Returns the date object representing the conception date of this Person
+     * Returns the date object for the conception date of this Person
      */
     getConceptionDate: function() {
         return this._conceptionDate;
     },
 
     /*
-     * If this Person is marked as a Fetus, this method replaces the conception date with newDate
-     * and (optionally) updates the graphics
+     * Replaces the conception date with newDate
      *
      * @param newDate a javascript Date object
      * @param forceDisplay set to true if you want to display the change on the canvas
@@ -183,7 +181,7 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /*
-     * Returns the number of weeks passed since conception
+     * Returns the number of weeks since conception
      */
     getGestationAge: function() {
         if(this.getLifeStatus() == 'unborn' && this.getConceptionDate()) {
@@ -201,34 +199,31 @@ var Person = Class.create(AbstractPerson, {
 
     /*
      * Updates the conception age of the Person given the number of weeks passed since conception,
-     * and (optionally) updates the graphics
      *
      * @param numWeeks a number greater than or equal to 0
-     * @param forceDisplay set to true if you want to display the change on the canvas
      */
-    setGestationAge: function(numWeeks, forceDisplay) {
+    setGestationAge: function(numWeeks) {
         if(numWeeks){
             this._gestationAge = numWeeks;
             var daysAgo = numWeeks * 7,
                 d = new Date();
             d.setDate(d.getDate() - daysAgo);
-            this.setConceptionDate(d, forceDisplay);
+            this.setConceptionDate(d);
         }
         else {
-            this.setConceptionDate(null, forceDisplay);
+            this.setConceptionDate(null);
         }
     },
 
     /*
-     * Returns the date object representing the birth date of this Person
+     * Returns the date object for the birth date of this Person
      */
     getBirthDate: function() {
         return this._birthDate;
     },
 
     /*
-     * If this Person is not marked as a Fetus, this method replaces the birth date with newDate
-     * and (optionally) updates the graphics
+     * Replaces the birth date with newDate
      *
      * @param newDate a javascript Date object, that must be an earlier date than deathDate and
      * a later date than conception date
@@ -241,14 +236,14 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /*
-     * Returns the date object representing the death date of this Person
+     * Returns the date object for the death date of this Person
      */
     getDeathDate: function() {
         return this._deathDate;
     },
 
     /*
-     * Replaces the death date with newDate and (optionally) updates the graphics
+     * Replaces the death date with newDate
      *
      * @param newDate a javascript Date object, that must be a later date than deathDate and
      * a later date than conception date
@@ -299,7 +294,6 @@ var Person = Class.create(AbstractPerson, {
 
     /*
      * Removes disorder to the list of this node's disorders and updates the Legend.
-     * (Optionally) updates the graphics of this node
      *
      * @param disorder an object with fields 'id' and 'value', where id is the id number
      * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
@@ -317,6 +311,14 @@ var Person = Class.create(AbstractPerson, {
         forceDisplay && this.getGraphics().updateDisorderShapes();
     },
 
+    /*
+     * Given a list of disorders, adds and removes the disorders of this node to match
+     * the new list
+     *
+     * @param disorderArray should be an array of objects with fields 'id' and 'value', where id is the id number
+     * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
+     * eg. [{id: 33244, value: 'Down Syndrome'}, {id: 13241, value: 'Huntington's Disease'}, ...]
+     */
     updateDisorders: function(disorders) {
         var me = this;
         this.getDisorders().each(function(disorder) {
@@ -334,6 +336,11 @@ var Person = Class.create(AbstractPerson, {
         this.getGraphics().updateDisorderShapes();
     },
 
+    /*
+     * Returns true if this person has the disorder with id
+     *
+     * @param id a string id for the disorder, taken from the OMIM database
+     */
     hasDisorder: function(id) {
         for(var i = 0; i < this.getDisorders().length; i++) {
             if(this.getDisorders()[i].id == id) {
@@ -344,8 +351,7 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
-     * Changes the adoption status of this Person to isAdopted and (optionally) updates the
-     * graphics of this node
+     * Changes the adoption status of this Person to isAdopted
      *
      * @param isAdopted set to true if you want to mark the Person adopted
      */
@@ -462,3 +468,4 @@ var Person = Class.create(AbstractPerson, {
             gestation_age: {value : this.getGestationAge(), inactive : !this.isFetus()}
         };
     }
+});

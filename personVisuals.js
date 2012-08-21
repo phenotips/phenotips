@@ -24,10 +24,17 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._hoverBox = new PersonHoverbox(node, x, y, this.getGenderSymbol());
     },
 
+    /*
+     * Returns the PersonHoverbox object for this Person
+     */
     getHoverBox: function() {
         return this._hoverBox;
     },
 
+    /*
+     * Draws the icon for this Person depending on the gender, life status and whether this Person is the proband.
+     * Updates the disorder shapes.
+     */
     setGenderSymbol: function($super) {
         if(this.getNode().getLifeStatus() == 'aborted') {
             this._genderSymbol && this._genderSymbol.remove();
@@ -92,7 +99,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._evaluationLabels = evalLabels;
         this.updateDisorderShapes();
     },
-
+    /*
+     * Updates the name label for this Person
+     */
     updateNameLabel: function() {
         this._nameLabel && this._nameLabel.remove();
         var text =  "";
@@ -107,6 +116,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
     },
 
+    /*
+     * Returns the Raphaël element for this Person's name label
+     */
     getNameLabel: function() {
         return this._nameLabel;
     },
@@ -116,10 +128,16 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._nameLabel = label;
     },
 
+    /*
+     * Returns the Raphaël set with colorful blocks representing disorders
+     */
     getDisorderShapes: function() {
         return this._disorderShapes;
     },
 
+    /*
+     * Displays the disorders currently registered for this node.
+     */
     updateDisorderShapes: function() {
         this._disorderShapes && this._disorderShapes.remove();
         var gradient = function(color, angle) {
@@ -178,6 +196,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._deadShape.node.setAttribute("class","deadshape");
     },
 
+    /*
+     * Returns the Raphaël element for the line drawn across a dead Person
+     */
     getDeadShape: function() {
         return this._deadShape;
     },
@@ -186,6 +207,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         return this._stillBirthLabel;
     },
 
+    /*
+     * Returns the Raphaël element for this Person's age label
+     */
     getAgeLabel: function() {
         return this._ageLabel;
     },
@@ -195,6 +219,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._ageLabel = label;
     },
 
+    /*
+     * Updates the age label for this Person
+     */
     updateAgeLabel: function() {
         var text,
             person = this.getNode();
@@ -224,10 +251,16 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.setAgeLabel(text);
     },
 
+    /*
+     * Returns the Raphaël element used to display this Person's 'unborn' life-status
+     */
     getUnbornShape: function() {
         return this._unbornShape;
     },
 
+    /*
+     * Draws a "P" on top of the node to display this Person's 'unborn' life-status
+     */
     drawUnbornShape: function() {
         this._unbornShape && this._unbornShape.remove();
         if(this.getNode().getLifeStatus() == 'unborn') {
@@ -236,10 +269,16 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
     },
 
+    /*
+     * Returns the Raphaël element for this Person's age label
+     */
     getSBLabel: function() {
         return this._stillBirthLabel;
     },
 
+    /*
+     * Updates the stillbirth label for this Person
+     */
     updateSBLabel: function() {
         var SBLabel;
         this.getNode().getLifeStatus() == 'stillborn' && (SBLabel = editor.getPaper().text(this.getX(), this.getY(), "SB"));
@@ -248,6 +287,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.drawLabels();
     },
 
+    /*
+     * Displays the correct graphics to represent the current life status for this Person.
+     */
     updateLifeStatusShapes: function() {
         var status = this.getNode().getLifeStatus();
         this.getDeadShape() && this.getDeadShape().remove();
@@ -275,6 +317,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
     },
 
+    /*
+     * Draws brackets around the node icon to show that this node is adopted
+     */
     drawAdoptedShape: function() {
         this._adoptedShape && this._adoptedShape.remove();
         var r = editor.attributes.radius,
@@ -289,6 +334,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._adoptedShape.insertBefore(this.getHoverBox().getFrontElements().flatten());
     },
 
+    /*
+     * Removes the brackets around the node icon that show that this node is adopted
+     */
     removeAdoptedShape: function() {
         this._adoptedShape && this._adoptedShape.remove();
     },
@@ -368,7 +416,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     },
 
     /*
-     * Returns a Raphael set or element that contains the graphics associated with this node, excluding the labels.
+     * Returns a Raphael set with the gender icon, disorder shapes and life status shapes.
      */
     getShapes: function($super) {
         var lifeStatusShapes = editor.getPaper().set();
@@ -379,7 +427,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     },
 
     /*
-     * Returns a Raphael set or element that contains all the graphics and labels associated with this node.
+     * Returns a Raphael set or element that contains all the graphics and labels associated with this Person.
      */
     getAllGraphics: function($super) {
         return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this.getHoverBox().getFrontElements());
@@ -391,6 +439,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @param x the x coordinate on the canvas
      * @param y the y coordinate on the canvas
      * @param animate set to true if you want to animate the transition
+     * @param callback a function that will be called at the end of the animation
      */
     setPos: function($super, x, y, animate, callback) {
     var funct;
