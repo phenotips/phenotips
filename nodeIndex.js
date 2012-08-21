@@ -120,19 +120,19 @@ var NodeIndex = Class.create({
        var neighbors = node.getSideNeighbors();
        var found = false, dx = 2 * this.gridUnit.x;
        while (!found) {
-        var leftNode = this.getNodeNear(node.getX() - dx, node.getY());
-        if (!leftNode) {
-          dx = -dx;
+        var rightNode = this.getNodeNear(node.getX() + dx, node.getY());
+        if (!rightNode) {
           found = true;
         } else {
-          var rightNode = this.getNodeNear(node.getX() + dx, node.getY());
-          if (!rightNode) {
+          var leftNode = this.getNodeNear(node.getX() - dx, node.getY());
+          if (!leftNode) {
+            dx = -dx;
             found = true;
           } else {
-            if (!node.isPartnerOf(leftNode)) {
-              dx = -dx;
+            if (!node.isPartnerOf(rightNode)) {
               found = true;
-            } else if (!node.isPartnerOf(rightNode)) {
+            } else if (!node.isPartnerOf(leftNode)) {
+              dx = -dx;
               found = true;
             } else {
               dx += 2 * this.gridUnit.x;
