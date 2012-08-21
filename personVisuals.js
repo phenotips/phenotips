@@ -84,13 +84,15 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         var text =  "";
         this.getNode().getFirstName() && (text += this.getNode().getFirstName());
         this.getNode().getLastName() && (text += ' ' + this.getNode().getLastName());
-        if(text.strip() != ''){
-            this.setNameLabel(editor.getPaper().text(this.getRelativeX(), this.getRelativeY() + editor.attributes.radius, text));
+        this._nameLabel && this._nameLabel.remove();
+        if(text.strip() != '') {
+            this._nameLabel = editor.getPaper().text(this.getX(), this.getY() + editor.attributes.radius, text);
             this.getNameLabel().attr({'font-size': 18, 'font-family': 'Cambria'});
         }
         else {
-            this.setNameLabel(null);
+            this._nameLabel = null;
         }
+        this.drawLabels();
     },
 
     /*
@@ -98,11 +100,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     getNameLabel: function() {
         return this._nameLabel;
-    },
-
-    setNameLabel: function(label) {
-        this._nameLabel && this._nameLabel.remove();
-        this._nameLabel = label;
     },
 
     /*
@@ -201,11 +198,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         return this._ageLabel;
     },
 
-    setAgeLabel: function(label) {
-        this.getAgeLabel() && this.getAgeLabel().remove();
-        this._ageLabel = label;
-    },
-
     /*
      * Updates the age label for this Person
      */
@@ -234,8 +226,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 text = person.getBirthDate().getFullYear() + " - ?";
             }
         }
-        text && (text = editor.getPaper().text(this.getRelativeX(), this.getRelativeY(), text));
-        this.setAgeLabel(text);
+        this.getAgeLabel() && this.getAgeLabel().remove();
+        this._ageLabel = text ? editor.getPaper().text(this.getX(), this.getY(), text) : null;
+        this.drawLabels();
     },
 
     /*
@@ -345,8 +338,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     /*
      * Marks this node as hovered, and moves the labels out of the way
      */
-    setSelected: function($super, isSelected) {
-        $super();
+    setSelected: function(isSelected) {
+        this._isSelected = isSelected;
         if(isSelected) {
             this.shiftLabels();
         }
@@ -361,7 +354,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     shiftLabels: function() {
         var labels = this.getLabels();
         for(var i = 0; i<labels.length; i++) {
-            labels[i].stop().animate({"y": labels[i].oy + 50}, 200,">");
+            labels[i].stop().animate({"y": labels[i].oy + editor.attributes.radius/1.5}, 200,">");
         }
     },
     /*
@@ -379,10 +372,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     getLabels: function() {
         var labels = editor.getPaper().set();
-        this.getNameLabel() && labels.push(this.getNameLabel());
         this.getSBLabel() && labels.push(this.getSBLabel());
+        this.getNameLabel() && labels.push(this.getNameLabel());
         this.getAgeLabel() && labels.push(this.getAgeLabel());
-        this.getEvaluationLabels() && this.getEvaluationLabels().each(function(l) {labels.push(l); });
         return labels;
     },
 
