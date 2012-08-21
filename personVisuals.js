@@ -292,6 +292,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             this.drawDeadShape();
         }
         else if(status == 'aborted') {
+            this.drawDeadShape();
             this.getHoverBox().hidePartnerHandles();
         }
         else if(status == 'unborn') {
