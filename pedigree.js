@@ -70,13 +70,13 @@ var PedigreeEditor = Class.create({
         };
         Droppables.add($('canvas'), {accept: 'disorder', onDrop: this._onDropDisorder.bind(this)});
         this._proband = this.addNode(this.width/2, this.height/2, 'M', false);
-	
-	
-	document.observe('pedigree:child:added', function(event){
-	  if (event && event.memo && event.memo.node) {
-	    nodeIndex._childAdded(event.memo.node);
-	  }
-	});
+
+
+        document.observe('pedigree:child:added', function(event){
+            if (event && event.memo && event.memo.node) {
+                nodeIndex._childAdded(event.memo.node);
+            }
+        });
     },
 
     getPaper: function() {

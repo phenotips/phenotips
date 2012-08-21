@@ -231,7 +231,6 @@ var AbstractHoverbox = Class.create({
             orb.animate({"cx": orb.ox, "cy": orb.oy}, +handle.isDragged * 1000, "elastic",
                 function() {
                     me._activeHandles--;
-                    console.log(me._activeHandles);
                     if(me._activeHandles == 0) {
                         me.enable();
                         handle.isDragged && me.animateHideHoverZone();
