@@ -162,6 +162,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             }
         }
         this._disorderShapes = disorderShapes;
+        this._disorderShapes.flatten().insertAfter(this.getGenderSymbol().flatten());
     },
 
     /*
