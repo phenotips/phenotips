@@ -374,7 +374,12 @@ var PedigreeEditor = Class.create({
                         color = "green";
                     }
                     else if(me.currentDraggable.handle == "parent" && s.canBeParentOf(sourceNode)) {
-                        s.validParentSelected = true;
+                        if(s.getType() == 'pn') {
+                            s.validParentSelected = true;
+                        }
+                        else {
+                            s.validParentsSelected = true;
+                        }
                         color = "green";
                     }
                     else {
