@@ -52,12 +52,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 shape.attr("stroke-width", 5);
             }
 
-            x = this.getRelativeX() - 2 * height/ 3;
-            y = this.getRelativeY() + height/ 3;
-            var deadShape = editor.getPaper().path(["M", x, y, 'l', height + height/3, -(height+ height/3), "z"]);
-            deadShape.attr("stroke-width", 3);
-            shape.push(deadShape);
-
             if(this.getNode().getGender() == 'U') {
                 this._genderSymbol = shape;
             }
@@ -184,16 +178,30 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._disorderShapes = disorderShapes;
     },
 
+    /*
+     * Draws a line across the Person to display that he is dead (or aborted).
+     */
     drawDeadShape: function() {
-        var x = this.getRelativeX(),
-            y = this.getRelativeY(),
-            x1 = x - (10/8) * editor.attributes.radius,
-            y1 = y + (10/8) * editor.attributes.radius,
-            x2 = x + (10/8) * editor.attributes.radius,
-            y2 = y - (10/8) * editor.attributes.radius;
-        this._deadShape = editor.getPaper().path(["M", x1,y1,"L",x2, y2]).attr("stroke-width", 3);
+        var x, y;
+        if(this.getNode().getLifeStatus() == 'aborted') {
+            var side = editor.attributes.radius * Math.sqrt(3.5),
+                height = side/Math.sqrt(2);
+            x = this.getX() - height/1.5;
+            y = this.getY() + height/3;
+            this._deadShape = editor.getPaper().path(["M", x, y, 'l', height + height/3, -(height+ height/3), "z"]);
+            this._deadShape.attr("stroke-width", 3);
+        }
+        else {
+            x = this.getX();
+            y = this.getY();
+            var
+                x1 = x - (10/8) * editor.attributes.radius,
+                y1 = y + (10/8) * editor.attributes.radius,
+                x2 = x + (10/8) * editor.attributes.radius,
+                y2 = y - (10/8) * editor.attributes.radius;
+            this._deadShape = editor.getPaper().path(["M", x1,y1,"L",x2, y2]).attr("stroke-width", 3);
+        }
         this._deadShape.insertAfter(this.getHoverBox().getFrontElements().flatten());
-        this._deadShape.node.setAttribute("class","deadshape");
     },
 
     /*
