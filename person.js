@@ -151,14 +151,13 @@ var Person = Class.create(AbstractPerson, {
                 this.setBirthDate(null);
                 this.setAdopted(false);
             }
-
             this.getGraphics().updateLifeStatusShapes();
             editor.nodeMenu.update(this,
                 {
                     'gestation_age': {value : this.getGestationAge(), inactive : !this.isFetus()},
                     'date_of_birth': {value : this.getBirthDate(), inactive : this.isFetus()},
                     'adopted':       {value : this.isAdopted(), inactive: this.isFetus()},
-                    'date_of_death': {value : this.getDeathDate(), inactive: this.isFetus()}
+                    'date_of_death': {value : this.getDeathDate(), inactive: newStatus != 'deceased'}
                 });
         }
     },
@@ -465,7 +464,7 @@ var Person = Class.create(AbstractPerson, {
             disorders:     {value : this.getDisorders()},
             adopted:       {value : this.isAdopted(), inactive: this.isFetus()},
             state:         {value : this.getLifeStatus(), inactive: [(this.getPartnerships().length > 0) ? ['unborn','aborted','stillborn'] : ''].flatten()},
-            date_of_death: {value : this.getDeathDate(), inactive: this.isFetus()},
+            date_of_death: {value : this.getDeathDate(), inactive: this.getLifeStatus() != 'deceased'},
             gestation_age: {value : this.getGestationAge(), inactive : !this.isFetus()}
         };
     }
