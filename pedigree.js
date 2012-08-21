@@ -350,6 +350,13 @@ var PedigreeEditor = Class.create({
 
     enterHoverMode: function(sourceNode) {
         var hoverNodes = this.nodes[0].without(sourceNode);
+        if(this.currentDraggable.handle == "parent") {
+            this._junctions = this.nodes[2].without(sourceNode);
+            hoverNodes = hoverNodes.concat(this._junctions);
+            this._junctions.each(function(bubble) {
+                bubble.getGraphics().grow();
+            })
+        }
         var me = this,
             color;
         hoverNodes.each(function(s) {
@@ -399,6 +406,10 @@ var PedigreeEditor = Class.create({
 
     exitHoverMode: function() {
         this.hoverModeZones.remove();
+        this._junctions && this._junctions.each(function(bubble) {
+            bubble.getGraphics().area && bubble.getGraphics().area.remove();
+        });
+        this._junctions = null;
     }
 });
 

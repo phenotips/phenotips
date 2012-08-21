@@ -21,6 +21,14 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             me.updatePartnerConnection(partner, partner.getX(), partner.getY(), x, y);
         });
         this._hoverbox = new PartnershipHoverbox(partnership, x, y, this.getShapes());
+        this.area = null;
+    },
+
+    grow: function() {
+        this.area = this.getJunctionShape().clone().flatten().insertBefore(this.getJunctionShape().flatten());
+        this.area.attr({'fill': '#6666FF', stroke: 'none'});
+        this.area.ot = this.area.transform();
+        this.area.animate(Raphael.animation({transform : "...S2"}, 400, 'bounce'));
     },
 
     getHoverBox: function() {
