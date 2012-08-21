@@ -138,9 +138,12 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 }
                 var slice = editor.getPaper().path(["M", x1, y1, corner,"L", x2, y2, 'L',this.getX(), this.getY(),'z']),
                     color = gradient(editor.getLegend().getDisorder(this.getNode().getDisorders()[k]['id']).getColor(), 70);
-                disorderShapes.push(slice.attr({fill: color, 'stroke-width':.5 }));
+                disorderShapes.push(slice.attr({fill: color, 'stroke-width':.5, stroke: 'none' }));
                 x1 = x2;
                 y1 = y2;
+            }
+            if(this.getNode().isProband()) {
+                disorderShapes.transform(["...s", 1.04, 1.04, this.getX(), this.getY()-editor.attributes.radius]);
             }
         }
         else {
@@ -154,6 +157,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             }
 
             (disorderShapes.length < 2) ? disorderShapes.attr('stroke', 'none') : disorderShapes.attr({stroke: '#595959', 'stroke-width':.03});
+            if(this.getNode().isProband()) {
+                disorderShapes.transform(["...s", 1.04, 1.04, this.getX(), this.getY()]);
+            }
         }
         this._disorderShapes = disorderShapes;
     },
