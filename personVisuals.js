@@ -251,9 +251,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     updateLifeStatusShapes: function() {
         var status = this.getNode().getLifeStatus();
         this.getDeadShape() && this.getDeadShape().remove();
-        this.getHoverBox().unhidePartnerHandles();
         this.getUnbornShape() && this.getUnbornShape().remove();
         this.setGenderSymbol();
+        (!this.getNode().getPartnerships()[0]) && this.getHoverBox().unhideChildHandle();
+        this.getHoverBox().unhidePartnerHandles();
 
         if(status == 'deceased'){
             this.drawDeadShape();
@@ -268,6 +269,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         else if(status == 'unborn') {
             this.getHoverBox().hidePartnerHandles();
             this.drawUnbornShape();
+        }
+        if(this.getNode().isFetus()){
+            this.getHoverBox().hidePartnerHandles();
+            this.getHoverBox().hideChildHandle();
         }
     },
 

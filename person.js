@@ -69,6 +69,36 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /*
+     * Replaces the parents Partnership with partnership
+     *
+     * @param partnership is a Partnership object
+     */
+    setParentPartnership: function($super, partnership) {
+        $super(partnership);
+        if(partnership) {
+            this.getGraphics().getHoverBox().hideParentHandle();
+        }
+        else {
+            this.getGraphics().getHoverBox().unHideParentHandle();
+        }
+    },
+
+    /*
+     * Replaces the parents Partnership with partnership
+     *
+     * @param partnership is a Partnership object
+     */
+    setParentPartnership: function($super, partnership) {
+        $super(partnership);
+        if(partnership) {
+            this.getGraphics().getHoverBox().hideParentHandle();
+        }
+        else {
+            this.getGraphics().getHoverBox().unHideParentHandle();
+        }
+    },
+
+    /*
      * Returns the first name of this Person
      */
     getFirstName: function() {
