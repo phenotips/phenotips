@@ -13,12 +13,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._nameLabel = null;
         this._stillBirthLabel = null;
         this._ageLabel = null;
-        this._evaluationLabels = [];
         this._disorderShapes = null;
         this._deadShape = null;
         this._adoptedShape = null;
         this._unbornShape = null;
-        this._patientShape = null;
         this._isSelected = false;
         $super(node, x, y);
         this._hoverBox = new PersonHoverbox(node, x, y, this.getGenderSymbol());
@@ -76,21 +74,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         else if (!this.getNode().isProband()) {
             this._genderSymbol.flatten().insertAfter(editor.getProband().getGraphics().getAllGraphics().flatten());
         }
-
-    },
-
-    getEvaluationLabels: function() {
-        return this._evaluationLabels;
-    },
-
-    updateEvaluationLabels: function() {
-        var evalLabels = [];
-        this.getNode().getEvaluations().each( function(e) {
-            //TODO: get evaluations from legend
-            var label = editor.getPaper().text(e);
-            evalLabels.push(label);
-        });
-        this._evaluationLabels = evalLabels;
         this.updateDisorderShapes();
     },
     /*
@@ -209,10 +192,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     getDeadShape: function() {
         return this._deadShape;
-    },
-
-    getStillBirthLabel: function() {
-        return this._stillBirthLabel;
     },
 
     /*

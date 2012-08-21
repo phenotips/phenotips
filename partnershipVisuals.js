@@ -94,7 +94,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         var topCoordinate = childY - radius;
         var xDistance = (childX - junctionX);
         var yDistance = (topCoordinate - junctionY)/2;
-        var path = [["M", junctionX, junctionY],["l",0, yDistance],["l",xDistance,0], ["L", childX, topCoordinate]];
+        var path = [["M", junctionX, junctionY],["l",0, yDistance],["l", xDistance,0], ["L", childX, topCoordinate]];
         child.parentConnectionPath = path;
         if(this.getPartnership().hasChild(child) && child.parentConnection) {
             if(animate) {

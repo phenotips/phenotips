@@ -28,7 +28,7 @@ var PedigreeEditor = Class.create({
         (this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this))();
 
         this.adjustSizeToScreen();
-        this.nodes = [[],[]];
+        this.nodes = [[/*Person*/],[/*PlaceHolder*/],[/*Partnership*/]];
         this.idCount = 1;
         this.hoverModeZones = this._paper.set();
 
@@ -334,31 +334,6 @@ var PedigreeEditor = Class.create({
         node.addDisorder(disorderObj, true);
       }
     },
-
-    addPlaceHolder: function(x,y, gender) {
-        var ph = new PlaceHolder(x,y, gender);
-        this.nodes[1].push(ph);
-        return ph;
-    },
-
-    removeNode: function(node) {
-        //TODO: optimize (check whether node is a placeholder or a person)
-        this.nodes[0] = this.nodes[0].without(node);
-        this.nodes[1] = this.nodes[1].without(node);
-    },
-
-
-    addPartnership : function(node1, node2) {
-      var joinPosition = editor.findPosition({join : [node1.getID(), node2.getID()]});
-      var partnership = new Partnership(joinPosition.x, joinPosition.y, node1, node2);
-      this.nodeIndex.add(partnership);
-      return partnership;
-    },
-
-    addParentsPartnership : function(node, leftParent, rightParent) {
-        //TODO:
-    },
-    
         
     // WRAPPERS FOR THE NODE INDEX & GRID FUNCITONS
     getGridUnitX : function () {

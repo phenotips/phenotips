@@ -130,7 +130,7 @@ Raphael.st.concat = function (set) {
     return newSet;
 };
 
-Raphael.st.contains= function (target) {
+Raphael.st.contains = function (target) {
     var found = false;
     this.forEach(function(element) {
         if(element == target) {
