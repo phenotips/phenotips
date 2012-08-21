@@ -117,7 +117,7 @@ var NodeIndex = Class.create({
            // TODO
        result.y = Math.max(node1.getY(), node2.getY());
        var middleX = (node1.getX() + node2.getX()) / 2;
-       var nearestNode = node1.getY() != node2.getY() ? (node1.getY() == y ? node1 : node2) : (node1.getSideNeighbors().length > node2.getSideNeighbors().length ? node2 : node1);
+       var nearestNode = node1.getY() != node2.getY() ? (node1.getY() == result.y ? node1 : node2) : (node1.getSideNeighbors().length > node2.getSideNeighbors().length ? node2 : node1);
        result.x = nearestNode.getX() + this.gridUnit.x * (middleX < nearestNode.getX() ? -1 : 1);
     } else if (relativePosition.side) {
        // Finding positions for partners...
