@@ -12,11 +12,10 @@
 var AbstractPerson = Class.create(AbstractNode, {
 
     initialize: function($super, x, y, gender, id) {
-        this._id = (id != null) ? id : editor.generateID();
         this._parentPartnership = null;
         this._partnerships = [];
         this._gender = this.parseGender(gender);
-        $super(x, y);
+        $super(x, y, id);
       },
 
     /*

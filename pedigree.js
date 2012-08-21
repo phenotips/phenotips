@@ -295,7 +295,18 @@ var PedigreeEditor = Class.create({
         el.observe("click", function() {alert("new node has been created! WHOAH!")});
     },
 
-    addNode: function(x, y, gender, id, isPlaceHolder) {
+    addPartnership : function(x, y, node1, node2) {
+        var partnership = new Partnership(x, y, node1, node2);
+        this.nodeIndex.add(partnership);
+        this.nodes[2].push(partnership);
+        return partnership;
+    },
+
+    removePartnership: function(partnership) {
+        this.nodes[2] = this.nodes[2].without(partnership);
+    },
+
+    addNode: function(x, y, gender, isPlaceHolder, id) {
         !isPlaceHolder && (isPlaceHolder = false);
         var isProband = (!isPlaceHolder && this.nodes[0].length == 0);
         var node = (isPlaceHolder) ? (new PlaceHolder(x, y, gender)) : (new Person(x, y, gender, id, isProband));
@@ -303,7 +314,13 @@ var PedigreeEditor = Class.create({
 	this.nodeIndex.add(node);
         return node;
     },
-    
+
+    removeNode: function(node) {
+        //TODO: optimize (check whether node is a placeholder or a person)
+        this.nodes[0] = this.nodes[0].without(node);
+        this.nodes[1] = this.nodes[1].without(node);
+    },
+
     _onDropDisorder: function(disorder, target, event) {
       var position = {};
       var x = event.pointerX() - target.cumulativeOffset().left;

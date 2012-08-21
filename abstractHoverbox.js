@@ -227,22 +227,22 @@ var AbstractHoverbox = Class.create({
 //                return;
 //            }
             //document.stopObserving('mousedown', catchRightClick);
+            editor.exitHoverMode();
             orb.animate({"cx": orb.ox, "cy": orb.oy}, +handle.isDragged * 1000, "elastic",
                 function() {
                     me._activeHandles--;
                     console.log(me._activeHandles);
                     if(me._activeHandles == 0) {
                         me.enable();
-                        me.animateHideHoverZone();
+                        handle.isDragged && me.animateHideHoverZone();
                         hasEnded = true;
+                        handle.isDragged = false;
                     }
                 });
-            editor.exitHoverMode();
             me.handleAction(handle.type, handle.isDragged);
             connection.oPath[1][1] = connection.ox;
             connection.oPath[1][2] = connection.oy;
             connection.animate({"path": connection.oPath},1000, "elastic");
-            handle.isDragged = false;
         };
 
         orb.drag(move, start, end);
