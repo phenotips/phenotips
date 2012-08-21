@@ -251,10 +251,10 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Returns an array of nodes that are children from all of this node's Partnerships.
      * The array can include PlaceHolders.
      */
-    getChildren: function() {
+    getChildren: function(type) {
         var children = [];
         this.getPartnerships().each(function(partnership) {
-            children = children.concat(partnership.getChildren())
+            children = children.concat(partnership.getChildren(type))
         });
         return children;
     },

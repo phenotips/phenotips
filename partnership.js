@@ -13,7 +13,7 @@ var Partnership = Class.create(AbstractNode, {
    initialize: function($super, x, y, partner1, partner2, id) {
        if(partner1.getType() != 'ph' || partner2.getType() != 'ph') {
            this._partners = [partner1, partner2];
-           this._children = [];
+           this._children = [[/*Person*/],[/*PlaceHolder*/]];
            this._partners[0].addPartnership(this);
            this._partners[1].addPartnership(this);
            $super(x, y, id);
@@ -93,8 +93,14 @@ var Partnership = Class.create(AbstractNode, {
     /*
      * Returns an array of AbstractNodes that are children of this partnership
      */
-    getChildren: function() {
-        return this._children;
+    getChildren: function(type) {
+        if(type == 'pn') {
+            return this._children[0];
+        }
+        else if(type == 'ph') {
+            return this._children[1];
+        }
+        return this._children.flatten();
     },
 
     /*
@@ -131,10 +137,10 @@ var Partnership = Class.create(AbstractNode, {
     addChild: function(someNode) {
         //TODO: elaborate on restrictions for adding parents to existing node
         if(someNode && !this.hasChild(someNode) && (someNode.getParentPartnership() == null)) {
-            this.getChildren().each(function(child){
-                (child.getType() == 'ph') && child.remove();
+            this.getChildren('ph').each(function(child){
+                child.remove();
             });
-            this.getChildren().push(someNode);
+            this._children[+(someNode.getType() == 'ph')].push(someNode);
             someNode.parentConnection = this.getGraphics().updateChildConnection(someNode, someNode.getX(), someNode.getY(), this.getX(), this.getY());
             someNode.setParentPartnership(this);
         }
@@ -150,7 +156,8 @@ var Partnership = Class.create(AbstractNode, {
      */
     removeChild: function(someNode) {
         someNode.setParentPartnership(null);
-        this._children = this._children.without(someNode);
+        var index = +(someNode.getType() == 'ph');
+        this._children[index] = this._children[index].without(someNode);
         someNode.parentConnection.remove();
         someNode.parentConnection = null;
     },
