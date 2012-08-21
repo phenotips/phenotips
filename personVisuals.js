@@ -267,7 +267,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             this.getHoverBox().hidePartnerHandles();
         }
         else if(status == 'unborn') {
-            this.getHoverBox().hidePartnerHandles();
             this.drawUnbornShape();
         }
         if(this.getNode().isFetus()){

@@ -79,7 +79,6 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      */
     hidePartnerHandles: function() {
         this.getCurrentHandles().exclude(this._rightHandle.hide());
-        this.getCurrentHandles().exclude(this._downHandle.hide());
         this.getCurrentHandles().exclude(this._leftHandle.hide());
     },
 
@@ -89,10 +88,10 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
     unhidePartnerHandles: function() {
         if(this.isHovered() || this.isMenuToggled()) {
             this._rightHandle.show();
-            this._downHandle.show();
             this._leftHandle.show();
         }
-        this.getCurrentHandles().push(this._rightHandle, this._downHandle, this._leftHandle);
+        (!this.getCurrentHandles().contains(this._rightHandle)) && this.getCurrentHandles().push(this._rightHandle);
+        (!this.getCurrentHandles().contains(this._leftHandle)) && this.getCurrentHandles().push(this._leftHandle);
     },
     /*
      * Hides the child handle
