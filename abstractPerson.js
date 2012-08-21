@@ -340,7 +340,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     canBeParentOf: function(otherNode) {
         var isDescendant = this.isDescendantOf(otherNode);
-        return otherNode.getParentPartnership() == null && this.getChildren().indexOf(otherNode) == -1 && !isDescendant;
+        return (this != otherNode) && otherNode.getParentPartnership() == null && this.getChildren().indexOf(otherNode) == -1 && !isDescendant;
     },
 
     /*
