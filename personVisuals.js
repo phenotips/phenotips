@@ -33,8 +33,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             this._genderSymbol && this._genderSymbol.remove();
             var side = editor.attributes.radius * Math.sqrt(3.5),
                 height = side/Math.sqrt(2),
-                x = this.getRelativeX() - height,
-                y = this.getRelativeY();
+                x = this.getX() - height,
+                y = this.getY();
             var shape = editor.getPaper().path(["M",x, y, 'l', height, -height, 'l', height, height,"z"]);
             shape.attr(editor.attributes.nodeShape);
             this._genderShape = shape;
@@ -55,8 +55,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 this._genderSymbol = shape;
             }
             else {
-                x = this.getRelativeX();
-                y = this.getRelativeY() + editor.attributes.radius/1.4;
+                x = this.getX();
+                y = this.getY() + editor.attributes.radius/1.4;
                 var text = (this.getNode().getGender() == 'M') ? "Male" : "Female";
                 var genderLabel = editor.getPaper().text(x, y, text).attr(editor.attributes.label);
                 this._genderSymbol = editor.getPaper().set(shape, genderLabel);
@@ -72,10 +72,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         if(this.getHoverBox()) {
             this._genderSymbol.flatten().insertAfter(this.getHoverBox().getBackElements().flatten());
         }
-        else {
-            if (!this.getNode().isProband()) {
-                this._genderSymbol.flatten().insertAfter(editor.getProband().getGraphics().getAllGraphics().flatten());
-            }
+        else if (!this.getNode().isProband()) {
+            this._genderSymbol.flatten().insertAfter(editor.getProband().getGraphics().getAllGraphics().flatten());
         }
 
     },
@@ -92,6 +90,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             evalLabels.push(label);
         });
         this._evaluationLabels = evalLabels;
+        this.updateDisorderShapes();
     },
 
     updateNameLabel: function() {
@@ -135,17 +134,17 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             var side = editor.attributes.radius * Math.sqrt(3.5),
                 height = side/Math.sqrt(2),
                 delta = (height * 2)/(person.getDisorders().length),
-                x1 = this.getRelativeX() - height,
-                y1 = this.getRelativeY();
+                x1 = this.getX() - height,
+                y1 = this.getY();
 
             for(var k = 0; k < person.getDisorders().length; k++) {
                 var corner = [];
                 var x2 = x1 + delta;
-                var y2 = this.getRelativeY() - (height - Math.abs(x2 - this.getRelativeX()));
-                if (x1 < this.getRelativeX() && x2 >= this.getRelativeX()) {
-                    corner = ["L", this.getRelativeX(), this.getRelativeY()-height];
+                var y2 = this.getY() - (height - Math.abs(x2 - this.getX()));
+                if (x1 < this.getX() && x2 >= this.getX()) {
+                    corner = ["L", this.getX(), this.getY()-height];
                 }
-                var slice = editor.getPaper().path(["M", x1, y1, corner,"L", x2, y2, 'L',this.getRelativeX(), this.getRelativeY(),'z']),
+                var slice = editor.getPaper().path(["M", x1, y1, corner,"L", x2, y2, 'L',this.getX(), this.getY(),'z']),
                     color = gradient(editor.getLegend().getDisorder(this.getNode().getDisorders()[k]['id']).getColor(), 70);
                 disorderShapes.push(slice.attr({fill: color, 'stroke-width':.5 }));
                 x1 = x2;
@@ -158,7 +157,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
 
             for(var i = 0; i < person.getDisorders().length; i++) {
                 var color = gradient(editor.getLegend().getDisorder(person.getDisorders()[i]['id']).getColor(), (i * disorderAngle)+delta);
-                disorderShapes.push(sector(editor.getPaper(), this.getRelativeX(), this.getRelativeY(), editor.attributes.radius,
+                disorderShapes.push(sector(editor.getPaper(), this.getX(), this.getY(), editor.attributes.radius,
                     person.getGender(), i * disorderAngle, (i+1) * disorderAngle, color));
             }
 
@@ -232,7 +231,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     drawUnbornShape: function() {
         this._unbornShape && this._unbornShape.remove();
         if(this.getNode().getLifeStatus() == 'unborn') {
-            this._unbornShape = editor.getPaper().text(this.getRelativeX(), this.getRelativeY(), "P").attr(editor.attributes.unbornShape);
+            this._unbornShape = editor.getPaper().text(this.getX(), this.getY(), "P").attr(editor.attributes.unbornShape);
+            this._unbornShape.insertBefore(this.getHoverBox().getFrontElements());
         }
     },
 
@@ -242,9 +242,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
 
     updateSBLabel: function() {
         var SBLabel;
-        this.getNode().getLifeStatus() == 'stillborn' && (SBLabel = editor.getPaper().text(this.getRelativeX(), this.getRelativeY(), "SB"));
+        this.getNode().getLifeStatus() == 'stillborn' && (SBLabel = editor.getPaper().text(this.getX(), this.getY(), "SB"));
         this.getSBLabel() && this.getSBLabel().remove();
         this._stillBirthLabel = SBLabel;
+        this.drawLabels();
     },
 
     updateLifeStatusShapes: function() {
@@ -273,9 +274,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     drawAdoptedShape: function() {
         this._adoptedShape && this._adoptedShape.remove();
         var r = editor.attributes.radius,
-            x1 = this.getRelativeX() - ((0.8) * r),
-            x2 = this.getRelativeX() + ((0.8) * r),
-            y = this.getRelativeY() - ((1.3) * r),
+            x1 = this.getX() - ((0.8) * r),
+            x2 = this.getX() + ((0.8) * r),
+            y = this.getY() - ((1.3) * r),
             brackets = "M" + x1 + " " + y + "l" + r/(-2) +
                 " " + 0 + "l0 " + (2.6 * r) + "l" + (r)/2 + " 0M" + x2 +
                 " " + y + "l" + (r)/2 + " 0" + "l0 " + (2.6 * r) + "l" +
@@ -371,21 +372,19 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     /*
      * Returns a Raphael set or element that contains the graphics associated with this node, excluding the labels.
      */
-    getShapes: function() {
+    getShapes: function($super) {
         var lifeStatusShapes = editor.getPaper().set();
         this.getUnbornShape() && lifeStatusShapes.push(this.getUnbornShape());
         this.getDeadShape() && lifeStatusShapes.push(this.getDeadShape());
         this.getAdoptedShape() && lifeStatusShapes.push(this.getAdoptedShape());
-        return editor.getPaper().set(this.getGenderSymbol(), this.getDisorderShapes(), lifeStatusShapes);
-//        return editor.getPaper().set(this.getHoverBox().getBackElements(), this.getGenderSymbol(), this.getDisorderShapes(),
-//            lifeStatusShapes, this.getHoverBox().getFrontElements());
+        return $super().concat(editor.getPaper().set(this.getDisorderShapes(), lifeStatusShapes));
     },
 
     /*
      * Returns a Raphael set or element that contains all the graphics and labels associated with this node.
      */
-    getAllGraphics: function() {
-        return editor.getPaper().set(this.getHoverBox().getBackElements(),this.getShapes(), this.getLabels(), this.getHoverBox().getFrontElements());
+    getAllGraphics: function($super) {
+        return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this.getHoverBox().getFrontElements());
     },
 
     /*

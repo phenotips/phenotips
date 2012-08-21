@@ -21,19 +21,13 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
     setGenderSymbol: function($super) {
         $super();
         var shape = this.getGenderSymbol().attr(editor.attributes.phShape);
-        var text = editor.getPaper().text(this.getRelativeX(), this.getRelativeY() - editor.attributes.radius/20, "DRAG ME\nOR\nCLICK ME");
+        var text = editor.getPaper().text(this.getX(), this.getY() - editor.attributes.radius/20, "DRAG ME\nOR\nCLICK ME");
         text.attr(editor.attributes.dragMeLabel);
         shape.push(text);
         shape.attr("cursor", "pointer");
         shape.ox = shape.getBBox().x;
         shape.oy = shape.getBBox().y;
-       // var k = editor.getProband().getGraphics().getAllGraphics().flatten();
-
-        //shape.insertAfter(editor.getProband().getGraphics().getAllGraphics().flatten());
-        //k[14].attr({fill: "yellow", opacity: 1});
-//        shape[2].insertAfter(k[14]);
-//        shape[1].insertAfter(k[14]);
-//        shape[0].insertAfter(k[14]);
+        shape.flatten().insertAfter(editor.getProband().getGraphics().getAllGraphics().flatten());
     },
 
     /*

@@ -97,18 +97,18 @@ var AbstractNodeVisuals = Class.create({
     },
 
     /*
-     * Returns a Raphael set or element that contains all the graphics and labels associated with this node.
+     * Returns a Raphael set of all the graphics and labels associated with this node.
      */
     getAllGraphics: function() {
-        return editor.getPaper().set();
+        return editor.getPaper().set(this.getShapes());
     },
 
     /*
-     * Updates the graphical elements of this node including labels, and brings them to front in the correct
-     * layering order.
+     * Returns a Raphael set of graphic elements of which the icon of the node consists. Does not
+     * include hoverbox elements or labels.
      */
-    draw: function() {
-        this.getAllGraphics().toFront();
+    getShapes: function() {
+        return editor.getPaper().set()
     },
 
     /*

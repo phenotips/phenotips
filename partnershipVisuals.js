@@ -11,15 +11,16 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, partnership, x, y) {
         $super(partnership, x,y);
-        this._junctionShape = editor.getPaper().circle(x, y, 2).attr("fill", "black");
+        this._junctionShape = editor.getPaper().circle(x,y,6).attr({fill: '#bf2f2f', stroke: 'black', 'stroke-width':2});
+        this._junctionShape.insertBefore(editor.getProband().getGraphics().getAllGraphics().flatten());
+
         //TODO: find out whether there is an arc
-        this._connections = [null, null]
+        this._connections = [null, null];
         var me = this;
         me.getNode().getPartners().each(function(partner) {
             me.updatePartnerConnection(partner, partner.getX(), partner.getY(), x, y);
         });
         this._hoverbox = new PartnershipHoverbox(partnership, x, y, this.getShapes());
-        //this.draw();
     },
 
     getHoverBox: function() {
@@ -132,11 +133,11 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         });
 
         if(animate) {
-            this.getJunctionShape().stop().animate({'transform': "t " + (x-this.getX()) + "," + (y-this.getY()) + "..."},
+            this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getX()) + "," + (y-this.getY()) + "..."},
                 1000, "easeInOut", function() {junctionCallback(); callback && callback();});
         }
         else {
-            this.getJunctionShape().transform("t " + (x-this.getX()) + "," + (y-this.getY()) + "...");
+            this.getAllGraphics().transform("t " + (x-this.getX()) + "," + (y-this.getY()) + "...");
             junctionCallback();
         }
     },
@@ -148,6 +149,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         this.getJunctionShape().remove();
         this.getConnections()[0].remove();
         this.getConnections()[1].remove();
+        this.getHoverBox().remove();
     },
 
     /*
@@ -164,19 +166,8 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         return attr;
     },
 
-    getShapes: function() {
-        var connections = editor.getPaper().set(this.getConnections()[0], this.getConnections()[1]);
-        this.getNode().getChildren().each(function(child) {
-            connections.push(child.parentConnection);
-        });
-        return editor.getPaper().set(connections, this.getJunctionShape());
     },
 
     getAllGraphics: function($super) {
-        var connections = editor.getPaper().set(this.getConnections()[0], this.getConnections()[1]);
-        this.getNode().getChildren().each(function(child) {
-            connections.push(child.parentConnection);
-        });
-        return $super().push(this.getHoverBox().getFrontElements(), this.getHoverBox().getBackElements());
     }
 });

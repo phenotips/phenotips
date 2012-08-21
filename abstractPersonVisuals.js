@@ -16,12 +16,10 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         $super(node, x, y);
         this._width = editor.attributes.radius * 4;
         this.setGenderSymbol();
-        this._highlightBox = editor.getPaper().rect(this.getRelativeX()-(this._width/2), this.getRelativeY()-(this._width/2),
+        this._highlightBox = editor.getPaper().rect(this.getX()-(this._width/2), this.getY()-(this._width/2),
             this._width, this._width, 5).attr(editor.attributes.boxOnHover);
         this._highlightBox.attr({fill: 'black', opacity: 0, 'fill-opacity': 0});
         this._highlightBox.insertBefore(this.getGenderSymbol().flatten());
-
-        //this.draw();
     },
 
     /*
@@ -90,8 +88,8 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     setGenderSymbol: function() {
         this._genderSymbol && this._genderSymbol.remove();
         var shape,
-            x = this.getRelativeX(),
-            y = this.getRelativeY(),
+            x = this.getX(),
+            y = this.getY(),
             radius = this._radius = this._radius = (this.getNode().getGender() == 'U') ? editor.attributes.radius * (Math.sqrt(3)/2) : editor.attributes.radius;
 
         if (this.getNode().getGender() == 'F') {
@@ -151,31 +149,14 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     /*
      * Returns a Raphael set or element that contains the graphics associated with this node, excluding the labels.
      */
-    getShapes: function() {
-        return editor.getPaper().set(this.getHighlightBox(), this.getGenderSymbol());
+    getShapes: function($super) {
+        return $super().push(this.getGenderSymbol());
     },
 
     /*
      * Returns a Raphael set or element that contains all the graphics and labels associated with this node.
      */
-    getAllGraphics: function() {
-        return this.getShapes();
-    },
-
-    /*
-     * Updates the graphical elements of this node excluding labels, and brings them to front in the correct
-     * layering order.
-     */
-    drawShapes: function() {
-        this.setGenderSymbol();
-        this.getShapes().toFront();
-    },
-
-    /*
-     * Updates the graphical elements of this node including labels, and brings them to front in the correct
-     * layering order.
-     */
-    draw: function() {
-        this.drawShapes();
+    getAllGraphics: function($super) {
+        return editor.getPaper().set(this.getHighlightBox()).concat($super());
     }
 });
