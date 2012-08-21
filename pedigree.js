@@ -216,18 +216,6 @@ var PedigreeEditor = Class.create({
                 'type'  : 'hidden'
             },
             {
-                'name' : 'first_name',
-                'label': 'First name',
-                'type' : 'text',
-                'function' : 'setFirstName'
-            },
-            {
-                'name' : 'last_name',
-                'label': 'Last name',
-                'type' : 'text',
-                'function' : 'setLastName'
-            },
-            {
                 'name' : 'gender',
                 'label' : 'Gender',
                 'type' : 'radio',
@@ -240,13 +228,31 @@ var PedigreeEditor = Class.create({
                 'function' : 'setGender'
             },
             {
+                'name' : 'first_name',
+                'label': 'First name',
+                'type' : 'text',
+                'function' : 'setFirstName'
+            },
+            {
+                'name' : 'last_name',
+                'label': 'Last name',
+                'type' : 'text',
+                'function' : 'setLastName'
+            },
+            {
                 'name' : 'date_of_birth',
                 'label' : 'Date of birth',
                 'type' : 'date-picker',
                 'format' : 'dd/MM/yyyy',
                 'function' : 'setBirthDate'
             },
-
+            {
+                'name' : 'date_of_death',
+                'label' : 'Date of death',
+                'type' : 'date-picker',
+                'format' : 'dd/MM/yyyy',
+                'function' : 'setDeathDate'
+            },
             {
                 'name' : 'disorders',
                 'label' : 'Known disorders of this individual',
@@ -254,10 +260,11 @@ var PedigreeEditor = Class.create({
                 'function' : 'updateDisorders'
             },
             {
-                'name' : 'adopted',
-                'label' : 'Adopted',
-                'type' : 'checkbox',
-                'function' : 'setAdopted'
+                'name' : 'gestation_age',
+                'label' : 'Gestation age',
+                'type' : 'select',
+                'range' : {'start': 0, 'end': 50, 'item' : ['week', 'weeks']},
+                'function' : 'setGestationAge'
             },
             {
                 'name' : 'state',
@@ -274,18 +281,10 @@ var PedigreeEditor = Class.create({
                 'function' : 'setLifeStatus'
             },
             {
-                'name' : 'gestation_age',
-                'label' : 'Gestation age',
-                'type' : 'select',
-                'range' : {'start': 0, 'end': 50, 'item' : ['week', 'weeks']},
-                'function' : 'setGestationAge'
-            },
-            {
-                'name' : 'date_of_death',
-                'label' : 'Date of death',
-                'type' : 'date-picker',
-                'format' : 'dd/MM/yyyy',
-                'function' : 'setDeathDate'
+                'name' : 'adopted',
+                'label' : 'Adopted',
+                'type' : 'checkbox',
+                'function' : 'setAdopted'
             }
         ],$('canvas'));
     },
