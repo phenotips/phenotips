@@ -173,11 +173,10 @@ var Person = Class.create(AbstractPerson, {
      * Replaces the conception date with newDate
      *
      * @param newDate a javascript Date object
-     * @param forceDisplay set to true if you want to display the change on the canvas
      */
-    setConceptionDate: function(newDate, forceDisplay) {
+    setConceptionDate: function(newDate) {
         this._conceptionDate = newDate;
-        forceDisplay && this.getGraphics().drawLabels();
+        this.getGraphics().updateAgeLabel();
     },
 
     /*
