@@ -12,6 +12,7 @@ var Partnership = Class.create(AbstractNode, {
 
    initialize: function($super, x, y, partner1, partner2, id) {
        if(partner1.getType() != 'ph' || partner2.getType() != 'ph') {
+           this._type = 'partnership';
            this._partners = [partner1, partner2];
            this._children = [[/*Person*/],[/*PlaceHolder*/]];
            this._partners[0].addPartnership(this);
@@ -20,6 +21,9 @@ var Partnership = Class.create(AbstractNode, {
        }
    },
 
+    getType: function() {
+        return this._type;
+    },
     /*
      * Generates and returns an instance of PartnershipVisuals
      */
