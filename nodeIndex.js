@@ -95,10 +95,16 @@ var NodeIndex = Class.create({
       // Finding positions for children...
       var id = relativePosition.below;
       var node = this.nodes[id];
-      var i = 1, total = identifiers.length;
+      var total = identifiers.length;
       var crtSize = this._findLowerNeighborGroupsSize(node);
+      var crtLimits = this._findLowerNeighborGroupsLimits(node);
       var newSize = crtSize + total * 2 * this.gridUnit.x;
-      var start = node.getX() - newSize / 2 + crtSize;
+      var start, i = 1;
+      if (crtLimits.high - node.getX() > node.getX() - crtLimits.low) {
+        start = node.getX() - newSize / 2 ;
+      } else {
+        start = node.getX() - newSize / 2 + crtSize;
+      }
       identifiers.each(function(item) {
         result[item] = { x: start + (2 * i) * _this.gridUnit.x, y: node.getY() + _this.gridUnit.y}
         ++i;
@@ -260,8 +266,9 @@ var NodeIndex = Class.create({
       var ignore = {};
       ignore[parent.getID()] = true;
       ignore[node.getID()] = true;
+      var direction = node.getX() < parent.getX() ? 1 : -1;
       siblings.each(function(item) {
-        _this._subgraphShift(item, -_this.gridUnit.x, ignore);
+        _this._subgraphShift(item, direction * _this.gridUnit.x, ignore);
       });
       var limits = this._findLowerNeighborGroupsLimits(node);
       this._rowShift(node, limits, this.gridUnit.x, ignore);
