@@ -1,23 +1,39 @@
 var TmpIndex = Class.create({
   idToOriginalPos : {},
+  originalPosToId : {},
   initialize : function() {},
   insert : function(node) {
     this.idToOriginalPos[node.getID()] = {x : node.getX(), y : node.getY()};
+    this.originalPosToId[node.getX()+ "," + node.getY()] = node;
   },
   get : function(node) {
     return this.idToOriginalPos[node.getID()];
   },
+  getAtPos : function(x, y) {
+    return this.originalPosToId[x + ',' + y];
+  },
   remove : function(node) {
-    this.idToOriginalPos[node.getID()] && delete this.idToOriginalPos[node.getID()];
+    var pos = this.idToOriginalPos[node.getID()];
+    if (pos) {
+      delete this.idToOriginalPos[node.getID()];
+      delete this.originalPosToId[pos.x + "," + pos.y];
+    }
   },
   keys : function() {
     return Object.keys(this.idToOriginalPos);
   },
+  poss : function() {
+    return Object.keys(this.originalPosToId);
+  },
   clear : function() {
-    var keys = this.keys();
     var _this = this;
-    keys.each(function(item){
+    var keys = this.keys();
+    keys.each(function(key){
       delete _this.idToOriginalPos[key];
+    });
+    keys = this.poss();
+    keys.each(function(key){
+      delete _this.originalPosToId[key];
     });
   }
 });
@@ -191,6 +207,18 @@ var NodeIndex = Class.create({
   /**
    * Update the index after having performed node moves
    */
+  _findNodeInTmpIndex :  function(x, y) {
+    var node = this.tmpIndex.getAtPos(x, y);
+    if (node && x == node.getX() && y == node.getY()) {
+      return node;
+    }
+    node = this.getNodeNear(x, y);
+    var pos = node && this.tmpIndex.get(node);
+    if (!pos || pos.x == node.getX() && pos.y == node.getY()) {
+      return node;
+    }
+    return false;
+  },
   _updateTmpPositions : function() {
     var ids = this.tmpIndex.keys();
     var _this = this;
@@ -387,7 +415,7 @@ var NodeIndex = Class.create({
           var canMove = true;
           var found = false;
           for (var x = min + this.gridUnit.x; x < max; x += this.gridUnit.x) {
-            found = this.getNodeNear(x, y);
+            found = this._findNodeInTmpIndex(x, y);
             if (found && found != node) {
               break;
             } else {
