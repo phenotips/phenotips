@@ -282,7 +282,8 @@ var NodeIndex = Class.create({
    * @param node the added partnerships node
    */
   _parentsAdded : function(node, child) {
-    var neighbors = node.getNeighbors();
+    this.tmpIndex.clear();
+    var neighbors = node.getSideNeighbors();
     if (neighbors.length > 0) {
       var _this = this;
       var ignore = {};
@@ -290,7 +291,44 @@ var NodeIndex = Class.create({
         ignore[item.getID()] = true;
       });
       ignore[node.getID()] = true;
-      this._rowShift(node, 4 * this.gridUnit.x, ignore);
+      if (child) {
+        ignore[child.getID()] = true;
+        var sides = child.getSideNeighbors();
+        sides.each(function(side) {
+          var partners = side.getSideNeighbors().without(child);
+          partners.each(function(partner) {
+            var hasSiblings = false;
+            var parent = partner.getUpperNeighbors().length && partner.getUpperNeighbors()[0];
+            if (parent) {
+              var siblings = parent.getLowerNeighbors().without(partner);
+              siblings.each(function(sib) {
+                ignore[sib.getID] = true;
+                hasSiblings = true;
+              });
+            }
+            if (hasSiblings) {
+              ignore[partner.getID()] = true;
+              ignore[side.getID()] = true;
+            }
+          });
+        });
+      }
+      
+      var limits = this._findHorizontalGroupLimits(node);
+      limits.low -= this.gridUnit.x;
+      limits.high += this.gridUnit.x;
+      
+      var originalIgnore = Object.clone(ignore);
+      
+      while (this._rowShift(node, limits, this.gridUnit.x, ignore)){
+        ignore = Object.clone(originalIgnore);
+      }
+  
+      this._updateTmpPositions();
+      this._addNode(node, true);
+      neighbors.each(function (item) {
+        _this._addNode(item, true);
+      });
     }
   },
   _partnershipAdded : function() {
@@ -307,13 +345,17 @@ var NodeIndex = Class.create({
     var row = this._getNodesAt('y', node.getY());
     var _this = this;
     var mid = (limits.low + limits.high)/2;
+    var shifted = false;
     row.each(function (item) {
       if (item.getX() >= limits.low && item.getX() < mid) {
+        shifted = true;
         _this._subgraphShift(item, -length, ignore);
       } else if (item.getX() <= limits.high && item.getX() >= mid) {
+        shifted = true;
         _this._subgraphShift(item, length, ignore);
       }
     });
+    return shifted;
   },
   /**
    * [Internal method] Updates the positions of all the nodes related to a recently moved node
@@ -324,15 +366,53 @@ var NodeIndex = Class.create({
    */
   _subgraphShift : function(node, dx, ignore) {
     if (ignore[node.getID()]) {
-      return;
+      return false;
     }
     ignore[node.getID()] = true;
+    var newDx = dx;
+    if (node.getType() == "partnership") {
+      var isBlocked = true;
+      var sides = node.getSideNeighbors();
+      if (sides.length == 2) {
+        node.getSideNeighbors().each( function(item) {
+          if (!ignore[item.getID()]) {
+            isBlocked = false;
+          }
+        });
+        if (isBlocked &&  sides[0].getY() == sides[1].getY() && node.getX() != (sides[0].getY() + sides[1].getY()) / 2) {
+          var min = Math.min(sides[0].getX(), sides[1].getX());
+          var max = Math.max(sides[0].getX(), sides[1].getX());
+          var y = sides[0].getY();
+
+          var canMove = true;
+          var found = false;
+          for (var x = min + this.gridUnit.x; x < max; x += this.gridUnit.x) {
+            found = this.getNodeNear(x, y);
+            if (found && found != node) {
+              break;
+            } else {
+              found = false;
+            }
+          }
+          if (!found) {
+            var midX = min + Math.round((max - min) / (2 * this.gridUnit.x)) * this.gridUnit.x;
+            newDx = midX - node.getX();
+          }
+        }
+      }
+    }
+    if (newDx == 0) {
+      return false;
+    } else {
+      dx = newDx;
+    }
     this.relativeMove(node, dx, 0);
     var _this = this;
     var neighbors = node.getNeighbors();
     neighbors.each(function(item) {
       _this._subgraphShift(item, dx, ignore);
     });
+    return true;
   },
   /**
    * [Internal method] Updates the vertical ordering of nodes whenever a higher node is becomes the child of a lower one.
