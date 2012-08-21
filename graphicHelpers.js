@@ -108,7 +108,7 @@ function generateOrb(canvas, x, y, r, hue) {
 Raphael.st.flatten = function () {
     var flattenedSet = new Raphael.st.constructor();
         this.forEach(function(element) {
-            flattenedSet.concat(element.flatten());
+            flattenedSet = flattenedSet.concat(element.flatten());
         });
     return flattenedSet;
 };
@@ -118,15 +118,16 @@ Raphael.el.flatten = function () {
 };
 
 Raphael.st.concat = function (set) {
-    var _this = this;
+    var newSet = this.copy();
     if(typeof(set.forEach) == 'function') {
         set.forEach(function(element) {
-            _this.push(element);
+            newSet.push(element);
         });
     }
     else {
-        _this.push(set);
+        newSet.push(set);
     }
+    return newSet;
 };
 
 Raphael.st.contains= function (target) {
