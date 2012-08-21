@@ -164,7 +164,9 @@ var AbstractPerson = Class.create(AbstractNode, {
             var positions = editor.findPosition ({above : this.getID()}, ['mom', 'dad']);
             var mother = editor.addNode(positions['mom'].x, positions['mom'].y, "F", false),
                 father = editor.addNode(positions['dad'].x, positions['dad'].y, "M", false);
-            var partnership = editor.addPartnership(mother, father);
+
+            var joinPosition = editor.findPosition({join : [mother.getID(), father.getID()]});
+            var partnership = editor.addPartnership(joinPosition.x, joinPosition.y, mother, father);
             this.addParents(partnership);
         }
     },
@@ -230,7 +232,8 @@ var AbstractPerson = Class.create(AbstractNode, {
             return this.getPartnership(partner);
         }
         else if(this.canPartnerWith(partner)) {
-            var partnership = editor.addPartnership(this, partner);
+            var joinPosition = editor.findPosition({join : [this.getID(), partner.getID()]});
+            var partnership = editor.addPartnership(joinPosition.x, joinPosition.y, this, partner);
 
             if(this.getGender() == 'U' && partner.getGender() != 'U') {
                 this.setGender(partner.getOppositeGender(), true, null);
