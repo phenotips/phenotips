@@ -352,25 +352,19 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     },
 
     /*
-     * Updates the labels, and brings them to front in the correct layering order.
+     * Displays all the appropriate labels for this Person in the correct order
      */
     drawLabels: function() {
-        this.updateAgeLabel();
-        this.updateNameLabel();
-        this.updateSBLabel();
-        this.updateEvaluationLabels();
-
         var labels = this.getLabels(),
-            yOffset = (this.isSelected()) ? 50 : 0,
-            startY = this.getRelativeY() + editor.attributes.radius * 1.5 + yOffset;
+            yOffset = (this.isSelected()) ? editor.attributes.radius/1.5 : 0,
+            startY = this.getY() + editor.attributes.radius * 1.5 + yOffset;
         for (var i = 0; i < labels.length; i++) {
             labels[i].attr("y", startY + 11);
             labels[i].attr(editor.attributes.label);
-            labels[i].toFront();
             labels[i].oy = (labels[i].attr("y") - yOffset);
             startY = labels[i].getBBox().y2;
         }
-        this.getHoverBox().getFrontElements().toFront();
+        labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
     },
 
     /*
