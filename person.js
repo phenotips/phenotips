@@ -434,7 +434,7 @@ var Person = Class.create(AbstractPerson, {
                     partner.remove(false);
                 }
             });
-            if(this.getParentPartnership() || (this.getChildren('pn').length > 0 && hasPersonPartners())) {
+            if((this.getParentPartnership() && this.getParentPartnership().getChildren().length == 1) || (this.getChildren('pn').length > 0 && hasPersonPartners())) {
                 this.convertToPlaceholder();
             }
             else {
