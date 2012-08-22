@@ -367,8 +367,7 @@ var PedigreeEditor = Class.create({
       var position = {};
       var x = event.pointerX() - target.cumulativeOffset().left;
       var y = event.pointerY() - target.cumulativeOffset().top;
-      // TODO transform coordinates to real coordinates on the raphael paper once zoom & pan are implemented
-      var node = this.nodeIndex.getNodeNear(x, y);
+      var node = this.nodeIndex.getNodeNear(x+editor.viewBoxX, y+editor.viewBoxY);
       if (node && node.getType() == 'pn') {
 	var disorderObj = {};
         disorderObj.id = disorder.id.substring( disorder.id.indexOf('-') + 1);
