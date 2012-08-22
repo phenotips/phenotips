@@ -101,7 +101,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         var radius = (child.getGender() == "U") ? editor.attributes.radius * (Math.sqrt(6)/2) : child.getGraphics().getRadius();
         var topCoordinate = childY - radius;
         var xDistance = (childX - junctionX);
-        var yDistance = (topCoordinate - junctionY)/2;
+        var yDistance = (childY - junctionY)/2;
         var path = [["M", junctionX, junctionY],["l",0, yDistance],["l", xDistance,0], ["L", childX, topCoordinate]];
         child.parentConnectionPath = path;
         if(this.getPartnership().hasChild(child) && child.parentConnection) {
