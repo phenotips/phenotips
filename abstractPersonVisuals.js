@@ -54,7 +54,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
         if(animate){
             this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getX()) + "," +(y-this.getY()) + "..."},
-                1000, "easeInOut", function() {me.updatePositionData(x, y); callback && callback();});
+                1000, "easeInOut", function() { me.updatePositionData(x, y);callback && callback();});
         }
         else {
             this.getAllGraphics().transform("t " + (x-this.getX()) + "," +(y-this.getY()) + "...");
