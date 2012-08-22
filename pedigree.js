@@ -50,12 +50,12 @@ var PedigreeEditor = Class.create({
 
             me.background.attr({x: me.background.ox - dx, y: me.background.oy - dy});
             editor.getPaper().setViewBox(deltax, deltay, editor.width, editor.height);
-            me.background.ovx = deltax;
-            me.background.ovy = deltay;
+            me.background.ox = deltax;
+            me.background.oy = deltay;
         };
         var end = function() {
-            editor.viewBoxX = me.background.ovx;
-            editor.viewBoxY = me.background.ovy;
+            editor.viewBoxX = me.background.ox;
+            editor.viewBoxY = me.background.oy;
             me.background.attr("cursor", "default");
         };
         me.background.drag(move, start, end);
