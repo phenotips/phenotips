@@ -26,10 +26,10 @@ var PedigreeEditor = Class.create({
         this.background = editor.getPaper().rect(0,0, 200, 200).attr({fill: 'blue', stroke: 'none', opacity:0}).toBack();
 
         var nodeIndex = this.nodeIndex = new NodeIndex();
-        this.generateViewControls();
         (this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this))();
-
         this.adjustSizeToScreen();
+        this.generateViewControls();
+
         this.nodes = [[/*Person*/],[/*PlaceHolder*/],[/*Partnership*/]];
         this.idCount = 1;
         this.hoverModeZones = this._paper.set();
