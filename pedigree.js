@@ -252,7 +252,7 @@ var PedigreeEditor = Class.create({
     },
     generateNodeMenu: function() {
         var _this = this;
-        document.observe('click', function(event) {
+        document.observe('mousedown', function(event) {
                     if (_this.nodeMenu && _this.nodeMenu.isActive()) {
                         if (event.element().getAttribute('class') != 'menu-trigger' &&
                             (!event.element().up || !event.element().up('.menu-box, .calendar_date_select') && event.element().up('body'))) {
