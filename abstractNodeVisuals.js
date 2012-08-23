@@ -7,8 +7,6 @@ var AbstractNodeVisuals = Class.create({
 
     initialize: function(node, x, y) {
         this._node = node;
-        this._relativeX= x;
-        this._relativeY = y;
         this._absoluteX = x;
         this._absoluteY = y;
     },
@@ -18,20 +16,6 @@ var AbstractNodeVisuals = Class.create({
      */
     getNode: function() {
         return this._node;
-    },
-
-    /*
-     * Returns the x coordinate at which the node was originally drawn. Disregards transformation data.
-     */
-    getRelativeX: function() {
-        return this._relativeX;
-    },
-
-    /*
-     * Returns the y coordinate at which the node was originally drawn. Disregards transformation data.
-     */
-    getRelativeY: function() {
-        return this._relativeY;
     },
 
     /*
