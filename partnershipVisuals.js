@@ -11,7 +11,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, partnership, x, y) {
         $super(partnership, x,y);
-        this._junctionShape = editor.getPaper().circle(x,y,6).attr({fill: '#bf2f2f', stroke: 'black', 'stroke-width':2});
+        this._junctionShape = editor.getPaper().circle(x,y,6).attr({fill: '#EA5E48', stroke: 'black', 'stroke-width':2});
         this._junctionShape.insertBefore(editor.getProband().getGraphics().getAllGraphics().flatten());
 
         //TODO: find out whether there is an arc
@@ -26,7 +26,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
     grow: function() {
         this.area = this.getJunctionShape().clone().flatten().insertBefore(this.getJunctionShape().flatten());
-        this.area.attr({'fill': '#6666FF', stroke: 'none'});
+        this.area.attr({'fill': '#587498', stroke: 'none'});
         this.area.ot = this.area.transform();
         this.area.animate(Raphael.animation({transform : "...S2"}, 400, 'bounce'));
     },
