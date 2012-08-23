@@ -143,18 +143,17 @@ var PedigreeEditor = Class.create({
             _this.__pan[direction] = new Element('span', {'class' : 'view-control-pan pan-' + direction, 'title' : 'Pan ' + direction});
             _this.__pan.insert(_this.__pan[direction]);
             _this.__pan[direction].observe('click', function(event) {
-                var duration = 300;
                 if(direction == 'up') {
-                    editor.panTo(editor.viewBoxX, editor.viewBoxY - 200, duration);
+                    editor.panTo(editor.viewBoxX, editor.viewBoxY - 400);
                 }
                 else if(direction == 'down') {
-                    editor.panTo(editor.viewBoxX, editor.viewBoxY + 200, duration);
+                    editor.panTo(editor.viewBoxX, editor.viewBoxY + 400);
                 }
                 else if(direction == 'left') {
-                    editor.panTo(editor.viewBoxX - 200, editor.viewBoxY, duration);
+                    editor.panTo(editor.viewBoxX - 400, editor.viewBoxY);
                 }
                 else {
-                    editor.panTo(editor.viewBoxX + 200, editor.viewBoxY, duration);
+                    editor.panTo(editor.viewBoxX + 400, editor.viewBoxY);
                 }
             })
         });
