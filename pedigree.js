@@ -185,23 +185,24 @@ var PedigreeEditor = Class.create({
                 // Called whenever the Slider is moved by dragging.
                 // The called function gets the slider value (or array if slider has multiple handles) as its parameter.
                 _this.__zoom.__crtValue = 1 - value;
-                _this.__zoom.label.update(new Number(_this.__zoom.__crtValue  * 100).toPrecision(3) + "%");
-                // TODO: Zoom
+                var zoomValue = (_this.__zoom.__crtValue  * 2);
+                _this.zoom(zoomValue);
             },
             onChange : function (value) {
                 // Called whenever the Slider has finished moving or has had its value changed via the setSlider Value function.
                 // The called function gets the slider value (or array if slider has multiple handles) as its parameter.
+
                 _this.__zoom.__crtValue = 1 - value;
-                _this.__zoom.label.update(new Number(_this.__zoom.__crtValue  * 100).toPrecision(3) + "%");
-                // TODO: Zoom
+                var zoomValue = (_this.__zoom.__crtValue  * 2);
+                _this.zoom(zoomValue)
             }
         });
-        this.zoomSlider.setValue(.5); // TODO : set initial value
+        this.zoomSlider.setValue(.70); // TODO : set initial value
         this.__zoom.in.observe('click', function(event) {
-            _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue + .01))
+            _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue + .2))
         });
         this.__zoom.out.observe('click', function(event) {
-            _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue - .01))
+            _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue - .2))
         });
         // Insert all controls in the document
         $('canvas').insert({'after' : this.__controls});
