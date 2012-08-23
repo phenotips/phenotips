@@ -53,6 +53,7 @@ var PedigreeEditor = Class.create({
             editor.getPaper().setViewBox(deltax, deltay, editor.width/me.zoomCoefficient, editor.height/me.zoomCoefficient);
             me.background.ox = deltax;
             me.background.oy = deltay;
+            me.background.attr({"cursor": "default", x: me.background.ox, y: me.background.oy });
         };
         var end = function() {
             editor.viewBoxX = me.background.ox;
