@@ -212,8 +212,8 @@ var PedigreeEditor = Class.create({
     // VIEWBOX RELATED FUNCTIONS
     getPositionInViewBox: function(x,y) {
         return {
-            x: x - editor.viewBoxX,
-            y: y - editor.viewBoxY
+            x: this.zoomCoefficient * (x - editor.viewBoxX),
+            y: this.zoomCoefficient * (y - editor.viewBoxY)
         }
     },
 
