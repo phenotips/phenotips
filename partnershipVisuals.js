@@ -11,7 +11,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, partnership, x, y) {
         $super(partnership, x,y);
-        this._junctionShape = editor.getPaper().circle(x,y,6).attr({fill: '#EA5E48', stroke: 'black', 'stroke-width':2});
+        this._junctionShape = editor.getPaper().circle(x,y, editor.attributes.junctionRadius).attr({fill: '#EA5E48', stroke: 'black', 'stroke-width':2});
         this._junctionShape.insertBefore(editor.getProband().getGraphics().getAllGraphics().flatten());
 
         //TODO: find out whether there is an arc

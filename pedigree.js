@@ -15,7 +15,8 @@ var PedigreeEditor = Class.create({
         phShape: {fill: "white","fill-opacity": 0, "stroke": 'black', "stroke-dasharray": "- "},
         dragMeLabel: {'font-size': 14, 'font-family': 'Tahoma'},
         label: {'font-size': 18, 'font-family': 'Cambria'},
-        disorderShapes: {}
+        disorderShapes: {},
+        junctionRadius: 6
     },
 
     initialize: function(graphics) {
