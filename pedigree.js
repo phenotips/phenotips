@@ -203,27 +203,29 @@ var PedigreeEditor = Class.create({
         }
     },
 
-    panTo: function(x, y, duration, callback, callbackObject, args) {
+    panTo: function(x, y) {
         var oX = editor.viewBoxX,
             oY = editor.viewBoxY,
             xDisplacement = x - oX,
             yDisplacement = y - oY,
-            start = Date.now();
+            numSeconds = .5,
+            fps = 50,
+            xStep = xDisplacement/(fps*numSeconds),
+            yStep = yDisplacement/(fps*numSeconds);
+        var progress = 0;
+        function draw() {
+            setTimeout(function() {
+                if(progress++ < fps * numSeconds) {
+                    editor.viewBoxX += xStep;
+                    editor.viewBoxY += yStep;
+                    editor.getPaper().setViewBox(editor.viewBoxX, editor.viewBoxY, editor.width/editor.zoomCoefficient, editor.height/editor.zoomCoefficient);
+                    //this.background.attr({x: editor.viewBoxX, y: editor.viewBoxY});
+                    draw();
+                }
+            }, 1000 / fps);
 
-        function step(timestamp) {
-            var timePassed = (timestamp - start);
-            var progress = (timePassed)/duration;
-            editor.viewBoxX = oX + xDisplacement * (progress);
-            editor.viewBoxY = oY + yDisplacement * (progress);
-            editor.getPaper().setViewBox(editor.viewBoxX, editor.viewBoxY, editor.width, editor.height);
-            if (timePassed < duration) {
-                window.requestAnimFrame(step);
-            }
-            else {
-                callback && callback.apply(callbackObject, args);
-            }
         }
-        window.requestAnimFrame(step);
+        draw();
     },
 
     // EDITOR TOOLS
