@@ -55,6 +55,8 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
 
         //Called when the placeholder is dragged
         var move = function(dx, dy) {
+            dx = dx/editor.zoomCoefficient;
+            dy = dy/editor.zoomCoefficient;
             if(!me.isAnimating) {
                 me.setPos(absOx + dx, absOy + dy);
                 ox = dx;

@@ -213,6 +213,8 @@ var AbstractHoverbox = Class.create({
             me._activeHandles++;
         };
         var move = function(dx, dy) {
+            dx = dx/editor.zoomCoefficient;
+            dy = dy/editor.zoomCoefficient;
             orb.attr("cx", orb.ox + dx);
             orb.attr("cy", orb.oy + dy);
             connection.oPath[1][1] = connection.ox + dx;
