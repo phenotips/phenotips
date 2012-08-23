@@ -23,6 +23,7 @@ var PedigreeEditor = Class.create({
         this._paper = Raphael("canvas", this.width, this.height);
         this.viewBoxX = 0;
         this.viewBoxY = 0;
+        this.zoomCoefficient = 1;
         this.background = editor.getPaper().rect(0,0, 200, 200).attr({fill: 'blue', stroke: 'none', opacity:0}).toBack();
 
         var nodeIndex = this.nodeIndex = new NodeIndex();
@@ -45,11 +46,11 @@ var PedigreeEditor = Class.create({
             me.background.attr({cursor: 'url(https://mail.google.com/mail/images/2/closedhand.cur)'});
         };
         var move = function(dx, dy) {
-            var  deltax = editor.viewBoxX - dx;
-            var deltay = editor.viewBoxY - dy;
+            var  deltax = editor.viewBoxX - dx/me.zoomCoefficient;
+            var deltay = editor.viewBoxY - dy/me.zoomCoefficient;
 
-            me.background.attr({x: me.background.ox - dx, y: me.background.oy - dy});
-            editor.getPaper().setViewBox(deltax, deltay, editor.width, editor.height);
+            me.background.attr({x: me.background.ox - dx/me.zoomCoefficient, y: me.background.oy - dy/me.zoomCoefficient});
+            editor.getPaper().setViewBox(deltax, deltay, editor.width/me.zoomCoefficient, editor.height/me.zoomCoefficient);
             me.background.ox = deltax;
             me.background.oy = deltay;
         };
@@ -96,6 +97,17 @@ var PedigreeEditor = Class.create({
             nodeIndex._nodeUpgraded(event.memo.node, event.memo.sourceNode);
           }
         });
+    },
+
+    zoom: function(zoomCoefficient) {
+        zoomCoefficient += .6;
+        var newWidth = this.width/zoomCoefficient;
+        var newHeight = this.height/zoomCoefficient;
+        this.viewBoxX = this.viewBoxX + (this.width/this.zoomCoefficient - newWidth)/2;
+        this.viewBoxY = this.viewBoxY + (this.height/this.zoomCoefficient - newHeight)/2;
+        this.getPaper().setViewBox(this.viewBoxX, this.viewBoxY, newWidth, newHeight);
+        this.zoomCoefficient = zoomCoefficient;
+        this.background.attr({x: this.viewBoxX, y: this.viewBoxY, width: newWidth, height: newHeight});
     },
 
     getPaper: function() {
