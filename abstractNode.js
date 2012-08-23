@@ -10,8 +10,8 @@
 var AbstractNode = Class.create( {
 
     initialize: function(x, y, id) {
-        this._graphics = this.generateGraphics(x, y);
         this._id = id ? id : editor.generateID();
+        this._graphics = this.generateGraphics(x, y);
     },
     
     /*
