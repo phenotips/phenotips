@@ -216,6 +216,14 @@ var PedigreeEditor = Class.create({
             y: this.zoomCoefficient * (y - editor.viewBoxY)
         }
     },
+    
+    getPositionInViewport : function (x, y) {
+      var position = this.getPositionInViewBox(x, y);
+      return {
+        x : this.canvas.cumulativeOffset().left + position.x,
+        y : this.canvas.cumulativeOffset().top + position.y
+      };
+    },
 
     panTo: function(x, y) {
         var oX = editor.viewBoxX,
