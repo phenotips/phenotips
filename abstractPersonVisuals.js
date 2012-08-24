@@ -20,6 +20,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
             this._width, this._width, 5).attr(editor.attributes.boxOnHover);
         this._highlightBox.attr({fill: 'black', opacity: 0, 'fill-opacity': 0});
         this._highlightBox.insertBefore(this.getGenderSymbol().flatten());
+        this._idLabel = editor.getPaper().text(x, y,  editor.DEBUG_MODE ? node.getID() : "").attr(editor.attributes.dragMeLabel).insertAfter(this._genderSymbol.flatten());
     },
 
     /*
@@ -157,6 +158,6 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * Returns a Raphael set or element that contains all the graphics and labels associated with this node.
      */
     getAllGraphics: function($super) {
-        return editor.getPaper().set(this.getHighlightBox()).concat($super());
+        return editor.getPaper().set(this.getHighlightBox(), this._idLabel).concat($super());
     }
 });

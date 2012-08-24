@@ -20,6 +20,7 @@ var PedigreeEditor = Class.create({
     },
 
     initialize: function(graphics) {
+        this.DEBUG_MODE = false;
         window.editor = this;
         this.canvas = $('canvas');
         this._paper = Raphael("canvas", this.width, this.height);

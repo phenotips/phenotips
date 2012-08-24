@@ -22,6 +22,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         });
         this._hoverbox = new PartnershipHoverbox(partnership, x, y, this.getShapes());
         this.area = null;
+        this._idLabel = editor.getPaper().text(x, y-20, editor.DEBUG_MODE ? partnership.getID() : "").attr(editor.attributes.dragMeLabel).insertAfter(this._junctionShape.flatten());
     },
 
     grow: function() {
@@ -179,6 +180,6 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     getAllGraphics: function($super) {
-        return editor.getPaper().set(this.getHoverBox().getBackElements()).concat($super()).push(this.getHoverBox().getFrontElements());
+        return editor.getPaper().set(this.getHoverBox().getBackElements(), this._idLabel).concat($super()).push(this.getHoverBox().getFrontElements());
     }
 });
