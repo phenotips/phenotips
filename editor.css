@@ -351,7 +351,7 @@
   padding: .5em 0;
 }
 .menu-box .field-box input[type=text]{
-  width: 99%;;
+  width: 99%;
 }
 .menu-box .field-box input[type=text]:focus {
   border: 1px solif #333;
