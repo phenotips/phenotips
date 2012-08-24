@@ -39,6 +39,8 @@ var PedigreeEditor = Class.create({
 
         this.initMenu();
         this.nodeMenu = this.generateNodeMenu();
+        // TODO: create options bubble
+        // this.nodeTypeOptions = new NodeTypeOptions();
         this._legend = new Legend();
 
         var me = this;
