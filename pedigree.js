@@ -401,7 +401,8 @@ var PedigreeEditor = Class.create({
       var position = {};
       var x = event.pointerX() - target.cumulativeOffset().left;
       var y = event.pointerY() - target.cumulativeOffset().top;
-      var node = this.nodeIndex.getNodeNear(x+editor.viewBoxX, y+editor.viewBoxY);
+      var pos = editor.getRelativeCoordinates(x,y);
+      var node = this.nodeIndex.getNodeNear(pos.x, pos.y);
       if (node && node.getType() == 'pn') {
         var disorderObj = {};
         disorderObj.id = disorder.id.substring( disorder.id.indexOf('-') + 1);
