@@ -143,7 +143,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
             var optBBox = this.getBoxOnHover().getBBox();
             var x = optBBox.x2;
             var y = optBBox.y;
-            var position = editor.getPositionInViewBox(x+5, y);
+            var position = editor.getAbsoluteCoordinates(x+5, y);
             editor.nodeMenu.show(this.getNode(), position.x, position.y);
         }
         else {

@@ -213,10 +213,12 @@ var PedigreeEditor = Class.create({
     },
 
     // VIEWBOX RELATED FUNCTIONS
-    getPositionInViewBox: function(x,y) {
+    getAbsoluteCoordinates: function(relX,relY) {
         return {
-            x: this.zoomCoefficient * (x - editor.viewBoxX),
-            y: this.zoomCoefficient * (y - editor.viewBoxY)
+            x: this.zoomCoefficient * (relX - editor.viewBoxX),
+            y: this.zoomCoefficient * (relY - editor.viewBoxY)
+        }
+    },
         }
     },
     
