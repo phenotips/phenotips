@@ -351,7 +351,7 @@
   padding: .5em 0;
 }
 .menu-box .field-box input[type=text]{
-  width: 99%;;
+  width: 99%;
 }
 .menu-box .field-box input[type=text]:focus {
   border: 1px solif #333;
@@ -390,7 +390,90 @@
   width: 50%;
   float: right;
 }
-
 /* ===========================================
- * NODE TYPE OPTIONS BUBBLE
+ * NODE TYPE OPTIONS
+ */
+.callout {
+  position: absolute;
+  width: auto;
+}
+.callout .callout-handle {
+  position: absolute;
+  top: -8px;
+  border: 10px solid #e5e5e5;
+  border-top-width: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  display: block;
+  width: 0;
+  z-index: 10;
+  margin-left: -10px;
+}
+.callout.upside .callout-handle {
+  border-top-width: 10px;
+  border-bottom-width: 0;
+  top: auto;
+  bottom: -8px;
+}
+.node-type-options {
+  padding: 3px 0;
+  border: 1px solid #F5F5F5;
+  border-radius: 4px;
+  background: #EEE;
+  text-align: center;
+  position: relative;
+  white-space: nowrap !important;
+  box-shadow: 0 0 6px #FF9, 0 0 25px #DDDDDD inset;
+}
+.node-type-options .separator {
+  display: inline-block;
+  width: 0;
+  margin: 0 12px;
+  overflow: hidden;
+}
+.node-type-options .node-type-option {
+  background: transparent none center center no-repeat;
+  border: 1px solid #F5F5F5;
+  border-radius: 4px;
+  display: inline-block;
+  margin: 3px;
+  height: 24px;
+  width: 24px;
+  box-shadow: 0 0 9px #DDDDDD inset;
+  color: black !important;
+  vertical-align: middle;
+  text-decoration: none !important;
+ /*
+  TODO: Keep this:
+  overflow: hidden;
+  text-indent: 48px;
+  line-height: 48px;
+  font-size: 1px;
+  TODO: remove this
+  */
+  text-align: center;
+  line-height: 24px;
+}
+/* TODO: add icons to each option type:
+.node-type-options .node-type-M {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
+.node-type-options .node-type-F {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
+.node-type-options .node-type-U {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
+.node-type-options .node-type-T {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
+.node-type-options .node-type-m {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
+.node-type-options .node-type-i {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
+.node-type-options .node-type-n {
+  background-image: url("$xwiki.getSkinFile('.png')");
+}
  */
