@@ -284,7 +284,7 @@ var AbstractHoverbox = Class.create({
             else if(handleType == "child") {
                 this.getNode().createChild();
                 // TODO compute correct position of the handle's orb, then show the options bubble
-                // var position = editor.getPositionInViewport(this.getNode().getX(), (this.getNode().getY() + editor.attributes.radius * 1.6));
+                // var position = editor.getAbsoluteCoordinates(this.getNode().getX(), (this.getNode().getY() + editor.attributes.radius * 1.6));
                 // editor.nodeTypeOptions.show(this.getNode(), position.x, position.y);
             }
             else if(handleType == "parent") {

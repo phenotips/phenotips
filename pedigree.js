@@ -22,6 +22,7 @@ var PedigreeEditor = Class.create({
     initialize: function(graphics) {
         this.DEBUG_MODE = false;
         window.editor = this;
+        this.workspace = $('workspace');
         this.canvas = $('canvas');
         this._paper = Raphael("canvas", this.width, this.height);
         this.viewBoxX = 0;
@@ -209,7 +210,7 @@ var PedigreeEditor = Class.create({
             _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue - .2))
         });
         // Insert all controls in the document
-        this.canvas.insert({'after' : this.__controls});
+        this.workspace.insert(this.__controls);
     },
 
     // VIEWBOX RELATED FUNCTIONS
@@ -363,7 +364,7 @@ var PedigreeEditor = Class.create({
                 'type' : 'checkbox',
                 'function' : 'setAdopted'
             }
-        ], this.canvas);
+        ]);
     },
 
     initMenu : function() {

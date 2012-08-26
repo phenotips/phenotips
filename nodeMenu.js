@@ -1,6 +1,6 @@
 NodeMenu = Class.create({
-    initialize : function(data, canvas) {
-        this.canvas = canvas || $('body');
+    initialize : function(data) {
+        this.canvas = editor.canvas || $('body');
         var menuBox = this.menuBox = new Element('div', {'class' : 'menu-box'});
 
         this.closeButton = new Element('span', {'class' : 'close-button'}).update('×');
@@ -22,7 +22,7 @@ NodeMenu = Class.create({
 
         // Insert in document
         this.hide();
-        $('body').insert({'bottom' : this.menuBox});
+        editor.workspace.insert(this.menuBox);
 
         // Attach pickers
         // date
@@ -244,17 +244,17 @@ NodeMenu = Class.create({
       }
       this.menuBox.style.height = '';
       this.menuBox.style.overflow = '';
-      this.menuBox.style.left = ((this.canvas && this.canvas.cumulativeOffset().left || 0) + this._x) + 'px';
+      this.menuBox.style.left = this._x + 'px';
       // Make sure the menu fits inside the screen
       if (this.canvas && this.menuBox.getHeight() >= this.canvas.getHeight()) {
-        this.menuBox.style.top = this.canvas.cumulativeOffset().top + 'px';
+        this.menuBox.style.top = 0;
         this.menuBox.style.height = this.canvas.getHeight() + 'px';
         this.menuBox.style.overflow = 'auto';
       } else if (this.canvas.getHeight() < this._y + this.menuBox.getHeight()) {
         var diff = this._y + this.menuBox.getHeight() - this.canvas.getHeight();
-        this.menuBox.style.top = ((this.canvas && this.canvas.cumulativeOffset().top || 0) + this._y - diff) + 'px';
+        this.menuBox.style.top = (this._y - diff) + 'px';
       } else {
-        this.menuBox.style.top = ((this.canvas && this.canvas.cumulativeOffset().top || 0) + this._y) + 'px';
+        this.menuBox.style.top = this._y + 'px';
       }
     },
     show : function(node, x, y) {

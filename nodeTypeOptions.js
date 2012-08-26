@@ -63,7 +63,7 @@ NodeTypeOptions = Class.create({
       container.insert(def.type == 'separator' ? _this._separator() : _this._createOption(def, 'createChild'));
     });
     this.element.hide();
-    $('body').insert({'bottom' : this.element});
+    editor.workspace.insert(this.element);
 
     this._onClickOutside = this._onClickOutside.bindAsEventListener(this);
   },
@@ -95,14 +95,14 @@ NodeTypeOptions = Class.create({
   },
   _positionAt : function(x, y) {
     y = Math.round(y);
-    if (y + this.element.getHeight() > document.viewport.getHeight()) {
+    if (y + this.element.getHeight() > editor.workspace.getHeight()) {
       this.element.addClassName("upside");
       y = Math.round(y - this.element.getHeight());
     }
     this.element.style.top = y + "px";
     var dx = Math.round(this.element.getWidth()/2);
-    if (x - dx + this.element.getWidth() > document.viewport.getWidth()) {
-      dx = Math.round(this.element.getWidth() - (document.viewport.getWidth() - x));
+    if (x - dx + this.element.getWidth() > editor.workspace.getWidth()) {
+      dx = Math.round(this.element.getWidth() - (editor.workspace.getWidth() - x));
     } else if (dx > x) {
       dx = Math.round(x);
     }

@@ -10,10 +10,8 @@ var Legend = Class.create( {
         this._evaluations = {};
         this._disorderColors = new Hash({});
 
-        var canvas = $('canvas');
-
         this._legendBox = new Element('div', {'class' : 'legend-box', id: 'legend-box'});
-        canvas.insert({'after' : this._legendBox});
+        editor.workspace.insert(this._legendBox);
         this._legendBox.setOpacity(0);
 
         var legendTitle= new Element('h2', {'class' : 'legend-title'}).update('Key');
