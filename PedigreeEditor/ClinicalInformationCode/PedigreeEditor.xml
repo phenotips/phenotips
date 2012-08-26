@@ -50,12 +50,4 @@ $xwiki.jsfx.use("js/pedigree/kdTree.js")##
 $xwiki.jsfx.use("js/pedigree/nodeIndex.js", {'minify' : false})##
 $xwiki.jsfx.use("js/pedigree/pedigree.js", {'minify' : false})##
 {{/velocity}}
-
-{{html}}
-&lt;div id="workspace"&gt;
-&lt;div id="canvas"&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="clearfloats"&gt;&lt;/div&gt;
-{{/html}}
-
 </content></xwikidoc>

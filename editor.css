@@ -1,19 +1,9 @@
 #template("colorThemeInit.vm")
-
 /* =========================================
  * GENERAL
  */
-#mainContentArea, .main {
-  padding: 0 !important;
-  margin: 0 !important;
-  border: 0 none !important;
-}
-#headerglobal, #menuview, #footerglobal {
-  display: none !important;
-}
-#hierarchy {
-  padding: 0 !important;
-  margin: 0 !important;
+#body {
+  overflow: hidden;
 }
 /* =========================================
  * NOTIFICATIONS
@@ -57,20 +47,6 @@
     background-image: url("$xwiki.getSkinFile('icons/silk/tick.png')") !important;
     color: $theme.notificationSuccessColor !important;
     border-color: $theme.notificationSuccessColor !important;
-}
-/* =========================================
- * TITLE
- */
-#document-title h1 {
-    border: 0 none;
-    color: #000000;
-    font-size: 1.2em;
-    font-weight: bold;
-    letter-spacing: 0.2em;
-    margin: 0;
-    padding: 0.5em;
-    text-shadow: 0 0 6px #AAAAAA;
-    text-transform: uppercase;
 }
 /* =========================================
  * MENU

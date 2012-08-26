@@ -20,31 +20,19 @@ var PedigreeEditor = Class.create({
     },
 
     initialize: function(graphics) {
+        // Workspace
         this.DEBUG_MODE = false;
         window.editor = this;
-        this.workspace = $('workspace');
-        this.canvas = $('canvas');
-        this._paper = Raphael("canvas", this.width, this.height);
+        this.initWorkspace();
+
+        // Canvas controls
         this.viewBoxX = 0;
         this.viewBoxY = 0;
         this.zoomCoefficient = 1;
         this.background = editor.getPaper().rect(0,0, 200, 200).attr({fill: 'blue', stroke: 'none', opacity:0}).toBack();
 
-        var nodeIndex = this.nodeIndex = new NodeIndex();
-
-        this.initMenu();
         (this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this))();
-        this.adjustSizeToScreen();
         this.generateViewControls();
-
-        this.nodes = [[/*Person*/],[/*PlaceHolder*/],[/*Partnership*/]];
-        this.idCount = 1;
-        this.hoverModeZones = this._paper.set();
-
-        this.nodeMenu = this.generateNodeMenu();
-        // TODO: create options bubble
-        // this.nodeTypeOptions = new NodeTypeOptions();
-        this._legend = new Legend();
 
         var me = this;
         var start = function() {
@@ -72,12 +60,10 @@ var PedigreeEditor = Class.create({
         // Capture resize events
         Event.observe (window, 'resize', this.adjustSizeToScreen);
 
-        this.currentHoveredNode = null;
-        this.currentDraggable = {
-            handle: null,
-            placeholder: null
-        };
-        Droppables.add(this.canvas, {accept: 'disorder', onDrop: this._onDropDisorder.bind(this)});
+        // Nodes
+        this.nodes = [[/*Person*/],[/*PlaceHolder*/],[/*Partnership*/]];
+        var nodeIndex = this.nodeIndex = new NodeIndex();
+        this.idCount = 1;
         this._proband = this.addNode(this.width/2, this.height/2, 'M', false);
 
         document.observe('pedigree:child:added', function(event){
@@ -368,12 +354,31 @@ var PedigreeEditor = Class.create({
         ]);
     },
 
+    initWorkspace : function() {
+      this.canvas = new Element('div', {'id' : 'canvas'});
+      this.workspace = new Element('div', {'id' : 'workspace'}).update(this.canvas);
+      $('body').update(this.workspace);
+      this._paper = Raphael("canvas", this.width, this.height);
+
+      this.nodeMenu = this.generateNodeMenu();
+      // TODO: create options bubble
+      // this.nodeTypeOptions = new NodeTypeOptions();
+      this._legend = new Legend();
+      this.initMenu();
+      // TODO: add header & title
+
+
+      this.hoverModeZones = this._paper.set();
+      this.currentHoveredNode = null;
+      this.currentDraggable = {
+          handle: null,
+          placeholder: null
+      };
+      Droppables.add(this.canvas, {accept: 'disorder', onDrop: this._onDropDisorder.bind(this)});
+    },
+
     initMenu : function() {
-      var menu = $('editor-menu');
-      if (menu) {
-        menu.remove();
-      }
-      menu = new Element('div', {'id' : 'editor-menu'});
+      var menu = new Element('div', {'id' : 'editor-menu'});
       editor.workspace.insert({before : menu});
       var submenus = [{
         name : 'internal',
