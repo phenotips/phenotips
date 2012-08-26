@@ -31,6 +31,8 @@ var PedigreeEditor = Class.create({
         this.background = editor.getPaper().rect(0,0, 200, 200).attr({fill: 'blue', stroke: 'none', opacity:0}).toBack();
 
         var nodeIndex = this.nodeIndex = new NodeIndex();
+
+        this.initMenu();
         (this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this))();
         this.adjustSizeToScreen();
         this.generateViewControls();
@@ -39,7 +41,6 @@ var PedigreeEditor = Class.create({
         this.idCount = 1;
         this.hoverModeZones = this._paper.set();
 
-        this.initMenu();
         this.nodeMenu = this.generateNodeMenu();
         // TODO: create options bubble
         // this.nodeTypeOptions = new NodeTypeOptions();
@@ -368,8 +369,46 @@ var PedigreeEditor = Class.create({
     },
 
     initMenu : function() {
-        var el = $("action-new");
-        el.observe("click", function() {alert("new node has been created! WHOAH!")});
+      var menu = $('editor-menu');
+      if (menu) {
+        menu.remove();
+      }
+      menu = new Element('div', {'id' : 'editor-menu'});
+      editor.workspace.insert({before : menu});
+      var submenus = [{
+        name : 'internal',
+        items: [
+          { key : 'new',    label : 'New node'},
+          { key : 'undo',   label : 'Undo'},
+          { key : 'redo',   label : 'Redo'},
+          { key : 'layout', label : 'Adjust layout'},
+          { key : 'clear',  label : 'Clear all'}
+        ]
+      }, {
+        name : 'external',
+        items: [
+          { key : 'print',  label : 'Printable version'},
+          { key : 'save',   label : 'Save'},
+          { key : 'close',  label : 'Close'}
+        ]
+      }];
+      var _createSubmenu = function(data) {
+        var submenu = new Element('div', {'class' : data.name + '-actions action-group'});
+        menu.insert(submenu);
+        data.items.each(function (item) {
+          submenu.insert(_createMenuItem(item));
+        });
+      };
+      var _createMenuItem = function(data) {
+        var mi = new Element('span', {'id' : 'action-' + data.key, 'class' : 'menu-item ' + data.key}).update(data.label);
+        if (data.callback && typeof(editor[data.callback]) == 'function') {
+          mi.observe('click', function() {
+            editor[data.callback]();
+          });
+        }
+        return mi;
+      };
+      submenus.each(_createSubmenu);
     },
 
     addPartnership : function(x, y, node1, node2) {

@@ -52,22 +52,6 @@ $xwiki.jsfx.use("js/pedigree/pedigree.js", {'minify' : false})##
 {{/velocity}}
 
 {{html}}
-&lt;div id="editor-menu"&gt;
-&lt;div class="action-group internal-actions"&gt;
-&lt;span class="menu-item new" id="action-new"&gt;New node&lt;/span&gt;
-&lt;span class="menu-item undo" id="action-undo"&gt;Undo&lt;/span&gt;
-&lt;span class="menu-item redo" id="action-redo"&gt;Redo&lt;/span&gt;
-&lt;span class="menu-item layout" id="action-layout"&gt;Automatic layout&lt;/span&gt;
-&lt;span class="menu-item clear" id="action-clear"&gt;Clear all&lt;/span&gt;
-&lt;/div&gt;
-&lt;div class="action-group external-actions"&gt;
-&lt;span class="menu-item print" id="action-print"&gt;Printable version&lt;/span&gt;
-&lt;span class="menu-item save" id="action-save"&gt;Save&lt;/span&gt;
-&lt;!--&lt;span class="menu-item export" id="action-export"&gt;Export&lt;/span&gt;--&gt;
-&lt;span class="menu-item close" id="action-close"&gt;Close&lt;/span&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-
 &lt;div id="workspace"&gt;
 &lt;div id="canvas"&gt;&lt;/div&gt;
 &lt;/div&gt;
