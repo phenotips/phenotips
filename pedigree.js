@@ -200,25 +200,24 @@ var PedigreeEditor = Class.create({
     },
 
     // VIEWBOX RELATED FUNCTIONS
-    getAbsoluteCoordinates: function(relX,relY) {
+    canvasToDiv: function(canvasX,canvasY) {
         return {
-            x: this.zoomCoefficient * (relX - editor.viewBoxX),
-            y: this.zoomCoefficient * (relY - editor.viewBoxY)
+            x: this.zoomCoefficient * (canvasX - editor.viewBoxX),
+            y: this.zoomCoefficient * (canvasY - editor.viewBoxY)
         }
     },
 
-    getRelativeCoordinates: function(absX,absY) {
+    divToCanvas: function(divX,divY) {
         return {
-            x: absX/this.zoomCoefficient + editor.viewBoxX,
-            y: absY/this.zoomCoefficient + editor.viewBoxY
+            x: divX/this.zoomCoefficient + editor.viewBoxX,
+            y: divY/this.zoomCoefficient + editor.viewBoxY
         }
     },
     
-    getPositionInViewport : function (x, y) {
-      var position = this.getPositionInViewBox(x, y);
+    viewportToDiv : function (absX, absY) {
       return {
-        x : this.canvas.cumulativeOffset().left + position.x,
-        y : this.canvas.cumulativeOffset().top + position.y
+        x : this.canvas.cumulativeOffset().left + absX,
+        y : this.canvas.cumulativeOffset().top + absY
       };
     },
 
@@ -442,17 +441,15 @@ var PedigreeEditor = Class.create({
     },
 
     _onDropDisorder: function(disorder, target, event) {
-      var position = {};
-      var x = event.pointerX() - target.cumulativeOffset().left;
-      var y = event.pointerY() - target.cumulativeOffset().top;
-      var pos = editor.getRelativeCoordinates(x,y);
-      var node = this.nodeIndex.getNodeNear(pos.x, pos.y);
-      if (node && node.getType() == 'pn') {
-        var disorderObj = {};
-        disorderObj.id = disorder.id.substring( disorder.id.indexOf('-') + 1);
-        disorderObj.value = disorder.down('.disorder-name').firstChild.nodeValue;
-        node.addDisorder(disorderObj, true);
-      }
+        var divPos = editor.viewportToDiv(event.pointerX(), event.pointerY());
+        var pos = editor.divToCanvas(divPos.x,divPos.y);
+        var node = this.nodeIndex.getNodeNear(pos.x, pos.y);
+        if (node && node.getType() == 'pn') {
+            var disorderObj = {};
+            disorderObj.id = disorder.id.substring( disorder.id.indexOf('-') + 1);
+            disorderObj.value = disorder.down('.disorder-name').firstChild.nodeValue;
+            node.addDisorder(disorderObj, true);
+        }
     },
         
     // WRAPPERS FOR THE NODE INDEX & GRID FUNCITONS
