@@ -21,7 +21,7 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
     setGenderSymbol: function($super) {
         $super();
         var shape = this.getGenderSymbol().attr(editor.attributes.phShape);
-        var text = editor.getPaper().text(this.getX(), this.getY() - editor.attributes.radius/20, editor.DEBUG_MODE ? "" : "CLICK ME OR DRAG ME");
+        var text = editor.getPaper().text(this.getX(), this.getY() - editor.attributes.radius/20, editor.DEBUG_MODE ? "" : "CLICK ME \nOR \nDRAG ME");
         text.attr(editor.attributes.dragMeLabel);
         shape.push(text);
         shape.attr("cursor", "pointer");
