@@ -1,4 +1,3 @@
-
 var PedigreeEditor = Class.create({
 
     attributes: {
@@ -155,10 +154,10 @@ var PedigreeEditor = Class.create({
         this.__controls.insert(this.__zoom);
         this.__zoom.track = new Element('div', {'class' : 'zoom-track'});
         this.__zoom.handle = new Element('div', {'class' : 'zoom-handle', title : 'Drag to zoom'});
-        this.__zoom.in = new Element('div', {'class' : 'zoom-button zoom-in', title : 'Zoom in'});
+        this.__zoom['in'] = new Element('div', {'class' : 'zoom-button zoom-in', title : 'Zoom in'});
         this.__zoom.out = new Element('div', {'class' : 'zoom-button zoom-out', title : 'Zoom out'});
         this.__zoom.label = new Element('div', {'class' : 'zoom-crt-value'});
-        this.__zoom.insert(this.__zoom.in);
+        this.__zoom.insert(this.__zoom['in']);
         this.__zoom.insert(this.__zoom.track);
         this.__zoom.track.insert(this.__zoom.handle);
         this.__zoom.track.style.height = trackLength + 'px';
@@ -190,7 +189,7 @@ var PedigreeEditor = Class.create({
             }
         });
         this.zoomSlider.setValue(.70); // TODO : set initial value
-        this.__zoom.in.observe('click', function(event) {
+        this.__zoom['in'].observe('click', function(event) {
             _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue + .2))
         });
         this.__zoom.out.observe('click', function(event) {
