@@ -59,7 +59,7 @@ NodeMenu = Class.create({
                         'enableSort' : false,
                         'showClearTool' : true,
                         'inputType': 'hidden',
-                        'listInsertionElt' : '.label-other',
+                        'listInsertionElt' : 'input',
                         'listInsertionPosition' : 'after',
                         'acceptFreeText' : true
                     });
