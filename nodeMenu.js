@@ -45,9 +45,7 @@ NodeMenu = Class.create({
                     resultsParameter : "rows",
                     resultId : "id",
                     resultValue : "Title",
-                    resultInfo : {
-                        "Locus"      : {"selector"  : "Locus"}
-                    },
+                    resultInfo : {},
                     enableHierarchy: false,
                     fadeOnClear : false,
                     timeout : 30000,
