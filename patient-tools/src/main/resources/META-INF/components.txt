@@ -1,2 +1,3 @@
 edu.toronto.cs.cidb.tools.PercentileTools
 edu.toronto.cs.cidb.tools.PhenotypeDisplayTools
+edu.toronto.cs.cidb.tools.PhenotypeMappingService

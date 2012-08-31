@@ -22,8 +22,7 @@
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
-<content>{{groovy}}
-    def t = services.phenotype;
+<content>    def t = services.phenotype;
 
     LinkedHashMap&lt;String, LinkedHashMap&lt;String, Object&gt;&gt; phenotype = [
       "Behavior, Cognition and Development"     : [
@@ -241,14 +240,12 @@
     ]
   ];
 
+Map&lt;String, Object&gt; mappings = [
+  'phenotype': phenotype,
+  'prenatal_phenotype': prenatal_history,
+  'family_history': family_history,
+  'negative_phenotype': negative_phenotype,
+  'extraMessages': extraMessages
+]
 
-xcontext.get('vcontext').put('mapping__phenotype', phenotype);
-
-xcontext.get('vcontext').put('mapping__prenatal_phenotype', prenatal_history);
-
-xcontext.get('vcontext').put('mapping__family_history', family_history);
-
-xcontext.get('vcontext').put('mapping__negative_phenotype', negative_phenotype);
-
-xcontext.get('vcontext').put('mapping__extraMessages', extraMessages);
-{{/groovy}}</content></xwikidoc>
+context.setAttribute('mappings', mappings, 100);</content></xwikidoc>

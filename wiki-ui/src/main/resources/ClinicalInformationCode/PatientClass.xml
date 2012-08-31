@@ -201,8 +201,6 @@
 <customDisplay>{{velocity}}
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))
 #if ($config)
-  {{include document="$!{config.getProperty('phenotypeMapping').value}" context="new"/}}
-  
   {{include document="ClinicalInformationCode.PhenotypeDisplay" /}}
 #end
 {{/velocity}}</customDisplay>
@@ -346,8 +344,6 @@
 <customDisplay>{{velocity}}
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))
 #if ($config)
-  {{include document="$!{config.getProperty('phenotypeMapping').value}" context="new"/}}
-  
   {{include document="ClinicalInformationCode.PhenotypeDisplay" /}}
 #end
 {{/velocity}}</customDisplay>
@@ -486,8 +482,6 @@
 <customDisplay>{{velocity}}
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))
 #if ($config)
-  {{include document="$!{config.getProperty('phenotypeMapping').value}" context="new"/}}
-  
   {{include document="ClinicalInformationCode.PhenotypeDisplay" /}}
 #end
 {{/velocity}}</customDisplay>
@@ -532,8 +526,6 @@
 <customDisplay>{{velocity}}
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))
 #if ($config)
-  {{include document="$!{config.getProperty('phenotypeMapping').value}" context="new"/}}
-  
   {{include document="ClinicalInformationCode.PhenotypeDisplay" /}}
 #end
 {{/velocity}}</customDisplay>

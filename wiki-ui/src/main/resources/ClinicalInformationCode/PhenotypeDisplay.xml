@@ -24,14 +24,14 @@
 <hidden>false</hidden>
 <content>{{velocity}}
 #set($phenotypeDisplayTools = $services.phenotype)
-#set($data = $context.context.vcontext.get("mapping__${name}"))
+#set ($data = $services.phenotypeMapping.get($name))
 
 #if ("$!{data}" != '')
 $phenotypeDisplayTools.use($prefix, $name)##
 $phenotypeDisplayTools.setMode($context.action)##
 $phenotypeDisplayTools.setDocument($doc)##
 $!phenotypeDisplayTools.setSelectedValues($value)##
-$phenotypeDisplayTools.setMessageMap($context.context.vcontext.get('mapping__extraMessages'))##
+$phenotypeDisplayTools.setMessageMap($services.phenotypeMapping.extraMessages)##
 $phenotypeDisplayTools.display($data)##
 #end
 {{/velocity}}</content></xwikidoc>
