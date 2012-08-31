@@ -3,7 +3,7 @@
 <web>Main</web>
 <name>WebPreferences</name>
 <language></language>
-<defaultLanguage>en</defaultLanguage>
+<defaultLanguage></defaultLanguage>
 <translation>0</translation>
 <parent>Main.WebHome</parent>
 <creator>xwiki:XWiki.Admin</creator>

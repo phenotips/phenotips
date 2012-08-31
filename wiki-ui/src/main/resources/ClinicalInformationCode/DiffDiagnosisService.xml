@@ -5,7 +5,7 @@
 <language></language>
 <defaultLanguage></defaultLanguage>
 <translation>0</translation>
-<parent></parent>
+<parent>ClinicalInformationCode.WebHome</parent>
 <creator>xwiki:XWiki.Admin</creator>
 <author>xwiki:XWiki.Admin</author>
 <customClass></customClass>
@@ -19,7 +19,7 @@
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
 <comment></comment>
-<minorEdit>true</minorEdit>
+<minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
 <content>{{include document="ClinicalInformationCode.JSONMacros" /}}
