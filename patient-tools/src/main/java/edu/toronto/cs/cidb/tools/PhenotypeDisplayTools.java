@@ -516,7 +516,9 @@ public class PhenotypeDisplayTools implements ScriptService
             }
         }
         for (String selectedValue : getSelectedValues()) {
-            if (getValuesWithSelectedSubterms().containsKey(selectedValue)) {
+            if (StringUtils.isBlank(selectedValue)) {
+                continue;
+            } else if (getValuesWithSelectedSubterms().containsKey(selectedValue)) {
                 getPredefinedSelectedValues().add(selectedValue);
             } else {
                 getCustomSelectedValues().add(selectedValue);

@@ -237,7 +237,7 @@ public class SolrScriptService implements ScriptService, Initializable
         Map<String, String> queryParameters = new HashMap<String, String>();
         queryParameters.put(ID_FIELD_NAME, id);
         SolrDocumentList all = search(queryParameters, 1, 0);
-        if (!all.isEmpty()) {
+        if (all != null && !all.isEmpty()) {
             return all.get(0);
         }
         return null;
