@@ -278,7 +278,7 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
      * (non-Javadoc)
      * @see edu.toronto.cs.cidb.hpoa.ontology.Ontology#getAncestors(java.lang.String)
      */
-    public Set<String> getAncestors(String termId)
+    public synchronized Set<String> getAncestors(String termId)
     {
         if (this.ancestorCache.get(termId) == null) {
             this.ancestorCache.put(termId, this.findAncestors(termId));
