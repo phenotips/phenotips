@@ -41,7 +41,7 @@
       <includes>
         <include>edu.toronto.cs.cidb:database-zip</include>
       </includes>
-      <outputDirectory>/database</outputDirectory>
+      <outputDirectory>/data/database</outputDirectory>
       <unpack>true</unpack>
     </dependencySet>
     <!-- "solr" webapp. -->

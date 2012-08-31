@@ -22,12 +22,12 @@ package edu.toronto.cs.cidb.hpoa.ontology;
 import java.io.File;
 import java.util.Set;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 import edu.toronto.cs.cidb.hpoa.utils.graph.IDAGNode;
 import edu.toronto.cs.cidb.solr.SolrScriptService;
 
-@ComponentRole
+@Role
 public interface Ontology
 {
     public abstract int load(SolrScriptService source);

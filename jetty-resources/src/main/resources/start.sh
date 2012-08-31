@@ -48,14 +48,19 @@ fi
 
 echo Starting Jetty on port $JETTY_PORT ...
 
+# Location where XWiki stores generated data and where database files are.
+XWIKI_DATA_DIR=data
+START_OPTS="$START_OPTS -Dxwiki.data.dir=$XWIKI_DATA_DIR"
+
+# Ensure the data directory exists so that XWiki can use it for storing permanent data.
+mkdir -p $XWIKI_DATA_DIR 2>/dev/null
+
 # Ensure the logs directory exists as otherwise Jetty reports an error
-mkdir -p $JETTY_HOME/logs 2>/dev/null
+mkdir -p $XWIKI_DATA_DIR/logs 2>/dev/null
+mkdir -p jetty/logs 2>/dev/null
 
 # Ensure the work directory exists so that Jetty uses it for its temporary files.
 mkdir -p $JETTY_HOME/work 2>/dev/null
-
-# Ensure the data directory exists so that Solr can use it for storing permanent data
-mkdir -p data 2>/dev/null
 
 # Specify port on which HTTP requests will be handled
 START_OPTS="$START_OPTS -Djetty.port=$JETTY_PORT"
@@ -72,5 +77,12 @@ START_OPTS="$START_OPTS -Dfile.encoding=UTF8"
 # Path to the solr configuration
 START_OPTS="$START_OPTS -Dsolr.solr.home=${PRGDIR}/solrconfig/"
 
+# In order to avoid getting a "java.lang.IllegalStateException: Form too large" error
+# when editing large page in XWiki we need to tell Jetty to allow for large content
+# since by default it only allows for 20K. We do this by passing the
+# org.eclipse.jetty.server.Request.maxFormContentSize property.
+# Note that setting this value too high can leave your server vulnerable to denial of
+# service attacks.
+XWIKI_OPTS="$XWIKI_OPTS -Dorg.eclipse.jetty.server.Request.maxFormContentSize=1000000"
 
 java $START_OPTS $3 $4 $5 $6 $7 $8 $9 -jar $JETTY_HOME/start.jar OPTIONS=All

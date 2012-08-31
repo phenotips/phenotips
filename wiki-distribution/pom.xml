@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.xwiki.enterprise</groupId>
       <artifactId>xwiki-enterprise-web</artifactId>
-      <version>3.5.1</version>
+      <version>4.2-milestone-2</version>
       <type>war</type>
       <optional>true</optional>
     </dependency>

@@ -71,7 +71,7 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
     public void initialize() throws InitializationException
     {
         try {
-            this.solr = (SolrScriptService) this.cm.lookup(ScriptService.class, "solr");
+            this.solr = (SolrScriptService) this.cm.getInstance(ScriptService.class, "solr");
         } catch (ComponentLookupException ex) {
             throw new InitializationException("Needed component SolrScriptService wasn't available!");
         }
