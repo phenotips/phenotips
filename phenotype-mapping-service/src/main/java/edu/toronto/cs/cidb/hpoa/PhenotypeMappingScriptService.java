@@ -57,10 +57,6 @@ public class PhenotypeMappingScriptService implements ScriptService, Initializab
     private Ontology hpo;
 
     @Inject
-    @Named("solr")
-    private ScriptService service;
-
-    @Inject
     @Named("ic")
     private Predictor predictor;
 
@@ -122,7 +118,7 @@ public class PhenotypeMappingScriptService implements ScriptService, Initializab
 
     protected File getInternalFile(String name, String dir)
     {
-        File parent = new File(environment.getTemporaryDirectory(), dir);
+        File parent = new File(this.environment.getTemporaryDirectory(), dir);
         if (!parent.exists()) {
             parent.mkdirs();
         }
@@ -132,7 +128,7 @@ public class PhenotypeMappingScriptService implements ScriptService, Initializab
     @Override
     public void initialize() throws InitializationException
     {
-        OmimHPOAnnotations ann = new OmimHPOAnnotations(hpo);
+        OmimHPOAnnotations ann = new OmimHPOAnnotations(this.hpo);
         ann.load(getInputFileHandler("http://compbio.charite.de/svn/hpo/trunk/src/annotation/phenotype_annotation.tab",
             false));
 

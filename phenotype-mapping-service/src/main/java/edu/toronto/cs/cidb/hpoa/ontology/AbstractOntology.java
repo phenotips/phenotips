@@ -71,7 +71,7 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
             for (String name : result.getFieldNames()) {
                 Object val = result.get(name);
                 if (val instanceof Collection< ? >) {
-                    data.put(name, (Collection) val);
+                    data.put(name, (Collection<String>) val);
                 } else {
                     data.addTo(name, (String) val);
                 }

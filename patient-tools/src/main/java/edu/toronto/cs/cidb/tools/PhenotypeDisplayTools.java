@@ -27,8 +27,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -146,8 +146,7 @@ public class PhenotypeDisplayTools implements ScriptService
             for (Object sectionName : sectionNames) {
                 result += "(% class=\"" + getPropertyName() + "-group\" %)(((\n";
                 result += "===" + sectionName + "===\n";
-                result +=
-                    "{{html wiki=true clean=false}}\n"
+                result += "{{html wiki=true clean=false}}\n"
                     + handleSection(data.get(sectionName))
                     + "{{/html}}";
                 result += ")))\n";
