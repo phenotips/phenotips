@@ -1185,7 +1185,7 @@ document.observe('dom:loaded', function() {
 
         selectionSummary._updateSummary = function(inputElt, forceUpdate) {
           if (!inputElt) {return}
-          var sectionId = inputElt.up('.phenotype-group').down('h3');
+          var sectionId = inputElt.up('.phenotype-group') &amp;&amp; inputElt.up('.phenotype-group').down('h3');
           if (sectionId) {
             sectionId = sectionId.id;
           } else {
