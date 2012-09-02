@@ -420,7 +420,8 @@ var highlightChecked = function(element) {
         Event.fire(document, 'phenotype:selected', {
               key : element.value,
               text: element.title || element.nextSibling.nodeValue || element.nextSibling.firstChild.nodeValue,
-              enable: element.checked
+              enable: element.checked,
+              element : element
         });
       }
       if (selectionSummary) {selectionSummary._updateSummary(element);}
@@ -2457,7 +2458,7 @@ document.observe('xwiki:dom:loaded', function() {
   }
 
   document.observe('phenotype:selected', function(event) {
-    if (!event.memo || !event.memo.key) {return;}
+    if (!event.memo || !event.memo.key || !event.memo.element || event.memo.element.up('.negative-phenotype')) {return;}
     var key = event.memo.key;
     var text = event.memo.text || event.memo.key;
     var obj = cache.all[key];
