@@ -55,13 +55,13 @@ public class PercentileTools implements ScriptService, Initializable
     /** The name of the resource file holding the BMI LMS table. */
     private static final String BMI_FILE = "bmiage.csv";
 
-    /** The name of the resource file holding the BMI LMS table. */
+    /** The name of the resource file holding the head circumference LMS table. */
     private static final String HC_FILE = "hcage.csv";
 
-    /** The name of the resource file holding the BMI LMS table. */
+    /** The name of the resource file holding the height for age LMS table. */
     private static final String HEIGHT_FILE = "htage.csv";
 
-    /** The name of the resource file holding the BMI LMS table. */
+    /** The name of the resource file holding the weight for age LMS table. */
     private static final String WEIGHT_FILE = "wtage.csv";
 
     /** Logging helper object. */
@@ -186,9 +186,9 @@ public class PercentileTools implements ScriptService, Initializable
      * @param male {@code true} for boys, {@code false} for girls
      * @param ageInMonths the age of the measurement, in months
      * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
-     * @return the BMI (in kilograms per square meter) that falls in the middle of the target percentile, with the exception of the
-     *         open ended 0 and 100 percentiles, for which the value corresponding to the 0.25, respectively 99.75
-     *         percentage is returned
+     * @return the BMI (in kilograms per square meter) that falls in the middle of the target percentile, with the
+     *         exception of the open ended 0 and 100 percentiles, for which the value corresponding to the 0.25,
+     *         respectively 99.75 percentage is returned
      */
     public double getPercentileBMI(boolean male, int ageInMonths, int targetPercentile)
     {
@@ -268,11 +268,11 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
-     * Get the weight for age percentile for the given weight and age.
+     * Get the head circumference for age percentile for the given head circumference and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
      * @param ageInMonths the age of the measurement, in months
-     * @param weightInKilograms the measured weight, in kilograms
+     * @param headCircumferenceInCentimeters the measured head circumference, in centimeters
      * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
      */
     public int getHCPercentile(boolean male, int ageInMonths, double headCircumferenceInCentimeters)
