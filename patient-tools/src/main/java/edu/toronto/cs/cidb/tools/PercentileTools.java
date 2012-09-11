@@ -157,9 +157,8 @@ public class PercentileTools implements ScriptService, Initializable
      */
     public int getBMIPercentile(boolean male, int ageInMonths, double weightInKilograms, double heightInCentimeters)
     {
+        LMS lms = getLMSForAge(male ? this.bmiForAgeBoys : this.bmiForAgeGirls, ageInMonths);
         double bmi = getBMI(weightInKilograms, heightInCentimeters);
-        List<LMS> bmiForAge = male ? this.bmiForAgeBoys : this.bmiForAgeGirls;
-        LMS lms = (ageInMonths < bmiForAge.size()) ? bmiForAge.get(ageInMonths) : bmiForAge.get(bmiForAge.size() - 1);
         return valueToPercentile(bmi, lms);
     }
 
@@ -192,9 +191,7 @@ public class PercentileTools implements ScriptService, Initializable
      */
     public double getPercentileBMI(boolean male, int ageInMonths, int targetPercentile)
     {
-        List<LMS> bmiForAge = male ? this.bmiForAgeBoys : this.bmiForAgeGirls;
-        LMS lms = (ageInMonths < bmiForAge.size()) ? bmiForAge.get(ageInMonths) :
-            bmiForAge.get(bmiForAge.size() - 1);
+        LMS lms = getLMSForAge(male ? this.bmiForAgeBoys : this.bmiForAgeGirls, ageInMonths);
         return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
     }
 
@@ -209,9 +206,7 @@ public class PercentileTools implements ScriptService, Initializable
      */
     public int getHeightPercentile(boolean male, int ageInMonths, double heightInCentimeters)
     {
-        List<LMS> heightForAge = male ? this.heightForAgeBoys : this.heightForAgeGirls;
-        LMS lms = (ageInMonths < heightForAge.size()) ? heightForAge.get(ageInMonths) :
-            heightForAge.get(heightForAge.size() - 1);
+        LMS lms = getLMSForAge(male ? this.heightForAgeBoys : this.heightForAgeGirls, ageInMonths);
         return valueToPercentile(heightInCentimeters, lms);
     }
 
@@ -227,9 +222,7 @@ public class PercentileTools implements ScriptService, Initializable
      */
     public double getPercentileHeight(boolean male, int ageInMonths, int targetPercentile)
     {
-        List<LMS> heightForAge = male ? this.heightForAgeBoys : this.heightForAgeGirls;
-        LMS lms = (ageInMonths < heightForAge.size()) ? heightForAge.get(ageInMonths) :
-            heightForAge.get(heightForAge.size() - 1);
+        LMS lms = getLMSForAge(male ? this.heightForAgeBoys : this.heightForAgeGirls, ageInMonths);
         return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
     }
 
@@ -243,9 +236,7 @@ public class PercentileTools implements ScriptService, Initializable
      */
     public int getWeightPercentile(boolean male, int ageInMonths, double weightInKilograms)
     {
-        List<LMS> weightForAge = male ? this.weightForAgeBoys : this.weightForAgeGirls;
-        LMS lms = (ageInMonths < weightForAge.size()) ? weightForAge.get(ageInMonths) :
-            weightForAge.get(weightForAge.size() - 1);
+        LMS lms = getLMSForAge(male ? this.weightForAgeBoys : this.weightForAgeGirls, ageInMonths);
         return valueToPercentile(weightInKilograms, lms);
     }
 
@@ -261,9 +252,7 @@ public class PercentileTools implements ScriptService, Initializable
      */
     public double getPercentileWeight(boolean male, int ageInMonths, int targetPercentile)
     {
-        List<LMS> weightForAge = male ? this.weightForAgeBoys : this.weightForAgeGirls;
-        LMS lms = (ageInMonths < weightForAge.size()) ? weightForAge.get(ageInMonths) :
-            weightForAge.get(weightForAge.size() - 1);
+        LMS lms = getLMSForAge(male ? this.weightForAgeBoys : this.weightForAgeGirls, ageInMonths);
         return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
     }
 
@@ -277,9 +266,7 @@ public class PercentileTools implements ScriptService, Initializable
      */
     public int getHCPercentile(boolean male, int ageInMonths, double headCircumferenceInCentimeters)
     {
-        List<LMS> hcForAge = male ? this.hcForAgeBoys : this.hcForAgeGirls;
-        LMS lms = (ageInMonths < hcForAge.size()) ? hcForAge.get(ageInMonths) :
-            hcForAge.get(hcForAge.size() - 1);
+        LMS lms = getLMSForAge(male ? this.hcForAgeBoys : this.hcForAgeGirls, ageInMonths);
         return valueToPercentile(headCircumferenceInCentimeters, lms);
     }
 
@@ -295,9 +282,7 @@ public class PercentileTools implements ScriptService, Initializable
      */
     public double getPercentileHC(boolean male, int ageInMonths, int targetPercentile)
     {
-        List<LMS> hcForAge = male ? this.hcForAgeBoys : this.hcForAgeGirls;
-        LMS lms = (ageInMonths < hcForAge.size()) ? hcForAge.get(ageInMonths) :
-            hcForAge.get(hcForAge.size() - 1);
+        LMS lms = getLMSForAge(male ? this.hcForAgeBoys : this.hcForAgeGirls, ageInMonths);
         return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
     }
 
@@ -414,9 +399,15 @@ public class PercentileTools implements ScriptService, Initializable
                 double s = Double.parseDouble(tokens[4]);
                 LMS lms = new LMS(l, m, s);
                 if ("1".equals(tokens[0])) {
-                    boysList.add(month, lms);
+                    while (month >= boysList.size()) {
+                        boysList.add(null);
+                    }
+                    boysList.set(month, lms);
                 } else {
-                    girlsList.add(month, lms);
+                    while (month >= girlsList.size()) {
+                        girlsList.add(null);
+                    }
+                    girlsList.set(month, lms);
                 }
             }
         } catch (IOException ex) {
@@ -424,5 +415,31 @@ public class PercentileTools implements ScriptService, Initializable
             this.logger.error("Failed to read data table [{}]: {}",
                 new Object[] {filename, ex.getMessage(), ex});
         }
+    }
+
+    private LMS getLMSForAge(List<LMS> list, int ageInMonths)
+    {
+        if (ageInMonths >= list.size()) {
+            return list.get(list.size() - 1);
+        }
+        LMS result;
+        result = list.get(ageInMonths);
+        if (result == null) {
+            int lowerAge = ageInMonths - 1;
+            while (lowerAge >= 0 && list.get(lowerAge) == null) {
+                --lowerAge;
+            }
+            int upperAge = ageInMonths + 1;
+            while (upperAge < list.size() && list.get(upperAge) == null) {
+                ++upperAge;
+            }
+            LMS lowerLMS = list.get(lowerAge);
+            LMS upperLMS = list.get(upperAge);
+            double delta = ((double) ageInMonths - lowerAge) / (upperAge - lowerAge);
+            result = new LMS(lowerLMS.l + (upperLMS.l - lowerLMS.l) * delta,
+                lowerLMS.m + (upperLMS.m - lowerLMS.m) * delta,
+                lowerLMS.s + (upperLMS.s - lowerLMS.s) * delta);
+        }
+        return result;
     }
 }
