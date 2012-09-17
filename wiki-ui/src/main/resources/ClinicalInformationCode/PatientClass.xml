@@ -57,8 +57,8 @@
   #set ($format = $definedFormat)
 #end
 #if ($xcontext.action == 'edit')
+  #if (!$value)#set($value = $util.date)#end
   #if ($format.indexOf('d') &lt; 0)
-    #if (!$value)#set($value = $util.date)#end
     &lt;span class="month-year-date $name" id="$prefix${name}_container"&gt;
       &lt;input type="hidden" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date-hidden" alt="#formatdateISO($value)"/&gt;
       #set ($date = $util.date)
