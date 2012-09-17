@@ -29,6 +29,10 @@
   'height02' : {'min' : 39.0, 'max' : 111.0, 'step' : 1.0, 'labelStep' : 5, 'minX' : 0, 'maxX' : 24, 'stepX': 1, 'labelStepX' : 3, 'llabel' : 'Length (cm)', 'rlabel' : 'Length (cm)', 'blabel' : 'Age (months)', 'tlabel' : 'Age (months)', 'title' : 'Height for age, birth to 24 months'},
   'height220' : {'min' : 67.0, 'max' : 202.0, 'step' : 1.0, 'labelStep' : 5, 'minX' : 24, 'maxX' : 240, 'stepX': 6, 'labelStepX' : 12, 'ageInYears' : true, 'llabel' : 'Stature (cm)', 'rlabel' : 'Stature (cm)', 'blabel' : 'Age (years)', 'tlabel' : 'Age (years)', 'title' : 'Height for age, 2 to 20 years'},
   'hc03' : {'min' : 29.4, 'max' : 56.4, 'step' : 0.2, 'labelStep' : 1, 'minX' : 0, 'maxX' : 36, 'stepX': 1, 'labelStepX' : 3, 'llabel' : 'Head circumference (cm)', 'rlabel' : 'Head circumference (cm)', 'blabel' : 'Age (months)', 'tlabel' : 'Age (months)', 'title' : 'Head circumference for age, birth to 36 months'},
+  'icd03' : {'min' : 0.8, 'max' : 3.8, 'step' : 0.2, 'labelStep' : 1, 'minX' : 0, 'maxX' : 36, 'stepX': 1, 'labelStepX' : 3, 'llabel' : 'Inner canthal distance (cm)', 'rlabel' : 'Inner canthal distance (cm)', 'blabel' : 'Age (months)', 'tlabel' : 'Age (months)', 'title' : 'Inner canthal distance for age, birth to 24 months'},
+  'icd220' : {'min' : 1.8, 'max' : 4.8, 'step' : 0.2, 'labelStep' : 1, 'minX' : 24, 'maxX' : 240, 'stepX': 6, 'labelStepX' : 12, 'ageInYears' : true, 'llabel' : 'Inner canthal distance (cm)', 'rlabel' : 'Inner canthal distance (cm)', 'blabel' : 'Age (years)', 'tlabel' : 'Age (years)', 'title' : 'Inner canthal distance for age, 2 to 20 years'},
+  'ocd03' : {'min' : 4.8, 'max' : 10.8, 'step' : 0.2, 'labelStep' : 1, 'minX' : 0, 'maxX' : 24, 'stepX': 1, 'labelStepX' : 3, 'llabel' : 'Outer canthal distance (cm)', 'rlabel' : 'Outer canthal distance (cm)', 'blabel' : 'Age (months)', 'tlabel' : 'Age (months)', 'title' : 'Outer canthal distance for age, birth to 24 months'},
+  'ocd220' : {'min' : 5.8, 'max' : 11.8, 'step' : 0.2, 'labelStep' : 1, 'minX' : 24, 'maxX' : 240, 'stepX': 6, 'labelStepX' : 12, 'ageInYears' : true, 'llabel' : 'Outer canthal distance (cm)', 'rlabel' : 'Outer canthal distance (cm)', 'blabel' : 'Age (years)', 'tlabel' : 'Age (years)', 'title' : 'Outer canthal distance for age, 2 to 20 years'},
   'bmi03' : {'min' : 9.4, 'max' : 23.8, 'step' : 0.2, 'labelStep' : 1, 'minX' : 0, 'maxX' : 36, 'stepX': 1, 'labelStepX' : 3}
 })
 #macro (getPercentileValue $age $p)
@@ -40,6 +44,10 @@
     #set ($v = $services.percentile.getPercentileHC($sex, $age, $p))
   #elseif ($chart.startsWith('bmi'))
     #set ($v = $services.percentile.getPercentileBMI($sex, $age, $p))
+  #elseif ($chart.startsWith('icd'))
+    #set ($v = $services.percentile.getPercentileInnerCanthalDistance($sex, $age, $p))
+  #elseif ($chart.startsWith('ocd'))
+    #set ($v = $services.percentile.getPercentileOuterCanthalDistance($sex, $age, $p))
   #end
 #end
 #macro (getValuePercentile $age $v)
@@ -50,7 +58,11 @@
   #elseif ($chart.startsWith('hc'))
     #set ($p = $services.percentile.getHCPercentile($sex, $age, $v))
   #elseif ($chart.startsWith('bmi'))
-    #set ($v = $services.percentile.getBMIPercentile($sex, $age, $v))
+    #set ($p = $services.percentile.getBMIPercentile($sex, $age, $v))
+  #elseif ($chart.startsWith('icd'))
+    #set ($p = $services.percentile.getInnerCanthalDistancePercentile($sex, $age, $v))
+  #elseif ($chart.startsWith('ocd'))
+    #set ($p = $services.percentile.getOuterCanthalDistancePercentile($sex, $age, $v))
   #end
 #end
 #macro (getPercentileColor $p)

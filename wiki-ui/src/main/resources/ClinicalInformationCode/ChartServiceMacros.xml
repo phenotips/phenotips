@@ -22,7 +22,7 @@
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
-<content>{{velocity output=false}}
+<content>{{velocity output="false"}}
 #macro (_measurementCharts $options)
 ## ---------------------------------------------------------
 ## Initialization of 'global' vars
@@ -30,7 +30,10 @@
 #set ($wMeasurements = [])
 #set ($hMeasurements = [])
 #set ($hcMeasurements = [])
-#set ($ageLimits = {'weight' : {}, 'height' : {}, 'head_circumference' : {}})
+#set ($ocdMeasurements = [])
+#set ($icdMeasurements = [])
+#set ($measurements = {'weight' : [], 'height' : [], 'head_circumference' : [], 'ocd' : [], 'icd' : []})
+#set ($ageLimits = {})
 #set ($sex = false)
 #set ($c = $xwiki.getDocument('ClinicalInformationCode.ChartGenerator').getContent())
 #set ($service = $xwiki.getDocument('ClinicalInformationCode.ChartService'))
@@ -40,6 +43,9 @@
 #macro (_buildMeasurementsFromObjects $targetClassName $obj)
   #macro (_updateMeasurements $measurements $o $sourceName $age)
     #if ("$!{o.getProperty($sourceName).value}" != '')
+      #if ("$!ageLimits.get($sourceName)" == '')
+        #set ($discard = $ageLimits.put($sourceName, {}))
+      #end
       #if (!($ageLimits.get($sourceName).min &lt;= $age))
         #set ($ageLimits.get($sourceName).min = $age)
       #end
@@ -57,6 +63,8 @@
     #_updateMeasurements($wMeasurements $o 'weight' $age)
     #_updateMeasurements($hMeasurements $o 'height' $age)
     #_updateMeasurements($hcMeasurements $o 'head_circumference' $age)
+    #_updateMeasurements($ocdMeasurements $o 'ocd' $age)
+    #_updateMeasurements($icdMeasurements $o 'icd' $age)
   #end
   #set ($sex = $obj.getProperty('gender').value != 'F')
 #end
@@ -68,6 +76,9 @@
     #foreach ($m in $request.getParameterValues($paramName))
       #if ("$!{m}" != '')
         #set ($age = $mathtool.toInteger($ages.get($foreach.index)))
+        #if ("$!ageLimits.get($sourceName)" == '')
+          #set ($discard = $ageLimits.put($sourceName, {}))
+        #end
         #if (!($ageLimits.get($sourceName).min &lt;= $age))
           #set ($ageLimits.get($sourceName).min = $age)
         #end
@@ -82,6 +93,8 @@
   #_buildMeasurementFromRequest($wMeasurements 'w', 'weight')
   #_buildMeasurementFromRequest($hMeasurements 'h', 'height')
   #_buildMeasurementFromRequest($hcMeasurements 'c' 'head_circumference')
+  #_buildMeasurementFromRequest($ocdMeasurements 'ocd' 'ocd')
+  #_buildMeasurementFromRequest($icdMeasurements 'icd' 'icd')
   #set ($sex = ($request.getParameter('s') != 'F'))
 #end
 ## ---------------------------------------------------------
@@ -170,6 +183,10 @@ $format##
     #_generateChart($hMeasurements, $options.chartName 'h' '')
   #elseif ($options.chartName.startsWith('hc'))
     #_generateChart($hcMeasurements, $options.chartName 'c' '')
+  #elseif ($options.chartName.startsWith('ocd'))
+    #_generateChart($ocdMeasurements, $options.chartName 'ocd' '')
+  #elseif ($options.chartName.startsWith('icd'))
+    #_generateChart($icdMeasurements, $options.chartName 'icd' '')
   #end
 #else
   ## ---------------------------------------------------------
@@ -179,6 +196,10 @@ $format##
   #_generateCharts($hMeasurements, 'height' 'height' 'h' 'Height for age')
   #if ($ageLimits.get('head_circumference').min &lt;= 36)
     #_generateChart($hcMeasurements, 'hc03' 'c' 'Head circumference for age')
+  #end
+  #_generateCharts($ocdMeasurements, 'ocd' 'ocd' 'ocd' 'Outer canthal distance for age')
+  #if ($ageLimits.get('head_circumference').max &gt;= 24)
+    #_generateCharts($ocdMeasurements, 'icd' 'icd' 'icd' 'Inner canthal distance for age')
   #end
 #end
 
