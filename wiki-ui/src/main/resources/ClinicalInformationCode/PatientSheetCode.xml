@@ -4128,6 +4128,7 @@ table.extradata-list td.bmi_percentile {
 #macro(__reportSection__patient_info)
 (% class="clear patient-info chapter" %)(((
 == Patient Information ==
+  #__displayFormatted('2-col' 'external_id' '' '' '')
   #if ("$!activeFields.contains('last_name')" != false &amp;&amp; "$!activeFields.contains('first_name')" != false)
   (% class="fieldset" %)(((
     #__label('last_name' 'section clear' 'Patient name:')

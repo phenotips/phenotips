@@ -36,7 +36,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>comments</name>
-<number>21</number>
+<number>22</number>
 <picker>0</picker>
 <prettyName>Additional comments</prettyName>
 <rows>5</rows>
@@ -100,7 +100,7 @@
 <disabled>0</disabled>
 <emptyIsToday>1</emptyIsToday>
 <name>date_of_birth</name>
-<number>4</number>
+<number>5</number>
 <picker>1</picker>
 <prettyName>Date of birth</prettyName>
 <size>20</size>
@@ -118,7 +118,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>extended_negative_phenotype</name>
-<number>26</number>
+<number>27</number>
 <picker>0</picker>
 <prettyName>extended_negative_phenotype</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -142,7 +142,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>extended_phenotype</name>
-<number>24</number>
+<number>25</number>
 <picker>0</picker>
 <prettyName>extended_phenotype</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -166,7 +166,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>extended_prenatal_phenotype</name>
-<number>25</number>
+<number>26</number>
 <picker>0</picker>
 <prettyName>extended_prenatal_phenotype</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -181,12 +181,25 @@
 <valueField></valueField>
 <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
 </extended_prenatal_phenotype>
+<external_id>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>external_id</name>
+<number>2</number>
+<picker>0</picker>
+<prettyName>Identifier</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</external_id>
 <family_comments>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <editor>---</editor>
 <name>family_comments</name>
-<number>19</number>
+<number>20</number>
 <picker>0</picker>
 <prettyName>List health conditions found in family (describe the relationship with proband)</prettyName>
 <rows>5</rows>
@@ -208,7 +221,7 @@
 <displayType>select</displayType>
 <multiSelect>1</multiSelect>
 <name>family_history</name>
-<number>18</number>
+<number>19</number>
 <picker>0</picker>
 <prettyName>Family History</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -226,7 +239,7 @@
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <name>first_name</name>
-<number>2</number>
+<number>3</number>
 <picker>0</picker>
 <prettyName>First name</prettyName>
 <size>30</size>
@@ -242,7 +255,7 @@
 <displayType>radio</displayType>
 <multiSelect>0</multiSelect>
 <name>gender</name>
-<number>5</number>
+<number>6</number>
 <picker>0</picker>
 <prettyName>Sex</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -260,7 +273,7 @@
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <name>gestation</name>
-<number>17</number>
+<number>18</number>
 <numberType>integer</numberType>
 <prettyName>Gestation at delivery (weeks)</prettyName>
 <size>30</size>
@@ -273,7 +286,7 @@
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <name>health_card</name>
-<number>7</number>
+<number>8</number>
 <picker>0</picker>
 <prettyName>Provincial Health Card #</prettyName>
 <size>30</size>
@@ -300,7 +313,7 @@
 <disabled>0</disabled>
 <editor>PureText</editor>
 <name>indication_for_referral</name>
-<number>11</number>
+<number>12</number>
 <picker>0</picker>
 <prettyName>Indication for referral</prettyName>
 <rows>2</rows>
@@ -314,7 +327,7 @@
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <name>last_name</name>
-<number>3</number>
+<number>4</number>
 <picker>0</picker>
 <prettyName>Last name</prettyName>
 <size>30</size>
@@ -328,7 +341,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>medical_developmental_history</name>
-<number>22</number>
+<number>23</number>
 <picker>0</picker>
 <prettyName>Medical and developmental history</prettyName>
 <rows>5</rows>
@@ -352,7 +365,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>negative_phenotype</name>
-<number>14</number>
+<number>15</number>
 <picker>0</picker>
 <prettyName>Symptoms NOT observed in this patient</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -376,7 +389,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>omim_id</name>
-<number>10</number>
+<number>11</number>
 <picker>0</picker>
 <prettyName>OMIM disorder</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -443,7 +456,7 @@
 {{/html}}{{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>onset</name>
-<number>6</number>
+<number>7</number>
 <numberType>integer</numberType>
 <prettyName>Onset</prettyName>
 <size>30</size>
@@ -461,7 +474,7 @@
 <idField></idField>
 <multiSelect>0</multiSelect>
 <name>pedigree</name>
-<number>20</number>
+<number>21</number>
 <picker>0</picker>
 <prettyName>Pedigree</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -490,7 +503,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>phenotype</name>
-<number>13</number>
+<number>14</number>
 <picker>0</picker>
 <prettyName>Clinical symptoms &amp; physical findings</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -510,7 +523,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>prenatal_comments</name>
-<number>16</number>
+<number>17</number>
 <picker>0</picker>
 <prettyName>Notes</prettyName>
 <rows>5</rows>
@@ -534,7 +547,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>prenatal_phenotype</name>
-<number>15</number>
+<number>16</number>
 <picker>0</picker>
 <prettyName>Prenatal and Perinatal History</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -556,7 +569,7 @@
 <displayType>radio</displayType>
 <multiSelect>0</multiSelect>
 <name>relative</name>
-<number>8</number>
+<number>9</number>
 <picker>0</picker>
 <prettyName>Relative</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -579,7 +592,7 @@
 <idField></idField>
 <multiSelect>0</multiSelect>
 <name>relative_of</name>
-<number>9</number>
+<number>10</number>
 <picker>1</picker>
 <prettyName>relative_of</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -603,7 +616,7 @@
 <idField></idField>
 <multiSelect>1</multiSelect>
 <name>reports_history</name>
-<number>23</number>
+<number>24</number>
 <picker>0</picker>
 <prettyName>Reports</prettyName>
 <relationalStorage>1</relationalStorage>
@@ -625,7 +638,7 @@
 <displayFormType>checkbox</displayFormType>
 <displayType></displayType>
 <name>unaffected</name>
-<number>12</number>
+<number>13</number>
 <prettyName>This patient is clinically normal</prettyName>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
