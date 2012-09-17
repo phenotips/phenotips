@@ -317,6 +317,9 @@ public class PercentileTools implements ScriptService, Initializable
      */
     public int valueToPercentile(double x, LMS lms)
     {
+        if (lms == null) {
+            return -1;
+        }
         return valueToPercentile(x, lms.m, lms.l, lms.s);
     }
 
@@ -428,6 +431,9 @@ public class PercentileTools implements ScriptService, Initializable
             int lowerAge = ageInMonths - 1;
             while (lowerAge >= 0 && list.get(lowerAge) == null) {
                 --lowerAge;
+            }
+            if (lowerAge < 0) {
+                return null;
             }
             int upperAge = ageInMonths + 1;
             while (upperAge < list.size() && list.get(upperAge) == null) {
