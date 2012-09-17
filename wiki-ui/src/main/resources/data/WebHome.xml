@@ -415,6 +415,27 @@ $!value
 <values></values>
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </section__medical_history>
+<section__other>
+<cache>0</cache>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>section__other</name>
+<number>21</number>
+<picker>0</picker>
+<prettyName>More information</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<sort>none</sort>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<values></values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</section__other>
 <section__patient-info>
 <cache>0</cache>
 <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
@@ -530,6 +551,8 @@ $!value
 <guid>380d3252-75ab-4be3-8b4b-d212e9939b6f</guid>
 <property>
 <activeFields>
+<value>identifier</value>
+<value>external_id</value>
 <value>first_name</value>
 <value>last_name</value>
 <value>date_of_birth</value>
@@ -551,6 +574,9 @@ $!value
 <value>comments</value>
 <value>medical_developmental_history</value>
 <value>reports_history</value>
+<value>extended_negative_phenotype</value>
+<value>images</value>
+<value>files</value>
 </activeFields>
 </property>
 <property>
@@ -562,6 +588,7 @@ $!value
 <value>measurements</value>
 <value>phenotype-info</value>
 <value>diagnosis-info</value>
+<value>other</value>
 </activeSections>
 </property>
 <property>
@@ -579,9 +606,9 @@ $!value
 <value>doc.creator</value>
 <value>doc.author</value>
 <value>doc.creationDate</value>
+<value>external_id</value>
 <value>first_name</value>
 <value>last_name</value>
-<value>phenotype</value>
 </livetableColumns>
 </property>
 <property>
