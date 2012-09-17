@@ -26,6 +26,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -47,11 +48,12 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
 
     private final static String FIELD_NAME_VALUE_SEPARATOR = "\\s*:\\s+";
 
-    private final Map<String, String> alternateIdMapping = new HashMap<String, String>();
+    private final Map<String, String> alternateIdMapping = Collections.synchronizedMap(new HashMap<String, String>());
 
     private IDAGNode root;
 
-    private final Map<String, Set<String>> ancestorCache = new HashMap<String, Set<String>>();
+    private final Map<String, Set<String>> ancestorCache = Collections
+        .synchronizedMap(new HashMap<String, Set<String>>());
 
     /*
      * (non-Javadoc)
