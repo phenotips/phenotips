@@ -3650,7 +3650,6 @@ table.extradata-list {
 }
 .extradata-list th.actions {
   width: 24px;
-  ## border-left: 0 none;
 }
 .extradata-list th.actions .buttonwrapper {
     display: block;
@@ -3696,7 +3695,7 @@ table.extradata-list td.weight,
 table.extradata-list td.height,
 table.extradata-list td.bmi,
 table.extradata-list td.head_circumference {
-  paddingr-left: .5em;
+  padding-left: .5em;
 }
 table.extradata-list td.date,
 table.extradata-list td.bmi_percentile {
