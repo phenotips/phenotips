@@ -1087,9 +1087,6 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
     &lt;img src="$!logourl" alt="Logo"/&gt;
     &lt;/a&gt;
   &lt;/div&gt; ## companylogo
-  &lt;div class="sep"&gt;·&lt;/div&gt;
-  #set($spaceHome = $xwiki.getDocument("${doc.space}.WebHome"))
-  &lt;h1 id="spaceName"&gt;&lt;a href="$spaceHome.getURL()"&gt;$!spaceHome.displayTitle&lt;/a&gt;&lt;/h1&gt;
   &lt;/div&gt; ## company
   &lt;div class="clearfloats"&gt;&lt;/div&gt;
 &lt;/div&gt; ## headerglobal
