@@ -1287,7 +1287,7 @@
       #foreach ($val in [$startYear..$endYear])
         #set ($date.year = $val)
         &lt;option value="$xwiki.formatDate($date, $yFormat)"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $yFormat)&lt;/option&gt;
-      #end      
+      #end
       &lt;/select&gt;
     &lt;/span&gt;
   #else
@@ -1897,7 +1897,7 @@
 <comments></comments>
 </property>
 <property>
-<date_of_birth>2012-04-11 00:00:00.0</date_of_birth>
+<date_of_birth></date_of_birth>
 </property>
 <property>
 <family_comments></family_comments>
