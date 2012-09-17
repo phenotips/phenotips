@@ -12,14 +12,14 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-administration-ui</artifactId>
-      <version>4.2-milestone-2</version>
+      <version>4.2-milestone-3</version>
       <type>xar</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.xwiki.enterprise</groupId>
       <artifactId>xwiki-enterprise-ui</artifactId>
-      <version>4.2-milestone-2</version>
+      <version>4.2-milestone-3</version>
       <type>xar</type>
       <scope>provided</scope>
     </dependency>
@@ -40,14 +40,14 @@
       <extension>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
-        <version>4.2-milestone-2</version>
+        <version>4.2-milestone-3</version>
       </extension>
     </extensions>
     <plugins>
       <plugin>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-        <version>4.2-milestone-2</version>
+        <version>4.2-milestone-3</version>
         <configuration>
           <includes>
             <include>**/Main/*.xml</include>
