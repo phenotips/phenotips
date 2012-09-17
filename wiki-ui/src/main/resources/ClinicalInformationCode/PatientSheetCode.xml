@@ -4340,6 +4340,28 @@ $doc.display('reports_history')
 #end
 #end
 
+## =================================================================
+## More information
+#macro(__reportSection__other)
+#if (("$!activeFields.contains('images')" != 'false' || "$!activeFields.contains('files')" != 'false') &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('images')$doc.display('files')" != ''))
+#if ($xcontext.action != 'export')
+
+(% class="clear clinical-info other-info chapter" %)(((
+== Additional files ==
+
+#if ("$doc.display('files')" != '')
+=== Documents ===
+$doc.display('files')
+#end
+#if ("$doc.display('images')" != '')
+=== Images ===
+$doc.display('images')
+#end
+)))##chapter
+#end## context.action != export
+#end## fields in this section must be displayed
+#end
+
 ##
 ## =====================================================================
 {{/velocity}}

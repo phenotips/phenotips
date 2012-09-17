@@ -95,7 +95,6 @@
         "HP:0000204"                    : "Cleft lip",
         "HP:0000175"                    : "Cleft palate",
         "HP:0001999"                    : "Facial dysmorphism",
-       (t.IMAGE_FIELD_MARKER)         : "Facial dysmorphism photos:",
        (t.OTHER_FIELD_MARKER)      : null
       ],
       "Eye Defects"     : [

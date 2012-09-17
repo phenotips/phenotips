@@ -235,6 +235,27 @@
 <values></values>
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </family_history>
+<files>
+<cache>0</cache>
+<customDisplay>{{include document="ClinicalInformationCode.ImageDisplayer" /}}</customDisplay>
+<disabled>0</disabled>
+<displayType>checkbox</displayType>
+<multiSelect>1</multiSelect>
+<name>files</name>
+<number>29</number>
+<picker>0</picker>
+<prettyName>Additional files</prettyName>
+<relationalStorage>1</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<sort>none</sort>
+<unmodifiable>0</unmodifiable>
+<validationMessage>pdf</validationMessage>
+<validationRegExp>^application\/pdf$</validationRegExp>
+<values></values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</files>
 <first_name>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -308,6 +329,27 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </identifier>
+<images>
+<cache>0</cache>
+<customDisplay>{{include document="ClinicalInformationCode.ImageDisplayer" /}}</customDisplay>
+<disabled>0</disabled>
+<displayType>checkbox</displayType>
+<multiSelect>1</multiSelect>
+<name>images</name>
+<number>28</number>
+<picker>0</picker>
+<prettyName>Images</prettyName>
+<relationalStorage>1</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<sort>none</sort>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<values></values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</images>
 <indication_for_referral>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
