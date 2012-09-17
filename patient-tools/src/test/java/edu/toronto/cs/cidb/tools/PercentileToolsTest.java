@@ -174,6 +174,236 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase
     }
 
     @Test
+    public void testGetICDPercentile()
+    {
+        Assert.assertEquals(50, this.tool.getInnerCanthalDistancePercentile(true, 0, 2));
+        Assert.assertEquals(0, this.tool.getInnerCanthalDistancePercentile(true, 0, 0));
+        Assert.assertEquals(100, this.tool.getInnerCanthalDistancePercentile(true, 0, 1000));
+        Assert.assertEquals(50, this.tool.getInnerCanthalDistancePercentile(true, 1000, 3.1357));
+        Assert.assertEquals(5, this.tool.getInnerCanthalDistancePercentile(true, 16, 2.0475));
+        Assert.assertEquals(50, this.tool.getInnerCanthalDistancePercentile(true, 16, 2.5825));
+        Assert.assertEquals(95, this.tool.getInnerCanthalDistancePercentile(true, 16, 3.0485));
+        Assert.assertEquals(50, this.tool.getInnerCanthalDistancePercentile(true, 30, 2.6925));
+    }
+
+    @Test
+    public void testGetPercentileICD()
+    {
+        Assert.assertEquals(2, this.tool.getPercentileInnerCanthalDistance(true, 0, 50), 1.0E-2);
+        Assert.assertEquals(1.17, this.tool.getPercentileInnerCanthalDistance(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(2.85, this.tool.getPercentileInnerCanthalDistance(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(3.1275, this.tool.getPercentileInnerCanthalDistance(true, 1000, 50), 1.0E-2);
+        Assert.assertEquals(2.06, this.tool.getPercentileInnerCanthalDistance(true, 16, 5), 1.0E-2);
+        Assert.assertEquals(2.5825, this.tool.getPercentileInnerCanthalDistance(true, 16, 50), 1.0E-2);
+        Assert.assertEquals(3.03, this.tool.getPercentileInnerCanthalDistance(true, 16, 95), 1.0E-2);
+        Assert.assertEquals(2.6925, this.tool.getPercentileInnerCanthalDistance(true, 30, 50), 1.0E-2);
+    }
+
+    @Test
+    public void testGetIPDPercentile()
+    {
+        Assert.assertEquals(50, this.tool.getInterpupilaryDistancePercentile(true, 0, 3.91));
+        Assert.assertEquals(0, this.tool.getInterpupilaryDistancePercentile(true, 0, 0));
+        Assert.assertEquals(100, this.tool.getInterpupilaryDistancePercentile(true, 0, 1000));
+        Assert.assertEquals(50, this.tool.getInterpupilaryDistancePercentile(true, 1000, 6.13));
+        Assert.assertEquals(3, this.tool.getInterpupilaryDistancePercentile(true, 36, 4.23));
+        Assert.assertEquals(50, this.tool.getInterpupilaryDistancePercentile(true, 36, 4.835));
+        Assert.assertEquals(97, this.tool.getInterpupilaryDistancePercentile(true, 36, 5.49));
+        Assert.assertEquals(50, this.tool.getInterpupilaryDistancePercentile(true, 30, 4.7825));
+    }
+
+    @Test
+    public void testGetPercentileIPD()
+    {
+        Assert.assertEquals(3.91, this.tool.getPercentileInterpupilaryDistance(true, 0, 50), 1.0E-2);
+        Assert.assertEquals(3.04, this.tool.getPercentileInterpupilaryDistance(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(4.98, this.tool.getPercentileInterpupilaryDistance(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(6.13, this.tool.getPercentileInterpupilaryDistance(true, 1000, 50), 1.0E-2);
+        Assert.assertEquals(4.23, this.tool.getPercentileInterpupilaryDistance(true, 36, 3), 1.0E-2);
+        Assert.assertEquals(4.835, this.tool.getPercentileInterpupilaryDistance(true, 36, 50), 1.0E-2);
+        Assert.assertEquals(5.49, this.tool.getPercentileInterpupilaryDistance(true, 36, 97), 1.0E-2);
+        Assert.assertEquals(4.7825, this.tool.getPercentileInterpupilaryDistance(true, 30, 50), 1.0E-2);
+    }
+
+    @Test
+    public void testGetOCDPercentile()
+    {
+        Assert.assertEquals(50, this.tool.getOuterCanthalDistancePercentile(true, 0, 6.3));
+        Assert.assertEquals(0, this.tool.getOuterCanthalDistancePercentile(true, 0, 0));
+        Assert.assertEquals(100, this.tool.getOuterCanthalDistancePercentile(true, 0, 1000));
+        Assert.assertEquals(50, this.tool.getOuterCanthalDistancePercentile(true, 1000, 9.08));
+        Assert.assertEquals(3, this.tool.getOuterCanthalDistancePercentile(true, 16, 6.27));
+        Assert.assertEquals(50, this.tool.getOuterCanthalDistancePercentile(true, 16, 7.305));
+        Assert.assertEquals(97, this.tool.getOuterCanthalDistancePercentile(true, 16, 8.33));
+        Assert.assertEquals(50, this.tool.getOuterCanthalDistancePercentile(true, 30, 7.4725));
+    }
+
+    @Test
+    public void testGetPercentileOCD()
+    {
+        Assert.assertEquals(6.3, this.tool.getPercentileOuterCanthalDistance(true, 0, 50), 1.0E-2);
+        Assert.assertEquals(4.86, this.tool.getPercentileOuterCanthalDistance(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(7.98, this.tool.getPercentileOuterCanthalDistance(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(9.08, this.tool.getPercentileOuterCanthalDistance(true, 1000, 50), 1.0E-2);
+        Assert.assertEquals(6.27, this.tool.getPercentileOuterCanthalDistance(true, 16, 3), 1.0E-2);
+        Assert.assertEquals(7.305, this.tool.getPercentileOuterCanthalDistance(true, 16, 50), 1.0E-2);
+        Assert.assertEquals(8.33, this.tool.getPercentileOuterCanthalDistance(true, 16, 97), 1.0E-2);
+        Assert.assertEquals(7.4725, this.tool.getPercentileOuterCanthalDistance(true, 30, 50), 1.0E-2);
+    }
+
+    @Test
+    public void testGetEarLengthPercentile()
+    {
+        Assert.assertEquals(50, this.tool.getEarLengthPercentile(true, 0, 4.04));
+        Assert.assertEquals(0, this.tool.getEarLengthPercentile(true, 0, 0));
+        Assert.assertEquals(100, this.tool.getEarLengthPercentile(true, 0, 1000));
+        Assert.assertEquals(50, this.tool.getEarLengthPercentile(true, 1000, 6.0825));
+        Assert.assertEquals(5, this.tool.getEarLengthPercentile(true, 36, 4.51));
+        Assert.assertEquals(50, this.tool.getEarLengthPercentile(true, 36, 5.115));
+        Assert.assertEquals(95, this.tool.getEarLengthPercentile(true, 36, 5.86));
+        Assert.assertEquals(50, this.tool.getEarLengthPercentile(true, 30, 5.015));
+    }
+
+    @Test
+    public void testGetPercentileEarLength()
+    {
+        Assert.assertEquals(4.04, this.tool.getPercentileEarLength(true, 0, 50), 1.0E-2);
+        Assert.assertEquals(3, this.tool.getPercentileEarLength(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(5.21, this.tool.getPercentileEarLength(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(6.0825, this.tool.getPercentileEarLength(true, 1000, 50), 1.0E-2);
+        Assert.assertEquals(4.51, this.tool.getPercentileEarLength(true, 36, 5), 1.0E-2);
+        Assert.assertEquals(5.115, this.tool.getPercentileEarLength(true, 36, 50), 1.0E-2);
+        Assert.assertEquals(5.86, this.tool.getPercentileEarLength(true, 36, 95), 1.0E-2);
+        Assert.assertEquals(5.015, this.tool.getPercentileEarLength(true, 30, 50), 1.0E-2);
+    }
+
+    @Test
+    public void testGetPalpebralFissureLengthPercentile()
+    {
+        Assert.assertEquals(50, this.tool.getPalpebralFissureLengthPercentile(true, 0, 1.9));
+        Assert.assertEquals(0, this.tool.getPalpebralFissureLengthPercentile(true, 0, 0));
+        Assert.assertEquals(100, this.tool.getPalpebralFissureLengthPercentile(true, 0, 1000));
+        Assert.assertEquals(50, this.tool.getPalpebralFissureLengthPercentile(true, 1000, 3.13));
+        Assert.assertEquals(5, this.tool.getPalpebralFissureLengthPercentile(true, 36, 2.215));
+        Assert.assertEquals(50, this.tool.getPalpebralFissureLengthPercentile(true, 36, 2.49));
+        Assert.assertEquals(95, this.tool.getPalpebralFissureLengthPercentile(true, 36, 2.78));
+        Assert.assertEquals(50, this.tool.getPalpebralFissureLengthPercentile(true, 30, 2.4325));
+    }
+
+    @Test
+    public void testGetPercentilePalpebralFissureLength()
+    {
+        Assert.assertEquals(1.9, this.tool.getPercentilePalpebralFissureLength(true, 0, 50), 1.0E-2);
+        Assert.assertEquals(1.6, this.tool.getPercentilePalpebralFissureLength(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(2.28, this.tool.getPercentilePalpebralFissureLength(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(3.13, this.tool.getPercentilePalpebralFissureLength(true, 1000, 50), 1.0E-2);
+        Assert.assertEquals(2.215, this.tool.getPercentilePalpebralFissureLength(true, 36, 5), 1.0E-2);
+        Assert.assertEquals(2.49, this.tool.getPercentilePalpebralFissureLength(true, 36, 50), 1.0E-2);
+        Assert.assertEquals(2.78, this.tool.getPercentilePalpebralFissureLength(true, 36, 95), 1.0E-2);
+        Assert.assertEquals(2.4325, this.tool.getPercentilePalpebralFissureLength(true, 30, 50), 1.0E-2);
+    }
+
+    @Test
+    public void testGetHandLengthPercentile()
+    {
+        Assert.assertEquals(-1, this.tool.getHandLengthPercentile(true, 0, 6.3));
+        Assert.assertEquals(-1, this.tool.getHandLengthPercentile(true, 0, 0));
+        Assert.assertEquals(-1, this.tool.getHandLengthPercentile(true, 0, 1000));
+        Assert.assertEquals(50, this.tool.getHandLengthPercentile(true, 24, 10.5));
+        Assert.assertEquals(0, this.tool.getHandLengthPercentile(true, 24, 0));
+        Assert.assertEquals(100, this.tool.getHandLengthPercentile(true, 24, 1000));
+        Assert.assertEquals(50, this.tool.getHandLengthPercentile(true, 1000, 19.25));
+        Assert.assertEquals(3, this.tool.getHandLengthPercentile(true, 36, 9.95));
+        Assert.assertEquals(50, this.tool.getHandLengthPercentile(true, 36, 11.3));
+        Assert.assertEquals(97, this.tool.getHandLengthPercentile(true, 36, 12.45));
+        Assert.assertEquals(50, this.tool.getHandLengthPercentile(true, 30, 10.9));
+    }
+
+    @Test
+    public void testGetPercentileHandLength()
+    {
+        Assert.assertEquals(-1, this.tool.getPercentileHandLength(true, 0, 50), 1.0E-2);
+        Assert.assertEquals(-1, this.tool.getPercentileHandLength(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(-1, this.tool.getPercentileHandLength(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(10.5, this.tool.getPercentileHandLength(true, 24, 50), 1.0E-2);
+        Assert.assertEquals(8.33, this.tool.getPercentileHandLength(true, 24, 0), 1.0E-2);
+        Assert.assertEquals(12.08, this.tool.getPercentileHandLength(true, 24, 100), 1.0E-2);
+        Assert.assertEquals(19.25, this.tool.getPercentileHandLength(true, 1000, 50), 1.0E-2);
+        Assert.assertEquals(9.95, this.tool.getPercentileHandLength(true, 36, 3), 1.0E-2);
+        Assert.assertEquals(11.3, this.tool.getPercentileHandLength(true, 36, 50), 1.0E-2);
+        Assert.assertEquals(12.45, this.tool.getPercentileHandLength(true, 36, 97), 1.0E-2);
+        Assert.assertEquals(10.9, this.tool.getPercentileHandLength(true, 30, 50), 1.0E-2);
+    }
+
+    @Test
+    public void testGetPalmLengthPercentile()
+    {
+        Assert.assertEquals(50, this.tool.getPalmLengthPercentile(true, 0, 3.9));
+        Assert.assertEquals(0, this.tool.getPalmLengthPercentile(true, 0, 0));
+        Assert.assertEquals(100, this.tool.getPalmLengthPercentile(true, 0, 1000));
+        Assert.assertEquals(50, this.tool.getPalmLengthPercentile(true, 1000, 11.225));
+        Assert.assertEquals(3, this.tool.getPalmLengthPercentile(true, 36, 5.625));
+        Assert.assertEquals(50, this.tool.getPalmLengthPercentile(true, 36, 6.475));
+        Assert.assertEquals(97, this.tool.getPalmLengthPercentile(true, 36, 7.3));
+        Assert.assertEquals(50, this.tool.getPalmLengthPercentile(true, 30, 6.237));
+    }
+
+    @Test
+    public void testGetPercentilePalmLength()
+    {
+        Assert.assertEquals(3.9, this.tool.getPercentilePalmLength(true, 0, 50), 1.0E-2);
+        Assert.assertEquals(2.56, this.tool.getPercentilePalmLength(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(5.24, this.tool.getPercentilePalmLength(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(11.225, this.tool.getPercentilePalmLength(true, 1000, 50), 1.0E-2);
+        Assert.assertEquals(5.625, this.tool.getPercentilePalmLength(true, 36, 3), 1.0E-2);
+        Assert.assertEquals(6.475, this.tool.getPercentilePalmLength(true, 36, 50), 1.0E-2);
+        Assert.assertEquals(7.3, this.tool.getPercentilePalmLength(true, 36, 97), 1.0E-2);
+        Assert.assertEquals(6.237, this.tool.getPercentilePalmLength(true, 30, 50), 1.0E-2);
+    }
+
+    @Test
+    public void testGetFootLengthPercentile()
+    {
+        Assert.assertEquals(50, this.tool.getFootLengthPercentile(true, 0, 7.5));
+        Assert.assertEquals(50, this.tool.getFootLengthPercentile(false, 0, 8.5));
+        Assert.assertEquals(0, this.tool.getFootLengthPercentile(true, 0, 0));
+        Assert.assertEquals(100, this.tool.getFootLengthPercentile(true, 0, 1000));
+        Assert.assertEquals(0, this.tool.getFootLengthPercentile(false, 0, 0));
+        Assert.assertEquals(100, this.tool.getFootLengthPercentile(false, 0, 1000));
+        Assert.assertEquals(3, this.tool.getFootLengthPercentile(true, 36, 13.4));
+        Assert.assertEquals(50, this.tool.getFootLengthPercentile(true, 36, 15.2));
+        Assert.assertEquals(97, this.tool.getFootLengthPercentile(true, 36, 16.8));
+        Assert.assertEquals(50, this.tool.getFootLengthPercentile(true, 30, 14.5125));
+        Assert.assertEquals(50, this.tool.getFootLengthPercentile(true, 1000, 26.45));
+        Assert.assertEquals(3, this.tool.getFootLengthPercentile(false, 36, 13));
+        Assert.assertEquals(50, this.tool.getFootLengthPercentile(false, 36, 15.075));
+        Assert.assertEquals(97, this.tool.getFootLengthPercentile(false, 36, 16.95));
+        Assert.assertEquals(50, this.tool.getFootLengthPercentile(false, 30, 14.4875));
+        Assert.assertEquals(50, this.tool.getFootLengthPercentile(false, 1000, 23.975));
+    }
+
+    @Test
+    public void testGetPercentileFootLength()
+    {
+        Assert.assertEquals(7.5, this.tool.getPercentileFootLength(true, 0, 50), 1.0E-2);
+        Assert.assertEquals(8.5, this.tool.getPercentileFootLength(false, 0, 50), 1.0E-2);
+        Assert.assertEquals(6.75, this.tool.getPercentileFootLength(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(8.25, this.tool.getPercentileFootLength(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(19.54, this.tool.getPercentileFootLength(false, 300, 0), 1.0E-2);
+        Assert.assertEquals(27.05, this.tool.getPercentileFootLength(false, 300, 100), 1.0E-2);
+        Assert.assertEquals(13.4, this.tool.getPercentileFootLength(true, 36, 3), 1.0E-2);
+        Assert.assertEquals(15.2, this.tool.getPercentileFootLength(true, 36, 50), 1.0E-2);
+        Assert.assertEquals(16.8, this.tool.getPercentileFootLength(true, 36, 97), 1.0E-2);
+        Assert.assertEquals(14.5125, this.tool.getPercentileFootLength(true, 30, 50), 1.0E-2);
+        Assert.assertEquals(26.45, this.tool.getPercentileFootLength(true, 1000, 50), 1.0E-2);
+        Assert.assertEquals(13, this.tool.getPercentileFootLength(false, 36, 3), 1.0E-2);
+        Assert.assertEquals(15.075, this.tool.getPercentileFootLength(false, 36, 50), 1.0E-2);
+        Assert.assertEquals(16.95, this.tool.getPercentileFootLength(false, 36, 97), 1.0E-2);
+        Assert.assertEquals(14.4875, this.tool.getPercentileFootLength(false, 30, 50), 1.0E-2);
+        Assert.assertEquals(23.975, this.tool.getPercentileFootLength(false, 1000, 50), 1.0E-2);
+    }
+
+    @Test
     public void testGetHeightPercentile()
     {
         Assert.assertEquals(50, this.tool.getHeightPercentile(true, 0, 52.7));

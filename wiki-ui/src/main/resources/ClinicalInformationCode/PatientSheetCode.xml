@@ -1408,8 +1408,8 @@ document.observe('dom:loaded', function() {
           deleteTrigger.disabled = true
         },
         onSuccess : function() {
-          var dataRow = deleteTrigger.up('tr');
-          var dataTable = deleteTrigger.up('table');
+          var dataRow = deleteTrigger.up('tr:not(.head-group)');
+          var dataTable = deleteTrigger.up('table.extradata-list');
           if (dataRow) {
             dataRow.remove();
           }
@@ -1797,25 +1797,67 @@ document.observe('xwiki:dom:loaded', function() {
   // ----------------------------------------------------------------------------
 
   var dataTable = $('extradata-list-ClinicalInformationCode.MeasurementsClass');
-  if (!dataTable || !dataTable.down('.actions')) {return;}
+  if (!dataTable) {return;}
+
+  var reorganizeRow = function(row) {
+    if (row.down('th')) {return;}
+    var table = new Element('table');
+    var tbody = new Element('tbody');
+    table.update(tbody);
+    var rowMapping = [
+      {
+        name : 'head',
+        values : ['date', 'age', 'actions']
+      }, {
+        name : 'general',
+        values : ['weight', 'weight_percentile', 'height', 'height_percentile', 'bmi', 'bmi_percentile', 'head_circumference', 'hc_percentile']
+      }, {
+        name : 'face',
+        values : ['ocd', 'ocd_percentile', 'icd', 'icd_percentile', 'pfl', 'pfl_percentile', 'ipd', 'ipd_percentile']
+      }, {
+        name : 'organs',
+        values : ['ear', 'ear_percentile', 'hand', 'hand_percentile', 'palm', 'palm_percentile', 'foot', 'foot_percentile']
+      }
+    ];
+    rowMapping.each(function (data) {
+      var newRow = new Element('tr', {'class' : data.name + '-group'});
+      data.values.each(function (className) {
+        var element = row.down('td.' + className);
+        if (element) {
+          newRow.insert(element);
+          if (className == 'age') { element.setAttribute('colspan', 6);}
+        }
+      });
+      if (newRow.down('td')) {
+        tbody.insert(newRow);
+      }
+    });
+    row.update(table.wrap('td'));
+    row.addClassName('data-row');
+  };
+  dataTable.select('tr').each(reorganizeRow);
+  if (!dataTable.down('.actions')) {return;}
 
   var measurementsService = "$xwiki.getURL('ClinicalInformationCode.PatientToolsService', 'get')";
   var chartService = "$xwiki.getURL('ClinicalInformationCode.ChartService', 'get')";
   var chartContainer = $('charts')
 
   var createRowQueryString = function (row, forceParam) {
-    var weight = row.down('td.weight input');
-    var height = row.down('td.height input');
-    var hc = row.down('td.head_circumference input');
-
-    if (!weight || !height || !hc) {return '';}
-
     var date = row.down('td.date input');
+    //if (!date) {return '';}
     var birthDate = $(document.documentElement).down('input[name$=date_of_birth]');
 
-    return createReqParam('w', weight, forceParam) +
-           createReqParam('h', height, forceParam) +
-           createReqParam('c', hc, forceParam) +
+    return createReqParam('w', row.down('td.weight input'), forceParam) +
+           createReqParam('h', row.down('td.height input'), forceParam) +
+           createReqParam('c', row.down('td.head_circumference input'), forceParam) +
+           createReqParam('ocd', row.down('td.ocd input'), forceParam) +
+           createReqParam('icd', row.down('td.icd input'), forceParam) +
+           createReqParam('pfl', row.down('td.pfl input'), forceParam) +
+           createReqParam('ipd', row.down('td.ipd input'), forceParam) +
+           createReqParam('ear', row.down('td.ear input'), forceParam) +
+           createReqParam('hand', row.down('td.hand input'), forceParam) +
+           createReqParam('palm', row.down('td.palm input'), forceParam) +
+           createReqParam('foot', row.down('td.foot input'), forceParam) +
            createReqParamAge('a', date, birthDate, forceParam);
   }
 
@@ -1868,7 +1910,7 @@ document.observe('xwiki:dom:loaded', function() {
       var date = Date.parseISO_8601(element.alt.strip());
       if (!mostRecentDate || mostRecentDate &lt; date) {
          mostRecentDate = date;
-         mostRecentEntry = element.up('tr');
+         mostRecentEntry = element.up('tr.data-row');
       }
     })
     return mostRecentEntry;
@@ -1893,7 +1935,7 @@ document.observe('xwiki:dom:loaded', function() {
         if (values[p] &amp;&amp; values[p][value] &amp;&amp; targets[p] &amp;&amp; targets[p][value]) {
            updateValue(targets[p][value], values[p][value], (value == 'percentile') &amp;&amp; values[p]['valCategory']);
            var target = targets[p];
-           if (value == 'percentile' &amp;&amp; target['valueHooks'] &amp;&amp; getMostRecentEntry() == targets[p][value].up('tr')) {
+           if (value == 'percentile' &amp;&amp; target['valueHooks'] &amp;&amp; getMostRecentEntry() == targets[p][value].up('tr.data-row')) {
              var targetElt = values[p]['valCategory'] &amp;&amp; target['valueHooks'][values[p]['valCategory']];
              if (targetElt &amp;&amp; !targetElt.checked) {
                  targetElt.checked = true;
@@ -1917,7 +1959,7 @@ document.observe('xwiki:dom:loaded', function() {
 
   var updateCharts = function(event) {
     var qs = '';
-    dataTable.select('tr').each(function(row) {
+    dataTable.select('tr.data-row').each(function(row) {
       qs += createRowQueryString(row, true);
     })
     if (qs == '') {return;}
@@ -1955,11 +1997,11 @@ document.observe('xwiki:dom:loaded', function() {
 
   var valueChanged = function(event) {
     // Get inputs holding the values needed for computing the dependent values
-    var row = event &amp;&amp; event.element &amp;&amp; event.element() &amp;&amp; event.element().up('tr');
+    var row = event &amp;&amp; event.element &amp;&amp; event.element() &amp;&amp; event.element().up('tr.data-row');
     if (row) {
        updateDataRow(row);
     } else {
-       dataTable.select('tr').each(updateDataRow);
+       dataTable.select('tr.data-row').each(updateDataRow);
     }
   }
 
@@ -1995,6 +2037,30 @@ document.observe('xwiki:dom:loaded', function() {
            'extreme-below-normal': findFormElementForPhenotype('HP:0000252'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0000256')
          }
+       },
+       ocd : {
+         percentile : row.down('td.ocd_percentile')
+       },
+       icd : {
+         percentile : row.down('td.icd_percentile')
+       },
+       pfl : {
+         percentile : row.down('td.pfl_percentile')
+       },
+       ipd : {
+         percentile : row.down('td.ipd_percentile')
+       },
+       ear : {
+         percentile : row.down('td.ear_percentile')
+       },
+       hand : {
+         percentile : row.down('td.hand_percentile')
+       },
+       palm : {
+         percentile : row.down('td.palm_percentile')
+       },
+       foot : {
+         percentile : row.down('td.foot_percentile')
        }
     };
 
@@ -2022,13 +2088,14 @@ document.observe('xwiki:dom:loaded', function() {
       })
     }
   };
-  
+
   // Attach all listeners
   handleValueChanged(dataTable.select('input[type=text]'));
   handleValueChanged($$('input[name$=date_of_birth], input[name$=gender]'));
   dataTable.observe('extradata:added', function (event) {
      var elements = event &amp;&amp; event.memo &amp;&amp; event.memo.element &amp;&amp; event.memo.element.select('input[type=text]');
      if (elements) {
+       reorganizeRow(event.memo.element);
        handleValueChanged(elements);
        if (window.dateTimePicker) {
          window.dateTimePicker.attachPickers(event.memo.element);
@@ -3639,28 +3706,14 @@ table.extradata-list td.bmi_percentile {
   border-collapse: separate;
   border-spacing: 0 0;
 }
-#extradata-list-ClinicalInformationCode\.MeasurementsClass tr {
-  position: relative;
-}
 #extradata-list-ClinicalInformationCode\.MeasurementsClass td {
-  padding-top: 2.5em;
-  padding-bottom: .5em;
-  border-top: 1px solid $theme.pageContentBackgroundColor;
-  border-bottom: 1px solid $theme.borderColor;
+  text-align: left;
 }
-#extradata-list-ClinicalInformationCode\\.MeasurementsClass tr:first-child+tr td {
-  border-top: 0 none;
+#extradata-list-ClinicalInformationCode\.MeasurementsClass table {
+  width: 100% !important;
 }
-#extradata-list-ClinicalInformationCode\\.MeasurementsClass tr:last-child td {
-  border-bottom: 0 none;
-}
-#extradata-list-ClinicalInformationCode\.MeasurementsClass td.date {
-  position: absolute;
-  padding-top: 3px;
-  padding-bottom: 0;
-  border-color: transparent;
-}
-#extradata-list-ClinicalInformationCode\.MeasurementsClass td.date label.hint {
+#extradata-list-ClinicalInformationCode\.MeasurementsClass td.date label.hint,
+#extradata-list-ClinicalInformationCode\.MeasurementsClass td.age label.hint {
   font-size: 1em;
   color: $theme.textColor;
   font-weight: bold;
@@ -3669,17 +3722,15 @@ table.extradata-list td.bmi_percentile {
   width: 10em;
   margin: 0 0 0 .7em;
 }
-#extradata-list-ClinicalInformationCode\.MeasurementsClass td.actions {
-  padding: 3px;
-  position: absolute;
-  right: 10px;
-  border-color: transparent;
+#extradata-list-ClinicalInformationCode\.MeasurementsClass td.age .displayed-value {
+  display: inline;
 }
 #extradata-list-ClinicalInformationCode\.MeasurementsClass td.actions a.delete{
   margin: 0;
   background-image: none;
   width: 1em;
   height: auto;
+  float: right;
   text-indent: 0;
   text-align: center;
   color: $theme.buttonPrimaryTextColor;

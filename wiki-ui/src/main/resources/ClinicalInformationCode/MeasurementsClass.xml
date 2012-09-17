@@ -142,6 +142,123 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
 </date>
+<ear>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>ear</name>
+<number>19</number>
+<numberType>float</numberType>
+<prettyName>Ear length (cm)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</ear>
+<ear_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>ear_percentile</name>
+<number>20</number>
+<numberType>integer</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</ear_percentile>
+<foot>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>foot</name>
+<number>25</number>
+<numberType>float</numberType>
+<prettyName>Foot length (cm)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</foot>
+<foot_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>foot_percentile</name>
+<number>26</number>
+<numberType>integer</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</foot_percentile>
+<hand>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>hand</name>
+<number>21</number>
+<numberType>float</numberType>
+<prettyName>Hand length (cm)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</hand>
+<hand_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>hand_percentile</name>
+<number>22</number>
+<numberType>integer</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</hand_percentile>
 <hc_percentile>
 <customDisplay>{{velocity}}
 #if ($xcontext.action != 'edit' || $request.editor != 'object')
@@ -220,6 +337,201 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </height_percentile>
+<icd>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>icd</name>
+<number>13</number>
+<numberType>float</numberType>
+<prettyName>Inner canthal distance (cm)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</icd>
+<icd_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>icd_percentile</name>
+<number>14</number>
+<numberType>integer</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</icd_percentile>
+<ipd>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>ipd</name>
+<number>17</number>
+<numberType>float</numberType>
+<prettyName>Interpupilary distance (cm)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</ipd>
+<ipd_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>ipd_percentile</name>
+<number>18</number>
+<numberType>integer</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</ipd_percentile>
+<ocd>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>ocd</name>
+<number>11</number>
+<numberType>float</numberType>
+<prettyName>Outer canthal distance (cm)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</ocd>
+<ocd_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>ocd_percentile</name>
+<number>12</number>
+<numberType>integer</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</ocd_percentile>
+<palm>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>palm</name>
+<number>23</number>
+<numberType>float</numberType>
+<prettyName>Palm length (cm)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</palm>
+<palm_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>palm_percentile</name>
+<number>24</number>
+<numberType>integer</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</palm_percentile>
+<pfl>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>pfl</name>
+<number>15</number>
+<numberType>float</numberType>
+<prettyName>Palpebral fissure length (cm)</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</pfl>
+<pfl_percentile>
+<customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+<disabled>0</disabled>
+<name>pfl_percentile</name>
+<number>16</number>
+<numberType>integer</numberType>
+<prettyName>Percentile</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+</pfl_percentile>
 <weight>
 <customDisplay></customDisplay>
 <disabled>0</disabled>

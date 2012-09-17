@@ -55,11 +55,35 @@ public class PercentileTools implements ScriptService, Initializable
     /** The name of the resource file holding the BMI LMS table. */
     private static final String BMI_FILE = "bmiage.csv";
 
+    /** The name of the resource file holding the ear length for age LMS table. */
+    private static final String EAR_LENGTH_FILE = "elage.csv";
+
+    /** The name of the resource file holding the hand length for age LMS table. */
+    private static final String HAND_LENGTH_FILE = "hlage.csv";
+
+    /** The name of the resource file holding the palm length for age LMS table. */
+    private static final String PALM_LENGTH_FILE = "plage.csv";
+
+    /** The name of the resource file holding the foot length for age LMS table. */
+    private static final String FOOT_LENGTH_FILE = "flage.csv";
+
     /** The name of the resource file holding the head circumference LMS table. */
     private static final String HC_FILE = "hcage.csv";
 
     /** The name of the resource file holding the height for age LMS table. */
     private static final String HEIGHT_FILE = "htage.csv";
+
+    /** The name of the resource file holding the inner canthal distance LMS table. */
+    private static final String ICD_FILE = "icdage.csv";
+
+    /** The name of the resource file holding the interpupilary distance LMS table. */
+    private static final String IPD_FILE = "ipdage.csv";
+
+    /** The name of the resource file holding the outer canthal distance LMS table. */
+    private static final String OCD_FILE = "ocdage.csv";
+
+    /** The name of the resource file holding the palpebral fissure length LMS table. */
+    private static final String PFL_FILE = "pflage.csv";
 
     /** The name of the resource file holding the weight for age LMS table. */
     private static final String WEIGHT_FILE = "wtage.csv";
@@ -110,8 +134,23 @@ public class PercentileTools implements ScriptService, Initializable
     /** Table storing the BMI LMS triplets for each month of the normal development of girls. */
     private List<LMS> bmiForAgeGirls;
 
+    /** Table storing the ear length LMS triplets for each month of the normal development (both sexes). */
+    private List<LMS> earLengthForAge;
+
     /** Table storing the head circumference LMS triplets for each month of the normal development of boys. */
     private List<LMS> hcForAgeBoys;
+
+    /** Table storing the hand length LMS triplets for each month of the normal development (both sexes). */
+    private List<LMS> handLengthForAge;
+
+    /** Table storing the foot length LMS triplets for each month of the normal development of boys. */
+    private List<LMS> footLengthForAgeBoys;
+
+    /** Table storing the foot length LMS triplets for each month of the normal development of girls. */
+    private List<LMS> footLengthForAgeGirls;
+
+    /** Table storing the palm length LMS triplets for each month of the normal development (both sexes). */
+    private List<LMS> palmLengthForAge;
 
     /** Table storing the head circumference LMS triplets for each month of the normal development of girls. */
     private List<LMS> hcForAgeGirls;
@@ -121,6 +160,18 @@ public class PercentileTools implements ScriptService, Initializable
 
     /** Table storing the height LMS triplets for each month of the normal development of girls. */
     private List<LMS> heightForAgeGirls;
+
+    /** Table storing the inner canthal distance LMS triplets for each month of the normal development (both sexes). */
+    private List<LMS> icdForAge;
+
+    /** Table storing the interpupilary distance LMS triplets for each month of the normal development (both sexes). */
+    private List<LMS> ipdForAge;
+
+    /** Table storing the outer canthal distance LMS triplets for each month of the normal development (both sexes). */
+    private List<LMS> ocdForAge;
+
+    /** Table storing the palpebral fissure length LMS triplets for each month of the normal development (both sexes). */
+    private List<LMS> palpebralFissureLengthForAge;
 
     /** Table storing the weight LMS triplets for each month of the normal development of boys. */
     private List<LMS> weightForAgeBoys;
@@ -133,15 +184,32 @@ public class PercentileTools implements ScriptService, Initializable
     {
         this.bmiForAgeBoys = new ArrayList<LMS>(241);
         this.bmiForAgeGirls = new ArrayList<LMS>(241);
+        this.earLengthForAge = new ArrayList<LMS>(241);
+        this.handLengthForAge = new ArrayList<LMS>(241);
+        this.palmLengthForAge = new ArrayList<LMS>(241);
+        this.footLengthForAgeBoys = new ArrayList<LMS>(241);
+        this.footLengthForAgeGirls = new ArrayList<LMS>(241);
         this.hcForAgeBoys = new ArrayList<LMS>(37);
         this.hcForAgeGirls = new ArrayList<LMS>(37);
         this.heightForAgeBoys = new ArrayList<LMS>(241);
         this.heightForAgeGirls = new ArrayList<LMS>(241);
+        this.icdForAge = new ArrayList<LMS>(241);
+        this.ipdForAge = new ArrayList<LMS>(241);
+        this.ocdForAge = new ArrayList<LMS>(241);
+        this.palpebralFissureLengthForAge = new ArrayList<LMS>(241);
         this.weightForAgeBoys = new ArrayList<LMS>(241);
         this.weightForAgeGirls = new ArrayList<LMS>(241);
         readData(BMI_FILE, this.bmiForAgeBoys, this.bmiForAgeGirls);
+        readData(EAR_LENGTH_FILE, this.earLengthForAge, null);
+        readData(HAND_LENGTH_FILE, this.handLengthForAge, null);
+        readData(PALM_LENGTH_FILE, this.palmLengthForAge, null);
+        readData(FOOT_LENGTH_FILE, this.footLengthForAgeBoys, this.footLengthForAgeGirls);
         readData(HC_FILE, this.hcForAgeBoys, this.hcForAgeGirls);
         readData(HEIGHT_FILE, this.heightForAgeBoys, this.heightForAgeGirls);
+        readData(ICD_FILE, this.icdForAge, null);
+        readData(IPD_FILE, this.ipdForAge, null);
+        readData(OCD_FILE, this.ocdForAge, null);
+        readData(PFL_FILE, this.palpebralFissureLengthForAge, null);
         readData(WEIGHT_FILE, this.weightForAgeBoys, this.weightForAgeGirls);
     }
 
@@ -192,6 +260,36 @@ public class PercentileTools implements ScriptService, Initializable
     public double getPercentileBMI(boolean male, int ageInMonths, int targetPercentile)
     {
         LMS lms = getLMSForAge(male ? this.bmiForAgeBoys : this.bmiForAgeGirls, ageInMonths);
+        return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
+    }
+
+    /**
+     * Get the ear length for age percentile for the given height and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param earLengthInCentimeters the measured ear length, in centimeters
+     * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
+     */
+    public int getEarLengthPercentile(boolean male, int ageInMonths, double earLengthInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.earLengthForAge, ageInMonths);
+        return valueToPercentile(earLengthInCentimeters, lms);
+    }
+
+    /**
+     * Get the ear length that would correspond to the given height for age percentile.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
+     * @return the ear length (in centimeters) that falls in the middle of the target percentile, with the exception of
+     *         the open ended 0 and 100 percentiles, for which the value corresponding to the 0.25, respectively 99.75
+     *         percentage is returned
+     */
+    public double getPercentileEarLength(boolean male, int ageInMonths, int targetPercentile)
+    {
+        LMS lms = getLMSForAge(this.earLengthForAge, ageInMonths);
         return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
     }
 
@@ -283,6 +381,224 @@ public class PercentileTools implements ScriptService, Initializable
     public double getPercentileHC(boolean male, int ageInMonths, int targetPercentile)
     {
         LMS lms = getLMSForAge(male ? this.hcForAgeBoys : this.hcForAgeGirls, ageInMonths);
+        return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
+    }
+
+    /**
+     * Get the inner canthal distance percentile for the given distance and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param innerCanthalDistanceInCentimeters the measured inner canthal distance, in centimeters
+     * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
+     */
+    public int getInnerCanthalDistancePercentile(boolean male, int ageInMonths, double innerCanthalDistanceInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.icdForAge, ageInMonths);
+        return valueToPercentile(innerCanthalDistanceInCentimeters, lms);
+    }
+
+    /**
+     * Get the inner canthal distance that would correspond to the given percentile.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
+     * @return the inner canthal distance (in centimeters) that falls in the middle of the target percentile, with the
+     *         exception of the open ended 0 and 100 percentiles, for which the value corresponding to the 0.25,
+     *         respectively 99.75 percentage is returned
+     */
+    public double getPercentileInnerCanthalDistance(boolean male, int ageInMonths, int targetPercentile)
+    {
+        LMS lms = getLMSForAge(this.icdForAge, ageInMonths);
+        return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
+    }
+
+    /**
+     * Get the interpupilary distance percentile for the given distance and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param interpupilaryDistanceInCentimeters the measured inner canthal distance, in centimeters
+     * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
+     */
+    public int getInterpupilaryDistancePercentile(boolean male, int ageInMonths,
+        double interpupilaryDistanceInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.ipdForAge, ageInMonths);
+        return valueToPercentile(interpupilaryDistanceInCentimeters, lms);
+    }
+
+    /**
+     * Get the interpupilary distance that would correspond to the given percentile.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
+     * @return the interpupilary distance (in centimeters) that falls in the middle of the target percentile, with the
+     *         exception of the open ended 0 and 100 percentiles, for which the value corresponding to the 0.25,
+     *         respectively 99.75 percentage is returned
+     */
+    public double getPercentileInterpupilaryDistance(boolean male, int ageInMonths, int targetPercentile)
+    {
+        LMS lms = getLMSForAge(this.ipdForAge, ageInMonths);
+        return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
+    }
+
+    /**
+     * Get the outer canthal distance percentile for the given distance and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param outerCanthalDistanceInCentimeters the measured outer canthal distance, in centimeters
+     * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
+     */
+    public int getOuterCanthalDistancePercentile(boolean male, int ageInMonths, double outerCanthalDistanceInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.ocdForAge, ageInMonths);
+        return valueToPercentile(outerCanthalDistanceInCentimeters, lms);
+    }
+
+    /**
+     * Get the outer canthal distance that would correspond to the given percentile.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
+     * @return the outer canthal distance (in centimeters) that falls in the middle of the target percentile, with the
+     *         exception of the open ended 0 and 100 percentiles, for which the value corresponding to the 0.25,
+     *         respectively 99.75 percentage is returned
+     */
+    public double getPercentileOuterCanthalDistance(boolean male, int ageInMonths, int targetPercentile)
+    {
+        LMS lms = getLMSForAge(this.ocdForAge, ageInMonths);
+        return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
+    }
+
+    /**
+     * Get the palpebral fissure length percentile for the given length and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param palpebralFissureLengthInCentimeters the measured fissure length, in centimeters
+     * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
+     */
+    public int getPalpebralFissureLengthPercentile(boolean male, int ageInMonths,
+        double palpebralFissureLengthInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.palpebralFissureLengthForAge, ageInMonths);
+        return valueToPercentile(palpebralFissureLengthInCentimeters, lms);
+    }
+
+    /**
+     * Get the palpebral fissure length that would correspond to the given percentile.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
+     * @return the palpebral fissure length (in centimeters) that falls in the middle of the target percentile, with the
+     *         exception of the open ended 0 and 100 percentiles, for which the value corresponding to the 0.25,
+     *         respectively 99.75 percentage is returned
+     */
+    public double getPercentilePalpebralFissureLength(boolean male, int ageInMonths, int targetPercentile)
+    {
+        LMS lms = getLMSForAge(this.palpebralFissureLengthForAge, ageInMonths);
+        if (lms == null) {
+            return -1;
+        }
+        return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
+    }
+
+    /**
+     * Get the hand length percentile for the given length and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param handLengthInCentimeters the measured hand length, in centimeters
+     * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
+     */
+    public int getHandLengthPercentile(boolean male, int ageInMonths, double handLengthInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.handLengthForAge, ageInMonths);
+        return valueToPercentile(handLengthInCentimeters, lms);
+    }
+
+    /**
+     * Get the hand length that would correspond to the given percentile.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
+     * @return the hand length (in centimeters) that falls in the middle of the target percentile, with the exception of
+     *         the open ended 0 and 100 percentiles, for which the value corresponding to the 0.25, respectively 99.75
+     *         percentage is returned
+     */
+    public double getPercentileHandLength(boolean male, int ageInMonths, int targetPercentile)
+    {
+        LMS lms = getLMSForAge(this.handLengthForAge, ageInMonths);
+        if (lms == null) {
+            return -1;
+        }
+        return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
+    }
+
+    /**
+     * Get the palm length percentile for the given length and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param palmLengthInCentimeters the measured palm length, in centimeters
+     * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
+     */
+    public int getPalmLengthPercentile(boolean male, int ageInMonths, double palmLengthInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.palmLengthForAge, ageInMonths);
+        return valueToPercentile(palmLengthInCentimeters, lms);
+    }
+
+    /**
+     * Get the palm length that would correspond to the given percentile.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
+     * @return the palm length (in centimeters) that falls in the middle of the target percentile, with the exception of
+     *         the open ended 0 and 100 percentiles, for which the value corresponding to the 0.25, respectively 99.75
+     *         percentage is returned
+     */
+    public double getPercentilePalmLength(boolean male, int ageInMonths, int targetPercentile)
+    {
+        LMS lms = getLMSForAge(this.palmLengthForAge, ageInMonths);
+        return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
+    }
+
+    /**
+     * Get the foot length percentile for the given length and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param footLengthInCentimeters the measured foot length, in centimeters
+     * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
+     */
+    public int getFootLengthPercentile(boolean male, int ageInMonths, double footLengthInCentimeters)
+    {
+        LMS lms = getLMSForAge((male ? this.footLengthForAgeBoys : this.footLengthForAgeGirls), ageInMonths);
+        return valueToPercentile(footLengthInCentimeters, lms);
+    }
+
+    /**
+     * Get the foot length that would correspond to the given percentile.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
+     * @return the foot length (in centimeters) that falls in the middle of the target percentile, with the exception of
+     *         the open ended 0 and 100 percentiles, for which the value corresponding to the 0.25, respectively 99.75
+     *         percentage is returned
+     */
+    public double getPercentileFootLength(boolean male, int ageInMonths, int targetPercentile)
+    {
+        LMS lms = getLMSForAge((male ? this.footLengthForAgeBoys : this.footLengthForAgeGirls), ageInMonths);
         return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
     }
 

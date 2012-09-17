@@ -24,52 +24,119 @@
 <hidden>false</hidden>
 <content>{{velocity}}{{html clean="false"}}
 #if ($xcontext.action == 'get')
-  #macro (dashIfEmpty $val)#if ("$!val" == '')-#else$val#end#end
+  #macro (dashIfEmpty $val)#if ("$!val" == '' || $val &lt; 0)-#else$val#end#end
   $response.setContentType('application/json')
   #set ($age = $util.parseInt("$!request.a"))
   #set ($sex = ("$!request.s" != 'F'))
+##
   #set ($weight = $util.parseDouble("$!request.w"))
   #set ($height = $util.parseDouble("$!request.h"))
   #set ($head_c = $util.parseDouble("$!request.c"))
-  {
-  #if ("$!weight" != '' &amp;&amp; "$!height" != '')
-    "bmi" : {
-       "value" : "#dashIfEmpty($!mathtool.roundTo(2, $services.percentile.getBMI($weight, $height)))"##
-       #if ("$!age" != ''),
-#set($p = $!services.percentile.getBMIPercentile($sex, $age, $weight, $height))
-       "percentile" : "#dashIfEmpty($p)",
-       "valCategory" : "$!services.percentile.getFuzzyValue($p)"
-       #end
-
-    }##
+  #set ($ocd = $util.parseDouble("$!request.ocd"))
+  #set ($icd = $util.parseDouble("$!request.icd"))
+  #set ($pfl = $util.parseDouble("$!request.pfl"))
+  #set ($ipd = $util.parseDouble("$!request.ipd"))
+  #set ($ear = $util.parseDouble("$!request.ear"))
+  #set ($hand = $util.parseDouble("$!request.hand"))
+  #set ($palm = $util.parseDouble("$!request.palm"))
+  #set ($foot = $util.parseDouble("$!request.foot"))
+##
+  #set ($valueMapping = [])
+##
+  #if ($weight != 0 &amp;&amp; $height != 0)
+    #set($data = {'id' : 'bmi', 'value' : $!mathtool.roundTo(2, $services.percentile.getBMI($weight, $height))})
+    #if ("$!request.a" != '')
+       #set($discard = $data.put('percentile', $!services.percentile.getBMIPercentile($sex, $age, $weight, $height)))
+    #end
+    #set($discard = $valueMapping.add($data))
   #end
-  #if ("$!age" != '')
-    #if ("$!weight" != ''),
-    "weight" : {
-      "value" : "#dashIfEmpty($!request.w)",
-#set($p = $!services.percentile.getWeightPercentile($sex, $age, $weight))
-      "percentile" : "#dashIfEmpty($p)",
-      "valCategory" : "$!services.percentile.getFuzzyValue($p)"
+  #if ("$!request.a" != '')
+     #if ($weight != 0)
+       #set($data = {'id' : 'weight',
+                     'value' : $weight,
+                     'percentile' : $!services.percentile.getWeightPercentile($sex, $age, $weight)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ("$!height" != '' &amp;&amp; $height != 0)
+       #set($data = {'id' : 'height',
+                     'value' : $height,
+                     'percentile' : $!services.percentile.getHeightPercentile($sex, $age, $height)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ($head_c != 0)
+       #set($data = {'id' : 'head_c',
+                     'value' : $head_c,
+                     'percentile' : $!services.percentile.getHCPercentile($sex, $age, $head_c)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ($ocd != 0)
+       #set($data = {'id' : 'ocd',
+                     'value' : $ocd,
+                     'percentile' : $!services.percentile.getOuterCanthalDistancePercentile($sex, $age, $ocd)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ($icd != 0)
+       #set($data = {'id' : 'icd',
+                     'value' : $icd,
+                     'percentile' : $!services.percentile.getInnerCanthalDistancePercentile($sex, $age, $icd)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ($pfl != 0)
+       #set($data = {'id' : 'pfl',
+                     'value' : $pfl,
+                     'percentile' : $!services.percentile.getPalpebralFissureLengthPercentile($sex, $age, $pfl)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ($ipd != 0)
+       #set($data = {'id' : 'ipd',
+                     'value' : $ipd,
+                     'percentile' : $!services.percentile.getInterpupilaryDistancePercentile($sex, $age, $ipd)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ($ear != 0)
+       #set($data = {'id' : 'ear',
+                     'value' : $ear,
+                     'percentile' : $!services.percentile.getEarLengthPercentile($sex, $age, $ear)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ($hand != 0)
+       #set($data = {'id' : 'hand',
+                     'value' : $hand,
+                     'percentile' : $!services.percentile.getHandLengthPercentile($sex, $age, $hand)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ($palm != 0)
+       #set($data = {'id' : 'palm',
+                     'value' : $palm,
+                     'percentile' : $!services.percentile.getPalmLengthPercentile($sex, $age, $palm)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ($foot != 0)
+       #set($data = {'id' : 'foot',
+                     'value' : $foot,
+                     'percentile' : $!services.percentile.getFootLengthPercentile($sex, $age, $foot)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+  #end##age
+  {
+  #foreach ($entry in $valueMapping)
+    "$entry.id" : {
+        "value" : "#dashIfEmpty($entry.value)",
+        "percentile" : "#dashIfEmpty($entry.percentile)",
+        "valCategory" : "$!services.percentile.getFuzzyValue($entry.percentile)"
+    }#if($foreach.hasNext()),
 
-    }
-    #end
-    #if ("$!height" != ''),
-    "height" : {
-      "value" : "#dashIfEmpty($!request.h)",
-#set($p = $!services.percentile.getHeightPercentile($sex, $age, $height))
-      "percentile" : "#dashIfEmpty($p)",
-      "valCategory" : "$!services.percentile.getFuzzyValue($p)"
-
-    }
-    #end
-    #if ("$!head_c" != ''),
-    "head_c" : {
-      "value" : "#dashIfEmpty($!request.c)",
-#set($p = $!services.percentile.getHCPercentile($sex, $age, $head_c))
-      "percentile" : "#dashIfEmpty($p)",
-      "valCategory" : "$!services.percentile.getFuzzyValue($p)"
-
-    }
     #end
   #end
 
