@@ -1181,6 +1181,9 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
 <buttonSecondaryTextColor>#4D5860</buttonSecondaryTextColor>
 </property>
 <property>
+<fieldGradientColor></fieldGradientColor>
+</property>
+<property>
 <headerBackgroundImage>header.png</headerBackgroundImage>
 </property>
 <property>
@@ -1205,7 +1208,7 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
 <menuBackgroundColor>#222222</menuBackgroundColor>
 </property>
 <property>
-<menuContentBackgroundColor>#276400</menuContentBackgroundColor>
+<menuContentBackgroundColor>#222222</menuContentBackgroundColor>
 </property>
 <property>
 <menuContentGradientColor></menuContentGradientColor>
@@ -1277,7 +1280,7 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
 <panelTextColor>#636B75</panelTextColor>
 </property>
 <property>
-<submenuContentBackgroundColor>#276400</submenuContentBackgroundColor>
+<submenuContentBackgroundColor>#222222</submenuContentBackgroundColor>
 </property>
 <property>
 <textColor>#000000</textColor>
