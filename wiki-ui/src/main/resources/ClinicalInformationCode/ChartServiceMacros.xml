@@ -55,16 +55,18 @@
       #set ($discard = $measurements.add({'a': $age, 'x' : $o.getProperty($sourceName).value}))
     #end
   #end
-  #set ($bDate = $obj.getProperty('date_of_birth').value.time)
+  #set ($bDate = $xwiki.jodatime.getMutableDateTime($obj.getProperty('date_of_birth').value.time).toMutableDateTime($xwiki.jodatime.getUTCTimezone()))
   #foreach ($o in $doc.getObjects($targetClassName))
-    #set ($mDate = $xwiki.jodatime.getMutableDateTime($o.getProperty('date').value.time))
-    #set ($age = $mDate.toInstant().minus($bDate).toDateTime())
+    #set ($mDate = $xwiki.jodatime.getMutableDateTime($o.getProperty('date').value.time).toMutableDateTime($xwiki.jodatime.getUTCTimezone()))
+    #set ($age = $mDate.toInstant().minus($bDate.toInstant().getMillis()).toDateTime($xwiki.jodatime.getUTCTimezone()))
     #set ($age = ($age.year - 1970) * 12 + $age.monthOfYear - 1)
-    #_updateMeasurements($wMeasurements $o 'weight' $age)
-    #_updateMeasurements($hMeasurements $o 'height' $age)
-    #_updateMeasurements($hcMeasurements $o 'head_circumference' $age)
-    #_updateMeasurements($ocdMeasurements $o 'ocd' $age)
-    #_updateMeasurements($icdMeasurements $o 'icd' $age)
+    #if ($age &gt;=0)
+      #_updateMeasurements($wMeasurements $o 'weight' $age)
+      #_updateMeasurements($hMeasurements $o 'height' $age)
+      #_updateMeasurements($hcMeasurements $o 'head_circumference' $age)
+      #_updateMeasurements($ocdMeasurements $o 'ocd' $age)
+      #_updateMeasurements($icdMeasurements $o 'icd' $age)
+    #end
   #end
   #set ($sex = $obj.getProperty('gender').value != 'F')
 #end

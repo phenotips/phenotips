@@ -165,6 +165,7 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase
         Assert.assertEquals(50, getTool().getWeightPercentile(true, 1000, 70.6));
         Assert.assertEquals(37, getTool().getWeightPercentile(true, 349, 67.0));
         Assert.assertEquals(12, getTool().getWeightPercentile(false, 359, 49.0));
+        Assert.assertEquals(-1, getTool().getWeightPercentile(true, -1, 4.0));
     }
 
     @Test

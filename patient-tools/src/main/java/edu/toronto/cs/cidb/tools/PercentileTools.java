@@ -738,7 +738,9 @@ public class PercentileTools implements ScriptService, Initializable
 
     private LMS getLMSForAge(List<LMS> list, int ageInMonths)
     {
-        if (ageInMonths >= list.size()) {
+        if (ageInMonths < 0) {
+            return null;
+        } else if (ageInMonths >= list.size()) {
             return list.get(list.size() - 1);
         }
         LMS result;
