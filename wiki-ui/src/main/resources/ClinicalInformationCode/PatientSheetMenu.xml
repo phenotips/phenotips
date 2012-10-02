@@ -5,7 +5,7 @@
 <language></language>
 <defaultLanguage></defaultLanguage>
 <translation>0</translation>
-<parent>ClinicalInformationCode.PatientSheetUI</parent>
+<parent>ClinicalInformationCode.PatientSheetCode</parent>
 <creator>xwiki:XWiki.Admin</creator>
 <author>xwiki:XWiki.Admin</author>
 <customClass></customClass>
