@@ -51,6 +51,11 @@
       </includes>
       <outputDirectory>webapps/solr</outputDirectory>
       <unpack>true</unpack>
+      <unpackOptions>
+        <excludes>
+          <exclude>WEB-INF/lib/slf4j-jdk14-*.jar</exclude>
+        </excludes>
+      </unpackOptions>
     </dependencySet>
     <!-- Solr configuration. -->
     <dependencySet>
@@ -59,6 +64,14 @@
       </includes>
       <outputDirectory>solrconfig/</outputDirectory>
       <unpack>true</unpack>
+    </dependencySet>
+    <!-- Use Logback instead of Java SE logging -->
+    <dependencySet>
+      <includes>
+        <include>ch.qos.logback:*</include>
+      </includes>
+      <outputDirectory>webapps/solr/WEB-INF/lib</outputDirectory>
+      <unpack>false</unpack>
     </dependencySet>
     <!-- Unpack Jetty files -->
     <dependencySet>
@@ -78,6 +91,10 @@
     <file>
       <source>${basedir}/src/main/resources/xhtml2fo.xsl</source>
       <outputDirectory>webapps/xwiki/WEB-INF/classes</outputDirectory>
+    </file>
+    <file>
+      <source>${basedir}/src/main/resources/logback.xml</source>
+      <outputDirectory>webapps/solr/WEB-INF/classes</outputDirectory>
     </file>
   </files>
 </assembly>
