@@ -10,6 +10,9 @@
   <name>Phenotype Database - Wiki-based Distribution</name>
   <packaging>pom</packaging>
   <description>Distribution including a Jetty server, Solr, and an UI based on XWiki</description>
+  <properties>
+    <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.apache.solr</groupId>
@@ -96,6 +99,7 @@
     </dependency>
   </dependencies>
   <build>
+    <finalName>phenotips-${project.version}-${maven.build.timestamp}</finalName>
     <pluginManagement>
       <plugins>
         <plugin>
