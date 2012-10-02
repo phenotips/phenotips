@@ -129,8 +129,8 @@ public class PhenotypeMappingScriptService implements ScriptService, Initializab
     public void initialize() throws InitializationException
     {
         OmimHPOAnnotations ann = new OmimHPOAnnotations(this.hpo);
-        ann.load(getInputFileHandler("http://compbio.charite.de/svn/hpo/trunk/src/annotation/phenotype_annotation.tab",
-            false));
+        ann.load(getInputFileHandler("http://compbio.charite.de/hudson/job/hpo.annotations/" +
+                "lastStableBuild/artifact/misc/phenotype_annotation.tab", false));
 
         this.predictor.setAnnotation(ann);
     }
