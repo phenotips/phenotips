@@ -33,6 +33,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -49,6 +50,9 @@ import edu.toronto.cs.cidb.hpoa.prediction.Predictor;
 @Singleton
 public class PhenotypeMappingScriptService implements ScriptService, Initializable
 {
+    @Inject
+    private Logger logger;
+
     @Inject
     private Environment environment;
 
@@ -92,12 +96,12 @@ public class PhenotypeMappingScriptService implements ScriptService, Initializab
     {
         try {
             File result = new File(inputLocation);
-            if (!result.exists()) {
+            if (!result.exists() || result.length() == 0) {
                 String name = inputLocation.substring(inputLocation.lastIndexOf('/') + 1);
                 result = getTemporaryFile(name);
                 if (!result.exists()) {
-                    result.createNewFile();
                     BufferedInputStream in = new BufferedInputStream((new URL(inputLocation)).openStream());
+                    result.createNewFile();
                     OutputStream out = new FileOutputStream(result);
                     IOUtils.copy(in, out);
                     out.flush();
@@ -106,7 +110,7 @@ public class PhenotypeMappingScriptService implements ScriptService, Initializab
             }
             return result;
         } catch (IOException ex) {
-            ex.printStackTrace();
+            this.logger.error("Mapping file [{}] not found", inputLocation);
             return null;
         }
     }
@@ -129,8 +133,10 @@ public class PhenotypeMappingScriptService implements ScriptService, Initializab
     public void initialize() throws InitializationException
     {
         OmimHPOAnnotations ann = new OmimHPOAnnotations(this.hpo);
-        ann.load(getInputFileHandler("http://compbio.charite.de/hudson/job/hpo.annotations/" +
-                "lastStableBuild/artifact/misc/phenotype_annotation.tab", false));
+        if (ann.load(getInputFileHandler("http://compbio.charite.de/hudson/job/hpo.annotations/" +
+            "lastStableBuild/artifact/misc/phenotype_annotation.tab", false)) < 0) {
+            throw new InitializationException("Cannot load ontology mapping file, aborting.");
+        }
 
         this.predictor.setAnnotation(ann);
     }
