@@ -1384,7 +1384,7 @@
   },
 
   synchronizeSelection : function (input) {
-    $$('input[type=checkbox][value=' + input.value +']').each(function(item) {
+    $$('input[type="checkbox"][value="' + input.value.replace(/"/g, '\\"') +'"]').each(function(item) {
       if (item.checked != input.checked) {
         item.click();
       }
@@ -2195,14 +2195,14 @@ return MS;
   _expandToStep : function (termId, categories) {
     var _this = this;
     //alert ("expanding " + termId + " " + categories);
-    var target = this.container.contentContainer.down('li.entry input.select-tool[value=' + termId + ']');
+    var target = this.container.contentContainer.down('li.entry input.select-tool[value="' + termId.replace(/"/g, '\\"') + '"]');
     if (target) {
        return;
     }
     var finishedStep = false;
     categories.each(function(category) {
       if (finishedStep) {return}
-      var categoryInput = _this.container.contentContainer.down('li.entry input.select-tool[value=' + category + ']');
+      var categoryInput = _this.container.contentContainer.down('li.entry input.select-tool[value="' + category.replace(/"/g, '\\"') + '"]');
       if (categoryInput) {
         //alert ("start expanding " + category + " " + categories);
         var categoryEntry = categoryInput.up('li');

@@ -495,7 +495,7 @@ document.observe('dom:loaded', function() {
     $$('label.term-label input[type=checkbox]').each(function (input) {
       enableHighlightChecked(input);
       input.observe('click', function(event) {
-          $$('input[type=checkbox][value=' + event.element().value +']').each(function(item) {
+          $$('input[type="checkbox"][value="' + event.element().value.replace(/"/g, '\\"') +'"]').each(function(item) {
             if (item.checked != event.element().checked) {
               item.click();
             }
@@ -1153,7 +1153,7 @@ document.observe('dom:loaded', function() {
              }
            }.bind(group);
            group._find = function(value) {
-             return this.down('.group-contents input[value=' + value + ']');
+             return this.down('.group-contents input[value="' + value.replace(/"/g, '\\"') + '"]');
            }.bind(group);
            group._add = function(element) {
              this.down('.group-contents').insert(element) ;
@@ -1165,7 +1165,7 @@ document.observe('dom:loaded', function() {
         }.bind(selectionSummary);
 
         selectionSummary._find = function(value) {
-             return this.down('.summary-group .summary-item input[value=' + value + ']');
+             return this.down('.summary-group .summary-item input[value="' + value.replace(/"/g, '\\"') + '"]');
         }.bind(selectionSummary);
 
         selectionSummary._silentRemove = function(value) {
@@ -1255,9 +1255,9 @@ document.observe('dom:loaded', function() {
       var categories = '';
       var DO_EXPAND = !selectionSummary;
       var syncTermCategory = function(term) {
-        var field = $(document.documentElement).down('label.term-label.dropdown-root input[type=checkbox][name=' + fieldName + '][value=' + term +']');
+        var field = $(document.documentElement).down('label.term-label.dropdown-root input[type="checkbox"][name="' + fieldName.replace(/"/g, '\\"') + '"][value="' + term.replace(/"/g, '\\"') +'"]');
         if (field) {
-          var subtermsInCategory = $$('label.accepted-suggestion[for^=' + fieldName + '_] + .term-category input[type=hidden][value=' + term + ']');
+          var subtermsInCategory = $$('label.accepted-suggestion[for^="' + fieldName.replace(/"/g, '\\"') + '_"] + .term-category input[type="hidden"][value="' + term.replace(/"/g, '\\"') + '"]');
           var selectedSubterms  = 0;
           var countIfSelectedSubterm = function (categoryElement) {
             var subtermElement = categoryElement.up('li').down('label.accepted-suggestion input[type=checkbox]');

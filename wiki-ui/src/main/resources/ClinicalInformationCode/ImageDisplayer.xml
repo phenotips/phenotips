@@ -150,10 +150,10 @@
         this.form.observe('xwiki:ajaxupload:finish', function(event) {
            var responseContainer = this.gallery.down('.progress-info .upload-response');
            if (responseContainer) {
-             var attachmentField = responseContainer.down('.attachment-item input[type=checkbox], .attachment-item input[type=radio]');
+             var attachmentField = responseContainer.down('.attachment-item input[type="checkbox"], .attachment-item input[type="radio"]');
              if (attachmentField) {
                // is this just another version of another attachment that already exists?
-               this.gallery.select('.attachment-list .attachment-item input[type=' + attachmentField.type + '][value=' + attachmentField.value + ']').each(function (item) {
+               this.gallery.select('.attachment-list .attachment-item input[type="' + attachmentField.type + '"][value="' + attachmentField.value.replace(/"/g, '\\"') + '"]').each(function (item) {
                  item.up('.attachment-item').remove();
                })
                // if the attachment list contained some "Empty list" message, make sure to remove it
