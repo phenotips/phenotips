@@ -4401,14 +4401,14 @@ $doc.display('images')
 )))
 
 #end
-$xwiki.jsx.use('ClinicalInformationCode.TouchscreenEvents', {'minify' : false})##
+$xwiki.jsx.use('ClinicalInformationCode.TouchscreenEvents')##
 $xwiki.ssx.use('XWiki.DateTimePicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('ClinicalInformationCode.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.ssx.use('ClinicalInformationCode.Widgets', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('ClinicalInformationCode.Widgets', {'minify' : false})##
+$xwiki.jsx.use('ClinicalInformationCode.Widgets')##
 $xwiki.ssx.use('ClinicalInformationCode.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('ClinicalInformationCode.PatientSheetCode', {'minify' : false})##
+$xwiki.jsx.use('ClinicalInformationCode.PatientSheetCode')##
 ##
 ##
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))

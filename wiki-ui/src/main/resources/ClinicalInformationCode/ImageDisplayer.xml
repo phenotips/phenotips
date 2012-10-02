@@ -1335,7 +1335,7 @@ $content
 #__displayLastAttachmentSelected($targetDoc)
 #else
   $xwiki.ssx.use($displayerName, {'colorTheme' : "$xwiki.getSpacePreferenceFor('colorTheme', ${targetDoc.space})"})##
-  $xwiki.jsx.use($displayerName, {'minify' : false})##
+  $xwiki.jsx.use($displayerName)##
   ## check if the property exists and its value has the right type (is a list)
   #if ("$!{propValue.size()}" != '')
     #if ($options.mode == 'edit')
