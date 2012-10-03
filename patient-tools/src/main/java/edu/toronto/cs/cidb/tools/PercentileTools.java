@@ -629,7 +629,7 @@ public class PercentileTools implements ScriptService, Initializable
      * 
      * @param x the absolute value to fit into the normal distribution
      * @param lms the parameters defining the normal distribution
-     * @return a number between 0 and 100 (inclusive) specyfing the percentile of this measurement
+     * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
      */
     public int valueToPercentile(double x, LMS lms)
     {
@@ -647,7 +647,7 @@ public class PercentileTools implements ScriptService, Initializable
      * @param m the M value, the median
      * @param l the L value, the power
      * @param s the S value, the generalized coefficient of variation
-     * @return a number between 0 and 100 (inclusive) specyfing the percentile of this measurement
+     * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
      */
     public int valueToPercentile(double x, double m, double l, double s)
     {
@@ -664,11 +664,12 @@ public class PercentileTools implements ScriptService, Initializable
      * Compute the percentile corresponding to a given absolute value, compared to a normal distribution specified by
      * the given Box-Cox triplet.
      * 
-     * @param x the absolute value to fit into the normal distribution
+     * @param percentile the target percentile to extract from the normal distribution, a number between 0 and 100
+     *        (inclusive)
      * @param m the M value, the median
      * @param l the L value, the power
      * @param s the S value, the generalized coefficient of variation
-     * @return a number between 0 and 100 (inclusive) specyfing the percentile of this measurement
+     * @return a positive number specifying the expected measurement for the target percentile
      */
     public double percentileToValue(int percentile, double m, double l, double s)
     {
