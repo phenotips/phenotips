@@ -231,6 +231,24 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the BMI standard deviation for the given weight and height.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param weightInKilograms the measured weight, in kilograms
+     * @param heightInCentimeters the measured length for children under 24 months, or measured height for older
+     *        children, in centimeters
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double getBMIStandardDeviation(boolean male, int ageInMonths, double weightInKilograms,
+        double heightInCentimeters)
+    {
+        LMS lms = getLMSForAge(male ? this.bmiForAgeBoys : this.bmiForAgeGirls, ageInMonths);
+        double bmi = getBMI(weightInKilograms, heightInCentimeters);
+        return valueToStandardDeviation(bmi, lms);
+    }
+
+    /**
      * Compute the BMI (Body-Mass Index) for the given weigh and height. The formula is {@code weight / (height^2)}
      * multiplied by 10000 (to convert centimeters into meters).
      * 
@@ -264,6 +282,20 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the BMI that would correspond to the given BMI for age standard deviation.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetDeviation a number specifying the target deviation
+     * @return the BMI (in kilograms per square meter) that falls on the target standard deviation
+     */
+    public double getStandardDeviationBMI(boolean male, int ageInMonths, double targetDeviation)
+    {
+        LMS lms = getLMSForAge(male ? this.bmiForAgeBoys : this.bmiForAgeGirls, ageInMonths);
+        return standardDeviationToValue(targetDeviation, lms.m, lms.l, lms.s);
+    }
+
+    /**
      * Get the ear length for age percentile for the given height and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
@@ -275,6 +307,20 @@ public class PercentileTools implements ScriptService, Initializable
     {
         LMS lms = getLMSForAge(this.earLengthForAge, ageInMonths);
         return valueToPercentile(earLengthInCentimeters, lms);
+    }
+
+    /**
+     * Get the ear length for age standard deviation for the given height and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param earLengthInCentimeters the measured ear length, in centimeters
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double getEarLengthStandardDeviation(boolean male, int ageInMonths, double earLengthInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.earLengthForAge, ageInMonths);
+        return valueToStandardDeviation(earLengthInCentimeters, lms);
     }
 
     /**
@@ -294,6 +340,20 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the ear length that would correspond to the given height for age standard deviation.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetDeviation a number specifying the target deviation
+     * @return the ear length (in centimeters) that falls on the target standard deviation
+     */
+    public double getStandardDeviationEarLength(boolean male, int ageInMonths, double targetDeviation)
+    {
+        LMS lms = getLMSForAge(this.earLengthForAge, ageInMonths);
+        return standardDeviationToValue(targetDeviation, lms.m, lms.l, lms.s);
+    }
+
+    /**
      * Get the height for age percentile for the given height and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
@@ -306,6 +366,21 @@ public class PercentileTools implements ScriptService, Initializable
     {
         LMS lms = getLMSForAge(male ? this.heightForAgeBoys : this.heightForAgeGirls, ageInMonths);
         return valueToPercentile(heightInCentimeters, lms);
+    }
+
+    /**
+     * Get the height for age standard deviation for the given height and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param heightInCentimeters the measured length for children under 24 months, or measured height for older
+     *        children, in centimeters
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double getHeightStandardDeviation(boolean male, int ageInMonths, double heightInCentimeters)
+    {
+        LMS lms = getLMSForAge(male ? this.heightForAgeBoys : this.heightForAgeGirls, ageInMonths);
+        return valueToStandardDeviation(heightInCentimeters, lms);
     }
 
     /**
@@ -325,6 +400,20 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the height that would correspond to the given height for age standard deviation.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetDeviation a number specifying the target deviation
+     * @return the height (in centimeters) that falls on the target standard deviation
+     */
+    public double getStandardDeviationHeight(boolean male, int ageInMonths, double targetDeviation)
+    {
+        LMS lms = getLMSForAge(male ? this.heightForAgeBoys : this.heightForAgeGirls, ageInMonths);
+        return standardDeviationToValue(targetDeviation, lms.m, lms.l, lms.s);
+    }
+
+    /**
      * Get the weight for age percentile for the given weight and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
@@ -336,6 +425,20 @@ public class PercentileTools implements ScriptService, Initializable
     {
         LMS lms = getLMSForAge(male ? this.weightForAgeBoys : this.weightForAgeGirls, ageInMonths);
         return valueToPercentile(weightInKilograms, lms);
+    }
+
+    /**
+     * Get the weight for age standard deviation for the given weight and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param weightInKilograms the measured weight, in kilograms
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double getWeightStandardDeviation(boolean male, int ageInMonths, double weightInKilograms)
+    {
+        LMS lms = getLMSForAge(male ? this.weightForAgeBoys : this.weightForAgeGirls, ageInMonths);
+        return valueToStandardDeviation(weightInKilograms, lms);
     }
 
     /**
@@ -355,6 +458,20 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the weight that would correspond to the given weight for age standard deviation.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetDeviation a number specifying the target deviation
+     * @return the weight (in kilograms) that falls on the target standard deviation
+     */
+    public double getStandardDeviationWeight(boolean male, int ageInMonths, double targetDeviation)
+    {
+        LMS lms = getLMSForAge(male ? this.weightForAgeBoys : this.weightForAgeGirls, ageInMonths);
+        return standardDeviationToValue(targetDeviation, lms.m, lms.l, lms.s);
+    }
+
+    /**
      * Get the head circumference for age percentile for the given head circumference and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
@@ -366,6 +483,20 @@ public class PercentileTools implements ScriptService, Initializable
     {
         LMS lms = getLMSForAge(male ? this.hcForAgeBoys : this.hcForAgeGirls, ageInMonths);
         return valueToPercentile(headCircumferenceInCentimeters, lms);
+    }
+
+    /**
+     * Get the head circumference for age standard deviation for the given head circumference and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param headCircumferenceInCentimeters the measured head circumference, in centimeters
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double getHCStandardDeviation(boolean male, int ageInMonths, double headCircumferenceInCentimeters)
+    {
+        LMS lms = getLMSForAge(male ? this.hcForAgeBoys : this.hcForAgeGirls, ageInMonths);
+        return valueToStandardDeviation(headCircumferenceInCentimeters, lms);
     }
 
     /**
@@ -385,6 +516,20 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the head circumference that would correspond to the given HC for age standard deviation.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetDeviation a number specifying the target deviation
+     * @return the head circumference (in centimeters) that falls on the target standard deviation
+     */
+    public double getStandardDeviationHC(boolean male, int ageInMonths, double targetDeviation)
+    {
+        LMS lms = getLMSForAge(male ? this.hcForAgeBoys : this.hcForAgeGirls, ageInMonths);
+        return standardDeviationToValue(targetDeviation, lms.m, lms.l, lms.s);
+    }
+
+    /**
      * Get the inner canthal distance percentile for the given distance and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
@@ -396,6 +541,21 @@ public class PercentileTools implements ScriptService, Initializable
     {
         LMS lms = getLMSForAge(this.icdForAge, ageInMonths);
         return valueToPercentile(innerCanthalDistanceInCentimeters, lms);
+    }
+
+    /**
+     * Get the inner canthal distance standard deviation for the given distance and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param innerCanthalDistanceInCentimeters the measured inner canthal distance, in centimeters
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double getInnerCanthalDistanceStandardDeviation(boolean male, int ageInMonths,
+        double innerCanthalDistanceInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.icdForAge, ageInMonths);
+        return valueToStandardDeviation(innerCanthalDistanceInCentimeters, lms);
     }
 
     /**
@@ -415,6 +575,20 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the inner canthal distance that would correspond to the given standard deviation.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetDeviation a number specifying the target deviation
+     * @return the inner canthal distance (in centimeters) that falls on the target standard deviation
+     */
+    public double getStandardDeviationInnerCanthalDistance(boolean male, int ageInMonths, double targetDeviation)
+    {
+        LMS lms = getLMSForAge(this.icdForAge, ageInMonths);
+        return standardDeviationToValue(targetDeviation, lms.m, lms.l, lms.s);
+    }
+
+    /**
      * Get the interpupilary distance percentile for the given distance and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
@@ -427,6 +601,21 @@ public class PercentileTools implements ScriptService, Initializable
     {
         LMS lms = getLMSForAge(this.ipdForAge, ageInMonths);
         return valueToPercentile(interpupilaryDistanceInCentimeters, lms);
+    }
+
+    /**
+     * Get the interpupilary distance standard deviation for the given distance and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param interpupilaryDistanceInCentimeters the measured inner canthal distance, in centimeters
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double getInterpupilaryDistanceStandardDeviation(boolean male, int ageInMonths,
+        double interpupilaryDistanceInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.ipdForAge, ageInMonths);
+        return valueToStandardDeviation(interpupilaryDistanceInCentimeters, lms);
     }
 
     /**
@@ -446,6 +635,20 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the interpupilary distance that would correspond to the given standard deviation.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetDeviation a number specifying the target deviation
+     * @return the interpupilary distance (in centimeters) that falls on the target standard deviation
+     */
+    public double getStandardDeviationInterpupilaryDistance(boolean male, int ageInMonths, double targetDeviation)
+    {
+        LMS lms = getLMSForAge(this.ipdForAge, ageInMonths);
+        return standardDeviationToValue(targetDeviation, lms.m, lms.l, lms.s);
+    }
+
+    /**
      * Get the outer canthal distance percentile for the given distance and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
@@ -457,6 +660,21 @@ public class PercentileTools implements ScriptService, Initializable
     {
         LMS lms = getLMSForAge(this.ocdForAge, ageInMonths);
         return valueToPercentile(outerCanthalDistanceInCentimeters, lms);
+    }
+
+    /**
+     * Get the outer canthal distance standard deviation for the given distance and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param outerCanthalDistanceInCentimeters the measured outer canthal distance, in centimeters
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double getOuterCanthalDistanceStandardDeviation(boolean male, int ageInMonths,
+        double outerCanthalDistanceInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.ocdForAge, ageInMonths);
+        return valueToStandardDeviation(outerCanthalDistanceInCentimeters, lms);
     }
 
     /**
@@ -476,6 +694,20 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the outer canthal distance that would correspond to the given standard deviation.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetDeviation a number specifying the target deviation
+     * @return the outer canthal distance (in centimeters) that falls on the target standard deviation
+     */
+    public double getStandardDeviationOuterCanthalDistance(boolean male, int ageInMonths, double targetDeviation)
+    {
+        LMS lms = getLMSForAge(this.ocdForAge, ageInMonths);
+        return standardDeviationToValue(targetDeviation, lms.m, lms.l, lms.s);
+    }
+
+    /**
      * Get the palpebral fissure length percentile for the given length and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
@@ -488,6 +720,21 @@ public class PercentileTools implements ScriptService, Initializable
     {
         LMS lms = getLMSForAge(this.palpebralFissureLengthForAge, ageInMonths);
         return valueToPercentile(palpebralFissureLengthInCentimeters, lms);
+    }
+
+    /**
+     * Get the palpebral fissure length standard deviation for the given length and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param palpebralFissureLengthInCentimeters the measured fissure length, in centimeters
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double getPalpebralFissureLengthStandardDeviation(boolean male, int ageInMonths,
+        double palpebralFissureLengthInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.palpebralFissureLengthForAge, ageInMonths);
+        return valueToStandardDeviation(palpebralFissureLengthInCentimeters, lms);
     }
 
     /**
@@ -510,6 +757,23 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the palpebral fissure length that would correspond to the given standard deviation.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetDeviation a number specifying the target deviation
+     * @return the palpebral fissure length (in centimeters) that falls on the target standard deviation
+     */
+    public double getStandardDeviationPalpebralFissureLength(boolean male, int ageInMonths, double targetDeviation)
+    {
+        LMS lms = getLMSForAge(this.palpebralFissureLengthForAge, ageInMonths);
+        if (lms == null) {
+            return -1;
+        }
+        return standardDeviationToValue(targetDeviation, lms.m, lms.l, lms.s);
+    }
+
+    /**
      * Get the hand length percentile for the given length and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
@@ -521,6 +785,20 @@ public class PercentileTools implements ScriptService, Initializable
     {
         LMS lms = getLMSForAge(this.handLengthForAge, ageInMonths);
         return valueToPercentile(handLengthInCentimeters, lms);
+    }
+
+    /**
+     * Get the hand length standard deviation for the given length and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param handLengthInCentimeters the measured hand length, in centimeters
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double getHandLengthStandardDeviation(boolean male, int ageInMonths, double handLengthInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.handLengthForAge, ageInMonths);
+        return valueToStandardDeviation(handLengthInCentimeters, lms);
     }
 
     /**
@@ -543,6 +821,23 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the hand length that would correspond to the given standard deviation.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetDeviation a number specifying the target deviation
+     * @return the hand length (in centimeters) that falls on the target standard deviation
+     */
+    public double getStandardDeviationHandLength(boolean male, int ageInMonths, double targetDeviation)
+    {
+        LMS lms = getLMSForAge(this.handLengthForAge, ageInMonths);
+        if (lms == null) {
+            return Double.NaN;
+        }
+        return standardDeviationToValue(targetDeviation, lms.m, lms.l, lms.s);
+    }
+
+    /**
      * Get the palm length percentile for the given length and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
@@ -554,6 +849,20 @@ public class PercentileTools implements ScriptService, Initializable
     {
         LMS lms = getLMSForAge(this.palmLengthForAge, ageInMonths);
         return valueToPercentile(palmLengthInCentimeters, lms);
+    }
+
+    /**
+     * Get the palm length standard deviation for the given length and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param palmLengthInCentimeters the measured palm length, in centimeters
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double getPalmLengthStandardDeviation(boolean male, int ageInMonths, double palmLengthInCentimeters)
+    {
+        LMS lms = getLMSForAge(this.palmLengthForAge, ageInMonths);
+        return valueToStandardDeviation(palmLengthInCentimeters, lms);
     }
 
     /**
@@ -573,6 +882,20 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
+     * Get the palm length that would correspond to the given standard deviation.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetDeviation a number specifying the target deviation
+     * @return the palm length (in centimeters) that falls on the target standard deviation
+     */
+    public double getStandardDeviationPalmLength(boolean male, int ageInMonths, double targetDeviation)
+    {
+        LMS lms = getLMSForAge(this.palmLengthForAge, ageInMonths);
+        return standardDeviationToValue(targetDeviation, lms.m, lms.l, lms.s);
+    }
+
+    /**
      * Get the foot length percentile for the given length and age.
      * 
      * @param male {@code true} for boys, {@code false} for girls
@@ -584,6 +907,20 @@ public class PercentileTools implements ScriptService, Initializable
     {
         LMS lms = getLMSForAge((male ? this.footLengthForAgeBoys : this.footLengthForAgeGirls), ageInMonths);
         return valueToPercentile(footLengthInCentimeters, lms);
+    }
+
+    /**
+     * Get the foot length standard deviation for the given length and age.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param footLengthInCentimeters the measured foot length, in centimeters
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double getFootLengthStandardDeviation(boolean male, int ageInMonths, double footLengthInCentimeters)
+    {
+        LMS lms = getLMSForAge((male ? this.footLengthForAgeBoys : this.footLengthForAgeGirls), ageInMonths);
+        return valueToStandardDeviation(footLengthInCentimeters, lms);
     }
 
     /**
@@ -600,6 +937,20 @@ public class PercentileTools implements ScriptService, Initializable
     {
         LMS lms = getLMSForAge((male ? this.footLengthForAgeBoys : this.footLengthForAgeGirls), ageInMonths);
         return percentileToValue(targetPercentile, lms.m, lms.l, lms.s);
+    }
+
+    /**
+     * Get the foot length that would correspond to the given standard deviation.
+     * 
+     * @param male {@code true} for boys, {@code false} for girls
+     * @param ageInMonths the age of the measurement, in months
+     * @param targetDeviation a number specifying the target deviation
+     * @return the foot length (in centimeters) that falls on the target standard deviation
+     */
+    public double getStandardDeviationFootLength(boolean male, int ageInMonths, double targetDeviation)
+    {
+        LMS lms = getLMSForAge((male ? this.footLengthForAgeBoys : this.footLengthForAgeGirls), ageInMonths);
+        return standardDeviationToValue(targetDeviation, lms.m, lms.l, lms.s);
     }
 
     /**
@@ -624,7 +975,7 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
-     * Compute the percentile corresponding to a given absolute value, compared to a normal distribution specified by
+     * Compute the percentile corresponding to a given absolute value, according to a normal distribution specified by
      * the given Box-Cox triplet.
      * 
      * @param x the absolute value to fit into the normal distribution
@@ -640,7 +991,23 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
-     * Compute the percentile corresponding to a given absolute value, compared to a normal distribution specified by
+     * Compute the standard deviation corresponding to a given absolute value, according to a normal distribution
+     * specified by the given Box-Cox triplet.
+     * 
+     * @param x the absolute value to fit into the normal distribution
+     * @param lms the parameters defining the normal distribution
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double valueToStandardDeviation(double x, LMS lms)
+    {
+        if (lms == null) {
+            return Double.NaN;
+        }
+        return valueToStandardDeviation(x, lms.m, lms.l, lms.s);
+    }
+
+    /**
+     * Compute the percentile corresponding to a given absolute value, according to a normal distribution specified by
      * the given Box-Cox triplet.
      * 
      * @param x the absolute value to fit into the normal distribution
@@ -661,7 +1028,22 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
-     * Compute the percentile corresponding to a given absolute value, compared to a normal distribution specified by
+     * Compute the standard deviation corresponding to a given absolute value, according to a normal distribution
+     * specified by the given Box-Cox triplet.
+     * 
+     * @param x the absolute value to fit into the normal distribution
+     * @param m the M value, the median
+     * @param l the L value, the power
+     * @param s the S value, the generalized coefficient of variation
+     * @return a number specifying how many standard deviations does this measurement deviate from the mean
+     */
+    public double valueToStandardDeviation(double x, double m, double l, double s)
+    {
+        return (l != 0) ? ((Math.pow(x / m, l) - 1) / (l * s)) : (Math.log(x / m) / s);
+    }
+
+    /**
+     * Compute the value that would correspond to a target percentile, according to a normal distribution specified by
      * the given Box-Cox triplet.
      * 
      * @param percentile the target percentile to extract from the normal distribution, a number between 0 and 100
@@ -686,6 +1068,21 @@ public class PercentileTools implements ScriptService, Initializable
         } catch (MathException ex) {
             return 0;
         }
+    }
+
+    /**
+     * Compute the value that would correspond to a target standard deviation, according to a normal distribution
+     * specified by the given Box-Cox triplet.
+     * 
+     * @param deviation the target standard deviation to extract from the normal distribution
+     * @param m the M value, the median
+     * @param l the L value, the power
+     * @param s the S value, the generalized coefficient of variation
+     * @return a positive number specifying the expected measurement for the target standard deviation
+     */
+    public double standardDeviationToValue(double deviation, double m, double l, double s)
+    {
+        return (l != 0) ? Math.pow(deviation * l * s + 1, 1 / l) * m : Math.exp(deviation * s) * m;
     }
 
     /**
