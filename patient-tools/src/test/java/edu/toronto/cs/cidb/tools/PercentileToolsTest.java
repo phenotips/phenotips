@@ -180,9 +180,9 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase<Percen
         Assert.assertEquals(0, getMockedComponent().getInnerCanthalDistancePercentile(true, 0, 0));
         Assert.assertEquals(100, getMockedComponent().getInnerCanthalDistancePercentile(true, 0, 1000));
         Assert.assertEquals(50, getMockedComponent().getInnerCanthalDistancePercentile(true, 1000, 3.1357));
-        Assert.assertEquals(5, getMockedComponent().getInnerCanthalDistancePercentile(true, 16, 2.0475));
+        Assert.assertEquals(2, getMockedComponent().getInnerCanthalDistancePercentile(true, 16, 2.0475));
         Assert.assertEquals(50, getMockedComponent().getInnerCanthalDistancePercentile(true, 16, 2.5825));
-        Assert.assertEquals(95, getMockedComponent().getInnerCanthalDistancePercentile(true, 16, 3.0485));
+        Assert.assertEquals(98, getMockedComponent().getInnerCanthalDistancePercentile(true, 16, 3.0485));
         Assert.assertEquals(50, getMockedComponent().getInnerCanthalDistancePercentile(true, 30, 2.6925));
     }
 
@@ -190,12 +190,12 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase<Percen
     public void testGetPercentileICD() throws ComponentLookupException
     {
         Assert.assertEquals(2, getMockedComponent().getPercentileInnerCanthalDistance(true, 0, 50), 1.0E-2);
-        Assert.assertEquals(1.17, getMockedComponent().getPercentileInnerCanthalDistance(true, 0, 0), 1.0E-2);
-        Assert.assertEquals(2.85, getMockedComponent().getPercentileInnerCanthalDistance(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(1.30, getMockedComponent().getPercentileInnerCanthalDistance(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(2.71, getMockedComponent().getPercentileInnerCanthalDistance(true, 0, 100), 1.0E-2);
         Assert.assertEquals(3.1275, getMockedComponent().getPercentileInnerCanthalDistance(true, 1000, 50), 1.0E-2);
-        Assert.assertEquals(2.06, getMockedComponent().getPercentileInnerCanthalDistance(true, 16, 5), 1.0E-2);
+        Assert.assertEquals(2.03, getMockedComponent().getPercentileInnerCanthalDistance(true, 16, 2), 1.0E-2);
         Assert.assertEquals(2.5825, getMockedComponent().getPercentileInnerCanthalDistance(true, 16, 50), 1.0E-2);
-        Assert.assertEquals(3.03, getMockedComponent().getPercentileInnerCanthalDistance(true, 16, 95), 1.0E-2);
+        Assert.assertEquals(3.06, getMockedComponent().getPercentileInnerCanthalDistance(true, 16, 98), 1.0E-2);
         Assert.assertEquals(2.6925, getMockedComponent().getPercentileInnerCanthalDistance(true, 30, 50), 1.0E-2);
     }
 
@@ -258,9 +258,9 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase<Percen
         Assert.assertEquals(0, getMockedComponent().getEarLengthPercentile(true, 0, 0));
         Assert.assertEquals(100, getMockedComponent().getEarLengthPercentile(true, 0, 1000));
         Assert.assertEquals(50, getMockedComponent().getEarLengthPercentile(true, 1000, 6.0825));
-        Assert.assertEquals(5, getMockedComponent().getEarLengthPercentile(true, 36, 4.51));
+        Assert.assertEquals(2, getMockedComponent().getEarLengthPercentile(true, 36, 4.5));
         Assert.assertEquals(50, getMockedComponent().getEarLengthPercentile(true, 36, 5.115));
-        Assert.assertEquals(95, getMockedComponent().getEarLengthPercentile(true, 36, 5.86));
+        Assert.assertEquals(98, getMockedComponent().getEarLengthPercentile(true, 36, 5.89));
         Assert.assertEquals(50, getMockedComponent().getEarLengthPercentile(true, 30, 5.015));
     }
 
@@ -268,12 +268,12 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase<Percen
     public void testGetPercentileEarLength() throws ComponentLookupException
     {
         Assert.assertEquals(4.04, getMockedComponent().getPercentileEarLength(true, 0, 50), 1.0E-2);
-        Assert.assertEquals(3, getMockedComponent().getPercentileEarLength(true, 0, 0), 1.0E-2);
-        Assert.assertEquals(5.21, getMockedComponent().getPercentileEarLength(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(3.15, getMockedComponent().getPercentileEarLength(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(5.02, getMockedComponent().getPercentileEarLength(true, 0, 100), 1.0E-2);
         Assert.assertEquals(6.0825, getMockedComponent().getPercentileEarLength(true, 1000, 50), 1.0E-2);
-        Assert.assertEquals(4.51, getMockedComponent().getPercentileEarLength(true, 36, 5), 1.0E-2);
+        Assert.assertEquals(4.48, getMockedComponent().getPercentileEarLength(true, 36, 2), 1.0E-2);
         Assert.assertEquals(5.115, getMockedComponent().getPercentileEarLength(true, 36, 50), 1.0E-2);
-        Assert.assertEquals(5.86, getMockedComponent().getPercentileEarLength(true, 36, 95), 1.0E-2);
+        Assert.assertEquals(5.91, getMockedComponent().getPercentileEarLength(true, 36, 98), 1.0E-2);
         Assert.assertEquals(5.015, getMockedComponent().getPercentileEarLength(true, 30, 50), 1.0E-2);
     }
 
@@ -284,9 +284,9 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase<Percen
         Assert.assertEquals(0, getMockedComponent().getPalpebralFissureLengthPercentile(true, 0, 0));
         Assert.assertEquals(100, getMockedComponent().getPalpebralFissureLengthPercentile(true, 0, 1000));
         Assert.assertEquals(50, getMockedComponent().getPalpebralFissureLengthPercentile(true, 1000, 3.13));
-        Assert.assertEquals(5, getMockedComponent().getPalpebralFissureLengthPercentile(true, 36, 2.215));
+        Assert.assertEquals(2, getMockedComponent().getPalpebralFissureLengthPercentile(true, 36, 2.215));
         Assert.assertEquals(50, getMockedComponent().getPalpebralFissureLengthPercentile(true, 36, 2.49));
-        Assert.assertEquals(95, getMockedComponent().getPalpebralFissureLengthPercentile(true, 36, 2.78));
+        Assert.assertEquals(98, getMockedComponent().getPalpebralFissureLengthPercentile(true, 36, 2.78));
         Assert.assertEquals(50, getMockedComponent().getPalpebralFissureLengthPercentile(true, 30, 2.4325));
     }
 
@@ -294,12 +294,12 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase<Percen
     public void testGetPercentilePalpebralFissureLength() throws ComponentLookupException
     {
         Assert.assertEquals(1.9, getMockedComponent().getPercentilePalpebralFissureLength(true, 0, 50), 1.0E-2);
-        Assert.assertEquals(1.6, getMockedComponent().getPercentilePalpebralFissureLength(true, 0, 0), 1.0E-2);
-        Assert.assertEquals(2.28, getMockedComponent().getPercentilePalpebralFissureLength(true, 0, 100), 1.0E-2);
+        Assert.assertEquals(1.64, getMockedComponent().getPercentilePalpebralFissureLength(true, 0, 0), 1.0E-2);
+        Assert.assertEquals(2.21, getMockedComponent().getPercentilePalpebralFissureLength(true, 0, 100), 1.0E-2);
         Assert.assertEquals(3.13, getMockedComponent().getPercentilePalpebralFissureLength(true, 1000, 50), 1.0E-2);
-        Assert.assertEquals(2.215, getMockedComponent().getPercentilePalpebralFissureLength(true, 36, 5), 1.0E-2);
+        Assert.assertEquals(2.215, getMockedComponent().getPercentilePalpebralFissureLength(true, 36, 2), 1.0E-2);
         Assert.assertEquals(2.49, getMockedComponent().getPercentilePalpebralFissureLength(true, 36, 50), 1.0E-2);
-        Assert.assertEquals(2.78, getMockedComponent().getPercentilePalpebralFissureLength(true, 36, 95), 1.0E-2);
+        Assert.assertEquals(2.78, getMockedComponent().getPercentilePalpebralFissureLength(true, 36, 98), 1.0E-2);
         Assert.assertEquals(2.4325, getMockedComponent().getPercentilePalpebralFissureLength(true, 30, 50), 1.0E-2);
     }
 
