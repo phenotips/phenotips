@@ -33,29 +33,25 @@
 <validationScript></validationScript>
 <age>
 <customDisplay>{{velocity}}
-#if ($xcontext.action != 'edit' || $request.editor != 'object')
-  #if ("$!value" == '')
-    #set ($dValue = '-')
-  #else
-    #set ($dValue = '')
-    #if ($value &gt;= 0)
-      #set ($y = $mathtool.idiv($value, 12))
-      #set ($m = $mathtool.mod($value, 12))
-    #end
-    #if ($y &gt; 0)
-      #set ($dValue = "${y}y")
-    #end
-    #if ($y &gt; 0)
-      #set ($dValue = "$!dValue ${m}m")
-    #end
+#if ("$!value" == '')
+  #set ($dValue = '-')
+#else
+  #set ($dValue = '')
+  #if ($value &gt;= 0)
+    #set ($y = $mathtool.idiv($value, 12))
+    #set ($m = $mathtool.mod($value, 12))
   #end
-  {{html wiki=false clean=false}}
-  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
-  &lt;div class="$name displayed-value"&gt;$dValue&lt;/div&gt;
-  {{/html}}
-#else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+  #if ($y &gt; 0)
+    #set ($dValue = "${y}y")
+  #end
+  #if ($m &gt; 0)
+    #set ($dValue = "$!dValue ${m}m")
+  #end
 #end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+&lt;div class="$name displayed-value"&gt;$dValue.trim()&lt;/div&gt;
+{{/html}}
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>age</name>
