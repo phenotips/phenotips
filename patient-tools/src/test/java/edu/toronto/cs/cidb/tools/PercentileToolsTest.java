@@ -752,25 +752,40 @@ public class PercentileToolsTest extends AbstractMockingComponentTestCase<Percen
     }
 
     @Test
-    public void testGetFuzzyValue() throws ComponentLookupException
+    public void testGetFuzzyValueP() throws ComponentLookupException
     {
         Assert.assertEquals("extreme-below-normal", getMockedComponent().getFuzzyValue(Integer.MIN_VALUE));
         Assert.assertEquals("extreme-below-normal", getMockedComponent().getFuzzyValue(-1));
         Assert.assertEquals("extreme-below-normal", getMockedComponent().getFuzzyValue(0));
-        Assert.assertEquals("extreme-below-normal", getMockedComponent().getFuzzyValue(3));
-        Assert.assertEquals("below-normal", getMockedComponent().getFuzzyValue(4));
-        Assert.assertEquals("below-normal", getMockedComponent().getFuzzyValue(7));
-        Assert.assertEquals("below-normal", getMockedComponent().getFuzzyValue(10));
-        Assert.assertEquals("normal", getMockedComponent().getFuzzyValue(11));
+        Assert.assertEquals("extreme-below-normal", getMockedComponent().getFuzzyValue(1));
+        Assert.assertEquals("below-normal", getMockedComponent().getFuzzyValue(2));
+        Assert.assertEquals("below-normal", getMockedComponent().getFuzzyValue(3));
+        Assert.assertEquals("normal", getMockedComponent().getFuzzyValue(4));
         Assert.assertEquals("normal", getMockedComponent().getFuzzyValue(50));
-        Assert.assertEquals("normal", getMockedComponent().getFuzzyValue(89));
-        Assert.assertEquals("above-normal", getMockedComponent().getFuzzyValue(90));
-        Assert.assertEquals("above-normal", getMockedComponent().getFuzzyValue(93));
-        Assert.assertEquals("above-normal", getMockedComponent().getFuzzyValue(96));
-        Assert.assertEquals("extreme-above-normal", getMockedComponent().getFuzzyValue(97));
+        Assert.assertEquals("normal", getMockedComponent().getFuzzyValue(96));
+        Assert.assertEquals("above-normal", getMockedComponent().getFuzzyValue(97));
+        Assert.assertEquals("above-normal", getMockedComponent().getFuzzyValue(98));
         Assert.assertEquals("extreme-above-normal", getMockedComponent().getFuzzyValue(99));
         Assert.assertEquals("extreme-above-normal", getMockedComponent().getFuzzyValue(100));
         Assert.assertEquals("extreme-above-normal", getMockedComponent().getFuzzyValue(101));
         Assert.assertEquals("extreme-above-normal", getMockedComponent().getFuzzyValue(Integer.MAX_VALUE));
+    }
+
+    @Test
+    public void testGetFuzzyValueSD() throws ComponentLookupException
+    {
+        Assert.assertEquals("extreme-below-normal", getMockedComponent().getFuzzyValue(-Double.MAX_VALUE));
+        Assert.assertEquals("extreme-below-normal", getMockedComponent().getFuzzyValue(-3.1));
+        Assert.assertEquals("extreme-below-normal", getMockedComponent().getFuzzyValue(-3.0));
+        Assert.assertEquals("below-normal", getMockedComponent().getFuzzyValue(-2.99));
+        Assert.assertEquals("below-normal", getMockedComponent().getFuzzyValue(-2.0));
+        Assert.assertEquals("normal", getMockedComponent().getFuzzyValue(-1.99));
+        Assert.assertEquals("normal", getMockedComponent().getFuzzyValue(0.0));
+        Assert.assertEquals("normal", getMockedComponent().getFuzzyValue(1.99));
+        Assert.assertEquals("above-normal", getMockedComponent().getFuzzyValue(2.0));
+        Assert.assertEquals("above-normal", getMockedComponent().getFuzzyValue(2.99));
+        Assert.assertEquals("extreme-above-normal", getMockedComponent().getFuzzyValue(3.0));
+        Assert.assertEquals("extreme-above-normal", getMockedComponent().getFuzzyValue(3.1));
+        Assert.assertEquals("extreme-above-normal", getMockedComponent().getFuzzyValue(Double.MAX_VALUE));
     }
 }

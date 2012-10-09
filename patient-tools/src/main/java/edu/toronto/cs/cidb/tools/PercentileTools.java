@@ -954,7 +954,7 @@ public class PercentileTools implements ScriptService, Initializable
     }
 
     /**
-     * Convert the percentile number into a string grossly describing the value.
+     * Convert a percentile number into a string grossly describing the value.
      * 
      * @param percentile a number between 0 and 100
      * @return the percentile description
@@ -962,13 +962,34 @@ public class PercentileTools implements ScriptService, Initializable
     public String getFuzzyValue(int percentile)
     {
         String returnValue = "normal";
-        if (percentile <= 3) {
+        if (percentile <= 1) {
             returnValue = "extreme-below-normal";
-        } else if (percentile <= 10) {
+        } else if (percentile <= 3) {
             returnValue = "below-normal";
-        } else if (percentile >= 97) {
+        } else if (percentile >= 99) {
             returnValue = "extreme-above-normal";
-        } else if (percentile >= 90) {
+        } else if (percentile >= 97) {
+            returnValue = "above-normal";
+        }
+        return returnValue;
+    }
+
+    /**
+     * Convert a standard deviation number into a string grossly describing the value.
+     * 
+     * @param deviation standard deviation value
+     * @return the deviation description
+     */
+    public String getFuzzyValue(double deviation)
+    {
+        String returnValue = "normal";
+        if (deviation <= -3.0) {
+            returnValue = "extreme-below-normal";
+        } else if (deviation <= -2.0) {
+            returnValue = "below-normal";
+        } else if (deviation >= 3.0) {
+            returnValue = "extreme-above-normal";
+        } else if (deviation >= 2.0) {
             returnValue = "above-normal";
         }
         return returnValue;
