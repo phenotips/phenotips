@@ -1817,13 +1817,13 @@ document.observe('xwiki:dom:loaded', function() {
         values : ['date', 'age', 'actions']
       }, {
         name : 'general',
-        values : ['weight', 'weight_percentile', 'height', 'height_percentile', 'bmi', 'bmi_percentile', 'head_circumference', 'hc_percentile']
+        values : ['weight', 'weight_evaluation', 'height', 'height_evaluation', 'bmi', 'bmi_evaluation', 'head_circumference', 'hc_evaluation']
       }, {
         name : 'face',
-        values : ['ocd', 'ocd_percentile', 'icd', 'icd_percentile', 'pfl', 'pfl_percentile', 'ipd', 'ipd_percentile']
+        values : ['ocd', 'ocd_evaluation', 'icd', 'icd_evaluation', 'pfl', 'pfl_evaluation', 'ipd', 'ipd_evaluation']
       }, {
         name : 'organs',
-        values : ['ear', 'ear_percentile', 'hand', 'hand_percentile', 'palm', 'palm_percentile', 'foot', 'foot_percentile']
+        values : ['ear', 'ear_evaluation', 'hand', 'hand_evaluation', 'palm', 'palm_evaluation', 'foot', 'foot_evaluation']
       }
     ];
     rowMapping.each(function (data) {
@@ -1926,7 +1926,7 @@ document.observe('xwiki:dom:loaded', function() {
   var updateValue = function (target, value, fuzzyValue) {
     var input = target.down('input[type=hidden]');
     var displayed = target.down('.displayed-value');
-    input.value = value;
+    input &amp;&amp; (input.value = value);
     displayed.update(value || '-');
     if (fuzzyValue) {
       ['extreme-below-normal', 'below-normal', 'normal', 'above-normal', 'extreme-above-normal'].each(function (cssClass) {
@@ -1938,11 +1938,11 @@ document.observe('xwiki:dom:loaded', function() {
 
   var updateDependentValues = function (targets, values) {
     for (var p in values) {
-      ['value', 'percentile'].each( function (value) {
+      ['value', 'evaluation'].each( function (value) {
         if (values[p] &amp;&amp; values[p][value] &amp;&amp; targets[p] &amp;&amp; targets[p][value]) {
-           updateValue(targets[p][value], values[p][value], (value == 'percentile') &amp;&amp; values[p]['valCategory']);
+           updateValue(targets[p][value], values[p][value], (value == 'evaluation') &amp;&amp; values[p]['valCategory']);
            var target = targets[p];
-           if (value == 'percentile' &amp;&amp; target['valueHooks'] &amp;&amp; getMostRecentEntry() == targets[p][value].up('tr.data-row')) {
+           if (value == 'evaluation' &amp;&amp; target['valueHooks'] &amp;&amp; getMostRecentEntry() == targets[p][value].up('tr.data-row')) {
              var targetElt = values[p]['valCategory'] &amp;&amp; target['valueHooks'][values[p]['valCategory']];
              if (targetElt &amp;&amp; !targetElt.checked) {
                  targetElt.checked = true;
@@ -2022,52 +2022,52 @@ document.observe('xwiki:dom:loaded', function() {
     var targets = {
        bmi : {
          value : row.down('td.bmi'),
-         percentile : row.down('td.bmi_percentile')
+         evaluation : row.down('td.bmi_evaluation')
        },
        weight : {
-         percentile : row.down('td.weight_percentile'),
+         evaluation : row.down('td.weight_evaluation'),
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0004325'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001513')
          }
        },
        height : {
-         percentile : row.down('td.height_percentile'),
+         evaluation : row.down('td.height_evaluation'),
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0004322'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0000098')
          }
        },
        head_c : {
-         percentile : row.down('td.hc_percentile'),
+         evaluation : row.down('td.hc_evaluation'),
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0000252'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0000256')
          }
        },
        ocd : {
-         percentile : row.down('td.ocd_percentile')
+         evaluation : row.down('td.ocd_evaluation')
        },
        icd : {
-         percentile : row.down('td.icd_percentile')
+         evaluation : row.down('td.icd_evaluation')
        },
        pfl : {
-         percentile : row.down('td.pfl_percentile')
+         evaluation : row.down('td.pfl_evaluation')
        },
        ipd : {
-         percentile : row.down('td.ipd_percentile')
+         evaluation : row.down('td.ipd_evaluation')
        },
        ear : {
-         percentile : row.down('td.ear_percentile')
+         evaluation : row.down('td.ear_evaluation')
        },
        hand : {
-         percentile : row.down('td.hand_percentile')
+         evaluation : row.down('td.hand_evaluation')
        },
        palm : {
-         percentile : row.down('td.palm_percentile')
+         evaluation : row.down('td.palm_evaluation')
        },
        foot : {
-         percentile : row.down('td.foot_percentile')
+         evaluation : row.down('td.foot_evaluation')
        }
     };
 

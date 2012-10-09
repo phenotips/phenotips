@@ -90,28 +90,31 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </bmi>
-<bmi_percentile>
-<customDisplay>{{velocity}}
-#set ($dValue = "$!{value}")
-#if ($dValue == '')
-  #set ($dValue = '-')
-#end
-{{html wiki=false clean=false}}
-#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
-&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
-{{/html}}
-{{/velocity}}</customDisplay>
+<bmi_evaluation>
+<customDisplay></customDisplay>
 <disabled>0</disabled>
-<name>bmi_percentile</name>
+<name>bmi_evaluation</name>
 <number>8</number>
-<numberType>integer</numberType>
-<prettyName>Percentile</prettyName>
-<size>30</size>
+<prettyName>Evaluation</prettyName>
+<script>{{velocity}}
+#set ($wValue = $object.getProperty('weight').value)
+#set ($hValue = $object.getProperty('height').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('ClinicalInformationCode.PatientClass').getProperty('gender').value != 'F')
+#if ("$!wValue" == '' || "$!hValue" == '' || "$!wValue" == '0' || "$!hValue" == '0')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.percentile.getBMIPercentile($male, $age, $wValue, $hValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getBMIStandardDeviation($male, $age, $wValue, $hValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</bmi_percentile>
+<classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+</bmi_evaluation>
 <date>
 <customDisplay>{{velocity}}{{html wiki=false clean=false}}
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
@@ -147,28 +150,30 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </ear>
-<ear_percentile>
-<customDisplay>{{velocity}}
-#set ($dValue = "$!{value}")
-#if ($dValue == '')
-  #set ($dValue = '-')
-#end
-{{html wiki=false clean=false}}
-#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
-&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
-{{/html}}
-{{/velocity}}</customDisplay>
+<ear_evaluation>
+<customDisplay></customDisplay>
 <disabled>0</disabled>
-<name>ear_percentile</name>
+<name>ear_evaluation</name>
 <number>20</number>
-<numberType>integer</numberType>
-<prettyName>Percentile</prettyName>
-<size>30</size>
+<prettyName>Evaluation</prettyName>
+<script>{{velocity}}
+#set ($dValue = $object.getProperty('ear').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('ClinicalInformationCode.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.percentile.getEarLengthPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getEarLengthStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</ear_percentile>
+<classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+</ear_evaluation>
 <foot>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -182,28 +187,30 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </foot>
-<foot_percentile>
-<customDisplay>{{velocity}}
-#set ($dValue = "$!{value}")
-#if ($dValue == '')
-  #set ($dValue = '-')
-#end
-{{html wiki=false clean=false}}
-#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
-&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
-{{/html}}
-{{/velocity}}</customDisplay>
+<foot_evaluation>
+<customDisplay></customDisplay>
 <disabled>0</disabled>
-<name>foot_percentile</name>
-<number>26</number>
-<numberType>integer</numberType>
-<prettyName>Percentile</prettyName>
-<size>30</size>
+<name>foot_evaluation</name>
+<number>28</number>
+<prettyName>Evaluation</prettyName>
+<script>{{velocity}}
+#set ($dValue = $object.getProperty('foot').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('ClinicalInformationCode.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.percentile.getFootLengthPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getFootLengthStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</foot_percentile>
+<classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+</foot_evaluation>
 <hand>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -217,50 +224,54 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </hand>
-<hand_percentile>
-<customDisplay>{{velocity}}
-#set ($dValue = "$!{value}")
-#if ($dValue == '')
-  #set ($dValue = '-')
-#end
-{{html wiki=false clean=false}}
-#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
-&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
-{{/html}}
-{{/velocity}}</customDisplay>
+<hand_evaluation>
+<customDisplay></customDisplay>
 <disabled>0</disabled>
-<name>hand_percentile</name>
+<name>hand_evaluation</name>
 <number>22</number>
-<numberType>integer</numberType>
-<prettyName>Percentile</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</hand_percentile>
-<hc_percentile>
-<customDisplay>{{velocity}}
-#set ($dValue = "$!{value}")
-#if ($dValue == '')
+<prettyName>Evaluation</prettyName>
+<script>{{velocity}}
+#set ($dValue = $object.getProperty('hand').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('ClinicalInformationCode.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
   #set ($dValue = '-')
+#else
+  #set ($pValue = $services.percentile.getHandLengthPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getHandLengthStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-{{html wiki=false clean=false}}
-#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
-&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
-{{/html}}
-{{/velocity}}</customDisplay>
-<disabled>0</disabled>
-<name>hc_percentile</name>
-<number>10</number>
-<numberType>integer</numberType>
-<prettyName>Percentile</prettyName>
-<size>30</size>
+(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</hc_percentile>
+<classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+</hand_evaluation>
+<hc_evaluation>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>hc_evaluation</name>
+<number>10</number>
+<prettyName>Evaluation</prettyName>
+<script>{{velocity}}
+#set ($dValue = $object.getProperty('head_circumference').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('ClinicalInformationCode.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.percentile.getHCPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getHCStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+</hc_evaluation>
 <head_circumference>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -287,28 +298,30 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </height>
-<height_percentile>
-<customDisplay>{{velocity}}
-#set ($dValue = "$!{value}")
-#if ($dValue == '')
-  #set ($dValue = '-')
-#end
-{{html wiki=false clean=false}}
-#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
-&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
-{{/html}}
-{{/velocity}}</customDisplay>
+<height_evaluation>
+<customDisplay></customDisplay>
 <disabled>0</disabled>
-<name>height_percentile</name>
+<name>height_evaluation</name>
 <number>6</number>
-<numberType>integer</numberType>
-<prettyName>Percentile</prettyName>
-<size>30</size>
+<prettyName>Evaluation</prettyName>
+<script>{{velocity}}
+#set ($dValue = $object.getProperty('height').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('ClinicalInformationCode.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.percentile.getHeightPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getHeightStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</height_percentile>
+<classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+</height_evaluation>
 <icd>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -322,28 +335,30 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </icd>
-<icd_percentile>
-<customDisplay>{{velocity}}
-#set ($dValue = "$!{value}")
-#if ($dValue == '')
-  #set ($dValue = '-')
-#end
-{{html wiki=false clean=false}}
-#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
-&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
-{{/html}}
-{{/velocity}}</customDisplay>
+<icd_evaluation>
+<customDisplay></customDisplay>
 <disabled>0</disabled>
-<name>icd_percentile</name>
+<name>icd_evaluation</name>
 <number>14</number>
-<numberType>integer</numberType>
-<prettyName>Percentile</prettyName>
-<size>30</size>
+<prettyName>Evaluation</prettyName>
+<script>{{velocity}}
+#set ($dValue = $object.getProperty('icd').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('ClinicalInformationCode.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.percentile.getInnerCanthalDistancePercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getInnerCanthalDistanceStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</icd_percentile>
+<classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+</icd_evaluation>
 <ipd>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -357,28 +372,30 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </ipd>
-<ipd_percentile>
-<customDisplay>{{velocity}}
-#set ($dValue = "$!{value}")
-#if ($dValue == '')
-  #set ($dValue = '-')
-#end
-{{html wiki=false clean=false}}
-#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
-&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
-{{/html}}
-{{/velocity}}</customDisplay>
+<ipd_evaluation>
+<customDisplay></customDisplay>
 <disabled>0</disabled>
-<name>ipd_percentile</name>
+<name>ipd_evaluation</name>
 <number>18</number>
-<numberType>integer</numberType>
-<prettyName>Percentile</prettyName>
-<size>30</size>
+<prettyName>Evaluation</prettyName>
+<script>{{velocity}}
+#set ($dValue = $object.getProperty('ipd').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('ClinicalInformationCode.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.percentile.getInterpupilaryDistancePercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getInterpupilaryDistanceStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</ipd_percentile>
+<classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+</ipd_evaluation>
 <ocd>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -392,28 +409,30 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </ocd>
-<ocd_percentile>
-<customDisplay>{{velocity}}
-#set ($dValue = "$!{value}")
-#if ($dValue == '')
-  #set ($dValue = '-')
-#end
-{{html wiki=false clean=false}}
-#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
-&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
-{{/html}}
-{{/velocity}}</customDisplay>
+<ocd_evaluation>
+<customDisplay></customDisplay>
 <disabled>0</disabled>
-<name>ocd_percentile</name>
+<name>ocd_evaluation</name>
 <number>12</number>
-<numberType>integer</numberType>
-<prettyName>Percentile</prettyName>
-<size>30</size>
+<prettyName>Evaluation</prettyName>
+<script>{{velocity}}
+#set ($dValue = $object.getProperty('ocd').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('ClinicalInformationCode.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.percentile.getOuterCanthalDistancePercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getOuterCanthalDistanceStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</ocd_percentile>
+<classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+</ocd_evaluation>
 <palm>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -427,28 +446,30 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </palm>
-<palm_percentile>
-<customDisplay>{{velocity}}
-#set ($dValue = "$!{value}")
-#if ($dValue == '')
-  #set ($dValue = '-')
-#end
-{{html wiki=false clean=false}}
-#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
-&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
-{{/html}}
-{{/velocity}}</customDisplay>
+<palm_evaluation>
+<customDisplay></customDisplay>
 <disabled>0</disabled>
-<name>palm_percentile</name>
+<name>palm_evaluation</name>
 <number>24</number>
-<numberType>integer</numberType>
-<prettyName>Percentile</prettyName>
-<size>30</size>
+<prettyName>Evaluation</prettyName>
+<script>{{velocity}}
+#set ($dValue = $object.getProperty('palm').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('ClinicalInformationCode.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.percentile.getPalmLengthPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getPalmLengthStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</palm_percentile>
+<classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+</palm_evaluation>
 <pfl>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -462,28 +483,30 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </pfl>
-<pfl_percentile>
-<customDisplay>{{velocity}}
-#set ($dValue = "$!{value}")
-#if ($dValue == '')
-  #set ($dValue = '-')
-#end
-{{html wiki=false clean=false}}
-#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
-&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
-{{/html}}
-{{/velocity}}</customDisplay>
+<pfl_evaluation>
+<customDisplay></customDisplay>
 <disabled>0</disabled>
-<name>pfl_percentile</name>
+<name>pfl_evaluation</name>
 <number>16</number>
-<numberType>integer</numberType>
-<prettyName>Percentile</prettyName>
-<size>30</size>
+<prettyName>Evaluation</prettyName>
+<script>{{velocity}}
+#set ($dValue = $object.getProperty('pfl').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('ClinicalInformationCode.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.percentile.getPalpebralFissureLengthPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getPalpebralFissureLengthStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</pfl_percentile>
+<classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+</pfl_evaluation>
 <weight>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -497,27 +520,29 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
 </weight>
-<weight_percentile>
-<customDisplay>{{velocity}}
-#set ($dValue = "$!{value}")
-#if ($dValue == '')
-  #set ($dValue = '-')
-#end
-{{html wiki=false clean=false}}
-#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
-&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
-{{/html}}
-{{/velocity}}</customDisplay>
+<weight_evaluation>
+<customDisplay></customDisplay>
 <disabled>0</disabled>
-<name>weight_percentile</name>
+<name>weight_evaluation</name>
 <number>4</number>
-<numberType>integer</numberType>
-<prettyName>Percentile</prettyName>
-<size>30</size>
+<prettyName>Evaluation</prettyName>
+<script>{{velocity}}
+#set ($dValue = $object.getProperty('weight').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('ClinicalInformationCode.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.percentile.getWeightPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getWeightStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</weight_percentile>
+<classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+</weight_evaluation>
 </class>
 <content></content></xwikidoc>

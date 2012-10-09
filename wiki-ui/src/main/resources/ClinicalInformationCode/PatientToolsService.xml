@@ -24,7 +24,7 @@
 <hidden>false</hidden>
 <content>{{velocity}}{{html clean="false"}}
 #if ($xcontext.action == 'get')
-  #macro (dashIfEmpty $val)#if ("$!val" == '' || $val &lt; 0)-#else$val#end#end
+  #macro (dashIfEmpty $val)#if ("$!val" == '' || ($val.class.name.endsWith('Integer') &amp;&amp; $val &lt; 0) || ($val.class.name.endsWith('Double') &amp;&amp; $val.isNaN($val)))-#elseif ($val.class.name.endsWith('Integer'))$val#else$mathtool.roundTo(2, $val)#end#end
   $response.setContentType('application/json')
   #set ($age = $util.parseInt("$!request.a"))
   #set ($sex = ("$!request.s" != 'F'))
@@ -47,6 +47,7 @@
     #set($data = {'id' : 'bmi', 'value' : $!mathtool.roundTo(2, $services.percentile.getBMI($weight, $height))})
     #if ("$!request.a" != '')
        #set($discard = $data.put('percentile', $!services.percentile.getBMIPercentile($sex, $age, $weight, $height)))
+       #set($discard = $data.put('deviation', $!services.percentile.getBMIStandardDeviation($sex, $age, $weight, $height)))
     #end
     #set($discard = $valueMapping.add($data))
   #end
@@ -54,87 +55,107 @@
      #if ($weight != 0)
        #set($data = {'id' : 'weight',
                      'value' : $weight,
-                     'percentile' : $!services.percentile.getWeightPercentile($sex, $age, $weight)
+                     'percentile' : $!services.percentile.getWeightPercentile($sex, $age, $weight),
+                     'deviation' : $!services.percentile.getWeightStandardDeviation($sex, $age, $weight)
        })
        #set($discard = $valueMapping.add($data))
      #end
      #if ("$!height" != '' &amp;&amp; $height != 0)
        #set($data = {'id' : 'height',
                      'value' : $height,
-                     'percentile' : $!services.percentile.getHeightPercentile($sex, $age, $height)
+                     'percentile' : $!services.percentile.getHeightPercentile($sex, $age, $height),
+                     'deviation' : $!services.percentile.getHeightStandardDeviation($sex, $age, $height)
        })
        #set($discard = $valueMapping.add($data))
      #end
      #if ($head_c != 0)
        #set($data = {'id' : 'head_c',
                      'value' : $head_c,
-                     'percentile' : $!services.percentile.getHCPercentile($sex, $age, $head_c)
+                     'percentile' : $!services.percentile.getHCPercentile($sex, $age, $head_c),
+                     'deviation' : $!services.percentile.getHCStandardDeviation($sex, $age, $head_c)
        })
        #set($discard = $valueMapping.add($data))
      #end
      #if ($ocd != 0)
        #set($data = {'id' : 'ocd',
                      'value' : $ocd,
-                     'percentile' : $!services.percentile.getOuterCanthalDistancePercentile($sex, $age, $ocd)
+                     'percentile' : $!services.percentile.getOuterCanthalDistancePercentile($sex, $age, $ocd),
+                     'deviation' : $!services.percentile.getOuterCanthalDistanceStandardDeviation($sex, $age, $ocd)
        })
        #set($discard = $valueMapping.add($data))
      #end
      #if ($icd != 0)
        #set($data = {'id' : 'icd',
                      'value' : $icd,
-                     'percentile' : $!services.percentile.getInnerCanthalDistancePercentile($sex, $age, $icd)
+                     'percentile' : $!services.percentile.getInnerCanthalDistancePercentile($sex, $age, $icd),
+                     'deviation' : $!services.percentile.getInnerCanthalDistanceStandardDeviation($sex, $age, $icd)
        })
        #set($discard = $valueMapping.add($data))
      #end
      #if ($pfl != 0)
        #set($data = {'id' : 'pfl',
                      'value' : $pfl,
-                     'percentile' : $!services.percentile.getPalpebralFissureLengthPercentile($sex, $age, $pfl)
+                     'percentile' : $!services.percentile.getPalpebralFissureLengthPercentile($sex, $age, $pfl),
+                     'deviation' : $!services.percentile.getPalpebralFissureLengthStandardDeviation($sex, $age, $pfl)
        })
        #set($discard = $valueMapping.add($data))
      #end
      #if ($ipd != 0)
        #set($data = {'id' : 'ipd',
                      'value' : $ipd,
-                     'percentile' : $!services.percentile.getInterpupilaryDistancePercentile($sex, $age, $ipd)
+                     'percentile' : $!services.percentile.getInterpupilaryDistancePercentile($sex, $age, $ipd),
+                     'deviation' : $!services.percentile.getInterpupilaryDistanceStandardDeviation($sex, $age, $ipd)
        })
        #set($discard = $valueMapping.add($data))
      #end
      #if ($ear != 0)
        #set($data = {'id' : 'ear',
                      'value' : $ear,
-                     'percentile' : $!services.percentile.getEarLengthPercentile($sex, $age, $ear)
+                     'percentile' : $!services.percentile.getEarLengthPercentile($sex, $age, $ear),
+                     'deviation' : $!services.percentile.getEarLengthStandardDeviation($sex, $age, $ear)
        })
        #set($discard = $valueMapping.add($data))
      #end
      #if ($hand != 0)
        #set($data = {'id' : 'hand',
                      'value' : $hand,
-                     'percentile' : $!services.percentile.getHandLengthPercentile($sex, $age, $hand)
+                     'percentile' : $!services.percentile.getHandLengthPercentile($sex, $age, $hand),
+                     'deviation' : $!services.percentile.getHandLengthStandardDeviation($sex, $age, $hand)
        })
        #set($discard = $valueMapping.add($data))
      #end
      #if ($palm != 0)
        #set($data = {'id' : 'palm',
                      'value' : $palm,
-                     'percentile' : $!services.percentile.getPalmLengthPercentile($sex, $age, $palm)
+                     'percentile' : $!services.percentile.getPalmLengthPercentile($sex, $age, $palm),
+                     'deviation' : $!services.percentile.getPalmLengthStandardDeviation($sex, $age, $palm)
        })
        #set($discard = $valueMapping.add($data))
      #end
      #if ($foot != 0)
        #set($data = {'id' : 'foot',
                      'value' : $foot,
-                     'percentile' : $!services.percentile.getFootLengthPercentile($sex, $age, $foot)
+                     'percentile' : $!services.percentile.getFootLengthPercentile($sex, $age, $foot),
+                     'deviation' : $!services.percentile.getFootLengthStandardDeviation($sex, $age, $foot)
        })
        #set($discard = $valueMapping.add($data))
      #end
   #end##age
   {
   #foreach ($entry in $valueMapping)
+    #if ("$!entry.value" == '')
+      #set ($dValue = '-')
+    #else
+      #set ($pValue = $entry.percentile)
+      #set ($sdValue = $entry.deviation)
+      #set ($dValue = "${pValue}#if($pValue%10==1)&lt;sup&gt;st&lt;/sup&gt;#elseif($pValue%10==2)&lt;sup&gt;nd&lt;/sup&gt;#elseif($pValue%10==3)&lt;sup&gt;rd&lt;/sup&gt;#{else}&lt;sup&gt;th&lt;/sup&gt;#end pctl (#if ($sdValue &gt;= 0)+#end${mathtool.roundTo(2, $sdValue)}SD)")
+    #end
     "$entry.id" : {
         "value" : "#dashIfEmpty($entry.value)",
         "percentile" : "#dashIfEmpty($entry.percentile)",
-        "valCategory" : "$!services.percentile.getFuzzyValue($entry.percentile)"
+        "deviation" : "#dashIfEmpty($entry.deviation)",
+        "valCategory" : "$!services.percentile.getFuzzyValue($entry.deviation)",
+        "evaluation" : "$dValue"
     }#if($foreach.hasNext()),
 
     #end
