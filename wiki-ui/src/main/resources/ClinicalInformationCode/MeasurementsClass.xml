@@ -96,18 +96,14 @@
 </bmi>
 <bmi_percentile>
 <customDisplay>{{velocity}}
-#if ($xcontext.action != 'edit' || $request.editor != 'object')
-  #set ($dValue = "$!{value}")
-  #if ($dValue == '')
-    #set ($dValue = '-')
-  #end
-  {{html wiki=false clean=false}}
-  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
-  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
-  {{/html}}
-#else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#set ($dValue = "$!{value}")
+#if ($dValue == '')
+  #set ($dValue = '-')
 #end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
+&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
+{{/html}}
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>bmi_percentile</name>
@@ -157,18 +153,14 @@
 </ear>
 <ear_percentile>
 <customDisplay>{{velocity}}
-#if ($xcontext.action != 'edit' || $request.editor != 'object')
-  #set ($dValue = "$!{value}")
-  #if ($dValue == '')
-    #set ($dValue = '-')
-  #end
-  {{html wiki=false clean=false}}
-  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
-  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
-  {{/html}}
-#else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#set ($dValue = "$!{value}")
+#if ($dValue == '')
+  #set ($dValue = '-')
 #end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
+&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
+{{/html}}
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>ear_percentile</name>
@@ -196,18 +188,14 @@
 </foot>
 <foot_percentile>
 <customDisplay>{{velocity}}
-#if ($xcontext.action != 'edit' || $request.editor != 'object')
-  #set ($dValue = "$!{value}")
-  #if ($dValue == '')
-    #set ($dValue = '-')
-  #end
-  {{html wiki=false clean=false}}
-  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
-  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
-  {{/html}}
-#else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#set ($dValue = "$!{value}")
+#if ($dValue == '')
+  #set ($dValue = '-')
 #end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
+&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
+{{/html}}
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>foot_percentile</name>
@@ -235,18 +223,14 @@
 </hand>
 <hand_percentile>
 <customDisplay>{{velocity}}
-#if ($xcontext.action != 'edit' || $request.editor != 'object')
-  #set ($dValue = "$!{value}")
-  #if ($dValue == '')
-    #set ($dValue = '-')
-  #end
-  {{html wiki=false clean=false}}
-  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
-  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
-  {{/html}}
-#else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#set ($dValue = "$!{value}")
+#if ($dValue == '')
+  #set ($dValue = '-')
 #end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
+&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
+{{/html}}
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>hand_percentile</name>
@@ -261,18 +245,14 @@
 </hand_percentile>
 <hc_percentile>
 <customDisplay>{{velocity}}
-#if ($xcontext.action != 'edit' || $request.editor != 'object')
-  #set ($dValue = "$!{value}")
-  #if ($dValue == '')
-    #set ($dValue = '-')
-  #end
-  {{html wiki=false clean=false}}
-  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
-  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
-  {{/html}}
-#else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#set ($dValue = "$!{value}")
+#if ($dValue == '')
+  #set ($dValue = '-')
 #end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
+&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
+{{/html}}
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>hc_percentile</name>
@@ -313,18 +293,14 @@
 </height>
 <height_percentile>
 <customDisplay>{{velocity}}
-#if ($xcontext.action != 'edit' || $request.editor != 'object')
-  #set ($dValue = "$!{value}")
-  #if ($dValue == '')
-    #set ($dValue = '-')
-  #end
-  {{html wiki=false clean=false}}
-  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
-  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
-  {{/html}}
-#else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#set ($dValue = "$!{value}")
+#if ($dValue == '')
+  #set ($dValue = '-')
 #end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
+&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
+{{/html}}
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>height_percentile</name>
@@ -352,18 +328,14 @@
 </icd>
 <icd_percentile>
 <customDisplay>{{velocity}}
-#if ($xcontext.action != 'edit' || $request.editor != 'object')
-  #set ($dValue = "$!{value}")
-  #if ($dValue == '')
-    #set ($dValue = '-')
-  #end
-  {{html wiki=false clean=false}}
-  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
-  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
-  {{/html}}
-#else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#set ($dValue = "$!{value}")
+#if ($dValue == '')
+  #set ($dValue = '-')
 #end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
+&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
+{{/html}}
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>icd_percentile</name>
@@ -391,18 +363,14 @@
 </ipd>
 <ipd_percentile>
 <customDisplay>{{velocity}}
-#if ($xcontext.action != 'edit' || $request.editor != 'object')
-  #set ($dValue = "$!{value}")
-  #if ($dValue == '')
-    #set ($dValue = '-')
-  #end
-  {{html wiki=false clean=false}}
-  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
-  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
-  {{/html}}
-#else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#set ($dValue = "$!{value}")
+#if ($dValue == '')
+  #set ($dValue = '-')
 #end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
+&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
+{{/html}}
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>ipd_percentile</name>
@@ -430,18 +398,14 @@
 </ocd>
 <ocd_percentile>
 <customDisplay>{{velocity}}
-#if ($xcontext.action != 'edit' || $request.editor != 'object')
-  #set ($dValue = "$!{value}")
-  #if ($dValue == '')
-    #set ($dValue = '-')
-  #end
-  {{html wiki=false clean=false}}
-  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
-  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
-  {{/html}}
-#else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#set ($dValue = "$!{value}")
+#if ($dValue == '')
+  #set ($dValue = '-')
 #end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
+&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
+{{/html}}
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>ocd_percentile</name>
@@ -469,18 +433,14 @@
 </palm>
 <palm_percentile>
 <customDisplay>{{velocity}}
-#if ($xcontext.action != 'edit' || $request.editor != 'object')
-  #set ($dValue = "$!{value}")
-  #if ($dValue == '')
-    #set ($dValue = '-')
-  #end
-  {{html wiki=false clean=false}}
-  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
-  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
-  {{/html}}
-#else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#set ($dValue = "$!{value}")
+#if ($dValue == '')
+  #set ($dValue = '-')
 #end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
+&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
+{{/html}}
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>palm_percentile</name>
@@ -508,18 +468,14 @@
 </pfl>
 <pfl_percentile>
 <customDisplay>{{velocity}}
-#if ($xcontext.action != 'edit' || $request.editor != 'object')
-  #set ($dValue = "$!{value}")
-  #if ($dValue == '')
-    #set ($dValue = '-')
-  #end
-  {{html wiki=false clean=false}}
-  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
-  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
-  {{/html}}
-#else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#set ($dValue = "$!{value}")
+#if ($dValue == '')
+  #set ($dValue = '-')
 #end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
+&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
+{{/html}}
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>pfl_percentile</name>
@@ -547,18 +503,14 @@
 </weight>
 <weight_percentile>
 <customDisplay>{{velocity}}
-#if ($xcontext.action != 'edit' || $request.editor != 'object')
-  #set ($dValue = "$!{value}")
-  #if ($dValue == '')
-    #set ($dValue = '-')
-  #end
-  {{html wiki=false clean=false}}
-  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
-  &lt;div class="$name displayed-value $!services.percentile.getFuzzyValue($!value)"&gt;$dValue&lt;/div&gt;
-  {{/html}}
-#else{
-  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#set ($dValue = "$!{value}")
+#if ($dValue == '')
+  #set ($dValue = '-')
 #end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="${prefix}${name}" value="$!{value}"/&gt;#end
+&lt;div class="${name} displayed-value $!{services.percentile.getFuzzyValue($!value)}"&gt;${dValue}&lt;/div&gt;
+{{/html}}
 {{/velocity}}</customDisplay>
 <disabled>0</disabled>
 <name>weight_percentile</name>
