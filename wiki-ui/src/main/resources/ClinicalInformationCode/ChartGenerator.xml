@@ -50,6 +50,21 @@
     #set ($v = $services.percentile.getPercentileOuterCanthalDistance($sex, $age, $p))
   #end
 #end
+#macro (getSDValue $age $d)
+  #if ($chart.startsWith('weight'))
+    #set ($v = $services.percentile.getStandardDeviationWeight($sex, $age, $d))
+  #elseif ($chart.startsWith('height'))
+    #set ($v = $services.percentile.getStandardDeviationHeight($sex, $age, $d))
+  #elseif ($chart.startsWith('hc'))
+    #set ($v = $services.percentile.getStandardDeviationHC($sex, $age, $d))
+  #elseif ($chart.startsWith('bmi'))
+    #set ($v = $services.percentile.getStandardDeviationBMI($sex, $age, $d))
+  #elseif ($chart.startsWith('icd'))
+    #set ($v = $services.percentile.getStandardDeviationInnerCanthalDistance($sex, $age, $d))
+  #elseif ($chart.startsWith('ocd'))
+    #set ($v = $services.percentile.getStandardDeviationOuterCanthalDistance($sex, $age, $d))
+  #end
+#end
 #macro (getValuePercentile $age $v)
   #if ($chart.startsWith('weight'))
     #set ($p = $services.percentile.getWeightPercentile($sex, $age, $v))
@@ -63,6 +78,21 @@
     #set ($p = $services.percentile.getInnerCanthalDistancePercentile($sex, $age, $v))
   #elseif ($chart.startsWith('ocd'))
     #set ($p = $services.percentile.getOuterCanthalDistancePercentile($sex, $age, $v))
+  #end
+#end
+#macro (getValueSD $age $v)
+  #if ($chart.startsWith('weight'))
+    #set ($d = $services.percentile.getWeightStandardDeviation($sex, $age, $v))
+  #elseif ($chart.startsWith('height'))
+    #set ($d = $services.percentile.getHeightStandardDeviation($sex, $age, $v))
+  #elseif ($chart.startsWith('hc'))
+    #set ($d = $services.percentile.getHCStandardDeviation($sex, $age, $v))
+  #elseif ($chart.startsWith('bmi'))
+    #set ($d = $services.percentile.getBMIStandardDeviation($sex, $age, $v))
+  #elseif ($chart.startsWith('icd'))
+    #set ($d = $services.percentile.getInnerCanthalDistanceStandardDeviation($sex, $age, $v))
+  #elseif ($chart.startsWith('ocd'))
+    #set ($d = $services.percentile.getOuterCanthalDistanceStandardDeviation($sex, $age, $v))
   #end
 #end
 #macro (getPercentileColor $p)
@@ -175,11 +205,14 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
   stroke-width: 1px;
   stroke: #AAA;
 }
-.chart-percentile-curve {
+.chart-percentile-curve, .chart-deviation-curve {
   stroke: #000;
   stroke-width: 1px;
   stroke-linejoin: round;
   fill: none;
+}
+.chart-deviation, .chart-deviation-curve {
+  display: none;
 }
 .boy .chart-percentile-curve {
   stroke: #1059A0;
@@ -223,7 +256,7 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
 tspan.boy {
   fill: #1059A0;
 }
-.chart-percentile.background {
+.chart-percentile.chart-background {
   stroke: none;
   fill: white;
 }
@@ -298,6 +331,31 @@ tspan.girl {
     #end
     "/&gt;
   #end
+  #foreach ($d in [-3..3])
+    #getSDValue($parameters.minX $d)
+    &lt;path clip-path="url(#border${chartCounter})" class="chart-deviation-curve#if ($d == -2 || $d == 2) bold#end" d="M$mathtool.mul(0.5, $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))L##
+    #foreach ($i in [1..$xlines])
+      #set ($age = $mathtool.add($mathtool.mul($i, $parameters.stepX), $parameters.minX))
+      #getSDValue($age $d)
+      $mathtool.mul($mathtool.add(0.5, $foreach.count), $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale)) ##
+      #if ($age == 23 &amp;&amp; ($chart.startsWith('height') || $chart.startsWith('bmi')) &amp;&amp; $parameters.minX &lt; 24 &amp;&amp; $parameters.maxX &gt; 24)
+        #set ($v2 = $v)
+        #getSDValue($mathtool.sub($age, 1) $d)
+        #set ($v1 = $v)
+        #set ($m = ($v2 - $v1) / 2)
+        #set ($v3 = $v2 + $m)
+        $mathtool.mul($mathtool.add(1, $foreach.count), $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v3, $parameters.min), $yscale)) ##
+        #getSDValue($mathtool.add($age, 2) $d)
+        #set ($v3 = $v)
+        #getSDValue($mathtool.add($age, 1) $d)
+        #set ($v2 = $v)
+        #set ($m = ($v3 - $v2) / 2)
+        #set ($v1 = $v2 - $m)
+        M $mathtool.mul($mathtool.add(1, $foreach.count), $xstep) $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v1, $parameters.min), $yscale)) L##
+      #end
+    #end
+    "/&gt;
+  #end
 &lt;g clip-path="url(#border${chartCounter})"&gt;
   #foreach ($m in $measurements)
     #getValuePercentile($m.a $m.x)
@@ -329,6 +387,11 @@ tspan.girl {
     #getPercentileValue($mathtool.sub($parameters.maxX, 1) $p)
     &lt;circle cx="$mathtool.mul($mathtool.sub($xlines, 0.5), $xstep)" cy="$mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))" r="#if ($p == 3)0.5#{else}0.7#{end}em" class="chart-percentile chart-background"/&gt;
     &lt;text x="$mathtool.mul($mathtool.sub($xlines, 0.5), $xstep)" y="$mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))" class="chart-percentile chart-label" dy="0.5ex"&gt;$p&lt;/text&gt;
+  #end
+  #foreach ($d in [-3..3])
+    #getSDValue($mathtool.sub($parameters.maxX, 1) $d)
+    &lt;ellipse cx="$mathtool.mul($mathtool.sub($xlines, 0.85), $xstep)" cy="$mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))" ry="0.7em" rx="1.2em" class="chart-deviation chart-background"/&gt;
+    &lt;text x="$mathtool.mul($mathtool.sub($xlines, 0.85), $xstep)" y="$mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($v, $parameters.min), $yscale))" class="chart-deviation chart-label" dy="0.5ex"&gt;#if ($d &gt;= 0)+#end${d}SD&lt;/text&gt;
   #end
   #foreach ($m in $measurements)
     #set ($x = $mathtool.mul($mathtool.add(0.5, $mathtool.sub($m.a, $parameters.minX)), $xscale))
