@@ -38,7 +38,7 @@
 #set ($query = ', BaseObject obj where doc.space = ? and obj.name = doc.fullName and obj.className = ?')
 #set ($parameters = [$targetSpace, $targetClassName])
 #set ($isFirstReferrer = true)
-#foreach ($referrer in $request.getParameterValues('export_referrer'))
+#foreach ($referrer in $request.getParameterValues('doc.creator'))
   #if ($referrer != '')
     #if ($isFirstReferrer)
       #set ($query = $query.concat(" and (doc.creator = ?"))
@@ -53,16 +53,16 @@
   #set ($query = $query.concat(')'))
 #end
 #set ($isFirstPhenotype = true)
-#if ("$!request.export_phenotype_combine" == 'any')
+#if ("$!request.phenotype_combine" == 'any')
   #set ($separator = 'or')
 #else
   #set ($separator = 'and')
 #end
-#foreach ($phenotype in $request.getParameterValues('export_phenotype'))
+#foreach ($phenotype in $request.getParameterValues('phenotype'))
   #if ($phenotype != '')
     #if ($isFirstPhenotype)
       #set ($isFirstPhenotype = false)
-      #if ("$!request.export_phenotype_subterms" == 'no')
+      #if ("$!request.phenotype_subterms" == 'no')
         #set ($query = ", DBStringListProperty phenotype join phenotype.list as phenotypeValue ${query} and phenotype.id.id = obj.id and phenotype.id.name = 'phenotype' and (? in phenotypeValue")
       #else
         #set ($query = ", DBStringListProperty phenotype join phenotype.list as phenotypeValue ${query} and phenotype.id.id = obj.id and phenotype.id.name = 'extended_phenotype' and (? in phenotypeValue")
@@ -77,12 +77,12 @@
   #set ($query = $query.concat(')'))
 #end
 #set ($isFirstDisease = true)
-#if ("$!request.export_disease_combine" == 'any')
+#if ("$!request.omim_id_combine" == 'any')
   #set ($separator = 'or')
 #else
   #set ($separator = 'and')
 #end
-#foreach ($disease in $request.getParameterValues('export_disease'))
+#foreach ($disease in $request.getParameterValues('omim_id'))
   #if ($disease != '')
     #if ($isFirstDisease)
       #set ($query = ", DBStringListProperty disease join disease.list as diseaseValue ${query} and disease.id.id = obj.id and disease.id.name = 'omim_id' and (? in diseaseValue")
@@ -96,25 +96,25 @@
 #if (!$isFirstDisease)
   #set ($query = $query.concat(')'))
 #end
-#if ("$!request.export_creation_date_after" != '')
-  #set ($date = $dateFormat.parseDateTime($request.export_creation_date_after))
+#if ("$!request.get('doc.creationDate_after')" != '')
+  #set ($date = $dateFormat.parseDateTime($request.get('doc.creationDate_after')))
   #set ($query = $query.concat(' and doc.creationDate &gt; ?'))
   #set ($discard = $parameters.add($date.toDate()))
 #end
-#if ("$!request.export_creation_date_before" != '')
-  #set ($date = $dateFormat.parseDateTime($request.export_creation_date_before))
+#if ("$!request.get('doc.creationDate_before')" != '')
+  #set ($date = $dateFormat.parseDateTime($request.get('doc.creationDate_before')))
   #set ($query = $query.concat(' and doc.creationDate &lt; ?'))
   #set ($discard = $parameters.add($date.toDate()))
 #end
 #set ($hasBDate = false)
-#if ("$!request.export_date_of_birth_after" != '')
-  #set ($date = $dateFormat.parseDateTime($request.export_date_of_birth_after))
+#if ("$!request.date_of_birth_after" != '')
+  #set ($date = $dateFormat.parseDateTime($request.date_of_birth_after))
   #set ($query = ", DateProperty birthDate $query and birthDate.id.id = obj.id and birthDate.id.name = 'date_of_birth' and birthDate.value &gt; ?")
   #set ($discard = $parameters.add($date.toDate()))
   #set ($hasBDate = true)
 #end
-#if ("$!request.export_date_of_birth_before" != '')
-  #set ($date = $dateFormat.parseDateTime($request.export_date_of_birth_before))
+#if ("$!request.date_of_birth_before" != '')
+  #set ($date = $dateFormat.parseDateTime($request.date_of_birth_before))
   #if ($hasBDate)
     #set ($query = "$query and birthDate.value &lt; ?")
   #else
