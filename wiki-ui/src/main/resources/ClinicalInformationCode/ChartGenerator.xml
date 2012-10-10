@@ -397,7 +397,9 @@ tspan.girl {
     #set ($x = $mathtool.mul($mathtool.add(0.5, $mathtool.sub($m.a, $parameters.minX)), $xscale))
     #set ($y = $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($m.x, $parameters.min), $yscale)))
     #getValuePercentile($m.a $m.x)
-    &lt;circle cx="$x" cy="$y" fill="#getPercentileColor($p)" stroke="black" stroke-width="4" r="7" /&gt;
+    #getValueSD($m.a $m.x)
+    #set ($d = $mathtool.roundTo(2, $d))
+    &lt;circle cx="$x" cy="$y" fill="#getPercentileColor($p)" stroke="black" stroke-width="4" r="7" title="$p pctl (#if ($d &gt;= 0)+#end${d}SD)"/&gt;
   #end
   &lt;/g&gt;
   &lt;rect x="0" y="0" width="$graphWidth" height="$graphHeight" class="chart-border" /&gt;
