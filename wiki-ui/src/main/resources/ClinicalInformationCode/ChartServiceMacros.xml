@@ -41,6 +41,9 @@
 ## Build measurements data from objects
 ## ---------------------------------------------------------
 #macro (_buildMeasurementsFromObjects $targetClassName $obj)
+  #if (!$obj.getProperty('date_of_birth').value)
+    #break
+  #end
   #macro (_updateMeasurements $measurements $o $sourceName $age)
     #if ("$!{o.getProperty($sourceName).value}" != '')
       #if ("$!ageLimits.get($sourceName)" == '')
