@@ -21,17 +21,22 @@ package edu.toronto.cs.cidb.tools;
 
 public class FormField extends AbstractFormElement {
 
+	protected static final String DEFAULT_CSS_CLASS = "term-entry";
+	protected static final String EXPANDIBLE_CSS_CLASS = " dropdown-root";
 	protected final String value;
 	protected final boolean selection[];
+	private final boolean expandable;
 
-	FormField(String value, String title, String name, boolean selected) {
-		this(value, title, selected, false);
+	FormField(String value, String title, boolean expandible, String name,
+			boolean selected) {
+		this(value, title, expandible, selected, false);
 	}
 
-	FormField(String value, String title, boolean yesSelected,
-			boolean noSelected) {
+	FormField(String value, String title, boolean expandable,
+			boolean yesSelected, boolean noSelected) {
 		super(title);
 		this.value = value;
+		this.expandable = expandable;
 		this.selection = new boolean[2];
 		this.selection[YES] = yesSelected;
 		this.selection[NO] = noSelected;
@@ -56,7 +61,10 @@ public class FormField extends AbstractFormElement {
 
 	protected String generateFormField(String fieldNames[]) {
 		if (fieldNames[NO] != null) {
-			return "<span class='yes-no-picker'>"
+			return "<span class='"
+					+ DEFAULT_CSS_CLASS
+					+ (this.isExpandable() ? EXPANDIBLE_CSS_CLASS : "")
+					+ "'><span class='yes-no-picker'>"
 					+ generateCheckbox("NA", this.value, "",
 							(!isSelected(YES) && !isSelected(NO)), "na", "NA")
 					+ generateCheckbox(fieldNames[YES], this.value, this.title,
@@ -65,17 +73,27 @@ public class FormField extends AbstractFormElement {
 							isSelected(NO), "no", "N")
 					+ "</span>"
 					+ generateLabel(fieldNames[YES] + "_" + this.value,
-							"yes-no-picker-label", this.title);
+							"yes-no-picker-label", this.title) + "</span>";
 		} else {
-			return generateCheckbox(fieldNames[YES], this.value, this.title,
-					isSelected(YES), "term-label", this.title);
+			return generateCheckbox(
+					fieldNames[YES],
+					this.value,
+					this.title,
+					isSelected(YES),
+					DEFAULT_CSS_CLASS
+							+ (this.isExpandable() ? EXPANDIBLE_CSS_CLASS : ""),
+					this.title);
 		}
+	}
+
+	private boolean isExpandable() {
+		return this.expandable;
 	}
 
 	protected String generateSelection(final String fieldNames[]) {
 		String selectionMarker = isSelected(YES) ? "yes-selected"
 				: isSelected(NO) ? "no-selected" : null;
-		return (selectionMarker != null) ? ("<div class='value-checked"
+		return (selectionMarker != null) ? ("<div class='value-checked "
 				+ selectionMarker + "'>" + this.title + "</div>") : "";
 	}
 

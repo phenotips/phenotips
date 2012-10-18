@@ -45,6 +45,7 @@ public class PropertyDisplayer {
 	private static final String INDEXED_CATEGORY_KEY = "term_category";
 
 	private static final String DEFAULT_SECTION_TITLE = "Other";
+	private static final String INDEXED_PARENT_KEY = "is_a";
 
 	List<FormSection> sections = new LinkedList<FormSection>();
 
@@ -88,21 +89,19 @@ public class PropertyDisplayer {
 		for (String value : customNoSelected) {
 			nCustomCategories.put(value, this.getCategoriesFromOntology(value));
 		}
-		this.sections.add(new FormSection(DEFAULT_SECTION_TITLE, propertyName,
-				new LinkedList<String>()));
 		for (FormSection section : this.sections) {
 			List<String> yCustomFieldIDs = this.assignCustomFields(section,
 					yCustomCategories);
 			List<String> nCustomFieldIDs = this.assignCustomFields(section,
 					nCustomCategories);
 			for (String val : yCustomFieldIDs) {
-				section.addCustomElement(this.generateField(val, null, true,
-						false));
+				section.addCustomElement(this.generateField(val, null, false,
+						true, false));
 				yCustomCategories.remove(val);
 			}
 			for (String val : nCustomFieldIDs) {
 				section.addCustomElement(this.generateField(val, null, false,
-						true));
+						false, true));
 				nCustomCategories.remove(val);
 			}
 		}
@@ -189,19 +188,25 @@ public class PropertyDisplayer {
 			List<String> customYesSelected, List<String> customNoSelected) {
 		String id = (String) fieldTemplate.get(ID_KEY);
 		boolean yesSelected = customYesSelected.remove(id);
-		boolean noSelected = customYesSelected.remove(id);
+		boolean noSelected = customNoSelected.remove(id);
 		return this.generateField(id, (String) fieldTemplate.get(TITLE_KEY),
 				yesSelected, noSelected);
 
 	}
 
 	private FormElement generateField(String id, String title,
-			boolean yesSelected, boolean noSelected) {
+			boolean expandable, boolean yesSelected, boolean noSelected) {
 		if (title == null) {
 			title = getLabelFromOntology(id);
 		}
-		FormElement field = new FormField(id, title, yesSelected, noSelected);
-		return field;
+		return new FormField(id, title, expandable, yesSelected, noSelected);
+
+	}
+
+	private FormElement generateField(String id, String title,
+			boolean yesSelected, boolean noSelected) {
+		return generateField(id, title, hasDescendenntsInOntology(id),
+				yesSelected, noSelected);
 
 	}
 
@@ -230,6 +235,13 @@ public class PropertyDisplayer {
 			return (String) phObj.get(INDEXED_NAME_KEY);
 		}
 		return id;
+	}
+
+	private boolean hasDescendenntsInOntology(String id) {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put(INDEXED_PARENT_KEY, id);
+		return (((SolrScriptService) this.ontologyService).search(params, 1, 0)
+				.size() > 0);
 	}
 
 	@SuppressWarnings("unchecked")

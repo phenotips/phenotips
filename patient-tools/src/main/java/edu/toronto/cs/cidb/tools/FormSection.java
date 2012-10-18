@@ -53,39 +53,54 @@ public class FormSection extends FormGroup {
 	@Override
 	public String display(DisplayMode mode, String fieldNames[]) {
 		String displayedElements = super.display(mode, fieldNames);
-		if (StringUtils.isBlank(displayedElements)) {
+		String customValueDisplay = this.customElements.display(mode,
+				fieldNames);
+		if (!DisplayMode.Edit.equals(mode)
+				&& StringUtils.isBlank(displayedElements)
+				&& StringUtils.isBlank(customValueDisplay)) {
 			return "";
 		}
-		return "<div class='" + this.getPropertyName() + "-group'><h3 id='H"
-				+ this.title.replaceAll("[^a-zA-Z0-9]", "") + ">" + this.title
-				+ "</h3><div class='" + this.getPropertyName() + "-main'>"
-				+ displayedElements + "</div>"
-				+ generateSuggestionsField(mode, fieldNames) + "</div>";
+		return "<div class='"
+				+ this.getPropertyName()
+				+ "-group'><h3 id='H"
+				+ this.title.replaceAll("[^a-zA-Z0-9]", "")
+				+ "'>"
+				+ this.title
+				+ "</h3><div class='"
+				+ this.getPropertyName()
+				+ "-main predefined-entries'>"
+				+ displayedElements
+				+ "</div>"
+				+ "<div class='"
+				+ this.getPropertyName()
+				+ "-other custom-entries'>"
+				+ (!StringUtils.isBlank(customValueDisplay) ? ("<div class=\"custom-display-data\">"
+						+ customValueDisplay + "</div>")
+						: "") + generateSuggestionsField(mode, fieldNames)
+				+ "</div></div>";
 	}
 
 	private String generateSuggestionsField(DisplayMode mode,
 			String fieldNames[]) {
-		String result = "<div class='" + this.getPropertyName() + "-other'>";
-		String customValueDisplay = this.customElements.display(mode,
-				fieldNames);
-		if (!StringUtils.isBlank(customValueDisplay)) {
-			result += "<div class=\"custom-display-data\">"
-					+ customValueDisplay + "</div>";
+		if (!DisplayMode.Edit.equals(mode)) {
+			return "";
 		}
+		String result = "";
 		String id = fieldNames[YES] + "_" + Math.random();
 		String displayedLabel = "Other";
-		result = "<label for='" + id + "' class='label-other label-other-"
+		result += "<label for='" + id + "' class='label-other label-other-"
 				+ fieldNames[YES] + "'>" + displayedLabel + "</label>";
 		result += "<p class='hint'>(enter free text and choose among suggested ontology terms)</p>";
 
 		result += "<input type='text' name='"
 				+ fieldNames[YES]
-				+ "' class='suggested multi suggest-hpo generateYesNo' value='' size='16' id='"
-				+ id + "'/>";
+				+ "' class='suggested multi suggest-hpo "
+				+ (fieldNames[NO] == null ? "generateCheckboxes"
+						: "generateYesNo")
+				+ " accept-value' value='' size='16' id='" + id + "'/>";
 		result += "<input type='hidden' value='"
 				+ this.categories.toString().replaceAll("[\\[\\]\\s]", "")
-				+ "'_category'>";
-		result += "</div>";
+				+ "' name='_category'/>";
 		return result;
 	}
 

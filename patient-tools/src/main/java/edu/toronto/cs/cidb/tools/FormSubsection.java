@@ -38,7 +38,7 @@ public class FormSubsection extends FormGroup {
 			return "";
 		}
 		return "<label class='section'>" + this.title
-				+ "</label><<div class='subsection'>" + displayedElements
+				+ "</label><div class='subsection'>" + displayedElements
 				+ "</div>";
 	}
 }

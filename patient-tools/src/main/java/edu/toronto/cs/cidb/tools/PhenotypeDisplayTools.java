@@ -126,6 +126,24 @@ public class PhenotypeDisplayTools implements ScriptService {
 				getSelectedValues(NO_SELECTION_MARKER)).display(getMode());
 	}
 
+	public void clear() {
+		this.execution.getContext().removeProperty(DOCUMENT_KEY);
+		this.execution.getContext().removeProperty(MODE_KEY);
+		this.execution.getContext().removeProperty(
+				YES_SELECTION_MARKER + FIELD_NAME_KEY);
+		this.execution.getContext().removeProperty(
+				NO_SELECTION_MARKER + FIELD_NAME_KEY);
+		this.execution.getContext().removeProperty(
+				YES_SELECTION_MARKER + PROPERTY_NAME_KEY);
+		this.execution.getContext().removeProperty(
+				NO_SELECTION_MARKER + PROPERTY_NAME_KEY);
+		this.execution.getContext().removeProperty(
+				YES_SELECTION_MARKER + SELECTED_VALUES_KEY);
+		this.execution.getContext().removeProperty(
+				NO_SELECTION_MARKER + SELECTED_VALUES_KEY);
+		this.execution.getContext().removeProperty(MESSAGES_KEY);
+	}
+
 	private Document getDocument() {
 		return (Document) this.execution.getContext().getProperty(DOCUMENT_KEY);
 	}
