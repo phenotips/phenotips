@@ -20,6 +20,7 @@
 package edu.toronto.cs.cidb.tools;
 
 import org.apache.commons.lang3.StringUtils;
+import org.xwiki.xml.XMLUtils;
 
 public class FormSubsection extends FormGroup {
 	FormSubsection(String title) {
@@ -37,7 +38,8 @@ public class FormSubsection extends FormGroup {
 		if (StringUtils.isBlank(displayedElements)) {
 			return "";
 		}
-		return "<label class='section'>" + this.title
+		return "<label class='section'>"
+				+ XMLUtils.escapeElementContent(this.title)
 				+ "</label><div class='subsection'>" + displayedElements
 				+ "</div>";
 	}

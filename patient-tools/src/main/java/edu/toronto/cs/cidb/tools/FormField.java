@@ -19,6 +19,8 @@
  */
 package edu.toronto.cs.cidb.tools;
 
+import org.xwiki.xml.XMLUtils;
+
 public class FormField extends AbstractFormElement {
 
 	protected static final String DEFAULT_CSS_CLASS = "term-entry";
@@ -94,7 +96,8 @@ public class FormField extends AbstractFormElement {
 		String selectionMarker = isSelected(YES) ? "yes-selected"
 				: isSelected(NO) ? "no-selected" : null;
 		return (selectionMarker != null) ? ("<div class='value-checked "
-				+ selectionMarker + "'>" + this.title + "</div>") : "";
+				+ selectionMarker + "'>"
+				+ XMLUtils.escapeElementContent(this.title) + "</div>") : "";
 	}
 
 	private String generateCheckbox(String name, String value, String title,
@@ -103,14 +106,14 @@ public class FormField extends AbstractFormElement {
 		return "<label class='" + labelClass + "' for='" + id
 				+ "'><input type='checkbox' name='" + name + "' value='"
 				+ value + "' id='" + id + "' title='" + title + "'"
-				+ (selected ? " checked='checked'" : "") + "/>" + labelText
-				+ "</label>";
+				+ (selected ? " checked='checked'" : "") + "/>"
+				+ XMLUtils.escapeElementContent(labelText) + "</label>";
 	}
 
 	private String generateLabel(String forId, String labelClass,
 			String labelText) {
 		return "<label class='" + labelClass + "' for='" + forId + "'>"
-				+ labelText + "</label>";
+				+ XMLUtils.escapeElementContent(labelText) + "</label>";
 	}
 
 	@Override

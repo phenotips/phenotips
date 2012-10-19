@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.xwiki.xml.XMLUtils;
 
 public class FormSection extends FormGroup {
 	private final String propertyName;
@@ -65,7 +66,7 @@ public class FormSection extends FormGroup {
 				+ "-group'><h3 id='H"
 				+ this.title.replaceAll("[^a-zA-Z0-9]", "")
 				+ "'>"
-				+ this.title
+				+ XMLUtils.escapeElementContent(this.title)
 				+ "</h3><div class='"
 				+ this.getPropertyName()
 				+ "-main predefined-entries'>"
