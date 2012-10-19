@@ -201,10 +201,12 @@ public class PropertyDisplayer {
 
 	private FormElement generateField(String id, String title,
 			boolean expandable, boolean yesSelected, boolean noSelected) {
+		String hint = getLabelFromOntology(id);
 		if (title == null) {
-			title = getLabelFromOntology(id);
+			title = hint;
 		}
-		return new FormField(id, title, expandable, yesSelected, noSelected);
+		return new FormField(id, title, hint, expandable, yesSelected,
+				noSelected);
 
 	}
 

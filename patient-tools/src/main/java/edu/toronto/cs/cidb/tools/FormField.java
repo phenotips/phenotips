@@ -28,16 +28,18 @@ public class FormField extends AbstractFormElement {
 	protected final String value;
 	protected final boolean selection[];
 	private final boolean expandable;
+	private final String hint;
 
-	FormField(String value, String title, boolean expandible, String name,
-			boolean selected) {
-		this(value, title, expandible, selected, false);
+	FormField(String value, String title, String hint, boolean expandable,
+			String name, boolean selected) {
+		this(value, title, hint, expandable, selected, false);
 	}
 
-	FormField(String value, String title, boolean expandable,
+	FormField(String value, String title, String hint, boolean expandable,
 			boolean yesSelected, boolean noSelected) {
 		super(title);
 		this.value = value;
+		this.hint = hint;
 		this.expandable = expandable;
 		this.selection = new boolean[2];
 		this.selection[YES] = yesSelected;
@@ -69,9 +71,9 @@ public class FormField extends AbstractFormElement {
 					+ "'><span class='yes-no-picker'>"
 					+ generateCheckbox("NA", this.value, "",
 							(!isSelected(YES) && !isSelected(NO)), "na", "NA")
-					+ generateCheckbox(fieldNames[YES], this.value, this.title,
+					+ generateCheckbox(fieldNames[YES], this.value, this.hint,
 							isSelected(YES), "yes", "Y")
-					+ generateCheckbox(fieldNames[NO], this.value, this.title,
+					+ generateCheckbox(fieldNames[NO], this.value, this.hint,
 							isSelected(NO), "no", "N")
 					+ "</span>"
 					+ generateLabel(fieldNames[YES] + "_" + this.value,
@@ -80,7 +82,7 @@ public class FormField extends AbstractFormElement {
 			return generateCheckbox(
 					fieldNames[YES],
 					this.value,
-					this.title,
+					this.hint,
 					isSelected(YES),
 					DEFAULT_CSS_CLASS
 							+ (this.isExpandable() ? EXPANDIBLE_CSS_CLASS : ""),
