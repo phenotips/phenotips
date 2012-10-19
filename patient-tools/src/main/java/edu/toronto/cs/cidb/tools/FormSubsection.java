@@ -23,8 +23,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.xwiki.xml.XMLUtils;
 
 public class FormSubsection extends FormGroup {
+	private final String type;
+
 	FormSubsection(String title) {
+		this(title, "");
+	}
+
+	FormSubsection(String title, String type) {
 		super(title);
+		this.type = type;
 	}
 
 	@Override
@@ -40,7 +47,7 @@ public class FormSubsection extends FormGroup {
 		}
 		return "<label class='section'>"
 				+ XMLUtils.escapeElementContent(this.title)
-				+ "</label><div class='subsection'>" + displayedElements
-				+ "</div>";
+				+ "</label><div class='subsection " + this.type + "'>"
+				+ displayedElements + "</div>";
 	}
 }

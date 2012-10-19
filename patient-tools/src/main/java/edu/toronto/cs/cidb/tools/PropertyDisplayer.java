@@ -32,6 +32,7 @@ import edu.toronto.cs.cidb.solr.SolrScriptService;
 
 public class PropertyDisplayer {
 	private static final String TYPE_KEY = "type";
+	private static final String GROUP_TYPE_KEY = "group_type";
 	private static final String ID_KEY = "id";
 	private static final String TITLE_KEY = "title";
 	private static final String CATEGORIES_KEY = "categories";
@@ -161,7 +162,11 @@ public class PropertyDisplayer {
 	private FormElement generateSubsection(Map<String, ?> subsectionTemplate,
 			List<String> customYesSelected, List<String> customNoSelected) {
 		String title = (String) subsectionTemplate.get(TITLE_KEY);
-		FormGroup subsection = new FormSubsection(title);
+		String type = (String) subsectionTemplate.get(GROUP_TYPE_KEY);
+		if (type == null) {
+			type = "";
+		}
+		FormGroup subsection = new FormSubsection(title, type);
 		generateData(subsection, subsectionTemplate, customYesSelected,
 				customNoSelected);
 		return subsection;
