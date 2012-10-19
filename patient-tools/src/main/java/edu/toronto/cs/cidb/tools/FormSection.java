@@ -64,10 +64,10 @@ public class FormSection extends FormGroup {
 		return "<div class='"
 				+ this.getPropertyName()
 				+ "-group'><h3 id='H"
-				+ this.title.replaceAll("[^a-zA-Z0-9]", "")
-				+ "'>"
+				+ this.title.replaceAll("[^a-zA-Z0-9]+", "-")
+				+ "'><span>"
 				+ XMLUtils.escapeElementContent(this.title)
-				+ "</h3><div class='"
+				+ "</span></h3><div class='"
 				+ this.getPropertyName()
 				+ "-main predefined-entries'>"
 				+ displayedElements

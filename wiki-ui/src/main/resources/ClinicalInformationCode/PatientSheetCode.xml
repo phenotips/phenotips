@@ -1025,6 +1025,130 @@ document.observe('dom:loaded', function() {
                   'onItemAdded' : jumpToPubmed
                 }
     }
+    // ------------------------------------------------------------------------
+    // Generate selection summary
+    // ------------------------------------------------------------------------
+    selectionSummary = $('current-phenotype-selection');
+    if (selectionSummary) {
+        $$('.browse-phenotype-categories .phenotype-group h3').each(function(groupTitle) {
+           var group = new Element('div', {'class' : 'summary-group', id : 'summary-group-' + groupTitle.id});
+           group.insert({
+             top: new Element('h3').update(groupTitle.down('span:not(.expand-tool)').innerHTML),
+             bottom: new Element('div', {'class' : 'group-contents'})
+           });
+           selectionSummary.insert(group);
+           group._updateGroupVisibility = function() {
+             if (!this.down('.group-contents input')) {
+               this.hide();
+             } else {
+               this.show();
+             }
+           }.bind(group);
+           group._find = function(value, type) {
+             return this.down('.group-contents .' + type + ' input[value="' + value + '"]');
+           }.bind(group);
+           group._add = function(element) {
+             this.down('.group-contents').insert(element) ;
+           }.bind(group);
+           group._updateGroupVisibility();
+        });
+        selectionSummary._getGroup = function(name) {
+          return $('summary-group-' + name);
+        }.bind(selectionSummary);
+
+        selectionSummary._find = function(value, type) {
+             return this.down('.summary-group .summary-item .' + type + ' input[value="' + value + '"]');
+        }.bind(selectionSummary);
+
+        selectionSummary._silentRemove = function(value, type) {
+             var exists = this._find(value,type);
+             if (exists) {
+               var group = exists.up('.summary-group');
+               exists.up('.summary-item').remove();
+               if (!group) {return;}
+               group._updateGroupVisibility();
+             }
+        }.bind(selectionSummary);
+        selectionSummary._remove = function(value, type) {
+             var exists = this._find(value, type);
+             if (exists) {
+               var source = exists.up('.summary-item').__source;
+               if (source._ynpicker) {
+                 source._ynpicker._onUnselect();
+               } else {
+                 source.click();
+               }
+             }
+        }.bind(selectionSummary);
+
+        selectionSummary._updateSummary = function(inputElt, type, forceUpdate) {
+          if (!inputElt) {return}
+          var sectionId = inputElt.up('.phenotype-group') &amp;&amp; inputElt.up('.phenotype-group').down('h3');
+          if (sectionId) {
+            sectionId = sectionId.id;
+          } else {
+            return;
+          }
+          if (inputElt.checked) {
+             if (forceUpdate) {
+                this._silentRemove(inputElt.value, type);
+             }
+             var exists = this._find(inputElt.value, type);
+             if (!exists) {
+               var group = this._getGroup(sectionId);
+               if (!group) {return;}
+               var newItem = new Element('div', {'class' : 'summary-item'}).update(
+                  new Element('label', {'class' : type}).insert({
+                     'top': new Element('input', {'value' : inputElt.value, checked : 'checked', type : 'checkbox', 'class': 'hidden'}),
+                     'bottom' : inputElt.title || inputElt.nextSibling.nodeValue || inputElt.nextSibling.firstChild.nodeValue || inputElt.value
+                  })
+               );
+               newItem.__source = inputElt;
+               var tools = new Element('span', {'class' : 'tools hint'});
+               var deleteTool = new Element('span', {'class' : 'tool'}).update('Delete');
+               var detailsTool = new Element('span', {'class' : 'tool'}).update('Details...');
+               tools.insert(deleteTool);//.insert(' · ').insert(detailsTool);
+               deleteTool.observe('click', function(event) {
+                 var source = event.findElement('.summary-item').__source;
+                 if (source._ynpicker) {
+                   source._ynpicker._onUnselect();
+                 } else {
+                   source.click();
+                 }
+               });
+               detailsTool.observe('click', function(event) {
+                 alert('Coming soon:\n- specify onset age and end age for this symptom,\n- add comments,\n- upload relevant images.');
+               });
+               newItem.insert(tools);
+               group._add(newItem);
+               group._updateGroupVisibility();
+               Event.fire(document, "summary-item:added", {element: newItem});
+             }
+          } else {
+             this._silentRemove(inputElt.value, type);
+          }
+        }.bind(selectionSummary);
+
+        $$('.browse-phenotype-categories .phenotype-group .term-label.selected input, .browse-phenotype-categories .accepted-suggestion.selected input').each(function(input) {
+           selectionSummary._updateSummary(input);
+        });
+        $$('.browse-phenotype-categories .phenotype-group .accepted-suggestions').invoke('addClassName', 'hidden');
+        $$('.browse-phenotype-categories .phenotype-group .suggest-hpo.multi').each(function (sItem){
+           if (sItem._suggest) {
+             sItem._suggest.silent = true;
+           }
+        });
+        document.observe('phenotype:selected', function(event) {
+          if (!event.memo || !event.memo.key) {return;}
+          if (!event.memo.enable) {
+            selectionSummary._silentRemove(event.memo.key);
+          }
+        });
+        document.observe("custom:selection:category:changed", function(event) {
+          if (!event.memo || !event.memo.customElement) {return;}
+          selectionSummary._updateSummary(event.memo.customElement.down('input'), true);
+        });
+    }
     // -----------------------------------------------------------------
     // Create and attach the suggests
     // -----------------------------------------------------------------
@@ -1151,121 +1275,6 @@ document.observe('dom:loaded', function() {
           });
         }
       });
-
-      // ------------------------------------------------------------------------
-      // Generate selection summary
-      // ------------------------------------------------------------------------
-      selectionSummary = $('current-phenotype-selection');
-      if (selectionSummary) {
-        $$('.browse-phenotype-categories .phenotype-group h3').each(function(groupTitle) {
-           var group = new Element('div', {'class' : 'summary-group', id : 'summary-group-' + groupTitle.id});
-           group.insert({
-             top: new Element('h3').update(groupTitle.down('span:not(.expand-tool)').innerHTML),
-             bottom: new Element('div', {'class' : 'group-contents'})
-           });
-           selectionSummary.insert(group);
-           group._updateGroupVisibility = function() {
-             if (!this.down('.group-contents input')) {
-               this.hide();
-             } else {
-               this.show();
-             }
-           }.bind(group);
-           group._find = function(value, type) {
-             return this.down('.group-contents .' + type + ' input[value=' + value + ']');
-           }.bind(group);
-           group._add = function(element) {
-             this.down('.group-contents').insert(element) ;
-           }.bind(group);
-           group._updateGroupVisibility();
-        });
-        selectionSummary._getGroup = function(name) {
-          return $('summary-group-' + name);
-        }.bind(selectionSummary);
-
-        selectionSummary._find = function(value, type) {
-             return this.down('.summary-group .summary-item .' + type + ' input[value=' + value + ']');
-        }.bind(selectionSummary);
-
-        selectionSummary._silentRemove = function(value, type) {
-             var exists = this._find(value,type);
-             if (exists) {
-               var group = exists.up('.summary-group');
-               exists.up('.summary-item').remove();
-               if (!group) {return;}
-               group._updateGroupVisibility();
-             }
-        }.bind(selectionSummary);
-        selectionSummary._remove = function(value, type) {
-             var exists = this._find(value, type);
-             if (exists) {
-               exists.up('.summary-item').__source._ynpicker._onUnselect();
-             }
-        }.bind(selectionSummary);
-
-        selectionSummary._updateSummary = function(inputElt, type, forceUpdate) {
-          if (!inputElt) {return}
-          var sectionId = inputElt.up('.phenotype-group') &amp;&amp; inputElt.up('.phenotype-group').down('h3');
-          if (sectionId) {
-            sectionId = sectionId.id;
-          } else {
-            return;
-          }
-          if (inputElt.checked) {
-             if (forceUpdate) {
-                this._silentRemove(inputElt.value, type);
-             }
-             var exists = this._find(inputElt.value, type);
-             if (!exists) {
-               var group = this._getGroup(sectionId);
-               if (!group) {return;}
-               var newItem = new Element('div', {'class' : 'summary-item'}).update(
-                  new Element('label', {'class' : type}).insert({
-                     'top': new Element('input', {'value' : inputElt.value, checked : 'checked', type : 'checkbox', 'class': 'hidden'}),
-                     'bottom' : inputElt.title || inputElt.nextSibling.nodeValue || inputElt.nextSibling.firstChild.nodeValue || inputElt.value
-                  })
-               );
-               newItem.__source = inputElt;
-               var tools = new Element('span', {'class' : 'tools hint'});
-               var deleteTool = new Element('span', {'class' : 'tool'}).update('Delete');
-               var detailsTool = new Element('span', {'class' : 'tool'}).update('Details...');
-               tools.insert(deleteTool);//.insert(' · ').insert(detailsTool);
-               deleteTool.observe('click', function(event) {
-                 event.findElement('.summary-item').__source._ynpicker._onUnselect();
-               });
-               detailsTool.observe('click', function(event) {
-                 alert('Coming soon:\n- specify onset age and end age for this symptom,\n- add comments,\n- upload relevant images.');
-               });
-               newItem.insert(tools);
-               group._add(newItem);
-               group._updateGroupVisibility();
-               Event.fire(document, "summary-item:added", {element: newItem});
-             }
-          } else {
-             this._silentRemove(inputElt.value, type);
-          }
-        }.bind(selectionSummary);
-
-        $$('.browse-phenotype-categories .phenotype-group .term-label.selected input, .browse-phenotype-categories .accepted-suggestion.selected input').each(function(input) {
-           selectionSummary._updateSummary(input);
-        });
-        $$('.browse-phenotype-categories .phenotype-group .accepted-suggestions').invoke('addClassName', 'hidden');
-        $$('.browse-phenotype-categories .phenotype-group .suggest-hpo.multi').each(function (sItem){
-           if (sItem._suggest) {
-             sItem._suggest.silent = true;
-           }
-        });
-        document.observe('phenotype:selected', function(event) {
-          if (!event.memo || !event.memo.key) {return;}
-          if (!event.memo.enable) {
-            selectionSummary._silentRemove(event.memo.key);
-          }
-        });
-        document.observe("custom:selection:category:changed", function(event) {
-          if (!event.memo || !event.memo.customElement) {return;}
-          selectionSummary._updateSummary(event.memo.customElement.down('input'), true);
-        });
-      }
 
       // ------------------------------------------------------------------------
       // Sync dynamic subtree selections
@@ -3165,6 +3174,12 @@ h1, h2, h3, h4 {
   padding-left: 18px;
   margin-left: 1em;
   margin-bottom: .5em;
+}
+#current-phenotype-selection .summary-item .no, .value-checked.no-selected {
+  color: $theme.notificationErrorColor;
+}
+#current-phenotype-selection .summary-item .no:before, .value-checked.no-selected:before {
+  content: "NO ";
 }
 #current-phenotype-selection .summary-item label {
   width: auto;
