@@ -1973,14 +1973,21 @@ document.observe('xwiki:dom:loaded', function() {
            if (value == 'evaluation' &amp;&amp; target['valueHooks'] &amp;&amp; getMostRecentEntry() == targets[p][value].up('tr.data-row')) {
              var targetElt = values[p]['valCategory'] &amp;&amp; target['valueHooks'][values[p]['valCategory']];
              if (targetElt &amp;&amp; !targetElt.checked) {
-                 targetElt.checked = true;
+                 if (targetElt._ynpicker) {
+                   targetElt._ynpicker._onYes();
+                 } else {
+                   targetElt.checked = true;
+                 }
                  highlightChecked(targetElt);
              }
              ['extreme-below-normal', 'extreme-above-normal'].without(values[p]['valCategory'] || '').each(function(val) {
                 var elt = target['valueHooks'][val];
                 if (elt &amp;&amp; elt.checked) {
-                  elt.checked = false;
-                  highlightChecked(elt);
+                  if (elt._ynpicker) {
+                    elt._ynpicker._onUnselect();
+                  } else {
+                    elt.checked = false;
+                  }
                 }
              });
            }
