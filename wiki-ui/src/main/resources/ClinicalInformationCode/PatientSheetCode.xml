@@ -429,7 +429,7 @@ var restoreCategory = function (element) {
   if (parentElement) {
     parentElement.select('.term-category input[type=hidden]').each(function (item) {
       if (ignoredCategories &amp;&amp; ignoredCategories.indexOf(item.value) &gt;= 0) return;
-      selector += 'input.suggested[name^=' + element.name + '] + input[type=hidden][name=_category][value*=' + item.value +'], '
+      selector += 'input.suggested[name^="' + element.name + '"] + input[type=hidden][name=_category][value*="' + item.value +'"], '
     });
   }
   var matchingCategory = document.documentElement.down(selector);
