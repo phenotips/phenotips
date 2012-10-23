@@ -165,6 +165,8 @@
     // Show a 'hide suggestions' button
     enableHideButton: true,
     insertBeforeSuggestions: null,
+    // Should id be displayed or hidden
+    displayId: false,
     // Should value be displayed as a hint
     displayValue: false,
     // Display value prefix text
@@ -816,13 +818,17 @@
     var displayNode = new Element("div");
     // If the search result contains an icon information, we insert this icon in the result entry.
     if (data.icon) {
-      var iconImage = new Element("img", {'src' : data.icon, 'class' : 'icon' });
-      displayNode.insert({top: iconImage});
+      displayNode.insert(new Element("img", {'src' : data.icon, 'class' : 'icon' }));
     }
+    if (this.options.displayId) {
+        displayNode.insert(new Element('span', {'class':'suggestId'}).update(data.id));
+    }
+    displayNode.insert(new Element('span', {'class':'suggestValue'}).update(data.value));
+    displayNode.insert(new Element('div', {'class':'suggestInfo'}).update(data.info));
+
     var valueNode = new Element('div')
             .insert(new Element('span', {'class':'suggestId'}).update(data.id))
             .insert(new Element('span', {'class':'suggestValue'}).update(data.value))
-            .insert(new Element('div', {'class':'suggestInfo'}).update(data.info))
             .insert(new Element('div', {'class':'suggestCategory'}).update(data.category));
 
     var item = new MS.widgets.XListItem( displayNode , {
@@ -3267,14 +3273,8 @@ div.suggestItems li {
   padding: 4px;
 }
 
-div.suggestItems .suggestItem .value {
-  display: block !important;
-}
 div.suggestItems .suggestItem.custom-value .suggestId {
   display: none !important;
-}
-div.suggestItems * {
-  line-height:1.2em !important;
 }
 
 div.suggestItems em {
@@ -3392,6 +3392,7 @@ div.resultContainer div.sourceContent.loading {
   width: 99%;
   float: none;
   clear: both;
+  line-height:1.2em !important;
 }
 .suggestInfo dt {
   font-style: italic;
