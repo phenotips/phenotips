@@ -837,6 +837,9 @@
         noHighlight: true // we do the highlighting ourselves
     });
 
+
+    Event.fire(this.fld, "ms:suggest:suggestionCreated", {element: item.getElement()});
+
     return item;
   },
 
