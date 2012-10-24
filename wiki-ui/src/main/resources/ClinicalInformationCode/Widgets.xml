@@ -3142,8 +3142,6 @@ console.log(categories);
   color: #000;
   border: 2px solid #333;
   background-color: #f5f5f5;
-  -moz-border-radius: 8px;
-  -webkit-border-radius: 8px;
   border-radius: 8px;
   box-shadow: 0 0 6px $theme.linkColor;
 }
@@ -3170,6 +3168,7 @@ console.log(categories);
   font-weight: bold;
   color: #FFF;
   background-color: #333;
+  border-radius: 5.5px 5.5px 0 0;
   padding: .3em 1.2em .3em .8em;
   cursor: move;
 }
