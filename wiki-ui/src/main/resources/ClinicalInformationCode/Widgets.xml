@@ -838,7 +838,7 @@
     });
 
 
-    Event.fire(this.fld, "ms:suggest:suggestionCreated", {element: item.getElement()});
+    Event.fire(this.fld, "ms:suggest:suggestionCreated", {element: item.getElement(), suggest: this});
 
     return item;
   },
@@ -1263,7 +1263,7 @@
     if (input) {
       input.checked = true;
       Event.fire(input, 'suggest:change');
-      this.ensureVisible(input, true);
+      this.ensureVisible(input.up(), true);
       this.synchronizeSelection(input);
       return false;
     }
@@ -1313,7 +1313,7 @@
     // insert input
     var inputOptions = {"type" : this.options.inputType, "name" : this.inputName, "id" : id, "value" : key};
     if (this.options.inputType == 'checkbox') {
-      inputOptions.checked = 'checked';
+      inputOptions.checked = true;
     }
     displayedValue.insert({'bottom' : new Element("input", inputOptions)});
     // if the key should be displayed, insert it
@@ -1393,12 +1393,23 @@
   },
 
   synchronizeSelection : function (input) {
+    var element = (typeof (input.up) == 'function') &amp;&amp; input.up('li');
+    if (element) {
+      Element.select(element, 'input[name="fieldName"][type="hidden"]').each(function(n) {
+        var target = n.up('li').down('input[type="checkbox"]');
+        var originalName = target.name;
+        target.id = target.id.replace(target.name, n.value);
+        target.name = n.value;
+        target.up('label').addClassName(n.className);
+        target.up('label').htmlFor = target.id;
+        n.value = originalName;
+      });
+    }
     $$('input[type="checkbox"][value="' + input.value.replace(/"/g, '\\"') +'"]').each(function(item) {
       if (item.checked != input.checked) {
-        item.click();
+        //FIXME! item.click();
       }
     });
-    var element = (typeof (input.up) == 'function') &amp;&amp; input.up('li');
     if (element) {
       this.notifySelectionChange(element);
     }
@@ -1407,7 +1418,7 @@
   notifySelectionChange : function(elt) {
     if (!elt.__categoryArray) {
       elt.__categoryArray = [];
-      Element.select(elt, 'input[type=hidden]').each(function(c) {
+      Element.select(elt, '.term-category input[type=hidden]').each(function(c) {
         elt.__categoryArray.push(c.value); 
       });
     }
@@ -2247,9 +2258,9 @@ console.log(categories);
           if (doPopulate) {
             var newAdditions = this.buildDescendentsList(this._getDataFromResponse(response));
             element.insert({'bottom': newAdditions});
-            Event.fire(document, "obrowser:content:added", {added: newAdditions});
+            Event.fire(document, "obrowser:content:added", {added: newAdditions, obrowser: this});
             Event.fire(element, "obrowser:expand:finished");
-            Event.fire(this.container.contentContainer, "obrowser:expand:finished");
+            Event.fire(this.container.contentContainer || document, "obrowser:expand:finished");
             //memo.data = this.buildDescendentsList(this._getDataFromResponse(response));
             //Event.fire(element, 'obrowser:expand:done', memo);
           } else {
@@ -2347,6 +2358,7 @@ console.log(categories);
       if (parents.hasChildNodes()) {
         newContent.insert({'top' : parents});
       }
+      Event.fire(document, "obrowser:content:added", {added: parents, obrowser: this});
     }
     var data = {
       id : this._getResultFieldValue(targetResult, this.options.resultId),
@@ -2356,6 +2368,7 @@ console.log(categories);
     }
     var root = this._createRoot(data);
     newContent.insert({'bottom' : root});
+    Event.fire(document, "obrowser:content:added", {added: root, obrowser: this});
     //this._toggleExpandState(root);
     return newContent;
   },

@@ -427,9 +427,10 @@ var restoreCategory = function (element) {
           this.suggest.options.queryProcessor &amp;&amp; this.suggest.options.queryProcessor.restriction &amp;&amp;
           this.suggest.options.queryProcessor.restriction.term_category;
   if (parentElement) {
+    var originalName = parentElement.down('input[name="fieldName"]');
     parentElement.select('.term-category input[type=hidden]').each(function (item) {
       if (ignoredCategories &amp;&amp; ignoredCategories.indexOf(item.value) &gt;= 0) return;
-      selector += 'input.suggested[name^="' + element.name + '"] + input[type=hidden][name=_category][value*="' + item.value +'"], '
+      selector += 'input.suggested[name^="' + (originalName &amp;&amp; originalName.value || element.name) + '"] + input[type=hidden][name=_category][value*="' + item.value +'"], '
     });
   }
   var matchingCategory = document.documentElement.down(selector);
@@ -456,19 +457,24 @@ var findPropertyField = function(name) {
   return null;
 }
 
-var findFormElementForPhenotype = function(id) {
-  return $($('prefix').value + 'phenotype_' + id);
+var findFormElementForPhenotype = function(id, negative) {
+  return $($('prefix').value + (negative ? 'negative_' : '') + 'phenotype_' + id);
 };
 
-var isPhenotypeSelected = function (id) {
-  var elt = findFormElementForPhenotype(id);
+var isPhenotypeSelected = function (id, negative) {
+  var elt = findFormElementForPhenotype(id, negative);
   return (elt &amp;&amp; elt.checked);
 };
-var unselectPhenotype = function (id) {
-  var targetElt = findFormElementForPhenotype(id);
+var unselectPhenotype = function (id, negative) {
+  var targetElt = findFormElementForPhenotype(id, negative);
   if (targetElt &amp;&amp; targetElt.checked) {
     targetElt.click();
   }
+};
+
+var isValueSelected = function (fieldName, value) {
+  var elt = $(fieldName + '_' + value);
+  return (elt &amp;&amp; elt.checked);
 };
 
 document.observe('dom:loaded', function() {
@@ -869,7 +875,7 @@ document.observe('dom:loaded', function() {
 <cache>long</cache>
 </property>
 <property>
-<code>document.observe('dom:loaded', function() {
+<code>document.observe('xwiki:dom:loaded', function() {
     var jumpToPubmed = function(termID) {
        var label = termID.up('label');
        var li = label.up('li');
@@ -963,6 +969,18 @@ document.observe('dom:loaded', function() {
     };
     var pickerSpecialClassOptions = {
       'defaultPicker' : {},
+      'quickSearch' : {
+                  'showKey' : false,
+                  'showTooltip' : false,
+                  'showDeleteTool' : true,
+                  'enableSort' : false,
+                  'showClearTool' : false,
+                  'inputType': 'checkbox',
+                  'listInsertionElt' : $(document.documentElement).down('.phenotype-info .phenotype-group:last-child .phenotype-other'),
+                  'listInsertionPosition' : 'top',
+                  'silent' : true,
+                  'onItemAdded' : restoreCategory
+                },
       'generateShortList' : {
                   'showKey' : true,
                   'showTooltip' : false,
@@ -994,18 +1012,6 @@ document.observe('dom:loaded', function() {
                   'listInsertionPosition' : 'before',
                   'onItemAdded' : enableHighlightChecked,
                   'acceptFreeText' : true
-                },
-      'quickSearch' : {
-                  'showKey' : false,
-                  'showTooltip' : false,
-                  'showDeleteTool' : true,
-                  'enableSort' : false,
-                  'showClearTool' : false,
-                  'inputType': 'checkbox',
-                  'listInsertionElt' : $(document.documentElement).down('.phenotype-info .phenotype-group:last-child .phenotypes-main'),
-                  'listInsertionPosition' : 'top',
-                  'silent' : true,
-                  'onItemAdded' : restoreCategory
                 },
       'portal' : {
                   'showKey' : false,
@@ -1123,26 +1129,6 @@ document.observe('dom:loaded', function() {
              this._silentRemove(inputElt.value, type);
           }
         }.bind(selectionSummary);
-
-        $$('.browse-phenotype-categories .phenotype-group .term-label.selected input, .browse-phenotype-categories .accepted-suggestion.selected input').each(function(input) {
-           selectionSummary._updateSummary(input);
-        });
-        $$('.browse-phenotype-categories .phenotype-group .accepted-suggestions').invoke('addClassName', 'hidden');
-        $$('.browse-phenotype-categories .phenotype-group .suggest-hpo.multi').each(function (sItem){
-           if (sItem._suggest) {
-             sItem._suggest.silent = true;
-           }
-        });
-        document.observe('phenotype:selected', function(event) {
-          if (!event.memo || !event.memo.key) {return;}
-          if (!event.memo.enable) {
-            selectionSummary._silentRemove(event.memo.key);
-          }
-        });
-        document.observe("custom:selection:category:changed", function(event) {
-          if (!event.memo || !event.memo.customElement) {return;}
-          selectionSummary._updateSummary(event.memo.customElement.down('input'), true);
-        });
     }
     // -----------------------------------------------------------------
     // Create and attach the suggests
@@ -1200,7 +1186,71 @@ document.observe('dom:loaded', function() {
  
             }
             item.addClassName('initialized');
+
+            // ------------------------------------------------------------------------
+            // Add y/n pickers to generated suggestions
+            if (item.hasClassName('generateYesNo')) {
+              item.observe("ms:suggest:suggestionCreated", function(event) {
+                var negativeName = item.name.replace(/(_\d+)_/, "$1_negative_").replace(/__suggested$/, '');
+                var suggestion = event.memo &amp;&amp; event.memo.element;
+                if (suggestion) {
+                  var suggest = event.memo.suggest;
+                  var value =  suggestion.down(".suggestId").firstChild.nodeValue;
+                  var ynpicker = YesNoPicker.generatePickerElement([
+                    {type: 'yes', selected: isValueSelected(item.name.replace(/__suggested$/, ''), value)}, 
+                    {type: 'no' , selected: isValueSelected(negativeName, value)}
+                  ], value);
+                  suggestion.down(".suggestValue").up().insert({top: ynpicker});
+                  // Prevent click events from the label from activating the suggestion selection twice because of being forwarded to the input
+                  ynpicker.select('input').invoke('observe', 'click', function(event) {event.stop()});
+
+                  // Keep the default behavior for the Y button
+                  //  but capture the N button clicks and make sure the value is selected for the negative property field
+                  var nLabel = ynpicker.down('.no');
+                  nLabel.observe('click', function(event) {
+                    var predefinedCheckBox = $(negativeName + "_" + value);
+                    if (predefinedCheckBox &amp;&amp; !predefinedCheckBox.checked) {
+                      predefinedCheckBox._ynpicker._onNo();
+                      suggest.clearSuggestions();
+                      suggest.fld.value = '';
+                      suggest.fld.focus();
+                      suggest.fld.blur();
+                      event.stop();
+                    }
+                    suggestion.down('.suggestCategory').insert({
+                      top : new Element('input', {type: 'hidden', name : 'fieldName', value : negativeName, 'class' : 'no'})
+                    });
+                  });
+                }
+              });
+            }
           }
+        });
+      }
+
+      // ------------------------------------------------------------------------
+      // Complete selection summary behavior
+      // ------------------------------------------------------------------------
+       if (selectionSummary) {
+        $$('.browse-phenotype-categories .phenotype-group .term-label.selected input, .browse-phenotype-categories .accepted-suggestion.selected input').each(function(input) {
+           selectionSummary._updateSummary(input);
+        });
+        // TODO $$('.browse-phenotype-categories .phenotype-group .accepted-suggestions').invoke('addClassName', 'hidden');
+        $$('.browse-phenotype-categories .phenotype-group .suggest-hpo.multi').each(function (sItem){
+           if (sItem._suggest) {
+             sItem._suggest.silent = true;
+           }
+        });
+        document.observe('phenotype:selected', function(event) {
+          if (!event.memo || !event.memo.key) {return;}
+          if (!event.memo.enable) {
+            selectionSummary._silentRemove(event.memo.key);
+          }
+        });
+        document.observe("custom:selection:category:changed", function(event) {
+          if (!event.memo || !event.memo.customElement) {return;}
+          var input = event.memo.customElement.down('input');
+          selectionSummary._updateSummary(input, input.up('label.no') ? 'no' : 'yes', true);
         });
       }
 
@@ -1319,10 +1369,31 @@ document.observe('dom:loaded', function() {
           categories.each(syncTermCategory);
         }
         if (selectionSummary) {
-          selectionSummary._updateSummary(event.memo.customElement.down('input'));
+          var input = event.memo.customElement.down('input');
+          selectionSummary._updateSummary(input, input.up('label.no') ? 'no' : 'yes', true);
         }
       });
     }
+
+    // --------------------------------------------------------------
+    // Ontology browser y/n pickers
+    // --------------------------------------------------------------
+    document.observe('obrowser:content:added', function(event) {
+      if (!event.memo) return;
+      if (event.memo.added &amp;&amp; event.memo.obrowser &amp;&amp; event.memo.obrowser.suggest &amp;&amp; event.memo.obrowser.suggest.fld &amp;&amp; event.memo.obrowser.suggest.fld.hasClassName('generateYesNo')) {
+        event.memo.added.select('input.select-tool').each(function (item) {
+          var negativeName = event.memo.obrowser.suggest.fld.name.replace(/(_\d+)_/, "$1_negative_");
+          var value = item.value;
+          var ynpicker = YesNoPicker.generatePickerElement([
+              {type: 'na', selected: !isValueSelected(item.name, value) &amp;&amp; !isValueSelected(negativeName, value)}, 
+              {type: 'yes', selected: isValueSelected(item.name, value)}, 
+              {type: 'no' , selected: isValueSelected(negativeName, value)}
+          ], value, true);
+          item.insert({before: ynpicker});
+          item.remove();
+        });
+      }
+    }); 
 });</code>
 </property>
 <property>
@@ -3131,14 +3202,7 @@ h1, h2, h3, h4 {
   margin-left: -1em;
   margin-bottom: .3em;
 }
-.chapter .phenotype-group .half-width,
-.chapter .negative_phenotype-group .half-width {
-  width: 100%;
-  float: none;
-  margin: 0;
-}
-.chapter .phenotype-group .half-width + .half-width,
-.chapter .negative_phenotype-group .half-width + .half-width {
+.chapter .custom-entries {
   margin-top: .5em;
   padding-top: .5em;
   padding-left: .8em;
@@ -4074,7 +4138,7 @@ table.extradata-list td.bmi_percentile {
     ##&lt;h3 class="section"&gt;Quick phenotype search&lt;/h3&gt;
     &lt;table&gt;&lt;tbody&gt;&lt;tr&gt;
     &lt;td&gt;&lt;label for="quick-phenotype-search"&gt;Quick phenotype search:&lt;/label&gt;&lt;/td&gt;&lt;td class="input"&gt;
-    &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip' value='Enter keywords and choose among suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
+    &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip generateYesNo' value='Enter keywords and choose among suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
     &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
   &lt;/fieldset&gt;
   {{/html}}

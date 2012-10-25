@@ -324,9 +324,18 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
     this.na.observe('click', _onNA);
     //this.element.observe('click', _onUnselect);
 
+    yes.down('input').observe('suggest:change', function(event) {
+      var input = event.findElement();
+      _this._onSelect(input.checked ? 'yes' : 'na');
+    });
+    no.down('input').observe('suggest:change', function(event) {
+      var input = event.findElement();
+      _this._onSelect(input.checked ? 'no' : 'na');
+    });
+
     if (yes.down('input').checked) this._onSelect('yes');
     else if (no.down('input').checked) this._onSelect('no');
-    else this._onSelect('na');;
+    else this._onSelect('na');
 
     if (this.label) {
       this.label.addClassName('yes-no-picker-label');
@@ -396,7 +405,25 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
      }
      return this[name];
   }
-});</code>
+});
+
+YesNoPicker.generatePickerElement = function(buttons, value, activate) {
+  var supportedValues = {yes : 'Y', no : 'N', na: 'NA'};
+  var ynPickerElt = new Element("span", {'class': 'yes-no-picker'});
+  buttons.each(function(b) { 
+     //if (b.type &amp;&amp; supportedValues[b.type]) {
+       var bLabel = new Element('label', {'class' : b.type + (b.selected &amp;&amp; ' selected' || '')}).update(supportedValues[b.type]);
+       var bInput = new Element('input', {type : 'checkbox', value : value, checked: b.selected});
+       bInput.hide();
+       bLabel.insert({top: bInput});
+       ynPickerElt.insert(bLabel);
+     //}
+  });
+  if (activate) {
+    ynPickerElt._ynPicker = new YesNoPicker(ynPickerElt);
+  }
+  return ynPickerElt;
+};</code>
 </property>
 <property>
 <name></name>
@@ -510,11 +537,21 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
   background: transparent none center center no-repeat;
   box-shadow: inset 0 1px 2px #999;
   font-size: .7em;
-  line-height: 19px;
+  line-height: 19px !important;
   cursor: pointer;
   margin: 0px !important;
   padding: 0px !important;
   float: none !important;
+}
+
+.yes-no-picker label:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.yes-no-picker label:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 .yes-no-picker label.yes {
   color: #000;
@@ -525,21 +562,20 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
   background: #333;
   color: #FFF;
 }
+
 .yes-no-picker label.no {
-  border-radius: 0 4px 4px 0;
-  color: #c00;
+  color: #a00;
   border-left: 1px solid #fff;
 }
 .yes-no-picker label.semi-selected {
   background-color: #ccc;
 }
 .yes-no-picker label.selected.no {
-  background: #c00;
+  background: #a00;
   color: #FFF;
 }
 .yes-no-picker label.na {
   ##width: 24px;
-  border-radius: 4px 0 0 4px;
   color: #BBB;
   border-right: 4px solid #fff;
 }
@@ -552,21 +588,11 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
   color: #777;
 }
 .yes-no-picker-label.yes-selected {
-  font-weight: bold;
   color: #000;
 }
 .yes-no-picker-label.no-selected {
-  font-weight: bold;
-  color: #e40000;
-}
-.yes-no-picker-label.no-selected:before {
-  content: "No ";
-  color: #e40000
-}
-.expand-tool {
-  color: #c82;
-  text-shadow: 0 0 5px #ddd;
-  cursor: pointer;
+  color: #a00;
+  text-decoration: line-through;
 }</code>
 </property>
 <property>
