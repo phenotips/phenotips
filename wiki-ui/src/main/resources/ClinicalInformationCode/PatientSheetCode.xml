@@ -501,22 +501,17 @@ document.observe('dom:loaded', function() {
       Event.observe(document, 'ms:suggest:containerCreated', function(event) {
         if (event.memo.suggest.fld == qsBox.__x_qsInput) {
           qsBox.__x_qsInput._activeSuggest = true;
-//          if (qsSticky.isFixed()) {
-//            qsSticky.makeAbsolute((document.viewport.getScrollOffsets().top - content.cumulativeOffset().top) + qsSticky.options.shadowSize);
-//          }
           var qsSuggest = event.memo.container;
           if (qsBox.getStyle('position') == 'fixed') {
             qsSuggest.style.position = 'fixed';
           }
           qsSuggest.style.top = (qsBox.__x_qsInput.cumulativeOffset().top + qsBox.__x_qsInput.getHeight()) + 'px';
           qsSuggest.style.left = qsBox.__x_qsInput.cumulativeOffset().left;
-          //qsSuggest.style.marginTop = '1.6em';
         }
       });
       Event.observe(document, 'ms:suggest:clearSuggestions', function(event) {
         if (event.memo.suggest.fld == qsBox.__x_qsInput) {
           qsBox.__x_qsInput._activeSuggest = false;
-//          qsSticky.resetPosition();
         }
       });
     }
@@ -923,7 +918,7 @@ document.observe('dom:loaded', function() {
 								);
 							      }.bindAsEventListener(this));
 							    }
-			                      }
+			                     }
                          },
             enableHierarchy: true,
             resultParent : "is_a",
@@ -1182,13 +1177,14 @@ document.observe('dom:loaded', function() {
               for (var j = 0; j &lt; specialClasses.length; j++) {
                 if (item.hasClassName(specialClasses[j])) {
                   multiSuggestOptions = pickerSpecialClassOptions[specialClasses[j]];
+                  // FIXME! If the input has more than one special class, does the ordering declared in pickerSpecialClassOptions guarantee we choose the right one?
                   break;
                 }
               }
               var suggestPicker = new MS.widgets.SuggestPicker(item, item._suggest, multiSuggestOptions);
               item._suggestPicker = suggestPicker;
 
-              // Integrate the custom fields
+              // FIXME! Integrate the custom fields
               // 1. find the container element displaying them
               var customFieldsContainer = suggestPicker.list.up().down('.custom-display-data');
               if (customFieldsContainer) {
@@ -1278,6 +1274,7 @@ document.observe('dom:loaded', function() {
 
       // ------------------------------------------------------------------------
       // Sync dynamic subtree selections
+      // ------------------------------------------------------------------------
       var fieldName = '';
       var source = '';
       var categories = '';
@@ -1828,7 +1825,6 @@ document.observe('xwiki:dom:loaded', function() {
   }
   __adjustAllSVGHeights();
   Event.observe(window, 'resize', __adjustAllSVGHeights);
-  __adjustAllSVGHeights();
   // ----------------------------------------------------------------------------
 
   var dataTable = $('extradata-list-ClinicalInformationCode.MeasurementsClass');
@@ -2020,22 +2016,6 @@ document.observe('xwiki:dom:loaded', function() {
        onFailure: function (response) {}
     });
   }
-
-  // ----------------------------------------------------------------------------
-  // Workaround for webkit bug https://bugs.webkit.org/show_bug.cgi?id=68995
-  // Inspired by http://www.brichards.co.uk/blog/webkit-svg-height-bug-workaround
-  // (adapted from jQuery to Prototype.js)
-  var __adjustSVGHeight = function(svgElt) {
-     // Original width/height of the svg graphic: 952 X 1225
-     svgElt.setStyle({ 'height' : (1225 / 952 * svgElt.getWidth()) + 'px'});
-
-  }
-  var __adjustAllSVGHeights = function() {
-     chartContainer.select('.chart-wrapper').each(__adjustSVGHeight);
-  }
-  __adjustAllSVGHeights();
-  Event.observe(window, 'resize', __adjustAllSVGHeights);
-  // ----------------------------------------------------------------------------
 
   var valueChanged = function(event) {
     // Get inputs holding the values needed for computing the dependent values
