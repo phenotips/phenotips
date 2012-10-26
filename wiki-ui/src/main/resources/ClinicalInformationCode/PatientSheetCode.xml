@@ -1170,18 +1170,27 @@ document.observe('dom:loaded', function() {
               var suggestPicker = new MS.widgets.SuggestPicker(item, item._suggest, multiSuggestOptions);
               item._suggestPicker = suggestPicker;
 
-              // FIXME! Integrate the custom fields
+              // Integrate the custom fields
               // 1. find the container element displaying them
               var customFieldsContainer = suggestPicker.list.up().down('.custom-display-data');
               if (customFieldsContainer) {
                  // 2. get rid of the container
                  customFieldsContainer.remove();
                  // 3. find all the values and display them as part of the multi suggest picker
+                 var tmp = suggestPicker.silent;
                  suggestPicker.silent = true;
-                 customFieldsContainer.select('label input[type="checkbox"]').each(function(entry) {
-                   suggestPicker.addItem(entry.value, entry.nextSibling.nodeValue, '', entry.up('label').next('.term-category'));
+                 customFieldsContainer.select('.term-entry').each(function(entry) {
+                   var negativeCheckbox = entry.down('.yes-no-picker .no input');
+                   var value =  entry.down('input[type="checkbox"]').value;
+                   var text = negativeCheckbox &amp;&amp; negativeCheckbox.title || entry.down('input[type="checkbox"]').title;
+                   var category = entry.down('.term-category');
+                   if (negativeCheckbox &amp;&amp; negativeCheckbox.checked) {
+                     var negative = new Element('input', {type: 'hidden', name : 'fieldName', value : negativeCheckbox.name});
+                     category &amp;&amp; category.insert(negative) || (category = negative);
+                   }
+                   suggestPicker.addItem(value, text, '', category || '');
                  });
-                 suggestPicker.silent = false;
+                 suggestPicker.silent = tmp;
               }
  
             }
