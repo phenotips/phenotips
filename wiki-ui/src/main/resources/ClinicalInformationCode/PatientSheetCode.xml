@@ -1253,7 +1253,7 @@ document.observe('dom:loaded', function() {
         document.observe('phenotype:selected', function(event) {
           if (!event.memo || !event.memo.key) {return;}
           if (!event.memo.enable) {
-            selectionSummary._silentRemove(event.memo.key);
+            selectionSummary._silentRemove(event.memo.key, event.memo.type);
           }
         });
         document.observe("custom:selection:category:changed", function(event) {
