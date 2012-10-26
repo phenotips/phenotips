@@ -405,7 +405,7 @@ var highlightChecked = function(element) {
       if (element.id == element.name + '_' + element.value) {
         Event.fire(document, 'phenotype:selected', {
               key : element.value,
-              text: element.title || element.nextSibling.nodeValue || element.nextSibling.firstChild.nodeValue,
+              text: element.title || (element.nextSibling &amp;&amp; (element.nextSibling.firstChild &amp;&amp; element.nextSibling.firstChild.nodeValue || element.nextSibling.nodeValue)) || '',
               enable: element.checked,
               element : element,
               type : type
