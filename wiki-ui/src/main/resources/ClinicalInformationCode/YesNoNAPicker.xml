@@ -365,6 +365,7 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
       event.stop();
     }
     this._onSelect(target);
+    this.element.fire('ynpicker:selectionChanged', {'selected' : target});
   },
   _onSelect : function (target) {
     (target == 'yes') &amp;&amp; this._select('yes') || this._unselect('yes');
@@ -407,20 +408,27 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
   }
 });
 
-YesNoPicker.generatePickerElement = function(buttons, value, activate) {
+YesNoPicker.generatePickerElement = function(buttons, value, title, activate, label) {
   var supportedValues = {yes : 'Y', no : 'N', na: 'NA'};
   var ynPickerElt = new Element("span", {'class': 'yes-no-picker'});
   buttons.each(function(b) { 
-     //if (b.type &amp;&amp; supportedValues[b.type]) {
+     if (b.type &amp;&amp; supportedValues[b.type]) {
        var bLabel = new Element('label', {'class' : b.type + (b.selected &amp;&amp; ' selected' || '')}).update(supportedValues[b.type]);
-       var bInput = new Element('input', {type : 'checkbox', value : value, checked: b.selected});
+       var bInput = new Element('input', {type : 'checkbox', value : value, title: title || ''});
+       b.selected &amp;&amp; (bInput.checked = true);
+       if (b.name) {
+         bInput.name = b.name;
+         bInput.id = b.name + "_" + value;
+         bLabel.htmlFor = bInput.id;
+       }
        bInput.hide();
        bLabel.insert({top: bInput});
        ynPickerElt.insert(bLabel);
-     //}
+     }
   });
   if (activate) {
-    ynPickerElt._ynPicker = new YesNoPicker(ynPickerElt);
+    ynPickerElt._ynpicker = new YesNoPicker(ynPickerElt, label, label &amp;&amp; true);
+    ynPickerElt.select('input').each(function (item) {item._ynpicker = ynPickerElt._ynpicker});
   }
   return ynPickerElt;
 };</code>
