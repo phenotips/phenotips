@@ -2608,23 +2608,28 @@ console.log(categories);
       return;
     }
     var elt = trigger.up('.entry');
-    var id = elt.__termId;
     if (trigger.checked) {
-      if (this.suggest) {
-        if (this.options.modal &amp;&amp; typeof (this.container.getPositionInViewport) == 'function') {
-          var prevPosition = this.container.getPositionInViewport();
-        }
-        var value = elt.down('.value').firstChild.nodeValue;
-        this.suggest.acceptEntry({'id':id, 'value':value, 'category' : elt.__termCategory}, value, '', true);
-        elt.addClassName('accepted');
-        if (prevPosition &amp;&amp; (typeof (this.container.positionDialogInViewport) == 'function')) {
-          this.container.positionDialogInViewport(prevPosition.left, prevPosition.top);
-        }
-      }
+      this._selectEntry(elt);
     } else {
-       this.options.unselectTerm(id);
-       elt.removeClassName('accepted');
+      this._unselectEntry(elt);
     }
+  },
+  _selectEntry: function (entry) {
+    if (this.suggest) {
+      if (this.options.modal &amp;&amp; typeof (this.container.getPositionInViewport) == 'function') {
+        var prevPosition = this.container.getPositionInViewport();
+      }
+      var value = entry.down('.value').firstChild.nodeValue;
+      this.suggest.acceptEntry({'id':entry.__termId, 'value':value, 'category' : entry.__termCategory}, value, '', true);
+      entry.addClassName('accepted');
+      if (prevPosition &amp;&amp; (typeof (this.container.positionDialogInViewport) == 'function')) {
+        this.container.positionDialogInViewport(prevPosition.left, prevPosition.top);
+      }
+    }
+  },
+  _unselectEntry: function (entry) {
+     this.options.unselectTerm(entry.__termId);
+     entry.removeClassName('accepted');
   },
   _createTool : function (text, className, title, method) {
     var element = new Element('span', {'class' : 'entry-tool ' + className, "title" : title}).update(text);
