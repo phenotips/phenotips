@@ -2989,7 +2989,7 @@ console.log(categories);
         this.stickyElement.style.right = '';
         var originalPosition = this.stickyElement.getStyle('position');
         this.stickyElement.style.position = 'absolute';
-        if (originalPosition == 'fixed') {
+        if (originalPosition == 'fixed' &amp;&amp; !Prototype.Browser.WebKit) {
           this.stickyElement.style.left = (this.boxRelativeLeft - this.stickyElement.getOffsetParent().viewportOffset().left + 2) + 'px';
         } else {
           this.stickyElement.style.left = this.boxRelativeLeft + 'px';
