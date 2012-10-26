@@ -1258,7 +1258,7 @@ document.observe('dom:loaded', function() {
         });
         document.observe("custom:selection:category:changed", function(event) {
           if (!event.memo || !event.memo.customElement) {return;}
-          var input = event.memo.customElement.down('input');
+          var input = event.memo.customElement.select('input').find(function(item) { return item.checked; });
           selectionSummary._updateSummary(input, input.up('label.no') ? 'no' : 'yes', true);
         });
       }
@@ -1378,7 +1378,7 @@ document.observe('dom:loaded', function() {
           categories.each(syncTermCategory);
         }
         if (selectionSummary) {
-          var input = event.memo.customElement.down('input');
+          var input = event.memo.customElement.select('input').find(function(item) { return item.checked; });
           selectionSummary._updateSummary(input, input.up('label.no') ? 'no' : 'yes', true);
         }
       });
