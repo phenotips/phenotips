@@ -1244,7 +1244,7 @@ document.observe('dom:loaded', function() {
         $$('.browse-phenotype-categories .phenotype-group .term-label.selected input, .browse-phenotype-categories .accepted-suggestion.selected input').each(function(input) {
            selectionSummary._updateSummary(input);
         });
-        // TODO $$('.browse-phenotype-categories .phenotype-group .accepted-suggestions').invoke('addClassName', 'hidden');
+        $$('.browse-phenotype-categories .phenotype-group .accepted-suggestions').invoke('addClassName', 'hidden');
         $$('.browse-phenotype-categories .phenotype-group .suggest-hpo.multi').each(function (sItem){
            if (sItem._suggest) {
              sItem._suggest.silent = true;
