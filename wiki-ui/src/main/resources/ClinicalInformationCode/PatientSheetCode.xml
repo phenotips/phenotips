@@ -401,34 +401,21 @@ document.observe('xwiki:dom:loaded', function() {
 <property>
 <code>var selectionSummary = '';
 var highlightChecked = function(element) {
-      var subsection = element.up('.subsection');
-      if (subsection) {
-	var subsectionTitle = subsection.previous('label.section');
-      }
-      if (element.checked) {
-        element.up('label').addClassName('selected');
-	if (subsectionTitle) {
-	  subsectionTitle.addClassName('selected');
-	}
-      } else {
-        element.up('label').removeClassName('selected');
-	if (subsectionTitle &amp;&amp; !(subsectionTitle.next('.subsection') &amp;&amp; subsectionTitle.next('.subsection').down('.selected'))) {
-	  subsectionTitle.removeClassName('selected');
-	}
-      }
+      var type = element.up('label.no') ? 'no' : 'yes';
       if (element.id == element.name + '_' + element.value) {
         Event.fire(document, 'phenotype:selected', {
               key : element.value,
-              text: element.title || element.nextSibling.nodeValue || element.nextSibling.firstChild.nodeValue,
+              text: element.title || (element.nextSibling &amp;&amp; (element.nextSibling.firstChild &amp;&amp; element.nextSibling.firstChild.nodeValue || element.nextSibling.nodeValue)) || '',
               enable: element.checked,
-              element : element
+              element : element,
+              type : type
         });
       }
-      if (selectionSummary) {selectionSummary._updateSummary(element);}
+      if (selectionSummary) {selectionSummary._updateSummary(element, type);}
 };
 var enableHighlightChecked = function(element) {
       highlightChecked(element);
-      ['click', 'change', 'suggest:change'].each(function(eventName) {
+      ['click', 'change', 'suggest:change', 'picker:change'].each(function(eventName) {
         element.observe(eventName, highlightChecked.bind(element,element));
       });
 };
@@ -440,9 +427,10 @@ var restoreCategory = function (element) {
           this.suggest.options.queryProcessor &amp;&amp; this.suggest.options.queryProcessor.restriction &amp;&amp;
           this.suggest.options.queryProcessor.restriction.term_category;
   if (parentElement) {
+    var originalName = parentElement.down('input[name="fieldName"]');
     parentElement.select('.term-category input[type=hidden]').each(function (item) {
       if (ignoredCategories &amp;&amp; ignoredCategories.indexOf(item.value) &gt;= 0) return;
-      selector += 'input.suggested[name^=' + element.name + '] + input[type=hidden][name=_category][value*=' + item.value +'], '
+      selector += 'input.suggested[name^="' + (originalName &amp;&amp; originalName.value || element.name) + '"] + input[type=hidden][name=_category][value*="' + item.value +'"], '
     });
   }
   var matchingCategory = document.documentElement.down(selector);
@@ -469,43 +457,47 @@ var findPropertyField = function(name) {
   return null;
 }
 
-var findFormElementForPhenotype = function(id) {
-  return $($('prefix').value + 'phenotype_' + id);
+var findFormElementForPhenotype = function(id, negative) {
+  return $($('prefix').value + (negative ? 'negative_' : '') + 'phenotype_' + id);
 };
 
-var isPhenotypeSelected = function (id) {
-  var elt = findFormElementForPhenotype(id);
+var isPhenotypeSelected = function (id, negative) {
+  var elt = findFormElementForPhenotype(id, negative);
   return (elt &amp;&amp; elt.checked);
 };
-var unselectPhenotype = function (id) {
-  var targetElt = findFormElementForPhenotype(id);
+var unselectPhenotype = function (id, negative) {
+  var targetElt = findFormElementForPhenotype(id, negative);
   if (targetElt &amp;&amp; targetElt.checked) {
     targetElt.click();
   }
 };
 
-document.observe('dom:loaded', function() {
-    $$('.editbody .negative_phenotype-group .phenotypes-main').invoke('insert', {'before' : new Element('div', {'class' : 'infomessage'}).update("Add here any pertinent indications that were not observed, and which can be helpful for differential diagnosis.")});
-    $$('.negative_phenotype-group h3').each(function(title) {
-      title.update(title.innerHTML.replace("NOT", "&lt;em&gt;NOT&lt;/em&gt;"));
-    });
+var isValueSelected = function (fieldName, value) {
+  var elt = $(fieldName + '_' + value);
+  return (elt &amp;&amp; elt.checked);
+};
 
-    // ------------------------------------------------------------------------
-    // Selected term highlighting 
-    $$('label.term-label input[type=checkbox]').each(function (input) {
+document.observe('dom:loaded', function() {
+  $$('.editbody .negative_phenotype-group').invoke('hide');
+  // ------------------------------------------------------------------------
+  // Selected term highlighting 
+  // ------------------------------------------------------------------------
+  ["yes", "no"].each(function (type) {
+    $$('.term-label .' + type + ' input[type=checkbox]').each(function (input) {
       enableHighlightChecked(input);
       input.observe('click', function(event) {
-          $$('input[type="checkbox"][value="' + event.element().value.replace(/"/g, '\\"') +'"]').each(function(item) {
+          $$('.' + type + ' input[type=checkbox][value=' + event.element().value +']').each(function(item) {
             if (item.checked != event.element().checked) {
               item.click();
             }
           });
       });
     });
+  });
     
   // ------------------------------------------------------------------------
   // Behavior of the quick search box
-
+  // ------------------------------------------------------------------------
   var qsBox = $('quick-search-box');
   if (qsBox) {
     var content = qsBox.next('div');
@@ -515,22 +507,17 @@ document.observe('dom:loaded', function() {
       Event.observe(document, 'ms:suggest:containerCreated', function(event) {
         if (event.memo.suggest.fld == qsBox.__x_qsInput) {
           qsBox.__x_qsInput._activeSuggest = true;
-//          if (qsSticky.isFixed()) {
-//            qsSticky.makeAbsolute((document.viewport.getScrollOffsets().top - content.cumulativeOffset().top) + qsSticky.options.shadowSize);
-//          }
           var qsSuggest = event.memo.container;
           if (qsBox.getStyle('position') == 'fixed') {
             qsSuggest.style.position = 'fixed';
           }
           qsSuggest.style.top = (qsBox.__x_qsInput.cumulativeOffset().top + qsBox.__x_qsInput.getHeight()) + 'px';
           qsSuggest.style.left = qsBox.__x_qsInput.cumulativeOffset().left;
-          //qsSuggest.style.marginTop = '1.6em';
         }
       });
       Event.observe(document, 'ms:suggest:clearSuggestions', function(event) {
         if (event.memo.suggest.fld == qsBox.__x_qsInput) {
           qsBox.__x_qsInput._activeSuggest = false;
-//          qsSticky.resetPosition();
         }
       });
     }
@@ -888,7 +875,7 @@ document.observe('dom:loaded', function() {
 <cache>long</cache>
 </property>
 <property>
-<code>document.observe('dom:loaded', function() {
+<code>document.observe('xwiki:dom:loaded', function() {
     var jumpToPubmed = function(termID) {
        var label = termID.up('label');
        var li = label.up('li');
@@ -937,7 +924,7 @@ document.observe('dom:loaded', function() {
 								);
 							      }.bindAsEventListener(this));
 							    }
-			                      }
+			                     }
                          },
             enableHierarchy: true,
             resultParent : "is_a",
@@ -982,6 +969,18 @@ document.observe('dom:loaded', function() {
     };
     var pickerSpecialClassOptions = {
       'defaultPicker' : {},
+      'quickSearch' : {
+                  'showKey' : false,
+                  'showTooltip' : false,
+                  'showDeleteTool' : true,
+                  'enableSort' : false,
+                  'showClearTool' : false,
+                  'inputType': 'checkbox',
+                  'listInsertionElt' : $(document.documentElement).down('.phenotype-info .phenotype-group:last-child .phenotype-other'),
+                  'listInsertionPosition' : 'top',
+                  'silent' : true,
+                  'onItemAdded' : restoreCategory
+                },
       'generateShortList' : {
                   'showKey' : true,
                   'showTooltip' : false,
@@ -1002,17 +1001,17 @@ document.observe('dom:loaded', function() {
                   'onItemAdded' : enableHighlightChecked,
                   'acceptFreeText' : true
                 },
-      'quickSearch' : {
+      'generateYesNo' : {
                   'showKey' : false,
                   'showTooltip' : false,
                   'showDeleteTool' : true,
                   'enableSort' : false,
                   'showClearTool' : false,
                   'inputType': 'checkbox',
-                  'listInsertionElt' : $(document.documentElement).down('.phenotype-info .phenotype-group:last-child .phenotypes-main'),
-                  'listInsertionPosition' : 'top',
-                  'silent' : true,
-                  'onItemAdded' : restoreCategory
+                  'listInsertionElt' : '.label-other',
+                  'listInsertionPosition' : 'before',
+                  'onItemAdded' : enableHighlightChecked,
+                  'acceptFreeText' : true
                 },
       'portal' : {
                   'showKey' : false,
@@ -1026,6 +1025,110 @@ document.observe('dom:loaded', function() {
                   'silent' : true,
                   'onItemAdded' : jumpToPubmed
                 }
+    }
+    // ------------------------------------------------------------------------
+    // Generate selection summary
+    // ------------------------------------------------------------------------
+    selectionSummary = $('current-phenotype-selection');
+    if (selectionSummary) {
+        $$('.browse-phenotype-categories .phenotype-group h3').each(function(groupTitle) {
+           var group = new Element('div', {'class' : 'summary-group', id : 'summary-group-' + groupTitle.id});
+           group.insert({
+             top: new Element('h3').update(groupTitle.down('span:not(.expand-tool)').innerHTML),
+             bottom: new Element('div', {'class' : 'group-contents'})
+           });
+           selectionSummary.insert(group);
+           group._updateGroupVisibility = function() {
+             if (!this.down('.group-contents input')) {
+               this.hide();
+             } else {
+               this.show();
+             }
+           }.bind(group);
+           group._find = function(value, type) {
+             return this.down('.group-contents .' + type + ' input[value="' + value + '"]');
+           }.bind(group);
+           group._add = function(element) {
+             this.down('.group-contents').insert(element) ;
+           }.bind(group);
+           group._updateGroupVisibility();
+        });
+        selectionSummary._getGroup = function(name) {
+          return $('summary-group-' + name);
+        }.bind(selectionSummary);
+
+        selectionSummary._find = function(value, type) {
+             return this.down('.summary-group .summary-item .' + type + ' input[value="' + value + '"]');
+        }.bind(selectionSummary);
+
+        selectionSummary._silentRemove = function(value, type) {
+             var exists = this._find(value,type);
+             if (exists) {
+               var group = exists.up('.summary-group');
+               exists.up('.summary-item').remove();
+               if (!group) {return;}
+               group._updateGroupVisibility();
+             }
+        }.bind(selectionSummary);
+        selectionSummary._remove = function(value, type) {
+             var exists = this._find(value, type);
+             if (exists) {
+               var source = exists.up('.summary-item').__source;
+               if (source._ynpicker) {
+                 source._ynpicker._onUnselect();
+               } else {
+                 source.click();
+               }
+             }
+        }.bind(selectionSummary);
+
+        selectionSummary._updateSummary = function(inputElt, type, forceUpdate) {
+          if (!inputElt || !inputElt.value) {return}
+          var sectionId = inputElt.up('.phenotype-group') &amp;&amp; inputElt.up('.phenotype-group').down('h3');
+          if (sectionId) {
+            sectionId = sectionId.id;
+          } else {
+            return;
+          }
+          if (inputElt.checked) {
+             if (forceUpdate) {
+                this._silentRemove(inputElt.value, type);
+             }
+             var exists = this._find(inputElt.value, type);
+             if (!exists) {
+               var group = this._getGroup(sectionId);
+               if (!group) {return;}
+               var newItem = new Element('div', {'class' : 'summary-item'}).update(
+                  new Element('label', {'class' : type}).insert({
+                     'top': new Element('input', {'value' : inputElt.value, checked : 'checked', type : 'checkbox', 'class': 'hidden'}),
+                     'bottom' : inputElt.title || inputElt.nextSibling.nodeValue || inputElt.nextSibling.firstChild.nodeValue || inputElt.value
+                  })
+               );
+               newItem.__source = inputElt;
+               var tools = new Element('span', {'class' : 'tools hint'});
+               var deleteTool = new Element('span', {'class' : 'tool'}).update('Delete');
+               var detailsTool = new Element('span', {'class' : 'tool'}).update('Details...');
+               tools.insert(deleteTool);//.insert(' · ').insert(detailsTool);
+               deleteTool.observe('click', function(event) {
+                 var source = event.findElement('.summary-item').__source;
+                 if (source._ynpicker) {
+                   source._ynpicker._onUnselect();
+                 } else {
+                   source.click();
+                 }
+               });
+               detailsTool.observe('click', function(event) {
+                 alert('Coming soon:\n- specify onset age and end age for this symptom,\n- add comments,\n- upload relevant images.');
+               });
+               newItem.insert(tools);
+               group._add(newItem);
+               group._updateGroupVisibility();
+               Event.fire(document, "summary-item:added", {element: newItem});
+             }
+          } else {
+             this._silentRemove(inputElt.value, type);
+          }
+        }.bind(selectionSummary);
     }
     // -----------------------------------------------------------------
     // Create and attach the suggests
@@ -1060,6 +1163,7 @@ document.observe('dom:loaded', function() {
               for (var j = 0; j &lt; specialClasses.length; j++) {
                 if (item.hasClassName(specialClasses[j])) {
                   multiSuggestOptions = pickerSpecialClassOptions[specialClasses[j]];
+                  // FIXME! If the input has more than one special class, does the ordering declared in pickerSpecialClassOptions guarantee we choose the right one?
                   break;
                 }
               }
@@ -1073,27 +1177,107 @@ document.observe('dom:loaded', function() {
                  // 2. get rid of the container
                  customFieldsContainer.remove();
                  // 3. find all the values and display them as part of the multi suggest picker
+                 var tmp = suggestPicker.silent;
                  suggestPicker.silent = true;
-                 customFieldsContainer.select('label input[type="checkbox"]').each(function(entry) {
-                   suggestPicker.addItem(entry.value, entry.nextSibling.nodeValue, '', entry.up('label').next('.term-category'));
+                 customFieldsContainer.select('.term-entry').each(function(entry) {
+                   var negativeCheckbox = entry.down('.yes-no-picker .no input');
+                   var value =  entry.down('input[type="checkbox"]').value;
+                   var text = negativeCheckbox &amp;&amp; negativeCheckbox.title || entry.down('input[type="checkbox"]').title;
+                   var category = entry.down('.term-category');
+                   if (negativeCheckbox &amp;&amp; negativeCheckbox.checked) {
+                     var negative = new Element('input', {type: 'hidden', name : 'fieldName', value : negativeCheckbox.name});
+                     category &amp;&amp; category.insert(negative) || (category = negative);
+                   }
+                   suggestPicker.addItem(value, text, '', category || '');
                  });
-                 suggestPicker.silent = false;
+                 suggestPicker.silent = tmp;
               }
  
             }
             item.addClassName('initialized');
+
+            // ------------------------------------------------------------------------
+            // Add y/n pickers to generated suggestions
+            if (item.hasClassName('generateYesNo')) {
+              item.observe("ms:suggest:suggestionCreated", function(event) {
+                var negativeName = item.name.replace(/(_\d+)_/, "$1_negative_").replace(/__suggested$/, '');
+                var suggestion = event.memo &amp;&amp; event.memo.element;
+                if (suggestion) {
+                  var suggest = event.memo.suggest;
+                  var value =  suggestion.down(".suggestId").firstChild.nodeValue;
+                  var text =  suggestion.down(".suggestValue").firstChild.nodeValue;
+                  var ynpicker = YesNoPicker.generatePickerElement([
+                    {type: 'yes', selected: isValueSelected(item.name.replace(/__suggested$/, ''), value)}, 
+                    {type: 'no' , selected: isValueSelected(negativeName, value)}
+                  ], value, text);
+                  suggestion.down(".suggestValue").up().insert({top: ynpicker});
+                  // Prevent click events from the label from activating the suggestion selection twice because of being forwarded to the input
+                  ynpicker.select('input').invoke('observe', 'click', function(event) {event.stop()});
+
+                  // Keep the default behavior for the Y button
+                  //  but capture the N button clicks and make sure the value is selected for the negative property field
+                  var nLabel = ynpicker.down('.no');
+                  nLabel.observe('click', function(event) {
+                    var predefinedCheckBox = $(negativeName + "_" + value);
+                    if (predefinedCheckBox &amp;&amp; !predefinedCheckBox.checked) {
+                      predefinedCheckBox._ynpicker._onNo();
+                      suggest.clearSuggestions();
+                      suggest.fld.value = '';
+                      suggest.fld.focus();
+                      suggest.fld.blur();
+                      event.stop();
+                    }
+                    suggestion.down('.suggestCategory').insert({
+                      top : new Element('input', {type: 'hidden', name : 'fieldName', value : negativeName, 'class' : 'no'})
+                    });
+                  });
+                }
+              });
+            }
           }
         });
       }
 
       // ------------------------------------------------------------------------
+      // Complete selection summary behavior
+      // ------------------------------------------------------------------------
+       if (selectionSummary) {
+        $$('.browse-phenotype-categories .phenotype-group .term-label.selected input, .browse-phenotype-categories .accepted-suggestion.selected input').each(function(input) {
+           selectionSummary._updateSummary(input);
+        });
+        $$('.browse-phenotype-categories .phenotype-group .accepted-suggestions').invoke('addClassName', 'hidden');
+        $$('.browse-phenotype-categories .phenotype-group .suggest-hpo.multi').each(function (sItem){
+           if (sItem._suggest) {
+             sItem._suggest.silent = true;
+           }
+        });
+        document.observe('phenotype:selected', function(event) {
+          if (!event.memo || !event.memo.key) {return;}
+          if (!event.memo.enable) {
+            selectionSummary._silentRemove(event.memo.key, event.memo.type);
+          }
+        });
+        document.observe("custom:selection:category:changed", function(event) {
+          if (!event.memo || !event.memo.customElement) {return;}
+          var input = event.memo.customElement.select('input').find(function(item) { return item.checked; });
+          selectionSummary._updateSummary(input, input.up('label.no') ? 'no' : 'yes', true);
+        });
+      }
+
+      // ------------------------------------------------------------------------
       // Add dropdowns to all predefined elements
-      $$('.phenotype-group, .prenatal_phenotype-info').each(function(group) {
+      // ------------------------------------------------------------------------
+      $$('.phenotype-group, .prenatal_phenotype-group').each(function(group) {
         var sugestedInput = group.down('.suggested.multi');
         if (sugestedInput) {
-          group.select('.phenotypes-main label.term-label &gt; input[type=checkbox]').each(function(item) {
-            if (!item.up('.subsection')) {
-            item._dropDown = new MS.widgets.DropDown(item.up('label'));
+          group.select('.predefined-entries label.term-entry &gt; input[type=checkbox], .predefined-entries .term-entry .yes-no-picker .yes input[type=checkbox]').each(function(item) {
+            var item_subsection = item.up('.subsection');
+            if (item_subsection) {
+              if (item_subsection.hasClassName('single-select')){
+                 // TODO: ensure single select within this group
+              }
+            } else {
+            item._dropDown = new MS.widgets.DropDown(item.up('.term-entry'));
             item._ontologyBrowser = new MS.widgets.OntologyBrowser(
               sugestedInput._suggest,
               item._dropDown,
@@ -1108,7 +1292,7 @@ document.observe('dom:loaded', function() {
             );
             item._trigger = new Element('span', {'class' : 'expand-tool'}).update(item._ontologyBrowser._getExpandCollapseSymbol(true));
             item._trigger._source = item;
-            item._trigger._root = item.up('label');
+            item._trigger._root = item.up('.term-entry');
             item._trigger._root.insert({'top' : item._trigger});
             if (item._trigger._root.hasClassName('dropdown-root')) {
             item._trigger.observe('click', function(event) {
@@ -1129,135 +1313,36 @@ document.observe('dom:loaded', function() {
             } else {
               item._trigger.addClassName('disabled');
             }
-          }
+            }
+
+            // ------------------------------------------------------------------------
+            // Add  y/n selection
+            // ------------------------------------------------------------------------
+            var ynPickerElt = item.up('.yes-no-picker');
+            if (ynPickerElt) {
+              item._ynpicker = new YesNoPicker(ynPickerElt, ynPickerElt.next('label'), true);
+              enableHighlightChecked(item);
+              var negItem = ynPickerElt.down('.no input');
+              if (negItem) {
+                enableHighlightChecked(negItem);
+                negItem._ynpicker = item._ynpicker;
+              }
+            }
           });
         }
       });
 
       // ------------------------------------------------------------------------
-      // Generate selection summary
-      selectionSummary = $('current-phenotype-selection');
-      if (selectionSummary) {
-        $$('.browse-phenotype-categories .phenotype-group h3').each(function(groupTitle) {
-           var group = new Element('div', {'class' : 'summary-group', id : 'summary-group-' + groupTitle.id});
-           group.insert({
-             top: new Element('h3').update(groupTitle.down('span:not(.expand-tool)').innerHTML),
-             bottom: new Element('div', {'class' : 'group-contents'})
-           });
-           selectionSummary.insert(group);
-           group._updateGroupVisibility = function() {
-             if (!this.down('.group-contents input')) {
-               this.addClassName('hidden');
-             } else {
-               this.removeClassName('hidden');
-             }
-           }.bind(group);
-           group._find = function(value) {
-             return this.down('.group-contents input[value="' + value.replace(/"/g, '\\"') + '"]');
-           }.bind(group);
-           group._add = function(element) {
-             this.down('.group-contents').insert(element) ;
-           }.bind(group);
-           group._updateGroupVisibility();
-        });
-        selectionSummary._getGroup = function(name) {
-          return $('summary-group-' + name);
-        }.bind(selectionSummary);
-
-        selectionSummary._find = function(value) {
-             return this.down('.summary-group .summary-item input[value="' + value.replace(/"/g, '\\"') + '"]');
-        }.bind(selectionSummary);
-
-        selectionSummary._silentRemove = function(value) {
-             var exists = this._find(value);
-             if (exists) {
-               var group = exists.up('.summary-group');
-               exists.up('.summary-item').remove();
-               if (!group) {return;}
-               group._updateGroupVisibility();
-             }
-        }.bind(selectionSummary);
-        selectionSummary._remove = function(value) {
-             var exists = this._find(value);
-             if (exists) {
-               exists.up('.summary-item').__source.click();
-             }
-        }.bind(selectionSummary);
-
-        selectionSummary._updateSummary = function(inputElt, forceUpdate) {
-          if (!inputElt) {return}
-          var sectionId = inputElt.up('.phenotype-group') &amp;&amp; inputElt.up('.phenotype-group').down('h3');
-          if (sectionId) {
-            sectionId = sectionId.id;
-          } else {
-            return;
-          }
-          if (inputElt.checked) {
-             if (forceUpdate) {
-                this._silentRemove(inputElt.value);
-             }
-             var exists = this._find(inputElt.value);
-             if (!exists) {
-               var group = this._getGroup(sectionId);
-               if (!group) {return;}
-               var newItem = new Element('div', {'class' : 'summary-item'}).update(
-                  new Element('label').insert({
-                     'top': new Element('input', {'value' : inputElt.value, checked : 'checked', type : 'checkbox', 'class': 'hidden'}),
-                     'bottom' : inputElt.title || inputElt.nextSibling.nodeValue || inputElt.nextSibling.firstChild.nodeValue || inputElt.value
-                  })
-               );
-               newItem.__source = inputElt;
-               var tools = new Element('span', {'class' : 'tools hint'});
-               var deleteTool = new Element('span', {'class' : 'tool'}).update('Delete');
-               var detailsTool = new Element('span', {'class' : 'tool'}).update('Details...');
-               tools.insert(deleteTool);//.insert(' · ').insert(detailsTool);
-               deleteTool.observe('click', function(event) {
-                 event.findElement('.summary-item').__source.click();
-               });
-               detailsTool.observe('click', function(event) {
-                 alert('Coming soon:\n- specify onset age and end age for this symptom,\n- add comments,\n- upload relevant images.');
-               });
-               newItem.insert(tools);
-               group._add(newItem);
-               group._updateGroupVisibility();
-               Event.fire(document, "summary-item:added", {element: newItem});
-             }
-          } else {
-             this._silentRemove(inputElt.value);
-          }
-        }.bind(selectionSummary);
-
-        $$('.browse-phenotype-categories .phenotype-group .term-label.selected input, .browse-phenotype-categories .accepted-suggestion.selected input').each(function(input) {
-           selectionSummary._updateSummary(input);
-        });
-        $$('.browse-phenotype-categories .phenotype-group .accepted-suggestions').invoke('addClassName', 'hidden');
-        $$('.browse-phenotype-categories .phenotype-group .suggest-hpo.multi').each(function (sItem){
-           if (sItem._suggest) {
-             sItem._suggest.silent = true;
-           }
-        });
-        document.observe('phenotype:selected', function(event) {
-          if (!event.memo || !event.memo.key) {return;}
-          if (!event.memo.enable) {
-            selectionSummary._silentRemove(event.memo.key);
-          }
-        });
-        document.observe("custom:selection:category:changed", function(event) {
-          if (!event.memo || !event.memo.customElement) {return;}
-          selectionSummary._updateSummary(event.memo.customElement.down('input'), true);
-        });
-      }
-
-      // ------------------------------------------------------------------------
       // Sync dynamic subtree selections
+      // ------------------------------------------------------------------------
       var fieldName = '';
       var source = '';
       var categories = '';
       var DO_EXPAND = !selectionSummary;
       var syncTermCategory = function(term) {
-        var field = $(document.documentElement).down('label.term-label.dropdown-root input[type="checkbox"][name="' + fieldName.replace(/"/g, '\\"') + '"][value="' + term.replace(/"/g, '\\"') +'"]');
+        var field = $(document.documentElement).down('label.term-label.dropdown-root input[type=checkbox][name=' + fieldName + '][value=' + term +']');
         if (field) {
-          var subtermsInCategory = $$('label.accepted-suggestion[for^="' + fieldName.replace(/"/g, '\\"') + '_"] + .term-category input[type="hidden"][value="' + term.replace(/"/g, '\\"') + '"]');
+          var subtermsInCategory = $$('label.accepted-suggestion[for^=' + fieldName + '_] + .term-category input[type=hidden][value=' + term + ']');
           var selectedSubterms  = 0;
           var countIfSelectedSubterm = function (categoryElement) {
             var subtermElement = categoryElement.up('li').down('label.accepted-suggestion input[type=checkbox]');
@@ -1294,10 +1379,51 @@ document.observe('dom:loaded', function() {
           categories.each(syncTermCategory);
         }
         if (selectionSummary) {
-          selectionSummary._updateSummary(event.memo.customElement.down('input'));
+          var input = event.memo.customElement.select('input').find(function(item) { return item.checked; });
+          selectionSummary._updateSummary(input, input.up('label.no') ? 'no' : 'yes', true);
         }
       });
     }
+
+    // --------------------------------------------------------------
+    // Ontology browser y/n pickers
+    // --------------------------------------------------------------
+    document.observe('obrowser:content:added', function(event) {
+      if (!event.memo) return;
+      if (event.memo.added &amp;&amp; event.memo.obrowser &amp;&amp; event.memo.obrowser.suggest &amp;&amp; event.memo.obrowser.suggest.fld &amp;&amp; event.memo.obrowser.suggest.fld.hasClassName('generateYesNo')) {
+        event.memo.added.select('.entry-data input.select-tool').each(function (item) {
+          var positiveName = event.memo.obrowser.suggest.fld.name.replace(/__suggested$/, "");
+          var negativeName = event.memo.obrowser.suggest.fld.name.replace(/(_\d+)_/, "$1_negative_").replace(/__suggested$/, "");
+          var value = item.value;
+          var text = item.up('.entry-data').down('.value').firstChild.nodeValue;
+          var ynpickerElt = YesNoPicker.generatePickerElement([
+              {type: 'na', selected: !isValueSelected(positiveName, value) &amp;&amp; !isValueSelected(negativeName, value)}, 
+              {type: 'yes', selected: isValueSelected(positiveName, value)}, 
+              {type: 'no' , selected: isValueSelected(negativeName, value)}
+          ], value, text, true, item.next());
+          item.insert({before: ynpickerElt});
+          item.remove();
+          ynpickerElt._obrowser = event.memo.obrowser;
+          enableHighlightChecked(ynpickerElt.down('.yes input'));
+          enableHighlightChecked(ynpickerElt.down('.no input'));
+
+          ynpickerElt.observe('ynpicker:selectionChanged', function(event){
+            var selected = event.memo &amp;&amp; event.memo.selected;
+            var elt = event.findElement('.entry');
+            if (!selected || !elt) {return;}
+            var id = elt.__termId;
+            if (selected == 'na') {
+               ynpickerElt._obrowser._unselectEntry(elt);
+            } else if (selected == 'no') {
+                var negative = new Element('input', {type: 'hidden', name : 'fieldName', value : negativeName});
+                elt.__termCategory &amp;&amp;  elt.__termCategory.insert(negative) || (elt.__termCategory = negative);
+            }
+            // both yes &amp; no:
+            ynpickerElt._obrowser._selectEntry(elt);
+          });
+        });
+      }
+    }); 
 });</code>
 </property>
 <property>
@@ -1800,7 +1926,6 @@ document.observe('xwiki:dom:loaded', function() {
   }
   __adjustAllSVGHeights();
   Event.observe(window, 'resize', __adjustAllSVGHeights);
-  __adjustAllSVGHeights();
   // ----------------------------------------------------------------------------
 
   var dataTable = $('extradata-list-ClinicalInformationCode.MeasurementsClass');
@@ -1945,14 +2070,21 @@ document.observe('xwiki:dom:loaded', function() {
            if (value == 'evaluation' &amp;&amp; target['valueHooks'] &amp;&amp; getMostRecentEntry() == targets[p][value].up('tr.data-row')) {
              var targetElt = values[p]['valCategory'] &amp;&amp; target['valueHooks'][values[p]['valCategory']];
              if (targetElt &amp;&amp; !targetElt.checked) {
-                 targetElt.checked = true;
+                 if (targetElt._ynpicker) {
+                   targetElt._ynpicker._onYes();
+                 } else {
+                   targetElt.checked = true;
+                 }
                  highlightChecked(targetElt);
              }
              ['extreme-below-normal', 'extreme-above-normal'].without(values[p]['valCategory'] || '').each(function(val) {
                 var elt = target['valueHooks'][val];
                 if (elt &amp;&amp; elt.checked) {
-                  elt.checked = false;
-                  highlightChecked(elt);
+                  if (elt._ynpicker) {
+                    elt._ynpicker._onUnselect();
+                  } else {
+                    elt.checked = false;
+                  }
                 }
              });
            }
@@ -1985,22 +2117,6 @@ document.observe('xwiki:dom:loaded', function() {
        onFailure: function (response) {}
     });
   }
-
-  // ----------------------------------------------------------------------------
-  // Workaround for webkit bug https://bugs.webkit.org/show_bug.cgi?id=68995
-  // Inspired by http://www.brichards.co.uk/blog/webkit-svg-height-bug-workaround
-  // (adapted from jQuery to Prototype.js)
-  var __adjustSVGHeight = function(svgElt) {
-     // Original width/height of the svg graphic: 952 X 1225
-     svgElt.setStyle({ 'height' : (1225 / 952 * svgElt.getWidth()) + 'px'});
-
-  }
-  var __adjustAllSVGHeights = function() {
-     chartContainer.select('.chart-wrapper').each(__adjustSVGHeight);
-  }
-  __adjustAllSVGHeights();
-  Event.observe(window, 'resize', __adjustAllSVGHeights);
-  // ----------------------------------------------------------------------------
 
   var valueChanged = function(event) {
     // Get inputs holding the values needed for computing the dependent values
@@ -2382,7 +2498,7 @@ document.observe('xwiki:dom:loaded', function() {
 <cache>long</cache>
 </property>
 <property>
-<code>document.observe('xwiki:dom:loaded', function() {
+<code>document.observe('xwiki:dom:loading', function() {
 
   $$('.ncbi-search-box h3, .ncbi-search-box .expand-tools .tool').invoke('observe', 'click', function(event) {
      event.element().up('.ncbi-search-box').toggleClassName('collapsed');
@@ -2532,7 +2648,7 @@ document.observe('xwiki:dom:loaded', function() {
   }
 
   document.observe('phenotype:selected', function(event) {
-    if (!event.memo || !event.memo.key || !event.memo.element || event.memo.element.up('.negative-phenotype')) {return;}
+    if (!event.memo || !event.memo.key || !event.memo.element || event.memo.element.up('.negative-phenotype, .no')) {return;}
     var key = event.memo.key;
     var text = event.memo.text || event.memo.key;
     var obj = cache.all[key];
@@ -3116,14 +3232,7 @@ h1, h2, h3, h4 {
   margin-left: -1em;
   margin-bottom: .3em;
 }
-.chapter .phenotype-group .half-width,
-.chapter .negative_phenotype-group .half-width {
-  width: 100%;
-  float: none;
-  margin: 0;
-}
-.chapter .phenotype-group .half-width + .half-width,
-.chapter .negative_phenotype-group .half-width + .half-width {
+.editbody .chapter .custom-entries {
   margin-top: .5em;
   padding-top: .5em;
   padding-left: .8em;
@@ -3146,6 +3255,12 @@ h1, h2, h3, h4 {
   padding-left: 18px;
   margin-left: 1em;
   margin-bottom: .5em;
+}
+#current-phenotype-selection .summary-item .no, .value-checked.no-selected {
+  color: $theme.notificationErrorColor;
+}
+#current-phenotype-selection .summary-item .no:before, .value-checked.no-selected:before {
+  content: "NO ";
 }
 #current-phenotype-selection .summary-item label {
   width: auto;
@@ -3309,10 +3424,6 @@ input.wrongValue {
   padding-left: 8px;
   margin-left: 8px;
   border-left: 2px solid $theme.borderColor;
-}
-.clinical-info label {
-  display: inline-block;
-  ##width: 100%;
 }
 .value-checked, .viewbody .clinical-info label.section {
   padding-left: 18px;
@@ -3523,6 +3634,10 @@ input.wrongValue {
   display:inline-block;
   width:32%;
   margin-left:1%;
+}
+.term-entry {
+  display: block;
+  width: auto;
 }</code>
 </property>
 <property>
@@ -4049,7 +4164,7 @@ table.extradata-list td.bmi_percentile {
     ##&lt;h3 class="section"&gt;Quick phenotype search&lt;/h3&gt;
     &lt;table&gt;&lt;tbody&gt;&lt;tr&gt;
     &lt;td&gt;&lt;label for="quick-phenotype-search"&gt;Quick phenotype search:&lt;/label&gt;&lt;/td&gt;&lt;td class="input"&gt;
-    &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip' value='Enter keywords and choose among suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
+    &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip generateYesNo' value='Enter keywords and choose among suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
     &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
   &lt;/fieldset&gt;
   {{/html}}
@@ -4307,11 +4422,12 @@ $doc.display('prenatal_phenotype')
 ## Family history
 ##
 #macro(__reportSection__family_history)
-#if ("$!activeFields.contains('family_history')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('family_history')$doc.display('family_comments')$doc.display('pedigree')" != ''))
+#if ("$!activeFields.contains('consanguinity')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('consanguinity')doc.display('miscarriages')$doc.display('family_comments')$doc.display('pedigree')" != ''))
 (% class="clear clinical-info family_history-info chapter #__markIfMandatory('family_history')" %)(((
 == $!{class.get('family_history').prettyName} ==
 (((
-$doc.display('family_history')
+$doc.display('consanguinity')
+$doc.display('miscarriages')
 #__displayIfNotEmpty('family_comments')
 
 === Pedigree ===
@@ -4410,14 +4526,17 @@ $doc.display('images')
 )))
 
 #end
-$xwiki.jsx.use('ClinicalInformationCode.TouchscreenEvents')##
+
+$xwiki.jsx.use('ClinicalInformationCode.TouchscreenEvents', {'minify' : false})##
+$xwiki.ssx.use('ClinicalInformationCode.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('ClinicalInformationCode.YesNoNAPicker', {'minify' : false})##
 $xwiki.ssx.use('XWiki.DateTimePicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('ClinicalInformationCode.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.ssx.use('ClinicalInformationCode.Widgets', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('ClinicalInformationCode.Widgets')##
+$xwiki.jsx.use('ClinicalInformationCode.Widgets', {'minify' : false})##
 $xwiki.ssx.use('ClinicalInformationCode.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('ClinicalInformationCode.PatientSheetCode')##
+$xwiki.jsx.use('ClinicalInformationCode.PatientSheetCode', {'minify' : false})##
 ##
 ##
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))

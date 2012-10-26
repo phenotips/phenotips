@@ -22,229 +22,309 @@
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
-<content>    def t = services.phenotype;
-
-    LinkedHashMap&lt;String, LinkedHashMap&lt;String, Object&gt;&gt; phenotype = [
-      "Behavior, Cognition and Development"     : [
-        (t.RESTRICTION_FIELD_MARKER) : "HP:0001263,HP:0000708,HP:0001263,HP:0001286",
-        (t.CUSTOM_MAPPING_FIELD_MARKER) : "bcd",
-        "HP:0007228"                    : "Global development delay",
-        "HP:0010862"                    : "Fine motor delay",
-        "HP:0002194"                    : "Gross motor delay",
-        "HP:0000750"                    : "Language delay",
-        "HP:0001328"                    : "Learning disability",
-        "Intellectual disability"       : [
-          "HP:0001256"     : "Mild",
-          "HP:0002342"     : "Moderate",
-          "HP:0010864"     : "Severe"
+<content>Collection&lt;Map&lt;String, Object&gt;&gt;  phenotype = [
+  [
+    "type"       : "section",
+    "title"      : "Behavior, Cognition and Development",
+    "categories" : ["HP:0001263", "HP:0000708", "HP:0001286"],
+    "data"       : [
+        ["id" : "HP:0007228"],
+        ["id" : "HP:0010862"],
+        ["id" : "HP:0002194"],
+        ["id" : "HP:0000750"],
+        ["id" : "HP:0001328"],
+        [
+           "type"  : "subsection",
+           "id"    : "HP:0001249",
+           "group_type" : "single-select",
+           "title" : "Intellectual disability",
+           "data"  : [
+               ["id" : "HP:0001256", "title" : "Mild"],
+               ["id" : "HP:0002342", "title" : "Moderate"],
+               ["id" : "HP:0010864", "title" : "Severe"]
+           ]
         ],
-        "HP:0007018"                    : "Attention deficit hyperactivity disorder",
-        "HP:0000717"                    : "Autism",
-        "HP:0000708"                    : "Psychiatric disorders",
-        (t.OTHER_FIELD_MARKER)       : null
-      ], 
-      "Neurological"     : [
-       (t.RESTRICTION_FIELD_MARKER)   : "HP:0000707",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "ne",
-        "HP:0001290"                    : "Hypotonia",
-        "HP:0001250"                    : "Seizures",
-        "HP:0001251"                    : "Ataxia",
-        "HP:0001332"                    : "Dystonia",
-        "HP:0002072"                    : "Chorea",
-        "HP:0001257"                    : "Spasticity",
-        "HP:0010301"                    : "Neural tube defect",
-        "HP:0007319"                    : "Malformation of the CNS",
-       (t.OTHER_FIELD_MARKER)      : null
-      ],
-      "Growth parameters"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0001507",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "gp",
-        "Postnatal growth parameters:"     : [
-        "Weight for age"     : [
-          "HP:0004325"                    : "&lt;3rd",
-          "HP:0001513"                    : "&gt;97th",
+        ["id" : "HP:0007018"],
+        ["id" : "HP:0000717"],
+        ["id" : "HP:0000708"]
+    ] 
+  ],
+  [
+    "type"       : "section",
+    "title"      : "Neurological",
+    "categories" : ["HP:0000707"],
+    "data"       : [
+        ["id" : "HP:0001290"],
+        ["id" : "HP:0001250"],
+        ["id" : "HP:0001251"],
+        ["id" : "HP:0001332"],
+        ["id" : "HP:0002072"],
+        ["id" : "HP:0001257"],
+        ["id" : "HP:0010301"],
+        ["id" : "HP:0007319"]
+    ] 
+  ],
+  [
+    "type"       : "section",
+    "title"      : "Growth parameters",
+    "categories" : ["HP:0001507"],
+    "data"       : [
+        [
+           "type"  : "subsection",
+           "id"    : "HP:0004323",
+           "group_type" : "single-select",
+           "title" : "Weight for age",
+           "data"  : [
+               ["id" : "HP:0004325", "title" : "&lt;3rd"],
+               ["id" : "HP:0001513", "title" : "&gt;97th"]
+           ]
         ],
-        "Stature for age"     : [
-          "HP:0004322"                    : "&lt;3rd",
-          "HP:0000098"                    : "&gt;97th",
+        [
+           "type"  : "subsection",
+           "id"    : "HP:0000002",
+           "group_type" : "single-select",
+           "title" : "Stature for age",
+           "data"  : [
+               ["id" : "HP:0004322", "title" : "&lt;3rd"],
+               ["id" : "HP:0000098", "title" : "&gt;97th"]
+           ]
         ],
-        "Head circumference for age"     : [
-          "HP:0000252"                    : "&lt;3rd",
-          "HP:0000256"                    : "&gt;97th",
+        [
+           "type"  : "subsection",
+           "id"    : "HP:0000240",
+           "group_type" : "single-select",
+           "title" : "Head circumference for age",
+           "data"  : [
+               ["id" : "HP:0000252", "title" : "&lt;3rd"],
+               ["id" : "HP:0000256", "title" : "&gt;97th"]
+           ]
         ],
-        ],
-        "HP:0001528"                    : "Hemihypertrophy",
-       (t.OTHER_FIELD_MARKER)      : null
-      ],
-      "Cardiac"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0001627",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "ca",
-        "HP:0001631"                    : "ASD",
-        "HP:0001629"                    : "VSD",
-        "HP:0001674"                    : "AV canal defect",
-        "HP:0001680"                    : "Coarctation of aorta",
-        "HP:0001636"                    : "Tetralogy of fallot",
-        "HP:0001638"                    : "Cardiomyopathy",
-        "HP:0001665"                    : "Conduction defect",
-       (t.OTHER_FIELD_MARKER)      : null
-      ],
-      "Craniofacial"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000152",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "cf",
-        "HP:0001363"                    : "Craniosynostosis",
-        "HP:0000204"                    : "Cleft lip",
-        "HP:0000175"                    : "Cleft palate",
-        "HP:0001999"                    : "Facial dysmorphism",
-       (t.OTHER_FIELD_MARKER)      : null
-      ],
-      "Eye Defects"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000478",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "ey",
-        "HP:0000505"                    : "Impaired vision",
-        "HP:0000481"                    : "Abnormality of the cornea",
-        "HP:0000589"                    : "Coloboma",
-        "HP:0000593"                    : "Abnormality of the anterior chamber",
-        "HP:0000518"                    : "Cataract",
-        "HP:0000479"                    : "Abnormality of the retina",
-        "HP:0000587"                    : "Abnormality of the optic nerve",
-        "HP:0000568"                    : "Microphthalmia",
-        "HP:0000639"                    : "Nystagmus",
-        "HP:0000486"                    : "Strabismus",
-       (t.OTHER_FIELD_MARKER)      : null
-      ],
-      "Ear Defects"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000598",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "ea",
-        "Deafness" : [
-           "HP:0008538"                    : "Sensorineural",
-           "HP:0000367"                    : "Conductive"
-        ],
-        "HP:0004467"                    : "Peauricular pit",
-        "HP:0000384"                    : "Preauricular skin tag",
-        "HP:0000356"                    : "Outer ear abnormality",
-        "HP:0000359"                    : "Inner ear abnormality",
-       (t.OTHER_FIELD_MARKER)      : null
-      ],
-      "Cutaneous"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000951",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "cu",
-        "HP:0000953"                    : "Hyperpigmentation",
-        "HP:0001010"                    : "Hypopigmentation",
-        "HP:0005306"                    : "Capillary hemangiomas",
-        "HP:0011276"                    : "Vascular abnormality",
-       (t.OTHER_FIELD_MARKER)      : null
-      ],
-      "Respiratory"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0002086,HP:0000765",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "re",
-        "HP:0000776"                    : "Diaphragmatic hernia",
-        "HP:0002088"                    : "Lung abnormality",
-       (t.OTHER_FIELD_MARKER)      : null
-      ],
-      "Musculoskeletal"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000924,HP:0003549",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "ms",
-        "HP:0002652"                    : "Skeletal dysplasia",
-        "HP:0002659"                    : "Increased susceptibility to fracture",
-        "HP:0009816"                    : "Hypoplasia of lower limbs",
-        "HP:0009824"                    : "Hypoplasia of upper limbs",
-        "Camptodactyly"     : [
-          "HP:0100490"                    : "Finger",
-          "HP:0001836"                    : "Toe",
-        ],
-        "Syndactyly"     : [
-          "HP:0006101"                    : "Finger",
-          "HP:0001770"                    : "Toe",
-        ],
-        "Polydactyly"     : [
-          "HP:0100258"                    : "Preaxial",
-          "HP:0100259"                    : "Postaxial",
-        ],
-        "Oligodactyly"     : [
-          "HP:0001180"                    : "Hands",
-          "HP:0001849"                    : "Feet",
-        ],
-        "HP:0002650"                    : "Scoliosis",
-        "HP:0000925"                    : "Vertebral Anomaly",
-        "HP:0001371"                    : "Contractures",
-        "HP:0001762"                    : "Club foot",
-       (t.OTHER_FIELD_MARKER)      : null
-      ],
-      "Gastrointestinal"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0001438",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "gi",
-        "HP:0002032"                    : "Esophageal atresia",
-        "HP:0002575"                    : "Tracheoesophageal fistula",
-        "HP:0001543"                    : "Gastroschisis",
-        "HP:0001539"                    : "Omphalocele",
-        "HP:0002251"                    : "Hirschsprung",
-        "HP:0001396"                    : "Cholestasis",
-        "HP:0001411"                    : "Abnormal liver function",
-        "HP:0002581"                    : "Pancreatic Insufficiency",
-        "HP:0000819"                    : "Diabetes",
-       (t.OTHER_FIELD_MARKER)      : null
-      ],
-      "Genitourinary"     : [
-       (t.RESTRICTION_FIELD_MARKER) : "HP:0000119",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "gu",
-        "HP:0000107"                    : "Renal Cysts",
-        "HP:0000085"                    : "Horseshoe Kidney",
-        "HP:0000069"                    : "Abnormality of ureter",
-        "HP:0000795"                    : "Abnormality of urethra",
-        "HP:0000062"                    : "Ambiguous genitalia",
-        "HP:0000047"                    : "Hypospadias",
-        "HP:0000028"                    : "Cryptorchidism",
-       (t.OTHER_FIELD_MARKER)      : null
-      ],
-      "Other"     : [
-        (t.RESTRICTION_FIELD_MARKER): "HP:0000118",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "oth",
-      ]
-  ];
-
-  LinkedHashMap&lt;String, Object&gt; prenatal_history = [
-       (t.RESTRICTION_FIELD_MARKER): "HP:0000118",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "pre",
-        "Prenatal growth parameters:"     : [
-        "Weight for age"     : [
-          "HP:0004325"                    : "&lt;3rd",
-          "HP:0001513"                    : "&gt;97th",
-        ],
-        "Stature for age"     : [
-          "HP:0004322"                    : "&lt;3rd",
-          "HP:0000098"                    : "&gt;97th",
-        ],
-        "Head circumference for age"     : [
-          "HP:0000252"                    : "&lt;3rd",
-          "HP:0000256"                    : "&gt;97th",
-        ],
-        ],
-        "HP:0001562"                    : "Oligohydramnios",
-        "HP:0001561"                    : "Polyhydramnios",
-        "HP:0001622"                    : "Premature birth",
-       (t.OTHER_FIELD_MARKER)      : null
-  ];
-
-  LinkedHashMap&lt;String, Object&gt; family_history = [
-        "_c_miscarriages"            : "Parents with at least 3 miscarriages",
-        "_c_consanguinity"            : "Consanguinity"
-  ];
-  LinkedHashMap&lt;String, String&gt; extraMessages = [];
-
-  LinkedHashMap&lt;String, Object&gt; negative_phenotype = [
-    "Phenotypes NOT observed in this patient"     : [
-       (t.RESTRICTION_FIELD_MARKER): "HP:0000118",
-       (t.CUSTOM_MAPPING_FIELD_MARKER) : "neg",
-       (t.OTHER_FIELD_MARKER)      : null
+        ["id" : "HP:0001528"]
     ]
-  ];
+  ],
+  [
+    "type"       : "section",
+    "title"      : "Cardiac",
+    "categories" : ["HP:0001627"],
+    "data"       : [
+        ["id" : "HP:0001631"],
+        ["id" : "HP:0001629"],
+        ["id" : "HP:0001674"],
+        ["id" : "HP:0001680"],
+        ["id" : "HP:0001636"],
+        ["id" : "HP:0001638"],
+        ["id" : "HP:0001665"]
+    ] 
+  ],
+  [
+    "type"       : "section",
+    "title"      : "Craniofacial",
+    "categories" : ["HP:0000152"],
+    "data"       : [
+        ["id" : "HP:0001363"],
+        ["id" : "HP:0000204"],
+        ["id" : "HP:0000175"],
+        ["id" : "HP:0001999"]
+    ] 
+  ],
+  [
+    "type"       : "section",
+    "title"      : "Eye Defects",
+    "categories" : ["HP:0000478"],
+    "data"       : [
+        ["id" : "HP:0000505"],
+        ["id" : "HP:0000481"],
+        ["id" : "HP:0000589"],
+        ["id" : "HP:0000593"],
+        ["id" : "HP:0000518"],
+        ["id" : "HP:0000479"],
+        ["id" : "HP:0000587"],
+        ["id" : "HP:0000568"],
+        ["id" : "HP:0000639"],
+        ["id" : "HP:0000486"]
+    ] 
+  ],
+  [
+    "type"       : "section",
+    "title"      : "Ear Defects",
+    "categories" : ["HP:0000598"],
+    "data"       : [
+        [
+           "type"  : "subsection",
+           "id"    : "HP:0000404",
+           "title" : "Deafness",
+           "data"  : [
+               ["id" : "HP:0008538", "title" : "Sensorineural"],
+               ["id" : "HP:0000367", "title" : "Conductive"]
+           ]
+        ],
+        ["id" : "HP:0004467"],
+        ["id" : "HP:0000384"],
+        ["id" : "HP:0000356"],
+        ["id" : "HP:0000359"]
+    ] 
+  ],
+  [
+    "type"       : "section",
+    "title"      : "Cutaneous",
+    "categories" : ["HP:0000951"],
+    "data"       : [
+        ["id" : "HP:0000953"],
+        ["id" : "HP:0001010"],
+        ["id" : "HP:0005306"],
+        ["id" : "HP:0011276"]
+    ] 
+  ],
+  [
+    "type"       : "section",
+    "title"      : "Respiratory",
+    "categories" : ["HP:0002086", "HP:0000765"],
+    "data"       : [
+        ["id" : "HP:0000776"],
+        ["id" : "HP:0002088"]
+    ] 
+  ],
+  [
+    "type"       : "section",
+    "title"      : "Musculoskeletal",
+    "categories" : ["HP:0000924"],
+    "data"       : [
+        ["id" : "HP:0002652"],
+        ["id" : "HP:0002659"],
+        ["id" : "HP:0009816"],
+        ["id" : "HP:0009824"],
+
+        [
+           "type"  : "subsection",
+           "title" : "Camptodactyly",
+           "data"  : [
+               ["id" : "HP:0100490", "title" : "Finger"],
+               ["id" : "HP:0001836", "title" : "Toe"]
+           ]
+        ],
+        [
+           "type"  : "subsection",
+           "title" : "Syndactyly",
+           "data"  : [
+               ["id" : "HP:0006101", "title" : "Finger"],
+               ["id" : "HP:0001770", "title" : "Toe"]
+           ]
+        ],
+        [
+           "type"  : "subsection",
+           "title" : "Polydactyly",
+           "data"  : [
+               ["id" : "HP:0100258", "title" : "Preaxial"],
+               ["id" : "HP:0100259", "title" : "Postaxial"]
+           ]
+        ],
+        [
+           "type"  : "subsection",
+           "title" : "Oligodactyly",
+           "data"  : [
+               ["id" : "HP:0001180", "title" : "Hands"],
+               ["id" : "HP:0001849", "title" : "Feet"]
+           ]
+        ],
+
+        ["id" : "HP:0002650"],
+        ["id" : "HP:0000925"],
+        ["id" : "HP:0001371"],
+        ["id" : "HP:0001762"]
+    ] 
+  ],  [
+    "type"       : "section",
+    "title"      : "Gastrointestinal",
+    "categories" : ["HP:0011024"],
+    "data"       : [
+        ["id" : "HP:0002032"],
+        ["id" : "HP:0002575"],
+        ["id" : "HP:0001543"],
+        ["id" : "HP:0001539"],
+        ["id" : "HP:0002251"],
+        ["id" : "HP:0001396"],
+        ["id" : "HP:0001411"],
+        ["id" : "HP:0002581"],
+        ["id" : "HP:0000819"]
+    ] 
+  ],
+  [
+    "type"       : "section",
+    "title"      : "Genitourinary",
+    "categories" : ["HP:0000119"],
+    "data"       : [
+        ["id" : "HP:0000107"],
+        ["id" : "HP:0000085"],
+        ["id" : "HP:0000069"],
+        ["id" : "HP:0000795"],
+        ["id" : "HP:0000062"],
+        ["id" : "HP:0000047"],
+        ["id" : "HP:0000028"]
+    ] 
+  ],
+  [
+    "type"       : "section",
+    "title"      : "Other",
+    "categories" : ["HP:0000110"],
+    "data"       : [
+    ] 
+  ]
+];
+
+
+Collection&lt;Map&lt;String, Object&gt;&gt; prenatal_history = [
+  [
+    "type"       : "section",
+    "title"      : "Prenatal growth parameters",
+    "categories" : ["HP:0001507"],
+    "data"       : [
+       [
+         "type"  : "subsection",
+         "id"    : "HP:0004323",
+         "group_type" : "single-select",
+         "title" : "Weight for age",
+         "data"  : [
+           ["id" : "HP:0004325", "title" : "&lt;3rd"],
+           ["id" : "HP:0001513", "title" : "&gt;97th"]
+         ]
+       ],
+       [
+         "type"  : "subsection",
+         "id"    : "HP:0000002",
+         "group_type" : "single-select",
+         "title" : "Stature for age",
+         "data"  : [
+           ["id" : "HP:0004322", "title" : "&lt;3rd"],
+           ["id" : "HP:0000098", "title" : "&gt;97th"]
+         ]
+       ],
+       [
+         "type"  : "subsection",
+         "id"    : "HP:0000240",
+         "group_type" : "single-select",
+         "title" : "Head circumference for age",
+         "data"  : [
+           ["id" : "HP:0000252", "title" : "&lt;3rd"],
+           ["id" : "HP:0000256", "title" : "&gt;97th"]
+         ]
+       ],
+    ]
+  ],
+  [
+    "type"       : "section",
+    "title"      : "Prenatal development or birth",
+    "categories" : ["HP:0001197"],
+    "data"       : [
+        ["id" : "HP:0001562"],
+        ["id" : "HP:0001561"],
+        ["id" : "HP:0001622"],
+    ]
+  ]
+];
 
 Map&lt;String, Object&gt; mappings = [
   'phenotype': phenotype,
-  'prenatal_phenotype': prenatal_history,
-  'family_history': family_history,
-  'negative_phenotype': negative_phenotype,
-  'extraMessages': extraMessages
-]
+  'prenatal_phenotype': prenatal_history
+];
 
 context.setAttribute('mappings', mappings, 100);</content></xwikidoc>

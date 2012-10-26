@@ -334,19 +334,8 @@
 <cache>long</cache>
 </property>
 <property>
-<code>document.observe('xwiki:dom:loaded', function() {
-  var exportTool = $('cidb_export');
-  if (!exportTool) {
-     return;
-  }
-  exportTool.observe('click', function(event) {
-    event.stop();
-    var dialog = new MS.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': 'Export options', 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
-    dialog.showDialog();
-
-    // =================================================================================
-    // Suggest maps
-    var suggestionsMapping = {
+<code>document.observe('xwiki:dom:loading', function() {
+  var suggestionsMapping = {
         "hpo" : {
             script: "$xwiki.getURL('ClinicalInformationCode.SolrService', 'get')?",
             queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
@@ -381,8 +370,7 @@
             enableHierarchy: true,
             resultParent : "is_a",
             fadeOnClear : false,
-            timeout : 30000,
-            parentContainer : dialog.dialogBox
+            timeout : 30000
         },
         "omim" : {
             script: "$xwiki.getURL('ClinicalInformationCode.OmimService', 'get')?outputSyntax=plain&amp;",
@@ -397,8 +385,7 @@
                          },
             enableHierarchy: false,
             fadeOnClear : false,
-            timeout : 30000,
-            parentContainer : dialog.dialogBox
+            timeout : 30000
         },
         "pubmed" : {
             script: "$xwiki.getURL('ClinicalInformationCode.PubMedService', 'get')?",
@@ -415,13 +402,14 @@
                          },
             enableHierarchy: false,
             fadeOnClear : false,
-            timeout : 30000,
-            parentContainer : dialog.dialogBox
+            timeout : 30000
         }
-    };
-    var pickerSpecialClassOptions = {
-      'defaultPicker' : {},
-      'generateShortList' : {
+  };
+  // =================================================================================
+  // Suggest maps
+  var pickerSpecialClassOptions = {
+    'defaultPicker' : {},
+    'generateShortList' : {
                   'showKey' : true,
                   'showTooltip' : false,
                   'showDeleteTool' : true,
@@ -429,7 +417,7 @@
                   'showClearTool' : true,
                   'inputType': 'checkbox'
                 },
-      'generateCheckboxes' : {
+    'generateCheckboxes' : {
                   'showKey' : false,
                   'showTooltip' : false,
                   'showDeleteTool' : true,
@@ -440,143 +428,162 @@
                   'listInsertionPosition' : 'after',
                   'acceptFreeText' : true
                 }
-    };
+  };
 
+  var enhanceDialog = function(content) {
+    // =============================================================================
+    // Referrer suggest
+    var referrer = content.down('input[name="doc.creator"]');
+    if (referrer) {
+      referrer._suggestPicker = new MS.widgets.SuggestPicker(referrer, referrer.__x_suggest, {'showKey': false, 'inputType': 'checkbox'});
+      referrer.value.split(',').each(function(value) {
+        referrer._suggestPicker.addItem(value, value, '', '');
+      });
+      referrer.value = '';
+    }
+    // =============================================================================
+    // Phenotype suggest
+    if (typeof(MS.widgets.Suggest) != "undefined") {
+      var keys = Object.keys(suggestionsMapping);
+      var specialClasses = Object.keys(pickerSpecialClassOptions);
+      for (var i = 0; i &lt; keys.length; i++) {
+        var selector = 'input.suggest' + keys[i].capitalize();
+        content.select(selector).each(function(item) {
+          if (!item.hasClassName('initialized')) {
+            item._customOptions = Object.clone(suggestionsMapping[keys[i]]);
+            item._restriction = item.up('.phenotype-group')
+            if (item._restriction) {
+              item._restriction = item._restriction.down('input[name=_category]');
+              if (item._restriction &amp;&amp; item._restriction.value.strip() != '') {
+                item._restriction = item._restriction.value.strip().split(",");
+              } else {
+                item._restriction == null;
+              }
+            }
+            if (item._customOptions.queryProcessor &amp;&amp; item._restriction) {
+              item._customOptions.queryProcessor = Object.clone(item._customOptions.queryProcessor);
+              item._customOptions.queryProcessor.restriction = {
+                'term_category' : item._restriction
+              }
+            }
+            // Create the Suggest.
+            item._suggest = new MS.widgets.Suggest(item, item._customOptions);
+            if (item.hasClassName('multi') &amp;&amp; typeof(MS.widgets.SuggestPicker) != "undefined") {
+              var multiSuggestOptions = {};
+              for (var j = 0; j &lt; specialClasses.length; j++) {
+                if (item.hasClassName(specialClasses[j])) {
+                  multiSuggestOptions = pickerSpecialClassOptions[specialClasses[j]];
+                  break;
+                }
+              }
+              var suggestPicker = new MS.widgets.SuggestPicker(item, item._suggest, multiSuggestOptions);
+              item._suggestPicker = suggestPicker;
+
+              // Format the predefined value
+              item.value.split(',').each(function(value) {
+                item._suggestPicker.addItem(value, value, '', '');
+              });
+              item.value = '';
+            }
+            item.addClassName('initialized');
+          }
+        });
+      }
+    }
+
+    //============================================================================
+    // Date pickers
+    var crtYear = new Date().getFullYear();
+    window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
+
+    //============================================================================
+    // Column selection
+    var columnList = content.down('.section.columns ul');
+    if (columnList) {
+      var selectionTools = new Element('div', { 'class' : 'selection-tools' }).update('Select: ');
+      var all = new Element('span', {'class' : 'selection-tool select-all'}).update('All');
+      var none = new Element('span', {'class' : 'selection-tool select-none'}).update('None');
+      var invert = new Element('span', {'class' : 'selection-tool select-invert'}).update('Invert selection');
+      var restore = new Element('span', {'class' : 'selection-tool select-restore'}).update('Restore initial values');
+      selectionTools.insert(all).insert(' · ').insert(none).insert(' · ').insert(invert).insert(' · ').insert(restore);
+
+      columnList.select('input[type=checkbox]').each(function(elt) {elt._originallyChecked = elt.checked});
+
+      all.observe('click', function(event) {
+        columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = true});
+      });
+      none.observe('click', function(event) {
+        columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = false});
+      });
+      invert.observe('click', function(event) {
+        columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = !elt.checked});
+      });
+      restore.observe('click', function(event) {
+        columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = elt._originallyChecked});
+      });
+      columnList.insert({'before' : selectionTools});
+    }
+
+    //============================================================================
+    // Column selection
+    var cancelButton = $('export_cancel');
+    if (cancelButton) {
+      cancelButton.observe('click', function(event) {
+        content.__dialog &amp;&amp; content.__dialog.closeDialog();
+      });
+    }
+
+    //==========================================================================
+    // Live updates
+    var liveMatchCounter = $('filter-match-count');
+    var form = liveMatchCounter &amp;&amp; liveMatchCounter.up('form');
+    if (liveMatchCounter &amp;&amp; form) {
+      var lastRequestID = 0;
+      var updateMatchCounter = function(event) {
+        var url = "$xwiki.getURL('ClinicalInformationCode.Export', 'get')?count=true&amp;" + form.serialize();
+        var requestID = ++lastRequestID;
+        var ajx = new Ajax.Request(url, {
+          method: 'get',
+          onSuccess: function(response) {
+            if (requestID &lt; lastRequestID) {return;}
+            liveMatchCounter.update(response.responseText);
+          },
+          onFailure: function (response) {}
+        });
+      };
+      updateMatchCounter();
+      content.select('.xwiki-date').invoke('observe', 'xwiki:form:field-value-changed', updateMatchCounter);
+      document.observe('custom:selection:changed', updateMatchCounter);
+      content.select('input[type=radio]').invoke('observe', 'click', updateMatchCounter);
+      //content.select('input[type=text]').invoke('observe', 'blur', updateMatchCounter);
+    }
+  };
+  var exportTool = $('cidb_export');
+  if (!exportTool) {
+     return;
+  }
+  exportTool.observe('click', function(event) {
+    event.stop();
+    var dialog = new MS.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': 'Export options', 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+    dialog.showDialog();
     // =================================================================================
     // Generate the dialog content
     new Ajax.Request(new XWiki.Document('ExportPreferences', 'ClinicalInformationCode').getURL('get', 'space=' + XWiki.currentSpace), {
       onSuccess: function(transport) {
         var content = dialog.dialogBox._x_contentPlug;
         content.update(transport.responseText);
+        content.__dialog = dialog;
         document.fire('xwiki:dom:updated', {'elements': [content]});
-
-        // =============================================================================
-        // Referrer suggest
-        var referrer = content.down('input[name=export_referrer]');
-        if (referrer) {
-          referrer._suggestPicker = new MS.widgets.SuggestPicker(referrer, referrer.__x_suggest, {'showKey': false, 'inputType': 'checkbox'});
-          referrer.value.split(',').each(function(value) {
-            referrer._suggestPicker.addItem(value, value, '', '');
-          });
-          referrer.value = '';
-        }
-        // =============================================================================
-        // Phenotype suggest
-        if (typeof(MS.widgets.Suggest) != "undefined") {
-
-        var keys = Object.keys(suggestionsMapping);
-        var specialClasses = Object.keys(pickerSpecialClassOptions);
-        for (var i = 0; i &lt; keys.length; i++) {
-          var selector = 'input.suggest-' + keys[i];
-          content.select(selector).each(function(item) {
-            if (!item.hasClassName('initialized')) {
-              item._customOptions = Object.clone(suggestionsMapping[keys[i]]);
-              item._restriction = item.up('.phenotype-group')
-              if (item._restriction) {
-                item._restriction = item._restriction.down('input[name=_category]');
-                if (item._restriction &amp;&amp; item._restriction.value.strip() != '') {
-                  item._restriction = item._restriction.value.strip().split(",");
-                } else {
-                  item._restriction == null;
-                }
-              }
-              if (item._customOptions.queryProcessor &amp;&amp; item._restriction) {
-                item._customOptions.queryProcessor = Object.clone(item._customOptions.queryProcessor);
-                item._customOptions.queryProcessor.restriction = {
-                  'term_category' : item._restriction
-                }
-              }
-              // Create the Suggest.
-              item._suggest = new MS.widgets.Suggest(item, item._customOptions);
-              if (item.hasClassName('multi') &amp;&amp; typeof(MS.widgets.SuggestPicker) != "undefined") {
-                var multiSuggestOptions = {};
-                for (var j = 0; j &lt; specialClasses.length; j++) {
-                  if (item.hasClassName(specialClasses[j])) {
-                    multiSuggestOptions = pickerSpecialClassOptions[specialClasses[j]];
-                    break;
-                  }
-                }
-                var suggestPicker = new MS.widgets.SuggestPicker(item, item._suggest, multiSuggestOptions);
-                item._suggestPicker = suggestPicker;
-
-                // Format the predefined value
-                item.value.split(',').each(function(value) {
-                  item._suggestPicker.addItem(value, value, '', '');
-                });
-                item.value = '';
-              }
-              item.addClassName('initialized');
-            }
-          });
-        }
-        }
-
-        //============================================================================
-        // Date pickers
-        var crtYear = new Date().getFullYear();
-        window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
-
-        //============================================================================
-        // Column selection
-        var columnList = content.down('.section.columns ul');
-        if (columnList) {
-          var selectionTools = new Element('div', { 'class' : 'selection-tools' }).update('Select: ');
-          var all = new Element('span', {'class' : 'selection-tool select-all'}).update('All');
-          var none = new Element('span', {'class' : 'selection-tool select-none'}).update('None');
-          var invert = new Element('span', {'class' : 'selection-tool select-invert'}).update('Invert selection');
-          var restore = new Element('span', {'class' : 'selection-tool select-restore'}).update('Restore initial values');
-          selectionTools.insert(all).insert(' · ').insert(none).insert(' · ').insert(invert).insert(' · ').insert(restore);
-
-          columnList.select('input[type=checkbox]').each(function(elt) {elt._originallyChecked = elt.checked});
-
-          all.observe('click', function(event) {
-            columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = true});
-          });
-          none.observe('click', function(event) {
-            columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = false});
-          });
-          invert.observe('click', function(event) {
-            columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = !elt.checked});
-          });
-          restore.observe('click', function(event) {
-            columnList.select('input[type=checkbox]').each(function(elt) {elt.checked = elt._originallyChecked});
-          });
-          columnList.insert({'before' : selectionTools});
-        }
-
-        //============================================================================
-        // Column selection
-        var cancelButton = $('export_cancel');
-        if (cancelButton) {
-           cancelButton.observe('click', function(event) {
-              dialog.closeDialog();
-           });
-        }
-        //==========================================================================
-        // Live updates
-        var liveMatchCounter = $('filter-match-count');
-        var form = liveMatchCounter &amp;&amp; liveMatchCounter.up('form');
-        if (liveMatchCounter &amp;&amp; form) {
-          var lastRequestID = 0;
-          var updateMatchCounter = function(event) {
-            var url = "$xwiki.getURL('ClinicalInformationCode.Export', 'get')?count=true&amp;" + form.serialize();
-            var requestID = ++lastRequestID;
-            var ajx = new Ajax.Request(url, {
-              method: 'get',
-              onSuccess: function(response) {
-                if (requestID &lt; lastRequestID) {return;}
-                liveMatchCounter.update(response.responseText);
-              },
-              onFailure: function (response) {}
-            });
-          };
-          updateMatchCounter();
-          content.select('.xwiki-date').invoke('observe', 'xwiki:date:changed', updateMatchCounter);
-          document.observe('custom:selection:changed', updateMatchCounter);
-          content.select('input[type=radio]').invoke('observe', 'click', updateMatchCounter);
-          //content.select('input[type=text]').invoke('observe', 'blur', updateMatchCounter);
-        }
       }
+    });
+  });
+  ['xwiki:dom:loaded', 'xwiki:dom:updated'].each(function(eventName) {
+    document.observe(eventName, function(event) {
+      var elements = event.memo &amp;&amp; event.memo.elements || [document.documentElement];
+      elements.each(function(item) {
+        // We defer so that the standard suggests have time to initialize before applying the enhanced suggests
+        enhanceDialog.defer(item);
+      });
     });
   });
 });</code>
@@ -589,6 +596,102 @@
 </property>
 <property>
 <use>onDemand</use>
+</property>
+</object>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>ClinicalInformationCode.DBWebHomeSheet</name>
+<number>3</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>d9b727a8-4e6b-498f-8584-80dcac64c352</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>document.observe('xwiki:dom:loaded', function() {
+  $$('.xwiki-livetable-topfilters-container .toggle-filters').invoke('observe', 'click', function() {
+    $('patients-topfilters').toggleClassName('collapsed');
+  });
+});</code>
+</property>
+<property>
+<name>Hide Filters button behavior</name>
+</property>
+<property>
+<parse>0</parse>
+</property>
+<property>
+<use>currentPage</use>
 </property>
 </object>
 <object>
@@ -680,11 +783,51 @@
   box-shadow: none;
   border: 0 none;
 }
+#xwikicontent {
+  overflow: visible;
+}
+
 .xwiki-livetable-display-body td h3, .xwiki-livetable-display-body td .image-gallery {
   display: none;
 }
 h1 {
   border: 0 none;
+}
+#patients-topfilters .toggle-filters {
+  clear: both;
+  cursor: pointer;
+  font-size: 1em;
+  font-style: italic;
+  margin: -1em 4px 0;
+  opacity: 0.4;
+  padding: 0 0.5em;
+  float: right;
+}
+#patients-topfilters.collapsed .toggle-filters {
+  float: none;
+  font-size: 1.2em;
+  opacity: 1;
+  font-style: normal;
+}
+#patients-topfilters h2 {
+  margin: 0 4px 0;
+  padding: 0 0.5em;
+  color: #000;
+  border-bottom: 0px none;
+  font-weight: normal;
+}
+#patients-topfilters.collapsed h2 {
+  display: none;
+}
+#patients-topfilters .toggle-filters:before {
+  content: "Hide";
+}
+#patients-topfilters.collapsed .toggle-filters:before {
+  content: "Show";
+}
+
+#patients-topfilters.collapsed .filters {
+  display: none;
 }</code>
 </property>
 <property>
@@ -790,16 +933,19 @@ h1 {
 .export-dialog .xform .xHint {
   margin: 0;
 }
-.export-dialog .export-filters ul {
+.filters {
+  list-style-position: outside !important;
+}
+.filters ul {
   list-style-type: none;
   margin: 0 0 1.5em;
   padding: 0;
   font-size: .9em;
 }
-.export-dialog .export-filters ul label {
+.filters ul label {
   font-weight: bold;
 }
-.export-dialog input[type=text] {
+.filters input[type=text] {
   width: 99%;
   display: block;
 }
@@ -879,8 +1025,11 @@ h1 {
 
 = Phenotype  database =
 
-{{velocity}} 
+{{include document="ClinicalInformationCode.DatabaseFilters" /}}
+
+{{velocity}}
 $xwiki.ssx.use('ClinicalInformationCode.DBWebHomeSheet')##
+$xwiki.ssx.use('ClinicalInformationCode.DatabaseFilters')##
 $xwiki.ssx.use('ClinicalInformationCode.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('ClinicalInformationCode.DBWebHomeSheet')##
 $xwiki.ssx.use('ClinicalInformationCode.DBWebHomeSheet')##
@@ -901,7 +1050,11 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
       "_actions" : {"actions": ["edit", "delete"]}
 })
 #foreach($column in $columns)
-      #set($discard = $columnsProperties.put($column, { "type" : "text", "link" : "view", "size" : 7, "filterable" : true, "sortable": true  }))
+      #set($discard = $columnsProperties.put($column, { "type" : "text", "link" : "view", "size" : 7, "filterable" : false, "sortable": true  }))
+#end
+#if (!$configuredColumns.contains('date_of_birth'))
+  #set($discard = $columns.add('date_of_birth'))
+  #set($discard = $columnsProperties.put('date_of_birth', { "type" : "hidden" }))
 #end
 #set($tagProperty = "$!{config.getProperty('tagProperty').value}")
 #if ($tagProperty != '')
@@ -911,7 +1064,11 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
         #set($discard = $columns.add($tagProperty))
         #set($discard = $columnsProperties.put($tagProperty, { "type" : "hidden"}))
       #end
-      #set($topFilters = $doc.getRenderedContent("{{valuecloud classname='${patientClassName}' property='${tagProperty}' nameService='solr' enableJoinMode='1' collapsed='0'/}}", "xwiki/2.0"))
+      ###set($topFilters = $doc.getRenderedContent("{{valuecloud classname='${patientClassName}' property='${tagProperty}' nameService='solr' enableJoinMode='1' collapsed='0'/}}", "xwiki/2.0"))
+      #set($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
+== Filters ==
+
+{{velocity}}#__filters_display('xform'){{/velocity}})))", "xwiki/2.0"))
 #end
 #set($discard = $columns.add("_actions"))
 ##
@@ -921,11 +1078,11 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 "rowCount"          : 25,
 "maxPages"          : 10,
 "defaultOrder"      : "asc",
-"topFilters"        : $topFilters
+"topFilters"        : $topFilters,
+"resultPage"        : 'ClinicalInformationCode.LiveTableResults'
 })
 #livetable("patients" $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
-
 #if($hasEdit)
   {{html clean="false" wiki="false"}}&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('ClinicalInformationCode.CreatePatientRecord', 'view', 'doCreate=1')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
