@@ -1205,10 +1205,11 @@ document.observe('dom:loaded', function() {
                 if (suggestion) {
                   var suggest = event.memo.suggest;
                   var value =  suggestion.down(".suggestId").firstChild.nodeValue;
+                  var text =  suggestion.down(".suggestValue").firstChild.nodeValue;
                   var ynpicker = YesNoPicker.generatePickerElement([
                     {type: 'yes', selected: isValueSelected(item.name.replace(/__suggested$/, ''), value)}, 
                     {type: 'no' , selected: isValueSelected(negativeName, value)}
-                  ], value);
+                  ], value, text);
                   suggestion.down(".suggestValue").up().insert({top: ynpicker});
                   // Prevent click events from the label from activating the suggestion selection twice because of being forwarded to the input
                   ynpicker.select('input').invoke('observe', 'click', function(event) {event.stop()});
@@ -1324,7 +1325,7 @@ document.observe('dom:loaded', function() {
               var negItem = ynPickerElt.down('.no input');
               if (negItem) {
                 enableHighlightChecked(negItem);
-                 negItem._ynpicker = item._ynpicker;
+                negItem._ynpicker = item._ynpicker;
               }
             }
           });
