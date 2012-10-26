@@ -4216,6 +4216,15 @@ table.extradata-list td.bmi_percentile {
   #if ($dataClass)
     #if ($xcontext.action != 'edit' &amp;&amp; $doc.getObjects($dataClassName).size() == 0)
       (% class="hint" %)None specified
+    #elseif ($xcontext.action == 'export')
+      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}" %)
+      #set ($disableLabels = true)
+      #foreach ($o in $doc.getObjects($dataClassName))
+        #foreach($prop in $dataClass.properties)|= ${prop.prettyName}: |#if ($velocityCount &lt;= 2)=#end $doc.display($prop.getName(), $o)#if ($velocityCount %2 == 0)
+
+        #end#end## foreach object
+
+      #end## foreach object
     #else
       (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}" %)
       #if ("$!{options.counter}" == 'true')|=(% class="col-label" %)# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name" %)$prop.prettyName#end#if ($xcontext.action == 'edit')|=(% class="actions" %)
