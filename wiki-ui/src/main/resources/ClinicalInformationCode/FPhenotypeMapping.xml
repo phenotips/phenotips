@@ -187,7 +187,7 @@
   [
     "type"       : "section",
     "title"      : "Musculoskeletal",
-    "categories" : ["HP:0001438"],
+    "categories" : ["HP:0000924"],
     "data"       : [
         ["id" : "HP:0002652"],
         ["id" : "HP:0002659"],
@@ -235,7 +235,7 @@
   ],  [
     "type"       : "section",
     "title"      : "Gastrointestinal",
-    "categories" : ["HP:0000924", "HP:0003549"],
+    "categories" : ["HP:0011024"],
     "data"       : [
         ["id" : "HP:0002032"],
         ["id" : "HP:0002575"],
