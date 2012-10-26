@@ -53,10 +53,9 @@
   #set ($query = $query.concat(')'))
 #end
 #set ($isFirstPhenotype = true)
-#if ("$!request.phenotype_combine" == 'any')
-  #set ($separator = 'or')
-#else
-  #set ($separator = 'and')
+#set ($joinOperator = "$!{request.get('phenotype/join_mode').toUpperCase()}")
+#if ($joinOperator != 'AND' &amp;&amp; $joinOperator != 'OR')
+  #set ($joinOperator = 'AND')
 #end
 #foreach ($phenotype in $request.getParameterValues('phenotype'))
   #if ($phenotype != '')
@@ -68,7 +67,7 @@
         #set ($query = ", DBStringListProperty phenotype join phenotype.list as phenotypeValue ${query} and phenotype.id.id = obj.id and phenotype.id.name = 'extended_phenotype' and (? in phenotypeValue")
       #end
     #else
-      #set ($query = $query.concat(" ${separator} ? in phenotypeValue"))
+      #set ($query = $query.concat(" ${joinOperator} ? in phenotypeValue"))
     #end
     #set ($discard = $parameters.add($phenotype))
   #end
@@ -77,10 +76,9 @@
   #set ($query = $query.concat(')'))
 #end
 #set ($isFirstDisease = true)
-#if ("$!request.omim_id_combine" == 'any')
-  #set ($separator = 'or')
-#else
-  #set ($separator = 'and')
+#set ($joinOperator = "$!{request.get('omim/join_mode').toUpperCase()}")
+#if ($joinOperator != 'AND' &amp;&amp; $joinOperator != 'OR')
+  #set ($joinOperator = 'AND')
 #end
 #foreach ($disease in $request.getParameterValues('omim_id'))
   #if ($disease != '')
@@ -88,7 +86,7 @@
       #set ($query = ", DBStringListProperty disease join disease.list as diseaseValue ${query} and disease.id.id = obj.id and disease.id.name = 'omim_id' and (? in diseaseValue")
       #set ($isFirstDisease = false)
     #else
-      #set ($query = $query.concat(" ${separator} ? in diseaseValue"))
+      #set ($query = $query.concat(" ${joinOperator} ? in diseaseValue"))
     #end
     #set ($discard = $parameters.add($disease))
   #end
@@ -96,25 +94,25 @@
 #if (!$isFirstDisease)
   #set ($query = $query.concat(')'))
 #end
-#if ("$!request.get('doc.creationDate_after')" != '')
-  #set ($date = $dateFormat.parseDateTime($request.get('doc.creationDate_after')))
+#if ("$!request.get('doc.creationDate/after')" != '')
+  #set ($date = $dateFormat.parseDateTime($request.get('doc.creationDate/after')))
   #set ($query = $query.concat(' and doc.creationDate &gt; ?'))
   #set ($discard = $parameters.add($date.toDate()))
 #end
-#if ("$!request.get('doc.creationDate_before')" != '')
-  #set ($date = $dateFormat.parseDateTime($request.get('doc.creationDate_before')))
+#if ("$!request.get('doc.creationDate/before')" != '')
+  #set ($date = $dateFormat.parseDateTime($request.get('doc.creationDate/before')))
   #set ($query = $query.concat(' and doc.creationDate &lt; ?'))
   #set ($discard = $parameters.add($date.toDate()))
 #end
 #set ($hasBDate = false)
-#if ("$!request.date_of_birth_after" != '')
-  #set ($date = $dateFormat.parseDateTime($request.date_of_birth_after))
+#if ("$!request.get('date_of_birth/after')" != '')
+  #set ($date = $dateFormat.parseDateTime($request.get('date_of_birth/after')))
   #set ($query = ", DateProperty birthDate $query and birthDate.id.id = obj.id and birthDate.id.name = 'date_of_birth' and birthDate.value &gt; ?")
   #set ($discard = $parameters.add($date.toDate()))
   #set ($hasBDate = true)
 #end
-#if ("$!request.date_of_birth_before" != '')
-  #set ($date = $dateFormat.parseDateTime($request.date_of_birth_before))
+#if ("$!request.get('date_of_birth/before')" != '')
+  #set ($date = $dateFormat.parseDateTime($request.get('date_of_birth/before')))
   #if ($hasBDate)
     #set ($query = "$query and birthDate.value &lt; ?")
   #else

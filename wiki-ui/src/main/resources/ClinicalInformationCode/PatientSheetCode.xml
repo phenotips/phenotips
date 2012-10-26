@@ -1083,7 +1083,7 @@ document.observe('dom:loaded', function() {
         }.bind(selectionSummary);
 
         selectionSummary._updateSummary = function(inputElt, type, forceUpdate) {
-          if (!inputElt) {return}
+          if (!inputElt || !inputElt.value) {return}
           var sectionId = inputElt.up('.phenotype-group') &amp;&amp; inputElt.up('.phenotype-group').down('h3');
           if (sectionId) {
             sectionId = sectionId.id;
@@ -2498,7 +2498,7 @@ document.observe('xwiki:dom:loaded', function() {
 <cache>long</cache>
 </property>
 <property>
-<code>document.observe('xwiki:dom:loaded', function() {
+<code>document.observe('xwiki:dom:loading', function() {
 
   $$('.ncbi-search-box h3, .ncbi-search-box .expand-tools .tool').invoke('observe', 'click', function(event) {
      event.element().up('.ncbi-search-box').toggleClassName('collapsed');
@@ -2648,7 +2648,7 @@ document.observe('xwiki:dom:loaded', function() {
   }
 
   document.observe('phenotype:selected', function(event) {
-    if (!event.memo || !event.memo.key || !event.memo.element || event.memo.element.up('.negative-phenotype')) {return;}
+    if (!event.memo || !event.memo.key || !event.memo.element || event.memo.element.up('.negative-phenotype, .no')) {return;}
     var key = event.memo.key;
     var text = event.memo.text || event.memo.key;
     var obj = cache.all[key];

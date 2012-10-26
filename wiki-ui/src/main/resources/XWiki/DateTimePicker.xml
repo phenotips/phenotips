@@ -2330,6 +2330,7 @@ CalendarDateSelect = Class.create({
       cOptions.convert_to_UTC = cOptions.convert_to_UTC || target.hasClassName('withUTC');
       cOptions.onchange = function () {
         Event.fire(target, 'xwiki:date:changed');
+        Event.fire(target, 'xwiki:form:field-value-changed');
       }
       target.addClassName('initialized');
       target._selector = new CalendarDateSelect(target, cOptions);

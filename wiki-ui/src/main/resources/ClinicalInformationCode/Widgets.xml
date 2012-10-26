@@ -1443,6 +1443,7 @@
         elt.__categoryArray.push(c.value); 
       });
     }
+    Event.fire(this.input, 'xwiki:form:field-value-changed');
     Event.fire(document, "custom:selection:changed", {
        'categories' : elt.__categoryArray,
        'trigger'    : this.input,
