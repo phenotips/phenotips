@@ -1395,21 +1395,42 @@
   synchronizeSelection : function (input) {
     var element = (typeof (input.up) == 'function') &amp;&amp; input.up('li');
     if (element) {
-      Element.select(element, 'input[name="fieldName"][type="hidden"]').each(function(n) {
-        var target = n.up('li').down('input[type="checkbox"]');
-        var originalName = target.name;
-        target.id = target.id.replace(target.name, n.value);
-        target.name = n.value;
-        target.up('label').addClassName(n.className);
-        target.up('label').htmlFor = target.id;
-        n.value = originalName;
-      });
+      if (this.input.hasClassName('generateYesNo') &amp;&amp; !input.up('.yes-no-picker')) {
+        Element.select(element, 'input[name="fieldName"][type="hidden"]').each(function(n) {
+          var target = n.up('li').down('input[type="checkbox"]');
+          var originalName = target.name;
+          target.id = target.id.replace(target.name, n.value);
+          target.name = n.value;
+          target.up('label').addClassName(n.className);
+          target.up('label').htmlFor = target.id;
+          n.value = originalName;
+          if (n.up('.term-category')) {
+            n.up('.term-category').insert({before: n});
+          }
+        });
+        var positiveName = this.input.name.replace(/__suggested$/, "");
+        var negativeName = this.input.name.replace(/(_\d+)_/, "$1_negative_").replace(/__suggested$/, "");;
+        var value = input.value;
+        var text = element.down('.value').firstChild.nodeValue;
+        var ynpickerElt = YesNoPicker.generatePickerElement([
+              {type: 'na',                         selected: !isValueSelected(positiveName, value) &amp;&amp; !isValueSelected(negativeName, value)}, 
+              {type: 'yes', name: positiveName, selected: isValueSelected(positiveName, value)}, 
+              {type: 'no' , name: negativeName,    selected: isValueSelected(negativeName, value)}
+        ], value, text, true, input.next());
+        input.insert({before: ynpickerElt});
+        input.hide();
+        input.name = '';
+        input.id = '';
+        input.value = '';
+        enableHighlightChecked(ynpickerElt.down('.yes input'));
+        enableHighlightChecked(ynpickerElt.down('.no input'));
+      }
     }
-    $$('input[type="checkbox"][value="' + input.value.replace(/"/g, '\\"') +'"]').each(function(item) {
+    /*$$('input[type="checkbox"][value="' + input.value.replace(/"/g, '\\"') +'"]').each(function(item) {
       if (item.checked != input.checked) {
         //FIXME! item.click();
       }
-    });
+    });*/
     if (element) {
       this.notifySelectionChange(element);
     }
