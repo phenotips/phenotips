@@ -30,10 +30,18 @@ var Pregnancy = Class.create(AbstractNode, {
         return new PregnancyVisuals(this, x, y);
     },
 
+    /*
+     * Returns "M", "F", or "U" to represent the gender of nodes in this pregnancy
+     */
     getGender: function() {
         return this._gender;
     },
 
+    /*
+     * Changes the gender of this pregnancy
+     *
+     * @param gender can be "M", "F", or "U"
+     */
     setGender: function(gender) {
         if(this._gender != gender && !this.isGenderLocked()) {
             this._gender = gender;
@@ -45,6 +53,9 @@ var Pregnancy = Class.create(AbstractNode, {
         }
     },
 
+    /*
+     * Returns true if editing the gender of this pregnancy is currently impossible
+     */
     isGenderLocked: function() {
         var lockedGender = false;
         this.getChildren("Person").each(function(child) {
@@ -98,13 +109,12 @@ var Pregnancy = Class.create(AbstractNode, {
      * Creates a new node and sets it as a child of this pregnancy. Returns the child.
      *
      * @param type can be any type of AbstractPerson
-     * @param gender "M", "F" or "U"
      */
-    createChild: function(type, gender) {
-        if((gender == this.getGender() || this.getGender() == "U") && editor.getGraph()["add" + type]) {
+    createChild: function(type) {
+        if(this.isChildTypeValid(type) ) {
             var id = this.getID();
             var pos = editor.findPosition({below: id}, ['child']);
-            var child = editor.getGraph()["add" + type](pos['child'].x, pos['child'].y, gender);
+            var child = editor.getGraph()["add" + type](pos['child'].x, pos['child'].y, this.getGender());
             this.addChild(child);
             //document.fire("pedigree:child:added", {node: child, 'relatedNodes' : [], 'sourceNode' : this});
         }
@@ -194,10 +204,25 @@ var Pregnancy = Class.create(AbstractNode, {
 
     /*
      * Returns true if someNode can be a child of this pregnancy
+     *
+     * @param someNode is an AbstractNode
      */
     canBeParentOf: function(someNode) {
-        var validTwin = this.getGender() == 'U' || this.getGender() == someNode.getGender();
-        return this.getPartnership().canBeParentOf(someNode) && validTwin;
+        var compatibleGender = someNode.getGender() == this.getGender() || this.getGender() == "U";
+        return compatibleGender && this.isChildTypeValid(someNode.getType()) && this.getPartnership().canBeParentOf(someNode);
+    },
+
+    /*
+     * Returns true if a child of type 'nodeType' can be added to this pregnancy
+     *
+     * @nodeType can be any type of AbstractNode, such as "Person", "PlaceHolder" and "PersonGroup"
+     */
+    isChildTypeValid: function(nodeType) {
+        var validType = editor.getGraph()["add" + nodeType];
+        var validPlaceHolder = nodeType != "PlaceHolder" || this.getChildren("PlaceHolder").length == 0;
+        var validPersonGroup = nodeType != "PersonGroup" || this.getChildren("Person").length == 0;
+        var noPersonGroups = this.getChildren("PersonGroup").length == 0;
+        return validType && validPlaceHolder && validPersonGroup && noPersonGroups;
     },
 
     /*

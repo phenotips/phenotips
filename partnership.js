@@ -168,7 +168,9 @@ var Partnership = Class.create(AbstractNode, {
             placeholders[0].getChildren('PlaceHolder')[0].convertTo(type, gender);
         }
         else {
-            this.createPregnancy().createChild(type, gender);
+            var pregnancy = this.createPregnancy();
+            pregnancy.setGender(gender);
+            pregnancy.createChild(type);
         }
     },
 

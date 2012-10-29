@@ -463,7 +463,7 @@ var Person = Class.create(AbstractPerson, {
             if(!me.getChildlessStatus() && !partnership.getChildlessStatus() &&
                 !partnership.getPartnerOf(me).getChildlessStatus() &&
                 partnership.getChildren().length == 0) {
-                partnership.createChild('PlaceHolder', 'U', 1)
+                partnership.createChild('PlaceHolder', 'U')
             }
         });
     },
