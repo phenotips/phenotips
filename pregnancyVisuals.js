@@ -20,7 +20,7 @@ var PregnancyVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     updateActive: function() {
-        if(this.getPregnancy().isActive) {
+        if(this.getPregnancy().isActive()) {
             this.getJunctionShape().hover(this.grow, this.shrink);
             this.getJunctionShape().click(this.onClick);
         }
