@@ -5,12 +5,14 @@
  *
  * @param x the x coordinate on the canvas
  * @param x the y coordinate on the canvas
+ * @param id the id of the node
  */
 
 var AbstractNode = Class.create( {
 
     initialize: function(x, y, id) {
-        this._id = id ? id : editor.generateID();
+        this._type = "AbstractNode";
+        this._id = id ? id : editor.getGraph().generateID();
         this._graphics = this.generateGraphics(x, y);
     },
     
@@ -43,7 +45,7 @@ var AbstractNode = Class.create( {
     },
 
     /*
-     * Changes the X coordinate of the node
+     * Changes the X coordinate of the nodek
      *
      * @param x the x coordinate on the canvas
      * @param animate set to true if you want to animate, callback the transition
@@ -91,12 +93,12 @@ var AbstractNode = Class.create( {
     },
     
     /**
-     * Provides access to the type of the node
+     * Returns the type of this node
      * 
      * @return a string expressing the type
      */
     getType: function() {
-        return "";
+        return this._type;
     },
 
     /*
@@ -140,7 +142,7 @@ var AbstractNode = Class.create( {
         if(isRecursive) {
             toRemove.push(me);
             this.getNeighbors().each(function(neighbor) {
-                var result = neighbor.isRelatedTo(editor.getProband(), toRemove.clone());
+                var result = neighbor.isRelatedTo(editor.getGraph().getProband(), toRemove.clone());
                 if(!result[0]) {
                     toRemove = result[1];
                 }
@@ -188,5 +190,59 @@ var AbstractNode = Class.create( {
             });
             return [found, visitedNodes];
         }
+    },
+
+    onWidgetHide: function() {
+        this.getGraphics().getHoverBox().onWidgetHide();
     }
 });
+
+var ChildlessBehavior = {
+
+    /*
+     * Returns null if the node has no childless markers.
+     * Returns 'childless' if this node is marked childless
+     * Returns 'infertile' if this node is marked infertile
+     */
+    getChildlessStatus: function() {
+        return this._childlessStatus;
+    },
+
+    /*
+     * Changes the childless status of this node
+     *
+     * @param status set to null, 'infertile' or 'childless'
+     */
+    setChildlessStatus: function(status) {
+        if(status == 'infertile' || status == 'childless') {
+            this._childlessStatus = status;
+            var phChildren = this.getChildren("PlaceHolder");
+            phChildren.each(function(child) {
+                child.remove(false);
+            });
+        }
+        else {
+            this._childlessStatus = null;
+            this.restorePlaceholders();
+        }
+        this.setChildlessReason(null);
+        this.getGraphics().updateChildlessShapes();
+    },
+
+    /*
+     * Returns the reason for this node's status of 'infertile' or 'childless'
+     */
+    getChildlessReason: function() {
+        return this._childlessReason;
+    },
+
+    /*
+     * Changes the reason for this node's 'childless' or 'infertile' status
+     *
+     * @param reason a string that explains the condition (eg. "By Choice", "Vasectomy" etc)
+     */
+    setChildlessReason: function(reason) {
+        this._childlessReason = reason;
+        this.getGraphics().updateChildlessStatusLabel();
+    }
+};

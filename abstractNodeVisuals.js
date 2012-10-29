@@ -99,6 +99,78 @@ var AbstractNodeVisuals = Class.create({
      * Removes all the graphical elements of this node from the canvas
      */
     remove: function() {
+        this.getHoverBox() && this.getHoverBox().remove();
         this.getAllGraphics().remove();
+    },
+
+    /*
+     * Returns the hoverbox object for this node
+     */
+    getHoverBox: function() {
+        return this._hoverBox;
     }
 });
+
+var ChildlessBehaviorVisuals = {
+
+    /*
+     * Returns the childless status shape for this Person
+     */
+    getChildlessShape: function() {
+        return this._childlessShape;
+    },
+
+    /*
+     * Updates the childless status icon for this Person based on the childless/infertility status.
+     */
+    updateChildlessShapes: function() {
+        var status = this.getNode().getChildlessStatus();
+        this.getChildlessShape() && this.getChildlessShape().remove();
+
+        var x = this.getX(),
+            y = this.getY(),
+            r = editor.attributes.radius,
+            lowY = 1.6 * r + y;
+
+        var childlessPath = [["M", x, y],["L", x, lowY],["M", x - r, lowY], ["l", 2 * r, 0]];
+        if(status == 'infertile') {
+            childlessPath.push(["M", x - r, lowY + 4], ["l", 2 * r, 0]);
+        }
+
+        if(status) {
+            this._childlessShape = editor.getPaper().path(childlessPath);
+            this._childlessShape.attr({"stroke-width": 2.5, stroke: "#3C3C3C"});
+            this._childlessShape.insertAfter(this.getHoverBox().getBackElements().flatten());
+            this.getHoverBox().hideChildHandle()
+        }
+        else {
+            this._childlessShape && this._childlessShape.remove();
+            this.getHoverBox().unhideChildHandle()
+        }
+    },
+
+    /*
+     * Updates the childless status reason label for this Person
+     */
+    updateChildlessStatusLabel: function() {
+        this._childlessStatusLabel && this._childlessStatusLabel.remove();
+        var text =  "";
+        this.getNode().getChildlessReason() && (text += this.getNode().getChildlessReason());
+        if(text.strip() != '') {
+            this._childlessStatusLabel = editor.getPaper().text(this.getX(), this.getY() + editor.attributes.radius * 2, "(" + text.slice(0, 14) +")" );
+            this._childlessStatusLabel.attr({'font-size': 18, 'font-family': 'Cambria'});
+        }
+        else {
+            this._childlessStatusLabel = null;
+        }
+        this._childlessStatusLabel && this._childlessStatusLabel.insertAfter(this.getChildlessShape().flatten());
+        this.getNode().getType() == "Person" && this.drawLabels();
+    },
+
+    /*
+     * Returns the Raphaël element for this Person's childless status reason label
+     */
+    getChildlessStatusLabel: function() {
+        return this._childlessStatusLabel;
+    }
+};

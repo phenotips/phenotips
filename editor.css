@@ -237,7 +237,7 @@
 /* ===========================================
  * LEGEND
  */
-#workspace {
+#work-area {
   position: relative;
 }
 .legend-box {
@@ -356,6 +356,14 @@
   -moz-column-count: 2;
   -webkit-column-count: 2;
   column-count: 2;
+}
+
+.field-inputs {
+  display: table;
+  width: 100%;
+}
+.field-inputs>span {
+  display: table-cell;
 }
 
 .menu-box .field-first_name {

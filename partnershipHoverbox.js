@@ -18,7 +18,8 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      */
     initialize: function($super, partnership, junctionX, junctionY, shapes) {
         var radius = editor.attributes.radius;
-        $super(partnership, junctionX - radius/2, junctionY - radius/2, radius, radius*1.7, junctionX, junctionY, shapes);
+        this._isMenuToggled = false;
+        $super(partnership, junctionX - radius/1.5, junctionY - radius/2, radius*(4/3), radius*1.7, junctionX, junctionY, shapes);
     },
 
     /**
@@ -33,15 +34,50 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      * Creates delete button. Returns a raphael set.
      */
     generateButtons: function($super) {
-        var me = this;
-        var action = function() {
-            me.getNode().remove(true);
-        };
-        var path = "M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z";
-        var attributes = editor.attributes.deleteBtnIcon;
-        var x = this.getX() + editor.attributes.radius * 0.05;
-        var y = this.getY();
-        var deleteButton = this.createButton(x, y, path, attributes, action);
-        return $super().push(deleteButton);
+        var deleteButton = this.generateDeleteBtn();
+        var menuButton = this.generateMenuBtn();
+        return $super().push(deleteButton, menuButton);
+    },
+
+    /*
+     * Hides the child handle
+     */
+    hideChildHandle: function() {
+        this.getCurrentHandles().exclude(this._downHandle.hide());
+    },
+
+    /*
+     * Unhides the child handle
+     */
+    unhideChildHandle: function() {
+        if(this.isHovered() || this.isMenuToggled()) {
+            this._downHandle.show();
+        }
+        (!this.getCurrentHandles().contains(this._downHandle)) && this.getCurrentHandles().push(this._downHandle);
+    },
+
+    /*
+     * Returns true if the menu is toggled for this partnership node
+     */
+    isMenuToggled: function() {
+        return this._isMenuToggled;
+    },
+
+    /*
+     * Shows/hides the menu for this partnership node
+     */
+    toggleMenu: function(isMenuToggled) {
+        this._isMenuToggled = isMenuToggled;
+        if(isMenuToggled) {
+            this.disable();
+            var optBBox = this.getBoxOnHover().getBBox();
+            var x = optBBox.x2;
+            var y = optBBox.y;
+            var position = editor.getWorkspace().canvasToDiv(x+5, y);
+            editor.getPartnershipMenu().show(this.getNode(), position.x, position.y);
+        }
+        else {
+            editor.getPartnershipMenu().hide();
+        }
     }
 });

@@ -59,6 +59,32 @@ var NodeIndex = Class.create({
     this._addNode = this._addNode.bind(this);
     nodes && nodes.each(this._addNode);
     this.tmpIndex = new TmpIndex();
+
+      document.observe('pedigree:child:added', function(event){
+          if (event && event.memo && event.memo.node) {
+              _this._childAdded(event.memo.node, event.memo.sourceNode);
+          }
+      });
+      document.observe('pedigree:partner:added', function(event){
+          if (event && event.memo && event.memo.node) {
+              _this._partnerAdded(event.memo.node, event.memo.sourceNode);
+          }
+      });
+      document.observe('pedigree:parents:added', function(event){
+          if (event && event.memo && event.memo.node) {
+              _this._parentsAdded(event.memo.node, event.memo.sourceNode);
+          }
+      });
+      document.observe('pedigree:partnership:added', function(event){
+          if (event && event.memo && event.memo.node) {
+              _this._partnershipAdded(event.memo.node, event.memo.sourceNode);
+          }
+      });
+      document.observe('pedigree:node:upgraded', function(event){
+          if (event && event.memo && event.memo.node) {
+              _this._nodeUpgraded(event.memo.node, event.memo.sourceNode);
+          }
+      });
   },
 
   /**
@@ -498,7 +524,7 @@ var NodeIndex = Class.create({
     return !!node;
   },
   /**
-   * Move a node to a diferent position, indicated by relative coordinates
+   * Move a node to a different position, indicated by relative coordinates
    * 
    * @param node the node to move
    * @param dx the horizontal distance to the new position

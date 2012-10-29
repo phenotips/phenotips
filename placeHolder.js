@@ -14,6 +14,7 @@ var PlaceHolder = Class.create(AbstractPerson, {
 
     initialize: function($super, x, y, gender, id) {
         $super(x, y, gender, id);
+        this._type = "PlaceHolder"
     },
 
     /*
@@ -27,19 +28,12 @@ var PlaceHolder = Class.create(AbstractPerson, {
     },
 
     /*
-     * Returns "ph" ("PlaceHolder")
-     */
-    getType: function() {
-        return "ph";
-    },
-
-    /*
      * Creates a new Person in the place of this PlaceHolder and merges the PlaceHolder with the person
      */
-    convertToPerson: function() {
-        var newNode = editor.addNode(this.getGraphics().getX(), this.getGraphics().getY(), this.getGender(), false);
-        this.merge(newNode);
-        document.fire('pedigree:node:upgraded', {'node' : newNode, 'relatedNodes' : [], 'sourceNode' : this});
+    convertTo: function(type, gender) {
+        var replacement = editor.getGraph()["add" + type](this.getX(), this.getY(), gender);
+        this.merge(replacement);
+        //document.fire('pedigree:node:upgraded', {'node' : replacement, 'relatedNodes' : [], 'sourceNode' : this});
     },
 
     /*
@@ -50,8 +44,10 @@ var PlaceHolder = Class.create(AbstractPerson, {
     merge: function(person) {
         if(this.canMergeWith(person)) {
             var parents = this.getParentPartnership();
-            parents && parents.removeChild(this);
-            parents && (parents.getChildren().indexOf(person) == -1) && parents.addChild(person);
+            if(parents) {
+                (parents.getChildren().indexOf(person) == -1) && this.getParentPregnancy().addChild(person);
+                this.getParentPregnancy().removeChild(this);
+            }
             var partnerships = this.getPartnerships();
             var me = this;
 
@@ -76,7 +72,7 @@ var PlaceHolder = Class.create(AbstractPerson, {
                 partnership.remove();
                 }
             });
-            me && me.remove(false, true);
+            me && me.remove(false);
         }
     },
 
@@ -109,5 +105,10 @@ var PlaceHolder = Class.create(AbstractPerson, {
 //            (this._father && node._mother && this._father != node._mother);
 //
 //        return notReversedParents && (hasConflictingDads || hasConflictingMoms);
+    },
+
+    remove: function($super) {
+        editor.getGraph().removePlaceHolder(this);
+        return $super()
     }
 });

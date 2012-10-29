@@ -22,9 +22,12 @@ var Person = Class.create(AbstractPerson, {
         this._isAdopted = false;
         this._lifeStatus = 'alive';
         this._isProband = isProband;
+        this._childlessStatus = null;
+        this._childlessReason = null;
         this._disorders = [];
         this._evaluations = [];
         $super(x, y, gender, id);
+        this._type = "Person"
     },
 
     /*
@@ -35,13 +38,6 @@ var Person = Class.create(AbstractPerson, {
      */
     generateGraphics: function(x, y) {
         return new PersonVisuals(this, x, y);
-    },
-
-    /*
-     * Returns "pn" ("Person Node")
-     */
-    getType: function() {
-        return "pn";
     },
 
     /*
@@ -141,7 +137,7 @@ var Person = Class.create(AbstractPerson, {
      * @param newStatus can be "alive", "deceased", "stillborn", "unborn" or "aborted"
      */
     setLifeStatus: function(newStatus) {
-        if(newStatus == 'unborn' || newStatus == 'stillborn' || newStatus == 'aborted' || newStatus == 'alive' || newStatus == 'deceased'){
+        if(newStatus == 'unborn' || newStatus == 'stillborn' || newStatus == 'aborted' || newStatus == 'alive' || newStatus == 'deceased') {
             this._lifeStatus = newStatus;
 
             (newStatus != 'deceased') && this.setDeathDate(null);
@@ -150,14 +146,17 @@ var Person = Class.create(AbstractPerson, {
             if(this.isFetus()) {
                 this.setBirthDate(null);
                 this.setAdopted(false);
+                this.setChildlessStatus(null);
             }
             this.getGraphics().updateLifeStatusShapes();
-            editor.nodeMenu.update(this,
+            editor.getNodeMenu().update(this,
                 {
                     'gestation_age': {value : this.getGestationAge(), inactive : !this.isFetus()},
                     'date_of_birth': {value : this.getBirthDate(), inactive : this.isFetus()},
                     'adopted':       {value : this.isAdopted(), inactive: this.isFetus()},
-                    'date_of_death': {value : this.getDeathDate(), inactive: newStatus != 'deceased'}
+                    'date_of_death': {value : this.getDeathDate(), inactive: newStatus != 'deceased'},
+                    childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive : this.isFetus()},
+                    childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive : this.isFetus()}
                 });
         }
     },
@@ -186,7 +185,7 @@ var Person = Class.create(AbstractPerson, {
         if(this.getLifeStatus() == 'unborn' && this.getConceptionDate()) {
             var oneWeek = 1000 * 60 * 60 * 24 * 7,
                 lastDay = new Date();
-            return Math.round((lastDay.getTime()- this.getConceptionDate().getTime())/oneWeek)
+            return Math.round((lastDay.getTime() - this.getConceptionDate().getTime()) / oneWeek)
         }
         else if(this.isFetus()){
             return this._gestationAge;
@@ -364,7 +363,7 @@ var Person = Class.create(AbstractPerson, {
         }
     },
 
-    /**
+    /*
      * Returns true if this Person is marked adopted
      */
     isAdopted: function() {
@@ -392,14 +391,15 @@ var Person = Class.create(AbstractPerson, {
      */
     convertToPlaceholder: function() {
         var me = this;
-        var placeholder = editor.addNode(this.getX(), this.getY(), this.getGender(), true);
+        var gender = (this.getPartnerships().length == 0) ? "U" : this.getGender();
+        var placeholder = editor.getGraph().addPlaceHolder(this.getX(), this.getY(), gender);
         var parents = this.getParentPartnership();
         if(parents) {
-            parents.removeChild(me);
             parents.addChild(placeholder);
+            parents.removeChild(me);
         }
         this.getPartnerships().each(function(partnership) {
-            var newPartnership = editor.addPartnership(partnership.getX(), partnership.getY(), partnership.getPartnerOf(me), placeholder);
+            var newPartnership = editor.getGraph().addPartnership(partnership.getX(), partnership.getY(), partnership.getPartnerOf(me), placeholder);
             partnership.getChildren().each(function(child) {
                 partnership.removeChild(child);
                 newPartnership.addChild(child);
@@ -417,12 +417,13 @@ var Person = Class.create(AbstractPerson, {
      * not connected to the proband
      */
     remove: function($super, isRecursive) {
+        editor.getGraph().removePerson(this);
         if(!isRecursive) {
             var me = this;
             var hasPersonPartners = function() {
                 var found = false;
                 me.getPartners().each(function(partner) {
-                    if(partner.getType() == 'pn') {
+                    if(partner.getType() == 'Person') {
                         found = true;
                         throw $break;
                     }
@@ -430,11 +431,14 @@ var Person = Class.create(AbstractPerson, {
                 return found;
             };
             this.getPartners().each(function(partner) {
-                if(partner.getType() == 'ph') {
+                if(partner.getType() == 'PlaceHolder') {
                     partner.remove(false);
                 }
             });
-            if((this.getParentPartnership() && this.getParentPartnership().getChildren().length == 1) || (this.getChildren('pn').length > 0 && hasPersonPartners())) {
+            var parents = this.getParentPartnership();
+            var singleChild = parents && parents.getChildren().length == 1;
+            var hasChildren = this.getChildren("Person").concat(this.getChildren("PersonGroup")).length != 0;
+            if(singleChild || hasChildren) {
                 this.convertToPlaceholder();
             }
             else {
@@ -451,6 +455,20 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /*
+     * Adds a placeholder child to all partnerships that are missing it.
+     */
+    restorePlaceholders: function() {
+        var me = this;
+        this.getPartnerships().each(function(partnership) {
+            if(!me.getChildlessStatus() && !partnership.getChildlessStatus() &&
+                !partnership.getPartnerOf(me).getChildlessStatus() &&
+                partnership.getChildren().length == 0) {
+                partnership.createChild('PlaceHolder', 'U', 1)
+            }
+        });
+    },
+
+    /*
      * Returns an object (to be accepted by the menu) with information about this Person
      */
     getSummary: function() {
@@ -464,7 +482,11 @@ var Person = Class.create(AbstractPerson, {
             adopted:       {value : this.isAdopted(), inactive: this.isFetus()},
             state:         {value : this.getLifeStatus(), inactive: [(this.getPartnerships().length > 0) ? ['unborn','aborted','stillborn'] : ''].flatten()},
             date_of_death: {value : this.getDeathDate(), inactive: this.getLifeStatus() != 'deceased'},
-            gestation_age: {value : this.getGestationAge(), inactive : !this.isFetus()}
+            gestation_age: {value : this.getGestationAge(), inactive : !this.isFetus()},
+            childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive : this.isFetus()},
+            childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive : this.isFetus()}
         };
     }
 });
+
+Person.addMethods(ChildlessBehavior);

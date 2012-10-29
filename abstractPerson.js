@@ -12,10 +12,12 @@
 var AbstractPerson = Class.create(AbstractNode, {
 
     initialize: function($super, x, y, gender, id) {
-        this._parentPartnership = null;
-        this._partnerships = [];
+        this._partnershipNodes = [];
         this._gender = this.parseGender(gender);
+        this._parentPartnership = null;
+        this._parentPregnancy = null;
         $super(x, y, id);
+        this._type = "AbstractPerson"
       },
 
     /*
@@ -26,6 +28,71 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     generateGraphics: function(x, y) {
         return new AbstractPersonVisuals(this, x, y);
+    },
+
+    /*
+     * Returns a Partnership containing the parent nodes
+     */
+    getParentPartnership: function() {
+        return this._parentPartnership;
+    },
+
+    /*
+     * Replaces the parents Partnership with the one passed in the parameter
+     *
+     * @param partnership is a Partnership object that should have this node listed as a child
+     */
+    setParentPartnership: function(partnership) {
+        this._parentPartnership = partnership;
+    },
+
+    /*
+     * Returns the Pregnancy associated with this node
+     */
+    getParentPregnancy: function() {
+        return this._parentPregnancy;
+    },
+
+    /*
+     * Replaces the the Pregnancy associated with this node with the one passed in the parameter
+     *
+     * @param pregnancy a Pregnancy object that has this node listed as a child
+     */
+    setParentPregnancy: function(pregnancy) {
+            this._parentPregnancy = pregnancy;
+            var partnership = (pregnancy) ? pregnancy.getPartnership() : null;
+            this.setParentPartnership(partnership)
+    },
+
+    /*
+     * Returns an array containing the two parents of this node.
+     */
+    getParents: function() {
+        if(this.getParentPartnership()){
+            return [this.getParentPartnership().getPartners()[0], this.getParentPartnership().getPartners()[1]]
+        }
+        return null;
+    },
+
+    /*
+     * Returns true if this node is a descendant of otherNode
+     *
+     * @param otherNode can be a Person or a PlaceHolder
+     */
+    isDescendantOf: function(otherNode) {
+        if(otherNode.isParentOf(this)) {
+            return true;
+        }
+        else {
+            var found = false,
+                children = otherNode.getChildren(),
+                i = 0;
+            while((i < children.length) && !found) {
+                found = this.isDescendantOf(children[i]);
+                i++;
+            }
+            return found;
+        }
     },
 
     /*
@@ -55,22 +122,26 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @param visitedNodes an array of nodes that were visited during the traversal up until
      *  this node. OMIT this parameter. It is used for internal functionality.
      */
-    setGender: function(gender, forceDraw, visitedNodes) {
+    setGender: function(gender, visitedNodes) {
         var visited = (visitedNodes) ? visitedNodes : [];
         visited.push(this);
-        if(this.getPartners().length == 0) {
-            this._gender = this.parseGender(gender);
-            this.getGraphics().setGenderSymbol();
-        }
-        else if(this.getGender() == "U") {
-            var me = this;
-            this._gender = this.parseGender(gender);
-            this.getGraphics().setGenderSymbol();
-            this.getPartners().each(function(partner) {
-                if(visited.indexOf(partner) == -1) {
-                    visited = partner.setGender(me.getOppositeGender(), forceDraw, visited);
-                }
-            });
+        if(!this.getParentPregnancy().isGenderLocked()) {
+            if(this.getPartners().length == 0) {
+                this._gender = this.parseGender(gender);
+                this.getGraphics().setGenderSymbol();
+                this.getParentPregnancy().setGender(gender);
+            }
+            else if(this.getGender() == "U") {
+                var me = this;
+                this._gender = this.parseGender(gender);
+                this.getGraphics().setGenderSymbol();
+                this.getPartners().each(function(partner) {
+                    if(visited.indexOf(partner) == -1) {
+                        visited = partner.setGender(me.getOppositeGender(), visited);
+                    }
+                });
+                this.getParentPregnancy().setGender(gender);
+            }
         }
         return visited;
     },
@@ -79,7 +150,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Returns an array of Partnership objects of this node
      */
     getPartnerships: function() {
-        return this._partnerships;
+        return this._partnershipNodes;
     },
 
     /*
@@ -117,7 +188,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     addPartnership: function(partnership) {
        if(this.getPartners().indexOf(partnership.getPartnerOf(this)) == -1) {
-           this._partnerships.push(partnership);
+           this._partnershipNodes.push(partnership);
        }
     },
 
@@ -127,33 +198,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @param partnership is a Partnership object with this node as one of the partners
      */
     removePartnership: function(partnership) {
-        this._partnerships = this._partnerships.without(partnership);
-    },
-
-    /*
-     * Returns a Partnership containing this the parent nodes
-     */
-    getParentPartnership: function() {
-        return this._parentPartnership;
-    },
-
-    /*
-     * Replaces the parents Partnership with the one passed in the parameter
-     *
-     * @param partnership is a Partnership object that should have this node listed as a child
-     */
-    setParentPartnership: function(partnership) {
-        this._parentPartnership = partnership;
-    },
-
-    /*
-     * Returns an array containing the two parent AbstractPerson nodes of this node.
-     */
-    getParents: function() {
-        if(this.getParentPartnership()){
-            return [this.getParentPartnership().getPartners()[0], this.getParentPartnership().getPartners()[1]]
-        }
-        return null;
+        this._partnershipNodes = this._partnershipNodes.without(partnership);
     },
 
     /*
@@ -162,13 +207,13 @@ var AbstractPerson = Class.create(AbstractNode, {
     createParents: function() {
         if(this.getParentPartnership() == null) {
             var positions = editor.findPosition ({above : this.getID()}, ['mom', 'dad']);
-            var mother = editor.addNode(positions['mom'].x, positions['mom'].y, "F", false),
-                father = editor.addNode(positions['dad'].x, positions['dad'].y, "M", false);
+            var mother = editor.getGraph().addPerson(positions['mom'].x, positions['mom'].y, "F", false),
+                father = editor.getGraph().addPerson(positions['dad'].x, positions['dad'].y, "M", false);
 
             var joinPosition = editor.findPosition({join : [mother.getID(), father.getID()]});
-            var partnership = editor.addPartnership(joinPosition.x, joinPosition.y, mother, father);
+            var partnership = editor.getGraph().addPartnership(joinPosition.x, joinPosition.y, mother, father);
             
-            document.fire('pedigree:parents:added', {'node' : partnership, 'relatedNodes' : [mother, father], 'sourceNode' : this});
+            //document.fire('pedigree:parents:added', {'node' : partnership, 'relatedNodes' : [mother, father], 'sourceNode' : this});
             this.addParents(partnership);
         }
     },
@@ -179,12 +224,6 @@ var AbstractPerson = Class.create(AbstractNode, {
     addParents: function(partnership) {
         if(this.getParentPartnership() == null) {
             partnership.addChild(this);
-        }
-    },
-
-    removeParents: function() {
-        if(this.getParentPartnership()) {
-            this.getParentPartnership().remove();
         }
     },
 
@@ -217,8 +256,9 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @param isPlaceHolder set to true if the new partner should be a PlaceHolder
      */
     createPartner: function(isPlaceHolder, noChild) {
-        var position = editor.findPosition({side: this.getID()}),
-            partner = editor.addNode(position.x, position.y, this.getOppositeGender(), isPlaceHolder);
+        var pos = editor.findPosition({side: this.getID()}),
+            gen = this.getOppositeGender(),
+            partner = (isPlaceHolder) ? editor.getGraph().addPlaceHolder(pos.x, pos.y, gen) : editor.getGraph().addPerson(pos.x, pos.y, gen);
         var result = this.addPartner(partner, noChild);
         document.fire('pedigree:partner:added', {'node' : partner, 'relatedNodes' : [result], 'sourceNode' : this});
         return result;
@@ -237,17 +277,17 @@ var AbstractPerson = Class.create(AbstractNode, {
         }
         else if(this.canPartnerWith(partner)) {
             var joinPosition = editor.findPosition({join : [this.getID(), partner.getID()]});
-            var partnership = editor.addPartnership(joinPosition.x, joinPosition.y, this, partner);
+            var partnership = editor.getGraph().addPartnership(joinPosition.x, joinPosition.y, this, partner);
 
             if(this.getGender() == 'U' && partner.getGender() != 'U') {
-                this.setGender(partner.getOppositeGender(), true, null);
+                this.setGender(partner.getOppositeGender());
             }
             else if(this.getGender() != 'U' && partner.getGender() == 'U') {
-                partner.setGender(this.getOppositeGender(), true, null);
+                partner.setGender(this.getOppositeGender());
             }
 
-            if(partnership.getChildren().length == 0 && !noChild) {
-                partnership.createChild(true);
+            if(partnership.getChildren().length == 0 && !noChild && !(this.getChildlessStatus && this.getChildlessStatus()) && !(partner.getChildlessStatus && partner.getChildlessStatus())) {
+                partnership.createChild("PlaceHolder", "U", 1);
             }
             
             document.fire('pedigree:partnership:added', {'node' : partnership, 'relatedNodes' : [partner], 'sourceNode' : this});
@@ -258,6 +298,8 @@ var AbstractPerson = Class.create(AbstractNode, {
     /*
      * Returns an array of nodes that are children from all of this node's Partnerships.
      * The array can include PlaceHolders.
+     *
+     * @param type can be "Person", "PersonGroup" or "PlaceHolder"
      */
     getChildren: function(type) {
         var children = [];
@@ -267,9 +309,8 @@ var AbstractPerson = Class.create(AbstractNode, {
         return children;
     },
 
-    createChild: function(isPlaceHolder) {
-      var partnership = this.createPartner(true, true);
-      partnership.createChild(isPlaceHolder);
+    createChild: function(type, gender) {
+        return this.createPartner(true, true).createChild(type, gender);
     },
 
     addChild: function(child) {
@@ -281,6 +322,10 @@ var AbstractPerson = Class.create(AbstractNode, {
         return null;
     },
 
+    getTwins: function(type) {
+        return this.getParentPregnancy().getChildren(type).without(this);
+    },
+
     /*
      * Returns true if this node is a parent of otherNode
      *
@@ -288,27 +333,6 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     isParentOf: function(otherNode) {
         return (this.getChildren().indexOf(otherNode) > -1);
-    },
-
-    /*
-     * Returns true if this node is a descendant of otherNode
-     *
-     * @param otherNode can be a Person or a PlaceHolder
-     */
-    isDescendantOf: function(otherNode) {
-        if(otherNode.isParentOf(this)) {
-            return true;
-        }
-        else {
-            var found = false,
-                children = otherNode.getChildren(),
-                i = 0;
-            while((i < children.length) && !found) {
-                found = this.isDescendantOf(children[i]);
-                i++;
-            }
-            return found;
-        }
     },
 
     /*
@@ -363,23 +387,14 @@ var AbstractPerson = Class.create(AbstractNode, {
             $super(true)
         }
         else {
-            var me = this,
-                toRemove = [],
-                parents = this.getParentPartnership();
-            parents && parents.removeChild(me);
             this.getPartnerships().each(function(partnership) {
                 partnership.remove(false);
             });
-            editor.removeNode(this);
+            var parentPregnancy = this.getParentPregnancy();
+            parentPregnancy && parentPregnancy.removeChild(this);
             this.getGraphics().remove();
+            $super(isRecursive);
         }
-    },
-
-    /*
-     * Returns the parent's Partnership
-     */
-    getUpperNeighbors: function() {
-        return this.getParentPartnership() ? [this.getParentPartnership()] : [];
     },
 
     /*
@@ -416,5 +431,12 @@ var AbstractPerson = Class.create(AbstractNode, {
             });
             return [numSteps, visited];
         }
+    },
+
+    /*
+     * Returns the parent's Partnership
+     */
+    getUpperNeighbors: function() {
+        return this.getParentPartnership() ? [this.getParentPartnership()] : [];
     }
 });

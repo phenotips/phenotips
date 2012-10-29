@@ -6,26 +6,28 @@
  * @param y the y coordinate at which the partnership junction will be placed
  * @param partner1 an AbstractPerson who's one of the partners in the relationship.
  * @param partner2 an AbstractPerson who's the other partner in the relationship. The order of partners is irrelevant.
+ * @id the unique ID number of this node
  */
 
 var Partnership = Class.create(AbstractNode, {
 
    initialize: function($super, x, y, partner1, partner2, id) {
-       if(partner1.getType() != 'ph' || partner2.getType() != 'ph') {
-           this._type = 'partnership';
+       if(partner1.getType() != 'PlaceHolder' || partner2.getType() != 'PlaceHolder') {
            this._partners = [partner1, partner2];
-           this._children = [[/*Person*/],[/*PlaceHolder*/]];
+           this._pregnancies = [];
            this._partners[0].addPartnership(this);
            this._partners[1].addPartnership(this);
+           this._childlessStatus = null;
+           this._childlessReason = null;
            $super(x, y, id);
+           this._type = 'Partnership';
        }
    },
 
-    getType: function() {
-        return this._type;
-    },
     /*
      * Generates and returns an instance of PartnershipVisuals
+     *
+     * @param x,y the x and y coordinates of this partnership
      */
     generateGraphics: function(x, y) {
         return new PartnershipVisuals(this, x, y);
@@ -95,16 +97,23 @@ var Partnership = Class.create(AbstractNode, {
     },
 
     /*
-     * Returns an array of AbstractNodes that are children of this partnership
+     * Returns an array of pregnancies stemming from this partnership.
+     */
+    getPregnancies: function() {
+        return this._pregnancies;
+    },
+
+    /*
+     * Returns an array of nodes that are children of this partnership
+     *
+     * @param type can filter the array to the specified type (eg. "PlaceHolder", "Person", etc)
      */
     getChildren: function(type) {
-        if(type == 'pn') {
-            return this._children[0];
-        }
-        else if(type == 'ph') {
-            return this._children[1];
-        }
-        return this._children.flatten();
+        var children = [];
+        this.getPregnancies().each(function(pregnancy) {
+            children = children.concat(pregnancy.getChildren(type));
+        });
+        return children;
     },
 
     /*
@@ -113,24 +122,51 @@ var Partnership = Class.create(AbstractNode, {
      * @param someNode is an AbstractPerson
      */
     hasChild: function(someNode) {
-        return this.getChildren().indexOf(someNode) > -1;
+        var found = false;
+        this.getPregnancies().each(function(pregnancy) {
+            if(pregnancy.hasChild(someNode)) {
+                found = true;
+                throw $break;
+            }
+        });
+        return found;
     },
 
     /*
-     * Creates a new AbstractNode and sets it as a child of this partnership. Returns the child.
-     *
-     * @param isPlaceHolder set to true if the child is a placeholder
+     * Creates and returns a new Pregnancy for this partnership
      */
-    createChild: function(isPlaceHolder) {
-        if(this.getChildren() && this.getChildren()[0] && this.getChildren()[0].getType() == 'ph') {
-            return this.getChildren()[0].convertToPerson();
+    createPregnancy: function() {
+        //var id = this.getID();
+        //var pos = editor.findPosition({below: id}, ['pregnancy']);
+        var pregnancy = editor.getGraph().addPregnancy(this.getX(), this.getY() + 50, this);
+        this.getPregnancies().push(pregnancy);
+
+        //TODO: parent connection
+        //pregnancy.parentConnection = this.getGraphics().updateChildConnection(pregnancy, pregnancy.getX(), pregnancy.getY(), this.getX(), this.getY());
+
+        return pregnancy;
+    },
+
+    /*
+     * Removes pregnancy from the list of pregnancies associated with this partnership
+     */
+    removePregnancy: function(pregnancy) {
+        this._pregnancies = this._pregnancies.without(pregnancy);
+    },
+
+    /*
+     * Creates a new pregnancy and a new child for that pregnancy. Returns the child.
+     *
+     * @param type the type of AbstractPerson that this child should be (eg. "Person", "PlaceHolder", etc)
+     * @param gender should be "M", "F", or "U"
+     */
+    createChild: function(type, gender) {
+        var placeholders = this.getPlaceHolderPregnancies();
+        if(placeholders.length != 0) {
+            placeholders[0].getChildren('PlaceHolder')[0].convertTo(type, gender);
         }
         else {
-            var position = editor.findPosition({below: this.getID()}, ['child']);
-            var child = editor.addNode(position['child'].x, position['child'].y, "U", isPlaceHolder);
-            var result = this.addChild(child);
-            document.fire("pedigree:child:added", {node: child, 'relatedNodes' : [], 'sourceNode' : this});
-            return result;
+            this.createPregnancy().createChild(type, gender);
         }
     },
 
@@ -141,18 +177,19 @@ var Partnership = Class.create(AbstractNode, {
      * @param someNode is an AbstractPerson
      */
     addChild: function(someNode) {
-        //TODO: elaborate on restrictions for adding parents to existing node
-        if(someNode && !this.hasChild(someNode) && (someNode.getParentPartnership() == null)) {
-            this.getChildren('ph').each(function(child){
-                child.remove();
-            });
-            this._children[+(someNode.getType() == 'ph')].push(someNode);
-            someNode.parentConnection = this.getGraphics().updateChildConnection(someNode, someNode.getX(), someNode.getY(), this.getX(), this.getY());
-            someNode.setParentPartnership(this);
+        if(someNode && this.canBeParentOf(someNode)) {
+            var phPregnancies = this.getPlaceHolderPregnancies();
+            if(phPregnancies.length != 0) {
+                phPregnancies[0].addChild(someNode);
+                phPregnancies[0].getChildren("PlaceHolder")[0].remove();
+            }
+            else {
+                this.createPregnancy().addChild(someNode);
+            }
         }
         return someNode;
     },
-    
+
     /*
      * Removes someNode from the list of children of this partnership, and removes this partnership as its parents
      * reference. Returns someNode.
@@ -160,26 +197,26 @@ var Partnership = Class.create(AbstractNode, {
      * @param someNode is an AbstractPerson
      */
     removeChild: function(someNode) {
-        someNode.setParentPartnership(null);
-        var index = +(someNode.getType() == 'ph');
-        this._children[index] = this._children[index].without(someNode);
-        someNode.parentConnection.remove();
-        someNode.parentConnection = null;
+        var pregnancy = someNode.getParentPregnancy();
+        pregnancy && pregnancy.removeChild(someNode);
+        return someNode;
     },
 
+    /*
+     * Removes this partnership and all the visuals attached to it from the graph.
+     * Set isRecursive to true to remove all pregnancies and children, unless they have some other connection
+     * to the Proband
+     *
+     * @param isRecursive can be true or false
+     */
     remove: function($super, isRecursive) {
+        editor.getGraph().removePartnership(this);
         if(isRecursive) {
             $super(isRecursive);
         }
         else {
-            var me = this;
-            editor.removePartnership(this);
-            this.getChildren().each(function(child) {
-                child.setParentPartnership(null);
-                me.removeChild(child);
-                if(child.getType() == 'ph') {
-                    child.remove(false, true);
-                }
+            this.getPregnancies().each(function(pregnancy) {
+                pregnancy.remove();
             });
             this.getPartners()[0].removePartnership(this);
             this.getPartners()[1].removePartnership(this);
@@ -188,10 +225,10 @@ var Partnership = Class.create(AbstractNode, {
     },
 
     /*
-     * Returns an array of children nodes of this partnership
+     * Returns an array of pregnancies of this partnership
      */
     getLowerNeighbors: function() {
-        return this.getChildren();
+        return this.getPregnancies();
     },
 
     /*
@@ -201,7 +238,45 @@ var Partnership = Class.create(AbstractNode, {
         return this.getPartners();
     },
 
+    /*
+     * Returns true if someNode can be a child of this partnership
+     */
     canBeParentOf: function(someNode) {
         return (this.getPartners()[0].canBeParentOf(someNode) && this.getPartners()[1].canBeParentOf(someNode));
+    },
+
+    /*
+     * Creates a placeholder child for this partnership, if it has no children
+     */
+    restorePlaceholders: function() {
+        if(!this.getPartners()[0].getChildlessStatus() &&
+           !this.getPartners()[1].getChildlessStatus() &&
+            this.getChildren().length == 0) {
+            this.createChild('PlaceHolder', 'U')
+        }
+    },
+
+    /*
+     * Returns a list of pregnancies with only a PlaceHolder child.
+     */
+    getPlaceHolderPregnancies: function() {
+        var pregnancies = [];
+        this.getPregnancies().each(function(pregnancy) {
+            pregnancy.isPlaceHolderPregnancy() && pregnancies.push(pregnancy);
+        });
+        return pregnancies;
+    },
+
+    /*
+     * Returns an object (to be accepted by the menu) with information about this Person
+     */
+    getSummary: function() {
+        return {
+            identifier:    {value : this.getID()},
+            childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none'},
+            childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none'}
+        };
     }
 });
+
+Partnership.addMethods(ChildlessBehavior);

@@ -27,7 +27,7 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
         shape.attr("cursor", "pointer");
         shape.ox = shape.getBBox().x;
         shape.oy = shape.getBBox().y;
-        shape.flatten().insertAfter(editor.getProband().getGraphics().getAllGraphics().flatten());
+        shape.flatten().insertAfter(editor.getGraph().getProband().getGraphics().getAllGraphics().flatten());
     },
 
     /*
@@ -49,21 +49,21 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
                 absOy = me.getY();
                 isDragged = false;
                 me.getShapes().toFront();
-                editor.enterHoverMode(me.getNode());
+                editor.getGraph().setCurrentDraggable(me.getNode());
+                editor.getGraph().enterHoverMode(me.getNode(), ["Person"]);
             }
         };
 
         //Called when the placeholder is dragged
         var move = function(dx, dy) {
-            dx = dx/editor.zoomCoefficient;
-            dy = dy/editor.zoomCoefficient;
+            dx = dx/editor.getWorkspace().zoomCoefficient;
+            dy = dy/editor.getWorkspace().zoomCoefficient;
             if(!me.isAnimating) {
                 me.setPos(absOx + dx, absOy + dy);
                 ox = dx;
                 oy = dy;
                 if(dx > 2 || dx < -2 || dy > 2 || dy < -2 ) {
                     isDragged = true;
-                    editor.currentDraggable.placeholder = me.getNode();
                 }
             }
         };
@@ -73,10 +73,9 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
             if(!me.isAnimating){
                 if(isDragged) {
                     draggable = false;
-                    var node = editor.currentHoveredNode;
-                    var vp = editor.validPlaceholderNode;
-                    editor.validPlaceholderNode = false;
-                    if(node && vp) {
+                    var node = me.getNode().validHoveredNode;
+                    me.getNode().validHoveredNode = null;
+                    if(node) {
                         me.getNode().merge(node);
                     }
                     else {
@@ -90,13 +89,12 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
                 }
                 else {
                     me.setPos(absOx, absOy, false);
-                    me.getNode().convertToPerson();
+                    me.getNode().convertTo("Person", me.getNode().getGender());
                 }
-                editor.exitHoverMode();
-                editor.currentDraggable.placeholder = null;
+                editor.getGraph().exitHoverMode();
+                editor.getGraph().setCurrentDraggable(null);
             }
         };
-
         //Adds dragging capability to the genderSymbols
         me.getGenderSymbol().drag(move, start, end);
     }

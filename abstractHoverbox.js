@@ -112,7 +112,7 @@ var AbstractHoverbox = Class.create({
         icon.transform(["t" , x , y, "s", iconScale, iconScale, 0, 0]);
         var mask = editor.getPaper().rect(icon.getBBox().x, icon.getBBox().y,
             icon.getBBox().width, icon.getBBox().height, 1);
-        mask.attr({fill: 'gray', opacity: 0}).transform("s1.5");
+        mask.attr({fill: 'gray', opacity: 0, "stroke-width" : 0}).transform("s1.5");
 
         var button = editor.getPaper().set(mask, icon).click(onClick);
         button.mousedown(function(){mask.attr(editor.attributes.btnMaskClick)});
@@ -127,6 +127,37 @@ var AbstractHoverbox = Class.create({
         });
         button.icon = icon;
         return button;
+    },
+
+    /**
+     * Creates and returns a show-menu button. Returns Raphael set.
+     */
+    generateMenuBtn: function() {
+        var me = this;
+        var action = function() {
+            me.toggleMenu(!me.isMenuToggled());
+        };
+        var path = "M2.021,9.748L2.021,9.748V9.746V9.748zM2.022,9.746l5.771,5.773l-5.772,5.771l2.122,2.123l7.894-7.895L4.143,7.623L2.022,9.746zM12.248,23.269h14.419V20.27H12.248V23.269zM16.583,17.019h10.084V14.02H16.583V17.019zM12.248,7.769v3.001h14.419V7.769H12.248z";
+        var attributes = editor.attributes.menuBtnIcon;
+        var x = this.getX() + this.getWidth() - 18 - this.getWidth()/40;
+        var y = this.getY() + this.getHeight()/40;
+        var className = "menu-trigger";
+        return this.createButton(x, y, path, attributes, action, className);
+    },
+
+    /**
+     * Creates and returns a delete button (big red X). Returns Raphael set.
+     */
+    generateDeleteBtn: function() {
+        var me = this;
+        var action = function() {
+            me.getNode().remove(true);
+        };
+        var path = "M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z";
+        var attributes = editor.attributes.deleteBtnIcon;
+        var x = this.getX() + this.getWidth()/40;
+        var y = this.getY() + this.getHeight()/40;
+        return this.createButton(x, y, path, attributes, action);
     },
 
     /*
@@ -185,12 +216,18 @@ var AbstractHoverbox = Class.create({
             connection = editor.getPaper().path(path).attr({"stroke-width": 4, stroke: "gray"}),
             orbRadius = editor.attributes.radius/7,
             orbHue = editor.attributes.orbHue,
-            orb = generateOrb(editor.getPaper(), orbX, orbY, orbRadius, orbHue).attr("cursor", "pointer"),
-            handle = editor.getPaper().set().push(connection, orb),
-            hasEnded = true,
+            orb = generateOrb(editor.getPaper(), orbX, orbY, orbRadius*1.1, orbHue).attr("cursor", "pointer");
+
+            var handle = editor.getPaper().set().push(connection, orb),
+                hasEnded = true,
+                hoverTypes = ["Person"],
             me = this;
         handle.type = type;
         connection.oPath = path;
+
+        if(type == 'parent') {
+            hoverTypes.push("Partnership")
+        }
 
         var start = function() {
 //            if(!hasEnded) {
@@ -206,21 +243,20 @@ var AbstractHoverbox = Class.create({
             orb.oy = orb[0].attr("cy");
             connection.ox = connection.oPath[1][1];
             connection.oy = connection.oPath[1][2];
-            editor.currentDraggable.node = me.getNode();
-            editor.currentDraggable.handle = type;
             handle.isDragged = false;
-            editor.enterHoverMode(me.getNode());
+            editor.getGraph().setCurrentDraggable(handle);
+            editor.getGraph().enterHoverMode(me.getNode(), hoverTypes);
             me._activeHandles++;
         };
         var move = function(dx, dy) {
-            dx = dx/editor.zoomCoefficient;
-            dy = dy/editor.zoomCoefficient;
+            dx = dx/editor.getWorkspace().zoomCoefficient;
+            dy = dy/editor.getWorkspace().zoomCoefficient;
             orb.attr("cx", orb.ox + dx);
             orb.attr("cy", orb.oy + dy);
             connection.oPath[1][1] = connection.ox + dx;
             connection.oPath[1][2] = connection.oy + dy;
             connection.attr("path", connection.oPath);
-            if(dx > 5 || dx < -5 || dy > 5 || dy < -5 ) {
+            if(dx > 1 || dx < 1 || dy > 1 || dy < -1 ) {
                 handle.isDragged = true;
             }
         };
@@ -229,17 +265,26 @@ var AbstractHoverbox = Class.create({
 //                return;
 //            }
             //document.stopObserving('mousedown', catchRightClick);
-            editor.exitHoverMode();
-            orb.animate({"cx": orb.ox, "cy": orb.oy}, +handle.isDragged * 1000, "elastic",
-                function() {
-                    me._activeHandles--;
-                    if(me._activeHandles == 0) {
-                        me.enable();
-                        handle.isDragged && me.animateHideHoverZone();
-                        hasEnded = true;
-                        handle.isDragged = false;
-                    }
-                });
+            editor.getGraph().exitHoverMode();
+            if(handle.isDragged){
+                orb.animate({"cx": orb.ox, "cy": orb.oy}, + handle.isDragged * 1000, "elastic",
+                    function() {
+                        me._activeHandles--;
+                        if(me._activeHandles == 0) {
+                            me.enable();
+                            me.animateHideHoverZone();
+                            hasEnded = true;
+                            handle.isDragged = false;
+                        }
+                    });
+            }
+            else {
+                me._activeHandles--;
+                if(me._activeHandles == 0) {
+                    me.enable();
+                    hasEnded = true;
+                }
+            }
             me.handleAction(handle.type, handle.isDragged);
             connection.oPath[1][1] = connection.ox;
             connection.oPath[1][2] = connection.oy;
@@ -247,8 +292,19 @@ var AbstractHoverbox = Class.create({
         };
 
         orb.drag(move, start, end);
+        orb.hover(function() {
+                orb[0].attr({fill: "r(.5,.9)hsb(" + (orbHue + .36) + ", 1, .75)-hsb(" + (orbHue + .36) + ", .5, .25)", stroke: "none"});
+                //orb[0].attr({fill: "r(.5,.9)hsb(" + orbHue +.7 + ", 1, .75)-hsb(" + orbHue + .7 + ", .5, .25)"})
+            },
+            function () {
+                orb[0].attr({fill: "r(.5,.9)hsb(" + orbHue + ", 1, .75)-hsb(" + orbHue + ", .5, .25)"})
+            });
         this._orbs.push(orb);
         this._connections.push(connection);
+
+        handle.getType = function() {
+            return type;
+        };
         return handle;
     },
 
@@ -258,41 +314,60 @@ var AbstractHoverbox = Class.create({
      * @param handleType can be either "child", "partner" or "parent"
      */
     handleAction : function(handleType, isDrag) {
-        if(isDrag) {
-            if(editor.currentHoveredNode && editor.currentHoveredNode.validPartnerSelected) {
-                editor.currentHoveredNode.validPartnerSelected = false;
-                this.getNode().addPartner(editor.currentHoveredNode);
+        var curHovered = editor.getGraph().getCurrentHoveredNode();
+        if(isDrag && curHovered) {
+            if(curHovered.validPartnerSelected) {
+                curHovered.validPartnerSelected = false;
+                this.getNode().addPartner(curHovered);
             }
-            else if(editor.currentHoveredNode && editor.currentHoveredNode.validChildSelected) {
-                    editor.currentHoveredNode.validChildSelected = false;
-                this.getNode().addChild(editor.currentHoveredNode);
+            else if(curHovered.validChildSelected) {
+                curHovered.validChildSelected = false;
+                this.getNode().addChild(curHovered);
 
             }
-            else if(editor.currentHoveredNode && editor.currentHoveredNode.validParentSelected) {
-                editor.currentHoveredNode.validParentSelected = false;
-                this.getNode().addParent(editor.currentHoveredNode);
+            else if(curHovered.validParentSelected) {
+                curHovered.validParentSelected = false;
+                this.getNode().addParent(curHovered);
             }
-            else if(editor.currentHoveredNode && editor.currentHoveredNode.validParentsSelected) {
-                editor.currentHoveredNode.validParentsSelected = false;
-                this.getNode().addParents(editor.currentHoveredNode);
+            else if(curHovered.validParentsSelected) {
+                curHovered.validParentsSelected = false;
+                this.getNode().addParents(curHovered);
             }
         }
-        else {
+        else if (!isDrag) {
             if(handleType == "partner") {
                 this.getNode().createPartner(false);
             }
             else if(handleType == "child") {
-                this.getNode().createChild();
-                // TODO compute correct position of the handle's orb, then show the options bubble
-                // var position = editor.getAbsoluteCoordinates(this.getNode().getX(), (this.getNode().getY() + editor.attributes.radius * 1.6));
-                // editor.nodeTypeOptions.show(this.getNode(), position.x, position.y);
+                //this.getNode().createChild();
+                var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + editor.attributes.radius * 2.3));
+                editor.getNodeTypeOptions().show(this.getNode(), position.x, position.y);
+                this.disable();
             }
             else if(handleType == "parent") {
                 this.getNode().createParents();
             }
-            editor.currentHoveredNode && editor.currentHoveredNode.getGraphics().getHoverBox().getBoxOnHover().attr(editor.attributes.boxOnHover);
+            curHovered && curHovered.getGraphics().getHoverBox().getBoxOnHover().attr(editor.attributes.boxOnHover);
         }
-        editor.currentHoveredNode =  editor.currentDraggable.node = editor.currentDraggable.handle = null;
+        editor.getGraph().setCurrentHoveredNode(null);
+        editor.getGraph().setCurrentDraggable(null);
+    },
+
+    /*
+     * Hides the child handle
+     */
+    hideChildHandle: function() {
+        this.getCurrentHandles().exclude(this._downHandle.hide());
+    },
+
+    /*
+     * Unhides the child handle
+     */
+    unhideChildHandle: function() {
+        if(this.isHovered() || this.isMenuToggled()) {
+            this._downHandle.show();
+        }
+        (!this.getCurrentHandles().contains(this._downHandle)) && this.getCurrentHandles().push(this._downHandle);
     },
 
     /*
@@ -350,5 +425,11 @@ var AbstractHoverbox = Class.create({
         this.disable();
         this.getBackElements().remove();
         this.getFrontElements().remove();
+    },
+
+    onWidgetHide: function() {
+        this._isMenuToggled = false;
+        !this.isHovered() && this.animateHideHoverZone();
+        this.enable();
     }
 });

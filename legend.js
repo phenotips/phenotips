@@ -1,17 +1,17 @@
-var Legend = Class.create( {
-
-
 /*
- * Class responsible for keeping track of disorders on canvas and their properties.
+ * Class responsible for keeping track of disorders and their properties.
  * This information is graphically displayed in a 'Legend' box
  */
+
+var Legend = Class.create( {
+
     initialize: function() {
         this._disorders = new Hash({});
         this._evaluations = {};
         this._disorderColors = new Hash({});
 
         this._legendBox = new Element('div', {'class' : 'legend-box', id: 'legend-box'});
-        editor.workspace.insert(this._legendBox);
+        editor.getWorkspace().getWorkArea().insert(this._legendBox);
         this._legendBox.setOpacity(0);
 
         var legendTitle= new Element('h2', {'class' : 'legend-title'}).update('Key');
@@ -26,6 +26,7 @@ var Legend = Class.create( {
         Element.observe(this._legendBox, 'mouseout', function() {
             $$('.menu-box').invoke('setOpacity', 1);
         });
+        Droppables.add(editor.getWorkspace().canvas, {accept: 'disorder', onDrop: this._onDropDisorder.bind(this)});
     },
 
     /*
@@ -222,5 +223,18 @@ var Legend = Class.create( {
           ghosting: true
         });
         return item;
-    }
+    },
+
+    _onDropDisorder: function(disorder, target, event) {
+        var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
+        var pos = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
+        var node = editor.getNodeIndex().getNodeNear(pos.x, pos.y);
+        console.log(node);
+        if (node && node.getType() == 'Person') {
+            var disorderObj = {};
+            disorderObj.id = disorder.id.substring( disorder.id.indexOf('-') + 1);
+            disorderObj.value = disorder.down('.disorder-name').firstChild.nodeValue;
+            node.addDisorder(disorderObj, true);
+        }
+    },
 });

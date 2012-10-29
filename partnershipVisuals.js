@@ -11,8 +11,10 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, partnership, x, y) {
         $super(partnership, x,y);
-        this._junctionShape = editor.getPaper().circle(x,y, editor.attributes.junctionRadius).attr({fill: '#EA5E48', stroke: 'black', 'stroke-width':2});
-        this._junctionShape.insertBefore(editor.getProband().getGraphics().getAllGraphics().flatten());
+        this._childlessShape = null;
+        this._childlessStatusLabel = null;
+        this._junctionShape = editor.getPaper().circle(x,y, editor.attributes.partnershipRadius).attr({fill: '#EA5E48', stroke: 'black', 'stroke-width':2});
+        this._junctionShape.insertBefore(editor.getGraph().getProband().getGraphics().getAllGraphics().flatten());
 
         //TODO: find out whether there is an arc
         this._connections = [null, null];
@@ -20,7 +22,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         me.getNode().getPartners().each(function(partner) {
             me.updatePartnerConnection(partner, partner.getX(), partner.getY(), x, y);
         });
-        this._hoverbox = new PartnershipHoverbox(partnership, x, y, this.getShapes());
+        this._hoverBox = new PartnershipHoverbox(partnership, x, y, this.getShapes());
         this.area = null;
         this._idLabel = editor.getPaper().text(x, y-20, editor.DEBUG_MODE ? partnership.getID() : "").attr(editor.attributes.dragMeLabel).insertAfter(this._junctionShape.flatten());
     },
@@ -30,10 +32,6 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         this.area.attr({'fill': '#587498', stroke: 'none'});
         this.area.ot = this.area.transform();
         this.area.animate(Raphael.animation({transform : "...S2"}, 400, 'bounce'));
-    },
-
-    getHoverBox: function() {
-        return this._hoverbox;
     },
 
     /*
@@ -99,7 +97,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      * @animate set to true if you want to animate a transition to the new location
      */
     updateChildConnection: function(child, childX, childY, junctionX, junctionY, animate) {
-        var radius = (child.getGender() == "U") ? editor.attributes.radius * (Math.sqrt(6)/2) : child.getGraphics().getRadius();
+        var radius = (child.getGender && child.getGender() == "U") ? editor.attributes.radius * (Math.sqrt(6)/2) : child.getGraphics().getRadius();
         var topCoordinate = childY - radius;
         var xDistance = (childX - junctionX);
         var yDistance = (childY - junctionY)/2;
@@ -133,8 +131,8 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             me._absoluteY = y;
         };
 
-        this.getNode().getChildren().each(function(child) {
-            me.updateChildConnection(child, child.getX(), child.getY(), x, y,  animate)
+        this.getNode().getPregnancies().each(function(pregnancy) {
+            me.updateChildConnection(pregnancy, pregnancy.getX(), pregnancy.getY(), x, y,  animate)
         });
 
         me.getNode().getPartners().each(function(partner) {
@@ -159,6 +157,8 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         this.getConnections()[0].remove();
         this.getConnections()[1].remove();
         this.getHoverBox().remove();
+        this.getChildlessShape() && this.getChildlessShape().remove();
+        this.getChildlessStatusLabel() && this.getChildlessStatusLabel().remove();
     },
 
     /*
@@ -171,7 +171,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     getConnectionAttributes: function(node, type) {
         var attr = {"stroke-width": 2};
         (type == 'partner') ? attr.stroke = '#2E2E56' : attr.stroke = '#2E2E56';
-        (node.getType() == "ph") && (attr['stroke-dasharray'] = '- ');
+        (node.getType() == "PlaceHolder") && (attr['stroke-dasharray'] = '- ');
         return attr;
     },
 
@@ -183,3 +183,5 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         return editor.getPaper().set(this.getHoverBox().getBackElements(), this._idLabel).concat($super()).push(this.getHoverBox().getFrontElements());
     }
 });
+
+PartnershipVisuals.addMethods(ChildlessBehaviorVisuals);

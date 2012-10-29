@@ -21,6 +21,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         var radius = editor.attributes.radius * 2;
         $super(personNode, centerX - radius, centerY - radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);
         this._isMenuToggled = false;
+        var r = editor.attributes.radius;
     },
 
     /**
@@ -40,37 +41,6 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         var buttons = $super().push(this.generateMenuBtn());
         (!this.getNode().isProband()) && buttons.push(this.generateDeleteBtn());
         return buttons;
-    },
-
-    /**
-     * Creates and returns a delete button (big red X). Returns Raphael set.
-     */
-    generateDeleteBtn: function() {
-        var me = this;
-        var action = function() {
-            me.getNode().remove(true);
-        };
-        var path = "M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z";
-        var attributes = editor.attributes.deleteBtnIcon;
-        var x = this.getX() + editor.attributes.radius * 0.05;
-        var y = this.getY() + editor.attributes.radius * 0.1;
-        return this.createButton(x, y, path, attributes, action);
-    },
-
-    /**
-     * Creates and returns a show-menu button. Returns Raphael set.
-     */
-    generateMenuBtn: function() {
-        var me = this;
-        var action = function() {
-            me.toggleMenu(!me.isMenuToggled());
-        };
-        var path = "M2.021,9.748L2.021,9.748V9.746V9.748zM2.022,9.746l5.771,5.773l-5.772,5.771l2.122,2.123l7.894-7.895L4.143,7.623L2.022,9.746zM12.248,23.269h14.419V20.27H12.248V23.269zM16.583,17.019h10.084V14.02H16.583V17.019zM12.248,7.769v3.001h14.419V7.769H12.248z";
-        var attributes = editor.attributes.menuBtnIcon;
-        var x = this.getX() + this.getWidth() - editor.attributes.radius * 0.55;
-        var y = this.getY() + editor.attributes.radius * 0.1;
-        var className = "menu-trigger";
-        return this.createButton(x, y, path, attributes, action, className);
     },
 
     /*
@@ -143,12 +113,12 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
             var optBBox = this.getBoxOnHover().getBBox();
             var x = optBBox.x2;
             var y = optBBox.y;
-            var position = editor.canvasToDiv(x+5, y);
-            editor.nodeMenu.show(this.getNode(), position.x, position.y);
+            var position = editor.getWorkspace().canvasToDiv(x+5, y);
+            editor.getNodeMenu().show(this.getNode(), position.x, position.y);
         }
         else {
             //this.enable();
-            editor.nodeMenu.hide();
+            editor.getNodeMenu().hide();
         }
     },
 
@@ -157,7 +127,13 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      */
     animateHideHoverZone: function($super) {
         if(!this.isMenuToggled()){
+            this.getNode().getParentPregnancy() && this.getNode().getParentPregnancy().getGraphics().shrink();
             $super();
         }
+    },
+
+    animateDrawHoverZone: function($super) {
+        this.getNode().getParentPregnancy() && this.getNode().getParentPregnancy().getGraphics().grow();
+        $super();
     }
 });

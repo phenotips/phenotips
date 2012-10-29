@@ -1,6 +1,6 @@
 NodeMenu = Class.create({
     initialize : function(data) {
-        this.canvas = editor.canvas || $('body');
+        this.canvas = editor.getWorkspace().canvas || $('body');
         var menuBox = this.menuBox = new Element('div', {'class' : 'menu-box'});
 
         this.closeButton = new Element('span', {'class' : 'close-button'}).update('×');
@@ -22,7 +22,7 @@ NodeMenu = Class.create({
 
         // Insert in document
         this.hide();
-        editor.workspace.insert(this.menuBox);
+        editor.getWorkspace().getWorkArea().insert(this.menuBox);
 
         // Attach pickers
         // date
@@ -79,7 +79,6 @@ NodeMenu = Class.create({
              colorBubble.setStyle({background : color});
           });
         }.bind(this);
-        var _this = this;
         document.observe('disorder:color', function(event) {
            if (!event.memo || !event.memo.id || !event.memo.color) {
              return;
@@ -92,7 +91,8 @@ NodeMenu = Class.create({
     _generateEmptyField : function (data) {
         var result = new Element('div', {'class' : 'field-box field-' + data.name});
         var label = new Element('label', {'class' : 'field-name'}).update(data.label);
-        result.insert(label);
+        result.inputsContainer = new Element('div', {'class' : 'field-inputs'});
+        result.insert(label).insert(result.inputsContainer);
         this.fieldMap[data.name] = {
             'type' : data.type,
             'element' : result,
@@ -118,11 +118,37 @@ NodeMenu = Class.create({
       });
     },
 
+    _attachDependencyBehavior : function(field, data) {
+        if (data.dependency) {
+            var dependency = data.dependency.split(' ', 3);
+            var element = this.fieldMap[dependency[0]].element;
+            dependency[0] = this.form[dependency[0]];
+            element.inputsContainer.insert(field.up());
+            this._updatedDependency(field, dependency);
+            dependency[0].observe('change', function() {
+                this._updatedDependency(field, dependency);
+                field.value = '';
+            }.bindAsEventListener(this));
+            return true;
+        }
+    },
+
+    _updatedDependency : function (field, dependency) {
+        switch (dependency[1]) {
+            case '!=':
+                field.disabled =  (dependency[0].value == dependency[2]);
+                break;
+            default:
+                field.disabled =  (dependency[0].value == dependency[2]);
+                break;
+        }
+    },
+
     _generateField : {
         'radio' : function (data) {
             var result = this._generateEmptyField(data);
             var values = new Element('div', {'class' : 'field-values'});
-            result.insert(values);
+            result.inputsContainer.insert(values);
             var _this = this;
             var _generateRadioButton = function(v) {
                 var radioLabel = new Element('label', {'class' : data.name + '_' + v.actual}).update(v.displayed);
@@ -131,6 +157,7 @@ NodeMenu = Class.create({
                 radioButton._getValue = function() { return [this.value, true]; }.bind(radioButton);
                 values.insert(radioLabel);
                 _this._attachFieldEventListeners(radioButton, ['click']);
+                _this._attachDependencyBehavior(radioButton, data);
             };
             data.values.each(_generateRadioButton);
             
@@ -148,9 +175,14 @@ NodeMenu = Class.create({
         'text' : function (data) {
             var result = this._generateEmptyField(data);
             var text = new Element('input', {type: 'text', name: data.name});
-            result.insert(text);
+            if (data.tip) {
+                text.placeholder = data.tip;
+            }
+            result.inputsContainer.insert(text);
+            text.wrap('span');
             text._getValue = function() { return [this.value, true]; }.bind(text);
             this._attachFieldEventListeners(text, ['keypress', 'keyup'], [true]);
+            this._attachDependencyBehavior(text, data);
             return result;
         },
 
@@ -190,12 +222,15 @@ NodeMenu = Class.create({
         'select' : function (data) {
             var result = this._generateEmptyField(data);
             var select = new Element('select', {'name' : data.name});
-            result.insert(select);
+            result.inputsContainer.insert(select);
+            select.wrap('span');
             var _generateSelectOption = function(v) {
               var option = new Element('option', {'value' : v.actual}).update(v.displayed);
               select.insert(option);
             };
-            _generateSelectOption({'actual' : '', displayed : '-'});
+            if(data.nullValue) {
+                _generateSelectOption({'actual' : '', displayed : '-'});
+            }
             if (data.values) {
                 data.values.each(_generateSelectOption);
             } else if (data.range) {
@@ -218,10 +253,12 @@ NodeMenu = Class.create({
       return !!this.targetNode;
     },
     hide : function() {
-      if (!this.menuBox.hasClassName('hidden')) {
-        Event.fire(document, 'nodemenu:hiding', {node : this.targetNode});
-        this.targetNode && delete this.targetNode;
-        this.menuBox.addClassName('hidden');
+      if (this.isActive()) {
+          if (this.targetNode) {
+              this.targetNode.onWidgetHide();
+              delete this.targetNode;
+          }
+        this.menuBox.hide();
         this._clearCrtData();
         this.menuBox.style.height = '';
         this.menuBox.style.overflow = '';
@@ -259,7 +296,7 @@ NodeMenu = Class.create({
         this.hide();
         this.targetNode = node;
         this._setCrtData(node.getSummary());
-        this.menuBox.removeClassName('hidden');
+        this.menuBox.show();
         this._x = x; this._y = y;
         this.reposition();
     },
@@ -278,6 +315,7 @@ NodeMenu = Class.create({
             _this.fieldMap[name].inactive = (data && data[name] && (typeof(data[name].inactive) == 'boolean' || typeof(data[name].inactive) == 'object')) ? data[name].inactive : _this.fieldMap[name].inactive;
             _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
             _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
+            //this._updatedDependency(_this.fieldMap[name].element, _this.fieldMap[name].element);
         });
     },
     _setFieldValue : {
@@ -359,6 +397,40 @@ NodeMenu = Class.create({
         },
         'text' : function (container, inactive) {
             this._toggleFieldVisibility(container, inactive);
+        },
+        'date-picker' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
+        'disease-picker' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
+        'select' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
+        'hidden' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        }
+    },
+
+    _setFieldDisabled : {
+        'radio' : function (container, inactive) {
+            if (inactive === true) {
+              container.addClassName('hidden');
+            } else {
+              container.removeClassName('hidden');
+              var hasInactiveList = inactive && (typeof(inactive.indexOf) == 'function');
+              container.select('input[type=radio]').each(function(item) {
+                  item.disabled = hasInactiveList && (inactive.indexOf(item.value) >= 0);
+              });
+            }
+        },
+        'checkbox' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
+        'text' : function (container, disabled) {
+            container.descendants().each(function(item) {
+                item.disabled = disabled;
+            });
         },
         'date-picker' : function (container, inactive) {
             this._toggleFieldVisibility(container, inactive);

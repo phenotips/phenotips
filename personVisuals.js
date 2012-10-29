@@ -13,20 +13,15 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._nameLabel = null;
         this._stillBirthLabel = null;
         this._ageLabel = null;
+        this._childlessStatusLabel = null;
         this._disorderShapes = null;
         this._deadShape = null;
         this._adoptedShape = null;
         this._unbornShape = null;
+        this._childlessShape = null;
         this._isSelected = false;
         $super(node, x, y);
         this._hoverBox = new PersonHoverbox(node, x, y, this.getGenderSymbol());
-    },
-
-    /*
-     * Returns the PersonHoverbox object for this Person
-     */
-    getHoverBox: function() {
-        return this._hoverBox;
     },
 
     /*
@@ -69,13 +64,21 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             this.getGenderShape().attr("stroke-width", 5);
         }
         if(this.getHoverBox()) {
-            this._genderSymbol.flatten().insertAfter(this.getHoverBox().getBackElements().flatten());
+            this._genderSymbol.flatten().insertAfter(this.getBackElements().flatten());
         }
         else if (!this.getNode().isProband()) {
-            this._genderSymbol.flatten().insertAfter(editor.getProband().getGraphics().getAllGraphics().flatten());
+            this._genderSymbol.flatten().insertAfter(editor.getGraph().getProband().getGraphics().getAllGraphics().flatten());
         }
         this.updateDisorderShapes();
     },
+
+    /*
+     * Returns a Raphaël set of all elements that are behind the gender symbol
+     */
+    getBackElements: function() {
+        return this.getHoverBox().getBackElements().concat(editor.getPaper().set(this.getChildlessStatusLabel(), this.getChildlessShape()));
+    },
+
     /*
      * Updates the name label for this Person
      */
@@ -282,7 +285,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.getDeadShape() && this.getDeadShape().remove();
         this.getUnbornShape() && this.getUnbornShape().remove();
         this.setGenderSymbol();
-        (!this.getNode().getPartnerships()[0]) && this.getHoverBox().unhideChildHandle();
+        (!this.getNode().getPartnerships()[0]) && !this.getNode().getChildlessStatus() && this.getHoverBox().unhideChildHandle();
         this.getHoverBox().unhidePartnerHandles();
 
         if(status == 'deceased'){
@@ -360,18 +363,22 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * Moves the labels down to make space for the hoverbox
      */
     shiftLabels: function() {
-        var labels = this.getLabels();
-        for(var i = 0; i<labels.length; i++) {
-            labels[i].stop().animate({"y": labels[i].oy + editor.attributes.radius/1.5}, 200,">");
+        if(!this.getChildlessStatusLabel()) {
+            var labels = this.getLabels();
+            for(var i = 0; i<labels.length; i++) {
+                labels[i].stop().animate({"y": labels[i].oy + editor.attributes.radius/1.5}, 200,">");
+            }
         }
     },
     /*
      * Animates the labels of this node to their original position under the node
      */
     unshiftLabels: function() {
-        var labels = this.getLabels();
-        for(var i = 0; i<labels.length; i++) {
-            labels[i].stop().animate({"y": labels[i].oy}, 200,">");
+        if(!this.getChildlessStatusLabel()) {
+            var labels = this.getLabels();
+            for(var i = 0; i<labels.length; i++) {
+                labels[i].stop().animate({"y": labels[i].oy}, 200,">");
+            }
         }
     },
 
@@ -391,12 +398,13 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     drawLabels: function() {
         var labels = this.getLabels(),
-            yOffset = (this.isSelected()) ? editor.attributes.radius/1.5 : 0,
-            startY = this.getY() + editor.attributes.radius * 1.5 + yOffset;
+            selectionOffset = (this.isSelected() && !this.getChildlessStatusLabel()) ? editor.attributes.radius/1.5 : 0,
+            childlessOffset = (this.getChildlessStatusLabel()) ? editor.attributes.radius/2 : 0,
+            startY = this.getY() + editor.attributes.radius * 1.7 + selectionOffset + childlessOffset;
         for (var i = 0; i < labels.length; i++) {
             labels[i].attr("y", startY + 11);
             labels[i].attr(editor.attributes.label);
-            labels[i].oy = (labels[i].attr("y") - yOffset);
+            labels[i].oy = (labels[i].attr("y") - selectionOffset);
             startY = labels[i].getBBox().y2;
         }
         labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
@@ -408,6 +416,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     getShapes: function($super) {
         var lifeStatusShapes = editor.getPaper().set();
         this.getUnbornShape() && lifeStatusShapes.push(this.getUnbornShape());
+        this.getChildlessShape() && lifeStatusShapes.push(this.getChildlessShape());
+        this.getChildlessStatusLabel() && lifeStatusShapes.push(this.getChildlessStatusLabel());
         this.getDeadShape() && lifeStatusShapes.push(this.getDeadShape());
         this.getAdoptedShape() && lifeStatusShapes.push(this.getAdoptedShape());
         return $super().concat(editor.getPaper().set(this.getDisorderShapes(), lifeStatusShapes));
@@ -452,3 +462,5 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         $super(x, y)
     }
 });
+
+PersonVisuals.addMethods(ChildlessBehaviorVisuals);

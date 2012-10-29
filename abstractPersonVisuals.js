@@ -10,32 +10,28 @@
 var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, node, x, y) {
-        this._genderSymbol = null;
-        this._genderShape = null;
+        this._icon = null;
         this._radius = editor.attributes.radius;
         $super(node, x, y);
         this._width = editor.attributes.radius * 4;
-        this.setGenderSymbol();
+        this.setIcon();
         this._highlightBox = editor.getPaper().rect(this.getX()-(this._width/2), this.getY()-(this._width/2),
             this._width, this._width, 5).attr(editor.attributes.boxOnHover);
         this._highlightBox.attr({fill: 'black', opacity: 0, 'fill-opacity': 0});
-        this._highlightBox.insertBefore(this.getGenderSymbol().flatten());
-        this._idLabel = editor.getPaper().text(x, y,  editor.DEBUG_MODE ? node.getID() : "").attr(editor.attributes.dragMeLabel).insertAfter(this._genderSymbol.flatten());
+        this._highlightBox.insertBefore(this.getIcon().flatten());
+        this._idLabel = editor.getPaper().text(x, y,  editor.DEBUG_MODE ? node.getID() : "").attr(editor.attributes.dragMeLabel).insertAfter(this._icon.flatten());
     },
 
     /*
      * Returns the Raphael element representing the gender of the node.
      */
-    getGenderSymbol: function() {
-        return this._genderSymbol;
+    getIcon: function() {
+        return this._icon;
     },
 
-    /*
-     * Removes the current Raphael element or set representing the gender of the node, and
-     * replaces it with the one passed in the parameter.
-     *
-     * @param: shape a Raphael element or set
-     */
+    setIcon: function($super) {
+        this.setGenderSymbol();
+    },
 
     /*
      * Changes the position of the node to (X,Y)
@@ -50,7 +46,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         this.getNode().getPartnerships().each(function(partnership) {
             partnership.getGraphics().updatePartnerConnection(me.getNode(), x, y, partnership.getX(), partnership.getY(),  animate);
         });
-        var p = this.getNode().getParentPartnership();
+        var p = this.getNode().getParentPregnancy();
         p && p.getGraphics().updateChildConnection(this.getNode(), x, y, p.getX(), p.getY(), animate);
 
         if(animate){
@@ -73,6 +69,55 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         var me = this;
         me._absoluteX = x;
         me._absoluteY = y;
+    },
+
+    /*
+     * Returns the distance from the center of the genderSymbol to the rightmost point of the shape.
+     */
+    getRadius: function() {
+        return this._radius;
+    },
+
+    /*
+     * Returns the box around the element that appears when the node is highlighted
+     */
+    getHighlightBox: function() {
+        return this._highlightBox;
+    },
+
+    /*
+     * Displays the highlightBox around the node
+     */
+    highlight: function() {
+        this.getHighlightBox().attr({"opacity": .5, 'fill-opacity':.5});
+    },
+
+    /*
+     * Hides the highlightBox around the node
+     */
+    unHighlight: function() {
+        this.getHighlightBox().attr({"opacity": 0, 'fill-opacity':0});
+    },
+
+    /*
+     * Returns a Raphael set or element that contains the graphics associated with this node, excluding the labels.
+     */
+    getShapes: function($super) {
+        return $super().push(this.getIcon());
+    },
+
+    /*
+     * Returns a Raphael set or element that contains all the graphics and labels associated with this node.
+     */
+    getAllGraphics: function($super) {
+        return editor.getPaper().set(this.getHighlightBox(), this._idLabel).concat($super());
+    },
+
+    /*
+     * Returns the Raphael element representing the gender of the node.
+     */
+    getGenderSymbol: function() {
+        return this._genderSymbol;
     },
 
     /*
@@ -110,54 +155,13 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         this.getGenderSymbol() && this.getGenderSymbol().remove();
         this._genderSymbol = editor.getPaper().set(shadow, shape);
 
-        var p = this.getNode().getParentPartnership();
+        var p = this.getNode().getParentPregnancy();
         p && p.getGraphics().updateChildConnection(this.getNode(), this.getX(), this.getY(), p.getX(), p.getY());
 
         var me = this;
         this.getNode().getPartnerships().each(function(partnership) {
             partnership.getGraphics().updatePartnerConnection(me.getNode(), me.getX(), me.getY(), partnership.getX(), partnership.getY());
-        })
-    },
-
-    /*
-     * Returns the distance from the center of the genderSymbol to the rightmost point of the shape.
-     */
-    getRadius: function() {
-        return this._radius;
-    },
-
-    /*
-     * Returns the box around the element that appears when the node is highlighted
-     */
-    getHighlightBox: function() {
-        return this._highlightBox;
-    },
-
-    /*
-     * Displays the highlightBox around the node
-     */
-    highlight: function() {
-        this.getHighlightBox().attr({"opacity": .5, 'fill-opacity':.5});
-    },
-
-    /*
-     * Hides the highlightBox around the node
-     */
-    unHighlight: function() {
-        this.getHighlightBox().attr({"opacity": 0, 'fill-opacity':0});
-    },
-
-    /*
-     * Returns a Raphael set or element that contains the graphics associated with this node, excluding the labels.
-     */
-    getShapes: function($super) {
-        return $super().push(this.getGenderSymbol());
-    },
-
-    /*
-     * Returns a Raphael set or element that contains all the graphics and labels associated with this node.
-     */
-    getAllGraphics: function($super) {
-        return editor.getPaper().set(this.getHighlightBox(), this._idLabel).concat($super());
+        });
+        this._icon = this._genderSymbol;
     }
 });
