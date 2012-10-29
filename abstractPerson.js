@@ -123,7 +123,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      *  this node. OMIT this parameter. It is used for internal functionality.
      */
     setGender: function(gender, visitedNodes) {
-        var visited = (visitedNodes) ? visitedNodes : [];
+        var visited = (visitedNodes instanceof Array) ? visitedNodes : [];
         visited.push(this);
         if(!this.getParentPregnancy().isGenderLocked()) {
             if(this.getPartners().length == 0) {
