@@ -67,14 +67,21 @@ var Pregnancy = Class.create(AbstractNode, {
     /*
      * Returns an array of nodes that are children of this Pregnancy
      *
-     * @param type can filter the array to the specified type (eg. "PlaceHolder", "Person", etc)
+     * @param type can filter the array to the specified type (eg. "PlaceHolder", "Person", etc).
+     * Multiple types can be passed (eg. getChildren(type1, type2,...,typeN)
      */
     getChildren: function(type) {
-        if(this["_" + type + "Children"]) {
-            return this["_" + type + "Children"];
+        if(arguments.length == 0) {
+            return this._PlaceHolderChildren.concat(this._PersonGroupChildren, this._PersonChildren);
         }
         else {
-            return this._PlaceHolderChildren.concat(this._PersonChildren);
+            var children = [];
+            for(var i = 0; i < arguments.length; i++) {
+                if(this["_" + arguments[i] + "Children"]) {
+                    children = children.concat(this["_" + arguments[i] + "Children"]);
+                }
+            }
+            return children;
         }
     },
 

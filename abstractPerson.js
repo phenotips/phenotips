@@ -299,12 +299,14 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Returns an array of nodes that are children from all of this node's Partnerships.
      * The array can include PlaceHolders.
      *
-     * @param type can be "Person", "PersonGroup" or "PlaceHolder"
+     * @param type can be "Person", "PersonGroup" or "PlaceHolder".
+     * Multiple types can be passed (eg. getChildren(type1, type2,...,typeN)
      */
     getChildren: function(type) {
+        var args = arguments;
         var children = [];
         this.getPartnerships().each(function(partnership) {
-            children = children.concat(partnership.getChildren(type))
+            children = children.concat(partnership.getChildren(args))
         });
         return children;
     },

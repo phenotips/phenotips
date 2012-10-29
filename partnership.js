@@ -107,11 +107,13 @@ var Partnership = Class.create(AbstractNode, {
      * Returns an array of nodes that are children of this partnership
      *
      * @param type can filter the array to the specified type (eg. "PlaceHolder", "Person", etc)
+     * Multiple types can be passed (eg. getChildren(type1, type2,...,typeN)
      */
     getChildren: function(type) {
-        var children = [];
+        var args = arguments,
+            children = [];
         this.getPregnancies().each(function(pregnancy) {
-            children = children.concat(pregnancy.getChildren(type));
+            children = children.concat(pregnancy.getChildren(args));
         });
         return children;
     },
