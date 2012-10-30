@@ -126,12 +126,11 @@ var Pregnancy = Class.create(AbstractNode, {
      * @param someNode is an AbstractPerson
      */
     addChild: function(someNode) {
-        //TODO: figure out whether to remove placeholders as well
         if(someNode && this.canBeParentOf(someNode)) {
             this["_" + someNode.getType() + "Children"].push(someNode);
             someNode.setParentPregnancy(this);
             this.getGraphics().addChild(someNode);
-            this.setActive(someNode.getType() == 'Person');
+            this.updateActive()
             this.setGender(someNode.getGender());
         }
         return someNode;
@@ -151,7 +150,7 @@ var Pregnancy = Class.create(AbstractNode, {
             this.remove();
         }
         else {
-            this.setActive(child.getType() == "PlaceHolder");
+            this.updateActive();
         }
         return child;
     },
@@ -245,6 +244,11 @@ var Pregnancy = Class.create(AbstractNode, {
         }
     },
 
+    /*
+     * Toggles the pregnancy junction interactivity active and inactive
+     *
+     * @param isActive set to true if interacting with the junction is allowed
+     */
     setActive: function(isActive) {
         if(this._isActive != isActive) {
             this._isActive = isActive;
@@ -252,7 +256,17 @@ var Pregnancy = Class.create(AbstractNode, {
         }
     },
 
+    /*
+     * Returns true if the user can currently interactively add new children to this pregnancy
+     */
     isActive: function() {
         return this._isActive;
+    },
+
+    /*
+     * Checks whether the pregnancy junction should be active and updates the active status
+     */
+    updateActive: function() {
+        this.setActive(this.getChildren("PlaceHolder", "PersonGroup").length == 0);
     }
 });
