@@ -19,11 +19,16 @@
  */
 package edu.toronto.cs.cidb.tools;
 
-public interface FormElement {
-	final static int YES = 0;
-	final static int NO = 1;
+/**
+ * @version $Id$
+ */
+public interface FormElement
+{
+    int YES = 0;
 
-	public String getTitle();
+    int NO = 1;
 
-	public String display(DisplayMode mode, String fieldNames[]);
+    String getTitle();
+
+    String display(DisplayMode mode, String fieldNames[]);
 }

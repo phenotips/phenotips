@@ -22,32 +22,37 @@ package edu.toronto.cs.cidb.tools;
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.xml.XMLUtils;
 
-public class FormSubsection extends FormGroup {
-	private final String type;
+public class FormSubsection extends FormGroup
+{
+    private final String type;
 
-	FormSubsection(String title) {
-		this(title, "");
-	}
+    FormSubsection(String title)
+    {
+        this(title, "");
+    }
 
-	FormSubsection(String title, String type) {
-		super(title);
-		this.type = type;
-	}
+    FormSubsection(String title, String type)
+    {
+        super(title);
+        this.type = type;
+    }
 
-	@Override
-	public String getTitle() {
-		return this.title;
-	}
+    @Override
+    public String getTitle()
+    {
+        return this.title;
+    }
 
-	@Override
-	public String display(DisplayMode mode, String fieldNames[]) {
-		String displayedElements = super.display(mode, fieldNames);
-		if (StringUtils.isBlank(displayedElements)) {
-			return "";
-		}
-		return "<label class='section'>"
-				+ XMLUtils.escapeElementContent(this.title)
-				+ "</label><div class='subsection " + this.type + "'>"
-				+ displayedElements + "</div>";
-	}
+    @Override
+    public String display(DisplayMode mode, String fieldNames[])
+    {
+        String displayedElements = super.display(mode, fieldNames);
+        if (StringUtils.isBlank(displayedElements)) {
+            return "";
+        }
+        return "<label class='section'>"
+            + XMLUtils.escapeElementContent(this.title)
+            + "</label><div class='subsection " + this.type + "'>"
+            + displayedElements + "</div>";
+    }
 }

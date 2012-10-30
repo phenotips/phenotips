@@ -19,15 +19,23 @@
  */
 package edu.toronto.cs.cidb.tools;
 
-public abstract class AbstractFormElement implements FormElement {
-	protected final String title;
+/**
+ * Base class for implementing a {@link FormElement}.
+ * 
+ * @version $Id$
+ */
+public abstract class AbstractFormElement implements FormElement
+{
+    protected final String title;
 
-	AbstractFormElement(String title) {
-		this.title = title;
-	}
+    AbstractFormElement(String title)
+    {
+        this.title = title;
+    }
 
-	@Override
-	public String getTitle() {
-		return this.title;
-	}
+    @Override
+    public String getTitle()
+    {
+        return this.title;
+    }
 }

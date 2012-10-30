@@ -30,237 +30,265 @@ import org.xwiki.script.service.ScriptService;
 
 import edu.toronto.cs.cidb.solr.SolrScriptService;
 
-public class PropertyDisplayer {
-	private static final String TYPE_KEY = "type";
-	private static final String GROUP_TYPE_KEY = "group_type";
-	private static final String ID_KEY = "id";
-	private static final String TITLE_KEY = "title";
-	private static final String CATEGORIES_KEY = "categories";
-	private static final String DATA_KEY = "data";
+public class PropertyDisplayer
+{
+    private static final String TYPE_KEY = "type";
 
-	private static final String ITEM_TYPE_SECTION = "section";
-	private static final String ITEM_TYPE_SUBSECTION = "subsection";
-	private static final String ITEM_TYPE_FIELD = "field";
+    private static final String GROUP_TYPE_KEY = "group_type";
 
-	private static final String INDEXED_NAME_KEY = "name";
-	private static final String INDEXED_CATEGORY_KEY = "term_category";
+    private static final String ID_KEY = "id";
 
-	private static final String DEFAULT_SECTION_TITLE = "Other";
-	private static final String INDEXED_PARENT_KEY = "is_a";
+    private static final String TITLE_KEY = "title";
 
-	List<FormSection> sections = new LinkedList<FormSection>();
+    private static final String CATEGORIES_KEY = "categories";
 
-	protected ScriptService ontologyService;
-	protected final String fieldNames[];
-	protected final String propertyName;
+    private static final String DATA_KEY = "data";
 
-	PropertyDisplayer(Collection<Map<String, ?>> template, String propertyName,
-			ScriptService ontologyService, String fieldName,
-			Collection<String> selected) {
-		this(template, propertyName, ontologyService, fieldName, null,
-				selected, null);
-	}
+    private static final String ITEM_TYPE_SECTION = "section";
 
-	PropertyDisplayer(Collection<Map<String, ?>> template, String propertyName,
-			ScriptService ontologyService, String yesFieldName,
-			String noFieldName, Collection<String> yesSelected,
-			Collection<String> noSelected) {
-		this.ontologyService = ontologyService;
-		this.fieldNames = new String[2];
-		this.fieldNames[0] = yesFieldName;
-		this.fieldNames[1] = noFieldName;
-		this.propertyName = propertyName;
-		List<String> customYesSelected = new LinkedList<String>();
-		customYesSelected.addAll(yesSelected);
-		List<String> customNoSelected = new LinkedList<String>();
-		if (noFieldName != null) {
-			customNoSelected.addAll(noSelected);
-		}
-		for (Map<String, ?> sectionTemplate : template) {
-			if (isSection(sectionTemplate)) {
-				this.sections.add(generateSection(sectionTemplate,
-						customYesSelected, customNoSelected));
-			}
-		}
-		Map<String, List<String>> yCustomCategories = new HashMap<String, List<String>>();
-		Map<String, List<String>> nCustomCategories = new HashMap<String, List<String>>();
-		for (String value : customYesSelected) {
-			yCustomCategories.put(value, this.getCategoriesFromOntology(value));
-		}
-		for (String value : customNoSelected) {
-			nCustomCategories.put(value, this.getCategoriesFromOntology(value));
-		}
-		for (FormSection section : this.sections) {
-			List<String> yCustomFieldIDs = this.assignCustomFields(section,
-					yCustomCategories);
-			List<String> nCustomFieldIDs = this.assignCustomFields(section,
-					nCustomCategories);
-			for (String val : yCustomFieldIDs) {
-				section.addCustomElement(this.generateField(val, null, false,
-						true, false));
-				yCustomCategories.remove(val);
-			}
-			for (String val : nCustomFieldIDs) {
-				section.addCustomElement(this.generateField(val, null, false,
-						false, true));
-				nCustomCategories.remove(val);
-			}
-		}
-	}
+    private static final String ITEM_TYPE_SUBSECTION = "subsection";
 
-	public String display(DisplayMode mode) {
-		StringBuilder str = new StringBuilder();
-		for (FormSection section : this.sections) {
-			str.append(section.display(mode, this.fieldNames));
-		}
-		return str.toString();
-	}
+    private static final String ITEM_TYPE_FIELD = "field";
 
-	private boolean isSection(Map<String, ?> item) {
-		return ITEM_TYPE_SECTION.equals(item.get(TYPE_KEY))
-				&& item.get(CATEGORIES_KEY) != null
-				&& Collection.class.isAssignableFrom(item.get(CATEGORIES_KEY)
-						.getClass())
-				&& item.get(TITLE_KEY) != null
-				&& String.class
-						.isAssignableFrom(item.get(TITLE_KEY).getClass())
-				&& item.get(DATA_KEY) != null
-				&& Collection.class.isAssignableFrom(item.get(DATA_KEY)
-						.getClass());
-	}
+    private static final String INDEXED_NAME_KEY = "name";
 
-	private boolean isSubsection(Map<String, ?> item) {
-		return ITEM_TYPE_SUBSECTION.equals(item.get(TYPE_KEY))
-				&& item.get(TITLE_KEY) != null
-				&& String.class
-						.isAssignableFrom(item.get(TITLE_KEY).getClass())
-				&& item.get(DATA_KEY) != null
-				&& Collection.class.isAssignableFrom(item.get(DATA_KEY)
-						.getClass());
-	}
+    private static final String INDEXED_CATEGORY_KEY = "term_category";
 
-	private boolean isField(Map<String, ?> item) {
-		return item.get(TYPE_KEY) == null
-				|| ITEM_TYPE_FIELD.equals(item.get(TYPE_KEY))
-				&& item.get(ID_KEY) != null
-				&& String.class.isAssignableFrom(item.get(ID_KEY).getClass());
-	}
+    private static final String DEFAULT_SECTION_TITLE = "Other";
 
-	@SuppressWarnings("unchecked")
-	private FormSection generateSection(Map<String, ?> sectionTemplate,
-			List<String> customYesSelected, List<String> customNoSelected) {
-		String title = (String) sectionTemplate.get(TITLE_KEY);
-		Collection<String> categories = (Collection<String>) sectionTemplate
-				.get(CATEGORIES_KEY);
-		FormSection section = new FormSection(title, this.propertyName,
-				categories);
-		generateData(section, sectionTemplate, customYesSelected,
-				customNoSelected);
-		return section;
-	}
+    private static final String INDEXED_PARENT_KEY = "is_a";
 
-	private FormElement generateSubsection(Map<String, ?> subsectionTemplate,
-			List<String> customYesSelected, List<String> customNoSelected) {
-		String title = (String) subsectionTemplate.get(TITLE_KEY);
-		String type = (String) subsectionTemplate.get(GROUP_TYPE_KEY);
-		if (type == null) {
-			type = "";
-		}
-		FormGroup subsection = new FormSubsection(title, type);
-		generateData(subsection, subsectionTemplate, customYesSelected,
-				customNoSelected);
-		return subsection;
-	}
+    List<FormSection> sections = new LinkedList<FormSection>();
 
-	@SuppressWarnings("unchecked")
-	private void generateData(FormGroup formGroup,
-			Map<String, ?> groupTemplate, List<String> customYesSelected,
-			List<String> customNoSelected) {
-		Collection<Map<String, ?>> data = (Collection<Map<String, ?>>) groupTemplate
-				.get(DATA_KEY);
-		for (Map<String, ?> item : data) {
-			if (isSubsection(item)) {
-				formGroup.addElement(generateSubsection(item,
-						customYesSelected, customNoSelected));
-			} else if (isField(item)) {
-				formGroup.addElement(generateField(item, customYesSelected,
-						customNoSelected));
-			}
-		}
-	}
+    protected ScriptService ontologyService;
 
-	private FormElement generateField(Map<String, ?> fieldTemplate,
-			List<String> customYesSelected, List<String> customNoSelected) {
-		String id = (String) fieldTemplate.get(ID_KEY);
-		boolean yesSelected = customYesSelected.remove(id);
-		boolean noSelected = customNoSelected.remove(id);
-		return this.generateField(id, (String) fieldTemplate.get(TITLE_KEY),
-				yesSelected, noSelected);
+    protected final String fieldNames[];
 
-	}
+    protected final String propertyName;
 
-	private FormElement generateField(String id, String title,
-			boolean expandable, boolean yesSelected, boolean noSelected) {
-		String hint = getLabelFromOntology(id);
-		if (title == null) {
-			title = hint;
-		}
-		return new FormField(id, title, hint, expandable, yesSelected,
-				noSelected);
+    PropertyDisplayer(Collection<Map<String, ? >> template, String propertyName,
+        ScriptService ontologyService, String fieldName,
+        Collection<String> selected)
+    {
+        this(template, propertyName, ontologyService, fieldName, null,
+            selected, null);
+    }
 
-	}
+    PropertyDisplayer(Collection<Map<String, ? >> template, String propertyName,
+        ScriptService ontologyService, String yesFieldName,
+        String noFieldName, Collection<String> yesSelected,
+        Collection<String> noSelected)
+    {
+        this.ontologyService = ontologyService;
+        this.fieldNames = new String[2];
+        this.fieldNames[0] = yesFieldName;
+        this.fieldNames[1] = noFieldName;
+        this.propertyName = propertyName;
+        List<String> customYesSelected = new LinkedList<String>();
+        customYesSelected.addAll(yesSelected);
+        List<String> customNoSelected = new LinkedList<String>();
+        if (noFieldName != null) {
+            customNoSelected.addAll(noSelected);
+        }
+        for (Map<String, ? > sectionTemplate : template) {
+            if (isSection(sectionTemplate)) {
+                this.sections.add(generateSection(sectionTemplate,
+                    customYesSelected, customNoSelected));
+            }
+        }
+        Map<String, List<String>> yCustomCategories = new HashMap<String, List<String>>();
+        Map<String, List<String>> nCustomCategories = new HashMap<String, List<String>>();
+        for (String value : customYesSelected) {
+            yCustomCategories.put(value, this.getCategoriesFromOntology(value));
+        }
+        for (String value : customNoSelected) {
+            nCustomCategories.put(value, this.getCategoriesFromOntology(value));
+        }
+        for (FormSection section : this.sections) {
+            List<String> yCustomFieldIDs = this.assignCustomFields(section,
+                yCustomCategories);
+            List<String> nCustomFieldIDs = this.assignCustomFields(section,
+                nCustomCategories);
+            for (String val : yCustomFieldIDs) {
+                section.addCustomElement(this.generateField(val, null, false,
+                    true, false));
+                yCustomCategories.remove(val);
+            }
+            for (String val : nCustomFieldIDs) {
+                section.addCustomElement(this.generateField(val, null, false,
+                    false, true));
+                nCustomCategories.remove(val);
+            }
+        }
+    }
 
-	private FormElement generateField(String id, String title,
-			boolean yesSelected, boolean noSelected) {
-		return generateField(id, title, hasDescendenntsInOntology(id),
-				yesSelected, noSelected);
+    public String display(DisplayMode mode)
+    {
+        StringBuilder str = new StringBuilder();
+        for (FormSection section : this.sections) {
+            str.append(section.display(mode, this.fieldNames));
+        }
+        return str.toString();
+    }
 
-	}
+    private boolean isSection(Map<String, ? > item)
+    {
+        return ITEM_TYPE_SECTION.equals(item.get(TYPE_KEY))
+            && item.get(CATEGORIES_KEY) != null
+            && Collection.class.isAssignableFrom(item.get(CATEGORIES_KEY)
+                .getClass())
+            && item.get(TITLE_KEY) != null
+            && String.class
+                .isAssignableFrom(item.get(TITLE_KEY).getClass())
+            && item.get(DATA_KEY) != null
+            && Collection.class.isAssignableFrom(item.get(DATA_KEY)
+                .getClass());
+    }
 
-	private List<String> assignCustomFields(FormSection section,
-			Map<String, List<String>> customCategories) {
-		List<String> assigned = new LinkedList<String>();
-		if (section.getCategories().size() == 0) {
-			assigned.addAll(customCategories.keySet());
-		} else {
-			for (String value : customCategories.keySet()) {
-				List<String> categories = customCategories.get(value);
-				for (String c : categories) {
-					if (section.getCategories().contains(c)) {
-						assigned.add(value);
-						break;
-					}
-				}
-			}
-		}
-		return assigned;
-	}
+    private boolean isSubsection(Map<String, ? > item)
+    {
+        return ITEM_TYPE_SUBSECTION.equals(item.get(TYPE_KEY))
+            && item.get(TITLE_KEY) != null
+            && String.class
+                .isAssignableFrom(item.get(TITLE_KEY).getClass())
+            && item.get(DATA_KEY) != null
+            && Collection.class.isAssignableFrom(item.get(DATA_KEY)
+                .getClass());
+    }
 
-	private String getLabelFromOntology(String id) {
-		SolrDocument phObj = ((SolrScriptService) this.ontologyService).get(id);
-		if (phObj != null) {
-			return (String) phObj.get(INDEXED_NAME_KEY);
-		}
-		return id;
-	}
+    private boolean isField(Map<String, ? > item)
+    {
+        return item.get(TYPE_KEY) == null
+            || ITEM_TYPE_FIELD.equals(item.get(TYPE_KEY))
+            && item.get(ID_KEY) != null
+            && String.class.isAssignableFrom(item.get(ID_KEY).getClass());
+    }
 
-	private boolean hasDescendenntsInOntology(String id) {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put(INDEXED_PARENT_KEY, id);
-		return (((SolrScriptService) this.ontologyService).search(params, 1, 0)
-				.size() > 0);
-	}
+    @SuppressWarnings("unchecked")
+    private FormSection generateSection(Map<String, ? > sectionTemplate,
+        List<String> customYesSelected, List<String> customNoSelected)
+    {
+        String title = (String) sectionTemplate.get(TITLE_KEY);
+        Collection<String> categories = (Collection<String>) sectionTemplate
+            .get(CATEGORIES_KEY);
+        FormSection section = new FormSection(title, this.propertyName,
+            categories);
+        generateData(section, sectionTemplate, customYesSelected,
+            customNoSelected);
+        return section;
+    }
 
-	@SuppressWarnings("unchecked")
-	private List<String> getCategoriesFromOntology(String value) {
-		SolrDocument termObj = ((SolrScriptService) this.ontologyService)
-				.get(value);
-		if (termObj != null
-				&& termObj.get(INDEXED_CATEGORY_KEY) != null
-				&& List.class.isAssignableFrom(termObj
-						.get(INDEXED_CATEGORY_KEY).getClass())) {
-			return (List<String>) termObj.get(INDEXED_CATEGORY_KEY);
-		}
-		return new LinkedList<String>();
-	}
+    private FormElement generateSubsection(Map<String, ? > subsectionTemplate,
+        List<String> customYesSelected, List<String> customNoSelected)
+    {
+        String title = (String) subsectionTemplate.get(TITLE_KEY);
+        String type = (String) subsectionTemplate.get(GROUP_TYPE_KEY);
+        if (type == null) {
+            type = "";
+        }
+        FormGroup subsection = new FormSubsection(title, type);
+        generateData(subsection, subsectionTemplate, customYesSelected,
+            customNoSelected);
+        return subsection;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void generateData(FormGroup formGroup,
+        Map<String, ? > groupTemplate, List<String> customYesSelected,
+        List<String> customNoSelected)
+    {
+        Collection<Map<String, ? >> data = (Collection<Map<String, ? >>) groupTemplate
+            .get(DATA_KEY);
+        for (Map<String, ? > item : data) {
+            if (isSubsection(item)) {
+                formGroup.addElement(generateSubsection(item,
+                    customYesSelected, customNoSelected));
+            } else if (isField(item)) {
+                formGroup.addElement(generateField(item, customYesSelected,
+                    customNoSelected));
+            }
+        }
+    }
+
+    private FormElement generateField(Map<String, ? > fieldTemplate,
+        List<String> customYesSelected, List<String> customNoSelected)
+    {
+        String id = (String) fieldTemplate.get(ID_KEY);
+        boolean yesSelected = customYesSelected.remove(id);
+        boolean noSelected = customNoSelected.remove(id);
+        return this.generateField(id, (String) fieldTemplate.get(TITLE_KEY),
+            yesSelected, noSelected);
+
+    }
+
+    private FormElement generateField(String id, String title,
+        boolean expandable, boolean yesSelected, boolean noSelected)
+    {
+        String hint = getLabelFromOntology(id);
+        if (title == null) {
+            title = hint;
+        }
+        return new FormField(id, title, hint, expandable, yesSelected,
+            noSelected);
+
+    }
+
+    private FormElement generateField(String id, String title,
+        boolean yesSelected, boolean noSelected)
+    {
+        return generateField(id, title, hasDescendenntsInOntology(id),
+            yesSelected, noSelected);
+
+    }
+
+    private List<String> assignCustomFields(FormSection section,
+        Map<String, List<String>> customCategories)
+    {
+        List<String> assigned = new LinkedList<String>();
+        if (section.getCategories().size() == 0) {
+            assigned.addAll(customCategories.keySet());
+        } else {
+            for (String value : customCategories.keySet()) {
+                List<String> categories = customCategories.get(value);
+                for (String c : categories) {
+                    if (section.getCategories().contains(c)) {
+                        assigned.add(value);
+                        break;
+                    }
+                }
+            }
+        }
+        return assigned;
+    }
+
+    private String getLabelFromOntology(String id)
+    {
+        SolrDocument phObj = ((SolrScriptService) this.ontologyService).get(id);
+        if (phObj != null) {
+            return (String) phObj.get(INDEXED_NAME_KEY);
+        }
+        return id;
+    }
+
+    private boolean hasDescendenntsInOntology(String id)
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(INDEXED_PARENT_KEY, id);
+        return (((SolrScriptService) this.ontologyService).search(params, 1, 0)
+            .size() > 0);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<String> getCategoriesFromOntology(String value)
+    {
+        SolrDocument termObj = ((SolrScriptService) this.ontologyService)
+            .get(value);
+        if (termObj != null
+            && termObj.get(INDEXED_CATEGORY_KEY) != null
+            && List.class.isAssignableFrom(termObj
+                .get(INDEXED_CATEGORY_KEY).getClass())) {
+            return (List<String>) termObj.get(INDEXED_CATEGORY_KEY);
+        }
+        return new LinkedList<String>();
+    }
 }

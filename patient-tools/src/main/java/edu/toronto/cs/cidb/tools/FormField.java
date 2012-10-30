@@ -21,105 +21,121 @@ package edu.toronto.cs.cidb.tools;
 
 import org.xwiki.xml.XMLUtils;
 
-public class FormField extends AbstractFormElement {
+public class FormField extends AbstractFormElement
+{
+    protected static final String DEFAULT_CSS_CLASS = "term-entry";
 
-	protected static final String DEFAULT_CSS_CLASS = "term-entry";
-	protected static final String EXPANDIBLE_CSS_CLASS = " dropdown-root";
-	protected final String value;
-	protected final boolean selection[];
-	private final boolean expandable;
-	private final String hint;
+    protected static final String EXPANDIBLE_CSS_CLASS = " dropdown-root";
 
-	FormField(String value, String title, String hint, boolean expandable,
-			String name, boolean selected) {
-		this(value, title, hint, expandable, selected, false);
-	}
+    protected final String value;
 
-	FormField(String value, String title, String hint, boolean expandable,
-			boolean yesSelected, boolean noSelected) {
-		super(title);
-		this.value = value;
-		this.hint = hint;
-		this.expandable = expandable;
-		this.selection = new boolean[2];
-		this.selection[YES] = yesSelected;
-		this.selection[NO] = noSelected;
-	}
+    protected final boolean selection[];
 
-	@Override
-	public String getTitle() {
-		return this.title;
-	}
+    private final boolean expandable;
 
-	private boolean isSelected(int which) {
-		return this.selection[which];
-	}
+    private final String hint;
 
-	@Override
-	public String display(DisplayMode mode, String fieldNames[]) {
-		if (DisplayMode.Edit.equals(mode)) {
-			return generateFormField(fieldNames);
-		}
-		return generateSelection(fieldNames);
-	}
+    FormField(String value, String title, String hint, boolean expandable,
+        String name, boolean selected)
+    {
+        this(value, title, hint, expandable, selected, false);
+    }
 
-	protected String generateFormField(String fieldNames[]) {
-		if (fieldNames[NO] != null) {
-			return "<span class='"
-					+ DEFAULT_CSS_CLASS
-					+ (this.isExpandable() ? EXPANDIBLE_CSS_CLASS : "")
-					+ "'><span class='yes-no-picker'>"
-					+ generateCheckbox("NA", this.value, "",
-							(!isSelected(YES) && !isSelected(NO)), "na", "NA")
-					+ generateCheckbox(fieldNames[YES], this.value, this.hint,
-							isSelected(YES), "yes", "Y")
-					+ generateCheckbox(fieldNames[NO], this.value, this.hint,
-							isSelected(NO), "no", "N")
-					+ "</span>"
-					+ generateLabel(fieldNames[YES] + "_" + this.value,
-							"yes-no-picker-label", this.title) + "</span>";
-		} else {
-			return generateCheckbox(
-					fieldNames[YES],
-					this.value,
-					this.hint,
-					isSelected(YES),
-					DEFAULT_CSS_CLASS
-							+ (this.isExpandable() ? EXPANDIBLE_CSS_CLASS : ""),
-					this.title);
-		}
-	}
+    FormField(String value, String title, String hint, boolean expandable,
+        boolean yesSelected, boolean noSelected)
+    {
+        super(title);
+        this.value = value;
+        this.hint = hint;
+        this.expandable = expandable;
+        this.selection = new boolean[2];
+        this.selection[YES] = yesSelected;
+        this.selection[NO] = noSelected;
+    }
 
-	private boolean isExpandable() {
-		return this.expandable;
-	}
+    @Override
+    public String getTitle()
+    {
+        return this.title;
+    }
 
-	protected String generateSelection(final String fieldNames[]) {
-		String selectionMarker = isSelected(YES) ? "yes-selected"
-				: isSelected(NO) ? "no-selected" : null;
-		return (selectionMarker != null) ? ("<div class='value-checked "
-				+ selectionMarker + "'>"
-				+ XMLUtils.escapeElementContent(this.title) + "</div>") : "";
-	}
+    private boolean isSelected(int which)
+    {
+        return this.selection[which];
+    }
 
-	private String generateCheckbox(String name, String value, String title,
-			boolean selected, String labelClass, String labelText) {
-		String id = name + "_" + value;
-		return "<label class='" + labelClass + "' for='" + id
-				+ "'><input type='checkbox' name='" + name + "' value='"
-				+ value + "' id='" + id + "' title='" + title + "'"
-				+ (selected ? " checked='checked'" : "") + "/>"
-				+ XMLUtils.escapeElementContent(labelText) + "</label>";
-	}
+    @Override
+    public String display(DisplayMode mode, String fieldNames[])
+    {
+        if (DisplayMode.Edit.equals(mode)) {
+            return generateFormField(fieldNames);
+        }
+        return generateSelection(fieldNames);
+    }
 
-	private String generateLabel(String forId, String labelClass,
-			String labelText) {
-		return "<label class='" + labelClass + "' for='" + forId + "'>"
-				+ XMLUtils.escapeElementContent(labelText) + "</label>";
-	}
+    protected String generateFormField(String fieldNames[])
+    {
+        if (fieldNames[NO] != null) {
+            return "<span class='"
+                + DEFAULT_CSS_CLASS
+                + (this.isExpandable() ? EXPANDIBLE_CSS_CLASS : "")
+                + "'><span class='yes-no-picker'>"
+                + generateCheckbox("NA", this.value, "",
+                    (!isSelected(YES) && !isSelected(NO)), "na", "NA")
+                + generateCheckbox(fieldNames[YES], this.value, this.hint,
+                    isSelected(YES), "yes", "Y")
+                + generateCheckbox(fieldNames[NO], this.value, this.hint,
+                    isSelected(NO), "no", "N")
+                + "</span>"
+                + generateLabel(fieldNames[YES] + "_" + this.value,
+                    "yes-no-picker-label", this.title) + "</span>";
+        } else {
+            return generateCheckbox(
+                fieldNames[YES],
+                this.value,
+                this.hint,
+                isSelected(YES),
+                DEFAULT_CSS_CLASS
+                    + (this.isExpandable() ? EXPANDIBLE_CSS_CLASS : ""),
+                this.title);
+        }
+    }
 
-	@Override
-	public String toString() {
-		return this.title;
-	}
+    private boolean isExpandable()
+    {
+        return this.expandable;
+    }
+
+    protected String generateSelection(final String fieldNames[])
+    {
+        String selectionMarker = isSelected(YES) ? "yes-selected"
+            : isSelected(NO) ? "no-selected" : null;
+        return (selectionMarker != null) ? ("<div class='value-checked "
+            + selectionMarker + "'>"
+            + XMLUtils.escapeElementContent(this.title) + "</div>") : "";
+    }
+
+    private String generateCheckbox(String name, String value, String title,
+        boolean selected, String labelClass, String labelText)
+    {
+        String id = name + "_" + value;
+        return "<label class='" + labelClass + "' for='" + id
+            + "'><input type='checkbox' name='" + name + "' value='"
+            + value + "' id='" + id + "' title='" + title + "'"
+            + (selected ? " checked='checked'" : "") + "/>"
+            + XMLUtils.escapeElementContent(labelText) + "</label>";
+    }
+
+    private String generateLabel(String forId, String labelClass,
+        String labelText)
+    {
+        return "<label class='" + labelClass + "' for='" + forId + "'>"
+            + XMLUtils.escapeElementContent(labelText) + "</label>";
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.title;
+    }
 }

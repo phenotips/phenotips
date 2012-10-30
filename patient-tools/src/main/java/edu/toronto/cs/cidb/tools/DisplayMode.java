@@ -19,13 +19,20 @@
  */
 package edu.toronto.cs.cidb.tools;
 
-public enum DisplayMode {
-	View, Edit;
+/**
+ * Different ways of displaying form elements. Used by the {@link FormElement#display(DisplayMode, String[])} method.
+ * 
+ * @version $Id$
+ */
+public enum DisplayMode
+{
+    View, Edit;
 
-	public static DisplayMode get(String mode) {
-		if ("edit".equalsIgnoreCase(mode)) {
-			return Edit;
-		}
-		return View;
-	}
+    public static DisplayMode get(String mode)
+    {
+        if ("edit".equalsIgnoreCase(mode)) {
+            return Edit;
+        }
+        return View;
+    }
 }

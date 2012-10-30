@@ -22,23 +22,27 @@ package edu.toronto.cs.cidb.tools;
 import java.util.LinkedList;
 import java.util.List;
 
-public class FormGroup extends AbstractFormElement {
-	protected List<FormElement> elements = new LinkedList<FormElement>();
+public class FormGroup extends AbstractFormElement
+{
+    protected List<FormElement> elements = new LinkedList<FormElement>();
 
-	FormGroup(String title) {
-		super(title);
-	}
+    FormGroup(String title)
+    {
+        super(title);
+    }
 
-	protected boolean addElement(FormElement e) {
-		return this.elements.add(e);
-	}
+    protected boolean addElement(FormElement e)
+    {
+        return this.elements.add(e);
+    }
 
-	@Override
-	public String display(DisplayMode mode, String fieldNames[]) {
-		StringBuilder str = new StringBuilder();
-		for (FormElement e : this.elements) {
-			str.append(e.display(mode, fieldNames));
-		}
-		return str.toString();
-	}
+    @Override
+    public String display(DisplayMode mode, String fieldNames[])
+    {
+        StringBuilder str = new StringBuilder();
+        for (FormElement e : this.elements) {
+            str.append(e.display(mode, fieldNames));
+        }
+        return str.toString();
+    }
 }

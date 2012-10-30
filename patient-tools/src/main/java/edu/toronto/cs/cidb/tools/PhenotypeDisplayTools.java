@@ -44,150 +44,147 @@ import com.xpn.xwiki.api.Document;
 @Component
 @Named("phenotype")
 @Singleton
-public class PhenotypeDisplayTools implements ScriptService {
-	private static final String DOCUMENT_KEY = "pdt.document";
+public class PhenotypeDisplayTools implements ScriptService
+{
+    private static final String DOCUMENT_KEY = "pdt.document";
 
-	private static final String YES_SELECTION_MARKER = "pdt.yes_";
+    private static final String YES_SELECTION_MARKER = "pdt.yes_";
 
-	private static final String NO_SELECTION_MARKER = "pdt.no_";
+    private static final String NO_SELECTION_MARKER = "pdt.no_";
 
-	private static final String FIELD_NAME_KEY = "pdt.fieldName";
+    private static final String FIELD_NAME_KEY = "pdt.fieldName";
 
-	private static final String PROPERTY_NAME_KEY = "pdt.propertyName";
+    private static final String PROPERTY_NAME_KEY = "pdt.propertyName";
 
-	private static final String MODE_KEY = "pdt.mode";
+    private static final String MODE_KEY = "pdt.mode";
 
-	private static final String SELECTED_VALUES_KEY = "pdt.selectedValues";
+    private static final String SELECTED_VALUES_KEY = "pdt.selectedValues";
 
-	private static final String MESSAGES_KEY = "pdt.messages";
+    private static final String MESSAGES_KEY = "pdt.messages";
 
-	@Inject
-	private Execution execution;
+    @Inject
+    private Execution execution;
 
-	@Inject
-	@Named("solr")
-	private ScriptService ontologyService;
+    @Inject
+    @Named("solr")
+    private ScriptService ontologyService;
 
-	public void use(String prefix, String name) {
-		useProperty(YES_SELECTION_MARKER, prefix, name);
-	}
+    public void use(String prefix, String name)
+    {
+        useProperty(YES_SELECTION_MARKER, prefix, name);
+    }
 
-	public void use(String prefix, String yName, String nName) {
-		useProperty(YES_SELECTION_MARKER, prefix, yName);
-		useProperty(NO_SELECTION_MARKER, prefix, nName);
-	}
+    public void use(String prefix, String yName, String nName)
+    {
+        useProperty(YES_SELECTION_MARKER, prefix, yName);
+        useProperty(NO_SELECTION_MARKER, prefix, nName);
+    }
 
-	protected void useProperty(String type, String prefix, String name) {
-		this.execution.getContext().setProperty(type + FIELD_NAME_KEY,
-				prefix + name);
-		this.execution.getContext().setProperty(type + PROPERTY_NAME_KEY, name);
-	}
+    protected void useProperty(String type, String prefix, String name)
+    {
+        this.execution.getContext().setProperty(type + FIELD_NAME_KEY,
+            prefix + name);
+        this.execution.getContext().setProperty(type + PROPERTY_NAME_KEY, name);
+    }
 
-	public void setDocument(Document document) {
-		this.execution.getContext().setProperty(DOCUMENT_KEY, document);
-	}
+    public void setDocument(Document document)
+    {
+        this.execution.getContext().setProperty(DOCUMENT_KEY, document);
+    }
 
-	public void setSelectedValues(Collection<String> values) {
-		setSelectedValues(YES_SELECTION_MARKER, values);
-	}
+    public void setSelectedValues(Collection<String> values)
+    {
+        setSelectedValues(YES_SELECTION_MARKER, values);
+    }
 
-	public void setSelectedValues(Collection<String> yValues,
-			Collection<String> nValues) {
-		setSelectedValues(YES_SELECTION_MARKER, yValues);
-		setSelectedValues(NO_SELECTION_MARKER, nValues);
-	}
+    public void setSelectedValues(Collection<String> yValues,
+        Collection<String> nValues)
+    {
+        setSelectedValues(YES_SELECTION_MARKER, yValues);
+        setSelectedValues(NO_SELECTION_MARKER, nValues);
+    }
 
-	protected void setSelectedValues(String type, Collection<String> values) {
-		Set<String> selectedValues = new HashSet<String>();
-		if (values != null) {
-			selectedValues.addAll(values);
-		}
-		this.execution.getContext().setProperty(type + SELECTED_VALUES_KEY,
-				selectedValues);
-	}
+    protected void setSelectedValues(String type, Collection<String> values)
+    {
+        Set<String> selectedValues = new HashSet<String>();
+        if (values != null) {
+            selectedValues.addAll(values);
+        }
+        this.execution.getContext().setProperty(type + SELECTED_VALUES_KEY,
+            selectedValues);
+    }
 
-	public void setMode(String mode) {
-		this.execution.getContext()
-				.setProperty(MODE_KEY, DisplayMode.get(mode));
-	}
+    public void setMode(String mode)
+    {
+        this.execution.getContext()
+            .setProperty(MODE_KEY, DisplayMode.get(mode));
+    }
 
-	public void setMessageMap(Map<String, String> messages) {
-		Map<String, String> messageMap = new LinkedHashMap<String, String>();
-		messageMap.putAll(messages);
-		this.execution.getContext().setProperty(MESSAGES_KEY, messageMap);
-	}
+    public void setMessageMap(Map<String, String> messages)
+    {
+        Map<String, String> messageMap = new LinkedHashMap<String, String>();
+        messageMap.putAll(messages);
+        this.execution.getContext().setProperty(MESSAGES_KEY, messageMap);
+    }
 
-	@SuppressWarnings("unchecked")
-	public String display(Collection<Map<String, ?>> template) {
-		return new PropertyDisplayer(template, this.getPropertyName(),
-				this.ontologyService, getFieldName(YES_SELECTION_MARKER),
-				getFieldName(NO_SELECTION_MARKER),
-				getSelectedValues(YES_SELECTION_MARKER),
-				getSelectedValues(NO_SELECTION_MARKER)).display(getMode());
-	}
+    public String display(Collection<Map<String, ? >> template)
+    {
+        return new PropertyDisplayer(template, this.getPropertyName(),
+            this.ontologyService, getFieldName(YES_SELECTION_MARKER),
+            getFieldName(NO_SELECTION_MARKER),
+            getSelectedValues(YES_SELECTION_MARKER),
+            getSelectedValues(NO_SELECTION_MARKER)).display(getMode());
+    }
 
-	public void clear() {
-		this.execution.getContext().removeProperty(DOCUMENT_KEY);
-		this.execution.getContext().removeProperty(MODE_KEY);
-		this.execution.getContext().removeProperty(
-				YES_SELECTION_MARKER + FIELD_NAME_KEY);
-		this.execution.getContext().removeProperty(
-				NO_SELECTION_MARKER + FIELD_NAME_KEY);
-		this.execution.getContext().removeProperty(
-				YES_SELECTION_MARKER + PROPERTY_NAME_KEY);
-		this.execution.getContext().removeProperty(
-				NO_SELECTION_MARKER + PROPERTY_NAME_KEY);
-		this.execution.getContext().removeProperty(
-				YES_SELECTION_MARKER + SELECTED_VALUES_KEY);
-		this.execution.getContext().removeProperty(
-				NO_SELECTION_MARKER + SELECTED_VALUES_KEY);
-		this.execution.getContext().removeProperty(MESSAGES_KEY);
-	}
+    public void clear()
+    {
+        this.execution.getContext().removeProperty(DOCUMENT_KEY);
+        this.execution.getContext().removeProperty(MODE_KEY);
+        this.execution.getContext().removeProperty(
+            YES_SELECTION_MARKER + FIELD_NAME_KEY);
+        this.execution.getContext().removeProperty(
+            NO_SELECTION_MARKER + FIELD_NAME_KEY);
+        this.execution.getContext().removeProperty(
+            YES_SELECTION_MARKER + PROPERTY_NAME_KEY);
+        this.execution.getContext().removeProperty(
+            NO_SELECTION_MARKER + PROPERTY_NAME_KEY);
+        this.execution.getContext().removeProperty(
+            YES_SELECTION_MARKER + SELECTED_VALUES_KEY);
+        this.execution.getContext().removeProperty(
+            NO_SELECTION_MARKER + SELECTED_VALUES_KEY);
+        this.execution.getContext().removeProperty(MESSAGES_KEY);
+    }
 
-	private Document getDocument() {
-		return (Document) this.execution.getContext().getProperty(DOCUMENT_KEY);
-	}
+    private Set<String> getSelectedValues(String type)
+    {
+        @SuppressWarnings("unchecked")
+        Set<String> result = (Set<String>) this.execution.getContext()
+            .getProperty(type + SELECTED_VALUES_KEY);
+        if (result == null) {
+            result = Collections.emptySet();
+        }
+        return result;
+    }
 
-	private Set<String> getSelectedValues() {
-		return getSelectedValues(YES_SELECTION_MARKER);
-	}
+    private String getFieldName(String type)
+    {
+        return (String) this.execution.getContext().getProperty(
+            type + FIELD_NAME_KEY);
+    }
 
-	private Set<String> getSelectedValues(String type) {
-		@SuppressWarnings("unchecked")
-		Set<String> result = (Set<String>) this.execution.getContext()
-				.getProperty(type + SELECTED_VALUES_KEY);
-		if (result == null) {
-			result = Collections.emptySet();
-		}
-		return result;
-	}
+    private DisplayMode getMode()
+    {
+        return (DisplayMode) this.execution.getContext().getProperty(MODE_KEY);
+    }
 
-	private Map<String, String> getMessageMap() {
-		@SuppressWarnings("unchecked")
-		Map<String, String> result = (Map<String, String>) this.execution
-				.getContext().getProperty(MESSAGES_KEY);
-		return result;
-	}
+    private String getPropertyName()
+    {
+        return getPropertyName(YES_SELECTION_MARKER);
+    }
 
-	private String getFieldName() {
-		return getFieldName(YES_SELECTION_MARKER);
-	}
-
-	private String getFieldName(String type) {
-		return (String) this.execution.getContext().getProperty(
-				type + FIELD_NAME_KEY);
-	}
-
-	private DisplayMode getMode() {
-		return (DisplayMode) this.execution.getContext().getProperty(MODE_KEY);
-	}
-
-	private String getPropertyName() {
-		return getPropertyName(YES_SELECTION_MARKER);
-	}
-
-	private String getPropertyName(String type) {
-		return (String) this.execution.getContext().getProperty(
-				type + PROPERTY_NAME_KEY);
-	}
+    private String getPropertyName(String type)
+    {
+        return (String) this.execution.getContext().getProperty(
+            type + PROPERTY_NAME_KEY);
+    }
 }
