@@ -214,7 +214,8 @@ var ChildlessBehavior = {
      * @param status set to null, 'infertile' or 'childless'
      */
     setChildlessStatus: function(status) {
-        if(status == 'infertile' || status == 'childless') {
+        var nonPlaceHolders = this.getChildren("Person","PersonGroup");
+        if((status == 'infertile' || status == 'childless') && nonPlaceHolders.length == 0) {
             this._childlessStatus = status;
             var phChildren = this.getChildren("PlaceHolder");
             phChildren.each(function(child) {
