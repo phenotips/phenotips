@@ -26,8 +26,14 @@ package edu.toronto.cs.cidb.tools;
  */
 public abstract class AbstractFormElement implements FormElement
 {
+    /** See {@link #getTitle()}. */
     protected final String title;
 
+    /**
+     * Basic constructor passing the mandatory title.
+     *
+     * @param title the title of this element
+     */
     AbstractFormElement(String title)
     {
         this.title = title;

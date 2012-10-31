@@ -59,38 +59,26 @@ public class FormSection extends FormGroup
     }
 
     @Override
-    public String display(DisplayMode mode, String fieldNames[])
+    public String display(DisplayMode mode, String[] fieldNames)
     {
         String displayedElements = super.display(mode, fieldNames);
-        String customValueDisplay = this.customElements.display(mode,
-            fieldNames);
+        String customValueDisplay = this.customElements.display(mode, fieldNames);
         if (!DisplayMode.Edit.equals(mode)
             && StringUtils.isBlank(displayedElements)
             && StringUtils.isBlank(customValueDisplay)) {
             return "";
         }
-        return "<div class='"
-            + this.getPropertyName()
-            + "-group'><h3 id='H"
-            + this.title.replaceAll("[^a-zA-Z0-9]+", "-")
-            + "'><span>"
-            + XMLUtils.escapeElementContent(this.title)
-            + "</span></h3><div class='"
-            + this.getPropertyName()
-            + "-main predefined-entries'>"
-            + displayedElements
-            + "</div>"
-            + "<div class='"
-            + this.getPropertyName()
-            + "-other custom-entries'>"
-            + (!StringUtils.isBlank(customValueDisplay) ? ("<div class=\"custom-display-data\">"
-                + customValueDisplay + "</div>")
-                : "") + generateSuggestionsField(mode, fieldNames)
-            + "</div></div>";
+        return String.format("<div class='%s-group'><h3 id='H%s'><span>%s</span></h3>"
+            + "<div class='%1$s-main predefined-entries'>%s</div>"
+            + "<div class='%1$s-other custom-entries'>%s%s</div></div>",
+            this.getPropertyName(), this.title.replaceAll("[^a-zA-Z0-9]+", "-"),
+            XMLUtils.escapeElementContent(this.title), displayedElements,
+            StringUtils.isNotBlank(customValueDisplay)
+                ? ("<div class=\"custom-display-data\">" + customValueDisplay + "</div>") : "",
+            generateSuggestionsField(mode, fieldNames));
     }
 
-    private String generateSuggestionsField(DisplayMode mode,
-        String fieldNames[])
+    private String generateSuggestionsField(DisplayMode mode, String[] fieldNames)
     {
         if (!DisplayMode.Edit.equals(mode)) {
             return "";
@@ -98,19 +86,15 @@ public class FormSection extends FormGroup
         String result = "";
         String id = fieldNames[YES] + "_" + Math.random();
         String displayedLabel = "Other";
-        result += "<label for='" + id + "' class='label-other label-other-"
-            + fieldNames[YES] + "'>" + displayedLabel + "</label>";
+        result += String.format("<label for='%s' class='label-other label-other-%s'>%s</label>", id, fieldNames[YES],
+            displayedLabel);
         result += "<p class='hint'>(enter free text and choose among suggested ontology terms)</p>";
 
-        result += "<input type='text' name='"
-            + fieldNames[YES]
-            + "' class='suggested multi suggest-hpo "
-            + (fieldNames[NO] == null ? "generateCheckboxes"
-                : "generateYesNo")
-            + " accept-value' value='' size='16' id='" + id + "'/>";
-        result += "<input type='hidden' value='"
-            + this.categories.toString().replaceAll("[\\[\\]\\s]", "")
-            + "' name='_category'/>";
+        result += String.format("<input type='text' name='%s' class='suggested multi suggest-hpo %s accept-value'"
+            + " value='' size='16' id='%s'/>", fieldNames[YES],
+            (fieldNames[NO] == null ? "generateCheckboxes" : "generateYesNo"), id);
+        result += String.format("<input type='hidden' value='%s' name='_category'/>",
+            this.categories.toString().replaceAll("[\\[\\]\\s]", ""));
         return result;
     }
 

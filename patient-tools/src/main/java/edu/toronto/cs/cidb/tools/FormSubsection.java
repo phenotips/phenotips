@@ -44,7 +44,7 @@ public class FormSubsection extends FormGroup
     }
 
     @Override
-    public String display(DisplayMode mode, String fieldNames[])
+    public String display(DisplayMode mode, String[] fieldNames)
     {
         String displayedElements = super.display(mode, fieldNames);
         if (StringUtils.isBlank(displayedElements)) {

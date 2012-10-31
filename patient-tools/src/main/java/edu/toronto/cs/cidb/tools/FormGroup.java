@@ -37,7 +37,7 @@ public class FormGroup extends AbstractFormElement
     }
 
     @Override
-    public String display(DisplayMode mode, String fieldNames[])
+    public String display(DisplayMode mode, String[] fieldNames)
     {
         StringBuilder str = new StringBuilder();
         for (FormElement e : this.elements) {

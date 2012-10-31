@@ -30,5 +30,5 @@ public interface FormElement
 
     String getTitle();
 
-    String display(DisplayMode mode, String fieldNames[]);
+    String display(DisplayMode mode, String[] fieldNames);
 }

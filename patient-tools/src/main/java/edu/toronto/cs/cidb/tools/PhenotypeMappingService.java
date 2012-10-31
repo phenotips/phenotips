@@ -57,7 +57,7 @@ import org.xwiki.script.service.ScriptService;
  * @version $Id$
  * @since 1.0
  */
-@Component(roles = {ScriptService.class})
+@Component(roles = ScriptService.class)
 @Named("phenotypeMapping")
 @Singleton
 public class PhenotypeMappingService implements ScriptService, EventListener, Initializable

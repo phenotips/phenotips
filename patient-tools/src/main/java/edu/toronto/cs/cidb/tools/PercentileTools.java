@@ -49,6 +49,21 @@ import org.xwiki.script.service.ScriptService;
 @Singleton
 public class PercentileTools implements ScriptService, Initializable
 {
+    /** Fuzzy value representing a measurement value considered extremely below normal. */
+    private static final String VALUE_EXTREME_BELOW_NORMAL = "extreme-below-normal";
+
+    /** Fuzzy value representing a measurement value considered below normal, but not extremely. */
+    private static final String VALUE_BELOW_NORMAL = "below-normal";
+
+    /** Fuzzy value representing a measurement value considered normal. */
+    private static final String VALUE_NORMAL = "normal";
+
+    /** Fuzzy value representing a measurement value considered above normal, but not extremely. */
+    private static final String VALUE_ABOVE_NORMAL = "above-normal";
+
+    /** Fuzzy value representing a measurement value considered extremely above normal. */
+    private static final String VALUE_EXTREME_ABOVE_NORMAL = "extreme-above-normal";
+
     /** Tool used for computing the percentile corresponding to a given z-score. */
     private static final NormalDistribution NORMAL = new NormalDistributionImpl();
 
@@ -124,7 +139,7 @@ public class PercentileTools implements ScriptService, Initializable
         @Override
         public String toString()
         {
-            return "[" + this.l + ", " + this.m + ", " + this.s + "]";
+            return String.format("[%.6g, %.6g, %.6g]", this.l, this.m, this.s);
         }
     }
 
@@ -161,16 +176,16 @@ public class PercentileTools implements ScriptService, Initializable
     /** Table storing the height LMS triplets for each month of the normal development of girls. */
     private List<LMS> heightForAgeGirls;
 
-    /** Table storing the inner canthal distance LMS triplets for each month of the normal development (both sexes). */
+    /** Table storing the inner canthal distance LMS triplets for each month of normal development (both sexes). */
     private List<LMS> icdForAge;
 
-    /** Table storing the interpupilary distance LMS triplets for each month of the normal development (both sexes). */
+    /** Table storing the interpupilary distance LMS triplets for each month of normal development (both sexes). */
     private List<LMS> ipdForAge;
 
-    /** Table storing the outer canthal distance LMS triplets for each month of the normal development (both sexes). */
+    /** Table storing the outer canthal distance LMS triplets for each month of normal development (both sexes). */
     private List<LMS> ocdForAge;
 
-    /** Table storing the palpebral fissure length LMS triplets for each month of the normal development (both sexes). */
+    /** Table storing the palpebral fissure length LMS triplets for each month of normal development (both sexes). */
     private List<LMS> palpebralFissureLengthForAge;
 
     /** Table storing the weight LMS triplets for each month of the normal development of boys. */
@@ -537,7 +552,8 @@ public class PercentileTools implements ScriptService, Initializable
      * @param innerCanthalDistanceInCentimeters the measured inner canthal distance, in centimeters
      * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
      */
-    public int getInnerCanthalDistancePercentile(boolean male, int ageInMonths, double innerCanthalDistanceInCentimeters)
+    public int getInnerCanthalDistancePercentile(boolean male, int ageInMonths,
+        double innerCanthalDistanceInCentimeters)
     {
         LMS lms = getLMSForAge(this.icdForAge, ageInMonths);
         return valueToPercentile(innerCanthalDistanceInCentimeters, lms);
@@ -656,7 +672,8 @@ public class PercentileTools implements ScriptService, Initializable
      * @param outerCanthalDistanceInCentimeters the measured outer canthal distance, in centimeters
      * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
      */
-    public int getOuterCanthalDistancePercentile(boolean male, int ageInMonths, double outerCanthalDistanceInCentimeters)
+    public int getOuterCanthalDistancePercentile(boolean male, int ageInMonths,
+        double outerCanthalDistanceInCentimeters)
     {
         LMS lms = getLMSForAge(this.ocdForAge, ageInMonths);
         return valueToPercentile(outerCanthalDistanceInCentimeters, lms);
@@ -961,15 +978,15 @@ public class PercentileTools implements ScriptService, Initializable
      */
     public String getFuzzyValue(int percentile)
     {
-        String returnValue = "normal";
+        String returnValue = VALUE_NORMAL;
         if (percentile <= 1) {
-            returnValue = "extreme-below-normal";
+            returnValue = VALUE_EXTREME_BELOW_NORMAL;
         } else if (percentile <= 3) {
-            returnValue = "below-normal";
+            returnValue = VALUE_BELOW_NORMAL;
         } else if (percentile >= 99) {
-            returnValue = "extreme-above-normal";
+            returnValue = VALUE_EXTREME_ABOVE_NORMAL;
         } else if (percentile >= 97) {
-            returnValue = "above-normal";
+            returnValue = VALUE_ABOVE_NORMAL;
         }
         return returnValue;
     }
@@ -982,15 +999,15 @@ public class PercentileTools implements ScriptService, Initializable
      */
     public String getFuzzyValue(double deviation)
     {
-        String returnValue = "normal";
+        String returnValue = VALUE_NORMAL;
         if (deviation <= -3.0) {
-            returnValue = "extreme-below-normal";
+            returnValue = VALUE_EXTREME_BELOW_NORMAL;
         } else if (deviation <= -2.0) {
-            returnValue = "below-normal";
+            returnValue = VALUE_BELOW_NORMAL;
         } else if (deviation >= 3.0) {
-            returnValue = "extreme-above-normal";
+            returnValue = VALUE_EXTREME_ABOVE_NORMAL;
         } else if (deviation >= 2.0) {
-            returnValue = "above-normal";
+            returnValue = VALUE_ABOVE_NORMAL;
         }
         return returnValue;
     }
@@ -1155,6 +1172,17 @@ public class PercentileTools implements ScriptService, Initializable
         }
     }
 
+    /**
+     * Extract the LMS triplet corresponding to a given month from the given list. If the requested month is before the
+     * first element of the list, {@code null} is returned. If a valid entry corresponding to the requested month is
+     * found in the list, then return that entry. If there's no entry for the requested month, but there are valid
+     * entries in previous and later months, a linear interpolation of the nearest surrounding entries is computed and
+     * returned. Otherwise, if the requested month is beyond the last valid entry, return the last valid entry.
+     *
+     * @param list the standard list of measurements where to look in
+     * @param ageInMonths the target age (in months) for which to compute the LMS triplet
+     * @return a LMS triplet computed according to the rules above, possibly {@code null}
+     */
     private LMS getLMSForAge(List<LMS> list, int ageInMonths)
     {
         if (ageInMonths < 0) {
