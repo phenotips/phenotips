@@ -39,5 +39,6 @@
     <module>xwiki-platform-cloud-configuration-default</module>
     <module>xwiki-platform-cloud-configuration-hibernate-api</module>
     <module>xwiki-platform-cloud-configuration-hibernate-environment</module>
+    <module>xwiki-platform-cloud-configuration-hibernate-cloudfoundry</module>
   </modules>
 </project>

@@ -24,6 +24,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 
 import org.slf4j.Logger;
+import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
@@ -33,9 +34,10 @@ import org.xwiki.configuration.HibernateConfigurator;
 
 /**
  * The default provider for Hibernate configurators.
- * 
+ *
  * @version $Id$
  */
+@Component
 public class DefaultHibernateConfiguratorProvider implements Provider<HibernateConfigurator>, Initializable
 {
     /**
@@ -73,15 +75,16 @@ public class DefaultHibernateConfiguratorProvider implements Provider<HibernateC
         String hibernateConfiguratorHint = configurationSource.getProperty(HIBERNATE_CONFIGURATOR_PROPERTY);
         if (hibernateConfiguratorHint == null) {
             throw new InitializationException(String.format(
-                "You must specify the '%s' in your xwiki.properties file for selecting a hibernate configurator.",
-                HIBERNATE_CONFIGURATOR_PROPERTY));
+                    "You must specify the '%s' in your xwiki.properties file for selecting a hibernate configurator.",
+                    HIBERNATE_CONFIGURATOR_PROPERTY));
         }
 
         try {
-            hibernateConfigurator = componentManager.lookup(HibernateConfigurator.class, hibernateConfiguratorHint);
+            hibernateConfigurator =
+                    componentManager.getInstance(HibernateConfigurator.class, hibernateConfiguratorHint);
         } catch (ComponentLookupException e) {
             String errorMessage =
-                String.format("Unable to lookup a Hibernate configurator '%s'", hibernateConfiguratorHint);
+                    String.format("Unable to lookup a Hibernate configurator '%s'", hibernateConfiguratorHint);
 
             logger.error(errorMessage);
 

@@ -1,6 +1,7 @@
 # Build
 target
 target-eclipse
+overlays
 
 # IDEA
 *.iml
