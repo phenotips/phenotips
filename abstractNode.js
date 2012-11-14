@@ -11,7 +11,7 @@
 var AbstractNode = Class.create( {
 
     initialize: function(x, y, id) {
-        this._type = "AbstractNode";
+        !this._type && (this._type = "AbstractNode");
         this._id = id ? id : editor.getGraph().generateID();
         this._graphics = this.generateGraphics(x, y);
     },
