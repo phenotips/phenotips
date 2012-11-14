@@ -163,7 +163,7 @@ var Pregnancy = Class.create(AbstractNode, {
      * @param isRecursive can be true or false
      */
     remove: function($super, isRecursive) {
-        editor.getGraph().removePartnership(this);
+        editor.getGraph().removePregnancy(this);
         if(isRecursive) {
             $super(isRecursive);
         }
