@@ -419,17 +419,6 @@ var Person = Class.create(AbstractPerson, {
     remove: function($super, isRecursive) {
         editor.getGraph().removePerson(this);
         if(!isRecursive) {
-            var me = this;
-            var hasPersonPartners = function() {
-                var found = false;
-                me.getPartners().each(function(partner) {
-                    if(partner.getType() == 'Person') {
-                        found = true;
-                        throw $break;
-                    }
-                });
-                return found;
-            };
             this.getPartners().each(function(partner) {
                 if(partner.getType() == 'PlaceHolder') {
                     partner.remove(false);
