@@ -147,10 +147,14 @@ var Pregnancy = Class.create(AbstractNode, {
         child.setParentPregnancy(null);
         this["_" + child.getType() + "Children"] = this["_" + child.getType() + "Children"].without(child);
         if(this.getChildren().length == 0) {
-            this.remove();
+            this.remove(false);
         }
         else {
             this.updateActive();
+        }
+        var p = this.getPartnership().getPartners();
+        if(this.isPlaceHolderPregnancy() && (p[0].getType() == "PlaceHolder" || p[1].getType() == "PlaceHolder")) {
+            this.remove(false);
         }
         return child;
     },
