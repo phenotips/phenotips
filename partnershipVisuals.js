@@ -86,29 +86,27 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     /*
-     * Updates the path of the connection for the given child or creates a new
+     * Updates the path of the connection for the given pregnancy or creates a new
      * connection if it doesn't exist.
      *
-     * @param child an AbstractPerson who's a child in this Partnership
-     * @param childX X coordinate of the child
-     * @param childY Y coordinate of the child
-     * @junctionX the X coordinate of the junction
-     * @junctionY Y coordinate of the junction
+     * @param preg pregnancy of this partnership
+     * @param pregX the X coordinate of the pregnancy
+     * @param pregY the Y coordinate of the pregnancy
+     * @partnershipX the X coordinate of the junction
+     * @partnershipY Y coordinate of the junction
      * @animate set to true if you want to animate a transition to the new location
      */
-    updateChildConnection: function(child, childX, childY, junctionX, junctionY, animate) {
-        var radius = (child.getGender && child.getGender() == "U") ? editor.attributes.radius * (Math.sqrt(6)/2) : child.getGraphics().getRadius();
-        var topCoordinate = childY - radius;
-        var xDistance = (childX - junctionX);
-        var yDistance = (childY - junctionY)/2;
-        var path = [["M", junctionX, junctionY],["l",0, yDistance],["l", xDistance,0], ["L", childX, topCoordinate]];
-        child.parentConnectionPath = path;
-        if(this.getPartnership().hasChild(child) && child.parentConnection) {
+    updatePregnancyConnection: function(preg, pregX, pregY, partnershipX, partnershipY, animate) {
+        var xDistance = (pregX - partnershipX);
+        var yDistance = (pregY - partnershipY) * 0.8;
+        var path = [["M", partnershipX, partnershipY],["l",0, yDistance],["l", xDistance,0], ["L", pregX, pregY]];
+        preg.pregnancyConnectionPath = path;
+        if(this.getPartnership().hasPregnancy(preg) && preg.pregnancyConnection) {
             if(animate) {
-                child.parentConnection.animate({path: path}, 1000, "<>")
+                preg.pregnancyConnection.animate({path: path}, 1000, "<>")
             }
             else {
-                child.parentConnection.attr({path: path});
+                preg.pregnancyConnection.attr({path: path});
             }
         }
         else {
@@ -132,7 +130,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         };
 
         this.getNode().getPregnancies().each(function(pregnancy) {
-            me.updateChildConnection(pregnancy, pregnancy.getX(), pregnancy.getY(), x, y,  animate)
+            me.updatePregnancyConnection(pregnancy, pregnancy.getX(), pregnancy.getY(), x, y,  animate)
         });
 
         me.getNode().getPartners().each(function(partner) {

@@ -9,6 +9,8 @@ var PregnancyVisuals = Class.create(AbstractNodeVisuals, {
         this.grow = this.grow.bind(this);
         this.shrink = this.shrink.bind(this);
         this.onClick = this.onClick.bind(this);
+        var p = pregnancy.getPartnership().getGraphics();
+        this.pregnancyConnection = p.updatePregnancyConnection(pregnancy, x, y, p.getX(), p.getY(), false)
     },
 
     grow: function() {
@@ -114,6 +116,7 @@ var PregnancyVisuals = Class.create(AbstractNodeVisuals, {
      * Removes all the graphical elements of this partnership from the canvas
      */
     remove: function() {
+        this.pregnancyConnection.remove();
         this.getJunctionShape().remove();
     },
 
