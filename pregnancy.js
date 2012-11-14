@@ -16,8 +16,8 @@ var Pregnancy = Class.create(AbstractNode, {
         this._PlaceHolderChildren = [];
         this._PersonGroupChildren = [];
         this._isActive = false;
-        $super(x, y, id);
         this._type = 'Pregnancy';
+        $super(x, y, id);
         this._gender = "U";
     },
 
