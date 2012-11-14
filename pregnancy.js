@@ -225,11 +225,11 @@ var Pregnancy = Class.create(AbstractNode, {
     },
 
     /*
-     * Returns true is the only child of this pregnancy is a PlaceHolder
+     * Returns true if the only child of this pregnancy is a PlaceHolder
      */
     isPlaceHolderPregnancy: function() {
         var children = this.getChildren();
-        return children.length = 1 && children[0].getType() == "PlaceHolder";
+        return (children.length == 0) || (children.length = 1 && children[0].getType() == "PlaceHolder");
     },
 
     /*
