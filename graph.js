@@ -137,7 +137,6 @@ var Graph = Class.create({
             hoverModeZone.attr("cursor", "pointer");
             hoverModeZone.hover(
                 function() {
-                    console.log(me.getCurrentDraggable().getType());
                     me._currentHoveredNode = node;
                     node.getGraphics().getHoverBox().setHovered(true);
                     node.getGraphics().getHoverBox().getBoxOnHover().attr(editor.attributes.boxOnHover);
@@ -169,6 +168,7 @@ var Graph = Class.create({
                     node.getGraphics().getHoverBox().getBoxOnHover().attr("fill", color);
                 },
                 function() {
+                    me.getCurrentDraggable() && (me.getCurrentDraggable().validHoveredNode = null);
                     node.getGraphics().getHoverBox().setHovered(false);
                     node.getGraphics().getHoverBox().getBoxOnHover().attr(editor.attributes.boxOnHover).attr('opacity', 0);
                     me._currentHoveredNode = null;
