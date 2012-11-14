@@ -113,7 +113,7 @@ var Partnership = Class.create(AbstractNode, {
         var args = arguments,
             children = [];
         this.getPregnancies().each(function(pregnancy) {
-            children = children.concat(pregnancy.getChildren(args));
+            children = children.concat(pregnancy.getChildren.apply(pregnancy, args));
         });
         return children;
     },
@@ -142,10 +142,6 @@ var Partnership = Class.create(AbstractNode, {
         //var pos = editor.findPosition({below: id}, ['pregnancy']);
         var pregnancy = editor.getGraph().addPregnancy(this.getX(), this.getY() + 50, this);
         this.getPregnancies().push(pregnancy);
-
-        //TODO: parent connection
-        //pregnancy.parentConnection = this.getGraphics().updateChildConnection(pregnancy, pregnancy.getX(), pregnancy.getY(), this.getX(), this.getY());
-
         return pregnancy;
     },
 
@@ -154,6 +150,14 @@ var Partnership = Class.create(AbstractNode, {
      */
     removePregnancy: function(pregnancy) {
         this._pregnancies = this._pregnancies.without(pregnancy);
+        var p = this.getPartners();
+        if(this._pregnancies.length == 0 && (p[0].getType() == "PlaceHolder" || p[1].getType() == "PlaceHolder")) {
+            this.remove(false);
+        }
+    },
+
+    hasPregnancy: function(pregnancy) {
+        return this.getPregnancies().indexOf(pregnancy) > -1;
     },
 
     /*
@@ -222,8 +226,12 @@ var Partnership = Class.create(AbstractNode, {
             this.getPregnancies().each(function(pregnancy) {
                 pregnancy.remove();
             });
-            this.getPartners()[0].removePartnership(this);
-            this.getPartners()[1].removePartnership(this);
+            var p1 = this.getPartners()[0];
+            var p2 = this.getPartners()[1];
+            p1.removePartnership(this);
+            p2.removePartnership(this);
+            p1.getType() == "PlaceHolder" && p1.remove(false);
+            p2.getType() == "PlaceHolder" && p2.remove(false);
             this.getGraphics().remove();
         }
     },

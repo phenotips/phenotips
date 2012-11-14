@@ -306,7 +306,7 @@ var AbstractPerson = Class.create(AbstractNode, {
         var args = arguments;
         var children = [];
         this.getPartnerships().each(function(partnership) {
-            children = children.concat(partnership.getChildren(args))
+            children = children.concat(partnership.getChildren.apply(partnership, args));
         });
         return children;
     },
