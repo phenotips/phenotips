@@ -22,7 +22,8 @@ var PedigreeEditor = Class.create({
         descendantGroupLabel: {'font-size': 20, 'font-family': 'Tahoma'},
         label: {'font-size': 18, 'font-family': 'Cambria'},
         disorderShapes: {},
-        partnershipRadius: 6
+        partnershipRadius: 6,
+        partnershipLines : {"stroke-width": 2, stroke : '#2E2E56'}
     },
 
     /*

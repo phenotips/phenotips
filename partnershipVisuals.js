@@ -81,7 +81,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             }
         }
         else {
-            this.getConnections()[connectionIndex] = editor.getPaper().path(path).attr(this.getConnectionAttributes(partner, 'partner')).toBack();
+            this.getConnections()[connectionIndex] = editor.getPaper().path(path).attr(editor.attributes.partnershipLines).toBack();
         }
     },
 
@@ -112,7 +112,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             }
         }
         else {
-            return editor.getPaper().path(path).attr(this.getConnectionAttributes(child, 'child')).toBack();
+            return editor.getPaper().path(path).attr(editor.attributes.partnershipLines).toBack();
         }
     },
 
@@ -159,20 +159,6 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         this.getHoverBox().remove();
         this.getChildlessShape() && this.getChildlessShape().remove();
         this.getChildlessStatusLabel() && this.getChildlessStatusLabel().remove();
-    },
-
-    /*
-     * Returns color and style attributes for a connection based on the type of the connection and type of the node.
-     * PlaceHolder connections have a dash-array stroke.
-     *
-     * @param node the node for which the connection is being drawn
-     * @param type can be either "partner" or "child"
-     */
-    getConnectionAttributes: function(node, type) {
-        var attr = {"stroke-width": 2};
-        (type == 'partner') ? attr.stroke = '#2E2E56' : attr.stroke = '#2E2E56';
-        (node.getType() == "PlaceHolder") && (attr['stroke-dasharray'] = '- ');
-        return attr;
     },
 
     getShapes: function($super) {
