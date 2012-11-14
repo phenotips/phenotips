@@ -393,7 +393,7 @@ var Person = Class.create(AbstractPerson, {
         var me = this;
         var gender = (this.getPartnerships().length == 0) ? "U" : this.getGender();
         var placeholder = editor.getGraph().addPlaceHolder(this.getX(), this.getY(), gender);
-        var parents = this.getParentPartnership();
+        var parents = this.getUpperNeighbors()[0];
         if(parents) {
             parents.addChild(placeholder);
             parents.removeChild(me);
