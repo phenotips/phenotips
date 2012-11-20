@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>ClinicalInformationCode</web>
-<name>ChartGenerator</name>
-<language></language>
-<defaultLanguage></defaultLanguage>
-<translation>0</translation>
-<parent>ClinicalInformationCode.ChartService</parent>
-<creator>xwiki:XWiki.Admin</creator>
-<author>xwiki:XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-<creationDate>1332741005000</creationDate>
-<date>1332773099000</date>
-<contentUpdateDate>1332773099000</contentUpdateDate>
-<version>1.1</version>
-<title></title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment></comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.0</syntaxId>
-<hidden>false</hidden>
-<content>#set ($scales = {
+  <web>ClinicalInformationCode</web>
+  <name>ChartGenerator</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>ClinicalInformationCode.ChartService</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1332741005000</creationDate>
+  <date>1332773099000</date>
+  <contentUpdateDate>1332773099000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <content>#set ($scales = {
   'weight03' : {'min' : 1.4, 'max' : 19.4, 'step': 0.2, 'labelStep' : 1, 'minX' : 0, 'maxX' : 36, 'stepX': 1, 'labelStepX' : 3, 'llabel' : 'Weight (kg)', 'rlabel' : 'Weight (kg)', 'blabel' : 'Age (months)', 'tlabel' : 'Age (months)', 'title' : 'Weight for age, birth to 36 months'},
   'weight220' : {'min' : 7, 'max' : 127, 'step': 1, 'labelStep' : 5, 'minX' : 24, 'maxX' : 240, 'stepX': 6, 'labelStepX' : 12, 'ageInYears' : true, 'llabel' : 'Weight (kg)', 'rlabel' : 'Weight (kg)', 'blabel' : 'Age (years)', 'tlabel' : 'Age (years)', 'title' : 'Weight for age, 2 to 20 years'},
   'height03' : {'min' : 39.0, 'max' : 111.0, 'step' : 1.0, 'labelStep' : 5, 'minX' : 0, 'maxX' : 36, 'stepX': 1, 'labelStepX' : 3, 'llabel' : 'Length (cm)', 'rlabel' : 'Stature (cm)', 'blabel' : 'Age (months)', 'tlabel' : 'Age (months)', 'title' : 'Height for age, birth to 36 months'},
@@ -410,4 +411,5 @@ tspan.girl {
   &lt;text y="$mathtool.add($graphHeight, 20)" x="$mathtool.div($graphWidth, 2)" class="bottom side chart-label" dy="0.7em"&gt;${parameters.blabel}&lt;/text&gt;
   &lt;/g&gt;
 &lt;/svg&gt;
-{{/html}}</content></xwikidoc>
+{{/html}}</content>
+</xwikidoc>

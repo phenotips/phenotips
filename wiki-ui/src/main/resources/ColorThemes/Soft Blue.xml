@@ -1,33 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>ColorThemes</web>
-<name>Soft Blue</name>
-<language></language>
-<defaultLanguage></defaultLanguage>
-<translation>0</translation>
-<parent>ColorThemes.WebHome</parent>
-<creator>xwiki:XWiki.Admin</creator>
-<author>xwiki:XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-<creationDate>1301134494000</creationDate>
-<date>1322876640000</date>
-<contentUpdateDate>1322876640000</contentUpdateDate>
-<version>1.1</version>
-<title>Soft Blue</title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment></comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.0</syntaxId>
-<hidden>false</hidden><attachment>
-<filename>header.png</filename>
-<filesize>31799</filesize>
-<author>xwiki:XWiki.Admin</author>
-<date>1301141631000</date>
-<version>1.1</version>
-<comment></comment><content>iVBORw0KGgoAAAANSUhEUgAABYsAAAFBCAMAAAABlADpAAACiFBMVEURg7MXsc8YtNEXstAYs9AY
+  <web>ColorThemes</web>
+  <name>Soft Blue</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>ColorThemes.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1301134494000</creationDate>
+  <date>1322876640000</date>
+  <contentUpdateDate>1322876640000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Soft Blue</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <attachment>
+    <filename>header.png</filename>
+    <filesize>31799</filesize>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1301141631000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAABYsAAAFBCAMAAAABlADpAAACiFBMVEURg7MXsc8YtNEXstAYs9AY
 s9ETjbkTjLgYtdERhbUWqMkSjrkSj7sTj7sWp8gXss8XrcwSj7oWrMwSjboTi7gXsc4Ti7cTlr8X
 qcoXqssTlr4TjrkWq8wSkLsTl78Yr84WpccXr88TkLoTjboUkrwYsM8TjLkWqsoXr80Ysc8VpccX
 q8sXrM0WrMsWqswXp8kXqMoYrs4VpcgVpMYYrc0TjbgYrs0SkbwYsM4XqMkVpMgXpsgWpMgWp8oX
@@ -585,13 +588,16 @@ NpZNfChjXH+ornBqYiWBi2Vh3JxWVRNr59gKJ9mQcx64MwxzcaDYxR7Z1sV0R9Gi4lsAVdy2TMUM
 wcccyMJlmvhZHj6cX2tVsxO4NDTFqZj+2jklhmHZ+LNpGvUYBeFTS8FdTLH4FmV8F1RMDLgPGBmA
 j0rLTs8UYN0wbgFFJCYPV6tYnmU75VUehmE0cQl9MRujWNnYX2cqi0nGjlx8S6DZk49bmUGyMQco
 JB+c1NM62E24I6RhRDBxq0NfFDe4ClSsv8TDMIzfoQ0Tt+s6Zh8AAAAASUVORK5CYII=
-</content></attachment><attachment>
-<filename>s.png</filename>
-<filesize>7739</filesize>
-<author>xwiki:XWiki.Admin</author>
-<date>1320959940000</date>
-<version>1.1</version>
-<comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAAZUAAAA5CAYAAAD+8rYaAAAAAXNSR0IArs4c6QAAAAZiS0dEABEA
+</content>
+  </attachment>
+  <attachment>
+    <filename>s.png</filename>
+    <filesize>7739</filesize>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1320959940000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAAZUAAAA5CAYAAAD+8rYaAAAAAXNSR0IArs4c6QAAAAZiS0dEABEA
 gwCzFdhCogAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sLChURKafGTd4AAAAdaVRYdENv
 bW1lbnQAAAAAAENyZWF0ZWQgd2l0aCBHSU1QZC5lBwAAHZJJREFUeNrtXXmYZFV1/71X1d0DEiAM
 E6KoxGUQIyKC4BZcMa6JJgTBBQlgVFSiEEVNXGKIQYQgGFFDXIJGDSgCWYi4kggyykjABY1mBFkC
@@ -727,13 +733,16 @@ jcugn2k8r8vzQ2ouLXDdCifj4mXM+QUsTyjGpcciPjN0oWGKjh7PdJRNk8cX8n7LTKeFBXp+Wycn
 zEfXLFehWWoD00lhLvfxtxn7uEp/pcBKpW8buiz02JcbrtryZttxLTZOF8hBHHtsXfE1Dr3nq28y
 ZMiQIUOGDBkyZMiQIUOGDBkyZMiQIUOGDBkyZMiQIUOGDBkyZMiQIUOGDBkyZMiQIUOGDBkyZMiQ
 IUOGDBkyZMiQIUOGDBkyZMiQIcNWhV8AFZYUoTNDIDcAAAAASUVORK5CYII=
-</content></attachment><attachment>
-<filename>logo.png</filename>
-<filesize>1761</filesize>
-<author>xwiki:XWiki.Admin</author>
-<date>1301141631000</date>
-<version>1.1</version>
-<comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAAH4AAAA8CAYAAACgsw7vAAAABmJLR0QAEQCDALMV2EKiAAAGlklE
+</content>
+  </attachment>
+  <attachment>
+    <filename>logo.png</filename>
+    <filesize>1761</filesize>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1301141631000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAAH4AAAA8CAYAAACgsw7vAAAABmJLR0QAEQCDALMV2EKiAAAGlklE
 QVR4XuzRMQ2AMBhGwT/IwQ/qcFA9FdKpCwkfQQEz6Q1ve9tVP2q99DEIvMALvMALvMALvMALvMAL
 vMCnbW+LwYDPnTPJyDX3nwOAf9g3nxCrqjiOR4tHi8GFtBhaDC2GFiKMCMqAIViBbYxAE3RjCOai
 NrZRgjFKiGqREFMLi0gEgxIX6iJbWIS5mFw40oyBtbCMacAZp978ee/dc36f+PF4nfPOPW/ufe9N
@@ -764,715 +773,717 @@ buvwe/bjdD/W54EfqEDGij9QES9+LKESmVu7I1R8hAgqRM7lhHaeur7r9ESuFnsagaIgH7bh5q7H
 01XuuFih3SNUVBFBJ0J6XK4BaGxTmI/XUiuS7NJ8d00PTSZmg2CfbSezsJZRt6DSWdM1f4sdzXMI
 VKCkfTWlbBk3GLul0/dwRa/0t+phTZ3gvXFM2iTjIPPWsvmfdu6YCAAYBIJgBo9xDnqSChEMW6yC
 q/87wBIeMXqUMJrwCI/wCI/wCI/wCI/wCI/wCI/wfGYQBlgw0RGQAAAAAElFTkSuQmCC
-</content></attachment>
-<object>
-<class>
-<name>ColorThemes.ColorThemeClass</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<backgroundSecondaryColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>backgroundSecondaryColor</name>
-<number>32</number>
-<picker>0</picker>
-<prettyName>Secondary background color (table headers, message boxes, administration boxes)</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</backgroundSecondaryColor>
-<borderColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>borderColor</name>
-<number>7</number>
-<picker>0</picker>
-<prettyName>Border color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</borderColor>
-<buttonPrimaryBackgroundColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>buttonPrimaryBackgroundColor</name>
-<number>29</number>
-<picker>0</picker>
-<prettyName>Primary action button background color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</buttonPrimaryBackgroundColor>
-<buttonPrimaryGradientColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>buttonPrimaryGradientColor</name>
-<number>37</number>
-<picker>0</picker>
-<prettyName>Primary action button gradient color</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</buttonPrimaryGradientColor>
-<buttonPrimaryTextColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>buttonPrimaryTextColor</name>
-<number>28</number>
-<picker>0</picker>
-<prettyName>Primary action button text color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</buttonPrimaryTextColor>
-<buttonSecondaryBackgroundColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>buttonSecondaryBackgroundColor</name>
-<number>31</number>
-<picker>0</picker>
-<prettyName>Secondary action button background color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</buttonSecondaryBackgroundColor>
-<buttonSecondaryGradientColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>buttonSecondaryGradientColor</name>
-<number>38</number>
-<picker>0</picker>
-<prettyName>Secondary action button gradient color</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</buttonSecondaryGradientColor>
-<buttonSecondaryTextColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>buttonSecondaryTextColor</name>
-<number>30</number>
-<picker>0</picker>
-<prettyName>Secondary action button text color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</buttonSecondaryTextColor>
-<fieldGradientColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>fieldGradientColor</name>
-<number>45</number>
-<picker>0</picker>
-<prettyName>Field gradient color (for form elements: input, select, textarea, etc.)</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</fieldGradientColor>
-<headerBackgroundImage>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>headerBackgroundImage</name>
-<number>13</number>
-<picker>0</picker>
-<prettyName>Banner (header image - the name of an image attached to the theme document)</prettyName>
-<size>15</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</headerBackgroundImage>
-<headerBackgroundPosition>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>headerBackgroundPosition</name>
-<number>14</number>
-<picker>0</picker>
-<prettyName>Banner position and repeat (CSS syntax, for example: "left center no-repeat")</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</headerBackgroundPosition>
-<highlightColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>highlightColor</name>
-<number>15</number>
-<picker>0</picker>
-<prettyName>Background color for highlighted elements</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</highlightColor>
-<linkColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>linkColor</name>
-<number>5</number>
-<picker>0</picker>
-<prettyName>Link color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</linkColor>
-<logoImage>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>logoImage</name>
-<number>11</number>
-<picker>0</picker>
-<prettyName>Logo (image displayed at the top left corner of the header - the name of an image attached to the theme document; if set, it has priority over the logo configured in the skin and the default logo)</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</logoImage>
-<menuAddEntryBackgroundColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>menuAddEntryBackgroundColor</name>
-<number>21</number>
-<picker>0</picker>
-<prettyName>Add menu entry background color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</menuAddEntryBackgroundColor>
-<menuAddEntryLinkColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>menuAddEntryLinkColor</name>
-<number>20</number>
-<picker>0</picker>
-<prettyName>Add menu entry link color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</menuAddEntryLinkColor>
-<menuBackgroundColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>menuBackgroundColor</name>
-<number>16</number>
-<picker>0</picker>
-<prettyName>Menu background color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</menuBackgroundColor>
-<menuContentBackgroundColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>menuContentBackgroundColor</name>
-<number>42</number>
-<picker>0</picker>
-<prettyName>Content menu background color</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</menuContentBackgroundColor>
-<menuContentGradientColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>menuContentGradientColor</name>
-<number>44</number>
-<picker>0</picker>
-<prettyName>Content menu gradient color</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</menuContentGradientColor>
-<menuContentLinkColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>menuContentLinkColor</name>
-<number>43</number>
-<picker>0</picker>
-<prettyName>Content menu text color</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</menuContentLinkColor>
-<menuGradientColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>menuGradientColor</name>
-<number>39</number>
-<picker>0</picker>
-<prettyName>Menu gradient color</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</menuGradientColor>
-<menuLinkColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>menuLinkColor</name>
-<number>17</number>
-<picker>0</picker>
-<prettyName>Menu text color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</menuLinkColor>
-<menuSelectedEntryBackgroundColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>menuSelectedEntryBackgroundColor</name>
-<number>18</number>
-<picker>0</picker>
-<prettyName>Selected menu entry background color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</menuSelectedEntryBackgroundColor>
-<menuSelectedEntryLinkColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>menuSelectedEntryLinkColor</name>
-<number>19</number>
-<picker>0</picker>
-<prettyName>Selected menu entry text color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</menuSelectedEntryLinkColor>
-<notificationErrorColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>notificationErrorColor</name>
-<number>36</number>
-<picker>0</picker>
-<prettyName>Error notifications color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</notificationErrorColor>
-<notificationInfoColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>notificationInfoColor</name>
-<number>33</number>
-<picker>0</picker>
-<prettyName>Informational notifications color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</notificationInfoColor>
-<notificationSuccessColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>notificationSuccessColor</name>
-<number>34</number>
-<picker>0</picker>
-<prettyName>Success notifications color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</notificationSuccessColor>
-<notificationWarningColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>notificationWarningColor</name>
-<number>35</number>
-<picker>0</picker>
-<prettyName>Warning notifications color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</notificationWarningColor>
-<pageBackgroundColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>pageBackgroundColor</name>
-<number>8</number>
-<picker>0</picker>
-<prettyName>Page background color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</pageBackgroundColor>
-<pageBackgroundImage>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>pageBackgroundImage</name>
-<number>9</number>
-<picker>0</picker>
-<prettyName>Page background image (the name of an image attached to the theme document)</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</pageBackgroundImage>
-<pageBackgroundPosition>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>pageBackgroundPosition</name>
-<number>10</number>
-<picker>0</picker>
-<prettyName>Page background image position and repeat (CSS syntax, for example: "left top repeat-x")</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</pageBackgroundPosition>
-<pageContentBackgroundColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>pageContentBackgroundColor</name>
-<number>1</number>
-<picker>0</picker>
-<prettyName>Page content background color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</pageContentBackgroundColor>
-<pageHeaderBackgroundColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>pageHeaderBackgroundColor</name>
-<number>12</number>
-<picker>0</picker>
-<prettyName>Page header background color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</pageHeaderBackgroundColor>
-<panelBackgroundColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>panelBackgroundColor</name>
-<number>22</number>
-<picker>0</picker>
-<prettyName>Panel background color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</panelBackgroundColor>
-<panelCollapsedBackgroundColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>panelCollapsedBackgroundColor</name>
-<number>26</number>
-<picker>0</picker>
-<prettyName>Collapsed panel background color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</panelCollapsedBackgroundColor>
-<panelCollapsedGradientColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>panelCollapsedGradientColor</name>
-<number>41</number>
-<picker>0</picker>
-<prettyName>Collapsed panel gradient color</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</panelCollapsedGradientColor>
-<panelCollapsedTextColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>panelCollapsedTextColor</name>
-<number>27</number>
-<picker>0</picker>
-<prettyName>Collapsed panel text color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</panelCollapsedTextColor>
-<panelHeaderBackgroundColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>panelHeaderBackgroundColor</name>
-<number>24</number>
-<picker>0</picker>
-<prettyName>Panel header background color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</panelHeaderBackgroundColor>
-<panelHeaderGradientColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>panelHeaderGradientColor</name>
-<number>40</number>
-<picker>0</picker>
-<prettyName>Panel header gradient color</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</panelHeaderGradientColor>
-<panelHeaderTextColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>panelHeaderTextColor</name>
-<number>25</number>
-<picker>0</picker>
-<prettyName>Panel header text color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</panelHeaderTextColor>
-<panelTextColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>panelTextColor</name>
-<number>23</number>
-<picker>0</picker>
-<prettyName>Panel text color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</panelTextColor>
-<submenuContentBackgroundColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>submenuContentBackgroundColor</name>
-<number>46</number>
-<picker>0</picker>
-<prettyName>Content submenu background color</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</submenuContentBackgroundColor>
-<textColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>textColor</name>
-<number>2</number>
-<picker>0</picker>
-<prettyName>Text color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</textColor>
-<textPrimaryColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>textPrimaryColor</name>
-<number>3</number>
-<picker>0</picker>
-<prettyName>Informative text color (Modified by, Created by, etc)</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</textPrimaryColor>
-<textSecondaryColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>textSecondaryColor</name>
-<number>4</number>
-<picker>0</picker>
-<prettyName>Details text color (Comments date, attachments date, etc)</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</textSecondaryColor>
-<titleColor>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>titleColor</name>
-<number>6</number>
-<picker>0</picker>
-<prettyName>Title color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</titleColor>
-</class>
-<name>ColorThemes.Soft Blue</name>
-<number>0</number>
-<className>ColorThemes.ColorThemeClass</className>
-<guid>eac46e76-196b-4e7b-9509-f880e62862ff</guid>
-<property>
-<backgroundSecondaryColor>#DDEEFF</backgroundSecondaryColor>
-</property>
-<property>
-<borderColor>#DFDFF2</borderColor>
-</property>
-<property>
-<buttonPrimaryBackgroundColor>#414142</buttonPrimaryBackgroundColor>
-</property>
-<property>
-<buttonPrimaryTextColor>#FFFFFF</buttonPrimaryTextColor>
-</property>
-<property>
-<buttonSecondaryBackgroundColor>#FFFFFF</buttonSecondaryBackgroundColor>
-</property>
-<property>
-<buttonSecondaryTextColor>#1183B3</buttonSecondaryTextColor>
-</property>
-<property>
-<headerBackgroundImage>header.png</headerBackgroundImage>
-</property>
-<property>
-<headerBackgroundPosition>80px top no-repeat</headerBackgroundPosition>
-</property>
-<property>
-<highlightColor>#FFEE99</highlightColor>
-</property>
-<property>
-<linkColor>#1183B3</linkColor>
-</property>
-<property>
-<logoImage>s.png</logoImage>
-</property>
-<property>
-<menuAddEntryBackgroundColor>#269A26</menuAddEntryBackgroundColor>
-</property>
-<property>
-<menuAddEntryLinkColor>#FFFFFF</menuAddEntryLinkColor>
-</property>
-<property>
-<menuBackgroundColor>#414142</menuBackgroundColor>
-</property>
-<property>
-<menuLinkColor>#FFFFFF</menuLinkColor>
-</property>
-<property>
-<menuSelectedEntryBackgroundColor>#EFEFEF</menuSelectedEntryBackgroundColor>
-</property>
-<property>
-<menuSelectedEntryLinkColor>#000000</menuSelectedEntryLinkColor>
-</property>
-<property>
-<pageBackgroundColor>#FFFFFF</pageBackgroundColor>
-</property>
-<property>
-<pageBackgroundImage></pageBackgroundImage>
-</property>
-<property>
-<pageBackgroundPosition></pageBackgroundPosition>
-</property>
-<property>
-<pageContentBackgroundColor>#FFFFFF</pageContentBackgroundColor>
-</property>
-<property>
-<pageHeaderBackgroundColor>#1183B3</pageHeaderBackgroundColor>
-</property>
-<property>
-<panelBackgroundColor>#FFFFFF</panelBackgroundColor>
-</property>
-<property>
-<panelCollapsedBackgroundColor>#DFDFF2</panelCollapsedBackgroundColor>
-</property>
-<property>
-<panelCollapsedTextColor>#444444</panelCollapsedTextColor>
-</property>
-<property>
-<panelHeaderBackgroundColor>#414142</panelHeaderBackgroundColor>
-</property>
-<property>
-<panelHeaderTextColor>#FFFFFF</panelHeaderTextColor>
-</property>
-<property>
-<panelTextColor>#000000</panelTextColor>
-</property>
-<property>
-<textColor>#222222</textColor>
-</property>
-<property>
-<textPrimaryColor>#555555</textPrimaryColor>
-</property>
-<property>
-<textSecondaryColor>#6D6870</textSecondaryColor>
-</property>
-<property>
-<titleColor>#000000</titleColor>
-</property>
-</object>
-<content>{{include document="ColorThemes.ColorThemeSheet"/}}</content></xwikidoc>
+</content>
+  </attachment>
+  <object>
+    <class>
+      <name>ColorThemes.ColorThemeClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <backgroundSecondaryColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>backgroundSecondaryColor</name>
+        <number>32</number>
+        <picker>0</picker>
+        <prettyName>Secondary background color (table headers, message boxes, administration boxes)</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </backgroundSecondaryColor>
+      <borderColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>borderColor</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>Border color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </borderColor>
+      <buttonPrimaryBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>buttonPrimaryBackgroundColor</name>
+        <number>29</number>
+        <picker>0</picker>
+        <prettyName>Primary action button background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </buttonPrimaryBackgroundColor>
+      <buttonPrimaryGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>buttonPrimaryGradientColor</name>
+        <number>37</number>
+        <picker>0</picker>
+        <prettyName>Primary action button gradient color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </buttonPrimaryGradientColor>
+      <buttonPrimaryTextColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>buttonPrimaryTextColor</name>
+        <number>28</number>
+        <picker>0</picker>
+        <prettyName>Primary action button text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </buttonPrimaryTextColor>
+      <buttonSecondaryBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>buttonSecondaryBackgroundColor</name>
+        <number>31</number>
+        <picker>0</picker>
+        <prettyName>Secondary action button background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </buttonSecondaryBackgroundColor>
+      <buttonSecondaryGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>buttonSecondaryGradientColor</name>
+        <number>38</number>
+        <picker>0</picker>
+        <prettyName>Secondary action button gradient color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </buttonSecondaryGradientColor>
+      <buttonSecondaryTextColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>buttonSecondaryTextColor</name>
+        <number>30</number>
+        <picker>0</picker>
+        <prettyName>Secondary action button text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </buttonSecondaryTextColor>
+      <fieldGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>fieldGradientColor</name>
+        <number>45</number>
+        <picker>0</picker>
+        <prettyName>Field gradient color (for form elements: input, select, textarea, etc.)</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </fieldGradientColor>
+      <headerBackgroundImage>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>headerBackgroundImage</name>
+        <number>13</number>
+        <picker>0</picker>
+        <prettyName>Banner (header image - the name of an image attached to the theme document)</prettyName>
+        <size>15</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </headerBackgroundImage>
+      <headerBackgroundPosition>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>headerBackgroundPosition</name>
+        <number>14</number>
+        <picker>0</picker>
+        <prettyName>Banner position and repeat (CSS syntax, for example: "left center no-repeat")</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </headerBackgroundPosition>
+      <highlightColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>highlightColor</name>
+        <number>15</number>
+        <picker>0</picker>
+        <prettyName>Background color for highlighted elements</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </highlightColor>
+      <linkColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>linkColor</name>
+        <number>5</number>
+        <picker>0</picker>
+        <prettyName>Link color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </linkColor>
+      <logoImage>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>logoImage</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>Logo (image displayed at the top left corner of the header - the name of an image attached to the theme document; if set, it has priority over the logo configured in the skin and the default logo)</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </logoImage>
+      <menuAddEntryBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuAddEntryBackgroundColor</name>
+        <number>21</number>
+        <picker>0</picker>
+        <prettyName>Add menu entry background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuAddEntryBackgroundColor>
+      <menuAddEntryLinkColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuAddEntryLinkColor</name>
+        <number>20</number>
+        <picker>0</picker>
+        <prettyName>Add menu entry link color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuAddEntryLinkColor>
+      <menuBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuBackgroundColor</name>
+        <number>16</number>
+        <picker>0</picker>
+        <prettyName>Menu background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuBackgroundColor>
+      <menuContentBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuContentBackgroundColor</name>
+        <number>42</number>
+        <picker>0</picker>
+        <prettyName>Content menu background color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuContentBackgroundColor>
+      <menuContentGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuContentGradientColor</name>
+        <number>44</number>
+        <picker>0</picker>
+        <prettyName>Content menu gradient color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuContentGradientColor>
+      <menuContentLinkColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuContentLinkColor</name>
+        <number>43</number>
+        <picker>0</picker>
+        <prettyName>Content menu text color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuContentLinkColor>
+      <menuGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuGradientColor</name>
+        <number>39</number>
+        <picker>0</picker>
+        <prettyName>Menu gradient color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuGradientColor>
+      <menuLinkColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuLinkColor</name>
+        <number>17</number>
+        <picker>0</picker>
+        <prettyName>Menu text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuLinkColor>
+      <menuSelectedEntryBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuSelectedEntryBackgroundColor</name>
+        <number>18</number>
+        <picker>0</picker>
+        <prettyName>Selected menu entry background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuSelectedEntryBackgroundColor>
+      <menuSelectedEntryLinkColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuSelectedEntryLinkColor</name>
+        <number>19</number>
+        <picker>0</picker>
+        <prettyName>Selected menu entry text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuSelectedEntryLinkColor>
+      <notificationErrorColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>notificationErrorColor</name>
+        <number>36</number>
+        <picker>0</picker>
+        <prettyName>Error notifications color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </notificationErrorColor>
+      <notificationInfoColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>notificationInfoColor</name>
+        <number>33</number>
+        <picker>0</picker>
+        <prettyName>Informational notifications color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </notificationInfoColor>
+      <notificationSuccessColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>notificationSuccessColor</name>
+        <number>34</number>
+        <picker>0</picker>
+        <prettyName>Success notifications color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </notificationSuccessColor>
+      <notificationWarningColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>notificationWarningColor</name>
+        <number>35</number>
+        <picker>0</picker>
+        <prettyName>Warning notifications color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </notificationWarningColor>
+      <pageBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>pageBackgroundColor</name>
+        <number>8</number>
+        <picker>0</picker>
+        <prettyName>Page background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </pageBackgroundColor>
+      <pageBackgroundImage>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>pageBackgroundImage</name>
+        <number>9</number>
+        <picker>0</picker>
+        <prettyName>Page background image (the name of an image attached to the theme document)</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </pageBackgroundImage>
+      <pageBackgroundPosition>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>pageBackgroundPosition</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>Page background image position and repeat (CSS syntax, for example: "left top repeat-x")</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </pageBackgroundPosition>
+      <pageContentBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>pageContentBackgroundColor</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Page content background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </pageContentBackgroundColor>
+      <pageHeaderBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>pageHeaderBackgroundColor</name>
+        <number>12</number>
+        <picker>0</picker>
+        <prettyName>Page header background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </pageHeaderBackgroundColor>
+      <panelBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelBackgroundColor</name>
+        <number>22</number>
+        <picker>0</picker>
+        <prettyName>Panel background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelBackgroundColor>
+      <panelCollapsedBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelCollapsedBackgroundColor</name>
+        <number>26</number>
+        <picker>0</picker>
+        <prettyName>Collapsed panel background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelCollapsedBackgroundColor>
+      <panelCollapsedGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelCollapsedGradientColor</name>
+        <number>41</number>
+        <picker>0</picker>
+        <prettyName>Collapsed panel gradient color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelCollapsedGradientColor>
+      <panelCollapsedTextColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelCollapsedTextColor</name>
+        <number>27</number>
+        <picker>0</picker>
+        <prettyName>Collapsed panel text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelCollapsedTextColor>
+      <panelHeaderBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelHeaderBackgroundColor</name>
+        <number>24</number>
+        <picker>0</picker>
+        <prettyName>Panel header background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelHeaderBackgroundColor>
+      <panelHeaderGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelHeaderGradientColor</name>
+        <number>40</number>
+        <picker>0</picker>
+        <prettyName>Panel header gradient color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelHeaderGradientColor>
+      <panelHeaderTextColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelHeaderTextColor</name>
+        <number>25</number>
+        <picker>0</picker>
+        <prettyName>Panel header text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelHeaderTextColor>
+      <panelTextColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelTextColor</name>
+        <number>23</number>
+        <picker>0</picker>
+        <prettyName>Panel text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelTextColor>
+      <submenuContentBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>submenuContentBackgroundColor</name>
+        <number>46</number>
+        <picker>0</picker>
+        <prettyName>Content submenu background color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </submenuContentBackgroundColor>
+      <textColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>textColor</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </textColor>
+      <textPrimaryColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>textPrimaryColor</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>Informative text color (Modified by, Created by, etc)</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </textPrimaryColor>
+      <textSecondaryColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>textSecondaryColor</name>
+        <number>4</number>
+        <picker>0</picker>
+        <prettyName>Details text color (Comments date, attachments date, etc)</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </textSecondaryColor>
+      <titleColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>titleColor</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>Title color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </titleColor>
+    </class>
+    <name>ColorThemes.Soft Blue</name>
+    <number>0</number>
+    <className>ColorThemes.ColorThemeClass</className>
+    <guid>eac46e76-196b-4e7b-9509-f880e62862ff</guid>
+    <property>
+      <backgroundSecondaryColor>#DDEEFF</backgroundSecondaryColor>
+    </property>
+    <property>
+      <borderColor>#DFDFF2</borderColor>
+    </property>
+    <property>
+      <buttonPrimaryBackgroundColor>#414142</buttonPrimaryBackgroundColor>
+    </property>
+    <property>
+      <buttonPrimaryTextColor>#FFFFFF</buttonPrimaryTextColor>
+    </property>
+    <property>
+      <buttonSecondaryBackgroundColor>#FFFFFF</buttonSecondaryBackgroundColor>
+    </property>
+    <property>
+      <buttonSecondaryTextColor>#1183B3</buttonSecondaryTextColor>
+    </property>
+    <property>
+      <headerBackgroundImage>header.png</headerBackgroundImage>
+    </property>
+    <property>
+      <headerBackgroundPosition>80px top no-repeat</headerBackgroundPosition>
+    </property>
+    <property>
+      <highlightColor>#FFEE99</highlightColor>
+    </property>
+    <property>
+      <linkColor>#1183B3</linkColor>
+    </property>
+    <property>
+      <logoImage>s.png</logoImage>
+    </property>
+    <property>
+      <menuAddEntryBackgroundColor>#269A26</menuAddEntryBackgroundColor>
+    </property>
+    <property>
+      <menuAddEntryLinkColor>#FFFFFF</menuAddEntryLinkColor>
+    </property>
+    <property>
+      <menuBackgroundColor>#414142</menuBackgroundColor>
+    </property>
+    <property>
+      <menuLinkColor>#FFFFFF</menuLinkColor>
+    </property>
+    <property>
+      <menuSelectedEntryBackgroundColor>#EFEFEF</menuSelectedEntryBackgroundColor>
+    </property>
+    <property>
+      <menuSelectedEntryLinkColor>#000000</menuSelectedEntryLinkColor>
+    </property>
+    <property>
+      <pageBackgroundColor>#FFFFFF</pageBackgroundColor>
+    </property>
+    <property>
+      <pageBackgroundImage/>
+    </property>
+    <property>
+      <pageBackgroundPosition/>
+    </property>
+    <property>
+      <pageContentBackgroundColor>#FFFFFF</pageContentBackgroundColor>
+    </property>
+    <property>
+      <pageHeaderBackgroundColor>#1183B3</pageHeaderBackgroundColor>
+    </property>
+    <property>
+      <panelBackgroundColor>#FFFFFF</panelBackgroundColor>
+    </property>
+    <property>
+      <panelCollapsedBackgroundColor>#DFDFF2</panelCollapsedBackgroundColor>
+    </property>
+    <property>
+      <panelCollapsedTextColor>#444444</panelCollapsedTextColor>
+    </property>
+    <property>
+      <panelHeaderBackgroundColor>#414142</panelHeaderBackgroundColor>
+    </property>
+    <property>
+      <panelHeaderTextColor>#FFFFFF</panelHeaderTextColor>
+    </property>
+    <property>
+      <panelTextColor>#000000</panelTextColor>
+    </property>
+    <property>
+      <textColor>#222222</textColor>
+    </property>
+    <property>
+      <textPrimaryColor>#555555</textPrimaryColor>
+    </property>
+    <property>
+      <textSecondaryColor>#6D6870</textSecondaryColor>
+    </property>
+    <property>
+      <titleColor>#000000</titleColor>
+    </property>
+  </object>
+  <content>{{include document="ColorThemes.ColorThemeSheet"/}}</content>
+</xwikidoc>

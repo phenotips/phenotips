@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>ClinicalInformationCode</web>
-<name>ChartService</name>
-<language></language>
-<defaultLanguage></defaultLanguage>
-<translation>0</translation>
-<parent>ClinicalInformationCode.WebHome</parent>
-<creator>xwiki:XWiki.Admin</creator>
-<author>xwiki:XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-<creationDate>1332766503000</creationDate>
-<date>1332775339000</date>
-<contentUpdateDate>1332775339000</contentUpdateDate>
-<version>1.1</version>
-<title></title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment></comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.0</syntaxId>
-<hidden>false</hidden>
-<content>{{include document="ClinicalInformationCode.ChartServiceMacros" /}}
+  <web>ClinicalInformationCode</web>
+  <name>ChartService</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>ClinicalInformationCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1332766503000</creationDate>
+  <date>1332775339000</date>
+  <contentUpdateDate>1332775339000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <content>{{include document="ClinicalInformationCode.ChartServiceMacros" /}}
 
 {{velocity}}
 #set ($format = "$!{request.f}")
@@ -41,4 +42,5 @@
 #if (!$chartOptions.standalone)
   (% class="clear"%)((()))
 #end
-{{/velocity}}</content></xwikidoc>
+{{/velocity}}</content>
+</xwikidoc>

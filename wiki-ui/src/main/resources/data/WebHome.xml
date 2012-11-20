@@ -1,61 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>data</web>
-<name>WebHome</name>
-<language></language>
-<defaultLanguage></defaultLanguage>
-<translation>0</translation>
-<parent>Main.WebHome</parent>
-<creator>xwiki:XWiki.Admin</creator>
-<author>xwiki:XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-<creationDate>1331574445000</creationDate>
-<date>1331942300000</date>
-<contentUpdateDate>1331942300000</contentUpdateDate>
-<version>1.1</version>
-<title>Phenotype database</title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment></comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.0</syntaxId>
-<hidden>false</hidden>
-<object>
-<class>
-<name>ClinicalInformationCode.DBConfigurationClass</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<activeFields>
-<cache>0</cache>
-<customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
-<disabled>0</disabled>
-<displayType>input</displayType>
-<multiSelect>1</multiSelect>
-<name>activeFields</name>
-<number>8</number>
-<picker>0</picker>
-<prettyName>Active fields (displayed to report editors and viewers)</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</activeFields>
-<activeSections>
-<cache>0</cache>
-<customDisplay>{{velocity output=false}}
+  <web>data</web>
+  <name>WebHome</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>Main.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1331574445000</creationDate>
+  <date>1331942300000</date>
+  <contentUpdateDate>1331942300000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Phenotype database</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <object>
+    <class>
+      <name>ClinicalInformationCode.DBConfigurationClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <activeFields>
+        <cache>0</cache>
+        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>activeFields</name>
+        <number>8</number>
+        <picker>0</picker>
+        <prettyName>Active fields (displayed to report editors and viewers)</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </activeFields>
+      <activeSections>
+        <cache>0</cache>
+        <customDisplay>{{velocity output=false}}
 #set ($orderedSectionIds = [])
 #set ($sections = {})
 #foreach ($property in $object.xWikiClass.properties)
@@ -100,26 +101,26 @@ document.observe("xwiki:dom:loaded", function() {
 });
 &lt;/script&gt;
 {{/html}}{{/velocity}}</customDisplay>
-<disabled>0</disabled>
-<displayType>input</displayType>
-<multiSelect>1</multiSelect>
-<name>activeSections</name>
-<number>7</number>
-<picker>0</picker>
-<prettyName>Active sections and their order of appearence</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</activeSections>
-<dateOfBirthFormat>
-<customDisplay>{{velocity}}
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>activeSections</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>Active sections and their order of appearence</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </activeSections>
+      <dateOfBirthFormat>
+        <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit' || $xcontext.action == 'admin')
 {{html wiki=false clean=false}}
 &lt;select name="$prefix$name" id="$prefix$iname"&gt;
@@ -132,46 +133,46 @@ document.observe("xwiki:dom:loaded", function() {
 $!value
 #end
 {{/velocity}}</customDisplay>
-<disabled>0</disabled>
-<name>dateOfBirthFormat</name>
-<number>10</number>
-<picker>0</picker>
-<prettyName>Date of birth format</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</dateOfBirthFormat>
-<idField>
-<customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
-<disabled>0</disabled>
-<name>idField</name>
-<number>3</number>
-<picker>0</picker>
-<prettyName>Identifier field</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</idField>
-<idPrefix>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>idPrefix</name>
-<number>4</number>
-<picker>0</picker>
-<prettyName>Database identifier prefix</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</idPrefix>
-<livetableColumns>
-<cache>0</cache>
-<customDisplay>//Meta information: //
+        <disabled>0</disabled>
+        <name>dateOfBirthFormat</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>Date of birth format</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </dateOfBirthFormat>
+      <idField>
+        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <disabled>0</disabled>
+        <name>idField</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>Identifier field</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </idField>
+      <idPrefix>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>idPrefix</name>
+        <number>4</number>
+        <picker>0</picker>
+        <prettyName>Database identifier prefix</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </idPrefix>
+      <livetableColumns>
+        <cache>0</cache>
+        <customDisplay>//Meta information: //
 
 {{velocity output=false}}
 #set ($docFields = ['doc.name', 'doc.creator', 'doc.author', 'doc.creationDate', 'doc.date'])
@@ -196,175 +197,175 @@ $!value
 //Patient information: //
 
 {{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
-<disabled>0</disabled>
-<displayType>input</displayType>
-<multiSelect>1</multiSelect>
-<name>livetableColumns</name>
-<number>5</number>
-<picker>0</picker>
-<prettyName>Livetable columns</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>40</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</livetableColumns>
-<mandatoryFields>
-<cache>0</cache>
-<customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>mandatoryFields</name>
-<number>9</number>
-<picker>0</picker>
-<prettyName>Mandatory fields</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</mandatoryFields>
-<patientClass>
-<cache>0</cache>
-<classname></classname>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>input</displayType>
-<idField></idField>
-<multiSelect>0</multiSelect>
-<name>patientClass</name>
-<number>1</number>
-<picker>1</picker>
-<prettyName>Patient class</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators></separators>
-<size>1</size>
-<sort>none</sort>
-<sql></sql>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<valueField></valueField>
-<classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-</patientClass>
-<patientTemplate>
-<cache>0</cache>
-<classname></classname>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>input</displayType>
-<idField>doc.fullName</idField>
-<multiSelect>0</multiSelect>
-<name>patientTemplate</name>
-<number>2</number>
-<picker>1</picker>
-<prettyName>Patient template</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators></separators>
-<size>30</size>
-<sort>none</sort>
-<sql></sql>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<valueField></valueField>
-<classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-</patientTemplate>
-<phenotypeMapping>
-<cache>0</cache>
-<classname></classname>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>input</displayType>
-<idField></idField>
-<multiSelect>0</multiSelect>
-<name>phenotypeMapping</name>
-<number>12</number>
-<picker>1</picker>
-<prettyName>Phenotype mapping document</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators></separators>
-<size>30</size>
-<sort>none</sort>
-<sql></sql>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<valueField></valueField>
-<classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-</phenotypeMapping>
-<relativeReportHint>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>relativeReportHint</name>
-<number>11</number>
-<picker>0</picker>
-<prettyName>Hint for relative field</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</relativeReportHint>
-<section__diagnosis-info>
-<cache>0</cache>
-<customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>section__diagnosis-info</name>
-<number>19</number>
-<picker>0</picker>
-<prettyName>Diagnosis</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</section__diagnosis-info>
-<section__family-history>
-<cache>0</cache>
-<customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>section__family-history</name>
-<number>17</number>
-<picker>0</picker>
-<prettyName>Family history</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</section__family-history>
-<section__measurements>
-<cache>0</cache>
-<customDisplay>{{velocity output=false}}
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>livetableColumns</name>
+        <number>5</number>
+        <picker>0</picker>
+        <prettyName>Livetable columns</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>40</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </livetableColumns>
+      <mandatoryFields>
+        <cache>0</cache>
+        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>mandatoryFields</name>
+        <number>9</number>
+        <picker>0</picker>
+        <prettyName>Mandatory fields</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </mandatoryFields>
+      <patientClass>
+        <cache>0</cache>
+        <classname/>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <idField/>
+        <multiSelect>0</multiSelect>
+        <name>patientClass</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>Patient class</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>1</size>
+        <sort>none</sort>
+        <sql/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+      </patientClass>
+      <patientTemplate>
+        <cache>0</cache>
+        <classname/>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <idField>doc.fullName</idField>
+        <multiSelect>0</multiSelect>
+        <name>patientTemplate</name>
+        <number>2</number>
+        <picker>1</picker>
+        <prettyName>Patient template</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>30</size>
+        <sort>none</sort>
+        <sql/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+      </patientTemplate>
+      <phenotypeMapping>
+        <cache>0</cache>
+        <classname/>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <idField/>
+        <multiSelect>0</multiSelect>
+        <name>phenotypeMapping</name>
+        <number>12</number>
+        <picker>1</picker>
+        <prettyName>Phenotype mapping document</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>30</size>
+        <sort>none</sort>
+        <sql/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+      </phenotypeMapping>
+      <relativeReportHint>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>relativeReportHint</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>Hint for relative field</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </relativeReportHint>
+      <section__diagnosis-info>
+        <cache>0</cache>
+        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>section__diagnosis-info</name>
+        <number>19</number>
+        <picker>0</picker>
+        <prettyName>Diagnosis</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </section__diagnosis-info>
+      <section__family-history>
+        <cache>0</cache>
+        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>section__family-history</name>
+        <number>17</number>
+        <picker>0</picker>
+        <prettyName>Family history</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </section__family-history>
+      <section__measurements>
+        <cache>0</cache>
+        <customDisplay>{{velocity output=false}}
 #set($customValues = {"ClinicalInformationCode.MeasurementsClass" : "measurements table", "growth-charts" : "charts"})
 #set($hideClassFields = true)
 {{/velocity}}
@@ -376,132 +377,132 @@ $!value
 #set($customClassTableName = '')
 #set($hideClassFields = '')
 {{/velocity}}</customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>section__measurements</name>
-<number>14</number>
-<picker>0</picker>
-<prettyName>Measurements</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</section__measurements>
-<section__medical_history>
-<cache>0</cache>
-<customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>section__medical_history</name>
-<number>18</number>
-<picker>0</picker>
-<prettyName>Medical history</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</section__medical_history>
-<section__other>
-<cache>0</cache>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>select</displayType>
-<multiSelect>0</multiSelect>
-<name>section__other</name>
-<number>21</number>
-<picker>0</picker>
-<prettyName>More information</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</section__other>
-<section__patient-info>
-<cache>0</cache>
-<customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>section__patient-info</name>
-<number>13</number>
-<picker>0</picker>
-<prettyName>Patient information</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</section__patient-info>
-<section__phenotype-info>
-<cache>0</cache>
-<customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>section__phenotype-info</name>
-<number>15</number>
-<picker>0</picker>
-<prettyName>Phenotypic description (clinical symptions)</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</section__phenotype-info>
-<section__prenatal_phenotype-info>
-<cache>0</cache>
-<customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>section__prenatal_phenotype-info</name>
-<number>16</number>
-<picker>0</picker>
-<prettyName>Prenatal and perinatal history</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</section__prenatal_phenotype-info>
-<section__variant-info>
-<cache>0</cache>
-<customDisplay>{{velocity output=false}}
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>section__measurements</name>
+        <number>14</number>
+        <picker>0</picker>
+        <prettyName>Measurements</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </section__measurements>
+      <section__medical_history>
+        <cache>0</cache>
+        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>section__medical_history</name>
+        <number>18</number>
+        <picker>0</picker>
+        <prettyName>Medical history</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </section__medical_history>
+      <section__other>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>section__other</name>
+        <number>21</number>
+        <picker>0</picker>
+        <prettyName>More information</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </section__other>
+      <section__patient-info>
+        <cache>0</cache>
+        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>section__patient-info</name>
+        <number>13</number>
+        <picker>0</picker>
+        <prettyName>Patient information</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </section__patient-info>
+      <section__phenotype-info>
+        <cache>0</cache>
+        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>section__phenotype-info</name>
+        <number>15</number>
+        <picker>0</picker>
+        <prettyName>Phenotypic description (clinical symptions)</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </section__phenotype-info>
+      <section__prenatal_phenotype-info>
+        <cache>0</cache>
+        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>section__prenatal_phenotype-info</name>
+        <number>16</number>
+        <picker>0</picker>
+        <prettyName>Prenatal and perinatal history</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </section__prenatal_phenotype-info>
+      <section__variant-info>
+        <cache>0</cache>
+        <customDisplay>{{velocity output=false}}
 #set($customValues = {"ClinicalInformationCode.VariantClass" : "variants table"})
 #set($hideClassFields = true)
 {{/velocity}}
@@ -513,647 +514,648 @@ $!value
 #set($customClassTableName = '')
 #set($hideClassFields = '')
 {{/velocity}}</customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>section__variant-info</name>
-<number>20</number>
-<picker>0</picker>
-<prettyName>Variants</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</section__variant-info>
-<tagProperty>
-<customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
-<disabled>0</disabled>
-<name>tagProperty</name>
-<number>6</number>
-<picker>0</picker>
-<prettyName>Tag property</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</tagProperty>
-</class>
-<name>data.WebHome</name>
-<number>0</number>
-<className>ClinicalInformationCode.DBConfigurationClass</className>
-<guid>380d3252-75ab-4be3-8b4b-d212e9939b6f</guid>
-<property>
-<activeFields>
-<value>identifier</value>
-<value>external_id</value>
-<value>first_name</value>
-<value>last_name</value>
-<value>date_of_birth</value>
-<value>gender</value>
-<value>onset</value>
-<value>relative</value>
-<value>relative_of</value>
-<value>omim_id</value>
-<value>indication_for_referral</value>
-<value>unaffected</value>
-<value>phenotype</value>
-<value>negative_phenotype</value>
-<value>prenatal_phenotype</value>
-<value>prenatal_comments</value>
-<value>gestation</value>
-<value>family_history</value>
-<value>family_comments</value>
-<value>pedigree</value>
-<value>comments</value>
-<value>medical_developmental_history</value>
-<value>reports_history</value>
-<value>extended_negative_phenotype</value>
-<value>images</value>
-<value>files</value>
-</activeFields>
-</property>
-<property>
-<activeSections>
-<value>patient-info</value>
-<value>prenatal_phenotype-info</value>
-<value>medical_history</value>
-<value>family-history</value>
-<value>measurements</value>
-<value>phenotype-info</value>
-<value>diagnosis-info</value>
-<value>other</value>
-</activeSections>
-</property>
-<property>
-<dateOfBirthFormat>MM/dd/yyyy</dateOfBirthFormat>
-</property>
-<property>
-<idField>identifier</idField>
-</property>
-<property>
-<idPrefix>P</idPrefix>
-</property>
-<property>
-<livetableColumns>
-<value>doc.name</value>
-<value>doc.creator</value>
-<value>doc.author</value>
-<value>doc.creationDate</value>
-<value>external_id</value>
-<value>first_name</value>
-<value>last_name</value>
-</livetableColumns>
-</property>
-<property>
-<mandatoryFields/>
-</property>
-<property>
-<patientClass>ClinicalInformationCode.PatientClass</patientClass>
-</property>
-<property>
-<patientTemplate>ClinicalInformationCode.PatientTemplate</patientTemplate>
-</property>
-<property>
-<phenotypeMapping>ClinicalInformationCode.FPhenotypeMapping</phenotypeMapping>
-</property>
-<property>
-<relativeReportHint>Patient (MRN)</relativeReportHint>
-</property>
-<property>
-<section__diagnosis-info>
-<value>omim_id</value>
-</section__diagnosis-info>
-</property>
-<property>
-<section__family-history>
-<value>family_history</value>
-</section__family-history>
-</property>
-<property>
-<section__measurements>
-<value>ClinicalInformationCode.MeasurementsClass</value>
-<value>growth-charts</value>
-</section__measurements>
-</property>
-<property>
-<section__patient-info>
-<value>date_of_birth</value>
-<value>gender</value>
-<value>onset</value>
-<value>relative</value>
-<value>relative_of</value>
-</section__patient-info>
-</property>
-<property>
-<section__phenotype-info>
-<value>unaffected</value>
-<value>phenotype</value>
-<value>negative_phenotype</value>
-</section__phenotype-info>
-</property>
-<property>
-<section__prenatal_phenotype-info>
-<value>prenatal_phenotype</value>
-</section__prenatal_phenotype-info>
-</property>
-<property>
-<section__variant-info>
-<value>ClinicalInformationCode.VariantClass</value>
-</section__variant-info>
-</property>
-<property>
-<tagProperty>phenotype</tagProperty>
-</property>
-</object>
-<object>
-<class>
-<name>ClinicalInformationCode.MenuConfigurationClass</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<enableDeleteTool>
-<cache>0</cache>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>enableDeleteTool</name>
-<number>5</number>
-<picker>0</picker>
-<prettyName>Enable delete tool for</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values>view|edit</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</enableDeleteTool>
-<enableEditTool>
-<cache>0</cache>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>enableEditTool</name>
-<number>4</number>
-<picker>0</picker>
-<prettyName>Enable edit tools for</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values>view|edit</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</enableEditTool>
-<enableForObject>
-<cache>0</cache>
-<classname></classname>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>input</displayType>
-<idField></idField>
-<multiSelect>0</multiSelect>
-<name>enableForObject</name>
-<number>1</number>
-<picker>1</picker>
-<prettyName>Enable this menu for pages of this type</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators></separators>
-<size>1</size>
-<sort>none</sort>
-<sql></sql>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<valueField></valueField>
-<classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-</enableForObject>
-<enableHistoryTool>
-<cache>0</cache>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>enableHistoryTool</name>
-<number>2</number>
-<picker>0</picker>
-<prettyName>Enable history tool for</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values>view|edit</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</enableHistoryTool>
-<enablePdfTool>
-<cache>0</cache>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>enablePdfTool</name>
-<number>6</number>
-<picker>0</picker>
-<prettyName>Enable PDF export for</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values>view|edit</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</enablePdfTool>
-<enableTocTool>
-<cache>0</cache>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>checkbox</displayType>
-<multiSelect>1</multiSelect>
-<name>enableTocTool</name>
-<number>3</number>
-<picker>0</picker>
-<prettyName>Enable table of contents for</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values>view|edit</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</enableTocTool>
-</class>
-<name>data.WebHome</name>
-<number>0</number>
-<className>ClinicalInformationCode.MenuConfigurationClass</className>
-<guid>522661a1-1a9a-4d2f-937e-a959d53a4ef7</guid>
-<property>
-<enableDeleteTool>
-<value>view</value>
-</enableDeleteTool>
-</property>
-<property>
-<enableEditTool>
-<value>view</value>
-<value>edit</value>
-</enableEditTool>
-</property>
-<property>
-<enableForObject></enableForObject>
-</property>
-<property>
-<enableHistoryTool>
-<value>view</value>
-<value>edit</value>
-</enableHistoryTool>
-</property>
-<property>
-<enablePdfTool>
-<value>view</value>
-</enablePdfTool>
-</property>
-<property>
-<enableTocTool>
-<value>edit</value>
-</enableTocTool>
-</property>
-</object>
-<object>
-<class>
-<name>XWiki.ConfigurableClass</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<codeToExecute>
-<disabled>0</disabled>
-<editor>---</editor>
-<name>codeToExecute</name>
-<number>7</number>
-<picker>0</picker>
-<prettyName>codeToExecute</prettyName>
-<rows>5</rows>
-<size>40</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-</codeToExecute>
-<configurationClass>
-<disabled>0</disabled>
-<name>configurationClass</name>
-<number>3</number>
-<picker>0</picker>
-<prettyName>configurationClass</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</configurationClass>
-<configureGlobally>
-<defaultValue></defaultValue>
-<disabled>0</disabled>
-<displayFormType>checkbox</displayFormType>
-<displayType></displayType>
-<name>configureGlobally</name>
-<number>4</number>
-<prettyName>configureGlobally</prettyName>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</configureGlobally>
-<displayInSection>
-<disabled>0</disabled>
-<name>displayInSection</name>
-<number>1</number>
-<picker>0</picker>
-<prettyName>displayInSection</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</displayInSection>
-<heading>
-<disabled>0</disabled>
-<name>heading</name>
-<number>2</number>
-<picker>0</picker>
-<prettyName>heading</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</heading>
-<iconAttachment>
-<disabled>0</disabled>
-<name>iconAttachment</name>
-<number>8</number>
-<picker>0</picker>
-<prettyName>iconAttachment</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</iconAttachment>
-<linkPrefix>
-<disabled>0</disabled>
-<name>linkPrefix</name>
-<number>5</number>
-<picker>0</picker>
-<prettyName>linkPrefix</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</linkPrefix>
-<propertiesToShow>
-<cache>0</cache>
-<disabled>0</disabled>
-<displayType>input</displayType>
-<multiSelect>1</multiSelect>
-<name>propertiesToShow</name>
-<number>6</number>
-<picker>0</picker>
-<prettyName>propertiesToShow</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>20</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</propertiesToShow>
-</class>
-<name>data.WebHome</name>
-<number>0</number>
-<className>XWiki.ConfigurableClass</className>
-<guid>73d1fb26-3da7-4f17-91be-25c84b0282f3</guid>
-<property>
-<codeToExecute></codeToExecute>
-</property>
-<property>
-<configurationClass>ClinicalInformationCode.DBConfigurationClass</configurationClass>
-</property>
-<property>
-<configureGlobally>0</configureGlobally>
-</property>
-<property>
-<displayInSection>DBConfig</displayInSection>
-</property>
-<property>
-<heading>Database and form configuration</heading>
-</property>
-<property>
-<iconAttachment>clinicaldata.png</iconAttachment>
-</property>
-<property>
-<linkPrefix></linkPrefix>
-</property>
-<property>
-<propertiesToShow>
-<value>patientClass</value>
-<value>patientTemplate</value>
-<value>idField</value>
-<value>idPrefix</value>
-<value>livetableColumns</value>
-<value>tagProperty</value>
-<value>activeSections</value>
-<value>activeFields</value>
-<value>mandatoryFields</value>
-<value>dateOfBirthFormat</value>
-<value>relativeReportHint</value>
-<value>phenotypeMapping</value>
-<value>section__measurements</value>
-<value>section__variant-info</value>
-</propertiesToShow>
-</property>
-</object>
-<object>
-<class>
-<name>XWiki.ConfigurableClass</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<codeToExecute>
-<disabled>0</disabled>
-<editor>---</editor>
-<name>codeToExecute</name>
-<number>7</number>
-<picker>0</picker>
-<prettyName>codeToExecute</prettyName>
-<rows>5</rows>
-<size>40</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-</codeToExecute>
-<configurationClass>
-<disabled>0</disabled>
-<name>configurationClass</name>
-<number>3</number>
-<picker>0</picker>
-<prettyName>configurationClass</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</configurationClass>
-<configureGlobally>
-<defaultValue></defaultValue>
-<disabled>0</disabled>
-<displayFormType>checkbox</displayFormType>
-<displayType></displayType>
-<name>configureGlobally</name>
-<number>4</number>
-<prettyName>configureGlobally</prettyName>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</configureGlobally>
-<displayInSection>
-<disabled>0</disabled>
-<name>displayInSection</name>
-<number>1</number>
-<picker>0</picker>
-<prettyName>displayInSection</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</displayInSection>
-<heading>
-<disabled>0</disabled>
-<name>heading</name>
-<number>2</number>
-<picker>0</picker>
-<prettyName>heading</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</heading>
-<iconAttachment>
-<disabled>0</disabled>
-<name>iconAttachment</name>
-<number>8</number>
-<picker>0</picker>
-<prettyName>iconAttachment</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</iconAttachment>
-<linkPrefix>
-<disabled>0</disabled>
-<name>linkPrefix</name>
-<number>5</number>
-<picker>0</picker>
-<prettyName>linkPrefix</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</linkPrefix>
-<propertiesToShow>
-<cache>0</cache>
-<disabled>0</disabled>
-<displayType>input</displayType>
-<multiSelect>1</multiSelect>
-<name>propertiesToShow</name>
-<number>6</number>
-<picker>0</picker>
-<prettyName>propertiesToShow</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>20</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</propertiesToShow>
-</class>
-<name>data.WebHome</name>
-<number>1</number>
-<className>XWiki.ConfigurableClass</className>
-<guid>fe29a271-94ae-433b-8b46-fde8f028f1f8</guid>
-<property>
-<codeToExecute></codeToExecute>
-</property>
-<property>
-<configurationClass>ClinicalInformationCode.MenuConfigurationClass</configurationClass>
-</property>
-<property>
-<configureGlobally>0</configureGlobally>
-</property>
-<property>
-<displayInSection>MenuConfig</displayInSection>
-</property>
-<property>
-<heading>Menu configuration</heading>
-</property>
-<property>
-<iconAttachment></iconAttachment>
-</property>
-<property>
-<linkPrefix></linkPrefix>
-</property>
-<property>
-<propertiesToShow/>
-</property>
-</object>
-<content>{{include document="ClinicalInformationCode.DBWebHomeSheet" /}}</content></xwikidoc>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>section__variant-info</name>
+        <number>20</number>
+        <picker>0</picker>
+        <prettyName>Variants</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </section__variant-info>
+      <tagProperty>
+        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <disabled>0</disabled>
+        <name>tagProperty</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>Tag property</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </tagProperty>
+    </class>
+    <name>data.WebHome</name>
+    <number>0</number>
+    <className>ClinicalInformationCode.DBConfigurationClass</className>
+    <guid>380d3252-75ab-4be3-8b4b-d212e9939b6f</guid>
+    <property>
+      <activeFields>
+        <value>identifier</value>
+        <value>external_id</value>
+        <value>first_name</value>
+        <value>last_name</value>
+        <value>date_of_birth</value>
+        <value>gender</value>
+        <value>onset</value>
+        <value>relative</value>
+        <value>relative_of</value>
+        <value>omim_id</value>
+        <value>indication_for_referral</value>
+        <value>unaffected</value>
+        <value>phenotype</value>
+        <value>negative_phenotype</value>
+        <value>prenatal_phenotype</value>
+        <value>prenatal_comments</value>
+        <value>gestation</value>
+        <value>family_history</value>
+        <value>family_comments</value>
+        <value>pedigree</value>
+        <value>comments</value>
+        <value>medical_developmental_history</value>
+        <value>reports_history</value>
+        <value>extended_negative_phenotype</value>
+        <value>images</value>
+        <value>files</value>
+      </activeFields>
+    </property>
+    <property>
+      <activeSections>
+        <value>patient-info</value>
+        <value>prenatal_phenotype-info</value>
+        <value>medical_history</value>
+        <value>family-history</value>
+        <value>measurements</value>
+        <value>phenotype-info</value>
+        <value>diagnosis-info</value>
+        <value>other</value>
+      </activeSections>
+    </property>
+    <property>
+      <dateOfBirthFormat>MM/dd/yyyy</dateOfBirthFormat>
+    </property>
+    <property>
+      <idField>identifier</idField>
+    </property>
+    <property>
+      <idPrefix>P</idPrefix>
+    </property>
+    <property>
+      <livetableColumns>
+        <value>doc.name</value>
+        <value>doc.creator</value>
+        <value>doc.author</value>
+        <value>doc.creationDate</value>
+        <value>external_id</value>
+        <value>first_name</value>
+        <value>last_name</value>
+      </livetableColumns>
+    </property>
+    <property>
+      <mandatoryFields/>
+    </property>
+    <property>
+      <patientClass>ClinicalInformationCode.PatientClass</patientClass>
+    </property>
+    <property>
+      <patientTemplate>ClinicalInformationCode.PatientTemplate</patientTemplate>
+    </property>
+    <property>
+      <phenotypeMapping>ClinicalInformationCode.FPhenotypeMapping</phenotypeMapping>
+    </property>
+    <property>
+      <relativeReportHint>Patient (MRN)</relativeReportHint>
+    </property>
+    <property>
+      <section__diagnosis-info>
+        <value>omim_id</value>
+      </section__diagnosis-info>
+    </property>
+    <property>
+      <section__family-history>
+        <value>family_history</value>
+      </section__family-history>
+    </property>
+    <property>
+      <section__measurements>
+        <value>ClinicalInformationCode.MeasurementsClass</value>
+        <value>growth-charts</value>
+      </section__measurements>
+    </property>
+    <property>
+      <section__patient-info>
+        <value>date_of_birth</value>
+        <value>gender</value>
+        <value>onset</value>
+        <value>relative</value>
+        <value>relative_of</value>
+      </section__patient-info>
+    </property>
+    <property>
+      <section__phenotype-info>
+        <value>unaffected</value>
+        <value>phenotype</value>
+        <value>negative_phenotype</value>
+      </section__phenotype-info>
+    </property>
+    <property>
+      <section__prenatal_phenotype-info>
+        <value>prenatal_phenotype</value>
+      </section__prenatal_phenotype-info>
+    </property>
+    <property>
+      <section__variant-info>
+        <value>ClinicalInformationCode.VariantClass</value>
+      </section__variant-info>
+    </property>
+    <property>
+      <tagProperty>phenotype</tagProperty>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>ClinicalInformationCode.MenuConfigurationClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <enableDeleteTool>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>enableDeleteTool</name>
+        <number>5</number>
+        <picker>0</picker>
+        <prettyName>Enable delete tool for</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>view|edit</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </enableDeleteTool>
+      <enableEditTool>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>enableEditTool</name>
+        <number>4</number>
+        <picker>0</picker>
+        <prettyName>Enable edit tools for</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>view|edit</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </enableEditTool>
+      <enableForObject>
+        <cache>0</cache>
+        <classname/>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <idField/>
+        <multiSelect>0</multiSelect>
+        <name>enableForObject</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>Enable this menu for pages of this type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>1</size>
+        <sort>none</sort>
+        <sql/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+      </enableForObject>
+      <enableHistoryTool>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>enableHistoryTool</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Enable history tool for</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>view|edit</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </enableHistoryTool>
+      <enablePdfTool>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>enablePdfTool</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>Enable PDF export for</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>view|edit</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </enablePdfTool>
+      <enableTocTool>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>enableTocTool</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>Enable table of contents for</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>view|edit</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </enableTocTool>
+    </class>
+    <name>data.WebHome</name>
+    <number>0</number>
+    <className>ClinicalInformationCode.MenuConfigurationClass</className>
+    <guid>522661a1-1a9a-4d2f-937e-a959d53a4ef7</guid>
+    <property>
+      <enableDeleteTool>
+        <value>view</value>
+      </enableDeleteTool>
+    </property>
+    <property>
+      <enableEditTool>
+        <value>view</value>
+        <value>edit</value>
+      </enableEditTool>
+    </property>
+    <property>
+      <enableForObject/>
+    </property>
+    <property>
+      <enableHistoryTool>
+        <value>view</value>
+        <value>edit</value>
+      </enableHistoryTool>
+    </property>
+    <property>
+      <enablePdfTool>
+        <value>view</value>
+      </enablePdfTool>
+    </property>
+    <property>
+      <enableTocTool>
+        <value>edit</value>
+      </enableTocTool>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.ConfigurableClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <codeToExecute>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>codeToExecute</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>codeToExecute</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </codeToExecute>
+      <configurationClass>
+        <disabled>0</disabled>
+        <name>configurationClass</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>configurationClass</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </configurationClass>
+      <configureGlobally>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>configureGlobally</name>
+        <number>4</number>
+        <prettyName>configureGlobally</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </configureGlobally>
+      <displayInSection>
+        <disabled>0</disabled>
+        <name>displayInSection</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>displayInSection</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInSection>
+      <heading>
+        <disabled>0</disabled>
+        <name>heading</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>heading</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </heading>
+      <iconAttachment>
+        <disabled>0</disabled>
+        <name>iconAttachment</name>
+        <number>8</number>
+        <picker>0</picker>
+        <prettyName>iconAttachment</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </iconAttachment>
+      <linkPrefix>
+        <disabled>0</disabled>
+        <name>linkPrefix</name>
+        <number>5</number>
+        <picker>0</picker>
+        <prettyName>linkPrefix</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </linkPrefix>
+      <propertiesToShow>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>propertiesToShow</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>propertiesToShow</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>20</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </propertiesToShow>
+    </class>
+    <name>data.WebHome</name>
+    <number>0</number>
+    <className>XWiki.ConfigurableClass</className>
+    <guid>73d1fb26-3da7-4f17-91be-25c84b0282f3</guid>
+    <property>
+      <codeToExecute/>
+    </property>
+    <property>
+      <configurationClass>ClinicalInformationCode.DBConfigurationClass</configurationClass>
+    </property>
+    <property>
+      <configureGlobally>0</configureGlobally>
+    </property>
+    <property>
+      <displayInSection>DBConfig</displayInSection>
+    </property>
+    <property>
+      <heading>Database and form configuration</heading>
+    </property>
+    <property>
+      <iconAttachment>clinicaldata.png</iconAttachment>
+    </property>
+    <property>
+      <linkPrefix/>
+    </property>
+    <property>
+      <propertiesToShow>
+        <value>patientClass</value>
+        <value>patientTemplate</value>
+        <value>idField</value>
+        <value>idPrefix</value>
+        <value>livetableColumns</value>
+        <value>tagProperty</value>
+        <value>activeSections</value>
+        <value>activeFields</value>
+        <value>mandatoryFields</value>
+        <value>dateOfBirthFormat</value>
+        <value>relativeReportHint</value>
+        <value>phenotypeMapping</value>
+        <value>section__measurements</value>
+        <value>section__variant-info</value>
+      </propertiesToShow>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.ConfigurableClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <codeToExecute>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>codeToExecute</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>codeToExecute</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </codeToExecute>
+      <configurationClass>
+        <disabled>0</disabled>
+        <name>configurationClass</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>configurationClass</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </configurationClass>
+      <configureGlobally>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>configureGlobally</name>
+        <number>4</number>
+        <prettyName>configureGlobally</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </configureGlobally>
+      <displayInSection>
+        <disabled>0</disabled>
+        <name>displayInSection</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>displayInSection</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInSection>
+      <heading>
+        <disabled>0</disabled>
+        <name>heading</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>heading</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </heading>
+      <iconAttachment>
+        <disabled>0</disabled>
+        <name>iconAttachment</name>
+        <number>8</number>
+        <picker>0</picker>
+        <prettyName>iconAttachment</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </iconAttachment>
+      <linkPrefix>
+        <disabled>0</disabled>
+        <name>linkPrefix</name>
+        <number>5</number>
+        <picker>0</picker>
+        <prettyName>linkPrefix</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </linkPrefix>
+      <propertiesToShow>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>propertiesToShow</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>propertiesToShow</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>20</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </propertiesToShow>
+    </class>
+    <name>data.WebHome</name>
+    <number>1</number>
+    <className>XWiki.ConfigurableClass</className>
+    <guid>fe29a271-94ae-433b-8b46-fde8f028f1f8</guid>
+    <property>
+      <codeToExecute/>
+    </property>
+    <property>
+      <configurationClass>ClinicalInformationCode.MenuConfigurationClass</configurationClass>
+    </property>
+    <property>
+      <configureGlobally>0</configureGlobally>
+    </property>
+    <property>
+      <displayInSection>MenuConfig</displayInSection>
+    </property>
+    <property>
+      <heading>Menu configuration</heading>
+    </property>
+    <property>
+      <iconAttachment/>
+    </property>
+    <property>
+      <linkPrefix/>
+    </property>
+    <property>
+      <propertiesToShow/>
+    </property>
+  </object>
+  <content>{{include document="ClinicalInformationCode.DBWebHomeSheet" /}}</content>
+</xwikidoc>
