@@ -1145,7 +1145,7 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
 #end
   &lt;div id="company"&gt;
   &lt;div id="companylogo"&gt;
-    &lt;a href="$!xwiki.getURL('Main.WebHome')" title="Home" rel="home"&gt;
+    &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;
 #if("$!{themeDocFullName}" == '')
   #set($themeDocFullName = "$!xwiki.getUserPreference('colorTheme')")
 #end
