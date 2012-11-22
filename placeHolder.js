@@ -109,5 +109,171 @@ var PlaceHolder = Class.create(AbstractPerson, {
     remove: function($super) {
         editor.getGraph().removePlaceHolder(this);
         return $super()
+    },
+
+    /*
+     * Generates an actionStack entry for merging with a person and calls merge
+     * @param person the Person this placeholder is merged with
+     */
+    mergeAction: function(person, originalX, originalY) {
+        var me = this,
+            source = this.getInfo(),
+            target = person.getInfo(),
+            parentPreg = this.getParentPregnancy() ? this.getParentPregnancy().getInfo() : null;
+        var phPartnerships = [];
+        var phPregnancies = [];
+        me.getPartnerships().each(function(partnership) {
+            phPartnerships.push({
+                id: partnership.getID(),
+                x: partnership.getX(),
+                y: partnership.getY(),
+                partnerID: partnership.getPartnerOf(me).getID()
+            });
+            partnership.getPregnancies().each(function(pregnancy) {
+                var info = {
+                    id: pregnancy.getID(),
+                    x: pregnancy.getX(),
+                    y: pregnancy.getY(),
+                    partnershipID: pregnancy.getPartnership().getID(),
+                    childrenIDs: []
+                };
+                pregnancy.getChildren().each(function(child) {
+                    info.childrenIDs.push(child.getID());
+                });
+                phPregnancies.push(info);
+            });
+        });
+
+        var oldPartnerships = [];
+        var oldPregnancies = [];
+
+        person.getPartnerships().each(function(partnership) {
+            oldPartnerships.push(partnership.getID());
+            partnership.getPregnancies().each(function(pregnancy) {
+                oldPregnancies.push(pregnancy.getID())
+            });
+        });
+
+        if(this.merge(person)) {
+            var newParentPreg = person.getParentPregnancy();
+            if(newParentPreg) {
+                newParentPreg = newParentPreg.getInfo();
+            }
+            var newPartnerships = [];
+            var newPregnancies = [];
+            person.getPartnerships().each(function(partnership) {
+                if(oldPartnerships.indexOf(partnership.getID()) == -1) {
+                    newPartnerships.push({
+                        id: partnership.getID(),
+                        x: partnership.getX(),
+                        y: partnership.getY(),
+                        partnerID: partnership.getPartnerOf(person).getID()
+                    });
+                }
+                partnership.getPregnancies().each(function(pregnancy) {
+                    if(oldPregnancies.indexOf(pregnancy.getID()) == -1) {
+                        var info = {
+                            id: pregnancy.getID(),
+                            x: pregnancy.getX(),
+                            y: pregnancy.getY(),
+                            partnershipID: pregnancy.getPartnership().getID(),
+                            childrenIDs: []
+                        };
+                        pregnancy.getChildren().each(function(child) {
+                            info.childrenIDs.push(child.getID());
+                        });
+                        newPregnancies.push(info);
+
+                    }
+                });
+            });
+
+            var undoFunct = function() {
+                var ph = editor.getGraph().addPlaceHolder(source.x, source.y, source.gender, source.id);
+                if(parentPreg && newParentPreg) {
+                    var pPregnancy = editor.getGraph().getNodeMap()[newParentPreg.id];
+                    var pPartnership;
+                    if(pPregnancy) {
+                        pPartnership = pPregnancy.getPartnership();
+                        pPregnancy.remove(false);
+                    }
+                    if(pPartnership) {
+                        var ppreg = editor.getGraph().addPregnancy(parentPreg.x, parentPreg.y, pPartnership,
+                            parentPreg.id);
+                        ppreg.addChild(ph);
+                    }
+                }
+                newPregnancies.each(function(pregnancy) {
+                    var preg = editor.getGraph().getNodeMap()[pregnancy.id];
+                    preg && preg.remove(false);
+                });
+                newPartnerships.each(function(partnership) {
+                    var part = editor.getGraph().getNodeMap()[partnership.id];
+                    part && part.remove(false);
+                });
+
+                phPartnerships.each(function(partnership) {
+                    var partner = editor.getGraph().getNodeMap()[partnership.partnerID];
+                    if(partner) {
+                        editor.getGraph().addPartnership(partnership.x, partnership.y, ph, partner);
+                    }
+                });
+
+                phPregnancies.each(function(pregnancy) {
+                    var partnership = editor.getGraph().getNodeMap()[pregnancy.partnershipID];
+                    if(partnership) {
+                        var preg  = editor.getGraph().addPregnancy(pregnancy.x, pregnancy.y, partnership, pregnancy.id);
+                        pregnancy.childrenIDs.each(function(child) {
+                            var c = editor.getGraph().getNodeMap()[child];
+                            c && preg.addChild(c);
+                        });
+                    }
+                });
+
+                ph.setPos(originalX,originalY, true);
+            };
+
+            var redoFunct = function() {
+                var targetPerson = editor.getGraph().getNodeMap()[target.id];
+                if(parentPreg && newParentPreg) {
+                    var pPregnancy = editor.getGraph().getNodeMap()[parentPreg.id];
+                    var pPartnership;
+                    if(pPregnancy) {
+                        pPartnership = pPregnancy.getPartnership();
+                        pPregnancy.remove(false);
+                    }
+                    if(pPartnership) {
+                        var ppreg = editor.getGraph().addPregnancy(newParentPreg.x, newParentPreg.y, pPartnership,
+                                                                                                    newParentPreg.id);
+                        ppreg.addChild(targetPerson);
+                    }
+                }
+                if(targetPerson) {
+                    phPregnancies.each(function(pregnancy) {
+                        var preg = editor.getGraph().getNodeMap()[pregnancy.id];
+                        preg && preg.remove(false);
+                    });
+                    phPartnerships.each(function(partnership) {
+                        var part = editor.getGraph().getNodeMap()[partnership.id];
+                        part && part.remove(false);
+                    });
+                    newPartnerships.each(function(partnership) {
+                        var partner = editor.getGraph().getNodeMap()[partnership.partnerID];
+                        if(partner) {
+                            editor.getGraph().addPartnership(partnership.x, partnership.y, partner,
+                                                                                targetPerson, partnership.id)
+                        }
+                    });
+
+                    newPregnancies.each(function(pregnancy) {
+                        var partnership = editor.getGraph().getNodeMap()[pregnancy.partnershipID];
+                        if(partnership) {
+                            editor.getGraph().addPregnancy(pregnancy.x, pregnancy.y, partnership, pregnancy.id)
+                        }
+                    })
+                }
+            };
+            editor.getActionStack().push({undo: undoFunct, redo: redoFunct});
+        }
     }
 });

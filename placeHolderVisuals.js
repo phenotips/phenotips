@@ -76,7 +76,7 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
                     var node = me.getNode().validHoveredNode;
                     me.getNode().validHoveredNode = null;
                     if(node) {
-                        me.getNode().merge(node);
+                        me.getNode().mergeAction(node, absOx, absOy);
                     }
                     else {
                         me.isAnimating = true;
