@@ -160,10 +160,12 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @partner can be a Person or a PlaceHolder
      */
     getPartnership: function(partner) {
-        var partnerships = this.getPartnerships();
-        for(var i = 0; i < partnerships.length; i++) {
-            if(partnerships[i].getPartnerOf(this) == partner) {
-                return partnerships[i];
+        if(partner) {
+            var partnerships = this.getPartnerships();
+            for(var i = 0; i < partnerships.length; i++) {
+                if(partnerships[i].getPartnerOf(this).getID() == partner.getID()) {
+                    return partnerships[i];
+                }
             }
         }
         return null;
@@ -199,7 +201,15 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @param partnership is a Partnership object with this node as one of the partners
      */
     removePartnership: function(partnership) {
-        this._partnershipNodes = this._partnershipNodes.without(partnership);
+        if(partnership) {
+            var target = null;
+            this._partnershipNodes.each(function(p) {
+                if(p.getID() == partnership.getID())
+                    target = p;
+            });
+            if(target)
+                this._partnershipNodes = this._partnershipNodes.without(target);
+        }
     },
 
     /*
@@ -353,7 +363,13 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @param otherNode can be a Person or a PlaceHolder
      */
     isPartnerOf: function(otherNode) {
-        return this.getPartners().indexOf(otherNode) > -1;
+        if(otherNode) {
+            for(var i = 0; i < this.getPartners().length; i++) {
+                if(this.getPartners()[i].getID() == otherNode.getID())
+                    return true;
+            }
+        }
+        return false;
     },
 
     /*
