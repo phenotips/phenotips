@@ -230,8 +230,11 @@ var Partnership = Class.create(AbstractNode, {
      * @param someNode is an AbstractPerson
      */
     removeChild: function(someNode) {
-        var pregnancy = someNode.getParentPregnancy();
-        pregnancy && pregnancy.removeChild(someNode);
+        if(someNode) {
+            var pregnancy = someNode.getParentPregnancy();
+            if(pregnancy && this.hasPregnancy(pregnancy))
+                pregnancy && pregnancy.removeChild(someNode);
+        }
         return someNode;
     },
 
