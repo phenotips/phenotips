@@ -158,6 +158,17 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         this.getChildlessShape() && this.getChildlessShape().remove();
         this.getChildlessStatusLabel() && this.getChildlessStatusLabel().remove();
     },
+//
+//    /*
+//     * Returns color and style attributes for a connection based on the type of the connection and type of the node.
+//     * PlaceHolder connections have a dash-array stroke.
+//     *
+//     * @param node the node for which the connection is being drawn
+//     * @param type can be either "partner" or "child"
+//     */
+//    getConnectionAttributes: function(node, type) {
+//        return {"stroke-width": 2, stroke : '#2E2E56'};
+//    },
 
     getShapes: function($super) {
         return $super().push(this.getJunctionShape());
