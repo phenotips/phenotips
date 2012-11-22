@@ -68,13 +68,13 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /*
-     * Replaces the parents Partnership with partnership
+     * Replaces the parent Pregnancy
      *
-     * @param partnership is a Partnership object
+     * @param pregnancy is a Pregnancy object
      */
-    setParentPartnership: function($super, partnership) {
-        $super(partnership);
-        if(partnership) {
+    setParentPregnancy: function($super, pregnancy) {
+        $super(pregnancy);
+        if(pregnancy) {
             this.getGraphics().getHoverBox().hideParentHandle();
         }
         else {
