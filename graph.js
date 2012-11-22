@@ -8,6 +8,7 @@ var Graph = Class.create({
         this._personGroupNodes = [];
         this._personNodes = [];
         this.idCount = 1;
+        this._nodeMap = {};
 
         var w = editor.getWorkspace().getWidth();
         var h = editor.getWorkspace().getHeight();
@@ -15,6 +16,10 @@ var Graph = Class.create({
 
         this._currentHoveredNode = null;
         this._currentDraggable = null;
+    },
+
+    getNodeMap: function() {
+        return this._nodeMap;
     },
 
     getCurrentHoveredNode: function() {
@@ -41,8 +46,9 @@ var Graph = Class.create({
         return this._proband;
     },
 
-    addPartnership : function(x, y, node1, node2) {
-        var partnership = new Partnership(x, y, node1, node2);
+    addPartnership : function(x, y, node1, node2, id) {
+        var partnership = new Partnership(x, y, node1, node2, id);
+        this.getNodeMap()[partnership.getID()] = partnership;
         editor.getNodeIndex()._addNode(partnership, true);
         this._partnershipNodes.push(partnership);
         return partnership;
@@ -78,6 +84,7 @@ var Graph = Class.create({
         }
         var node = new Person(x, y, gender, id, isProband);
         this.getPersonNodes().push(node);
+        this.getNodeMap()[node.getID()] = node;
         editor.getNodeIndex()._addNode(node, true);
         return node;
     },
@@ -89,6 +96,7 @@ var Graph = Class.create({
     addPlaceHolder: function(x, y, gender, id) {
         var node = new PlaceHolder(x, y, gender, id);
         this.getPlaceHolderNodes().push(node);
+        this.getNodeMap()[node.getID()] = node;
         editor.getNodeIndex()._addNode(node, true);
         return node;
     },
@@ -100,6 +108,7 @@ var Graph = Class.create({
     addPersonGroup: function(x, y, id) {
         var node = new PersonGroup(x, y, id);
         this.getPersonGroupNodes().push(node);
+        this.getNodeMap()[node.getID()] = node;
         editor.getNodeIndex()._addNode(node, true);
         return node;
     },
@@ -111,6 +120,7 @@ var Graph = Class.create({
     addPregnancy: function(x, y, partnership, id) {
         var node = new Pregnancy(x, y, partnership, id);
         this.getPregnancyNodes().push(node);
+        this.getNodeMap()[node.getID()] = node;
         editor.getNodeIndex()._addNode(node, true);
         return node;
     },
