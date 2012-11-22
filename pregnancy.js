@@ -19,6 +19,7 @@ var Pregnancy = Class.create(AbstractNode, {
         this._type = 'Pregnancy';
         $super(x, y, id);
         this._gender = "U";
+        partnership.addPregnancy(this);
     },
 
     /*

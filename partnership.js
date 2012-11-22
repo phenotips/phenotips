@@ -146,6 +146,24 @@ var Partnership = Class.create(AbstractNode, {
     },
 
     /*
+     * Adds pregnancy to list of pregnancies associated with this partnership
+     */
+    addPregnancy: function(pregnancy) {
+        if(pregnancy && pregnancy.getType() == "Pregnancy") {
+            var newPreg = true;
+            this.getPregnancies().each(function(preg){
+                if(preg.getID() == pregnancy.getID()) {
+                    newPreg = false;
+                    throw $break;
+                }
+            });
+            newPreg && this.getPregnancies().push(pregnancy);
+            return pregnancy;
+        }
+        return null;
+    },
+
+    /*
      * Removes pregnancy from the list of pregnancies associated with this partnership
      */
     removePregnancy: function(pregnancy) {
