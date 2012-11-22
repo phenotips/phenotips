@@ -76,14 +76,16 @@ var Partnership = Class.create(AbstractNode, {
      * @param someNode is an AbstractPerson
      */
     getPartnerOf: function(someNode) {
-        if(someNode == this.getPartners()[0]) {
-            return this.getPartners()[1];
-        }
-        else if(someNode == this.getPartners()[1]) {
-            return this.getPartners()[0];
-        }
-        else {
-            return null;
+        if(someNode) {
+            if(someNode.getID() == this.getPartners()[0].getID()) {
+                return this.getPartners()[1];
+            }
+            else if(someNode.getID() == this.getPartners()[1].getID()) {
+                return this.getPartners()[0];
+            }
+            else {
+                return null;
+            }
         }
     },
 
@@ -175,7 +177,13 @@ var Partnership = Class.create(AbstractNode, {
     },
 
     hasPregnancy: function(pregnancy) {
-        return this.getPregnancies().indexOf(pregnancy) > -1;
+        if(pregnancy) {
+            for(var i; i<this.getPregnancies().length; i++) {
+                if(this.getPregnancies()[i].getID() == pregnancy.getID())
+                    return true;
+            }
+        }
+        return false;
     },
 
     /*
