@@ -53,27 +53,26 @@ var PlaceHolder = Class.create(AbstractPerson, {
 
             partnerships.each(function(partnership){
                 var partner = partnership.getPartnerOf(me);
+                var newPartnership;
                 if(person.getPartners().indexOf(partner) == -1) {
-                    var newPartnership = person.addPartner(partnership.getPartnerOf(me), true);
-                    partnership.getChildren().each(function(child){
-                        partnership.removeChild(child);
-                        newPartnership.addChild(child);
-                    });
+                    newPartnership = person.addPartner(partnership.getPartnerOf(me), true);
                 }
                 else {
-                    var redundantPartnership = person.getPartnership(partner),
-                        existingChildren = redundantPartnership.getChildren();
-                    partnership.getChildren().each(function(child){
-                        if(existingChildren.indexOf(child) == -1) {
-                            partnership.removeChild(child);
-                            redundantPartnership.addChild(child);
-                        }
-                    });
-                partnership.remove();
+                    newPartnership = person.getPartnership(partner)
                 }
+                partnership.getPregnancies().each(function(pregnancy) {
+                    var newPreg = newPartnership.createPregnancy();
+                    pregnancy.getChildren().each(function(child) {
+                        pregnancy.removeChild(child);
+                        newPreg.addChild(child);
+                    });
+                });
+                partnership.remove(false);
             });
             me && me.remove(false);
+            return person;
         }
+        return null;
     },
 
     /*
