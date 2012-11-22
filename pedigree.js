@@ -40,6 +40,16 @@ var PedigreeEditor = Class.create({
         this._legend = new Legend();
         this._nodeIndex = new NodeIndex();
         this._graph = new Graph();
+        this._actionStack = new ActionStack();
+
+        var undoButton = $('action-undo');
+        undoButton && undoButton.on("click", function(event) {
+            editor.getActionStack().undo();
+        });
+        var redoButton = $('action-redo');
+        redoButton && redoButton.on("click", function(event) {
+            editor.getActionStack().redo();
+        });
     },
 
     /*
@@ -47,6 +57,10 @@ var PedigreeEditor = Class.create({
      */
     getGraph: function() {
         return this._graph;
+    },
+
+    getActionStack: function() {
+        return this._actionStack;
     },
 
     /*
