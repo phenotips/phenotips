@@ -309,51 +309,6 @@ var AbstractHoverbox = Class.create({
     },
 
     /*
-     * Performs the appropriate action for clicking on the handle of type handleType
-     *
-     * @param handleType can be either "child", "partner" or "parent"
-     */
-    handleAction : function(handleType, isDrag) {
-        var curHovered = editor.getGraph().getCurrentHoveredNode();
-        if(isDrag && curHovered) {
-            if(curHovered.validPartnerSelected) {
-                curHovered.validPartnerSelected = false;
-                this.getNode().addPartner(curHovered);
-            }
-            else if(curHovered.validChildSelected) {
-                curHovered.validChildSelected = false;
-                this.getNode().addChild(curHovered);
-
-            }
-            else if(curHovered.validParentSelected) {
-                curHovered.validParentSelected = false;
-                this.getNode().addParent(curHovered);
-            }
-            else if(curHovered.validParentsSelected) {
-                curHovered.validParentsSelected = false;
-                this.getNode().addParents(curHovered);
-            }
-        }
-        else if (!isDrag) {
-            if(handleType == "partner") {
-                this.getNode().createPartner(false);
-            }
-            else if(handleType == "child") {
-                //this.getNode().createChild();
-                var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + editor.attributes.radius * 2.3));
-                editor.getNodeTypeOptions().show(this.getNode(), position.x, position.y);
-                this.disable();
-            }
-            else if(handleType == "parent") {
-                this.getNode().createParents();
-            }
-            curHovered && curHovered.getGraphics().getHoverBox().getBoxOnHover().attr(editor.attributes.boxOnHover);
-        }
-        editor.getGraph().setCurrentHoveredNode(null);
-        editor.getGraph().setCurrentDraggable(null);
-    },
-
-    /*
      * Hides the child handle
      */
     hideChildHandle: function() {

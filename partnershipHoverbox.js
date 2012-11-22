@@ -79,5 +79,53 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         else {
             editor.getPartnershipMenu().hide();
         }
+    },
+
+    /*
+     * Performs the appropriate action for clicking on the handle of type handleType
+     *
+     * @param handleType can be either "child", "partner" or "parent"
+     */
+    handleAction : function(handleType, isDrag) {
+        var curHovered = editor.getGraph().getCurrentHoveredNode();
+        if(isDrag && curHovered && curHovered.validChildSelected) {
+            curHovered.validChildSelected = false;
+            this.addChildAction(this.getNode().addChild(curHovered));
+        }
+        else if (!isDrag && handleType == "child") {
+            //this.getNode().createChild();
+            var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + editor.attributes.radius * 2.3));
+            editor.getNodeTypeOptions().show(this.getNode(), position.x, position.y);
+            this.disable();
+            curHovered && curHovered.getGraphics().getHoverBox().getBoxOnHover().attr(editor.attributes.boxOnHover);
+        }
+        editor.getGraph().setCurrentHoveredNode(null);
+        editor.getGraph().setCurrentDraggable(null);
+    },
+
+    /*
+     * Generates an actionStack entry for adding a child
+     * @param child the child that is being added to this partnership
+     */
+    addChildAction: function(child) {
+        if(child) {
+            var childID = child.getID(),
+                preg = child.getParentPregnancy().getInfo(),
+                part = preg.getPartnership().getInfo();
+
+            var redoFunct = function() {
+                var source = editor.getGraph().getNodeMap()[part.partnershipID];
+                var theChild = editor.getGraph().getNodeMap()[childID];
+                if(source && theChild) {
+                    var pregnancy = editor.getGraph().addPregnancy(preg.x, preg.y, source, preg.id);
+                    pregnancy.addChild(theChild);
+                }
+            };
+            var undoFunct = function() {
+                var pregnancy = editor.getGraph().getNodeMap()[preg.id];
+                pregnancy && pregnancy.remove(false);
+            };
+            editor.getActionStack().push({undo: undoFunct, redo: redoFunct});
+        }
     }
 });
