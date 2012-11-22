@@ -288,6 +288,13 @@ var Partnership = Class.create(AbstractNode, {
             childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none'},
             childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none'}
         };
+    },
+
+    getInfo: function($super) {
+        var info = $super();
+        info['partner1ID'] = this.getPartners()[0].getID();
+        info['partner2ID'] = this.getPartners()[1].getID();
+        return info;
     }
 });
 

@@ -440,5 +440,11 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     getUpperNeighbors: function() {
         return this.getParentPregnancy() ? [this.getParentPregnancy()] : [];
+    },
+
+    getInfo: function($super) {
+        var info = $super();
+        info['gender'] = this.getGender();
+        return info;
     }
 });

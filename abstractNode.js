@@ -192,6 +192,10 @@ var AbstractNode = Class.create( {
         }
     },
 
+    getInfo: function() {
+        return {x: this.getX(), y : this.getY(), id: this.getID()}
+    },
+
     onWidgetHide: function() {
         this.getGraphics().getHoverBox().onWidgetHide();
     }

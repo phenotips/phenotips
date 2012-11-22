@@ -272,5 +272,11 @@ var Pregnancy = Class.create(AbstractNode, {
      */
     updateActive: function() {
         this.setActive(this.getChildren("PlaceHolder", "PersonGroup").length == 0);
+    },
+
+    getInfo: function($super) {
+        var info = $super();
+        info['partnershipID'] = this.getPartnership().getID();
+        return info;
     }
 });
