@@ -225,7 +225,7 @@ var AbstractPerson = Class.create(AbstractNode, {
             var partnership = editor.getGraph().addPartnership(joinPosition.x, joinPosition.y, mother, father);
             
             //document.fire('pedigree:parents:added', {'node' : partnership, 'relatedNodes' : [mother, father], 'sourceNode' : this});
-            this.addParents(partnership);
+            return this.addParents(partnership);
         }
     },
 
@@ -236,12 +236,14 @@ var AbstractPerson = Class.create(AbstractNode, {
         if(this.getParentPartnership() == null) {
             partnership.addChild(this);
         }
+        return partnership;
     },
 
     addParent: function(parent) {
         if(parent.canBeParentOf(this)) {
             var partnership = parent.createPartner(true, true);
             partnership.addChild(this);
+            return partnership;
         }
     },
 
