@@ -14,7 +14,6 @@ var AbstractPerson = Class.create(AbstractNode, {
     initialize: function($super, x, y, gender, id) {
         this._partnershipNodes = [];
         this._gender = this.parseGender(gender);
-        this._parentPartnership = null;
         this._parentPregnancy = null;
         $super(x, y, id);
         this._type = "AbstractPerson"
@@ -34,7 +33,11 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Returns a Partnership containing the parent nodes
      */
     getParentPartnership: function() {
-        return this._parentPartnership;
+        var preg = this.getParentPregnancy();
+        if(preg) {
+            return preg.getPartnership();
+        }
+        return null;
     },
 
     /*
@@ -60,8 +63,6 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     setParentPregnancy: function(pregnancy) {
             this._parentPregnancy = pregnancy;
-            var partnership = (pregnancy) ? pregnancy.getPartnership() : null;
-            this.setParentPartnership(partnership)
     },
 
     /*
