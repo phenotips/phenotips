@@ -514,7 +514,7 @@ $xwiki.ssx.use('XWiki.TagCloud', {'colorTheme' : "$xwiki.getSpacePreference('col
 #end
 ##
 ## Display tag cloud.
-{{html}}
+{{html clean="false"}}
 &lt;div class="value-cloud-box#if ($collapsed) collapse#{end}"&gt;
 #if ($tagCount.size() &gt; 0)
   &lt;div class="instructions"&gt;Click on the ${property} values displayed to select them as filters for the results displayed in the table, and click again to unselect them. &lt;/div&gt;

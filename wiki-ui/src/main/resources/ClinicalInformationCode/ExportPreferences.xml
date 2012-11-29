@@ -27,7 +27,7 @@
 
 {{velocity output=false}}
 #macro(__export__displayFieldList $xclassName $targetFieldName $customValues $ignored $codeFields $valueList)
-  {{html}}
+  {{html clean="false"}}
     #set($xclass = $xwiki.getDocument($xclassName).getxWikiClass())
     &lt;ul class="field-list"&gt;
       #foreach($customVal in $customValues.keySet())
@@ -88,7 +88,7 @@
 )))##section columns
 
 (% class="buttons"%)(((
-{{html}}&lt;input type="hidden" name="space" value="$!request.space"/&gt;&lt;input type="hidden" name="outputSyntax" value="plain"/&gt;&lt;span class="buttonwrapper"&gt;&lt;input type="submit" value="Export" class="button" id="export_submit"/&gt;&lt;/span&gt; &lt;span class="buttonwrapper"&gt;&lt;input type="button" value="Cancel" class="button secondary" id="export_cancel"/&gt;&lt;/span&gt;{{/html}}
+{{html clean="false"}}&lt;input type="hidden" name="space" value="$!request.space"/&gt;&lt;input type="hidden" name="outputSyntax" value="plain"/&gt;&lt;span class="buttonwrapper"&gt;&lt;input type="submit" value="Export" class="button" id="export_submit"/&gt;&lt;/span&gt; &lt;span class="buttonwrapper"&gt;&lt;input type="button" value="Cancel" class="button secondary" id="export_cancel"/&gt;&lt;/span&gt;{{/html}}
 {{html clean="false"}}&lt;/div&gt;&lt;/form&gt;{{/html}}
 )))
 {{/velocity}}</content>

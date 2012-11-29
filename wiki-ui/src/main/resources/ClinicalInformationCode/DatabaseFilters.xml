@@ -45,7 +45,7 @@
 #end
 ##
 #macro (__filters_dateField $label $field_name $value)
-{{html}}&lt;label&gt;$label &lt;span class="xHint"&gt;(empty means no constraint)&lt;/span&gt;&lt;input class="xwiki-date" type="text" alt="#if($value)#formatdateISO($value)#end" value="$!xwiki.formatDate($value, $definedFormat)" name="${field_name}" title="${dateFormat}" /&gt;&lt;/label&gt;{{/html}}
+{{html clean="false"}}&lt;label&gt;$label &lt;span class="xHint"&gt;(empty means no constraint)&lt;/span&gt;&lt;input class="xwiki-date" type="text" alt="#if($value)#formatdateISO($value)#end" value="$!xwiki.formatDate($value, $definedFormat)" name="${field_name}" title="${dateFormat}" /&gt;&lt;/label&gt;{{/html}}
 #end
 
 #macro(__filters_display $cssClass)
@@ -57,12 +57,12 @@
 #end
 #if ($activeFields.contains('omim_id'))
   * By **disease**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all diseases are considered)&lt;/p&gt;&lt;input type="text" class="suggest multi suggestOmim generateCheckboxes" name="omim_id" value=""/&gt;{{/html}}
-  ** Filter records presenting {{html}}&lt;label&gt;&lt;input type="radio" name="omim_id/join_mode" value="AND"/&gt;all&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="omim_id/join_mode" value="OR" checked="checked"/&gt;at least one&lt;/label&gt;{{/html}} of the selected diseases.
+  ** Filter records presenting {{html clean="false"}}&lt;label&gt;&lt;input type="radio" name="omim_id/join_mode" value="AND"/&gt;all&lt;/label&gt; &lt;label&gt;&lt;input type="radio" name="omim_id/join_mode" value="OR" checked="checked"/&gt;at least one&lt;/label&gt;{{/html}} of the selected diseases.
 #end
 #if ($activeFields.contains('phenotype'))
-  * By **phenotype**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all phenotypes are considered)&lt;/p&gt;&lt;input type="text" class="suggest multi suggestHpo generateCheckboxes" name="phenotype" value=""/&gt;{{/html}}
-  ** Filter records presenting {{html}}&lt;label&gt;&lt;input type="radio" name="phenotype/join_mode" value="AND"/&gt;all&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="phenotype/join_mode" value="OR" checked="checked"/&gt;at least one&lt;/label&gt;{{/html}} of the selected phenotypes.
-  ** Filter records {{html}}&lt;label&gt;&lt;input type="radio" name="phenotype_subterms" value="yes" checked="checked"/&gt;with all subcategories of&lt;/label&gt;{{/html}} {{html}}&lt;label&gt;&lt;input type="radio" name="phenotype_subterms" value="no"/&gt;only matching exactly &lt;/label&gt;{{/html}} the selected phenotypes.
+  * By **phenotype**: {{html clean="false"}}&lt;p class="xHint"&gt;(an empty value list means all phenotypes are considered)&lt;/p&gt;&lt;input type="text" class="suggest multi suggestHpo generateCheckboxes" name="phenotype" value=""/&gt;{{/html}}
+  ** Filter records presenting {{html clean="false"}}&lt;label&gt;&lt;input type="radio" name="phenotype/join_mode" value="AND"/&gt;all&lt;/label&gt; &lt;label&gt;&lt;input type="radio" name="phenotype/join_mode" value="OR" checked="checked"/&gt;at least one&lt;/label&gt;{{/html}} of the selected phenotypes.
+  ** Filter records {{html clean="false"}}&lt;label&gt;&lt;input type="radio" name="phenotype_subterms" value="yes" checked="checked"/&gt;with all subcategories of&lt;/label&gt; &lt;label&gt;&lt;input type="radio" name="phenotype_subterms" value="no"/&gt;only matching exactly &lt;/label&gt;{{/html}} the selected phenotypes.
 #end
 #end
 {{/velocity}}</content>

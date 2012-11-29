@@ -4305,11 +4305,11 @@ table.extradata-list td.bmi_percentile {
 ##
 ##
 #macro (__extradata_deleteTool $object $anchor)
-  {{html}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="Delete"&gt;✖&lt;/a&gt;&lt;/span&gt;{{/html}}##
+  {{html clean="false"}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="Delete"&gt;✖&lt;/a&gt;{{/html}}##
 #end
 
 #macro (__extradata_addTool $classname $anchor)
-  {{html}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
+  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
 
 #macro (__extradata_displayTable $dataClassName $options)
   #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
