@@ -109,6 +109,8 @@ var PregnancyVisuals = Class.create(AbstractNodeVisuals, {
         this.getNode().getChildren().each(function(child) {
             me.updateChildConnection(child, child.getX(), child.getY(), x, y,  animate)
         });
+        var p = this.getNode().getPartnership();
+        p.getGraphics().updatePregnancyConnection(this.getNode(), x, y, p.getX(), p.getY(), animate);
 
         if(animate) {
             this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getX()) + "," + (y-this.getY()) + "..."},
