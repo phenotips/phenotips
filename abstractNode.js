@@ -70,7 +70,7 @@ var AbstractNode = Class.create( {
      * @param callback the function called at the end of the animation
      */
     setY: function(y, animate, callback) {
-        this.getGraphics().setX(y, animate, callback)
+        this.getGraphics().setY(y, animate, callback)
     },
 
     /*

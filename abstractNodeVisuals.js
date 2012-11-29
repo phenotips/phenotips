@@ -51,7 +51,7 @@ var AbstractNodeVisuals = Class.create({
      * @param callback the function called at the end of the animation
      */
     setY: function(y, animate, callback) {
-        this.setPos(y, this.getX(), animate, callback);
+        this.setPos(this.getX(), y, animate, callback);
     },
 
     /*
