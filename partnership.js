@@ -321,6 +321,8 @@ var Partnership = Class.create(AbstractNode, {
         var info = $super();
         info['partner1ID'] = this.getPartners()[0].getID();
         info['partner2ID'] = this.getPartners()[1].getID();
+        info['childlessStatus'] = this.getChildlessStatus();
+        info['childlessReason'] = this.getChildlessReason();
         return info;
     }
 });

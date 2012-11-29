@@ -278,6 +278,11 @@ var Pregnancy = Class.create(AbstractNode, {
     getInfo: function($super) {
         var info = $super();
         info['partnershipID'] = this.getPartnership().getID();
+        info['gender'] = this.getGender();
+        info['childrenIDs'] = [];
+        this.getChildren().each(function(child) {
+            info['childrenIDs'].push(child.getID());
+        });
         return info;
     }
 });

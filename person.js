@@ -475,6 +475,21 @@ var Person = Class.create(AbstractPerson, {
             childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive : this.isFetus()},
             childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive : this.isFetus()}
         };
+    },
+
+    getInfo: function($super) {
+        var info = $super();
+        info['fName'] = this.getFirstName();
+        info['lName'] = this.getLastName();
+        info['dob'] = this.getBirthDate();
+        info['disorders'] = this.getDisorders();
+        info['isAdopted'] = this.isAdopted();
+        info['lifeStatus'] = this.getLifeStatus();
+        info['dod'] = this.getDeathDate();
+        info['gestationAge'] = this.getGestationAge();
+        info['childlessStatus'] = this.getChildlessStatus();
+        info['childlessReason'] = this.getChildlessReason();
+        return info;
     }
 });
 
