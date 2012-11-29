@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
@@ -45,6 +46,10 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.MapSolrParams;
 import org.slf4j.Logger;
+import org.xwiki.cache.Cache;
+import org.xwiki.cache.CacheException;
+import org.xwiki.cache.CacheManager;
+import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -84,13 +89,23 @@ public class SolrScriptService implements ScriptService, Initializable
     /** The Solr server instance used. */
     private SolrServer server;
 
+    @Inject
+    private CacheManager cacheFactory;
+
+    private Cache<SolrDocument> cache;
+
     @Override
     public void initialize() throws InitializationException
     {
         try {
             this.server = new CommonsHttpSolrServer("http://localhost:8080/solr/");
+            this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
+
         } catch (MalformedURLException ex) {
             throw new InitializationException("Invalid URL specified for the Solr server: {}");
+        } catch (final CacheException ex) {
+            throw new InitializationException("Cannot create cache: " + ex.getMessage());
+
         }
     }
 
@@ -219,11 +234,16 @@ public class SolrScriptService implements ScriptService, Initializable
      */
     public SolrDocument get(final Map<String, String> fieldValues)
     {
-        SolrDocumentList all = search(fieldValues, 1, 0);
-        if (!all.isEmpty()) {
-            return all.get(0);
+        String cacheKey = dumpMap(fieldValues);
+        SolrDocument result = this.cache.get(cacheKey);
+        if (result == null) {
+            SolrDocumentList all = search(fieldValues, 1, 0);
+            if (all != null && !all.isEmpty()) {
+                result = all.get(0);
+                this.cache.set(cacheKey, result);
+            }
         }
-        return null;
+        return result;
     }
 
     /**
@@ -236,11 +256,7 @@ public class SolrScriptService implements ScriptService, Initializable
     {
         Map<String, String> queryParameters = new HashMap<String, String>();
         queryParameters.put(ID_FIELD_NAME, id);
-        SolrDocumentList all = search(queryParameters, 1, 0);
-        if (all != null && !all.isEmpty()) {
-            return all.get(0);
-        }
-        return null;
+        return get(queryParameters);
     }
 
     /**
@@ -283,6 +299,7 @@ public class SolrScriptService implements ScriptService, Initializable
         try {
             this.server.deleteByQuery("*:*");
             this.server.commit();
+            this.cache.removeAll();
             return 0;
         } catch (SolrServerException ex) {
             this.logger.error("SolrServerException while clearing the Solr index", ex);
@@ -326,6 +343,7 @@ public class SolrScriptService implements ScriptService, Initializable
         try {
             this.server.add(allTerms);
             this.server.commit();
+            this.cache.removeAll();
             return 0;
         } catch (SolrServerException ex) {
             this.logger.warn("Failed to index ontology: {}", ex.getMessage());
@@ -453,5 +471,16 @@ public class SolrScriptService implements ScriptService, Initializable
         result.put("spellcheck.collate", Boolean.toString(true));
         result.put("spellcheck.onlyMorePopular", Boolean.toString(true));
         return result;
+    }
+
+    private String dumpMap(Map<String, ? > map)
+    {
+        StringBuilder out = new StringBuilder();
+        out.append('{');
+        for (Entry<String, ? > entry : map.entrySet()) {
+            out.append(entry.getKey() + ':' + entry.getValue() + '\n');
+        }
+        out.append('}');
+        return out.toString();
     }
 }

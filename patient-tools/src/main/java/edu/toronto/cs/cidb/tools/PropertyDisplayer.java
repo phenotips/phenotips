@@ -241,7 +241,7 @@ public class PropertyDisplayer
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put(INDEXED_PARENT_KEY, id);
-        return (((SolrScriptService) this.ontologyService).search(params, 1, 0).size() > 0);
+        return (((SolrScriptService) this.ontologyService).get(params) != null);
     }
 
     @SuppressWarnings("unchecked")
