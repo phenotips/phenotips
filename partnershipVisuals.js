@@ -101,12 +101,12 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         var yDistance = (pregY - partnershipY) * 0.8;
         var path = [["M", partnershipX, partnershipY],["l",0, yDistance],["l", xDistance,0], ["L", pregX, pregY]];
         preg.pregnancyConnectionPath = path;
-        if(this.getPartnership().hasPregnancy(preg) && preg.pregnancyConnection) {
+        if(this.getPartnership().hasPregnancy(preg) && preg.getGraphics().pregnancyConnection) {
             if(animate) {
-                preg.pregnancyConnection.animate({path: path}, 1000, "<>")
+                preg.getGraphics().pregnancyConnection.animate({path: path}, 1000, "<>")
             }
             else {
-                preg.pregnancyConnection.attr({path: path});
+                preg.getGraphics().pregnancyConnection.attr({path: path});
             }
         }
         else {
