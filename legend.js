@@ -125,8 +125,9 @@ var Legend = Class.create( {
                     removeFromLegend();
                 }
             }
+            else
+                this._displayCasesForDisorder(disorder['id']);
         }
-        this._displayCasesForDisorder(disorder['id']);
     },
     
     /**
