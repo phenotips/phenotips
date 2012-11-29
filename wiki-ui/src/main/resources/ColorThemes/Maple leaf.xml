@@ -2136,7 +2136,7 @@ kqIDRaFRz7IAAAAASUVORK5CYII=
     <className>XWiki.StyleSheetExtension</className>
     <guid>cb41c8fb-86f8-4de8-a525-a09d7aaae730</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>#headerglobal {

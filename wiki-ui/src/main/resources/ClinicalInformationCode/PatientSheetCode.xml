@@ -151,7 +151,7 @@
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -314,10 +314,10 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Fix for the incomplete ToC</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -552,10 +552,10 @@ document.observe('dom:loaded', function() {
       <name>Form behavior</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -790,10 +790,10 @@ document.observe('dom:loaded', function() {
       <name>Form validation</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -1434,7 +1434,7 @@ document.observe('dom:loaded', function() {
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -1628,7 +1628,7 @@ document.observe('xwiki:dom:loaded', function() {
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -1708,7 +1708,7 @@ document.observe('xwiki:dom:loaded', function() {
     <className>XWiki.JavaScriptExtension</className>
     <guid>762f626c-9e6e-4a95-89bd-0217053bf947</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>document.observe('xwiki:dom:loaded', function() {
@@ -2238,7 +2238,7 @@ document.observe('xwiki:dom:loaded', function() {
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -2413,10 +2413,10 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Expand/collapse categories</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -2686,7 +2686,7 @@ document.observe('xwiki:dom:loaded', function() {
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -2797,7 +2797,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Date Pickers</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -2936,10 +2936,10 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Touchscreen drag and drop</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -3038,7 +3038,7 @@ document.observe('xwiki:dom:loaded', function() {
       <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>

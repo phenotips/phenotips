@@ -100,7 +100,7 @@
     <className>XWiki.JavaScriptExtension</className>
     <guid>0e1a6de2-6050-432f-a39f-656bb3b90163</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>var MS = (function(MS){
@@ -1124,7 +1124,7 @@
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -1204,7 +1204,7 @@
     <className>XWiki.JavaScriptExtension</className>
     <guid>d12911da-ec96-4e6b-bee9-8e6a5673edf8</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>var MS = (function (MS) {
@@ -1460,10 +1460,10 @@
       <name>Multi-suggest</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -1543,7 +1543,7 @@
     <className>XWiki.JavaScriptExtension</className>
     <guid>8671764c-5e4b-4641-a1ae-0a77d30d8009</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>var MS = (function (MS) {
@@ -1857,10 +1857,10 @@ return MS;
       <name>Modified modal popup</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -1940,7 +1940,7 @@ return MS;
     <className>XWiki.JavaScriptExtension</className>
     <guid>d536b27d-9de4-4d3d-9bc8-e458d3274c16</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>var MS = (function (MS) {
@@ -2039,10 +2039,10 @@ return MS;
       <name>Solr Qoery Processor</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -2122,7 +2122,7 @@ return MS;
     <className>XWiki.JavaScriptExtension</className>
     <guid>984c7b53-5644-489c-8ddc-ef51a196254a</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>var MS = (function (MS) {
@@ -2719,7 +2719,7 @@ console.log(categories);
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -2839,10 +2839,10 @@ console.log(categories);
       <name>Dropdown ontology browser</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -3025,10 +3025,10 @@ console.log(categories);
       <name>Sticky Box</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -3188,7 +3188,7 @@ console.log(categories);
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -3465,7 +3465,7 @@ div.resultContainer div.sourceContent.loading {
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -3623,7 +3623,7 @@ div.resultContainer div.sourceContent.loading {
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -3914,7 +3914,7 @@ div.resultContainer div.sourceContent.loading {
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -4049,7 +4049,7 @@ div.resultContainer div.sourceContent.loading {
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <content/>

@@ -100,7 +100,7 @@
     <className>XWiki.JavaScriptExtension</className>
     <guid>ac633427-9392-430c-a618-c22069853637</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>document.observe("xwiki:dom:loaded", function() {
@@ -158,10 +158,10 @@
       <name/>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -241,7 +241,7 @@
     <className>XWiki.StyleSheetExtension</className>
     <guid>ebfa0927-936c-48ba-8e8a-deecef845ac1</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>#template("colorThemeInit.vm")
@@ -309,7 +309,7 @@
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>

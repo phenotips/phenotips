@@ -1379,7 +1379,7 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
     <className>XWiki.StyleSheetExtension</className>
     <guid>bb4bd8f5-fd32-4101-8e92-30cc3df5209c</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>#template('colorThemeInit.vm')

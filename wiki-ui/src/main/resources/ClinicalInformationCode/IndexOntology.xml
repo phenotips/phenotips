@@ -247,7 +247,7 @@
     <className>XWiki.JavaScriptExtension</className>
     <guid>092d7722-c25e-46ae-9989-2ceb28d16c56</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>document.observe('xwiki:dom:loaded', function (){
@@ -293,7 +293,7 @@
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <content>{{velocity}}

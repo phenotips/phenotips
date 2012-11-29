@@ -334,7 +334,7 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
     <className>XWiki.JavaScriptExtension</className>
     <guid>ec504294-9ed2-4288-a088-fc12b010c398</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>var YesNoPicker = Class.create({
@@ -483,7 +483,7 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
@@ -563,7 +563,7 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
     <className>XWiki.StyleSheetExtension</className>
     <guid>6cb766b8-0d90-4b54-a866-a92cc2ffdf6b</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>.yes-no-picker {
@@ -653,7 +653,7 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <content>

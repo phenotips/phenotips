@@ -100,7 +100,7 @@
     <className>XWiki.JavaScriptExtension</className>
     <guid>6f429c0b-173f-4a3a-bd45-f5bc1f977bb4</guid>
     <property>
-      <cache>default</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>#set($dayFormats = {
@@ -288,7 +288,7 @@ _translations = {
     <className>XWiki.JavaScriptExtension</className>
     <guid>a7431ce6-0522-4fdc-a212-0759f788415d</guid>
     <property>
-      <cache>default</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>/**
@@ -1477,7 +1477,7 @@ Date.parseISO_8601 = function(string) {
       <name>Datejs - code</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -1560,7 +1560,7 @@ Date.parseISO_8601 = function(string) {
     <className>XWiki.JavaScriptExtension</className>
     <guid>7bda20e1-10df-458b-92da-57ff91e9f2d0</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>// CalendarDateSelect version 1.16.1 - a prototype based date picker
@@ -2216,7 +2216,7 @@ CalendarDateSelect = Class.create({
       <name>Calendar Date Select</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -2299,7 +2299,7 @@ CalendarDateSelect = Class.create({
     <className>XWiki.JavaScriptExtension</className>
     <guid>6ec8f73b-75c3-41b2-8869-c6fe927f6345</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>var XWiki = (function (XWiki) {
@@ -2352,7 +2352,7 @@ document.observe('xwiki:dom:loaded', function () {
       <name>Calendar activation</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -2754,7 +2754,7 @@ var SimpleDateFormat;
       <name>SimpleDateFormat</name>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -2837,7 +2837,7 @@ var SimpleDateFormat;
     <className>XWiki.StyleSheetExtension</className>
     <guid>ce37339d-1130-4b6a-94f4-f998389b5320</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>#template('colorThemeInit.vm')

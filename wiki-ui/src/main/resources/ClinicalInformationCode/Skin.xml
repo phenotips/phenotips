@@ -655,7 +655,7 @@ J0zuqu9ndCPsB+nQ8JRBimVn2f00tlza4/I//PSZ/vnOTwg0Ptx978igAAAAAElFTkSuQmCC
     <className>XWiki.StyleSheetExtension</className>
     <guid>8dda95b8-cd05-43f6-9f5b-c60c9566d28d</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>#template('colorThemeInit.vm')
