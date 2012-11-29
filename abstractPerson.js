@@ -126,11 +126,11 @@ var AbstractPerson = Class.create(AbstractNode, {
     setGender: function(gender, visitedNodes) {
         var visited = (visitedNodes instanceof Array) ? visitedNodes : [];
         visited.push(this);
-        if(!this.getParentPregnancy().isGenderLocked()) {
+        if(!this.getParentPregnancy()  || !this.getParentPregnancy().isGenderLocked()) {
             if(this.getPartners().length == 0) {
                 this._gender = this.parseGender(gender);
                 this.getGraphics().setGenderSymbol();
-                this.getParentPregnancy().setGender(gender);
+                this.getParentPregnancy() && this.getParentPregnancy().setGender(gender);
             }
             else if(this.getGender() == "U") {
                 var me = this;
@@ -141,7 +141,7 @@ var AbstractPerson = Class.create(AbstractNode, {
                         visited = partner.setGender(me.getOppositeGender(), visited);
                     }
                 });
-                this.getParentPregnancy().setGender(gender);
+                this.getParentPregnancy() && this.getParentPregnancy().setGender(gender);
             }
         }
         return visited;
