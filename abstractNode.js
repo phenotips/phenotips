@@ -196,6 +196,17 @@ var AbstractNode = Class.create( {
         return {type: this.getType(), x: this.getX(), y : this.getY(), id: this.getID()}
     },
 
+    loadInfo: function(info) {
+        if(info && info.id == this.getID() && info.type == this.getType()) {
+            if(this.getX() != info.x)
+                this.setX(info.x, false, null);
+            if(this.getY() != info.y)
+                this.setY(info.y, false, null.y);
+            return true;
+        }
+        return false;
+    },
+
     onWidgetHide: function() {
         this.getGraphics().getHoverBox().onWidgetHide();
     }

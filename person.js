@@ -490,6 +490,41 @@ var Person = Class.create(AbstractPerson, {
         info['childlessStatus'] = this.getChildlessStatus();
         info['childlessReason'] = this.getChildlessReason();
         return info;
+     },
+
+    loadInfo: function($super, info) {
+        if($super(info)) {
+            if(info.fName && this.getFirstName() != info.fName) {
+                this.setFirstName(info.fName);
+            }
+            if(info.lName && this.getLastName() != info.lName) {
+                this.setLastName(info.lName);
+            }
+            if(info.dob && this.getBirthDate() != info.dob) {
+                this.setBirthDate(info.dob);
+            }
+            if(info.disorders) {
+                this.updateDisorders(info.disorders);
+            }
+            if(info.isAdopted && this.isAdopted() != info.isAdopted) {
+                this.setAdopted(info.isAdopted);
+            }
+            if(info.lifeStatus && this.getLifeStatus() != info.lifeStatus) {
+                this.setLifeStatus(info.lifeStatus);
+            }
+            if(info.dod && this.getDeathDate() != info.dod) {
+                this.setDeathDate(info.dod);
+            }
+            if(info.gestationAge && this.getGestationAge() != info.gestationAge) {
+                this.setGestationAge(info.gestationAge);
+            }
+            if(info.childlessStatus && this.getChildlessStatus() != info.childlessStatus) {
+                this.setChildlessStatus(info.childlessStatus);
+            }
+            if(info.childlessReason && this.getChildlessReason() != info.childlessReason) {
+                this.setChildlessReason(info.childlessReason);
+            }
+        }
     }
 });
 

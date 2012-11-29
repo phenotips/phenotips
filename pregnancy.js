@@ -284,5 +284,21 @@ var Pregnancy = Class.create(AbstractNode, {
             info['childrenIDs'].push(child.getID());
         });
         return info;
+    },
+
+    loadInfo: function($super, info) {
+        var me = this;
+        if($super(info) && info.gender) {
+            if(this.getGender() != info.gender)
+                this.setGender(info.gender);
+            if(info.childrenIDs){
+                info.childrenIDs.each(function(id) {
+                    var child = editor.getGraph().getNodeMap()[id];
+                    child && me.addChild(child);
+                });
+            }
+            return true;
+        }
+        return false;
     }
 });

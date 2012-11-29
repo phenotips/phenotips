@@ -465,5 +465,14 @@ var AbstractPerson = Class.create(AbstractNode, {
         var info = $super();
         info['gender'] = this.getGender();
         return info;
+    },
+
+    loadInfo: function($super, info) {
+        if($super(info) && info.gender) {
+            if(this.getGender() != info.gender)
+                this.setGender(info.gender, null);
+            return true;
+        }
+        return false;
     }
 });

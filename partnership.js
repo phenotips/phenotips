@@ -324,6 +324,19 @@ var Partnership = Class.create(AbstractNode, {
         info['childlessStatus'] = this.getChildlessStatus();
         info['childlessReason'] = this.getChildlessReason();
         return info;
+    },
+
+    loadInfo: function($super, info) {
+        if($super(info)) {
+            if(info.childlessStatus && info.childlessStatus != this.getChildlessStatus()) {
+                this.setChildlessStatus(info.childlessStatus);
+            }
+            if(info.childlessReason && info.childlessReason != this.getChildlessReason()) {
+                this.setChildlessReason(info.childlessReason);
+            }
+            return true;
+        }
+        return false;
     }
 });
 
