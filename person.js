@@ -354,6 +354,7 @@ var Person = Class.create(AbstractPerson, {
      * @param isAdopted set to true if you want to mark the Person adopted
      */
     setAdopted: function(isAdopted) {
+        this._isAdopted = isAdopted;
         //TODO: implement adopted and social parents
         if(isAdopted) {
             this.getGraphics().drawAdoptedShape();
