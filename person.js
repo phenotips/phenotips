@@ -429,14 +429,14 @@ var Person = Class.create(AbstractPerson, {
             var singleChild = parents && parents.getChildren().length == 1;
             var hasChildren = this.getChildren("Person").concat(this.getChildren("PersonGroup")).length != 0;
             if(singleChild || hasChildren) {
-                this.convertToPlaceholder();
+                return this.convertToPlaceholder();
             }
             else {
                 this.getDisorders().each(function(disorder) {
                     editor.getLegend().removeCase(disorder, me);
                 });
                 this.getGraphics().getHoverBox().remove();
-                $super(isRecursive);
+                return $super(isRecursive);
             }
         }
         else {
