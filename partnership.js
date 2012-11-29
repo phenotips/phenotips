@@ -176,7 +176,7 @@ var Partnership = Class.create(AbstractNode, {
 
     hasPregnancy: function(pregnancy) {
         if(pregnancy) {
-            for(var i; i<this.getPregnancies().length; i++) {
+            for(var i = 0; i<this.getPregnancies().length; i++) {
                 if(this.getPregnancies()[i].getID() == pregnancy.getID())
                     return true;
             }
