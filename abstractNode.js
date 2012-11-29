@@ -193,7 +193,7 @@ var AbstractNode = Class.create( {
     },
 
     getInfo: function() {
-        return {x: this.getX(), y : this.getY(), id: this.getID()}
+        return {type: this.getType(), x: this.getX(), y : this.getY(), id: this.getID()}
     },
 
     onWidgetHide: function() {
