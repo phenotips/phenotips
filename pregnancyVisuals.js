@@ -12,15 +12,21 @@ var PregnancyVisuals = Class.create(AbstractNodeVisuals, {
         this.shrink = this.shrink.bind(this);
         this.onClick = this.onClick.bind(this);
         var p = pregnancy.getPartnership().getGraphics();
-        this.pregnancyConnection = p.updatePregnancyConnection(pregnancy, x, y, p.getX(), p.getY(), false)
+        this.pregnancyConnection = p.updatePregnancyConnection(pregnancy, x, y, p.getX(), p.getY(), false);
+        this._junctionShape.shrunk = true;
     },
 
     grow: function() {
-        this._junctionShape.animate({transform: "S4 4 " + this.getX() + " " + this.getY(), fill: 'green' }, 100);
+        if(this._junctionShape.shrunk && this.getPregnancy().isActive()) {
+            this._junctionShape.ot = this._junctionShape.transform();
+            this._junctionShape.stop().animate({transform: this._junctionShape.ot + ", S4 4 " + this.getX() + " " + this.getY(), fill: 'green' }, 100, function(){});
+        }
     },
 
     shrink: function() {
-        this._junctionShape.animate({transform: "", fill: 'black' }, 100);
+        var me = this;
+        this._junctionShape.shrunk = false;
+        this._junctionShape.stop().animate({transform: this._junctionShape.ot, fill: 'black' }, 100, function() {me._junctionShape.shrunk = true});
     },
 
     updateActive: function() {
