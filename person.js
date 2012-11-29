@@ -418,6 +418,7 @@ var Person = Class.create(AbstractPerson, {
      */
     remove: function($super, isRecursive) {
         editor.getGraph().removePerson(this);
+        var me = this;
         if(!isRecursive) {
             this.getPartners().each(function(partner) {
                 if(partner.getType() == 'PlaceHolder') {
@@ -432,7 +433,7 @@ var Person = Class.create(AbstractPerson, {
             }
             else {
                 this.getDisorders().each(function(disorder) {
-                    editor.getLegend().removeCase(disorder, this);
+                    editor.getLegend().removeCase(disorder, me);
                 });
                 this.getGraphics().getHoverBox().remove();
                 $super(isRecursive);
