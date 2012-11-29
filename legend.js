@@ -113,7 +113,6 @@ var Legend = Class.create( {
      * eg. {id: 33244, value: 'Down Syndrome'}
      */
     removeCase: function(disorder, node) {
-        var wasntEmpty = this.getDisorders().keys().length > 0;
         if (this.containsDisorder(disorder['id'])) {
             this.getDisorder(disorder['id']).removeAffectedNode(node);
             if(this.getDisorder(disorder['id']).getNumAffected() < 1) {
