@@ -231,6 +231,8 @@ var AbstractPerson = Class.create(AbstractNode, {
 
     /*
      * Sets parents to the partnership passed in the parameter, and adds this node to partnership's list of children
+     *
+     * @param partnership is a Partnership node.
      */
     addParents: function(partnership) {
         if(this.getParentPartnership() == null) {
@@ -238,7 +240,11 @@ var AbstractPerson = Class.create(AbstractNode, {
         }
         return partnership;
     },
-
+    /*
+     * Sets this node as a child of a new partnership between parent and a new placeholder.
+     *
+     * @param parent is an AbstractPerson.
+     */
     addParent: function(parent) {
         if(parent.canBeParentOf(this)) {
             var partnership = parent.createPartner(true, true);
@@ -299,11 +305,18 @@ var AbstractPerson = Class.create(AbstractNode, {
                 partner.setGender(this.getOppositeGender());
             }
 
-            if(partnership.getChildren().length == 0 && !noChild && !(this.getChildlessStatus && this.getChildlessStatus()) && !(partner.getChildlessStatus && partner.getChildlessStatus())) {
+            if(partnership.getChildren().length == 0 &&
+                                            !noChild &&
+                                            !(this.getChildlessStatus && this.getChildlessStatus()) &&
+                                            !(partner.getChildlessStatus && partner.getChildlessStatus())) {
                 partnership.createChild("PlaceHolder", "U", 1);
             }
             
-            document.fire('pedigree:partnership:added', {'node' : partnership, 'relatedNodes' : [partner], 'sourceNode' : this});
+            document.fire('pedigree:partnership:added', {
+                'node' : partnership,
+                'relatedNodes' : [partner],
+                'sourceNode' : this
+            });
             return partnership;
         }
     },
@@ -324,19 +337,43 @@ var AbstractPerson = Class.create(AbstractNode, {
         return children;
     },
 
-    createChild: function(type, gender) {
-        return this.createPartner(true, true).createChild(type, gender);
+    /*
+     * Returns true if this person is a parent of non-placeholder children.
+     */
+    hasChildren: function() {
+        return this.getChildren("Person").concat(this.getChildren("PersonGroup")).length > 0;
     },
 
-    addChild: function(child) {
-        if(this.canBeParentOf(child)) {
+    /*
+     * Creates node of type nodeType and gender nodeGender and a partnership with a new placeholder. Sets
+     * the child as a child of this partnership.
+     *
+     * @param nodeType the type for the new child. (eg. "Person", "PlaceHolder", "PersonGroup")
+     * @param nodeGender can be "M", "F" or "U".
+     */
+    createChild: function(nodeType, nodeGender) {
+        return this.createPartner(true, true).createChild(nodeType, nodeGender);
+    },
+
+    /*
+     * Creates a partnership with a new placeholder node and adds childNode to as a child of this partnership.
+     *
+     * @param childNode is an AbstractPerson
+     */
+    addChild: function(childNode) {
+        if(this.canBeParentOf(childNode)) {
             var partnership = this.createPartner(true, true);
-            partnership.addChild(child);
-            return child;
+            partnership.addChild(childNode);
+            return childNode;
         }
         return null;
     },
 
+    /*
+     * Returns all the nodes that come from the same pregnancy.
+     *
+     * @param type the type for the new child. (eg. "Person", "PlaceHolder", "PersonGroup")
+     */
     getTwins: function(type) {
         return this.getParentPregnancy().getChildren(type).without(this);
     },
@@ -380,7 +417,8 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @param otherNode is a Person
      */
     canPartnerWith: function(otherNode) {
-        var oppositeGender = (this.getOppositeGender() == otherNode.getGender() || this.getGender() == "U" || otherNode.getGender() == "U");
+        var oppositeGender = (this.getOppositeGender() == otherNode.getGender() || this.getGender() == "U"
+                                                                                || otherNode.getGender() == "U");
         var numSteps = this.getStepsToNode(otherNode)[0];
         var oddStepsAway = (numSteps == null || numSteps%2 == 1);
         return oppositeGender && oddStepsAway;
@@ -393,7 +431,10 @@ var AbstractPerson = Class.create(AbstractNode, {
      */
     canBeParentOf: function(otherNode) {
         var isDescendant = this.isDescendantOf(otherNode);
-        return (this != otherNode) && otherNode.getParentPartnership() == null && this.getChildren().indexOf(otherNode) == -1 && !isDescendant;
+        return (this != otherNode) &&
+            otherNode.getParentPartnership() == null &&
+            this.getChildren().indexOf(otherNode) == -1 &&
+            !isDescendant;
     },
 
     /*
@@ -461,12 +502,20 @@ var AbstractPerson = Class.create(AbstractNode, {
         return this.getParentPregnancy() ? [this.getParentPregnancy()] : [];
     },
 
+    /*
+     * Returns an object containing information about this person.
+     */
     getInfo: function($super) {
         var info = $super();
         info['gender'] = this.getGender();
         return info;
     },
 
+    /*
+     * Applies all the relevant information in info to this node
+     *
+     * @param info is an object containing information about this node. info.id should be the same as this node's id.
+     */
     loadInfo: function($super, info) {
         if($super(info) && info.gender) {
             if(this.getGender() != info.gender)
