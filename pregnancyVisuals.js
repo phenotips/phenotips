@@ -4,7 +4,9 @@ var PregnancyVisuals = Class.create(AbstractNodeVisuals, {
     initialize: function($super, pregnancy, x, y) {
         $super(pregnancy, x,y);
         this._junctionShape = editor.getPaper().circle(x,y, editor.attributes.partnershipRadius/3).attr({fill: 'black', stroke: 'none'});
-        this._junctionShape.insertBefore(editor.getGraph().getProband().getGraphics().getAllGraphics().flatten());
+        this._junctionMask = editor.getPaper().circle(x,y, editor.attributes.partnershipRadius*2).attr({fill: 'black', stroke: 'none', opacity: 0});
+        this._junctionSet = editor.getPaper().set(this._junctionShape, this._junctionMask);
+        this._junctionSet.insertBefore(editor.getGraph().getProband().getGraphics().getAllGraphics().flatten());
         this._idLabel = editor.getPaper().text(x, y-20, editor.DEBUG_MODE ? pregnancy.getID() : "").attr(editor.attributes.dragMeLabel).insertAfter(this._junctionShape.flatten());
         this.grow = this.grow.bind(this);
         this.shrink = this.shrink.bind(this);
@@ -23,12 +25,12 @@ var PregnancyVisuals = Class.create(AbstractNodeVisuals, {
 
     updateActive: function() {
         if(this.getPregnancy().isActive()) {
-            this.getJunctionShape().hover(this.grow, this.shrink);
-            this.getJunctionShape().click(this.onClick);
+            this.getJunctionSet().hover(this.grow, this.shrink);
+            this.getJunctionSet().click(this.onClick);
         }
         else {
-            this.getJunctionShape().unhover(this.grow, this.shrink);
-            this.getJunctionShape().unclick(this.onClick);
+            this.getJunctionSet().unhover(this.grow, this.shrink);
+            this.getJunctionSet().unclick(this.onClick);
         }
     },
 
@@ -48,8 +50,8 @@ var PregnancyVisuals = Class.create(AbstractNodeVisuals, {
     /*
      * Returns the raphael shape that joins connections
      */
-    getJunctionShape: function() {
-        return this._junctionShape;
+    getJunctionSet: function() {
+        return this._junctionSet;
     },
 
     /*
@@ -117,7 +119,7 @@ var PregnancyVisuals = Class.create(AbstractNodeVisuals, {
      */
     remove: function() {
         this.pregnancyConnection.remove();
-        this.getJunctionShape().remove();
+        this.getJunctionSet().remove();
     },
 
     /*
@@ -153,7 +155,7 @@ var PregnancyVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     getShapes: function($super) {
-        return $super().push(this.getJunctionShape());
+        return $super().push(this.getJunctionSet());
     },
 
     getAllGraphics: function($super) {
