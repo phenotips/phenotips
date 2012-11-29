@@ -128,11 +128,11 @@ var Pregnancy = Class.create(AbstractNode, {
      */
     addChild: function(someNode) {
         if(someNode && this.canBeParentOf(someNode)) {
+            this.setGender(someNode.getGender());
             this["_" + someNode.getType() + "Children"].push(someNode);
             someNode.setParentPregnancy(this);
             this.getGraphics().addChild(someNode);
             this.updateActive()
-            this.setGender(someNode.getGender());
         }
         return someNode;
     },
