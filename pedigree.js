@@ -145,7 +145,8 @@ var PedigreeEditor = Class.create({
             {
                 'name' : 'last_name',
                 'label': 'Last name',
-                'type' : 'text'
+                'type' : 'text',
+                'function' : 'setLastName'
             },
             {
                 'name' : 'date_of_birth',
