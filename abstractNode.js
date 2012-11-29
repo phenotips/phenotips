@@ -247,7 +247,9 @@ var ChildlessBehavior = {
      * @param reason a string that explains the condition (eg. "By Choice", "Vasectomy" etc)
      */
     setChildlessReason: function(reason) {
-        this._childlessReason = reason;
-        this.getGraphics().updateChildlessStatusLabel();
+        if(this.getChildlessStatus() != null) {
+            this._childlessReason = reason;
+            this.getGraphics().updateChildlessStatusLabel();
+        }
     }
 };
