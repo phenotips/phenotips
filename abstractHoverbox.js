@@ -32,7 +32,7 @@ var AbstractHoverbox = Class.create({
         var mask = this._boxOnHover.clone().attr({fill: 'green', opacity: 0});
         this._frontElements = editor.getPaper().set().push(mask, this._buttons, this._orbs);
         this._frontElements.insertAfter(nodeShapes.flatten());
-        mask.hover(function() {me.setHovered(true)}, function() {me.setHovered(false)});
+        this._frontElements.hover(function() {me.setHovered(true)}, function() {me.setHovered(false)});
         this.animateDrawHoverZone = this.animateDrawHoverZone.bind(this);
         this.animateHideHoverZone =  this.animateHideHoverZone.bind(this);
         this.hide();
@@ -113,8 +113,16 @@ var AbstractHoverbox = Class.create({
         var mask = editor.getPaper().rect(icon.getBBox().x, icon.getBBox().y,
             icon.getBBox().width, icon.getBBox().height, 1);
         mask.attr({fill: 'gray', opacity: 0, "stroke-width" : 0}).transform("s1.5");
-
-        var button = editor.getPaper().set(mask, icon).click(onClick);
+        var button = editor.getPaper().set(mask, icon);
+        var clickFunct = function() {
+            onClick && onClick();
+            button.isClicked = !button.isClicked;
+            if(button.isClicked)
+                mask.attr(editor.attributes.btnMaskClick);
+            else
+                mask.attr(editor.attributes.btnMaskHoverOn);
+        };
+        button.click(clickFunct);
         button.mousedown(function(){mask.attr(editor.attributes.btnMaskClick)});
         button.hover(function() {
                 mask.attr(editor.attributes.btnMaskHoverOn)
