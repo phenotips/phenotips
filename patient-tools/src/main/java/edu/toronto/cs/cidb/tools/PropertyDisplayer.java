@@ -205,7 +205,7 @@ public class PropertyDisplayer
     private FormElement generateField(String id, String title,
         boolean yesSelected, boolean noSelected)
     {
-        return generateField(id, title, hasDescendenntsInOntology(id), yesSelected, noSelected);
+        return generateField(id, title, hasDescendantsInOntology(id), yesSelected, noSelected);
     }
 
     private List<String> assignCustomFields(FormSection section,
@@ -237,7 +237,7 @@ public class PropertyDisplayer
         return id;
     }
 
-    private boolean hasDescendenntsInOntology(String id)
+    private boolean hasDescendantsInOntology(String id)
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put(INDEXED_PARENT_KEY, id);
