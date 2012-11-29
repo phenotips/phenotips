@@ -237,7 +237,7 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
         if (!this.cache.containsKey(docName)) {
             return null;
         }
-        return this.cache.get(docName).get("mapping__" + mappingName);
+        return this.cache.get(docName).get(mappingName);
     }
 
     /**
