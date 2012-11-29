@@ -2635,7 +2635,11 @@ document.observe('xwiki:dom:loaded', function() {
   var doSearch = function(service) {
     var data = services[service];
     if (!data || !data.target || !data.script) {return;}
-    data.target.__initiailzed || (data.target.__initiailzed = true) &amp;&amp; (data.target.__hiddenParent = data.target.up('.background-search.hidden'));
+    if (data.__pendingRequest !== undefined) {
+      window.clearTimeout(data.__pendingRequest);
+      data.__pendingRequest = undefined;
+    }
+    data.target.__initialized || (data.target.__initialized = true) &amp;&amp; (data.target.__hiddenParent = data.target.up('.background-search.hidden'));
     if (!data.expectedReqNo) {
       data.expectedReqNo = 0;
     }
@@ -2645,7 +2649,10 @@ document.observe('xwiki:dom:loaded', function() {
        queryString += ((source &amp;&amp; source.value.strip()) + ' ') || '';
     });
     
-    new Ajax.Updater(data.target, data.script + encodeURIComponent(queryString.strip()) + "&amp;reqNo=" + ++data.expectedReqNo, {onCreate : requestCreated.bind(this, data), onSuccess : responseReceived.bind(this, data), onComplete : updateDone.bind(this, data)});
+    data.__pendingRequest = function() {
+      data.__pendingRequest = undefined;
+      new Ajax.Updater(data.target, data.script + encodeURIComponent(queryString.strip()) + "&amp;reqNo=" + ++data.expectedReqNo, {onCreate : requestCreated.bind(this, data), onSuccess : responseReceived.bind(this, data), onComplete : updateDone.bind(this, data)});
+    }.bind(this).delay(0.5);
   }
 
   document.observe('phenotype:selected', function(event) {
