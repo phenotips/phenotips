@@ -122,7 +122,7 @@ public class PhenotypeMappingScriptService implements ScriptService, Initializab
 
     protected File getInternalFile(String name, String dir)
     {
-        File parent = new File(this.environment.getTemporaryDirectory(), dir);
+        File parent = new File(this.environment.getPermanentDirectory(), dir);
         if (!parent.exists()) {
             parent.mkdirs();
         }

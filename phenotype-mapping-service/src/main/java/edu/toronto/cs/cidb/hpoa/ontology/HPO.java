@@ -31,6 +31,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.environment.Environment;
@@ -41,6 +42,9 @@ import org.xwiki.environment.Environment;
 public class HPO extends AbstractOntology implements Initializable
 {
     @Inject
+    private Logger logger;
+
+    @Inject
     private Environment environment;
 
     private static HPO instance;
@@ -49,6 +53,7 @@ public class HPO extends AbstractOntology implements Initializable
     // @Named("solr")
     // private ScriptService service;
 
+    @Override
     public void initialize()
     {
         // if (this.service != null) {
@@ -64,12 +69,12 @@ public class HPO extends AbstractOntology implements Initializable
     {
         try {
             File result = new File(inputLocation);
-            if (!result.exists()) {
+            if (!result.exists() || result.length() == 0) {
                 String name = inputLocation.substring(inputLocation.lastIndexOf('/') + 1);
                 result = getTemporaryFile(name);
-                if (!result.exists()) {
-                    result.createNewFile();
+                if (!result.exists() || result.length() == 0) {
                     BufferedInputStream in = new BufferedInputStream((new URL(inputLocation)).openStream());
+                    result.createNewFile();
                     OutputStream out = new FileOutputStream(result);
                     IOUtils.copy(in, out);
                     out.flush();
@@ -78,7 +83,7 @@ public class HPO extends AbstractOntology implements Initializable
             }
             return result;
         } catch (IOException ex) {
-            ex.printStackTrace();
+            this.logger.error("Mapping file [{}] not found", inputLocation);
             return null;
         }
     }
@@ -90,7 +95,7 @@ public class HPO extends AbstractOntology implements Initializable
 
     protected File getInternalFile(String name, String dir)
     {
-        File parent = new File(this.environment.getTemporaryDirectory(), dir);
+        File parent = new File(this.environment.getPermanentDirectory(), dir);
         if (!parent.exists()) {
             parent.mkdirs();
         }
