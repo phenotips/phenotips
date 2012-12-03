@@ -1595,6 +1595,7 @@ document.observe('dom:loaded', function() {
           lastAdded.down('a.delete').observe('click', this.ajaxDeleteData.bindAsEventListener(this));
           lastAdded.removeClassName('new');
           Event.fire(dataTable, 'extradata:added', {'element' : lastAdded});
+          Event.fire(document, 'xwiki:dom:updated', {'elements' : [lastAdded]});
         }.bind(this),
         onFailure : function(response) {
           var failureReason = response.statusText;
@@ -4170,6 +4171,42 @@ table.extradata-list td.bmi_percentile {
 .extradata-list .right-side-group .icon {
   background-image: url("$xwiki.getSkinFile('body-icon-right-s.png')");
   opacity: .4;
+}
+
+.extradata-list .file {
+  width: 160px;
+}
+.extradata-list .file .attachment-list .attachment-item, .extradata-list .file .attachment-list .attachment-item input {
+  display: none;
+}
+.extradata-list .file .attachment-list .attachment-item.selected {
+  display: block;
+  width: 100%;
+}
+.extradata-list .file .attachment-list .attachment-item.image {
+  width: 150px !important;
+}
+.extradata-list .file .attachment-list .attachment-item.selected label {
+  padding: 3px 0 3px 20px;
+}
+.extradata-list .file .attachment-list .attachment-item.image label {
+  padding: 0 !important;
+}
+
+.extradata-list .file .attachment-list .attachment-item .attachment-preview {
+    width: 140px;
+}
+
+.extradata-list .file img {
+  max-width: 480px !important;
+  max-height: 480px !important;
+}
+
+
+.extradata-list .file .attachment-list .attachment-item .view {
+  background-color: $theme.pageContentBackgroundColor;
+  bottom: 0;
+  padding: 5px;
 }</code>
     </property>
     <property>
@@ -4805,23 +4842,21 @@ $doc.display('reports_history')
 ## =================================================================
 ## More information
 #macro(__reportSection__other)
-#if (("$!activeFields.contains('images')" != 'false' || "$!activeFields.contains('files')" != 'false') &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('images')$doc.display('files')" != ''))
-#if ($xcontext.action != 'export')
-
 (% class="clear clinical-info other-info chapter" %)(((
 == Additional files ==
-
-#if ("$doc.display('files')" != '')
+(((
+#set ($targetClassName = 'ClinicalInformationCode.ExternalFileClass')
+#if (($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
 === Documents ===
-$doc.display('files')
+#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false})
 #end
-#if ("$doc.display('images')" != '')
-=== Images ===
-$doc.display('images')
+#set ($targetClassName = 'ClinicalInformationCode.ExternalImageClass')
+#if (($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
+=== Imaging ===
+#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false})
 #end
+)))
 )))##chapter
-#end## context.action != export
-#end## fields in this section must be displayed
 #end
 
 ##

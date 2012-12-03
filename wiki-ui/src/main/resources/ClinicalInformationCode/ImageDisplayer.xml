@@ -281,7 +281,7 @@
         var image = item.down('.attachment-preview img');
         var viewlink = item.down('a.view.hidden');
         var id = input.id.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length);
-        var lItem = new Element('div', {'class' : item.className});
+        var lItem = new Element('div', {'class' : item.className + (input.checked &amp;&amp; ' selected' || '')});
         lItem.insert({
                   'top' : new Element('label', {'for' : id, 'title' : input.value}).update(input.value).insert({
                               top : new Element('input', {
@@ -322,15 +322,16 @@
   var dialog;
 
   /* Hook onto the picker buttons so that the gallery is loaded via AJAX in a modal dialog. */
-  document.observe('xwiki:dom:loaded', function() {
+  var __hookImageSelector = function(evt) {
     var __getParameter = function (name) {
       var result;
       if(result = (new RegExp('[?&amp;]'+encodeURIComponent(name)+'=([^&amp;#]*)')).exec(window.location.search))
         return decodeURIComponent(result[1]);
     };
-    $$('.manage-images-button').invoke('observe', 'click', function(event) {
+    $$('.manage-images-button:not(.initialized)').invoke('observe', 'click', function(event) {
       event.stop();
       var targetElement = event.element();
+      targetElement.addClassName('initialized');
       var reloadTargetId = targetElement.up('*[id]');
       if (reloadTargetId) {
         reloadTargetId = reloadTargetId.id;
@@ -380,7 +381,11 @@
     ) {
       activeAction.click();
     }
+  };
+  ['xwiki:dom:loaded', 'xwiki:dom:updated'].each (function(eventName) {
+     document.observe(eventName, __hookImageSelector)
   });
+
   return XWiki;
 }(XWiki || {}));</code>
     </property>
@@ -1252,7 +1257,7 @@
 #macro (__getExtension $filename)$!{filename.substring($mathtool.add($filename.lastIndexOf('.'), 1)).toLowerCase()}#end
 
 #macro (__displaySelectableAttachment $attachment $targetDocument $selection)
-  {{html wiki=true clean=false}}&lt;div class="attachment-item #if($options.isImage) image #else #__getExtension(${attachment.filename})#end"&gt;
+  {{html wiki=true clean=false}}&lt;div class="attachment-item #if($options.isImage) image #else #__getExtension(${attachment.filename})#{end}#if($selection.contains(${attachment.filename})) selected#{end}"&gt;
   &lt;label for='${fieldName}_${attachment.filename}' title='${attachment.filename}'&gt; 
   {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='${options.inputType}' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
   #if ($options.manage)
