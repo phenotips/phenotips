@@ -21,7 +21,7 @@
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.0</syntaxId>
+  <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <object>
     <class>
@@ -401,9 +401,9 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
     <property>
       <code>var selectionSummary = '';
-var highlightChecked = function(element) {
-      var type = element.up('label.no') ? 'no' : 'yes';
-      if (element.id == element.name + '_' + element.value) {
+var highlightChecked = function(element, initialization) {
+      var type = element.up().hasClassName('no') ? 'no' : 'yes';
+      if (initialization !== true &amp;&amp; element.id == element.name + '_' + element.value) {
         Event.fire(document, 'phenotype:selected', {
               key : element.value,
               text: element.title || (element.nextSibling &amp;&amp; (element.nextSibling.firstChild &amp;&amp; element.nextSibling.firstChild.nodeValue || element.nextSibling.nodeValue)) || '',
@@ -414,8 +414,8 @@ var highlightChecked = function(element) {
       }
       if (selectionSummary) {selectionSummary._updateSummary(element, type);}
 };
-var enableHighlightChecked = function(element) {
-      highlightChecked(element);
+var enableHighlightChecked = function(element, initialization) {
+      highlightChecked(element, initialization);
       ['click', 'change', 'suggest:change', 'picker:change'].each(function(eventName) {
         element.observe(eventName, highlightChecked.bind(element,element));
       });
@@ -485,7 +485,7 @@ document.observe('dom:loaded', function() {
   // ------------------------------------------------------------------------
   ["yes", "no"].each(function (type) {
     $$('.term-label .' + type + ' input[type=checkbox]').each(function (input) {
-      enableHighlightChecked(input);
+      enableHighlightChecked(input, true);
       input.observe('click', function(event) {
           $$('.' + type + ' input[type=checkbox][value=' + event.element().value +']').each(function(item) {
             if (item.checked != event.element().checked) {
@@ -1322,10 +1322,10 @@ document.observe('dom:loaded', function() {
             var ynPickerElt = item.up('.yes-no-picker');
             if (ynPickerElt) {
               item._ynpicker = new YesNoPicker(ynPickerElt, ynPickerElt.next('label'), true);
-              enableHighlightChecked(item);
+              enableHighlightChecked(item, true);
               var negItem = ynPickerElt.down('.no input');
               if (negItem) {
-                enableHighlightChecked(negItem);
+                enableHighlightChecked(negItem, true);
                 negItem._ynpicker = item._ynpicker;
               }
             }
@@ -2656,7 +2656,7 @@ document.observe('xwiki:dom:loaded', function() {
   }
 
   document.observe('phenotype:selected', function(event) {
-    if (!event.memo || !event.memo.key || !event.memo.element || event.memo.element.up('.negative-phenotype, .no')) {return;}
+    if (!event.memo || !event.memo.key || !event.memo.element || event.memo.type != 'yes') {return;}
     var key = event.memo.key;
     var text = event.memo.text || event.memo.key;
     var obj = cache.all[key];
@@ -2674,6 +2674,30 @@ document.observe('xwiki:dom:loaded', function() {
         delete cache.displayed[key];
       }
     }
+    updateDefaultSearchTerms();
+  });
+
+  document.observe('xwiki:dom:loaded', function() {
+    $$(".yes-no-picker .yes input").each(function(element) {
+      var key = element.value;
+      var text = element.title || (element.nextSibling &amp;&amp; (element.nextSibling.firstChild &amp;&amp; element.nextSibling.firstChild.nodeValue || element.nextSibling.nodeValue)) || key;
+      var obj = cache.all[key];
+      var enable = element.checked;
+      if (enable) {
+        if (!obj) {
+          obj = {'key' : key, 'text' : text};
+          cache.all[key] = obj;
+        } else {
+          obj.hidden = false;
+        }
+        cache.displayed[key] = true;
+      } else {
+        if (obj) {
+          obj.hidden = true;
+          delete cache.displayed[key];
+        }
+      }
+    });
     updateDefaultSearchTerms();
   });
 
