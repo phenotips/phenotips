@@ -1573,7 +1573,7 @@ document.observe('dom:loaded', function() {
          new XWiki.widgets.Notification('Cannot add data: type not found', 'error');
          return;
       }
-      var dataTable = $('extradata-list-' + classname);
+      var dataTable = addTrigger.up('.list-actions').previous('table[id^="extradata-list-' + classname + '"]');
       if (!dataTable) {
         new XWiki.widgets.Notification("Cannot find the list to update " + classname, 'error');
       }
@@ -4511,36 +4511,37 @@ table.extradata-list td.bmi_percentile {
   {{html clean="false"}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="Delete"&gt;✖&lt;/a&gt;{{/html}}##
 #end
 
-#macro (__extradata_addTool $classname $anchor)
-  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
+#macro (__extradata_addTool $classname $anchor $options)
+  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
 
 #macro (__extradata_displayTable $dataClassName $options)
   #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
   #if ($dataClass)
-    #if ($xcontext.action != 'edit' &amp;&amp; $doc.getObjects($dataClassName).size() == 0)
+    #set($dataObjects = $doc.getObjects($dataClassName, "$!{options.propertyName}", "$!{options.propertyValue}"))
+    #if ($xcontext.action != 'edit' &amp;&amp; $dataObjects.size() == 0)
       (% class="hint" %)None specified
     #elseif ($xcontext.action == 'export')
-      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}" %)
+      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
       #set ($disableLabels = true)
-      #foreach ($o in $doc.getObjects($dataClassName))
-        #foreach($prop in $dataClass.properties)|= ${prop.prettyName}: |#if ($velocityCount &lt;= 2)=#end $doc.display($prop.getName(), $o)#if ($velocityCount %2 == 0)
+      #foreach ($o in $dataObjects)
+        #foreach($prop in $dataClass.properties)#if ($prop.name != $options.propertyName)|= ${prop.prettyName}: |#if ($velocityCount &lt;= 2)=#end $doc.display($prop.getName(), $o)#if ($velocityCount %2 == 0)
 
-        #end#end## foreach object
+        #end#end#end## foreach object
 
       #end## foreach object
     #else
-      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}" %)
-      #if ("$!{options.counter}" == 'true')|=(% class="col-label" %)# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name" %)$prop.prettyName#end#if ($xcontext.action == 'edit')|=(% class="actions" %)
+      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
+      #if ("$!{options.counter}" == 'true')|=(% class="col-label" %)# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name#if ($prop.name == $options.propertyName) hidden#end" %)$prop.prettyName#end#if ($xcontext.action == 'edit')|=(% class="actions" %)
       #else
 
       #end
       #if ($xcontext.action == 'export')#set ($disableLabels = true)#end
-      #foreach ($o in $doc.getObjects($dataClassName))
-        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="hint" &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $o)#end#if ($xcontext.action == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
+      #foreach ($o in $dataObjects)
+        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.prettyName}&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $o)#end#if ($xcontext.action == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
 
       #end## foreach object
 
-      #if ($xcontext.action == 'edit')(% class="list-actions" %)(((#__extradata_addTool($dataClassName "extradata-${dataClassName}"))))
+      #if ($xcontext.action == 'edit')(% class="list-actions" %)(((#__extradata_addTool($dataClassName "extradata-${dataClassName}" $options))))
       #end
     #end## if xcontext.action
   #end## if dataclass
@@ -4785,6 +4786,18 @@ $doc.display('reports_history')
 (% class="clear variant-info chapter" %)(((
 == Variants ==
 #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false})
+)))##chapter
+#end
+#set ($targetClassName = 'ClinicalInformationCode.InvestigationClass')
+#if ($config &amp;&amp; $config.getProperty('section__variant-info').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
+(% class="clear variant-info chapter" %)(((
+== Investigations ==
+(((
+=== Genetic investigation ===
+#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'genetic'})
+=== Molecular genetics ===
+#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular'})
+)))
 )))##chapter
 #end
 #end

@@ -502,7 +502,7 @@ $!value
     <section__variant-info>
       <cache>0</cache>
       <customDisplay>{{velocity output=false}}
-#set($customValues = {"ClinicalInformationCode.VariantClass" : "variants table"})
+#set($customValues = {"ClinicalInformationCode.VariantClass" : "variants table", "ClinicalInformationCode.InvestigationClass" : "investigations table"})
 #set($hideClassFields = true)
 {{/velocity}}
 
