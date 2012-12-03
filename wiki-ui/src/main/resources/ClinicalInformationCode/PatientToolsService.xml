@@ -41,6 +41,10 @@
   #set ($hand = $util.parseDouble("$!request.hand"))
   #set ($palm = $util.parseDouble("$!request.palm"))
   #set ($foot = $util.parseDouble("$!request.foot"))
+  #set ($ear_right = $util.parseDouble("$!request.ear_right"))
+  #set ($hand_right = $util.parseDouble("$!request.hand_right"))
+  #set ($palm_right = $util.parseDouble("$!request.palm_right"))
+  #set ($foot_right = $util.parseDouble("$!request.foot_right"))
 ##
   #set ($valueMapping = [])
 ##
@@ -138,6 +142,38 @@
                      'value' : $foot,
                      'percentile' : $!services.percentile.getFootLengthPercentile($sex, $age, $foot),
                      'deviation' : $!services.percentile.getFootLengthStandardDeviation($sex, $age, $foot)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ($ear_right != 0)
+       #set($data = {'id' : 'ear_right',
+                     'value' : $ear_right,
+                     'percentile' : $!services.percentile.getEarLengthPercentile($sex, $age, $ear_right),
+                     'deviation' : $!services.percentile.getEarLengthStandardDeviation($sex, $age, $ear_right)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ($hand_right != 0)
+       #set($data = {'id' : 'hand_right',
+                     'value' : $hand_right,
+                     'percentile' : $!services.percentile.getHandLengthPercentile($sex, $age, $hand_right),
+                     'deviation' : $!services.percentile.getHandLengthStandardDeviation($sex, $age, $hand_right)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ($palm_right != 0)
+       #set($data = {'id' : 'palm_right',
+                     'value' : $palm_right,
+                     'percentile' : $!services.percentile.getPalmLengthPercentile($sex, $age, $palm_right),
+                     'deviation' : $!services.percentile.getPalmLengthStandardDeviation($sex, $age, $palm_right)
+       })
+       #set($discard = $valueMapping.add($data))
+     #end
+     #if ($foot_right != 0)
+       #set($data = {'id' : 'foot_right',
+                     'value' : $foot_right,
+                     'percentile' : $!services.percentile.getFootLengthPercentile($sex, $age, $foot_right),
+                     'deviation' : $!services.percentile.getFootLengthStandardDeviation($sex, $age, $foot_right)
        })
        #set($discard = $valueMapping.add($data))
      #end
