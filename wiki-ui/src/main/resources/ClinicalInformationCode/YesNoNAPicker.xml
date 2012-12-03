@@ -656,25 +656,11 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
       <use>onDemand</use>
     </property>
   </object>
-  <content>
-{{velocity}}
-$xwiki.jsx.use($doc.fullName, {'minify': false})
-{{/velocity}}
-
-
-{{html clean="false"}}
-&lt;span class="expand-tool"&gt;►&lt;/span&gt;&lt;span class="yes-no-picker"&gt;&lt;label class="na"&gt;&lt;input type="checkbox" name="na" value="A"/&gt;NA&lt;/label&gt;&lt;label class="yes"&gt;&lt;input type="checkbox" name="yes" value="A"/&gt;Y&lt;/label&gt;&lt;label class="no"&gt;&lt;input type="checkbox" name="no" value="A"/&gt;N&lt;/label&gt;&lt;/span&gt;&lt;label&gt;Short stature&lt;/label&gt;&lt;br/&gt;
-
-&lt;span class="expand-tool"&gt;►&lt;/span&gt;&lt;span class="yes-no-picker"&gt;&lt;label class="na"&gt;&lt;input type="checkbox" name="na" value="A"/&gt;NA&lt;/label&gt;&lt;label class="yes"&gt;&lt;input type="checkbox" name="yes" value="A"/&gt;Y&lt;/label&gt;&lt;label class="no"&gt;&lt;input type="checkbox" name="no" value="A"/&gt;N&lt;/label&gt;&lt;/span&gt;&lt;label&gt;Microcephaly&lt;/label&gt;&lt;br/&gt;
-
-
-&lt;span class="expand-tool"&gt;►&lt;/span&gt;&lt;span class="yes-no-picker"&gt;&lt;label class="na"&gt;&lt;input type="checkbox" name="na" value="A"/&gt;NA&lt;/label&gt;&lt;label class="yes"&gt;&lt;input type="checkbox" name="yes" value="A"/&gt;Y&lt;/label&gt;&lt;label class="no"&gt;&lt;input type="checkbox" name="no" value="A"/&gt;N&lt;/label&gt;&lt;/span&gt;&lt;label&gt;Decreased body weight&lt;/label&gt;&lt;br/&gt;
-
-&lt;span class="expand-tool"&gt;►&lt;/span&gt;&lt;span class="yes-no-picker"&gt;&lt;label class="na"&gt;&lt;input type="checkbox" name="na" value="A"/&gt;NA&lt;/label&gt;&lt;label class="yes"&gt;&lt;input type="checkbox" name="yes" value="A"/&gt;Y&lt;/label&gt;&lt;label class="no"&gt;&lt;input type="checkbox" name="no" value="A"/&gt;N&lt;/label&gt;&lt;/span&gt;&lt;label&gt;Hypoplastic Kidney&lt;/label&gt;&lt;br/&gt;
-
-&lt;span class="expand-tool"&gt;►&lt;/span&gt;&lt;span class="yes-no-picker"&gt;&lt;label class="na"&gt;&lt;input type="checkbox" name="na" value="A"/&gt;NA&lt;/label&gt;&lt;label class="yes"&gt;&lt;input type="checkbox" name="yes" value="A"/&gt;Y&lt;/label&gt;&lt;label class="no"&gt;&lt;input type="checkbox" name="no" value="A"/&gt;N&lt;/label&gt;&lt;/span&gt;&lt;label&gt;Campodactyly&lt;/label&gt;&lt;br/&gt;
-
-&lt;span class="expand-tool"&gt;►&lt;/span&gt;&lt;span class="yes-no-picker"&gt;&lt;label class="na"&gt;&lt;input type="checkbox" name="na" value="A"/&gt;NA&lt;/label&gt;&lt;label class="yes"&gt;&lt;input type="checkbox" name="yes" value="A"/&gt;Y&lt;/label&gt;&lt;label class="no"&gt;&lt;input type="checkbox" name="no" value="A"/&gt;N&lt;/label&gt;&lt;/span&gt;&lt;label&gt;Hypotonia&lt;/label&gt;&lt;br/&gt;
-{{/html}}
+  <content>{{velocity}}
+$xwiki.jsx.use('ClinicalInformationCode.YesNoNAPicker')##
+$xwiki.ssx.use('ClinicalInformationCode.YesNoNAPicker')##
+#set ($doDisplay = ($xcontext.action == 'edit' || $value != ''))
+{{html clean=false wiki=false}}##
+#if ($xcontext.action == 'edit')&lt;span class="yes-no-picker"&gt;&lt;label class="na"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="" #if($value == '')checked="checked"#end /&gt;NA&lt;/label&gt;&lt;label class="yes"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="1" #if($value == '1')checked="checked"#end /&gt;Y&lt;/label&gt;&lt;label class="no"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="0" #if($value == '0')checked="checked" #end/&gt;N&lt;/label&gt;&lt;/span&gt;#elseif ($value == '0')NO #{end}#if ($doDisplay)&lt;label class="yes-no-picker-label"&gt;$!object.xWikiClass.get($name).prettyName&lt;/label&gt;#end{{/html}}{{velocity}}
 </content>
 </xwikidoc>
