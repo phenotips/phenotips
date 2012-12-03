@@ -3642,7 +3642,7 @@ input.wrongValue {
   padding: 0;
 }
 .quick-search-box table td.input{
-  min-width: 80%;
+  min-width: 60%;
 }
 .quick-search-box table label{
   color: $theme.buttonPrimaryTextColor;
@@ -3912,6 +3912,27 @@ input.wrongValue {
 .term-entry {
   display: block;
   width: auto;
+}
+
+.enable-columns .predefined-entries {
+ -moz-column-count: 2;
+ -webkit-column-count: 2;
+ -o-column-count: 2;
+ -ms-column-count: 2;
+ column-count: 2;
+}
+.enable-columns .predefined-entries .subsection {
+  -webkit-column-break-before:avoid;
+  -moz-column-break-before:avoid;
+  -o-column-break-before:avoid;
+  -ms-column-break-before:avoid;
+  column-break-before:avoid;
+  webkit-column-break-inside:avoid;
+  -moz-column-break-inside:avoid;
+  -o-column-break-inside:avoid;
+  -ms-column-break-inside:avoid;
+  column-break-inside:avoid;
+  display: table;
 }</code>
     </property>
     <property>
