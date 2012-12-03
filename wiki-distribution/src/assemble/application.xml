@@ -12,6 +12,13 @@
       </includes>
       <outputDirectory>webapps/xwiki</outputDirectory>
       <unpack>true</unpack>
+      <unpackOptions>
+        <excludes>
+          <exclude>**/xwiki.js</exclude>
+          <exclude>**/livetable.js</exclude>
+          <exclude>**/autosave.js</exclude>
+        </excludes>
+      </unpackOptions>
     </dependencySet>
     <!-- Add JDBC driver for the database to use. -->
     <dependencySet>
@@ -95,6 +102,18 @@
     <file>
       <source>${basedir}/src/main/resources/logback.xml</source>
       <outputDirectory>webapps/solr/WEB-INF/classes</outputDirectory>
+    </file>
+    <file>
+      <source>${basedir}/src/main/resources/xwiki.js</source>
+      <outputDirectory>webapps/xwiki/resources/js/xwiki</outputDirectory>
+    </file>
+    <file>
+      <source>${basedir}/src/main/resources/livetable.js</source>
+      <outputDirectory>webapps/xwiki/resources/js/xwiki/table</outputDirectory>
+    </file>
+    <file>
+      <source>${basedir}/src/main/resources/autosave.js</source>
+      <outputDirectory>webapps/xwiki/resources/js/xwiki/editors</outputDirectory>
     </file>
   </files>
 </assembly>
