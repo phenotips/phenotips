@@ -1953,12 +1953,16 @@ document.observe('xwiki:dom:loaded', function() {
         name : 'face',
         values : ['ocd', 'ocd_evaluation', 'icd', 'icd_evaluation', 'pfl', 'pfl_evaluation', 'ipd', 'ipd_evaluation']
       }, {
-        name : 'organs',
+        name : 'left-side',
         values : ['ear', 'ear_evaluation', 'hand', 'hand_evaluation', 'palm', 'palm_evaluation', 'foot', 'foot_evaluation']
+      }, {
+        name : 'right-side',
+        values : ['ear_right', 'ear_right_evaluation', 'hand_right', 'hand_right_evaluation', 'palm_right', 'palm_right_evaluation', 'foot_right', 'foot_right_evaluation']
       }
     ];
     rowMapping.each(function (data) {
       var newRow = new Element('tr', {'class' : data.name + '-group'});
+      newRow.insert(new Element('td', {'class' : 'icon'}))
       data.values.each(function (className) {
         var element = row.down('td.' + className);
         if (element) {
@@ -1996,6 +2000,10 @@ document.observe('xwiki:dom:loaded', function() {
            createReqParam('hand', row.down('td.hand input'), forceParam) +
            createReqParam('palm', row.down('td.palm input'), forceParam) +
            createReqParam('foot', row.down('td.foot input'), forceParam) +
+           createReqParam('ear_right', row.down('td.ear_right input'), forceParam) +
+           createReqParam('hand_right', row.down('td.hand_right input'), forceParam) +
+           createReqParam('palm_right', row.down('td.palm_right input'), forceParam) +
+           createReqParam('foot_right', row.down('td.foot_right input'), forceParam) +
            createReqParamAge('a', date, birthDate, forceParam);
   }
 
@@ -2177,19 +2185,49 @@ document.observe('xwiki:dom:loaded', function() {
          evaluation : row.down('td.pfl_evaluation')
        },
        ipd : {
-         evaluation : row.down('td.ipd_evaluation')
+         evaluation : row.down('td.ipd_evaluation'),
+         valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0000601'),
+           'extreme-above-normal': findFormElementForPhenotype('HP:0000316')
+         }
        },
        ear : {
          evaluation : row.down('td.ear_evaluation')
        },
        hand : {
-         evaluation : row.down('td.hand_evaluation')
+         evaluation : row.down('td.hand_evaluation'),
+         valueHooks : {
+           'extreme-above-normal': findFormElementForPhenotype('HP:0001176')
+         }
        },
        palm : {
          evaluation : row.down('td.palm_evaluation')
        },
        foot : {
-         evaluation : row.down('td.foot_evaluation')
+         evaluation : row.down('td.foot_evaluation'),
+         valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0001764'),
+           'extreme-above-normal': findFormElementForPhenotype('HP:0001833')
+         }
+       },
+       ear_right : {
+         evaluation : row.down('td.ear_right_evaluation')
+       },
+       hand_right : {
+         evaluation : row.down('td.hand_right_evaluation'),
+         valueHooks : {
+           'extreme-above-normal': findFormElementForPhenotype('HP:0001176')
+         }
+       },
+       palm_right : {
+         evaluation : row.down('td.palm_right_evaluation')
+       },
+       foot_right : {
+         evaluation : row.down('td.foot_right_evaluation'),
+         valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0001764'),
+           'extreme-above-normal': findFormElementForPhenotype('HP:0001833')
+         }
        }
     };
 
@@ -4003,6 +4041,36 @@ table.extradata-list td.bmi_percentile {
 }
 .growth-charts-section.collapsed .expand-tools .show {
   display: inline;
+}
+
+.extradata-list .head-group label {
+  font-weight: bold;
+}
+.extradata-list .icon {
+  width: 20px;
+  background: transparent none center center no-repeat;
+}
+.extradata-list .head-group .icon {
+  background-image: url("$xwiki.getSkinFile('icons/datamodel/calendar.png')");
+}
+.extradata-list .general-group .icon {
+  background-image: url("$xwiki.getSkinFile('body-icon-s.png')");
+  opacity: .4;
+}
+.extradata-list .face-group .icon {
+  background-image: url("$xwiki.getSkinFile('eye.png')");
+}
+.extradata-list .organs-group .icon {
+  background-image: url("$xwiki.getSkinFile('body-icon-left-s.png')");
+  opacity: .4;
+}
+.extradata-list .left-side-group .icon {
+  background-image: url("$xwiki.getSkinFile('body-icon-left-s.png')");
+  opacity: .4;
+}
+.extradata-list .right-side-group .icon {
+  background-image: url("$xwiki.getSkinFile('body-icon-right-s.png')");
+  opacity: .4;
 }</code>
     </property>
     <property>
@@ -4562,7 +4630,7 @@ $doc.display('prenatal_phenotype')
 (% class="clear clinical-info family_history-info chapter #__markIfMandatory('family_history')" %)(((
 == $!{class.get('family_history').prettyName} ==
 (((
-$doc.display('consanguinity')
+$doc.display('consanguinity')##
 $doc.display('miscarriages')
 #__displayIfNotEmpty('family_comments')
 
