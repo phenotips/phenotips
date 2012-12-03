@@ -3199,7 +3199,7 @@ document.observe('xwiki:dom:loaded', function() {
   new XWiki.editors.AutoSave({
     form : 'inline',
     enabled: true,
-    frequency: 1,
+    frequency: 10,
     showConfigurationUI: false
   });
 });</code>
