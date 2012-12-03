@@ -3033,6 +3033,220 @@ console.log(categories);
   </object>
   <object>
     <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>ClinicalInformationCode.Widgets</name>
+    <number>7</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>576a48e8-6707-4310-941b-0abb9e532d23</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var MS = (function (MS) {
+  var widgets = MS.widgets = MS.widgets || {};
+  widgets.FreeMultiselect = Class.create({
+    counter : 1,
+    options : {
+      returnKeyNavigation : false
+    },
+    initialize: function(element, options) {
+      this.options = Object.extend(Object.clone(this.options), options || { });
+      var _this = this;
+
+      // Suggest?
+      var suggestInfoSource = element.previous('input[name="xwiki-free-multiselect-suggest-script"][type="hidden"]');
+      if (suggestInfoSource &amp;&amp; suggestInfoSource.value &amp;&amp; typeof(XWiki.widgets.Suggest) != "undefined") {
+        this.suggestOptions = {
+          script : suggestInfoSource.value,
+          shownoresults : false,
+          varname: "input"
+        }
+      }
+
+      // Add a delete button and a "KEY_RETURN" keypress event listener for each line
+      this.enhanceLine = this.enhanceLine.bind(this);
+      var values = element.select('li input.xwiki-free-multiselect-value');
+      values.each(this.enhanceLine);
+
+      // Generate and insert the "add" button, edit mode only
+      if (element.down('input.xwiki-free-multiselect-value')) {
+        var addTool = new Element('a', {'title' : 'add', 'href' : '#' + element.id}).update('+...');
+        element.insert(addTool.wrap('li'));
+        addTool.observe('click', function(event) {
+          event.stop();
+          var prevLine = addTool.up('li').previous();
+          var template = prevLine &amp;&amp; prevLine.down('input.xwiki-free-multiselect-value');
+          if (template) {
+            _this.generateInput(template);
+          }
+        }.bindAsEventListener(this));
+      }
+    },
+
+    enhanceLine : function(element) {
+      element.id = this.generateId(element);
+      element.up('li').addClassName('xwiki-free-multiselect-line');
+      this.attachDeleteTool(element);
+      if (this.suggestOptions) {
+        new XWiki.widgets.Suggest(element, this.suggestOptions);
+      }
+      this.enableAddInput(element);
+    },
+
+    attachDeleteTool : function(element) {
+      var wrapper = element.up('.xwiki-free-multiselect-line');
+      var deleteTool = new Element('a', {'title' : 'delete', 'href' : '#' + element.id}).update('✖');
+      wrapper.insert(' ').insert(deleteTool);
+      deleteTool.observe('click', function(event) {
+        event.stop();
+        var wrapper = event.findElement('.xwiki-free-multiselect-line');
+        if (wrapper.previous('.xwiki-free-multiselect-line') || wrapper.next('.xwiki-free-multiselect-line')) {
+          wrapper.remove();
+        } else {
+          var target = wrapper.down('input');
+          target.value = '';
+          target.focus();
+        }
+      });
+    },
+
+    enableAddInput : function(element) {
+      var wrapper = element.up('.xwiki-free-multiselect-line');
+      var _this = this;
+      if (!wrapper) {return;}
+      element.observe('keypress', function(event) {
+        if (event.keyCode == Event.KEY_RETURN) {
+          event.stop();
+          var next = wrapper.next('.xwiki-free-multiselect-line');
+          if (_this.options.returnKeyNavigation &amp;&amp; next &amp;&amp; next.down('input')) {
+            next.down('input').focus();
+          } else {
+            element.next().removeClassName('inactive');
+            _this.generateInput(element);
+          }
+        } else if (event.keyCode == Event.KEY_BACKSPACE &amp;&amp; element.value == '') {
+          event.stop();
+          var previous = wrapper.previous('.xwiki-free-multiselect-line');
+          if (previous &amp;&amp; previous.down('input')) {
+            previous.down('input').focus();
+            element.up('.xwiki-free-multiselect-line').remove();
+          }
+        }
+      });
+    },
+
+    generateInput : function(template) {
+      var newInput = new Element('input', {'name' : template.name, id : this.generateId(template), type: template.type, size: template.size, 'class' : 'xwiki-free-multiselect-value'});
+      var newWrapper = new Element('li');
+      newWrapper.insert(newInput);
+      template.up('.xwiki-free-multiselect-line').insert({after: newWrapper});
+      this.enhanceLine(newInput);
+      newInput.focus();
+    },
+
+    generateId : function(element) {
+      return element.name + '_' + this.nextIndex();
+    },
+
+    nextIndex : function() {
+      return ++this.counter;
+    },
+
+    lastIndex : function() {
+      return this.counter;
+    }
+
+  });
+  return MS;
+}(MS || {}));
+
+document.observe("xwiki:dom:loaded", function() {
+  $$('.xwiki-free-multiselect').each(function(element) {
+    new MS.widgets.FreeMultiselect(element);
+  });
+});</code>
+    </property>
+    <property>
+      <name>Free Multiselect</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
       <customMapping/>
@@ -4047,6 +4261,103 @@ div.resultContainer div.sourceContent.loading {
     </property>
     <property>
       <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>ClinicalInformationCode.Widgets</name>
+    <number>5</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>6a32e24f-34dd-4972-b5da-305be3db4027</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>ol.xwiki-free-multiselect {
+  list-style-position: outside;
+}
+input.xwiki-free-multiselect-value {
+  max-width: 50% !important;
+}</code>
+    </property>
+    <property>
+      <name>Free Multiselect</name>
+    </property>
+    <property>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
