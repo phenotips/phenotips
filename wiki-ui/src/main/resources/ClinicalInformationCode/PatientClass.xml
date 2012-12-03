@@ -394,12 +394,7 @@
     <negative_phenotype>
       <cache>0</cache>
       <classname/>
-      <customDisplay>{{velocity}}
-#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('ClinicalInformationCode.DBConfigurationClass'))
-#if ($config)
-  {{include document="ClinicalInformationCode.PhenotypeDisplay" /}}
-#end
-{{/velocity}}</customDisplay>
+      <customDisplay/>
       <disabled>0</disabled>
       <displayType>input</displayType>
       <idField/>
