@@ -4726,11 +4726,6 @@ table.extradata-list td.bmi_percentile {
           (% class="clear"%)((()))
           )))## selector-panels
         #end
-        #if ("$!activeFields.contains('negative_phenotype')" != 'false')
-          (% class="negative-phenotype  #__markIfMandatory('negative_phenotype')" %)(((
-            $doc.display('negative_phenotype')
-          )))## negative_phenotype
-        #end
       #if ("$!activeFields.contains('unaffected')" != 'false')
         )))## controlled (phenotype)
       #end
