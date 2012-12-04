@@ -1259,8 +1259,8 @@
     }
   },
 
-  acceptAddItem : function (key) {
-    var input = $(this.getInputId(key));
+  acceptAddItem : function (key, negative) {
+    var input = $(this.getInputId(key, negative));
     if (input) {
       input.checked = true;
       Event.fire(input, 'suggest:change');
@@ -1297,7 +1297,7 @@
   },
 
   acceptSuggestion : function(obj) {
-    if (this.acceptAddItem(obj.id || obj.value)) {
+    if (this.acceptAddItem(obj.id || obj.value, obj.negative)) {
       this.addItem(obj.id || obj.value, obj.value, obj.info, obj.category);
     }
     this.input.value = this.input.defaultValue || "";
@@ -1389,8 +1389,8 @@
     }
   },
 
-  getInputId : function(key) {
-    return this.inputName + "_" + key;
+  getInputId : function(key, negative) {
+    return (negative ? this.inputName.replace(/(_\d+)_/, "$1_negative_") : this.inputName) + "_" + key;
   },
 
   synchronizeSelection : function (input) {
@@ -2625,7 +2625,7 @@ console.log(categories);
         var prevPosition = this.container.getPositionInViewport();
       }
       var value = entry.down('.value').firstChild.nodeValue;
-      this.suggest.acceptEntry({'id':entry.__termId, 'value':value, 'category' : entry.__termCategory}, value, '', true);
+      this.suggest.acceptEntry({'id':entry.__termId, 'value':value, 'category' : entry.__termCategory, 'negative' : entry.down('.selected').hasClassName('no')}, value, '', true);
       entry.addClassName('accepted');
       if (prevPosition &amp;&amp; (typeof (this.container.positionDialogInViewport) == 'function')) {
         this.container.positionDialogInViewport(prevPosition.left, prevPosition.top);

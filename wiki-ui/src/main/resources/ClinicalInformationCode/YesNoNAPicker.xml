@@ -352,6 +352,7 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
     this.label = label;
     element.select('input[type="checkbox"]').invoke("hide");
     element.addClassName('yes-no-picker');
+    element.addClassName('initialized');
 
     var yes = this.yes = element.down('label.yes');
     var no = this.no = element.down('label.no');
