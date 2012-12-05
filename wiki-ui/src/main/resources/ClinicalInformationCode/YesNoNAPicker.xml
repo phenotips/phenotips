@@ -348,7 +348,7 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
   initialize : function(element, label, isLabelActive) {
     var _this = this;
     this._hints = _this.hints;
-    this.element = element;
+    this.element = $(element);
     this.label = label;
     element.select('input[type="checkbox"]').invoke("hide");
     element.addClassName('yes-no-picker');
@@ -357,6 +357,10 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
     var yes = this.yes = element.down('label.yes');
     var no = this.no = element.down('label.no');
     var na = this.na = element.down('label.na');
+
+    this.yesInput = this.yes.down('input');
+    this.noInput = this.no.down('input');
+    this.naInput = this.na.down('input');
 
     var _onYes = this._onYes.bindAsEventListener(this);
     var _onNo = this._onNo.bindAsEventListener(this);
@@ -367,12 +371,13 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
     this.no.observe('click', _onNo);
     this.na.observe('click', _onNA);
     //this.element.observe('click', _onUnselect);
+    document.observe('ynpicker:change', this._sync.bindAsEventListener(this));
 
-    yes.down('input').observe('suggest:change', function(event) {
+    this.yesInput.observe('suggest:change', function(event) {
       var input = event.findElement();
       _this._onSelect(input.checked ? 'yes' : 'na');
     });
-    no.down('input').observe('suggest:change', function(event) {
+    this.noInput.observe('suggest:change', function(event) {
       var input = event.findElement();
       _this._onSelect(input.checked ? 'no' : 'na');
     });
@@ -419,7 +424,7 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
   _onUnselect : function () {
     this._unselect('yes');
     this._unselect('no');
-    this._unselect('na');
+    this._select('na');
   },
 
   _getInput : function(name) {
@@ -434,6 +439,7 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
        var input = this[name].down('input');
        input.checked = true;
        Event.fire(input, 'picker:change');
+       document.fire('ynpicker:change', {'element' : input});
        this.label &amp;&amp; this.label.addClassName(name + '-selected');
        //this[name].title = this._hints[name].selectedTitle;
      }
@@ -449,6 +455,49 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
        //this[name].title = this._hints[name].unselectedTitle;
      }
      return this[name];
+  },
+  _sync : function(event) {
+    if (!event.memo || !event.memo.element) {
+      return;
+    }
+    var element = event.memo.element;
+    var value = element.value;
+    var selected = element.checked;
+    if (value != this.yesInput.value || !selected) {
+      return;
+    }
+    if (element.up('label').hasClassName('na')) {
+      this.naInput.checked = true;
+      this.na.addClassName('selected');
+      this.label &amp;&amp; this.label.addClassName('na-selected');
+      this.yesInput.checked = false;
+      this.yes.removeClassName('selected');
+      this.label &amp;&amp; this.label.removeClassName('yes-selected');
+      this.noInput.checked = false;
+      this.no.removeClassName('selected');
+      this.label &amp;&amp; this.label.removeClassName('no-selected');
+      this.element.up('li') &amp;&amp; this.element.up('li').removeClassName('accepted');
+    } else if (element.up('label').hasClassName('no')) {
+      this.naInput.checked = false;
+      this.na.removeClassName('selected');
+      this.yesInput.checked = false;
+      this.yes.removeClassName('selected');
+      this.label &amp;&amp; this.label.removeClassName('yes-selected');
+      this.noInput.checked = true;
+      this.no.addClassName('selected');
+      this.label &amp;&amp; this.label.addClassName('no-selected');
+      this.element.up('li') &amp;&amp; this.element.up('li').removeClassName('accepted');
+    } else {
+      this.naInput.checked = false;
+      this.na.removeClassName('selected');
+      this.yesInput.checked = true;
+      this.yes.addClassName('selected');
+      this.label &amp;&amp; this.label.addClassName('yes-selected');
+      this.noInput.checked = false;
+      this.no.removeClassName('selected');
+      this.label &amp;&amp; this.label.removeClassName('no-selected');
+      this.element.up('li') &amp;&amp; this.element.up('li').addClassName('accepted');
+    }
   }
 });
 

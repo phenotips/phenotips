@@ -1427,11 +1427,6 @@
         enableHighlightChecked(ynpickerElt.down('.no input'));
       }
     }
-    /*$$('input[type="checkbox"][value="' + input.value.replace(/"/g, '\\"') +'"]').each(function(item) {
-      if (item.checked != input.checked) {
-        //FIXME! item.click();
-      }
-    });*/
     if (element) {
       this.notifySelectionChange(element);
     }
