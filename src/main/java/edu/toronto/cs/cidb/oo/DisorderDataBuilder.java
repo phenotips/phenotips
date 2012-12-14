@@ -188,7 +188,7 @@ public class DisorderDataBuilder
         for (Entry<String, Double> s : d.getNegativePhenotypes().entrySet()) {
             String hpoId = s.getKey();
             Double boost = s.getValue();
-            writeField("not-symptom", hpoId, boost);
+            writeField("not_symptom", hpoId, boost);
             TermData term = this.oboData.get(hpoId);
             if (term != null) {
                 updateKeywords(negativeKeywords, term);
@@ -204,10 +204,10 @@ public class DisorderDataBuilder
         }
 
         for (Entry<String, Double> s : negativeParents.entrySet()) {
-            writeField("not-symptom", s.getKey(), s.getValue());
+            writeField("not_symptom", s.getKey(), s.getValue());
         }
         writeField("keywords", keywords.toString());
-        writeField("non-keywords", negativeKeywords.toString());
+        writeField("non_keywords", negativeKeywords.toString());
         endElement(DOC_ELEMENT_NAME);
     }
 
