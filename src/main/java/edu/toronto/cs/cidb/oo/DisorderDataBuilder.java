@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -161,15 +162,22 @@ public class DisorderDataBuilder
         writeField("name", d.getName());
         Map<String, Double> parents = new HashMap<String, Double>();
         Map<String, Double> negativeParents = new HashMap<String, Double>();
+        StringBuilder keywords = new StringBuilder();
+        StringBuilder negativeKeywords = new StringBuilder();
+        keywords.append(d.getName()).append(" ");
         for (Entry<String, Double> s : d.getSymptoms().entrySet()) {
             String hpoId = s.getKey();
             Double boost = s.getValue();
             writeField("symptom", hpoId, boost);
             TermData term = this.oboData.get(hpoId);
-            term.expandTermCategories(this.oboData);
-            for (String parent : term.get(TermData.TERM_CATEGORY_FIELD_NAME)) {
-                if (!parents.containsKey(parent) || parents.get(parent) < boost) {
-                    parents.put(parent, boost);
+            if (term != null) {
+                updateKeywords(keywords, term);
+                term.expandTermCategories(this.oboData);
+                for (String parent : term.get(TermData.TERM_CATEGORY_FIELD_NAME)) {
+                    if (!parents.containsKey(parent) || parents.get(parent) < boost) {
+                        parents.put(parent, boost);
+                        updateKeywords(keywords, parent);
+                    }
                 }
             }
         }
@@ -182,11 +190,15 @@ public class DisorderDataBuilder
             Double boost = s.getValue();
             writeField("not-symptom", hpoId, boost);
             TermData term = this.oboData.get(hpoId);
-            term.expandTermCategories(this.oboData);
-            for (String parent : term.get(TermData.TERM_CATEGORY_FIELD_NAME)) {
-                if (!parents.containsKey(parent)
-                    && (!negativeParents.containsKey(parent) || negativeParents.get(parent) < boost)) {
-                    negativeParents.put(parent, boost);
+            if (term != null) {
+                updateKeywords(negativeKeywords, term);
+                term.expandTermCategories(this.oboData);
+                for (String parent : term.get(TermData.TERM_CATEGORY_FIELD_NAME)) {
+                    if (!parents.containsKey(parent)
+                        && (!negativeParents.containsKey(parent) || negativeParents.get(parent) < boost)) {
+                        negativeParents.put(parent, boost);
+                        updateKeywords(negativeKeywords, parent);
+                    }
                 }
             }
         }
@@ -194,6 +206,8 @@ public class DisorderDataBuilder
         for (Entry<String, Double> s : negativeParents.entrySet()) {
             writeField("not-symptom", s.getKey(), s.getValue());
         }
+        writeField("keywords", keywords.toString());
+        writeField("non-keywords", negativeKeywords.toString());
         endElement(DOC_ELEMENT_NAME);
     }
 
@@ -234,5 +248,26 @@ public class DisorderDataBuilder
             text = (value + "");
         }
         this.hd.characters(text.toCharArray(), 0, text.length());
+    }
+
+    private void updateKeywords(StringBuilder keywords, String hpoId)
+    {
+        TermData term = this.oboData.get(hpoId);
+        if (term != null) {
+            updateKeywords(keywords, term);
+        }
+    }
+
+    private void updateKeywords(StringBuilder keywords, TermData term)
+    {
+        for (Collection<String> data : term.values()) {
+            if (data != null) {
+                for (String entry : data) {
+                    keywords.append(
+                        entry.replaceAll("^(HP\\:[0-9]{7})\\s*!\\s*(.*)", "$2").replaceAll("^(HP\\:[0-9]{7})$", ""))
+                        .append(" ");
+                }
+            }
+        }
     }
 }
