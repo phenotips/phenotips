@@ -1,0 +1,125 @@
+package edu.toronto.cs.cidb.oo;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class DisorderData
+{
+    private String id;
+
+    private String name;
+
+    private Map<String, Double> symptoms = new HashMap<String, Double>();
+
+    private Map<String, Double> negativePhenotypes = new HashMap<String, Double>();
+
+    private double prelevance;
+
+    protected DisorderData(String id, String name)
+    {
+        this.id = id;
+        this.name = name;
+    }
+
+    protected Double addSymptom(String id, String prelevance)
+    {
+        return this.symptoms.put(id, interpretPrelevance(prelevance));
+    }
+
+    protected Double addNegativePhenotype(String id, String prelevance)
+    {
+        return this.negativePhenotypes.put(id, interpretPrelevance(prelevance));
+    }
+
+    public double getPrelevance()
+    {
+        return this.prelevance;
+    }
+
+    protected void setPrelevance(double prelevance)
+    {
+        this.prelevance = prelevance;
+    }
+
+    public String getId()
+    {
+        return this.id;
+    }
+
+    public String getName()
+    {
+        return this.name;
+    }
+
+    public Map<String, Double> getSymptoms()
+    {
+        return this.symptoms;
+    }
+
+    public Map<String, Double> getNegativePhenotypes()
+    {
+        return this.negativePhenotypes;
+    }
+
+    private double interpretPrelevance(String text)
+    {
+        double result = 0.5; // just average
+        String t = text.trim();
+        // as percentage, e.g. 95.00 %
+        if (t.endsWith("%")) {
+            t = t.replaceAll("\\s*%", "");
+            // as percentage interval, e.g. 1-2 %; take the mean
+            if (t.indexOf('-') > 0) {
+                String pieces[] = t.split("\\s*-\\s*");
+                try {
+                    result = (Double.parseDouble(pieces[0]) + Double.parseDouble(pieces[1])) / 2.0 * 0.01;
+                } catch (NumberFormatException ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                // as simple percentage
+                try {
+                    result = Double.parseDouble(t);
+                    result *= 0.01;
+                } catch (NumberFormatException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        // as ratio, e.g. "24/25" or "11 of 29"
+        t = t.replaceAll("\\s*of\\s*", "/");
+        if (t.indexOf('/') > 0) {
+            String pieces[] = t.split("\\s*/\\s*");
+            try {
+                result = (Double.parseDouble(pieces[0]) / Double.parseDouble(pieces[1]));
+            } catch (NumberFormatException ex) {
+                ex.printStackTrace();
+            }
+        }
+        // as fuzzy values (with typos, unfortunately)
+        // known fuzzy values:
+        /*
+         * 155 common 26 Common 1 Freqeunt 144 frequent 13 Frequent 12984 hallmark 6 Hallmark 9 obligate 1 occaisonal
+         * 9404 occasional 99 Occasional 1221 rare 73 Rare 9907 typical 7 Typical 1 UNCOMMON 26 variable 9 very rare 2
+         * Very rare
+         */
+
+        if (t.equalsIgnoreCase("occasional") || t.equalsIgnoreCase("occaisonal")) {
+            result = 0.25;
+        } else if (t.equalsIgnoreCase("frequent") || t.equalsIgnoreCase("freqeunt")) {
+            result = 0.75;
+        } else if (t.equalsIgnoreCase("common") || t.equalsIgnoreCase("variable") || t.equals("")) {
+            result = 0.5;
+        } else if (t.equalsIgnoreCase("hallmark") || t.equalsIgnoreCase("typical")) {
+            result = .90;
+        } else if (t.equalsIgnoreCase("obligate")) {
+            result = 1.0;
+        } else if (t.equalsIgnoreCase("rare") || t.equalsIgnoreCase("uncommon") || t.equalsIgnoreCase("very rare")) {
+            result = 0.1;
+        }
+
+        // "round" the result
+        result = Math.round(result * 20) / 20.0;
+        return result;
+    }
+}
