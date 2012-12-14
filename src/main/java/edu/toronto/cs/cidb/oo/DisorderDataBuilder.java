@@ -207,7 +207,9 @@ public class DisorderDataBuilder
             writeField("not_symptom", s.getKey(), s.getValue());
         }
         writeField("keywords", keywords.toString());
-        writeField("non_keywords", negativeKeywords.toString());
+        if (negativeKeywords.length() > 0) {
+            writeField("not_keywords", negativeKeywords.toString());
+        }
         endElement(DOC_ELEMENT_NAME);
     }
 
