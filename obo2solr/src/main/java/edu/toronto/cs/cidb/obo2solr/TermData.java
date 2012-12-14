@@ -65,6 +65,9 @@ public class TermData extends SetMap<String, String>
         Set<String> newFront = new HashSet<String>();
         while (!front.isEmpty()) {
             for (String nextTermId : front) {
+                if (data.get(nextTermId).get(TERM_CATEGORY_FIELD_NAME) == null) {
+                    continue;
+                }
                 for (String parentTermId : data.get(nextTermId).get(TERM_CATEGORY_FIELD_NAME)) {
                     if (!result.contains(parentTermId)) {
                         newFront.add(parentTermId);
