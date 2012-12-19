@@ -84,8 +84,7 @@ public class PhenotypeDisplayTools implements ScriptService
 
     protected void useProperty(String type, String prefix, String name)
     {
-        this.execution.getContext().setProperty(type + FIELD_NAME_KEY,
-            prefix + name);
+        this.execution.getContext().setProperty(type + FIELD_NAME_KEY, prefix + name);
         this.execution.getContext().setProperty(type + PROPERTY_NAME_KEY, name);
     }
 
@@ -99,8 +98,7 @@ public class PhenotypeDisplayTools implements ScriptService
         setSelectedValues(YES_SELECTION_MARKER, values);
     }
 
-    public void setSelectedValues(Collection<String> yValues,
-        Collection<String> nValues)
+    public void setSelectedValues(Collection<String> yValues, Collection<String> nValues)
     {
         setSelectedValues(YES_SELECTION_MARKER, yValues);
         setSelectedValues(NO_SELECTION_MARKER, nValues);
@@ -112,14 +110,12 @@ public class PhenotypeDisplayTools implements ScriptService
         if (values != null) {
             selectedValues.addAll(values);
         }
-        this.execution.getContext().setProperty(type + SELECTED_VALUES_KEY,
-            selectedValues);
+        this.execution.getContext().setProperty(type + SELECTED_VALUES_KEY, selectedValues);
     }
 
     public void setMode(String mode)
     {
-        this.execution.getContext()
-            .setProperty(MODE_KEY, DisplayMode.get(mode));
+        this.execution.getContext().setProperty(MODE_KEY, DisplayMode.get(mode));
     }
 
     public void setMessageMap(Map<String, String> messages)
@@ -140,26 +136,19 @@ public class PhenotypeDisplayTools implements ScriptService
     {
         this.execution.getContext().removeProperty(DOCUMENT_KEY);
         this.execution.getContext().removeProperty(MODE_KEY);
-        this.execution.getContext().removeProperty(
-            YES_SELECTION_MARKER + FIELD_NAME_KEY);
-        this.execution.getContext().removeProperty(
-            NO_SELECTION_MARKER + FIELD_NAME_KEY);
-        this.execution.getContext().removeProperty(
-            YES_SELECTION_MARKER + PROPERTY_NAME_KEY);
-        this.execution.getContext().removeProperty(
-            NO_SELECTION_MARKER + PROPERTY_NAME_KEY);
-        this.execution.getContext().removeProperty(
-            YES_SELECTION_MARKER + SELECTED_VALUES_KEY);
-        this.execution.getContext().removeProperty(
-            NO_SELECTION_MARKER + SELECTED_VALUES_KEY);
+        this.execution.getContext().removeProperty(YES_SELECTION_MARKER + FIELD_NAME_KEY);
+        this.execution.getContext().removeProperty(NO_SELECTION_MARKER + FIELD_NAME_KEY);
+        this.execution.getContext().removeProperty(YES_SELECTION_MARKER + PROPERTY_NAME_KEY);
+        this.execution.getContext().removeProperty(NO_SELECTION_MARKER + PROPERTY_NAME_KEY);
+        this.execution.getContext().removeProperty(YES_SELECTION_MARKER + SELECTED_VALUES_KEY);
+        this.execution.getContext().removeProperty(NO_SELECTION_MARKER + SELECTED_VALUES_KEY);
         this.execution.getContext().removeProperty(MESSAGES_KEY);
     }
 
     private Set<String> getSelectedValues(String type)
     {
         @SuppressWarnings("unchecked")
-        Set<String> result = (Set<String>) this.execution.getContext()
-            .getProperty(type + SELECTED_VALUES_KEY);
+        Set<String> result = (Set<String>) this.execution.getContext().getProperty(type + SELECTED_VALUES_KEY);
         if (result == null) {
             result = Collections.emptySet();
         }
@@ -168,8 +157,7 @@ public class PhenotypeDisplayTools implements ScriptService
 
     private String getFieldName(String type)
     {
-        return (String) this.execution.getContext().getProperty(
-            type + FIELD_NAME_KEY);
+        return (String) this.execution.getContext().getProperty(type + FIELD_NAME_KEY);
     }
 
     private DisplayMode getMode()
@@ -184,7 +172,6 @@ public class PhenotypeDisplayTools implements ScriptService
 
     private String getPropertyName(String type)
     {
-        return (String) this.execution.getContext().getProperty(
-            type + PROPERTY_NAME_KEY);
+        return (String) this.execution.getContext().getProperty(type + PROPERTY_NAME_KEY);
     }
 }

@@ -124,30 +124,25 @@ public class PropertyDisplayer
 
     private boolean isSection(Map<String, ? > item)
     {
-        return ITEM_TYPE_SECTION.equals(item.get(TYPE_KEY))
-            && Collection.class.isInstance(item.get(CATEGORIES_KEY))
-            && String.class.isInstance(item.get(TITLE_KEY))
-            && Collection.class.isInstance(item.get(DATA_KEY));
+        return ITEM_TYPE_SECTION.equals(item.get(TYPE_KEY)) && Collection.class.isInstance(item.get(CATEGORIES_KEY))
+            && String.class.isInstance(item.get(TITLE_KEY)) && Collection.class.isInstance(item.get(DATA_KEY));
     }
 
     private boolean isSubsection(Map<String, ? > item)
     {
-        return ITEM_TYPE_SUBSECTION.equals(item.get(TYPE_KEY))
-            && String.class.isInstance(item.get(TITLE_KEY))
+        return ITEM_TYPE_SUBSECTION.equals(item.get(TYPE_KEY)) && String.class.isInstance(item.get(TITLE_KEY))
             && Collection.class.isInstance(item.get(DATA_KEY));
     }
 
     private boolean isField(Map<String, ? > item)
     {
-        return item.get(TYPE_KEY) == null
-            || ITEM_TYPE_FIELD.equals(item.get(TYPE_KEY))
-            && item.get(ID_KEY) != null
+        return item.get(TYPE_KEY) == null || ITEM_TYPE_FIELD.equals(item.get(TYPE_KEY)) && item.get(ID_KEY) != null
             && String.class.isAssignableFrom(item.get(ID_KEY).getClass());
     }
 
     @SuppressWarnings("unchecked")
-    private FormSection generateSection(Map<String, ? > sectionTemplate,
-        List<String> customYesSelected, List<String> customNoSelected)
+    private FormSection generateSection(Map<String, ? > sectionTemplate, List<String> customYesSelected,
+        List<String> customNoSelected)
     {
         String title = (String) sectionTemplate.get(TITLE_KEY);
         Collection<String> categories = (Collection<String>) sectionTemplate.get(CATEGORIES_KEY);
@@ -156,8 +151,8 @@ public class PropertyDisplayer
         return section;
     }
 
-    private FormElement generateSubsection(Map<String, ? > subsectionTemplate,
-        List<String> customYesSelected, List<String> customNoSelected)
+    private FormElement generateSubsection(Map<String, ? > subsectionTemplate, List<String> customYesSelected,
+        List<String> customNoSelected)
     {
         String title = (String) subsectionTemplate.get(TITLE_KEY);
         String type = (String) subsectionTemplate.get(GROUP_TYPE_KEY);
@@ -183,8 +178,8 @@ public class PropertyDisplayer
         }
     }
 
-    private FormElement generateField(Map<String, ? > fieldTemplate,
-        List<String> customYesSelected, List<String> customNoSelected)
+    private FormElement generateField(Map<String, ? > fieldTemplate, List<String> customYesSelected,
+        List<String> customNoSelected)
     {
         String id = (String) fieldTemplate.get(ID_KEY);
         boolean yesSelected = customYesSelected.remove(id);
@@ -193,22 +188,20 @@ public class PropertyDisplayer
 
     }
 
-    private FormElement generateField(String id, String title,
-        boolean expandable, boolean yesSelected, boolean noSelected)
+    private FormElement generateField(String id, String title, boolean expandable, boolean yesSelected,
+        boolean noSelected)
     {
         String hint = getLabelFromOntology(id);
         return new FormField(id, StringUtils.defaultString(title, hint), hint, expandable, yesSelected, noSelected);
 
     }
 
-    private FormElement generateField(String id, String title,
-        boolean yesSelected, boolean noSelected)
+    private FormElement generateField(String id, String title, boolean yesSelected, boolean noSelected)
     {
         return generateField(id, title, hasDescendantsInOntology(id), yesSelected, noSelected);
     }
 
-    private List<String> assignCustomFields(FormSection section,
-        Map<String, List<String>> customCategories)
+    private List<String> assignCustomFields(FormSection section, Map<String, List<String>> customCategories)
     {
         List<String> assigned = new LinkedList<String>();
         if (section.getCategories().size() == 0) {

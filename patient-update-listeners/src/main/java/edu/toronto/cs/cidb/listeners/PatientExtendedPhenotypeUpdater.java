@@ -95,8 +95,9 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
     {
         XWikiDocument doc = (XWikiDocument) source;
 
-        BaseObject patientRecordObj = doc.getXObject(new DocumentReference(
-            doc.getDocumentReference().getRoot().getName(), "ClinicalInformationCode", "PatientClass"));
+        BaseObject patientRecordObj =
+            doc.getXObject(new DocumentReference(doc.getDocumentReference().getRoot().getName(),
+                "ClinicalInformationCode", "PatientClass"));
         if (patientRecordObj == null) {
             return;
         }
