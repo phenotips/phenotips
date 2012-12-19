@@ -44,7 +44,7 @@ import org.xwiki.script.service.ScriptService;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
-import edu.toronto.cs.cidb.solr.SolrScriptService;
+import edu.toronto.cs.cidb.solr.HPOScriptService;
 
 /**
  * Update the extended_*_phenotype aggregated properties whenever the phenotypes change.
@@ -65,13 +65,13 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
     /**
      * Needed for accessing the HPO ontology.
      */
-    private SolrScriptService solr;
+    private HPOScriptService solr;
 
     @Override
     public void initialize() throws InitializationException
     {
         try {
-            this.solr = (SolrScriptService) this.cm.getInstance(ScriptService.class, "solr");
+            this.solr = (HPOScriptService) this.cm.getInstance(ScriptService.class, "hpo");
         } catch (ComponentLookupException ex) {
             throw new InitializationException("Needed component SolrScriptService wasn't available!");
         }

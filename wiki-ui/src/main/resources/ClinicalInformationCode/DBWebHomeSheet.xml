@@ -1068,7 +1068,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
         #set($discard = $columns.add($tagProperty))
         #set($discard = $columnsProperties.put($tagProperty, { "type" : "hidden"}))
       #end
-      ###set($topFilters = $doc.getRenderedContent("{{valuecloud classname='${patientClassName}' property='${tagProperty}' nameService='solr' enableJoinMode='1' collapsed='0'/}}", "xwiki/2.0"))
+      ###set($topFilters = $doc.getRenderedContent("{{valuecloud classname='${patientClassName}' property='${tagProperty}' nameService='hpo' enableJoinMode='1' collapsed='0'/}}", "xwiki/2.0"))
       #set($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
 == Filters ==
 

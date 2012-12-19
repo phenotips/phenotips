@@ -38,7 +38,7 @@ import org.apache.solr.common.SolrDocumentList;
 import edu.toronto.cs.cidb.hpoa.utils.graph.DAG;
 import edu.toronto.cs.cidb.hpoa.utils.graph.DAGNode;
 import edu.toronto.cs.cidb.hpoa.utils.graph.IDAGNode;
-import edu.toronto.cs.cidb.solr.SolrScriptService;
+import edu.toronto.cs.cidb.solr.AbstractSolrScriptService;
 
 public abstract class AbstractOntology extends DAG<OntologyTerm> implements Ontology
 {
@@ -59,7 +59,7 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
      * (non-Javadoc)
      * @see edu.toronto.cs.cidb.hpoa.ontology.Ontology#load(edu.toronto.cs.cidb.solr.SolrScriptService)
      */
-    public int load(SolrScriptService source)
+    public int load(AbstractSolrScriptService source)
     {
         // Make sure we can read the data
         if (source == null) {

@@ -25,12 +25,12 @@ import java.util.Set;
 import org.xwiki.component.annotation.Role;
 
 import edu.toronto.cs.cidb.hpoa.utils.graph.IDAGNode;
-import edu.toronto.cs.cidb.solr.SolrScriptService;
+import edu.toronto.cs.cidb.solr.AbstractSolrScriptService;
 
 @Role
 public interface Ontology
 {
-    public abstract int load(SolrScriptService source);
+    public abstract int load(AbstractSolrScriptService source);
 
     public abstract int load(File source);
 

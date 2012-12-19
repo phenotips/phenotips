@@ -27,9 +27,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.xwiki.script.service.ScriptService;
 
-import edu.toronto.cs.cidb.solr.SolrScriptService;
+import edu.toronto.cs.cidb.solr.HPOScriptService;
 
 public class PropertyDisplayer
 {
@@ -59,7 +58,7 @@ public class PropertyDisplayer
 
     private static final String INDEXED_PARENT_KEY = "is_a";
 
-    protected ScriptService ontologyService;
+    protected HPOScriptService ontologyService;
 
     protected final String[] fieldNames;
 
@@ -67,13 +66,13 @@ public class PropertyDisplayer
 
     private List<FormSection> sections = new LinkedList<FormSection>();
 
-    PropertyDisplayer(Collection<Map<String, ? >> template, String propertyName, ScriptService ontologyService,
+    PropertyDisplayer(Collection<Map<String, ? >> template, String propertyName, HPOScriptService ontologyService,
         String fieldName, Collection<String> selected)
     {
         this(template, propertyName, ontologyService, fieldName, null, selected, null);
     }
 
-    PropertyDisplayer(Collection<Map<String, ? >> template, String propertyName, ScriptService ontologyService,
+    PropertyDisplayer(Collection<Map<String, ? >> template, String propertyName, HPOScriptService ontologyService,
         String yesFieldName, String noFieldName, Collection<String> yesSelected, Collection<String> noSelected)
     {
         this.ontologyService = ontologyService;
@@ -230,7 +229,7 @@ public class PropertyDisplayer
 
     private String getLabelFromOntology(String id)
     {
-        SolrDocument phObj = ((SolrScriptService) this.ontologyService).get(id);
+        SolrDocument phObj = this.ontologyService.get(id);
         if (phObj != null) {
             return (String) phObj.get(INDEXED_NAME_KEY);
         }
@@ -241,16 +240,14 @@ public class PropertyDisplayer
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put(INDEXED_PARENT_KEY, id);
-        return (((SolrScriptService) this.ontologyService).get(params) != null);
+        return (this.ontologyService.get(params) != null);
     }
 
     @SuppressWarnings("unchecked")
     private List<String> getCategoriesFromOntology(String value)
     {
-        SolrDocument termObj = ((SolrScriptService) this.ontologyService)
-            .get(value);
-        if (termObj != null
-            && termObj.get(INDEXED_CATEGORY_KEY) != null
+        SolrDocument termObj = this.ontologyService.get(value);
+        if (termObj != null && termObj.get(INDEXED_CATEGORY_KEY) != null
             && List.class.isAssignableFrom(termObj.get(INDEXED_CATEGORY_KEY).getClass())) {
             return (List<String>) termObj.get(INDEXED_CATEGORY_KEY);
         }

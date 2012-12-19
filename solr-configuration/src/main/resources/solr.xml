@@ -23,12 +23,8 @@
   sharedLib: path to a lib directory that will be shared across all cores
 -->
 <solr persistent="false">
-
-  <!--
-  adminPath: RequestHandler path to manage cores.  
-    If 'null' (or absent), cores will not be manageable via request handler
-  -->
-  <cores adminPath="/admin/cores" defaultCoreName="collection1">
-    <core name="collection1" instanceDir="." />
+  <cores defaultCoreName="hpo">
+    <core name="hpo" instanceDir="hpo" />
+    <core name="omim" instanceDir="omim" />
   </cores>
 </solr>

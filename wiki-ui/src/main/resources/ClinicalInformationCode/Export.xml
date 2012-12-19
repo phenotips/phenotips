@@ -177,7 +177,7 @@ $response.setContentType('text/csv')##
         "##
         #foreach ($code in $!patientObj.getProperty($field).value)
           #if ($field.endsWith('phenotype'))
-            #set ($name = $!{services.solr.get($code).name})
+            #set ($name = $!{services.hpo.get($code).name})
             #if ($name)
               ${name.replace('"', '""')}##
             #else

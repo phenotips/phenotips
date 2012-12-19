@@ -25,7 +25,7 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 
 @Component
-@Named("omim")
+@Named("omimRemote")
 @Singleton
 public class OmimAccessService extends SpecializedNCBIEUtilsAccessService
 {

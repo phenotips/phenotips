@@ -36,6 +36,8 @@ import org.xwiki.script.service.ScriptService;
 
 import com.xpn.xwiki.api.Document;
 
+import edu.toronto.cs.cidb.solr.HPOScriptService;
+
 /**
  * Display lists of phenotype properties.
  * 
@@ -66,7 +68,7 @@ public class PhenotypeDisplayTools implements ScriptService
     private Execution execution;
 
     @Inject
-    @Named("solr")
+    @Named("hpo")
     private ScriptService ontologyService;
 
     public void use(String prefix, String name)
@@ -129,11 +131,9 @@ public class PhenotypeDisplayTools implements ScriptService
 
     public String display(Collection<Map<String, ? >> template)
     {
-        return new PropertyDisplayer(template, this.getPropertyName(),
-            this.ontologyService, getFieldName(YES_SELECTION_MARKER),
-            getFieldName(NO_SELECTION_MARKER),
-            getSelectedValues(YES_SELECTION_MARKER),
-            getSelectedValues(NO_SELECTION_MARKER)).display(getMode());
+        return new PropertyDisplayer(template, this.getPropertyName(), (HPOScriptService) this.ontologyService,
+            getFieldName(YES_SELECTION_MARKER), getFieldName(NO_SELECTION_MARKER),
+            getSelectedValues(YES_SELECTION_MARKER), getSelectedValues(NO_SELECTION_MARKER)).display(getMode());
     }
 
     public void clear()
