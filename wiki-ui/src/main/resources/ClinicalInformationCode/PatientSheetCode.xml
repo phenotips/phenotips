@@ -2601,7 +2601,7 @@ document.observe('xwiki:dom:loaded', function() {
     for (var k in cache.displayed) {
        var obj = cache.all[k];
        if (obj) {
-          var elt = new Element('span', {'class' : 'search-term'}).update(obj.text);
+          var elt = new Element('span', {'class' : 'search-term ' + obj.type}).update(obj.text);
           elt.__key = obj.key;
           elt.title = obj.disabled &amp;&amp; 'Click to enable' || 'Click to disable';
           if (obj.disabled) {
@@ -2689,44 +2689,72 @@ document.observe('xwiki:dom:loaded', function() {
     }
     //var queryString = (customSearchTermsInput &amp;&amp; (customSearchTermsInput.value.strip() + ' ') || '') + defaultSearchTermsInput.value.strip();
     var queryString = '';
+    var parameters = {};
+    for (var k in cache.displayed) {
+      var obj = cache.all[k];
+      if (obj &amp;&amp; !obj.disabled) {
+        var list = parameters[obj.type];
+        if (!list) {
+          list = [];
+          parameters[obj.type] = list;
+        }
+        list.push(obj.key.replace(/:/g, "\\:"));
+      }
+    }
     data.source.each(function(source) {
        queryString += ((source &amp;&amp; source.value.strip()) + ' ') || '';
     });
     
     data.__pendingRequest = function() {
       data.__pendingRequest = undefined;
-      new Ajax.Updater(data.target, data.script + encodeURIComponent(queryString.strip()) + "&amp;reqNo=" + ++data.expectedReqNo, {onCreate : requestCreated.bind(this, data), onSuccess : responseReceived.bind(this, data), onComplete : updateDone.bind(this, data)});
+      new Ajax.Updater(data.target, data.script + encodeURIComponent(queryString.strip()) + "&amp;reqNo=" + ++data.expectedReqNo, {
+        parameters: parameters,
+        onCreate : requestCreated.bind(this, data),
+        onSuccess : responseReceived.bind(this, data),
+        onComplete : updateDone.bind(this, data)
+      });
     }.bind(this).delay(0.5);
   }
 
   document.observe('phenotype:selected', function(event) {
-    if (!event.memo || !event.memo.key || !event.memo.element || event.memo.type != 'yes') {return;}
+    if (!event.memo || !event.memo.key || !event.memo.element) {return;}
     var key = event.memo.key;
     var text = event.memo.text || event.memo.key;
     var obj = cache.all[key];
-    if (event.memo.enable) {
-      if (!obj) {
-        obj = {'key' : key, 'text' : text};
-        cache.all[key] = obj;
+    // The event is sent for NA, Yes and No checkboxes, in this order, with partial results along the way.
+    // If we want to check the final state of the value, we only take the No checkbox into account.
+    if (event.memo.type == 'no') {
+      var yesSelected = event.memo.element.up('.yes-no-picker').down('.yes input').checked;
+      var noSelected = event.memo.enable;
+      if (yesSelected || noSelected) {
+        if (!obj) {
+          obj = {'key' : key, 'text' : text};
+          cache.all[key] = obj;
+        } else {
+          obj.hidden = false;
+        }
+        obj.type = noSelected ? 'not_symptom' : (key.startsWith('HP:') ? 'symptom' : 'free_symptom');
+        cache.displayed[key] = true;
       } else {
-        obj.hidden = false;
-      }
-      cache.displayed[key] = true;
-    } else {
-      if (obj) {
-        obj.hidden = true;
-        delete cache.displayed[key];
+        if (obj) {
+          obj.hidden = true;
+          delete cache.displayed[key];
+        }
       }
     }
     updateDefaultSearchTerms();
   });
 
   document.observe('xwiki:dom:loaded', function() {
-    $$(".yes-no-picker .yes input").each(function(element) {
-      var key = element.value;
-      var text = element.title || (element.nextSibling &amp;&amp; (element.nextSibling.firstChild &amp;&amp; element.nextSibling.firstChild.nodeValue || element.nextSibling.nodeValue)) || key;
+    $$(".yes-no-picker").each(function(element) {
+      var yesInput = element.down('.yes input');
+      var noInput = element.down('.no input');
+      var key = yesInput.value;
+      // FIXME The nextSibling part is supposed to make simple checkboxes work as well, but we're already selecting only YesNo pickers.
+      // Should be revisited to add back support for simple checkboxes.
+      var text = yesInput.title || (element.nextSibling &amp;&amp; (element.nextSibling.firstChild &amp;&amp; element.nextSibling.firstChild.nodeValue || element.nextSibling.nodeValue)) || key;
       var obj = cache.all[key];
-      var enable = element.checked;
+      var enable = !element.down('.na input').checked;
       if (enable) {
         if (!obj) {
           obj = {'key' : key, 'text' : text};
@@ -2734,6 +2762,7 @@ document.observe('xwiki:dom:loaded', function() {
         } else {
           obj.hidden = false;
         }
+        obj.type = (noInput.checked ? 'not_symptom' : (key.startsWith('HP:') ? 'symptom' : 'free_symptom'));
         cache.displayed[key] = true;
       } else {
         if (obj) {
@@ -4359,6 +4388,12 @@ table.extradata-list td.bmi_percentile {
 .search-term.disabled {
   opacity: .5;
   text-decoration: line-through;
+}
+.search-term.not_symptom {
+  color: #C00;
+}
+.search-term.not_symptom:before {
+  content: "NO ";
 }
 /** ----------------------------------------------------------- */
 /** PubMed &amp; OMIM suggestions */
