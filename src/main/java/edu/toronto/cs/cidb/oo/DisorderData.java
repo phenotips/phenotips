@@ -119,7 +119,7 @@ public class DisorderData
         }
 
         // "round" the result
-        result = Math.round(result * 20) / 20.0;
+        result = Math.round(result * 20);
         return result;
     }
 }

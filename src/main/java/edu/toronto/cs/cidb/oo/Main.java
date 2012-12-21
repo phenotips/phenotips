@@ -29,7 +29,7 @@ public class Main
 
     private static double interpretPrelevance(String text)
     {
-        double result = 0.5; // just average
+        double result = 0.00005; // just average
         String t = text.trim();
         // as ratio, e.g. "1/1000"
         t = t.replaceAll("\\s*+of\\s*+", "/");
@@ -39,7 +39,7 @@ public class Main
             if (pieces[0].indexOf('-') > 0) {
                 String iPieces[] = pieces[0].split("\\s*-\\s*");
                 try {
-                    result = (Double.parseDouble(iPieces[0]) + Double.parseDouble(pieces[1])) / 2.0;
+                    result = (Double.parseDouble(iPieces[0]) + Double.parseDouble(iPieces[1])) / 2.0;
                 } catch (NumberFormatException ex) {
                     ex.printStackTrace();
                 }
@@ -56,7 +56,7 @@ public class Main
                 ex.printStackTrace();
             }
         }
-        result = -Math.log10(result);
+        result = 6.0 + (Math.round(Math.log10(result) * 5.0 / 3.0) / 2.0);
         return result;
     }
 }

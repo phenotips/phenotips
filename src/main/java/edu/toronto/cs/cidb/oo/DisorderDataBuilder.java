@@ -221,7 +221,7 @@ public class DisorderDataBuilder
     private void writeField(String name, String value, Double boost) throws SAXException
     {
         addAttribute(FIELD_ATTRIBUTE_NAME, name);
-        addAttribute(FIELD_ATTRIBUTE_BOOST, boost);
+        //addAttribute(FIELD_ATTRIBUTE_BOOST, boost);
         startElement(FIELD_ELEMENT_NAME);
         characters(value.replaceAll("\"([^\"]+)\".*", "$1"));
         endElement(FIELD_ELEMENT_NAME);
