@@ -35,11 +35,28 @@
       #set ($limit = 20)
     #end
     #set ($data = [])
+    #set ($ancestors = $collectionstool.set)
+    #set ($negativeAncestors = $collectionstool.set)
     #foreach ($piece in $!request.getParameterValues('symptom'))
-      #set($discard = $data.add("symptom:${piece}"))
+      #set ($discard = $data.add("symptom:${piece.replaceAll(':', '\\:')}"))
+      #set ($discard = $ancestors.addAll($services.hpo.getAllAncestorsAndSelfIDs($piece)))
     #end
     #foreach ($piece in $!request.getParameterValues('not_symptom'))
-      #set($discard = $data.add("not_symptom:${piece}"))
+      #set ($discard = $data.add("not_symptom:${piece.replaceAll(':', '\\:')}"))
+      #set ($discard = $negativeAncestors.addAll($services.hpo.getAllAncestorsAndSelfIDs($piece)))
+    #end
+    #set ($discard = $negativeAncestors.removeAll($ancestors))
+    #if ($!request.getParameterValues('not_symptom'))
+      #set ($discard = $negativeAncestors.removeAll($!request.getParameterValues('not_symptom')))
+    #end
+    #if ($!request.getParameterValues('symptom'))
+      #set ($discard = $ancestors.removeAll($!request.getParameterValues('symptom')))
+    #end
+    #foreach ($piece in $ancestors)
+      #set ($discard = $data.add("symptom:${piece.replaceAll(':', '\\:')}^0.3"))
+    #end
+    #foreach ($piece in $negativeAncestors)
+      #set ($discard = $data.add("not_symptom:${piece.replaceAll(':', '\\:')}^0.3"))
     #end
     #foreach ($piece in $!request.getParameterValues('free_symptom'))
       #set($discard = $data.add("text:""${piece}"""))

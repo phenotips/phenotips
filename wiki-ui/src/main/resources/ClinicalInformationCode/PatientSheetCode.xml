@@ -944,7 +944,7 @@ document.observe('dom:loaded', function() {
             json: true,
             resultsParameter : "rows",
             resultId : "id",
-            resultValue : "Title",
+            resultValue : "name",
             resultInfo : {
                            "Locus"      : {"selector"  : "Locus"}
                          },
@@ -1385,7 +1385,7 @@ document.observe('dom:loaded', function() {
         }
         if (selectionSummary) {
           var input = event.memo.customElement.select('input').find(function(item) { return item.checked; });
-          selectionSummary._updateSummary(input, input.up('label.no') ? 'no' : 'yes', true);
+          input &amp;&amp; selectionSummary._updateSummary(input, input.up('label.no') ? 'no' : 'yes', true);
         }
       });
     }
@@ -2698,7 +2698,7 @@ document.observe('xwiki:dom:loaded', function() {
           list = [];
           parameters[obj.type] = list;
         }
-        list.push(obj.key.replace(/:/g, "\\:"));
+        list.push(obj.key);
       }
     }
     data.source.each(function(source) {
