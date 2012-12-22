@@ -28,16 +28,15 @@
 {{velocity filter="indent"}}
 #if ($xcontext.action == 'get')
   $response.setHeader("X-ReqNo", "$!request.reqNo")##
-  #if ("$!request.q" != '')##
-    #set ($_service = $services.hpoa)
+  #if ("$!request.symptom" != '')##
+    #set ($_service = $services.omim)
     #set ($limit = $mathtool.toInteger("$!{request.limit}"))
     #if (!($limit &gt; 0))
       #set ($limit = 20)
     #end
-    #set ($data = [])
-    #set ($pieces = $!request.q.split(' '))
-    #foreach ($piece in $pieces)
-      #set($discard = $data.add($piece))
+    #set ($data = $collectionstool.set)
+    #foreach($i in $request.getParameterValues('symptom'))
+      #set ($discard = $data.add($i))
     #end
     #if ("$!{request.format}" == 'html')
 #set ($results = $_service.getDifferentialPhenotypes($data, $limit))
@@ -57,7 +56,7 @@
    #set ($hasOutput = true)
 #else
    #set ($hasOutput = false)
-#end ## results.size() &gt; 0
+#end## results.size() &gt; 0
     #end## html format
   #else
     #set ($hasOutput = false)
