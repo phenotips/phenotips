@@ -79,7 +79,7 @@ public abstract class AbstractNumericValueMap<K, N extends Number> extends Linke
                     return 0;
                 }
                 try {
-                    return ((((Comparable<N>) safeGet(a)).compareTo(safeGet(b)) > 0) && descending) ? -1 : 1;
+                    return (descending ? -1 : 1) * (((Comparable<N>) safeGet(a)).compareTo(safeGet(b)));
                 } catch (ClassCastException ex) {
                     return 0;
                 }
