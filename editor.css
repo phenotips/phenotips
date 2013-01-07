@@ -64,8 +64,6 @@
 #editor-menu .menu-item {
   border: 1px solid #333;
   border-radius: 4px;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
   background: #444 none .2em center no-repeat;
   color: #fff;
   padding: .2em .2em .2em 22px;
@@ -130,8 +128,6 @@
   position: absolute;
   border: 1px solid #aaa;
   background: #FFF;
-  -moz-border-radius: 30px;
-  -webkit-border-radius: 30px;
   border-radius: 30px;
   box-shadow: 0 0 6px #AAAAAA;
 }
@@ -175,8 +171,6 @@
 .view-controls-zoom * {
   background: #FFF none center center no-repeat;
   border: 1px solid #aaa;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
   border-radius: 4px;
   box-shadow: 0 0 6px #AAAAAA;
   margin: auto;
@@ -217,22 +211,12 @@
 
   /* fallback */
   background-color: #FAFAFA;
-  background-position: center center; background-repeat: no-repeat;
+  background-position: center center;
+  background-repeat: no-repeat;
 
-  /* Safari 4-5, Chrome 1-9 */
-  /* Can't specify a percentage size? Laaaaaame. */
-  background: -webkit-gradient(radial, center center, 0, center center, 460, from(#FFFFFF), to(#D2D2D2));
-
-  /* Safari 5.1+, Chrome 10+ */
+  background: -o-radial-gradient(circle, #FFFFFF, #D2D2D2);
   background: -webkit-radial-gradient(circle, #FFFFFF, #D2D2D2);
-
-  /* Firefox 3.6+ */
-  background: -moz-radial-gradient(circle, #FFFFFF, #D2D2D2);
-
-  /* IE 10 */ 
-  background: -ms-radial-gradient(circle, #FFFFFF, #D2D2D2);
-
-  /* Opera cannot do radial gradients yet */ 
+  background: radial-gradient(circle, #FFFFFF, #D2D2D2);
 }
 /* ===========================================
  * LEGEND
@@ -247,8 +231,6 @@
   padding: 4px;
   background: #FFF;
   z-index: 100000;
-  -moz-border-radius: 0 0 0 4px;
-  -webkit-border-radius: 0 0 0 4px;
   border-radius: 0 0 0 4px;
   padding: .5em 1em;
   width: 15%;
@@ -260,8 +242,6 @@
   height: 28px;
   width: 28px;
   background: #FFF url("$xwiki.getSkinFile('icons/silk/information.png')") center center no-repeat;
-  -moz-border-radius: 4px 0 0 4px;
-  -webkit-border-radius: 4px 0 0 4px;
   border-radius: 4px 0 0 4px;
   position: absolute;
   top: 0;
@@ -284,8 +264,6 @@
   width: .8em;
   height: .8em;
   margin: 0 .5em .2em 0;
-  -moz-border-radius: .4em;
-  -webkit-border-radius: .4em;
   border-radius: .4em;
   background-color: #DDD;
   vertical-align: middle;
