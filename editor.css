@@ -206,7 +206,7 @@
 /* =========================================
  * CANVAS
  */
-#canvas { 
+#canvas {
   overflow: hidden;
 
   /* fallback */
@@ -246,7 +246,6 @@
   position: absolute;
   top: 0;
   left: -28px;
-  
 }
 .legend-box .legend-title {
   font-size: 1.1em;
@@ -304,7 +303,7 @@
 .menu-box .field-box {
   padding: .5em 0;
 }
-.menu-box .field-box input[type=text]{
+.menu-box .field-box input[type=text] {
   width: 99%;
 }
 .menu-box .field-box input[type=text]:focus {
@@ -438,4 +437,4 @@
 .node-type-options .node-type-n {
   background-image: url("$xwiki.getSkinFile('.png')");
 }
- */
+*/
