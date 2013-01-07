@@ -9,44 +9,44 @@
  * NOTIFICATIONS
  */
 #body .xnotification-container {
-    right: 0 !important;
-    left: auto !important;
-    width: 250px;
+  right: 0 !important;
+  left: auto !important;
+  width: 250px;
 }
 #body .xnotification {
-    background: $theme.pageContentBackgroundColor none 2px .7em no-repeat !important;
-    border: 2px solid $theme.borderColor;
-    box-shadow: 0 0 6px #AAA, 0 0 25px #DDD inset;
-    color: $theme.textColor !important;
-    display: block;
-    font-weight: normal;
-    margin: 2px;
-    padding: 0.5em 22px;
-    text-align: left;
-    width: 200px;
+  background: $theme.pageContentBackgroundColor none 2px .7em no-repeat !important;
+  border: 2px solid $theme.borderColor;
+  box-shadow: 0 0 6px #AAA, 0 0 25px #DDD inset;
+  color: $theme.textColor !important;
+  display: block;
+  font-weight: normal;
+  margin: 2px;
+  padding: 0.5em 22px;
+  text-align: left;
+  width: 200px;
 }
 #body .xnotification-inprogress {
-    background-image: url("$xwiki.getSkinFile('icons/xwiki/spinner.gif')") !important;
+  background-image: url("$xwiki.getSkinFile('icons/xwiki/spinner.gif')") !important;
 }
 #body .xnotification-error {
-    background-image: url("$xwiki.getSkinFile('icons/silk/delete.png')") !important;
-    color: $theme.notificationErrorColor !important;
-    border-color: $theme.notificationErrorColor !important;
+  background-image: url("$xwiki.getSkinFile('icons/silk/delete.png')") !important;
+  color: $theme.notificationErrorColor !important;
+  border-color: $theme.notificationErrorColor !important;
 }
 #body .xnotification-warning {
-    background-image: url("$xwiki.getSkinFile('icons/silk/error.png')") !important;
-    color: $theme.notificationWarningColor !important;
-    border-color: $theme.notificationWarningColor !important;
+  background-image: url("$xwiki.getSkinFile('icons/silk/error.png')") !important;
+  color: $theme.notificationWarningColor !important;
+  border-color: $theme.notificationWarningColor !important;
 }
 #body .xnotification-info {
-    background-image: url("$xwiki.getSkinFile('icons/silk/information.png')") !important;
-    color: $theme.notificationInfoColor !important;
-    border-color: $theme.notificationInfoColor !important;
+  background-image: url("$xwiki.getSkinFile('icons/silk/information.png')") !important;
+  color: $theme.notificationInfoColor !important;
+  border-color: $theme.notificationInfoColor !important;
 }
 #body .xnotification-done {
-    background-image: url("$xwiki.getSkinFile('icons/silk/tick.png')") !important;
-    color: $theme.notificationSuccessColor !important;
-    border-color: $theme.notificationSuccessColor !important;
+  background-image: url("$xwiki.getSkinFile('icons/silk/tick.png')") !important;
+  color: $theme.notificationSuccessColor !important;
+  border-color: $theme.notificationSuccessColor !important;
 }
 /* =========================================
  * MENU
