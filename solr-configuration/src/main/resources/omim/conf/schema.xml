@@ -440,7 +440,9 @@
    <field name="nameSort" type="string" indexed="true" stored="false"/>
    <field name="alphaNameSort" type="alphaOnlySort" indexed="true" stored="false"/>
    <field name="symptom" type="text_ws" indexed="true" stored="false" multiValued="true"/>
+   <field name="actual_symptom" type="text_ws" indexed="true" stored="true" multiValued="true"/>
    <field name="not_symptom" type="text_ws" indexed="true" stored="false" multiValued="true"/>
+   <field name="actual_not_symptom" type="text_ws" indexed="true" stored="true" multiValued="true"/>
    <field name="keywords" type="text_general" indexed="true" stored="false" multiValued="true"/>
    <field name="not_keywords" type="text_general" indexed="true" stored="false" multiValued="true"/>
    <!-- catchall field, containing all other searchable text fields (implemented
