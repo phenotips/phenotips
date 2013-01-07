@@ -280,7 +280,7 @@
   position: absolute;
   width: 300px;
 }
-.menu-box:hover {
+.menu-box form:hover {
   box-shadow: 0 0 6px #FF9, 0 0 25px #DDDDDD inset;
 }
 .menu-box form {
