@@ -110,7 +110,7 @@
   }
   deleteTool.observe('click', function(clickEvent) {
     clickEvent.stop();
-    var item = clickEvent.element(); 
+    var item = clickEvent.element();
     item.blur();
     if (item.disabled) {
       // Do nothing if the button was already clicked and it's waiting for a response from the server.
@@ -485,7 +485,7 @@ var isValueSelected = function (fieldName, value) {
 document.observe('dom:loaded', function() {
   $$('.editbody .negative_phenotype-group').invoke('hide');
   // ------------------------------------------------------------------------
-  // Selected term highlighting 
+  // Selected term highlighting
   // ------------------------------------------------------------------------
   ["yes", "no"].each(function (type) {
     $$('.term-label .' + type + ' input[type=checkbox]').each(function (input) {
@@ -499,7 +499,7 @@ document.observe('dom:loaded', function() {
       });
     });
   });
-    
+
   // ------------------------------------------------------------------------
   // Behavior of the quick search box
   // ------------------------------------------------------------------------
@@ -680,9 +680,9 @@ document.observe('dom:loaded', function() {
 
     // ------------------------------------------------------------------------
     // Live validation of the date of birth
-    
+
     var hasErrors = false;
-    
+
     var markIfHasErrors = function(inputHasErrors, input) {
       if (!input) {
         return false;
@@ -708,12 +708,12 @@ document.observe('dom:loaded', function() {
         return false;
       }
     }
-    
+
     $$('.mandatory input[type=text]:not(.suggested, .mapping)').invoke('observe', 'blur', function (event) {
       var input = event.element();
       markIfHasErrors((!input.value || input.value.strip() == ""), input);
     });
-    
+
     // ------------------------------------------------------------------------
     // Prevent form submission if there's missing data
 
@@ -721,7 +721,7 @@ document.observe('dom:loaded', function() {
     $('inline').observe('submit', function(event) {
       var form = event.element();
       var hasErrors = false;
-    
+
       $$('.mandatory *:not(.exclude) input[type=text]:not(.suggested, .mapping)').each(function (input) {
         hasErrors = markIfHasErrors((!input.value || input.value.strip() == ""), input) || hasErrors;
       });
@@ -736,24 +736,24 @@ document.observe('dom:loaded', function() {
       for (var inputName in hasVal) {
          if (!hasVal[inputName]) {
            hasErrors = true;
-	   if (titles[inputName]) {
-	     titles[inputName].addClassName('wrongValue');
-	   }
-	 } else {
-	   if (titles[inputName]) {
-	     titles[inputName].removeClassName('wrongValue');
-	   }
-	 }
+           if (titles[inputName]) {
+             titles[inputName].addClassName('wrongValue');
+           }
+         } else {
+           if (titles[inputName]) {
+             titles[inputName].removeClassName('wrongValue');
+           }
+         }
       }
-      
+
       if (hasErrors) {
 
         // ------------------------------------------------------------------------
         // The data has errors. Prevent submission and show fields with errors
-	if (!form.down('div.errormessage')) {
-	   form.insert({'top' : new Element('div', {'class' : 'errormessage'}).update("Some mandatory fields are missing or have incorrect values.")});
-	}
-	form.scrollTo();
+        if (!form.down('div.errormessage')) {
+           form.insert({'top' : new Element('div', {'class' : 'errormessage'}).update("Some mandatory fields are missing or have incorrect values.")});
+        }
+        form.scrollTo();
         event.stop();
       } else {
 
@@ -893,7 +893,7 @@ document.observe('dom:loaded', function() {
     }
     // ------------------------------------------------------------------------
     // Creation of suggest widgets
-    
+
     // hpo: namespace:medical_genetics
     // go : namespace:
     var suggestionsMapping = {
@@ -916,20 +916,20 @@ document.observe('dom:loaded', function() {
             resultValue : "name",
             resultCategory : "term_category",
             resultInfo : {
-		 "Browse related terms..." : {"extern" : true,
-		                              "processor" : function(trigger) {
-							      trigger._obrowser = new MS.widgets.OntologyBrowser(this, null, {
-								 isTermSelected : isPhenotypeSelected,
-								 unselectTerm : unselectPhenotype
-							      });
-							      trigger.observe('click', function(event){
-								event.stop();
-								event.element()._obrowser.show(
-								  event.element().up('.suggestItem').down('.suggestId').firstChild.nodeValue
-								);
-							      }.bindAsEventListener(this));
-							    }
-			                     }
+                 "Browse related terms..." : {"extern" : true,
+                                              "processor" : function(trigger) {
+                                                              trigger._obrowser = new MS.widgets.OntologyBrowser(this, null, {
+                                                                 isTermSelected : isPhenotypeSelected,
+                                                                 unselectTerm : unselectPhenotype
+                                                              });
+                                                              trigger.observe('click', function(event){
+                                                                event.stop();
+                                                                event.element()._obrowser.show(
+                                                                  event.element().up('.suggestItem').down('.suggestId').firstChild.nodeValue
+                                                                );
+                                                              }.bindAsEventListener(this));
+                                                            }
+                                             }
                          },
             enableHierarchy: true,
             resultParent : "is_a",
@@ -1157,7 +1157,7 @@ document.observe('dom:loaded', function() {
             }
             if (item._customOptions.queryProcessor &amp;&amp; item._restriction) {
               item._customOptions.queryProcessor = Object.clone(item._customOptions.queryProcessor);
-	      item._customOptions.queryProcessor.restriction = {
+              item._customOptions.queryProcessor.restriction = {
                 'term_category' : item._restriction
               }
             }
@@ -1197,7 +1197,7 @@ document.observe('dom:loaded', function() {
                  });
                  suggestPicker.silent = tmp;
               }
- 
+
             }
             item.addClassName('initialized');
 
@@ -1212,7 +1212,7 @@ document.observe('dom:loaded', function() {
                   var value =  suggestion.down(".suggestId").firstChild.nodeValue;
                   var text =  suggestion.down(".suggestValue").firstChild.nodeValue;
                   var ynpicker = YesNoPicker.generatePickerElement([
-                    {type: 'yes', selected: isValueSelected(item.name.replace(/__suggested$/, ''), value)}, 
+                    {type: 'yes', selected: isValueSelected(item.name.replace(/__suggested$/, ''), value)},
                     {type: 'no' , selected: isValueSelected(negativeName, value)}
                   ], value, text);
                   suggestion.down(".suggestValue").up().insert({top: ynpicker});
@@ -1402,8 +1402,8 @@ document.observe('dom:loaded', function() {
           var value = item.value;
           var text = item.up('.entry-data').down('.value').firstChild.nodeValue;
           var ynpickerElt = YesNoPicker.generatePickerElement([
-              {type: 'na', selected: !isValueSelected(positiveName, value) &amp;&amp; !isValueSelected(negativeName, value)}, 
-              {type: 'yes', selected: isValueSelected(positiveName, value)}, 
+              {type: 'na', selected: !isValueSelected(positiveName, value) &amp;&amp; !isValueSelected(negativeName, value)},
+              {type: 'yes', selected: isValueSelected(positiveName, value)},
               {type: 'no' , selected: isValueSelected(negativeName, value)}
           ], value, text, true, item.next());
           item.insert({before: ynpickerElt});
@@ -1429,7 +1429,7 @@ document.observe('dom:loaded', function() {
           });
         });
       }
-    }); 
+    });
 });</code>
     </property>
     <property>
@@ -1793,7 +1793,7 @@ document.observe('xwiki:dom:loaded', function() {
             {
               method: 'get',
               onCreate : function() {
-                form._isVersionVerified = true; 
+                form._isVersionVerified = true;
               },
               onSuccess : function(response) {
                 var crtVersion = __getDocumentVersionFromREST(response.responseXML);
@@ -1910,7 +1910,7 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
     <property>
       <code>document.observe('xwiki:dom:loaded', function() {
-  
+
   var chartContainer = $('charts');
 
   var chartsZone = chartContainer &amp;&amp; chartContainer.up('.growth-charts-section');
@@ -2074,7 +2074,7 @@ document.observe('xwiki:dom:loaded', function() {
       });
       displayed.addClassName(fuzzyValue);
     }
-  } 
+  }
 
   var updateDependentValues = function (targets, values) {
     for (var p in values) {
@@ -2428,7 +2428,7 @@ document.observe('xwiki:dom:loaded', function() {
   $$('.chapter.phenotype-info .collapsible-group h3').each(function(item){
      if (!item.up('.collapsible-group').down('input[type=checkbox]:checked')) {
        toggleCategory(item);
-     } 
+     }
      item.observe('click', toggleCategory);
   });
   phBrowserExpandAll.observe('click', function(event){
@@ -2441,7 +2441,7 @@ document.observe('xwiki:dom:loaded', function() {
       toggleCategory(item);
     });
   });
- 
+
   phBrowserToc.toggle();
   phBrowserJumpTo.observe('click', function(event){
     phBrowserToc.toggle();
@@ -2450,7 +2450,7 @@ document.observe('xwiki:dom:loaded', function() {
     phBrowserToc.toggle();
     tocLinkClicked(event);
   });
-  
+
 });</code>
     </property>
     <property>
@@ -2663,7 +2663,7 @@ document.observe('xwiki:dom:loaded', function() {
                  }
                }
             });
-          } 
+          }
         });
     }
     if (service.target.__hiddenParent) {
@@ -2704,7 +2704,7 @@ document.observe('xwiki:dom:loaded', function() {
     data.source.each(function(source) {
        queryString += ((source &amp;&amp; source.value.strip()) + ' ') || '';
     });
-    
+
     data.__pendingRequest = function() {
       data.__pendingRequest = undefined;
       new Ajax.Updater(data.target, data.script + encodeURIComponent(queryString.strip()) + "&amp;reqNo=" + ++data.expectedReqNo, {
@@ -3646,7 +3646,7 @@ input.wrongValue {
 }
 /** ----------------------------------------------------------- */
 /** Quick search box &amp; suggest */
-.emphasized-box { 
+.emphasized-box {
   background: $theme.backgroundSecondaryColor;
   border: 1px solid $theme.backgroundSecondaryColor;
   -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.15);
@@ -4526,7 +4526,7 @@ table.extradata-list td.bmi_percentile {
     #__label(${propName} "hint ${labelCssClass}" $label)
     #__display(${propName}, $obj)
   )))
-#end 
+#end
 
 #macro (__displayFormatted $mode $propName $label $groupCssClass $labelCssClass)
 #if ("$!activeFields.contains($propName)" != 'false' &amp;&amp; ($xcontext.action == 'edit' || $doc.display(${propName}) != ''))

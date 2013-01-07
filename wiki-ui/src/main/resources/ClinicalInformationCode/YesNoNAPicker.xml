@@ -504,7 +504,7 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
 YesNoPicker.generatePickerElement = function(buttons, value, title, activate, label) {
   var supportedValues = {yes : 'Y', no : 'N', na: 'NA'};
   var ynPickerElt = new Element("span", {'class': 'yes-no-picker'});
-  buttons.each(function(b) { 
+  buttons.each(function(b) {
      if (b.type &amp;&amp; supportedValues[b.type]) {
        var bLabel = new Element('label', {'class' : b.type + (b.selected &amp;&amp; ' selected' || '')}).update(supportedValues[b.type]);
        var bInput = new Element('input', {type : 'checkbox', value : value, title: title || ''});

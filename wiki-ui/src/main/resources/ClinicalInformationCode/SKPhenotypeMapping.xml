@@ -44,7 +44,7 @@
         "HP:0000729"                    : "Pervasive developmental delay",
         "HP:0002368"                    : "Psychiatric disorders",
         (t.OTHER_FIELD_MARKER)       : null
-      ], 
+      ],
       "Neurological"     : [
        (t.RESTRICTION_FIELD_MARKER) : "HP:0000707",
        (t.CUSTOM_MAPPING_FIELD_MARKER) : "ne",
@@ -93,8 +93,8 @@
         "HP:0001363"                    : "Craniosynostosis",
         "HP:0000204"                    : "Cleft lip",
         "HP:0000175"                    : "Cleft palate",
-	"HP:0000308"                    : "Microretrognathia",
-	"HP:0000278"                    : "Retrognathia",
+        "HP:0000308"                    : "Microretrognathia",
+        "HP:0000278"                    : "Retrognathia",
         "HP:0001999"                    : "Facial dysmorphism",
        (t.OTHER_FIELD_MARKER)      : null
       ],

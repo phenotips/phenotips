@@ -131,7 +131,7 @@
      */
     filterFormUpload : function() {
       this.form = this.gallery.down('form');
-      // Make sure unsaved selections are not lost 
+      // Make sure unsaved selections are not lost
       this.gallery.select('.attachment-item input[type=checkbox], .attachment-item input[type=radio]').each(function(item) {
           var twin = $(item.id.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length));
           if (twin) {item.checked = twin.checked;}
@@ -301,7 +301,7 @@
         });
         newList.insert({bottom: lItem});
       });
-      // is there at least one 
+      // is there at least one
       if (!newList.down('.attachment-item')) {
         newList.update(this.list.innerHTML);
       } else {
@@ -507,7 +507,7 @@
       this.form.select('input[type=file]').invoke('observe', 'change', this.fileSelected.bindAsEventListener(this));
       this.form.observe('submit', this.startUploading.bindAsEventListener(this));
       if (this.options.autoUpload) {
-        // Hide submit buttons 
+        // Hide submit buttons
         this.form.select('input[type=submit]').invoke('setStyle', {'display' : 'none'});
       }
 
@@ -601,7 +601,7 @@
       this.UNKNOWN_ERROR_MESSAGE  = _getElt('errormessage', 'An error occurred while uploading the file');
       this.UPLOAD_ABORTED_MESSAGE = _getElt('errormessage' , 'The upload has been canceled by the user or the browser dropped the connection');
       this.UPLOAD_SIZE_MESSAGE    = _getElt('errormessage' , 'The selected file is too large. Please choose files under ' + this.bytesToSize(this.options.maxFilesize));
-     
+
       this.form.insert({top : this.MESSAGE_CONTAINER});
     },
 
@@ -702,7 +702,7 @@
     }
     // get form data for POSTing
     //var vFD = this.form.getFormData(); // for FF3
-    var vFD = new FormData(this.form); 
+    var vFD = new FormData(this.form);
 
     // create XMLHttpRequest object, adding few event listeners, and POSTing our data
     var oXHR = new XMLHttpRequest();
@@ -788,7 +788,7 @@
 
   uploadError : function(e) { // upload error
     this.uploadAbnormalFinish(this.UNKNOWN_ERROR_MESSAGE);
-  }, 
+  },
 
   uploadAbort : function(e) { // upload abort
     this.uploadAbnormalFinish(this.UPLOAD_ABORTED_MESSAGE);
@@ -1258,7 +1258,7 @@
 
 #macro (__displaySelectableAttachment $attachment $targetDocument $selection)
   {{html wiki=true clean=false}}&lt;div class="attachment-item #if($options.isImage) image #else #__getExtension(${attachment.filename})#{end}#if($selection.contains(${attachment.filename})) selected#{end}"&gt;
-  &lt;label for='${fieldName}_${attachment.filename}' title='${attachment.filename}'&gt; 
+  &lt;label for='${fieldName}_${attachment.filename}' title='${attachment.filename}'&gt;
   {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='${options.inputType}' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
   #if ($options.manage)
   &lt;a class='action delete' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($context.action, $request.queryString))}")" title="Delete"&gt;Delete&lt;/a&gt;##
@@ -1322,7 +1322,7 @@
       #end
     #end
   #end
-  #if ($content != '')  
+  #if ($content != '')
 #if ($options.isImage &amp;&amp; $options.inputType == 'checkbox')
 {{gallery}}
 $content

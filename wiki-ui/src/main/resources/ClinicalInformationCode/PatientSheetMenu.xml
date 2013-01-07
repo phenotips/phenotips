@@ -52,7 +52,7 @@
         #set($editaction = $doc.getDefaultEditMode())
         #documentAction($doc.getURL($editaction, $!languageparams) 'tmActionEdit' $msg.get('core.menu.edit'))
       #end
-    #elseif ($xcontext.action == 'edit') 
+    #elseif ($xcontext.action == 'edit')
       #documentEditorAction('save', 'Save')
       #documentEditorAction('cancel', 'Cancel changes')
     #end

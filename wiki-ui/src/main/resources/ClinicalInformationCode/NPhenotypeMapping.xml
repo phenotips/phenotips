@@ -321,7 +321,7 @@
         ["id": "HP:0011323", "title" : "Cleft of chin"],
         ["id": "HP:0000307", "title" : "Pointed chin"]
     ]
-  ], 
+  ],
   [
     "type"       : "section",
     "title"      : "Neck",
@@ -336,7 +336,7 @@
        ["id": "HP:0009796", "title" : "Branchial cyst"],
        ["id": "HP:0009795", "title" : "Branchial cleft fistula"]
     ]
-  ],  
+  ],
   [
     "type"       : "section",
     "title"      : "Heart",
@@ -554,7 +554,7 @@
     "title"      : "Other",
     "categories" : ["HP:0000110"],
     "data"       : [
-    ] 
+    ]
   ]
 ];
 

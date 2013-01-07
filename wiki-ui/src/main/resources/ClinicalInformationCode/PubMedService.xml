@@ -39,7 +39,7 @@
   #if ("$!{request.format}" == 'html'){{html clean="false"}}##
 $response.setHeader("X-ReqNo", "$!request.reqNo")##
 #set ($results = $_service.getSuggestions("$!request.q", $limit, $start))
-#if ($results.size() &gt; 0) 
+#if ($results.size() &gt; 0)
 &lt;ul&gt;
 #foreach($item in $results)
   #if ("$!item.id"!= '' &amp;&amp; "$!item.Title" != '')

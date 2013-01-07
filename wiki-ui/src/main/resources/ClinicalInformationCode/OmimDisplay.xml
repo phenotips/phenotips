@@ -26,7 +26,7 @@
   <content>{{velocity}}
 #if ($value)
   #set ($names = $!services.omim.getNames($value))
-#end 
+#end
 #if ($xcontext.action == 'edit')
   {{html wiki=false clean=false}}
   &lt;div class="custom-display-data"&gt;

@@ -504,16 +504,16 @@
       var info = new Element("dl");
       for (var section in this.options.resultInfo) {
         var sOptions = this.options.resultInfo[section];
-            
+
         sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/gi, '').replace(/\s+/gi, "-");
-            
+
         var sectionState = ""
         if (sOptions.collapsed) {
           sectionState = "collapsed";
         }
-            
+
         var processingFunction = sOptions.processor;
-            
+
         if (sOptions.extern) {
           var trigger =  new Element("a").update(section);
           trigger._processingFunction = processingFunction;
@@ -521,12 +521,12 @@
           trigger._processingFunction.call(this, trigger);
           continue;
         }
-            
+
         var selector = sOptions.selector;
         if (!selector) {
           continue;
         }
-          
+
         var sectionContents = null;
         _getResultFieldValueAsArray(results[i], selector).each(function(item) {
           var text = item || '';
@@ -719,7 +719,7 @@
       var hideButton = new Element('span', {'class' : 'hide-button'}).update('hide suggestions');
       hideButton.observe('click', this.clearSuggestions.bindAsEventListener(this));
       this.container.insert({top : new Element('div', {'class' : 'hide-button-wrapper'}).update(hideButton)});
-      
+
       hideButton = new Element('span', {'class' : 'hide-button'}).update('hide-suggestions');
       hideButton.observe('click', this.clearSuggestions.bindAsEventListener(this));
       this.container.insert({bottom : new Element('div', {'class' : 'hide-button-wrapper'}).update(hideButton)});
@@ -1029,19 +1029,19 @@
         else
           selection = newFieldValue = this.iHighlighted.down(".suggestValue").innerHTML;
       }
-      
+
       var data = {
         suggest  : this,
         id       : this.iHighlighted.down(".suggestId").innerHTML,
         value    : this.iHighlighted.down(".suggestValue").innerHTML,
-	info     : this.iHighlighted.down(".suggestInfo").innerHTML,
-	icon     : (this.iHighlighted.down('img.icon') ? this.iHighlighted.down('img.icon').src : ''),
+        info     : this.iHighlighted.down(".suggestInfo").innerHTML,
+        icon     : (this.iHighlighted.down('img.icon') ? this.iHighlighted.down('img.icon').src : ''),
         category : this.iHighlighted.down(".suggestCategory").innerHTML
       };
       this.acceptEntry(data, selection, newFieldValue);
     }
   },
-  
+
   acceptEntry : function(data, selection, newFieldValue, silent) {
       var event = Event.fire(this.fld, "ms:suggest:selected", data);
 
@@ -1240,7 +1240,7 @@
       if (typeof(this.options.listInsertionElt) == "string") {
         listInsertionElement = this.input.up().down(this.options.listInsertionElt);
       } else {
-	listInsertionElement = this.options.listInsertionElt;
+        listInsertionElement = this.options.listInsertionElt;
       }
     }
     if (!listInsertionElement) {
@@ -1281,7 +1281,7 @@
       }
       section = section.up('.collapsed:not(.force-collapse)');
     }
-    if (element.viewportOffset().top &gt; this.input.viewportOffset().top) { 
+    if (element.viewportOffset().top &gt; this.input.viewportOffset().top) {
       if (element.viewportOffset().top &gt; document.viewport.getHeight()) {
         if (element.viewportOffset().top - this.input.viewportOffset().top &lt; document.viewport.getHeight()) {
           this.input.scrollTo();
@@ -1355,7 +1355,7 @@
   removeItem : function(event) {
     var item = event.findElement('li');
     this.synchronizeSelection({
-      value   : item.down('input[type=checkbox]').value, 
+      value   : item.down('input[type=checkbox]').value,
       checked : false
     });
     item.remove();
@@ -1414,8 +1414,8 @@
         var value = input.value;
         var text = element.down('.value').firstChild.nodeValue;
         var ynpickerElt = YesNoPicker.generatePickerElement([
-              {type: 'na',                         selected: !isValueSelected(positiveName, value) &amp;&amp; !isValueSelected(negativeName, value)}, 
-              {type: 'yes', name: positiveName, selected: isValueSelected(positiveName, value)}, 
+              {type: 'na',                         selected: !isValueSelected(positiveName, value) &amp;&amp; !isValueSelected(negativeName, value)},
+              {type: 'yes', name: positiveName, selected: isValueSelected(positiveName, value)},
               {type: 'no' , name: negativeName,    selected: isValueSelected(negativeName, value)}
         ], value, text, true, input.next());
         input.insert({before: ynpickerElt});
@@ -1436,7 +1436,7 @@
     if (!elt.__categoryArray) {
       elt.__categoryArray = [];
       Element.select(elt, '.term-category input[type=hidden]').each(function(c) {
-        elt.__categoryArray.push(c.value); 
+        elt.__categoryArray.push(c.value);
       });
     }
     Event.fire(this.input, 'xwiki:form:field-value-changed');
@@ -1692,7 +1692,7 @@ widgets.ModalPopup = Class.create({
       }
       var result = '';
       if (crtDimension &lt; viewportDimension) {
-	result = viewportDimension + 'px';
+        result = viewportDimension + 'px';
       }
       /*if (limit &amp;&amp; crtDimension &lt; limit) {
         result = limit + 'px';
@@ -1960,7 +1960,7 @@ return MS;
     for (var rField in this.restriction) {
       var restrictionString = "+(";
       for (var i = 0; i &lt; this.restriction[rField].length; ++i) {
-	restrictionString += rField + ":" + this.restriction[rField][i].replace(/:/g, "\\:") + " ";
+        restrictionString += rField + ":" + this.restriction[rField][i].replace(/:/g, "\\:") + " ";
       }
       restrictionString = restrictionString.strip() + ") ";
       result += restrictionString;
@@ -2227,7 +2227,7 @@ return MS;
   expandTo : function (termId, categories) {
     //alert ("start expanding " + termId + " " + categories);
     if (categories.indexOf(this.__crtRoot) == -1) {
-      // not in the right tree, nothing to do 
+      // not in the right tree, nothing to do
       return;
     }
     this._expandToStep(termId, categories.without(this.__crtRoot, termId));
@@ -2467,7 +2467,7 @@ console.log(categories);
     }
     return element;
   },
-  
+
   _generateEntryTitle : function(id, value) {
     return  new Element('span', {'class' : 'info'}).insert(
                      {'bottom' : new Element('span', {'class' : 'key'}).update('[' + id + ']')}).insert(
@@ -2511,7 +2511,7 @@ console.log(categories);
           info.insert({"bottom" : new Element("dt", {'class' : sectionClass}).insert({'bottom' : section})});
           sectionContents = new Element("dd");
           info.insert({"bottom" : sectionContents});
-	}
+        }
         var text = item;
         if (typeof sOptions.processor == 'function') {
           text = sOptions.processor(text);
@@ -2939,7 +2939,7 @@ console.log(categories);
         this.resetPosition();
       }
     },
-    
+
     resetPosition : function() {
       if (!this.options.isSticky(this.stickyElement) || this.stickyElement.getHeight() &gt;= this.stickyAreaElement.getHeight()) {
         return;
@@ -2972,7 +2972,7 @@ console.log(categories);
       }
       this.stickyAreaElement._prevPosition = relativeContentPosition;
     },
-    
+
     makeFixed : function() {
       if (this.stickyElement.style.position != 'fixed') {
         this.stickyElement.style.left = this.boxLeft + 'px';
@@ -3368,7 +3368,7 @@ document.observe("xwiki:dom:loaded", function() {
   width: .8em;
   margin-right: .4em;
   height: 1.4em;
-  text-align : center; 
+  text-align : center;
   font-weight: bold;
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1.4em;
@@ -3386,7 +3386,7 @@ document.observe("xwiki:dom:loaded", function() {
   padding: .3em 1.2em .3em .8em;
   cursor: move;
 }
-.msdialog-box .xform { 
+.msdialog-box .xform {
   width: 100%;
 }</code>
     </property>

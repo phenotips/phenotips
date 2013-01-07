@@ -40,7 +40,7 @@
 $response.setHeader("X-ReqNo", "$!request.reqNo")##
 {{html clean="false"  wiki="false"}}##
 #set ($results = $_service.search("$!request.q", $limit, $start))
-#if ($results.size() &gt; 0) 
+#if ($results.size() &gt; 0)
 &lt;ul&gt;
 #foreach($item in $results)
   #if ("$!item.id"!= '' &amp;&amp; "$!item.name" != '')

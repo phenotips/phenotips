@@ -46,7 +46,7 @@ synchronized (System.class) { //really?
      crtMaxID++
      name = prefix + String.format("%07d", crtMaxID)
      newDoc = crtContext.getWiki().getDocument(targetSpace + "." + name, crtContext)
-   } 
+   }
    def createURL = newDoc.getURL('save', "form_token=${request.get('form_token')}&amp;template=${templateName}&amp;${className}_0_${idPropertyName}=${crtMaxID}&amp;title=${name}&amp;xredirect=" + crtContext.vcontext.escapetool.url(newDoc.getURL('edit', "form_token=${request.get('form_token')}", crtContext)), crtContext)
    crtContext.getResponse().sendRedirect(createURL)
   }

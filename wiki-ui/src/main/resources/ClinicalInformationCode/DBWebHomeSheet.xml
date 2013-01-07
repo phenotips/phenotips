@@ -108,7 +108,7 @@
   tableEvent.memo.row.select(".actiondelete").invoke('setAttribute', 'title', 'Delete');
   tableEvent.memo.row.select(".actiondelete").invoke('observe', 'click', function(clickEvent){
     clickEvent.stop();
-    var item = clickEvent.element(); 
+    var item = clickEvent.element();
     item.blur();
     if (item.disabled) {
       // Do nothing if the button was already clicked and it's waiting for a response from the server.
