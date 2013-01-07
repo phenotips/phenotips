@@ -169,6 +169,7 @@ public class DisorderDataBuilder
             String hpoId = s.getKey();
             Double boost = s.getValue();
             writeField("symptom", hpoId, boost);
+            writeField("actual_symptom", hpoId, boost);
             TermData term = this.oboData.get(hpoId);
             if (term != null) {
                 updateKeywords(keywords, term);
@@ -189,6 +190,7 @@ public class DisorderDataBuilder
             String hpoId = s.getKey();
             Double boost = s.getValue();
             writeField("not_symptom", hpoId, boost);
+            writeField("actual_not_symptom", hpoId, boost);
             TermData term = this.oboData.get(hpoId);
             if (term != null) {
                 updateKeywords(negativeKeywords, term);
@@ -221,7 +223,7 @@ public class DisorderDataBuilder
     private void writeField(String name, String value, Double boost) throws SAXException
     {
         addAttribute(FIELD_ATTRIBUTE_NAME, name);
-        //addAttribute(FIELD_ATTRIBUTE_BOOST, boost);
+        // addAttribute(FIELD_ATTRIBUTE_BOOST, boost);
         startElement(FIELD_ELEMENT_NAME);
         characters(value.replaceAll("\"([^\"]+)\".*", "$1"));
         endElement(FIELD_ELEMENT_NAME);
