@@ -463,10 +463,11 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
     var element = event.memo.element;
     var value = element.value;
     var selected = element.checked;
-    if (value != this.yesInput.value || !selected) {
+    var label = element.parentNode;
+    if (value != this.yesInput.value || !selected || !label) {
       return;
     }
-    if (element.up('label').hasClassName('na')) {
+    if (label.hasClassName('na')) {
       this.naInput.checked = true;
       this.na.addClassName('selected');
       this.label &amp;&amp; this.label.addClassName('na-selected');
@@ -477,7 +478,7 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
       this.no.removeClassName('selected');
       this.label &amp;&amp; this.label.removeClassName('no-selected');
       this.element.up('li') &amp;&amp; this.element.up('li').removeClassName('accepted');
-    } else if (element.up('label').hasClassName('no')) {
+    } else if (label.hasClassName('no')) {
       this.naInput.checked = false;
       this.na.removeClassName('selected');
       this.yesInput.checked = false;

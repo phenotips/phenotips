@@ -1283,19 +1283,7 @@ document.observe('dom:loaded', function() {
               }
             } else {
             item._dropDown = new MS.widgets.DropDown(item.up('.term-entry'));
-            item._ontologyBrowser = new MS.widgets.OntologyBrowser(
-              sugestedInput._suggest,
-              item._dropDown,
-              {
-                isTermSelected : isPhenotypeSelected,
-                unselectTerm : unselectPhenotype,
-                showParents: false,
-                showRoot: false,
-                defaultEntryAction: 'select',
-                enableBrowse: false
-              }
-            );
-            item._trigger = new Element('span', {'class' : 'expand-tool'}).update(item._ontologyBrowser._getExpandCollapseSymbol(true));
+            item._trigger = new Element('span', {'class' : 'expand-tool'}).update(MS.widgets.OntologyBrowser.prototype._getExpandCollapseSymbol(true));
             item._trigger._source = item;
             item._trigger._root = item.up('.term-entry');
             item._trigger._root.insert({'top' : item._trigger});
@@ -1305,7 +1293,18 @@ document.observe('dom:loaded', function() {
               var trigger =  event.element();
               var source  =  trigger._source;
               var root    =  trigger._root;
-
+              source._ontologyBrowser || (source._ontologyBrowser = new MS.widgets.OntologyBrowser(
+                sugestedInput._suggest,
+                source._dropDown,
+                {
+                  isTermSelected : isPhenotypeSelected,
+                  unselectTerm : unselectPhenotype,
+                  showParents: false,
+                  showRoot: false,
+                  defaultEntryAction: 'select',
+                  enableBrowse: false
+                }
+              ));
               if (root._expanded) {
                 source._ontologyBrowser.hide();
               } else {
