@@ -93,8 +93,8 @@ public class FormField extends AbstractFormElement
         String id = name + '_' + value;
         return String.format(
             "<label class='%s' for='%s'><input type='checkbox' name='%s' value='%s' id='%s' title='%s'%s/>%s</label>",
-            labelClass, id, name, value, id, title, (selected ? " checked='checked'" : ""),
-            XMLUtils.escapeElementContent(labelText));
+            labelClass, id, name, value, id, XMLUtils.escapeAttributeValue(title), (selected ? " checked='checked'"
+                : ""), XMLUtils.escapeElementContent(labelText));
     }
 
     private String generateLabel(String forId, String labelClass, String labelText)
