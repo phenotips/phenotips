@@ -35,8 +35,7 @@ public class FormField extends AbstractFormElement
 
     private final String hint;
 
-    FormField(String value, String title, String hint, boolean expandable,
-        String name, boolean selected)
+    FormField(String value, String title, String hint, boolean expandable, String name, boolean selected)
     {
         this(value, title, hint, expandable, selected, false);
     }
@@ -76,17 +75,15 @@ public class FormField extends AbstractFormElement
                 generateCheckbox(fieldNames[NO], this.value, this.hint, isSelected(NO), "no", "N"),
                 generateLabel(fieldNames[YES] + '_' + this.value, "yes-no-picker-label", this.title));
         } else {
-            return generateCheckbox(fieldNames[YES], this.value, this.hint, isSelected(YES),
-                DEFAULT_CSS_CLASS + (this.expandable ? EXPANDABLE_CSS_CLASS : ""), this.title);
+            return generateCheckbox(fieldNames[YES], this.value, this.hint, isSelected(YES), DEFAULT_CSS_CLASS
+                + (this.expandable ? EXPANDABLE_CSS_CLASS : ""), this.title);
         }
     }
 
     protected String generateSelection(final String[] fieldNames)
     {
-        String selectionMarker = isSelected(YES) ? "yes-selected"
-            : isSelected(NO) ? "no-selected" : null;
-        return (selectionMarker != null) ? ("<div class='value-checked "
-            + selectionMarker + "'>"
+        String selectionMarker = isSelected(YES) ? "yes-selected" : isSelected(NO) ? "no-selected" : null;
+        return (selectionMarker != null) ? ("<div class='value-checked " + selectionMarker + "'>"
             + XMLUtils.escapeElementContent(this.title) + "</div>") : "";
     }
 
