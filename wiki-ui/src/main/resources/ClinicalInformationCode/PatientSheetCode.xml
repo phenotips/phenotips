@@ -2748,6 +2748,10 @@ document.observe('xwiki:dom:loaded', function() {
     $$(".yes-no-picker").each(function(element) {
       var yesInput = element.down('.yes input');
       var noInput = element.down('.no input');
+      if (yesInput.name === noInput.name) {
+        // Not a phenotype
+        return;
+      }
       var key = yesInput.value;
       // FIXME The nextSibling part is supposed to make simple checkboxes work as well, but we're already selecting only YesNo pickers.
       // Should be revisited to add back support for simple checkboxes.

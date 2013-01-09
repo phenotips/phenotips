@@ -192,8 +192,10 @@ public class PropertyDisplayer
         boolean noSelected)
     {
         String hint = getLabelFromOntology(id);
-        return new FormField(id, StringUtils.defaultString(title, hint), hint, expandable, yesSelected, noSelected);
-
+        if (id.equals(hint) && title != null) {
+            hint = title;
+        }
+        return new FormField(id, StringUtils.defaultIfEmpty(title, hint), hint, expandable, yesSelected, noSelected);
     }
 
     private FormElement generateField(String id, String title, boolean yesSelected, boolean noSelected)
