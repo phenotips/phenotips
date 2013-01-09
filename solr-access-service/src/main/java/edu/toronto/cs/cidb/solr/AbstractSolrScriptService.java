@@ -256,7 +256,8 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
         try {
             QueryResponse response = this.server.query(params);
             SolrDocumentList results = response.getResults();
-            if (results.size() == 0 && !response.getSpellCheckResponse().isCorrectlySpelled()) {
+            if (results.size() == 0 && response.getSpellCheckResponse() != null
+                && !response.getSpellCheckResponse().isCorrectlySpelled()) {
                 String suggestedQuery = response.getSpellCheckResponse().getCollatedResult();
                 if (StringUtils.isEmpty(suggestedQuery)) {
                     return new SolrDocumentList();
