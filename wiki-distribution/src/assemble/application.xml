@@ -38,7 +38,7 @@
         <include>edu.toronto.cs.cidb:obo2solr</include>
         <include>edu.toronto.cs.cidb:patient-update-listeners</include>
         <include>edu.toronto.cs.cidb:patient-tools</include>
-        <include>org.apache.commons:commons-math</include>
+        <include>org.apache.commons:commons-math3</include>
       </includes>
       <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
       <unpack>false</unpack>

@@ -30,9 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.math.MathException;
-import org.apache.commons.math.distribution.NormalDistribution;
-import org.apache.commons.math.distribution.NormalDistributionImpl;
+import org.apache.commons.math3.distribution.NormalDistribution;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -65,7 +63,7 @@ public class PercentileTools implements ScriptService, Initializable
     private static final String VALUE_EXTREME_ABOVE_NORMAL = "extreme-above-normal";
 
     /** Tool used for computing the percentile corresponding to a given z-score. */
-    private static final NormalDistribution NORMAL = new NormalDistributionImpl();
+    private static final NormalDistribution NORMAL = new NormalDistribution();
 
     /** The name of the resource file holding the BMI LMS table. */
     private static final String BMI_FILE = "bmiage.csv";
@@ -1057,12 +1055,8 @@ public class PercentileTools implements ScriptService, Initializable
     public int valueToPercentile(double x, double m, double l, double s)
     {
         double z = (l != 0) ? ((Math.pow(x / m, l) - 1) / (l * s)) : (Math.log(x / m) / s);
-        try {
-            double p = NORMAL.cumulativeProbability(z) * 100;
-            return (int) Math.round(p);
-        } catch (MathException ex) {
-            return 0;
-        }
+        double p = NORMAL.cumulativeProbability(z) * 100;
+        return (int) Math.round(p);
     }
 
     /**
@@ -1099,13 +1093,9 @@ public class PercentileTools implements ScriptService, Initializable
         } else if (percentile >= 100) {
             correctedPercentile = 99.75;
         }
-        try {
-            double z = NORMAL.inverseCumulativeProbability(correctedPercentile / 100.0);
-            double x = (l != 0) ? Math.pow(z * l * s + 1, 1 / l) * m : Math.exp(z * s) * m;
-            return x;
-        } catch (MathException ex) {
-            return 0;
-        }
+        double z = NORMAL.inverseCumulativeProbability(correctedPercentile / 100.0);
+        double x = (l != 0) ? Math.pow(z * l * s + 1, 1 / l) * m : Math.exp(z * s) * m;
+        return x;
     }
 
     /**
