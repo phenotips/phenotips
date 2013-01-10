@@ -74,6 +74,8 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
 
     protected Cache<SolrDocument> cache;
 
+    private static final SolrDocument EMPTY_MARKER = new SolrDocument();
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -224,9 +226,11 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
             if (all != null && !all.isEmpty()) {
                 result = all.get(0);
                 this.cache.set(cacheKey, result);
+            } else {
+                this.cache.set(cacheKey, EMPTY_MARKER);
             }
         }
-        return result;
+        return (result == EMPTY_MARKER) ? null : result;
     }
 
     /**
