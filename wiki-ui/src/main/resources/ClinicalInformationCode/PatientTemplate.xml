@@ -499,12 +499,12 @@
         <disabled>0</disabled>
         <displayType>select</displayType>
         <idField/>
-        <multiSelect>0</multiSelect>
+        <multiSelect>1</multiSelect>
         <name>negative_prenatal_phenotype</name>
         <number>20</number>
         <picker>0</picker>
         <prettyName>negative_prenatal_phenotype</prettyName>
-        <relationalStorage>0</relationalStorage>
+        <relationalStorage>1</relationalStorage>
         <separator> </separator>
         <separators/>
         <size>1</size>
