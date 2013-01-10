@@ -24,16 +24,13 @@
   <syntaxId>xwiki/2.0</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity}}
-#if ($value)
-  #set ($names = $!services.omim.getNames($value))
-#end
 #if ($xcontext.action == 'edit')
   {{html wiki=false clean=false}}
   &lt;div class="custom-display-data"&gt;
   #foreach ($val in $value)
-    &lt;label for="${prefix}${name}_${val}"&gt;
-      &lt;input type="checkbox" checked="checked" name="${prefix}${name}" id="${prefix}${name}_${val}" value="${val}"/&gt;
-      $!names.get($val)
+    #set($entryName = "$!{services.omim.get($val).name}")
+    &lt;label class="term-entry" for="${prefix}${name}_${val}"&gt;
+      &lt;input title="$entryName" type="checkbox" checked="checked" name="${prefix}${name}" id="${prefix}${name}_${val}" value="${val}"/&gt;$entryName
     &lt;/label&gt;
   #end
   &lt;/div&gt;
@@ -42,7 +39,11 @@
   {{/html}}
 #elseif ($value.size() &gt; 0 &amp;&amp; "${value.get(0)}" != '')
   #foreach ($val in $value)
-    (%%)((([$val] $!names.get($val))))
+    #set ($name = $!services.omim.get($val).name)
+    #if ("$!{name}" == '')
+      #set ($name = $val)
+    #end
+    (%%)((($name)))
   #end
 #end
 {{/velocity}}</content>
