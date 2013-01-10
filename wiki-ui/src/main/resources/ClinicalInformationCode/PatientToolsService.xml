@@ -180,7 +180,7 @@
   #end##age
   {
   #foreach ($entry in $valueMapping)
-    #if ("$!entry.value" == '')
+    #if ("$!entry.value" == '' || $entry.percentile &lt; 0)
       #set ($dValue = '-')
     #else
       #set ($pValue = $entry.percentile)
