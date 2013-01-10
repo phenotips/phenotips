@@ -383,7 +383,7 @@
             json: true,
             resultsParameter : "rows",
             resultId : "id",
-            resultValue : "Title",
+            resultValue : "name",
             resultInfo : {
                            "Locus"      : {"selector"  : "Locus"}
                          },
