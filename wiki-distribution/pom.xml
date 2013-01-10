@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>edu.toronto.cs.cidb</groupId>
-    <artifactId>phenotype-database</artifactId>
+    <groupId>edu.toronto.cs.phenotips</groupId>
+    <artifactId>phenotips</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>distribution-wiki</artifactId>
@@ -30,61 +30,61 @@
     <dependency>
       <groupId>org.xwiki.enterprise</groupId>
       <artifactId>xwiki-enterprise-web</artifactId>
-      <version>4.3-milestone-1</version>
+      <version>${xwiki.version}</version>
       <type>war</type>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>edu.toronto.cs.cidb</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>solr-configuration</artifactId>
       <version>${project.version}</version>
       <type>jar</type>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>edu.toronto.cs.cidb</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>database-zip</artifactId>
       <version>${project.version}</version>
       <type>zip</type>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>edu.toronto.cs.cidb</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>solr-access-service</artifactId>
       <version>${project.version}</version>
       <type>jar</type>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>edu.toronto.cs.cidb</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>patient-tools</artifactId>
       <version>${project.version}</version>
       <type>jar</type>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>edu.toronto.cs.cidb</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>ncbieutils-access-service</artifactId>
       <version>${project.version}</version>
       <type>jar</type>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>edu.toronto.cs.cidb</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>phenotype-mapping-service</artifactId>
       <version>${project.version}</version>
       <type>jar</type>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>edu.toronto.cs.cidb</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>patient-update-listeners</artifactId>
       <version>${project.version}</version>
       <type>jar</type>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>edu.toronto.cs.cidb</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetty-resources</artifactId>
       <version>${project.version}</version>
       <type>zip</type>

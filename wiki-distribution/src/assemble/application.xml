@@ -31,13 +31,13 @@
     <!-- Add solr-access component and dependencies. -->
     <dependencySet>
       <includes>
-        <include>edu.toronto.cs.cidb:solr-access-service</include>
-        <include>edu.toronto.cs.cidb:ncbieutils-access-service</include>
-        <include>edu.toronto.cs.cidb:phenotype-mapping-service</include>
+        <include>${project.groupId}:solr-access-service</include>
+        <include>${project.groupId}:ncbieutils-access-service</include>
+        <include>${project.groupId}:phenotype-mapping-service</include>
         <include>org.apache.solr:solr-solrj</include>
-        <include>edu.toronto.cs.cidb:obo2solr</include>
-        <include>edu.toronto.cs.cidb:patient-update-listeners</include>
-        <include>edu.toronto.cs.cidb:patient-tools</include>
+        <include>${project.groupId}:obo2solr</include>
+        <include>${project.groupId}:patient-update-listeners</include>
+        <include>${project.groupId}:patient-tools</include>
         <include>org.apache.commons:commons-math3</include>
       </includes>
       <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
@@ -46,7 +46,7 @@
     <!-- Unpack the HSQLDB database files to package it in the distribution -->
     <dependencySet>
       <includes>
-        <include>edu.toronto.cs.cidb:database-zip</include>
+        <include>${project.groupId}:database-zip</include>
       </includes>
       <outputDirectory>/data/database</outputDirectory>
       <unpack>true</unpack>
@@ -67,7 +67,7 @@
     <!-- Solr configuration. -->
     <dependencySet>
       <includes>
-        <include>edu.toronto.cs.cidb:solr-configuration</include>
+        <include>${project.groupId}:solr-configuration</include>
       </includes>
       <outputDirectory>solrconfig/</outputDirectory>
       <unpack>true</unpack>
@@ -83,7 +83,7 @@
     <!-- Unpack Jetty files -->
     <dependencySet>
       <includes>
-        <include>edu.toronto.cs.cidb:jetty-resources</include>
+        <include>${project.groupId}:jetty-resources</include>
       </includes>
       <outputDirectory>/</outputDirectory>
       <unpack>true</unpack>

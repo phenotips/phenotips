@@ -25,8 +25,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>edu.toronto.cs.cidb</groupId>
-    <artifactId>phenotype-database</artifactId>
+    <groupId>edu.toronto.cs.phenotips</groupId>
+    <artifactId>phenotips</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>database-zip</artifactId>
@@ -35,7 +35,6 @@
   <description>ZIP packaging of the XWiki-based phenotype database interface, stored as an HSQLDB database dump.</description>
   <properties>
     <xwiki.db.connection.url>jdbc:hsqldb:file:${project.build.directory}/database/xwiki_db;shutdown=true</xwiki.db.connection.url>
-    <commons.version>4.3-milestone-1</commons.version>
   </properties>
   <!-- Required for the exec:exec plugin execution below. Doesn't seem to work as an exec plugin
        dependency -->
@@ -46,9 +45,9 @@
       <version>2.2.8</version>
     </dependency>
     <dependency>
-      <groupId>edu.toronto.cs.cidb</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>wiki-ui</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${project.version}</version>
       <type>xar</type>
       <scope>provided</scope>
     </dependency>
@@ -62,9 +61,9 @@
         <plugin>
           <groupId>org.xwiki.commons</groupId>
           <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-          <version>${commons.version}</version>
+          <version>${xwiki.version}</version>
           <configuration>
-            <groupId>edu.toronto.cs.cidb</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>wiki-ui</artifactId>
             <outputDirectory>${project.build.directory}/xar</outputDirectory>
           </configuration>
@@ -83,7 +82,7 @@
         <plugin>
           <groupId>org.xwiki.platform</groupId>
           <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
-          <version>${commons.version}</version>
+          <version>${xwiki.version}</version>
           <configuration>
             <sourceDirectory>${project.build.directory}/xar</sourceDirectory>
             <hibernateConfig>

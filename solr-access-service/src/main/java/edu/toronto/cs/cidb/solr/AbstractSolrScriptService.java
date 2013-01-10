@@ -19,7 +19,6 @@
  */
 package edu.toronto.cs.cidb.solr;
 
-import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,7 +28,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -79,10 +78,10 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     public void initialize() throws InitializationException
     {
         try {
-            this.server = new CommonsHttpSolrServer("http://localhost:8080/solr/" + this.getName() + "/");
+            this.server = new HttpSolrServer("http://localhost:8080/solr/" + this.getName() + "/");
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
 
-        } catch (MalformedURLException ex) {
+        } catch (RuntimeException ex) {
             throw new InitializationException("Invalid URL specified for the Solr server: {}");
         } catch (final CacheException ex) {
             throw new InitializationException("Cannot create cache: " + ex.getMessage());
