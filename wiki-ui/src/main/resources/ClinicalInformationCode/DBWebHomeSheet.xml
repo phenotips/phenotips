@@ -832,6 +832,11 @@ h1 {
 
 #patients-topfilters.collapsed .filters {
   display: none;
+}
+
+/* FIXME: Hide the avatar in the user picker until we fix the suggest style. */
+.suggestList img {
+  display: none;
 }</code>
     </property>
     <property>
