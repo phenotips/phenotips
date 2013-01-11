@@ -91,8 +91,8 @@
     <module>patient-tools</module>
     <module>ncbieutils-access-service</module>
     <module>phenotype-mapping-service</module>
-    <module>wiki-ui</module>
-    <module>wiki-database</module>
-    <module>wiki-distribution</module>
+    <module>ui</module>
+    <module>database</module>
+    <module>distribution</module>
   </modules>
 </project>
