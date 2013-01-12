@@ -21,7 +21,6 @@
 -->
 
 <assembly>
-  <id>data</id>
   <formats>
     <format>zip</format>
   </formats>
