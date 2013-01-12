@@ -14,6 +14,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         this._radius = editor.attributes.radius;
         $super(node, x, y);
         this._width = editor.attributes.radius * 4;
+        this._adoptedShape = null;
         this.setIcon();
         this._highlightBox = editor.getPaper().rect(this.getX()-(this._width/2), this.getY()-(this._width/2),
             this._width, this._width, 5).attr(editor.attributes.boxOnHover);
@@ -49,7 +50,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         var p = this.getNode().getParentPregnancy();
         p && p.getGraphics().updateChildConnection(this.getNode(), x, y, p.getX(), p.getY(), animate);
 
-        if(animate){
+        if(animate && (this.getX() != x || this.getY() != y)) {
             this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getX()) + "," +(y-this.getY()) + "..."},
                 1000, "easeInOut", function() { me.updatePositionData(x, y);callback && callback();});
         }
@@ -93,6 +94,37 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     /*
+     * Draws brackets around the node icon to show that this node is adopted
+     */
+    drawAdoptedShape: function() {
+        this._adoptedShape && this._adoptedShape.remove();
+        var r = editor.attributes.radius,
+            x1 = this.getX() - ((0.8) * r),
+            x2 = this.getX() + ((0.8) * r),
+            y = this.getY() - ((1.3) * r),
+            brackets = "M" + x1 + " " + y + "l" + r/(-2) +
+                " " + 0 + "l0 " + (2.6 * r) + "l" + (r)/2 + " 0M" + x2 +
+                " " + y + "l" + (r)/2 + " 0" + "l0 " + (2.6 * r) + "l" +
+                (r)/(-2) + " 0";
+        this._adoptedShape = editor.getPaper().path(brackets).attr("stroke-width", 3);
+        this._adoptedShape.insertBefore(this.getGenderShape().flatten());
+    },
+
+    /*
+     * Removes the brackets around the node icon that show that this node is adopted
+     */
+    removeAdoptedShape: function() {
+        this._adoptedShape && this._adoptedShape.remove();
+    },
+
+    /*
+     * Returns the raphael element or set containing the adoption shape
+     */
+    getAdoptedShape: function() {
+        return this._adoptedShape;
+    },
+
+    /*
      * Hides the highlightBox around the node
      */
     unHighlight: function() {
@@ -103,7 +135,9 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * Returns a Raphael set or element that contains the graphics associated with this node, excluding the labels.
      */
     getShapes: function($super) {
-        return $super().push(this.getIcon());
+        var shapes = $super().push(this.getIcon());
+        this.getAdoptedShape() && shapes.push(this.getAdoptedShape());
+        return shapes;
     },
 
     /*

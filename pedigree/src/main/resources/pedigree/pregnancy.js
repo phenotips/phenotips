@@ -117,8 +117,24 @@ var Pregnancy = Class.create(AbstractNode, {
             var pos = editor.findPosition({below: id}, ['child']);
             var child = editor.getGraph()["add" + type](pos['child'].x, pos['child'].y, this.getGender());
             this.addChild(child);
+            return child;
             //document.fire("pedigree:child:added", {node: child, 'relatedNodes' : [], 'sourceNode' : this});
         }
+    },
+
+    createChildAction: function() {
+        var childInfo = this.createChild("PlaceHolder").getInfo();
+        var nodeID = this.getID();
+        var undo = function() {
+            var child = editor.getGraph().getNodeMap()[childInfo.id];
+            child && child.remove();
+        };
+        var redo = function() {
+            var preg = editor.getGraph().getNodeMap()[nodeID];
+            var child = editor.getGraph().addPlaceHolder(childInfo.x, childInfo.y, preg.getGender(), childInfo.id);
+            preg.addChild(child);
+        }
+        editor.getActionStack().push({undo: undo, redo: redo});
     },
 
     /*
@@ -167,10 +183,10 @@ var Pregnancy = Class.create(AbstractNode, {
      *
      * @param isRecursive can be true or false
      */
-    remove: function($super, isRecursive) {
+    remove: function($super, isRecursive, skipConfirmation) {
         editor.getGraph().removePregnancy(this);
         if(isRecursive) {
-            $super(isRecursive);
+            return $super(isRecursive, skipConfirmation);
         }
         else {
             var me = this;
@@ -249,6 +265,15 @@ var Pregnancy = Class.create(AbstractNode, {
         }
     },
 
+    hasNonAdoptedChildren: function() {
+        var children = this.getChildren("Person");
+        for(var i = 0; i < children.length; i++) {
+            if(!children[i].isAdopted())
+                return true;
+        }
+        return false;
+    },
+
     /*
      * Toggles the pregnancy junction interactivity active and inactive
      *
@@ -272,7 +297,9 @@ var Pregnancy = Class.create(AbstractNode, {
      * Checks whether the pregnancy junction should be active and updates the active status
      */
     updateActive: function() {
-        this.setActive(this.getChildren("PlaceHolder", "PersonGroup").length == 0);
+        var adoptedChild = this.getChildren()[0];
+        adoptedChild = (adoptedChild && adoptedChild.isAdopted());
+        this.setActive(this.getChildren("PlaceHolder", "PersonGroup").length == 0 && !adoptedChild);
     },
 
     getInfo: function($super) {

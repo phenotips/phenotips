@@ -41,7 +41,7 @@ var PregnancyVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     onClick: function() {
-        this.getPregnancy().createChild("PlaceHolder", this.getPregnancy().getGender());
+        this.getPregnancy().createChildAction();
         this.shrink();
         this.updateActive();
     },

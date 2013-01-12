@@ -1,7 +1,10 @@
-/*
+/**
  * Partnership is a class that represents the relationship between two AbstractNodes
  * and their children.
  *
+ * @class Partnership
+ * @constructor
+ * @extends AbstractNode
  * @param x the x coordinate at which the partnership junction will be placed
  * @param y the y coordinate at which the partnership junction will be placed
  * @param partner1 an AbstractPerson who's one of the partners in the relationship.
@@ -18,7 +21,7 @@ var Partnership = Class.create(AbstractNode, {
            this._partners[0].addPartnership(this);
            this._partners[1].addPartnership(this);
            this._childlessStatus = null;
-           this._childlessReason = null;
+           this._childlessReason = "";
            $super(x, y, id);
            this._type = 'Partnership';
        }
@@ -193,12 +196,65 @@ var Partnership = Class.create(AbstractNode, {
     createChild: function(type, gender) {
         var placeholders = this.getPlaceHolderPregnancies();
         if(placeholders.length != 0) {
-            placeholders[0].getChildren('PlaceHolder')[0].convertTo(type, gender);
+            var child = placeholders[0].getChildren('PlaceHolder')[0].convertTo(type, gender);
+            this.getChildlessStatus() && child.setAdopted(true);
+            return child;
         }
         else {
             var pregnancy = this.createPregnancy();
             pregnancy.setGender(gender);
-            pregnancy.createChild(type);
+            return pregnancy.createChild(type);
+        }
+    },
+
+    createNodeAction: function(type, gender) {
+        var phPregnancyInfo,
+            phInfo;
+        this.getPregnancies().each(function(p) {
+            if(p.isPlaceHolderPregnancy()) {
+                phPregnancyInfo = p.getInfo();
+                phInfo = p.getChildren()[0].getInfo();
+            }
+        });
+
+        var child = this.createChild(type, gender);
+        if(child && child.getParentPregnancy()) {
+            var childInfo = child.getInfo(),
+                nodeID = this.getID(),
+                preg = child.getParentPregnancy(),
+                pregInfo = (preg ) ? preg.getInfo() : null,
+                newPreg = (!phPregnancyInfo || (preg.getID() != phPregnancyInfo.id));
+
+            var undoFunct = function() {
+                var me = editor.getGraph().getNodeMap()[nodeID];
+                if(me) {
+                    var pregnancy = editor.getGraph().getNodeMap()[pregInfo.id]
+                    pregnancy && pregnancy.remove(false);
+                    var target = editor.getGraph().getNodeMap()[childInfo.id]
+                    target && target.remove(false);
+                    if(!newPreg) {
+                        pregnancy = editor.getGraph().addPregnancy(pregInfo.x, pregInfo.y, me, pregInfo.id)
+                        var ph = editor.getGraph().addPlaceHolder(phInfo.x, phInfo.y, phInfo, phInfo.id);
+                        pregnancy && pregnancy.addChild(ph);
+                    }
+                }
+            };
+
+            var redoFunct = function() {
+                var existingChild = editor.getGraph().getNodeMap()[childInfo.id],
+                    me = editor.getGraph().getNodeMap()[nodeID];
+                if(me && !(existingChild)) {
+                    var target = editor.getGraph()["add" + type](childInfo.x, childInfo.y, gender, childInfo.id);
+                    var existingPreg = editor.getGraph().getNodeMap()[pregInfo.id];
+                    var pregnancy = (existingPreg) ? existingPreg : editor.getGraph().addPregnancy(pregInfo.x, pregInfo.y, me, pregInfo.id);
+                    pregnancy.addChild(target);
+                    if(!newPreg){
+                        var ph = editor.getGraph().getNodeMap()[phInfo.id];
+                        ph && ph.remove(false);
+                    }
+                }
+            };
+            editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
         }
     },
 
@@ -223,6 +279,33 @@ var Partnership = Class.create(AbstractNode, {
     },
 
     /*
+     * Generates an actionStack entry for adding a child
+     * @param child the child that is being added to this partnership
+     */
+    addChildAction: function(child) {
+        if(this.addChild(child)) {
+            var childID = child.getID(),
+                preg = child.getParentPregnancy(),
+                pregInfo = preg.getInfo(),
+                part = preg.getPartnership().getInfo();
+
+            var redoFunct = function() {
+                var source = editor.getGraph().getNodeMap()[part.partnershipID];
+                var theChild = editor.getGraph().getNodeMap()[childID];
+                if(source && theChild) {
+                    var pregnancy = editor.getGraph().addPregnancy(pregInfo.x, pregInfo.y, source, pregInfo.id);
+                    pregnancy.addChild(theChild);
+                }
+            };
+            var undoFunct = function() {
+                var pregnancy = editor.getGraph().getNodeMap()[pregInfo.id];
+                pregnancy && pregnancy.remove(false);
+            };
+            editor.getActionStack().push({undo: undoFunct, redo: redoFunct});
+        }
+    },
+
+    /*
      * Removes someNode from the list of children of this partnership, and removes this partnership as its parents
      * reference. Returns someNode.
      *
@@ -237,6 +320,44 @@ var Partnership = Class.create(AbstractNode, {
         return someNode;
     },
 
+    setChildlessStatus: function(status, ignoreChildren) {
+        if(status != this.getChildlessStatus()) {
+            if(this.isValidChildlessStatus(status)) {
+                this._childlessStatus = status;
+                if(!ignoreChildren) {
+                    this.getChildren("PlaceHolder").each(function(child) {
+                            child.remove(false);
+                    });
+                }
+            }
+            else {
+                this._childlessStatus = null;
+                !ignoreChildren && this.restorePlaceholders();
+            }
+            this.setChildlessReason(null);
+            this.getGraphics().updateChildlessShapes();
+        }
+    },
+
+    hasTwins: function() {
+        var pregs = this.getPregnancies();
+        for(var i = 0; i < pregs.length; i++) {
+            if(pregs[i].getChildren("Person").length > 1) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    hasNonAdoptedChildren: function() {
+        var pregs = this.getPregnancies();
+        for(var i = 0; i < pregs.length; i++) {
+            if(pregs[i].hasNonAdoptedChildren())
+                return true;
+        }
+        return false;
+    },
+
     /*
      * Removes this partnership and all the visuals attached to it from the graph.
      * Set isRecursive to true to remove all pregnancies and children, unless they have some other connection
@@ -244,10 +365,10 @@ var Partnership = Class.create(AbstractNode, {
      *
      * @param isRecursive can be true or false
      */
-    remove: function($super, isRecursive) {
+    remove: function($super, isRecursive, skipConfirmation) {
         editor.getGraph().removePartnership(this);
         if(isRecursive) {
-            $super(isRecursive);
+            return $super(isRecursive, skipConfirmation);
         }
         else {
             this.getPregnancies().each(function(pregnancy) {
@@ -263,11 +384,14 @@ var Partnership = Class.create(AbstractNode, {
         }
     },
 
-    /*
-     * Returns an array of pregnancies of this partnership
+    /**
+     * Returns an array of all adjacent nodes (neighbors) located below this node.
+     *
+     * @method getLowerNeighbors
+     * @return {Array} in the form of [node1, node2, ...]
      */
-    getLowerNeighbors: function() {
-        return this.getPregnancies();
+    getLowerNeighbors: function($super) {
+        return $super().concat(this.getPregnancies());
     },
 
     /*
@@ -310,10 +434,11 @@ var Partnership = Class.create(AbstractNode, {
      * Returns an object (to be accepted by the menu) with information about this Person
      */
     getSummary: function() {
+        var childlessInactive = this.hasNonAdoptedChildren();
         return {
             identifier:    {value : this.getID()},
-            childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none'},
-            childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none'}
+            childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive: childlessInactive},
+            childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive: childlessInactive}
         };
     },
 
@@ -337,7 +462,90 @@ var Partnership = Class.create(AbstractNode, {
             return true;
         }
         return false;
+    },
+
+    setChildlessStatusAction: function(status) {
+        if(status != this.getChildlessStatus() && (status || this.getChildlessStatus())) {
+            var me = this,
+                nodeID = this.getID(),
+                prevStatus = this.getChildlessStatus(),
+                prevReason = this.getChildlessReason();
+            var getPhInfo = function() {
+                var preg = me.getPregnancies()[0],
+                    ph = preg ? preg.getChildren("PlaceHolder")[0] : null;
+                return {
+                    pregInfo: (preg && preg.isPlaceHolderPregnancy()) ? preg.getInfo() : null,
+                    childInfo: ph ? ph.getInfo() : null
+                }
+            };
+            var nodesBeforeChange = getPhInfo(); //PlaceHolder child and pregnancy before changing childlessStatus
+            this.setChildlessStatus(status);
+            var nodesAfterChange = getPhInfo(); //PlaceHolder child and pregnancy after changing childlessStatus
+
+            editor.getActionStack().push({
+                undo: Partnership.childlessActionUndo,
+                redo: Partnership.childlessActionRedo,
+                nodeID: nodeID,
+                status: status,
+                prevStatus: prevStatus,
+                prevReason: prevReason,
+                nodesBeforeChange: nodesBeforeChange,
+                nodesAfterChange: nodesAfterChange
+            });
+        }
+    },
+
+    setChildlessReasonAction: function(reason) {
+        var nodeID = this.getID();
+        var prevReason = this.getChildlessReason();
+        this.setChildlessReason(reason);
+        var undo = function() {
+            var partnership = editor.getGraph().getNodeMap()[nodeID];
+            partnership && partnership.setChildlessReason(prevReason);
+        };
+        var redo = function() {
+            var partnership = editor.getGraph().getNodeMap()[nodeID];
+            partnership && partnership.setChildlessReason(reason);
+        };
+        editor.getActionStack().push({undo: undo, redo: redo});
     }
 });
 
 Partnership.addMethods(ChildlessBehavior);
+
+Partnership.removeNodes = function(nodes) {
+    Object.keys(nodes).forEach(function(key) {
+        if(nodes[key]) {
+            var node = editor.getGraph().getNodeMap()[nodes[key].id];
+            node && node.remove(false);
+        }
+    });
+};
+
+Partnership.restoreNodes = function(nodes, partnership) {
+    if(nodes.pregInfo) {
+        var pregnancy = editor.getGraph().addPregnancy(nodes.pregInfo.x, nodes.pregInfo.y, partnership, nodes.pregInfo.id);
+        if(nodes.childInfo) {
+            var child = editor.getGraph().addPlaceHolder(nodes.childInfo.x, nodes.childInfo.y, "U", nodes.childInfo.id);
+            pregnancy.addChild(child);
+        }
+    }
+};
+
+Partnership.childlessActionUndo = function(actionElement) {
+    var partnership = editor.getGraph().getNodeMap()[actionElement.nodeID];
+    if(partnership) {
+        Partnership.removeNodes(actionElement.nodesAfterChange);
+        partnership.setChildlessStatus(actionElement.prevStatus, true);
+        partnership.setChildlessReason(actionElement.prevReason);
+        Partnership.restoreNodes(actionElement.nodesBeforeChange, partnership)
+    }
+};
+Partnership.childlessActionRedo = function(actionElement) {
+    var partnership = editor.getGraph().getNodeMap()[actionElement.nodeID];
+    if(partnership) {
+        Partnership.removeNodes(actionElement.nodesBeforeChange);
+        partnership.setChildlessStatus(actionElement.status, true);
+        Partnership.restoreNodes(actionElement.nodesAfterChange, partnership)
+    }
+};

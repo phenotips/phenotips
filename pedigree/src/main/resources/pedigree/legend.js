@@ -234,7 +234,7 @@ var Legend = Class.create( {
             var disorderObj = {};
             disorderObj.id = disorder.id.substring( disorder.id.indexOf('-') + 1);
             disorderObj.value = disorder.down('.disorder-name').firstChild.nodeValue;
-            node.addDisorder(disorderObj, true);
+            node.addDisorderAction(disorderObj);
         }
     },
 });

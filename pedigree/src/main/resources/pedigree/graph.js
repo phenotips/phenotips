@@ -43,7 +43,7 @@ var Graph = Class.create({
     },
 
     getProband: function() {
-        return this._proband;
+        return this.getNodeMap()[1];
     },
 
     addPartnership : function(x, y, node1, node2, id) {
@@ -55,6 +55,7 @@ var Graph = Class.create({
     },
 
     removePartnership: function(partnership) {
+        delete this.getNodeMap()[partnership.getID()];
         this._partnershipNodes = this._partnershipNodes.without(partnership);
     },
 
@@ -90,6 +91,7 @@ var Graph = Class.create({
     },
 
     removePerson: function(person) {
+        delete this.getNodeMap()[person.getID()];
         this._personNodes = this._personNodes.without(person);
     },
 
@@ -102,11 +104,12 @@ var Graph = Class.create({
     },
 
     removePlaceHolder: function(placeholder) {
+        delete this.getNodeMap()[placeholder.getID()];
         this._placeHolderNodes = this._placeHolderNodes.without(placeholder);
     },
 
-    addPersonGroup: function(x, y, id) {
-        var node = new PersonGroup(x, y, id);
+    addPersonGroup: function(x, y, gender, id) {
+        var node = new PersonGroup(x, y, gender, id);
         this.getPersonGroupNodes().push(node);
         this.getNodeMap()[node.getID()] = node;
         editor.getNodeIndex()._addNode(node, true);
@@ -114,6 +117,7 @@ var Graph = Class.create({
     },
 
     removePersonGroup: function(groupNode) {
+        delete this.getNodeMap()[groupNode.getID()];
         this._personGroupNodes = this._personGroupNodes.without(groupNode);
     },
 
@@ -126,6 +130,7 @@ var Graph = Class.create({
     },
 
     removePregnancy: function(pregnancy) {
+        delete this.getNodeMap()[pregnancy.getID()];
         this._pregnancyNodes = this._pregnancyNodes.without(pregnancy);
     },
 
@@ -193,5 +198,104 @@ var Graph = Class.create({
         this.getPartnershipNodes().each(function(partnership) {
             partnership.getGraphics().area && partnership.getGraphics().area.remove();
         });
+    },
+
+    serialize: function() {
+        var nodes = {
+            placeHolders : [],
+            partnerships: [],
+            pregnancies: [],
+            personGroups: [],
+            persons: []
+        };
+
+        this.getPlaceHolderNodes().forEach(function(placeHolder) {
+            nodes.placeHolders.push(placeHolder.getInfo());
+        });
+        this.getPartnershipNodes().forEach(function(partnership) {
+            nodes.partnerships.push(partnership.getInfo());
+        });
+        this.getPregnancyNodes().forEach(function(pregnancy) {
+            nodes.pregnancies.push(pregnancy.getInfo());
+        });
+        this.getPersonGroupNodes().forEach(function(personGroup) {
+            nodes.personGroups.push(personGroup.getInfo());
+        });
+        this.getPersonNodes().forEach(function(person) {
+            nodes.persons.push(person.getInfo());
+        });
+
+        return nodes;
+    },
+
+    load: function(graphObj) {
+        if(!graphObj) {
+            new Ajax.Request('/some_url', {
+                method:'get',
+                requestHeaders: {Accept: 'application/json'},
+                onSuccess: function(transport){
+                    var json = transport.responseText.evalJSON(true);
+                }
+            });
+        }
+        var me = this;
+        if(this.isValidGraphObject(graphObj)) {
+            this.getNodeMap()[1] && this.getNodeMap()[1].remove(true, true);      //clears the graph
+            var people = graphObj.persons.concat(graphObj.placeHolders, graphObj.personGroups);
+            people.forEach(function(info) {
+                var newPerson = me["add" + info.type](info.x, info.y, info.gender, info.id);
+                newPerson.loadInfo(info);
+            });
+            graphObj.partnerships.forEach(function(info) {
+                var partner1 = me.getNodeMap()[info.partner1ID],
+                    partner2 = me.getNodeMap()[info.partner2ID];
+                if(partner1 && partner2)
+                    me.addPartnership(info.x, info.y, partner1, partner2, info.id);
+            });
+            graphObj.pregnancies.forEach(function(info) {
+                var partnership = me.getNodeMap()[info.partnershipID];
+                if(partnership) {
+                    var preg = me.addPregnancy(info.x, info.y, partnership, info.id);
+                    preg.loadInfo(info);
+                }
+            });
+        }
+    },
+
+    isValidGraphObject: function(graphObj) {
+        var foundProband = false;
+        var missingProperty = (Object.prototype.toString.call(graphObj.persons) != '[object Array]')
+                                    || (Object.prototype.toString.call(graphObj.personGroups) != '[object Array]')
+                                    || (Object.prototype.toString.call(graphObj.pregnancies) != '[object Array]')
+                                    || (Object.prototype.toString.call(graphObj.partnerships) != '[object Array]')
+                                    || (Object.prototype.toString.call(graphObj.placeHolders) != '[object Array]');
+        if(missingProperty)
+            return false;
+        var validBasics = function(node) {
+            return (node.id && node.type && node.x && node.y)
+        };
+        var people = graphObj.persons.concat(graphObj.personGroups, graphObj.placeHolders);
+        for (var i = 0; i < people.length; i++) {
+            if(!validBasics(people[i]) || !people[i].gender)
+                return false;
+            if(people[i].id == 1) {
+                foundProband = true;
+            }
+        }
+        if(!foundProband)
+            return false;
+        for (i = 0; i < graphObj.partnerships.length; i++) {
+            if(!validBasics(graphObj.partnerships[i]) || !graphObj.partnerships[i].partner1ID
+                                                      || !graphObj.partnerships[i].partner2ID) {
+                return false;
+            }
+        }
+        for (i = 0; i < graphObj.pregnancies.length; i++) {
+            if(!validBasics(graphObj.pregnancies[i]) || !graphObj.pregnancies[i].partnershipID ||
+                    (Object.prototype.toString.call(graphObj.pregnancies[i].childrenIDs) != '[object Array]')) {
+                return false;
+            }
+        }
+        return true;
     }
 });

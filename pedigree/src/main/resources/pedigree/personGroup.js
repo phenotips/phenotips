@@ -12,8 +12,8 @@
 var PersonGroup = Class.create(AbstractPerson, {
 
     initialize: function($super, x, y, gender, id) {
+        this._type = "PersonGroup";
         $super(x, y, gender, id);
-        this._type = "PersonGroup"
     },
 
     /*
@@ -33,7 +33,7 @@ var PersonGroup = Class.create(AbstractPerson, {
      * @param isRecursive set to true if you want to remove related nodes that are
      * not connected to the proband
      */
-    remove: function($super, isRecursive) {
+    remove: function($super, isRecursive, skipConfirmation) {
         editor.getGraph().removePersonGroup(this);
         var parents = this.getParentPartnership();
         if(!isRecursive && parents && parents.getChildren().length == 1) {
@@ -41,6 +41,6 @@ var PersonGroup = Class.create(AbstractPerson, {
             parents.removeChild(this);
             parents.addChild(placeholder);
         }
-        return $super(isRecursive);
+        return $super(isRecursive, skipConfirmation);
     }
 });

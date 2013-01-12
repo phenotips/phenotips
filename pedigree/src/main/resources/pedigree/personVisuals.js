@@ -16,7 +16,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._childlessStatusLabel = null;
         this._disorderShapes = null;
         this._deadShape = null;
-        this._adoptedShape = null;
         this._unbornShape = null;
         this._childlessShape = null;
         this._isSelected = false;
@@ -309,48 +308,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     },
 
     /*
-     * Draws brackets around the node icon to show that this node is adopted
-     */
-    drawAdoptedShape: function() {
-        this._adoptedShape && this._adoptedShape.remove();
-        var r = editor.attributes.radius,
-            x1 = this.getX() - ((0.8) * r),
-            x2 = this.getX() + ((0.8) * r),
-            y = this.getY() - ((1.3) * r),
-            brackets = "M" + x1 + " " + y + "l" + r/(-2) +
-                " " + 0 + "l0 " + (2.6 * r) + "l" + (r)/2 + " 0M" + x2 +
-                " " + y + "l" + (r)/2 + " 0" + "l0 " + (2.6 * r) + "l" +
-                (r)/(-2) + " 0";
-        this._adoptedShape = editor.getPaper().path(brackets).attr("stroke-width", 3);
-        this._adoptedShape.insertBefore(this.getHoverBox().getFrontElements().flatten());
-    },
-
-    /*
-     * Removes the brackets around the node icon that show that this node is adopted
-     */
-    removeAdoptedShape: function() {
-        this._adoptedShape && this._adoptedShape.remove();
-    },
-
-    /*
-     * Returns the raphael element or set containing the adoption shape
-     */
-    getAdoptedShape: function() {
-        return this._adoptedShape;
-    },
-
-    /*
-     * Returns true if this node is hovered
-     */
-    isSelected: function() {
-        return this._isSelected;
-    },
-
-    /*
      * Marks this node as hovered, and moves the labels out of the way
      */
-    setSelected: function(isSelected) {
-        this._isSelected = isSelected;
+    setSelected: function($super, isSelected) {
+        $super(isSelected);
         if(isSelected) {
             this.shiftLabels();
         }
@@ -419,7 +380,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.getChildlessShape() && lifeStatusShapes.push(this.getChildlessShape());
         this.getChildlessStatusLabel() && lifeStatusShapes.push(this.getChildlessStatusLabel());
         this.getDeadShape() && lifeStatusShapes.push(this.getDeadShape());
-        this.getAdoptedShape() && lifeStatusShapes.push(this.getAdoptedShape());
         return $super().concat(editor.getPaper().set(this.getDisorderShapes(), lifeStatusShapes));
     },
 

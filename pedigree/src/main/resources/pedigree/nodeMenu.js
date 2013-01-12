@@ -11,7 +11,6 @@ NodeMenu = Class.create({
         this.menuBox.insert({'bottom' : this.form});
 
         this.fieldMap = {};
-
         // Generate fields
         var _this = this;
         data.each(function(d) {
@@ -114,6 +113,7 @@ NodeMenu = Class.create({
           if (target && typeof(target[method]) == 'function') {
             target[method].apply(target, field._getValue && field._getValue());
           }
+          field.fire('pedigree:change');
         });
       });
     },
@@ -124,8 +124,9 @@ NodeMenu = Class.create({
             var element = this.fieldMap[dependency[0]].element;
             dependency[0] = this.form[dependency[0]];
             element.inputsContainer.insert(field.up());
+            this.fieldMap[field.name].element = element;
             this._updatedDependency(field, dependency);
-            dependency[0].observe('change', function() {
+            dependency[0].observe('pedigree:change', function() {
                 this._updatedDependency(field, dependency);
                 field.value = '';
             }.bindAsEventListener(this));
@@ -154,7 +155,7 @@ NodeMenu = Class.create({
                 var radioLabel = new Element('label', {'class' : data.name + '_' + v.actual}).update(v.displayed);
                 var radioButton = new Element('input', {type: 'radio', name: data.name, value: v.actual});
                 radioLabel.insert({'top': radioButton});
-                radioButton._getValue = function() { return [this.value, true]; }.bind(radioButton);
+                radioButton._getValue = function() { return [this.value]; }.bind(radioButton);
                 values.insert(radioLabel);
                 _this._attachFieldEventListeners(radioButton, ['click']);
                 _this._attachDependencyBehavior(radioButton, data);
@@ -167,7 +168,7 @@ NodeMenu = Class.create({
             var result = this._generateEmptyField(data);
             var checkbox = new Element('input', {type: 'checkbox', name: data.name, value: '1'});
             result.down('label').insert({'top': checkbox});
-            checkbox._getValue = function() { return [this.checked, true];}.bind(checkbox);
+            checkbox._getValue = function() { return [this.checked];}.bind(checkbox);
             this._attachFieldEventListeners(checkbox, ['click']);
             return result;
         },
@@ -180,7 +181,7 @@ NodeMenu = Class.create({
             }
             result.inputsContainer.insert(text);
             text.wrap('span');
-            text._getValue = function() { return [this.value, true]; }.bind(text);
+            text._getValue = function() { return [this.value]; }.bind(text);
             this._attachFieldEventListeners(text, ['keypress', 'keyup'], [true]);
             this._attachDependencyBehavior(text, data);
             return result;
@@ -190,7 +191,7 @@ NodeMenu = Class.create({
             var result = this._generateEmptyField(data);
             var datePicker = new Element('input', {type: 'text', 'class': 'xwiki-date', name: data.name, 'title': data.format, alt : '' });
             result.insert(datePicker);
-            datePicker._getValue = function() { return [this.alt && Date.parseISO_8601(this.alt), true]; }.bind(datePicker);
+            datePicker._getValue = function() { return [this.alt && Date.parseISO_8601(this.alt)]; }.bind(datePicker);
             this._attachFieldEventListeners(datePicker, ['xwiki:date:changed']);
             return result;
         },
@@ -206,7 +207,7 @@ NodeMenu = Class.create({
                   results.push({'id' : item.value, 'value' : item.next('.value') && item.next('.value').firstChild.nodeValue || item.value});
                 });
               }
-              return [results, true];
+              return [results];
             }.bind(diseasePicker);
             // Forward the 'custom:selection:changed' to the input
             var _this = this;
@@ -236,7 +237,7 @@ NodeMenu = Class.create({
             } else if (data.range) {
                 $A($R(data.range.start, data.range.end)).each(function(i) {_generateSelectOption({'actual': i, 'displayed' : i + ' ' + data.range.item[+(i!=1)]})});
             }
-            select._getValue = function() { return [(this.selectedIndex >= 0) && this.options[this.selectedIndex].value || '', true]; }.bind(select);
+            select._getValue = function() { return [(this.selectedIndex >= 0) && this.options[this.selectedIndex].value || '']; }.bind(select);
             this._attachFieldEventListeners(select, ['change']);
             return result;
         },
@@ -293,7 +294,6 @@ NodeMenu = Class.create({
       }
     },
     show : function(node, x, y) {
-        this.hide();
         this.targetNode = node;
         this._setCrtData(node.getSummary());
         this.menuBox.show();
@@ -313,9 +313,11 @@ NodeMenu = Class.create({
         Object.keys(this.fieldMap).each(function (name) {
             _this.fieldMap[name].crtValue = data && data[name] && typeof(data[name].value) != "undefined" ? data[name].value : _this.fieldMap[name].crtValue || _this.fieldMap[name]["default"];
             _this.fieldMap[name].inactive = (data && data[name] && (typeof(data[name].inactive) == 'boolean' || typeof(data[name].inactive) == 'object')) ? data[name].inactive : _this.fieldMap[name].inactive;
+            _this.fieldMap[name].disabled = (data && data[name] && (typeof(data[name].disabled) == 'boolean' || typeof(data[name].disabled) == 'object')) ? data[name].disabled : _this.fieldMap[name].disabled;
             _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
             _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
-            //this._updatedDependency(_this.fieldMap[name].element, _this.fieldMap[name].element);
+            _this._setFieldDisabled[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].disabled);
+            //_this._updatedDependency(_this.fieldMap[name].element, _this.fieldMap[name].element);
         });
     },
     _setFieldValue : {
@@ -428,9 +430,10 @@ NodeMenu = Class.create({
             this._toggleFieldVisibility(container, inactive);
         },
         'text' : function (container, disabled) {
-            container.descendants().each(function(item) {
-                item.disabled = disabled;
-            });
+            var target = container.down('input[type=text]');
+            if (target) {
+                target.disabled = disabled;
+            }
         },
         'date-picker' : function (container, inactive) {
             this._toggleFieldVisibility(container, inactive);

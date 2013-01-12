@@ -1,11 +1,18 @@
-/*
- * AbstractHoverbox is an abstract class for all the UI elements and graphics surrounding a a node on the canvas (a Person
-  * or a partnership). This includes the box that appears around the node when it's hovered by a mouse, as
+/**
+ * AbstractHoverbox is an abstract class for all the UI elements and graphics surrounding a node on the canvas (a Person
+ * or a partnership). This includes the box that appears around the node when it's hovered by a mouse, as
  * well as the handles used for creating connections and creating new nodes.
  *
- * @node the node Person or Partnership for which the hoverbox is drawn
- * @param x the x coordinate for the hoverbox
- * @param y the y coordinate for the hoverbox
+ * @class AbstractHoverbox
+ * @constructor
+ * @param node {AbstractNode} the node Person or Partnership for which the hoverbox is drawn
+ * @param x {Number} the x coordinate for the hoverbox
+ * @param y {Number} the y coordinate for the hoverbox
+ * @param width {Number} the width in pixels
+ * @param height {Number} the height in pixels
+ * @param nodeX {Number} the x coordinate of the node for which the hoverbox is drawn
+ * @param nodeY {Number} the y coordinate of the node for which the hoverbox is drawn
+ * @param nodeShapes {Raphael.st} a Raphaël set containing the graphical elements that make up the node
  */
 
 var AbstractHoverbox = Class.create({
@@ -39,73 +46,123 @@ var AbstractHoverbox = Class.create({
         this.enable();
     },
 
+    /**
+     * Returns the x coordinate of the hoverbox
+     * @method getX
+     * @return {Number} the x coordinate in pixels
+     */
     getX: function() {
         return this._relativeX;
     },
 
+    /**
+     * Returns the y coordinate of the hoverbox
+     * @method getY
+     * @return {Number} the y coordinate in pixels
+     */
     getY: function() {
         return this._relativeY;
     },
 
+    /**
+     * Returns the x coordinate of the attached node
+     * @method getNodeX
+     * @return {Number} the x coordinate in pixels
+     */
     getNodeX: function() {
         return this._nodeX;
     },
 
+    /**
+     * Returns the y coordinate of the attached node
+     * @method getNodeY
+     * @return {Number} the y coordinate in pixels
+     */
     getNodeY: function() {
         return this._nodeY;
     },
 
+    /**
+     * Returns the width of the hoverbox
+     * @method getWidth
+     * @return {Number} the width in pixels
+     */
     getWidth: function() {
         return this._width;
     },
 
+    /**
+     * Returns the height of the hoverbox
+     * @method getHeight
+     * @return {Number} the height in pixels
+     */
     getHeight: function() {
         return this._height;
     },
 
-    /*
-     * [Abstract] Creates the buttons used in this hoverbox. Returns a set of handles.
-     */
-    generateButtons: function() {
-        return editor.getPaper().set();
-    },
-
-    /*
-     * Returns Raphael set of the buttons in this hoverbox
-     */
-    getButtons: function() {
-        return this._buttons;
-    },
-
-    /*
-     * [Abstract] Creates the handles used in this hoverbox. Returns a set of handles.
-     */
-    generateHandles: function() {
-        return editor.getPaper().set();
-    },
-
-    /*
-     * Returns a Raphael set of the currently visible handles
-     */
-    getCurrentHandles: function() {
-        return this._currentHandles;
-    },
-
-    /*
-     * Returns the node Person or Partnership for which the hoverbox is drawn
+    /**
+     * Returns the node for which the hoverbox is drawn
+     * @method getNode
+     * @return {AbstractNode} can be either a Partnership or a Person
      */
     getNode: function() {
         return this._node;
     },
 
-    /*
+    /**
+     * Creates the buttons used in this hoverbox
+     * @method generateButtons
+     * @return {Raphael.st} a set of buttons
+     */
+    generateButtons: function() {
+        return editor.getPaper().set();
+    },
+
+    /**
+     * Returns Raphael set of the buttons in this hoverbox
+     * @method getButtons
+     * @return {Raphael.st} a set of buttons
+     */
+    getButtons: function() {
+        return this._buttons;
+    },
+
+    /**
+     * Creates the handles used in this hoverbox
+     * @method generateHandles
+     * @return {Raphael.st} a set of handles
+     */
+    generateHandles: function() {
+        return editor.getPaper().set();
+    },
+
+    /**
+     * Returns a Raphael set of the currently visible handles
+     * @method getCurrentHandles
+     * @return {Raphael.st} a set of handles
+     */
+    getCurrentHandles: function() {
+        return this._currentHandles;
+    },
+
+    /**
      * Returns the a Raphael set containing the four draggable handles
+     * @method getHandles
+     * @return {Raphael.st} a set of handles
      */
     getHandles: function() {
         return this._handles;
     },
 
-    createButton: function(x, y, svgPath, attributes, onClick, className) {
+    /**
+     * Generates a button and places it on the hoverbox
+     * @method createButton
+     * @param x {Number} the x coordinate of the button
+     * @param y {Number} the y coordinate of the button
+     * @param svgPath {Number|Array} the x coordinate of the button
+     * @return {Raphael.st} the generated button
+     */
+    createButton: function(x, y, svgPath, attributes, onClick, className, type) {
         var iconScale = editor.attributes.radius * 0.014,
             icon = editor.getPaper().path(svgPath).attr(attributes);
 
@@ -134,11 +191,15 @@ var AbstractHoverbox = Class.create({
             element.node.setAttribute('class', className);
         });
         button.icon = icon;
+        button.type = type;
         return button;
     },
 
     /**
-     * Creates and returns a show-menu button. Returns Raphael set.
+     * Creates a show-menu button
+     *
+     * @method generateMenuBtn
+     * @return {Raphael.st} the generated button
      */
     generateMenuBtn: function() {
         var me = this;
@@ -154,70 +215,92 @@ var AbstractHoverbox = Class.create({
     },
 
     /**
-     * Creates and returns a delete button (big red X). Returns Raphael set.
+     * Creates and returns a delete button (big red X).
+     *
+     * @method generateDeleteBtn
+     * @return {Raphael.st} the generated button
      */
     generateDeleteBtn: function() {
         var me = this;
         var action = function() {
-            me.getNode().remove(true);
+            me.getNode().removeAction();
         };
         var path = "M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z";
         var attributes = editor.attributes.deleteBtnIcon;
         var x = this.getX() + this.getWidth()/40;
         var y = this.getY() + this.getHeight()/40;
-        return this.createButton(x, y, path, attributes, action);
+        return this.createButton(x, y, path, attributes, action, "delete");
     },
 
-    /*
+    /**
      * Returns the gray box that appears when the node is hovered
+     *
+     * @method getBoxOnHover
+     * @return {Element} Raphael rectangle element
      */
     getBoxOnHover: function() {
         return this._boxOnHover;
     },
 
-    /*
-     * Returns true if the hover box is currently hovered
+    /**
+     * Returns true box if the hoverbox is currently hovered
+     *
+     * @method isHovered
+     * @return {Boolean} Raphael rectangle element
      */
     isHovered: function() {
         return this._isHovered;
     },
 
-    /*
+    /**
      * Sets the hovered property to isHovered.
-     *
-     * @param isHovered set to true if the box is hovered
+     * @method setHovered
+     * @param isHovered {Boolean} set to true if the box is hovered
      */
     setHovered: function(isHovered) {
         this._isHovered = isHovered;
     },
 
-    /*
+    /**
      * Returns the invisible mask layer in front of the hoverbox
+     *
+     * @method getHoverZoneMask
+     * @return {Element} Raphael rectangle
      */
     getHoverZoneMask: function() {
         return this.getFrontElements()[0];
     },
 
-    /*
+    /**
      * Returns a Raphael set containing all hoverbox elements that are layered
      * in front of the node graphics
+     *
+     * @method getFrontElements
+     * @return {Raphael.st} set of Raphael elements
      */
     getFrontElements: function() {
         return this._frontElements;
     },
 
-    /*
+    /**
      * Returns a Raphael set containing all hoverbox elements that are layered
      * behind of the node graphics
+     *
+     * @method getBackElements
+     * @return {Raphael.st} set of Raphael elements
      */
     getBackElements: function() {
         return this._backElements;
     },
 
-    /*
-     * Creates a handle with a blue orb from the center of the node to the coordinate (orbX, orbY);
+    /**
+     * Creates a handle with a blue orb from the center of the node and places it behind the node icon
      *
-     * @param type should be 'parent', 'child' or 'partner'
+     * @method generateHandle
+     * @param type {String} should be 'parent', 'child' or 'partner'
+     * @param orbX {Number} the x coordinate of the orb
+     * @param orbY {Number} the y coordinate of the orb
+     * @return {Raphael.st} Raphael set of elements that make up the handle
      */
     generateHandle: function(type, orbX, orbY) {
         var path = [["M", this.getNodeX(), this.getNodeY()],["L", orbX, orbY]],
@@ -225,10 +308,12 @@ var AbstractHoverbox = Class.create({
             orbRadius = editor.attributes.radius/7,
             orbHue = editor.attributes.orbHue,
             orb = generateOrb(editor.getPaper(), orbX, orbY, orbRadius*1.1, orbHue).attr("cursor", "pointer");
-
-            var handle = editor.getPaper().set().push(connection, orb),
-                hasEnded = true,
-                hoverTypes = ["Person"],
+//            adoptionPath = [["M", orbX - orbRadius/2, orbY + orbRadius*1.3],["L", (orbX - orbRadius * 1.3), orbY + orbRadius*1.3],["L", (orbX - orbRadius * 1.3), orbY - orbRadius*1.3],["L", (orbX - orbRadius / 2), orbY - orbRadius*1.3],["M", orbX + orbRadius/2, orbY + orbRadius*1.3],["L", (orbX + orbRadius * 1.3), orbY + orbRadius*1.3],["L", (orbX + orbRadius * 1.3), orbY - orbRadius*1.3],["L", (orbX + orbRadius / 2), orbY - orbRadius*1.3]],
+//            adoptionSymbol = editor.getPaper().path(adoptionPath).attr({"stroke-width": 2, stroke: "#484848", opacity: 1});
+            //orb.push(adoptionSymbol);
+        var handle = editor.getPaper().set().push(connection, orb),
+            hasEnded = true,
+            hoverTypes = ["Person"],
             me = this;
         handle.type = type;
         connection.oPath = path;
@@ -316,15 +401,19 @@ var AbstractHoverbox = Class.create({
         return handle;
     },
 
-    /*
+    /**
      * Hides the child handle
+     *
+     * @method hideChildHandle
      */
     hideChildHandle: function() {
         this.getCurrentHandles().exclude(this._downHandle.hide());
     },
 
-    /*
+    /**
      * Unhides the child handle
+     *
+     * @method unhideChildHandle
      */
     unhideChildHandle: function() {
         if(this.isHovered() || this.isMenuToggled()) {
@@ -335,6 +424,8 @@ var AbstractHoverbox = Class.create({
 
     /*
      * Fades the hoverbox graphics in
+     *
+     * @method animateDrawHoverZone
      */
     animateDrawHoverZone: function() {
         this.getNode().getGraphics().setSelected(true);
@@ -345,8 +436,10 @@ var AbstractHoverbox = Class.create({
         this.getCurrentHandles().show();
     },
 
-    /*
+    /**
      * Fades the hoverbox graphics out
+     *
+     * @method animateHideHoverZone
      */
     animateHideHoverZone: function() {
         if(!this.isHovered()) {
@@ -359,8 +452,10 @@ var AbstractHoverbox = Class.create({
         }
     },
 
-    /*
+    /**
      * Hides the hoverbox's graphical elements
+     *
+     * @method hide
      */
     hide: function() {
         this.getBoxOnHover().attr({opacity:0});
@@ -370,29 +465,43 @@ var AbstractHoverbox = Class.create({
         this.getHandles().hide();
     },
 
-    /*
-     * Stops responding to mouseovers
+    /**
+     * Stops the hoverbox from responding to mouseovers
+     *
+     * @method disable
      */
     disable: function() {
         this.getFrontElements().unhover(this.animateDrawHoverZone, this.animateHideHoverZone);
     },
 
-    /*
-     * Starts responding to mouseovers
+    /**
+     * Attaches onMouseOver behavior to the hoverbox
+     *
+     * @method enable
      */
     enable: function() {
         this.getFrontElements().hover(this.animateDrawHoverZone, this.animateHideHoverZone);
     },
 
+    /**
+     * Deletes the hoverbox
+     *
+     * @method remove
+     */
     remove: function() {
         this.disable();
         this.getBackElements().remove();
         this.getFrontElements().remove();
     },
 
+    /**
+     * Updates the hoverbox behavior after a widget (like the menu) is closed
+     *
+     * @method onWidgetHide
+     */
     onWidgetHide: function() {
         this._isMenuToggled = false;
         !this.isHovered() && this.animateHideHoverZone();
-        this.enable();
+        this._activeHandles == 0 && this.enable();
     }
 });

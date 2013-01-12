@@ -14,32 +14,32 @@ NodeTypeOptions = Class.create({
             label: "Male",
             tip  : "Create a person of male gender",
             symbol: "◻",
-            callback : "createChild",
-            params: ["Person", "M", 1]
+            callback : "createNodeAction",
+            params: ["Person", "M"]
         }, {
             key: "F",
             type: "person",
             label: "Female",
             tip  : "Create a person of female gender",
             symbol: "◯",
-            callback : "createChild",
-            params: ["Person", "F", 1]
+            callback : "createNodeAction",
+            params: ["Person", "F"]
         }, {
             key: "U",
             type: "person",
             label: "Unknown",
             tip  : "Create a person of unknown gender",
             symbol: "◇",
-            callback : "createChild",
-            params: ["Person", "U", 1]
+            callback : "createNodeAction",
+            params: ["Person", "U"]
         }, {
             key: "T",
             type: "person",
             label: "Twins",
             tip  : "Create twins (expandable to triplets or more)",
             symbol: "⋀",
-            callback : "createChild",
-            params: ["Person", "U", 2]
+            callback : "createTwinsAction",
+            params: []
         }, {
             type: "separator"
         }, {
@@ -48,8 +48,8 @@ NodeTypeOptions = Class.create({
             label: "Multiple",
             tip  : "Create a node representing multiple siblings",
             symbol: "〈n〉",
-            callback : "createChild",
-            params: ["PersonGroup", "U", 1]
+            callback : "createNodeAction",
+            params: ["PersonGroup", "U"]
         }, {
             type: "separator"
         }, {
@@ -58,7 +58,7 @@ NodeTypeOptions = Class.create({
             label: "No children",
             tip  : "Mark as childless by choice",
             symbol: "┴",
-            callback : "setChildlessStatus",
+            callback : "setChildlessStatusAction",
             params: ["childless"]
         }, {
             key: "i",
@@ -66,7 +66,7 @@ NodeTypeOptions = Class.create({
             label: "Infertile",
             tip  : "Mark as infertile",
             symbol: "╧",
-            callback : "setChildlessStatus",
+            callback : "setChildlessStatusAction",
             params: ["infertile"]
         }
     ],

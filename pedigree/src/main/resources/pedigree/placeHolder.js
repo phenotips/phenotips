@@ -13,8 +13,8 @@
 var PlaceHolder = Class.create(AbstractPerson, {
 
     initialize: function($super, x, y, gender, id) {
+        this._type = "PlaceHolder";
         $super(x, y, gender, id);
-        this._type = "PlaceHolder"
     },
 
     /*
@@ -27,12 +27,36 @@ var PlaceHolder = Class.create(AbstractPerson, {
         return new PlaceHolderVisuals(this, x, y);
     },
 
+    createNodeAction: function(type, gender) {
+        var replacement = editor.getGraph()["add" + type](this.getX(), this.getY(), gender);
+        if(replacement) {
+            var nodeInfo = replacement.getInfo();
+            this.mergeAction(replacement, this.getX(), this.getY());
+            var oldUndo = editor.getActionStack().peek().undo;
+            var oldRedo = editor.getActionStack().peek().redo;
+            editor.getActionStack().getStack()[editor.getActionStack().size() - 1] =
+            {
+                undo: function() {
+                    oldUndo();
+                    var node = editor.getGraph().getNodeMap()[nodeInfo.id];
+                    node && node.remove(false);
+                },
+
+                redo: function() {
+                    var node = editor.getGraph()["add" + type](nodeInfo.x, nodeInfo.y, gender, nodeInfo.id);
+                    oldRedo();
+                }
+            }
+
+        }
+    },
     /*
      * Creates a new Person in the place of this PlaceHolder and merges the PlaceHolder with the person
      */
     convertTo: function(type, gender) {
         var replacement = editor.getGraph()["add" + type](this.getX(), this.getY(), gender);
         this.merge(replacement);
+        return replacement;
         //document.fire('pedigree:node:upgraded', {'node' : replacement, 'relatedNodes' : [], 'sourceNode' : this});
     },
 
@@ -104,11 +128,6 @@ var PlaceHolder = Class.create(AbstractPerson, {
 //            (this._father && node._mother && this._father != node._mother);
 //
 //        return notReversedParents && (hasConflictingDads || hasConflictingMoms);
-    },
-
-    remove: function($super) {
-        editor.getGraph().removePlaceHolder(this);
-        return $super()
     },
 
     /*
@@ -183,7 +202,6 @@ var PlaceHolder = Class.create(AbstractPerson, {
                             info.childrenIDs.push(child.getID());
                         });
                         newPregnancies.push(info);
-
                     }
                 });
             });
@@ -215,7 +233,7 @@ var PlaceHolder = Class.create(AbstractPerson, {
                 phPartnerships.each(function(partnership) {
                     var partner = editor.getGraph().getNodeMap()[partnership.partnerID];
                     if(partner) {
-                        editor.getGraph().addPartnership(partnership.x, partnership.y, ph, partner);
+                        editor.getGraph().addPartnership(partnership.x, partnership.y, ph, partner,partnership.id);
                     }
                 });
 
@@ -268,7 +286,11 @@ var PlaceHolder = Class.create(AbstractPerson, {
                     newPregnancies.each(function(pregnancy) {
                         var partnership = editor.getGraph().getNodeMap()[pregnancy.partnershipID];
                         if(partnership) {
-                            editor.getGraph().addPregnancy(pregnancy.x, pregnancy.y, partnership, pregnancy.id)
+                            var preg = editor.getGraph().addPregnancy(pregnancy.x, pregnancy.y, partnership, pregnancy.id)
+                            pregnancy.childrenIDs.each(function(childID) {
+                                var child = editor.getGraph().getNodeMap()[childID];
+                                child && preg.addChild(child);
+                            })
                         }
                     })
                 }

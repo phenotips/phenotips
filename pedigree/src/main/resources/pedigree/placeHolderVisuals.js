@@ -11,7 +11,7 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
 
     initialize: function($super, node, x, y) {
         $super(node, x, y);
-        this.setDraggable();
+        //this.setDraggable();
     },
 
     /*
@@ -27,7 +27,10 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
         shape.attr("cursor", "pointer");
         shape.ox = shape.getBBox().x;
         shape.oy = shape.getBBox().y;
-        shape.flatten().insertAfter(editor.getGraph().getProband().getGraphics().getAllGraphics().flatten());
+        var layerBelow = (this._highlightBox) ? this._highlightBox : editor.getGraph().getProband().getGraphics().getAllGraphics().flatten()
+        shape.flatten().insertAfter(layerBelow);
+        this._icon = this._genderSymbol = shape;
+        this.setDraggable();
     },
 
     /*
@@ -89,7 +92,15 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
                 }
                 else {
                     me.setPos(absOx, absOy, false);
-                    me.getNode().convertTo("Person", me.getNode().getGender());
+                    if(me.getNode().getGender() == "U") {
+                        var x = me.getX(),
+                            y = me.getY() + editor.attributes.radius,
+                            position = editor.getWorkspace().canvasToDiv(x, y);
+                        editor.getNodeTypeOptions().show(me.getNode(), position.x, position.y);
+                    }
+                    else {
+                        me.getNode().createNodeAction("Person", me.getNode().getGender());
+                    }
                 }
                 editor.getGraph().exitHoverMode();
                 editor.getGraph().setCurrentDraggable(null);

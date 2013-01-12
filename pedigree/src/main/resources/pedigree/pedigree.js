@@ -52,6 +52,10 @@ var PedigreeEditor = Class.create({
         });
     },
 
+    getNode: function(nodeID) {
+        return editor.getGraph().getNodeMap()[nodeID];
+    },
+
     /*
      * Returns the Graph object, responsible for managing nodes in the editor
      */
@@ -134,39 +138,39 @@ var PedigreeEditor = Class.create({
                     { 'actual' : 'U', 'displayed' : 'Unknown' }
                 ],
                 'default' : 'U',
-                'function' : 'setGender'
+                'function' : 'setGenderAction'
             },
             {
                 'name' : 'first_name',
                 'label': 'First name',
                 'type' : 'text',
-                'function' : 'setFirstName'
+                'function' : 'setFirstNameAction'
             },
             {
                 'name' : 'last_name',
                 'label': 'Last name',
                 'type' : 'text',
-                'function' : 'setLastName'
+                'function' : 'setLastNameAction'
             },
             {
                 'name' : 'date_of_birth',
                 'label' : 'Date of birth',
                 'type' : 'date-picker',
                 'format' : 'dd/MM/yyyy',
-                'function' : 'setBirthDate'
+                'function' : 'setBirthDateAction'
             },
             {
                 'name' : 'date_of_death',
                 'label' : 'Date of death',
                 'type' : 'date-picker',
                 'format' : 'dd/MM/yyyy',
-                'function' : 'setDeathDate'
+                'function' : 'setDeathDateAction'
             },
             {
                 'name' : 'disorders',
                 'label' : 'Known disorders of this individual',
                 'type' : 'disease-picker',
-                'function' : 'updateDisorders'
+                'function' : 'setDisordersAction'
             },
             {
                 'name' : 'gestation_age',
@@ -174,7 +178,7 @@ var PedigreeEditor = Class.create({
                 'type' : 'select',
                 'range' : {'start': 0, 'end': 50, 'item' : ['week', 'weeks']},
                 'nullValue' : true,
-                'function' : 'setGestationAge'
+                'function' : 'setGestationAgeAction'
             },
             {
                 'name' : 'state',
@@ -188,27 +192,27 @@ var PedigreeEditor = Class.create({
                     { 'actual' : 'unborn', 'displayed' : 'Unborn' }
                 ],
                 'default' : 'alive',
-                'function' : 'setLifeStatus'
+                'function' : 'setLifeStatusAction'
             },
             {
                 'label' : 'Heredity options',
                 'name' : 'childlessSelect',
                 'values' : [{'actual': 'none', displayed: 'None'},{'actual': 'childless', displayed: 'Childless'},{'actual': 'infertile', displayed: 'Infertile'}],
                 'type' : 'select',
-                'function' : 'setChildlessStatus'
+                'function' : 'setChildlessStatusAction'
             },
             {
                 'name' : 'childlessText',
                 'type' : 'text',
                 'dependency' : 'childlessSelect != none',
                 'tip' : 'Reason',
-                'function' : 'setChildlessReason'
+                'function' : 'setChildlessReasonAction'
             },
             {
                 'name' : 'adopted',
                 'label' : 'Adopted',
                 'type' : 'checkbox',
-                'function' : 'setAdopted'
+                'function' : 'setAdoptedAction'
             }
         ]);
     },
@@ -239,16 +243,20 @@ var PedigreeEditor = Class.create({
                 'name' : 'childlessSelect',
                 'values' : [{'actual': 'none', displayed: 'None'},{'actual': 'childless', displayed: 'Childless'},{'actual': 'infertile', displayed: 'Infertile'}],
                 'type' : 'select',
-                'function' : 'setChildlessStatus'
+                'function' : 'setChildlessStatusAction'
             },
             {
                 'name' : 'childlessText',
                 'type' : 'text',
                 'dependency' : 'childlessSelect != none',
                 'tip' : 'Reason',
-                'function' : 'setChildlessReason'
+                'function' : 'setChildlessReasonAction'
             }
         ]);
+    },
+
+    initializeSave: function() {
+        setInterval(function(){editor.getGraph().serialize()},30000);
     },
 
     // WRAPPERS FOR THE NODE INDEX & GRID FUNCITONS

@@ -15,8 +15,9 @@ var AbstractPerson = Class.create(AbstractNode, {
         this._partnershipNodes = [];
         this._gender = this.parseGender(gender);
         this._parentPregnancy = null;
+        this._isAdopted = false;
+        this._type = this._type ? this._type : "AbstractPerson";
         $super(x, y, id);
-        this._type = "AbstractPerson"
       },
 
     /*
@@ -109,8 +110,21 @@ var AbstractPerson = Class.create(AbstractNode, {
     /*
      * Returns "U", "F" or "M" depending on the gender of this node
      */
-    getGender: function() {
-        return this._gender;
+    getGender: function(visited) {
+        if(visited) {
+            if(!visited[this.getID()]) {
+                visited[this.getID()] = this._gender;
+                var pp = this.getParentPregnancy();
+                pp && (visited[pp.getID()] = pp.getGender());
+                this.getPartners().each(function(partner) {
+                    visited = partner.getGender(visited);
+                });
+            }
+            return visited;
+        }
+        else {
+            return this._gender;
+        }
     },
 
     /*
@@ -132,7 +146,7 @@ var AbstractPerson = Class.create(AbstractNode, {
                 this.getGraphics().setGenderSymbol();
                 this.getParentPregnancy() && this.getParentPregnancy().setGender(gender);
             }
-            else if(this.getGender() == "U") {
+            else {
                 var me = this;
                 this._gender = this.parseGender(gender);
                 this.getGraphics().setGenderSymbol();
@@ -147,6 +161,104 @@ var AbstractPerson = Class.create(AbstractNode, {
         return visited;
     },
 
+    setGenderAction: function(gender) {
+        var prevGenders = this.getGender({});
+        var nodeID = this.getID();
+        this.setGender(gender, []);
+        var newGenders = this.getGender({});
+        editor.getActionStack().push({
+            undo: AbstractNode.setPropertyToListActionUndo,
+            redo: AbstractNode.setPropertyToListActionRedo,
+            oldValues: prevGenders,
+            newValues: newGenders,
+            property: 'Gender'
+        });
+    },
+
+    /**
+     * Changes the adoption status of this Person to isAdopted
+     *
+     * @param isAdopted set to true if you want to mark the Person adopted
+     */
+    setAdopted: function(isAdopted) {
+        this._isAdopted = isAdopted;
+        //TODO: implement adopted and social parents
+        if(isAdopted) {
+            this.getGraphics().drawAdoptedShape();
+            var twins = this.getTwins("PlaceHolder");
+            if(twins.length > 0) {
+                twins.each(function(twin) {
+                    twin.remove();
+                })
+            }
+        }
+        else {
+            this.getGraphics().removeAdoptedShape();
+        }
+        var preg = this.getParentPregnancy();
+        preg && preg.updateActive();
+    },
+
+    setAdoptedAction: function(isAdopted) {
+        var oldStatus = this.isAdopted();
+        if(oldStatus != isAdopted) {
+            var twin = this.getTwins("PlaceHolder")[0],
+                twinInfo = twin ? twin.getInfo() : null;
+            this.setAdopted(isAdopted);
+            var nodeID = this.getID();
+            var undo = function() {
+                var node = editor.getGraph().getNodeMap()[nodeID];
+                if(node) {
+                    node.setAdopted(oldStatus);
+                    if(twinInfo && node.getParentPregnancy()) {
+                        var newPh = editor.getGraph().addPlaceHolder(twinInfo.x, twinInfo.y, twinInfo.gender, twinInfo.id);
+                        node.getParentPregnancy().addChild(newPh);
+                    }
+                }
+            };
+            var redo = function() {
+                var node = editor.getGraph().getNodeMap()[nodeID];
+                node && node.setAdopted(isAdopted);
+            };
+            editor.getActionStack().push({undo: undo, redo: redo});
+        }
+    },
+
+    /*
+     * Returns true if this Person is marked adopted
+     */
+    isAdopted: function() {
+        return this._isAdopted;
+    },
+
+    traversePartners: function(visited) {
+        visited.push(this);
+        var me = this;
+        this.getPartners().each(function(partner) {
+            if (visited.indexOf(me.getID()) > -1) {
+
+            }
+            partner.traversePartners();
+        });
+    },
+
+    hasTwins: function() {
+        var partnerships = this.getPartnerships();
+        for(var i = 0; i < partnerships.length; i++) {
+            if(partnerships[i].hasTwins())
+                return true;
+        }
+        return false;
+    },
+
+    hasNonAdoptedChildren: function() {
+        var partnerships = this.getPartnerships();
+        for(var i = 0; i < partnerships.length; i++) {
+            if(partnerships[i].hasNonAdoptedChildren())
+                return true;
+        }
+        return false;
+    },
     /*
      * Returns an array of Partnership objects of this node
      */
@@ -444,9 +556,9 @@ var AbstractPerson = Class.create(AbstractNode, {
      *
      * @param isRecursive set to true if you want to remove all unrelated descendants as well
      */
-    remove: function($super, isRecursive) {
+    remove: function($super, isRecursive, skipConfirmation) {
         if(isRecursive) {
-            $super(true)
+            return $super(true, skipConfirmation)
         }
         else {
             this.getPartnerships().each(function(partnership) {
@@ -455,7 +567,7 @@ var AbstractPerson = Class.create(AbstractNode, {
             var parentPregnancy = this.getParentPregnancy();
             parentPregnancy && parentPregnancy.removeChild(this);
             this.getGraphics().remove();
-            $super(isRecursive);
+            return $super(isRecursive);
         }
     },
 
@@ -525,3 +637,4 @@ var AbstractPerson = Class.create(AbstractNode, {
         return false;
     }
 });
+
