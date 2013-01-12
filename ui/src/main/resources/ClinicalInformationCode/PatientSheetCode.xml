@@ -901,7 +901,7 @@ document.observe('dom:loaded', function() {
             script: "$xwiki.getURL('ClinicalInformationCode.SolrService', 'get')?",
             queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
                            'name' : { 'stub': true, 'boost': 1500 },
-                           'synonym' : { 'stub': true, 'boost': 1 },
+                           'synonym' : { 'stub': true, 'boost': 1400 },
                            'is_a' : { 'stub': true},
                            'text' : { 'stub': true, 'default': true },
                            'id' : {'activationRegex' : 'HP:[0-9]+', 'stub': true, 'boost' : 50}
