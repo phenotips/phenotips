@@ -84,7 +84,7 @@
   <modules>
     <module>solr-configuration</module>
     <module>jetty-resources</module>
-
+    <module>pedigree</module>
     <module>obo2solr</module>
     <module>solr-access-service</module>
     <module>patient-update-listeners</module>

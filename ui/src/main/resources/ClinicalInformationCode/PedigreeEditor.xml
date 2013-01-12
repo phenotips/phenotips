@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>ClinicalInformationCode</web>
-<name>PedigreeEditor</name>
-<language></language>
-<defaultLanguage>en</defaultLanguage>
-<translation>0</translation>
-<parent></parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1340918250000</creationDate>
-<date>1344125229000</date>
-<contentUpdateDate>1344125229000</contentUpdateDate>
-<version>35.7</version>
-<title>Pedigree editor#if ($request.id): $request.id#end</title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment></comment>
-<minorEdit>true</minorEdit>
-<syntaxId>xwiki/2.0</syntaxId>
-<hidden>false</hidden>
-<content>{{velocity output=false}}
+  <web>ClinicalInformationCode</web>
+  <name>PedigreeEditor</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>ClinicalInformationCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1340918250000</creationDate>
+  <date>1344125229000</date>
+  <contentUpdateDate>1344125229000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Pedigree editor#if ($request.id): $request.id#end</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity output=false}}
 $xwiki.jsfx.use("js/pedigree/raphael.js")##
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('XWiki.DateTimePicker')##
@@ -50,4 +51,5 @@ $xwiki.jsfx.use("js/pedigree/kdTree.js")##
 $xwiki.jsfx.use("js/pedigree/nodeIndex.js", {'minify' : false})##
 $xwiki.jsfx.use("js/pedigree/pedigree.js", {'minify' : false})##
 {{/velocity}}
-</content></xwikidoc>
+</content>
+</xwikidoc>

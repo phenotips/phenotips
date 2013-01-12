@@ -39,6 +39,7 @@
         <include>${project.groupId}:patient-update-listeners</include>
         <include>${project.groupId}:patient-tools</include>
         <include>org.apache.commons:commons-math3</include>
+        <include>${project.groupId}:pedigree-editor</include>
       </includes>
       <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
       <unpack>false</unpack>
