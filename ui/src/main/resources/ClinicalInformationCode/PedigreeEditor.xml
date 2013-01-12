@@ -24,32 +24,69 @@
   <syntaxId>xwiki/2.0</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity output=false}}
-$xwiki.jsfx.use("js/pedigree/raphael.js")##
+$xwiki.jsfx.use('js/scriptaculous/controls.js')##
+$xwiki.jsfx.use('js/scriptaculous/slider.js')##
+$xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
+$xwiki.jsrx.use('pedigree/raphael.js')##
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('XWiki.DateTimePicker')##
-$xwiki.jsx.use('ClinicalInformationCode.Widgets', {'minify' : false})##
+$xwiki.jsx.use('ClinicalInformationCode.Widgets')##
 $xwiki.ssx.use('ClinicalInformationCode.Widgets')##
-$xwiki.jsfx.use('js/pedigree/nodeMenu.js', true)##
-$xwiki.ssfx.use('js/pedigree/editor.css', true)##
-$xwiki.jsfx.use("js/pedigree/raphaelzpd.js")##
-$xwiki.jsfx.use("js/pedigree/ageCalc.js")##
-$xwiki.jsfx.use("js/pedigree/graphicHelpers.js")##
-$xwiki.jsfx.use("js/pedigree/disorder.js")##
-$xwiki.jsfx.use("js/pedigree/legend.js", true)##
-$xwiki.jsfx.use("js/pedigree/hoverbox.js")##
-$xwiki.jsfx.use("js/pedigree/abstractNode.js")##
-$xwiki.jsfx.use("js/pedigree/abstractNodeVisuals.js")##
-$xwiki.jsfx.use("js/pedigree/abstractPerson.js")##
-$xwiki.jsfx.use("js/pedigree/abstractPersonVisuals.js")##
-$xwiki.jsfx.use("js/pedigree/partnership.js")##
-$xwiki.jsfx.use("js/pedigree/partnershipVisuals.js")##
-$xwiki.jsfx.use("js/pedigree/person.js")##
-$xwiki.jsfx.use("js/pedigree/personVisuals.js")##
-$xwiki.jsfx.use("js/pedigree/placeHolder.js")##
-$xwiki.jsfx.use("js/pedigree/placeHolderVisuals.js")##
-$xwiki.jsfx.use("js/pedigree/kdTree.js")##
-$xwiki.jsfx.use("js/pedigree/nodeIndex.js", {'minify' : false})##
-$xwiki.jsfx.use("js/pedigree/pedigree.js", {'minify' : false})##
+$xwiki.jsrx.use('pedigree/nodeMenu.js')##
+$xwiki.jsrx.use('pedigree/nodeTypeOptions.js')##
+$xwiki.ssrx.use('pedigree/editor.css')##
+$xwiki.jsrx.use('pedigree/raphaelzpd.js')##
+$xwiki.jsrx.use('pedigree/ageCalc.js')##
+$xwiki.jsrx.use('pedigree/graphicHelpers.js')##
+$xwiki.jsrx.use('pedigree/disorder.js')##
+$xwiki.jsrx.use('pedigree/legend.js')##
+$xwiki.jsrx.use('pedigree/abstractHoverbox.js')##
+$xwiki.jsrx.use('pedigree/partnershipHoverbox.js')##
+$xwiki.jsrx.use('pedigree/personHoverbox.js')##
+$xwiki.jsrx.use('pedigree/groupHoverbox.js')##
+$xwiki.jsrx.use('pedigree/abstractNode.js')##
+$xwiki.jsrx.use('pedigree/abstractNodeVisuals.js')##
+$xwiki.jsrx.use('pedigree/abstractPerson.js')##
+$xwiki.jsrx.use('pedigree/abstractPersonVisuals.js')##
+$xwiki.jsrx.use('pedigree/personGroup.js')##
+$xwiki.jsrx.use('pedigree/personGroupVisuals.js')##
+$xwiki.jsrx.use('pedigree/pregnancy.js')##
+$xwiki.jsrx.use('pedigree/pregnancyVisuals.js')##
+$xwiki.jsrx.use('pedigree/partnership.js')##
+$xwiki.jsrx.use('pedigree/partnershipVisuals.js')##
+$xwiki.jsrx.use('pedigree/person.js')##
+$xwiki.jsrx.use('pedigree/personVisuals.js')##
+$xwiki.jsrx.use('pedigree/placeHolder.js')##
+$xwiki.jsrx.use('pedigree/placeHolderVisuals.js')##
+$xwiki.jsrx.use('pedigree/kdTree.js')##
+$xwiki.jsrx.use('pedigree/nodeIndex.js')##
+$xwiki.jsrx.use('pedigree/graph.js')##
+$xwiki.jsrx.use('pedigree/actionStack.js')##
+$xwiki.jsrx.use('pedigree/workspace.js')##
+$xwiki.jsrx.use('pedigree/pedigree.js')##
 {{/velocity}}
+
+{{html}}
+&lt;div id="editor-menu"&gt;
+&lt;div class="action-group internal-actions"&gt;
+&lt;span class="menu-item new" id="action-new"&gt;New node&lt;/span&gt;
+&lt;span class="menu-item undo" id="action-undo"&gt;Undo&lt;/span&gt;
+&lt;span class="menu-item redo" id="action-redo"&gt;Redo&lt;/span&gt;
+&lt;span class="menu-item layout" id="action-layout"&gt;Automatic layout&lt;/span&gt;
+&lt;span class="menu-item clear" id="action-clear"&gt;Clear all&lt;/span&gt;
+&lt;/div&gt;
+&lt;div class="action-group external-actions"&gt;
+&lt;span class="menu-item print" id="action-print"&gt;Printable version&lt;/span&gt;
+&lt;span class="menu-item save" id="action-save"&gt;Save&lt;/span&gt;
+&lt;!--&lt;span class="menu-item export" id="action-export"&gt;Export&lt;/span&gt;--&gt;
+&lt;span class="menu-item close" id="action-close"&gt;Close&lt;/span&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="workspace"&gt;
+&lt;div id="canvas"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="clearfloats"&gt;&lt;/div&gt;
+{{/html}}
 </content>
 </xwikidoc>
