@@ -34,7 +34,7 @@
   <packaging>pom</packaging>
   <description>ZIP packaging of the XWiki-based phenotype database interface, stored as an HSQLDB database dump.</description>
   <properties>
-    <xwiki.db.connection.url>jdbc:hsqldb:file:${project.build.directory}/database/xwiki_db;shutdown=true</xwiki.db.connection.url>
+    <xwiki.db.connection.url>jdbc:hsqldb:file:${project.build.directory}/data/xwiki_db;shutdown=true</xwiki.db.connection.url>
   </properties>
   <!-- Required for the exec:exec plugin execution below. Doesn't seem to work as an exec plugin
        dependency -->
@@ -120,7 +120,7 @@
           <artifactId>maven-assembly-plugin</artifactId>
           <configuration>
             <descriptors>
-              <descriptor>${basedir}/src/assemble/database.xml</descriptor>
+              <descriptor>${basedir}/src/assemble/data.xml</descriptor>
             </descriptors>
           </configuration>
           <executions>
@@ -147,7 +147,7 @@
                     <resourceBundle>org.xwiki.platform:xwiki-platform-tool-configuration-resources:3.3</resourceBundle>
                   </resourceBundles>
                   <properties>
-                    <xwikiDbConnectionUrl>jdbc:hsqldb:file:${project.build.directory}/database/xwiki_db;shutdown=true</xwikiDbConnectionUrl>
+                    <xwikiDbConnectionUrl>jdbc:hsqldb:file:${project.build.directory}/data/xwiki_db;shutdown=true</xwikiDbConnectionUrl>
                     <xwikiDbConnectionUsername>sa</xwikiDbConnectionUsername>
                     <xwikiDbConnectionPassword />
                     <xwikiDbConnectionDriverClass>org.hsqldb.jdbcDriver</xwikiDbConnectionDriverClass>
