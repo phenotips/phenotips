@@ -883,5 +883,36 @@
       <unaffected>0</unaffected>
     </property>
   </object>
+  <object>
+    <class>
+      <name>ClinicalInformationCode.PedigreeClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <data>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>data</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>data</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </data>
+    </class>
+    <name>ClinicalInformationCode.PatientTemplate</name>
+    <number>0</number>
+    <className>ClinicalInformationCode.PedigreeClass</className>
+    <guid>09879ef6-e139-47bc-adce-6feedb4c4d70</guid>
+  </object>
   <content/>
 </xwikidoc>

@@ -4835,6 +4835,12 @@ $doc.display('miscarriages')
 
 === Pedigree ===
 $doc.display('pedigree')
+#set($pedigreeObj = $doc.getObject('ClinicalInformationCode.PedigreeClass'))
+#if ($pedigreeObj)
+#set($data = $pedigreeObj.getProperty('data').value)
+#if ($data != '')#set($pAction = 'Edit pedigree')#else#set($pAction = 'Draw pedigree')#end
+(% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=ClinicalInformationCode.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]]
+#end
 )))
 )))##chapter
 #end
