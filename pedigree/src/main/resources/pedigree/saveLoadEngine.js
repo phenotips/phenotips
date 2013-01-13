@@ -75,6 +75,7 @@ var SaveLoadEngine = Class.create( {
                     preg.loadInfo(info);
                 }
             });
+            this.serialize();
         }
     },
 
