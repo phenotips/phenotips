@@ -38,3 +38,6 @@ nbproject
 *.log
 .sonar-ide.properties
 .clover
+
+/pedigree/src/main/resources/pedigree/.DS_Store
+.DS_Store
