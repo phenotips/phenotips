@@ -41,6 +41,8 @@ var PedigreeEditor = Class.create({
         this._nodeIndex = new NodeIndex();
         this._graph = new Graph();
         this._actionStack = new ActionStack();
+        this._saveLoadEngine = new SaveLoadEngine();
+        this._templateSelector = new TemplateSelector();
 
         var undoButton = $('action-undo');
         undoButton && undoButton.on("click", function(event) {
@@ -107,6 +109,26 @@ var PedigreeEditor = Class.create({
      */
     getPaper: function() {
         return this.getWorkspace().getPaper();
+    },
+
+    /**
+     * Returns the engine for saving and loading
+     *
+     * @method getSaveLoadEngine
+     * @return {SaveLoadEngine}
+     */
+    getSaveLoadEngine: function() {
+        return this._saveLoadEngine;
+    },
+
+    /**
+     * Returns the window for template selection
+     *
+     * @method getTemplateSelector
+     * @return {TemplateSelector}
+     */
+    getTemplateSelector: function() {
+        return this._templateSelector
     },
 
     /*
