@@ -229,7 +229,6 @@ var Legend = Class.create( {
         var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
         var pos = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
         var node = editor.getNodeIndex().getNodeNear(pos.x, pos.y);
-        console.log(node);
         if (node && node.getType() == 'Person') {
             var disorderObj = {};
             disorderObj.id = disorder.id.substring( disorder.id.indexOf('-') + 1);
