@@ -8,11 +8,14 @@
 var SaveLoadEngine = Class.create( {
 
     initialize: function() {
-        var timerID = this._timerID = null;
+        var me = this;
+        this._timerID = null;
         document.observe("pedigree:actionEvent", function(event) {
-            if(typeof timerID != "number") {
-                this.serialize();
-                timerID = this.serialize.delay(3);
+            if(typeof me._timerID != "number") {
+                me.serialize();
+                (function(){
+                    me._timerID = me.serialize();
+                }).delay(3);
             }
         });
     },
@@ -22,7 +25,7 @@ var SaveLoadEngine = Class.create( {
     },
 
     serialize: function() {
-        console.log("Serialized!");
+        alert("serialized!");
         this.resetTimerID();
         var nodes = {
             placeHolders : [],
@@ -32,19 +35,19 @@ var SaveLoadEngine = Class.create( {
             persons: []
         };
 
-        this.getPlaceHolderNodes().forEach(function(placeHolder) {
+        editor.getGraph().getPlaceHolderNodes().forEach(function(placeHolder) {
             nodes.placeHolders.push(placeHolder.getInfo());
         });
-        this.getPartnershipNodes().forEach(function(partnership) {
+        editor.getGraph().getPartnershipNodes().forEach(function(partnership) {
             nodes.partnerships.push(partnership.getInfo());
         });
-        this.getPregnancyNodes().forEach(function(pregnancy) {
+        editor.getGraph().getPregnancyNodes().forEach(function(pregnancy) {
             nodes.pregnancies.push(pregnancy.getInfo());
         });
-        this.getPersonGroupNodes().forEach(function(personGroup) {
+        editor.getGraph().getPersonGroupNodes().forEach(function(personGroup) {
             nodes.personGroups.push(personGroup.getInfo());
         });
-        this.getPersonNodes().forEach(function(person) {
+        editor.getGraph().getPersonNodes().forEach(function(person) {
             nodes.persons.push(person.getInfo());
         });
 
