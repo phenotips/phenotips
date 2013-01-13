@@ -25,7 +25,6 @@ var SaveLoadEngine = Class.create( {
     },
 
     serialize: function() {
-        alert("serialized!");
         this.resetTimerID();
         var nodes = {
             placeHolders : [],
