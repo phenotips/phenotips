@@ -149,7 +149,7 @@ var ChildlessBehaviorVisuals = {
      * Returns the childless status shape for this Person
      *
      * @method getChildlessShape
-     * @return {Element}
+     * @return {Raphael.el}
      */
     getChildlessShape: function() {
         return this._childlessShape;
@@ -217,7 +217,7 @@ var ChildlessBehaviorVisuals = {
      * Returns the Raphaël element for this Person's childless status reason label
      *
      * @method getChildlessStatusLabel
-     * @return {Element}
+     * @return {Raphael.el}
      */
     getChildlessStatusLabel: function() {
         return this._childlessStatusLabel;

@@ -236,7 +236,7 @@ var AbstractHoverbox = Class.create({
      * Returns the gray box that appears when the node is hovered
      *
      * @method getBoxOnHover
-     * @return {Element} Raphael rectangle element
+     * @return {Raphael.el} Raphael rectangle element
      */
     getBoxOnHover: function() {
         return this._boxOnHover;
@@ -265,7 +265,7 @@ var AbstractHoverbox = Class.create({
      * Returns the invisible mask layer in front of the hoverbox
      *
      * @method getHoverZoneMask
-     * @return {Element} Raphael rectangle
+     * @return {Raphael.el} Raphael rectangle
      */
     getHoverZoneMask: function() {
         return this.getFrontElements()[0];
