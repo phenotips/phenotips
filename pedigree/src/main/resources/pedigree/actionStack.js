@@ -3,15 +3,6 @@ var ActionStack = Class.create({
         this._index = 0;
         this._stack = [];
         this._maxMarkerID = 1;
-        this._numActions = 0;
-    },
-
-    incrementNumActions: function() {
-        this._numActions++;
-        if(this._numActions > 4) {
-            this._numActions = 0;
-            editor.getGraph().serialize();
-        }
     },
 
     getStack: function() {
@@ -39,7 +30,7 @@ var ActionStack = Class.create({
     },
 
     redo: function() {
-        this.incrementNumActions();
+        document.fire("pedigree:actionEvent", {actionType: "redo"})
         var o = this.getStack()[this.getIndex()];
         this.setIndex(this.getIndex() + 1)
         if (o && o.redo) {
@@ -56,7 +47,7 @@ var ActionStack = Class.create({
     },
 
     undo: function() {
-        this.incrementNumActions();
+        document.fire("pedigree:actionEvent", {actionType: "undo"})
         if(this.getIndex() > 0) {
             this.setIndex(this.getIndex() - 1);
             var o = this.getStack()[this.getIndex()];
@@ -76,7 +67,7 @@ var ActionStack = Class.create({
 
     push: function(el) {
         if(el && typeof(el["undo"]) == 'function' && typeof(el["redo"]) == 'function') {
-            this.incrementNumActions()
+            document.fire("pedigree:actionEvent", {actionType: "push"})
             this.setStack(this.getStack().splice(0, this.getIndex()));
             this.setIndex(this.getIndex() + 1);
             this.getStack().push(el);
