@@ -177,7 +177,7 @@ var AbstractNode = Class.create( {
      *
          {
             confirmed: true/false,
-            nodes: {
+            affected: {
                 PersonNodes : [Person1, Person2, ...],
                 PartnershipNodes : [Partnership1, Partnership2, ...],
                 PregnancyNodes : [Pregnancy1, Pregnancy2, ...],
