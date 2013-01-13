@@ -415,6 +415,28 @@
   text-align: center;
   line-height: 24px;
 }
+
+.msdialog-modal-container .pedigree-template-chooser {
+    width: 500px;
+}
+.picture-box {
+    display: inline-block;
+    box-shadow: rgba(0, 0, 0, 0.5) 0 0 5px 2px;
+    margin: 10px;
+}
+.picture-box:hover {
+    cursor: pointer;
+    box-shadow: rgba(0, 10, 0, 0.5) 0 0 5px 4px;
+}
+
+.template-picture-container {
+    display: inline-block;
+    margin: 3px;
+}
+.msdialog-box .content {
+    text-align: center;
+}
+
 /* TODO: add icons to each option type:
 .node-type-options .node-type-M {
   background-image: url("$xwiki.getSkinFile('.png')");
