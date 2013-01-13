@@ -242,8 +242,8 @@ var AbstractNode = Class.create( {
                 toRemove.reverse().each(function(node) {
                     if(node) {
                         if(node.getID() == nodeID) {
-                            var ph = node.remove(false);
-                            ph && placeholders.push(ph.getInfo());
+                            var ph = node.remove(false).created[0];
+                            ph && placeholders.push(ph);
                         }
                         else
                             node.remove(false);
