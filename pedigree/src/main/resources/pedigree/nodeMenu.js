@@ -416,15 +416,7 @@ NodeMenu = Class.create({
 
     _setFieldDisabled : {
         'radio' : function (container, inactive) {
-            if (inactive === true) {
-              container.addClassName('hidden');
-            } else {
-              container.removeClassName('hidden');
-              var hasInactiveList = inactive && (typeof(inactive.indexOf) == 'function');
-              container.select('input[type=radio]').each(function(item) {
-                  item.disabled = hasInactiveList && (inactive.indexOf(item.value) >= 0);
-              });
-            }
+            // FIXME: Not implemented
         },
         'checkbox' : function (container, inactive) {
             // FIXME: Not implemented
