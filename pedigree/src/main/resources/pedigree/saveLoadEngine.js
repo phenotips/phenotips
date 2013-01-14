@@ -54,8 +54,11 @@ var SaveLoadEngine = Class.create( {
                 nodes.persons.push(personInfo);
         });
 
-        //TODO:
-        //ajax request post
+        new Ajax.Request(XWiki.currentDocument.getRestURL('objects/ClinicalInformationCode.PedigreeClass/0', 'method=PUT'), {
+            method: 'POST',
+            onSuccess: function() {new XWiki.widgets.Notification("Successfuly saved");},
+            parameters: {"property#data": JSON.stringify(nodes), "property#image": $('canvas').innerHTML}
+        });
         return nodes;
     },
 
