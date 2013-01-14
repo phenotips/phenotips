@@ -366,7 +366,6 @@ var Partnership = Class.create(AbstractNode, {
      * @param isRecursive can be true or false
      */
     remove: function($super, isRecursive, skipConfirmation) {
-        editor.getGraph().removePartnership(this);
         if(isRecursive) {
             return $super(isRecursive, skipConfirmation);
         }
