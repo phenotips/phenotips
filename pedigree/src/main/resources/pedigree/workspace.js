@@ -103,7 +103,6 @@ var Workspace = Class.create({
         var submenus = [{
             name : 'internal',
             items: [
-                { key : 'new',    label : 'New node'},
                 { key : 'undo',   label : 'Undo'},
                 { key : 'redo',   label : 'Redo'},
                 { key : 'layout', label : 'Adjust layout'},
@@ -112,8 +111,10 @@ var Workspace = Class.create({
         }, {
             name : 'external',
             items: [
+                { key : 'save', label : 'Save'},
+                { key : 'reaload', label : 'Reload'},
+                { key : 'templates', label : 'Templates'},
                 { key : 'print',  label : 'Printable version'},
-                { key : 'save',   label : 'Save'},
                 { key : 'close',  label : 'Close'}
             ]
         }];

@@ -52,6 +52,21 @@ var PedigreeEditor = Class.create({
         redoButton && redoButton.on("click", function(event) {
             editor.getActionStack().redo();
         });
+
+        var saveButton = $('action-save');
+        saveButton && saveButton.on("click", function(event) {
+            editor.getSaveLoadEngine().serialize();
+        });
+
+        var loadButton = $('action-load');
+        loadButton && loadButton.on("click", function(event) {
+            editor.getSaveLoadEngine().load();
+        });
+
+        var templatesButton = $('action-templates');
+        templatesButton && templatesButton.on("click", function(event) {
+            editor.getTemplateSelector().show();
+        });
     },
 
     getNode: function(nodeID) {
