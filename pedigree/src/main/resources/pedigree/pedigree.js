@@ -42,6 +42,7 @@ var PedigreeEditor = Class.create({
         this._graph = new Graph();
         this._actionStack = new ActionStack();
         this._saveLoadEngine = new SaveLoadEngine();
+        this._startupTemplateSelector = new TemplateSelector(true);
         this._templateSelector = new TemplateSelector();
 
         var undoButton = $('action-undo');
@@ -137,7 +138,17 @@ var PedigreeEditor = Class.create({
     },
 
     /**
-     * Returns the window for template selection
+     * Returns the template selector which appears on startup
+     *
+     * @method getStartupTemplateSelector
+     * @return {TemplateSelector}
+     */
+    getStartupTemplateSelector: function() {
+        return this._startupTemplateSelector
+    },
+
+    /**
+     * Returns the user triggered template selector
      *
      * @method getTemplateSelector
      * @return {TemplateSelector}
