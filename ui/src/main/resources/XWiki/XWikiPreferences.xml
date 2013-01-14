@@ -21,7 +21,7 @@
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.0</syntaxId>
+  <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <class>
     <name>XWiki.XWikiPreferences</name>
@@ -2535,7 +2535,7 @@ Hello ${xwiki.getUserName("$xwikiname", false)},
 Your account on ${wikiname} has been successfully activated. You can now login at ${host}${xwiki.getURL('XWiki.XWikiLogin', 'login')} using your username (${xwiki.getDocument($xwikiname).getName()}).</confirmation_email_content>
     </property>
     <property>
-      <core.defaultDocumentSyntax>xwiki/2.0</core.defaultDocumentSyntax>
+      <core.defaultDocumentSyntax>xwiki/2.1</core.defaultDocumentSyntax>
     </property>
     <property>
       <dateformat/>
