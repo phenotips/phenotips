@@ -199,32 +199,37 @@ var AbstractNode = Class.create( {
             PlaceHolderNodes : []
         };
         if(isRecursive) {
-            toRemove.push(me);
+            toRemove.push(me.getID());
             this.getNeighbors().each(function(neighbor) {
-                var result = neighbor.isRelatedTo(editor.getGraph().getProband(), toRemove.clone());
+                var result = neighbor.isRelatedTo(1, toRemove.clone());
                 if(!result[0]) {
                     toRemove = result[1];
                 }
                 else if(neighbor.getType() == "Partnership") {
-                    affectedNeighbors.push(neighbor);
+                    affectedNeighbors.push(neighbor.getID());
                     neighbor.getPregnancies().each(function(preg) {
-                        affectedNeighbors.push(preg);
+                        affectedNeighbors.push(preg.getID());
                         if(preg.isPlaceHolderPregnancy()) {
-                            affectedNeighbors = affectedNeighbors.concat(preg.getChildren());
+                            preg.getChildren().forEach(function(child) {
+                                affectedNeighbors.push(child.getID());
+                            })
                         }
                     });
                 }
                 else if(neighbor.getType() == "Pregnancy") {
-                    affectedNeighbors.push(neighbor);
+                    affectedNeighbors.push(neighbor.getID());
                     if(neighbor.isPlaceHolderPregnancy()) {
-                        affectedNeighbors = affectedNeighbors.concat(neighbor.getChildren());
+                        neighbor.getChildren().forEach(function(child){
+                            affectedNeighbors.push(child.getID());
+                        });
                     }
                 }
             });
             var confirmation = true;
             if(!skipConfirmation) {
-                toRemove.each(function(node) {
-                    node.getGraphics().getHighlightBox && node.getGraphics().highlight();
+                toRemove.each(function(id) {
+                    var node = editor.getGraph().getNodeMap()[id];
+                    node && node.getGraphics().getHighlightBox && node.getGraphics().highlight();
                 });
                 if(toRemove.length > 1) {
                     confirmation = confirm("Removing this person will also remove all the highlighted individuals. Are you sure you want to proceed?");
@@ -234,24 +239,28 @@ var AbstractNode = Class.create( {
                 }
             }
             if(confirmation) {
-                toRemove.concat(affectedNeighbors).each(function(node) {
-                    nodes[node.getType() + "Nodes"].push(node.getInfo());
+                toRemove.concat(affectedNeighbors).each(function(nodeID) {
+                    var node = editor.getGraph().getNodeMap()[nodeID];
+                    node && nodes[node.getType() + "Nodes"].push(node.getInfo());
                 });
-                var nodeID = me.getID();
                 var placeholders = [];
-                toRemove.reverse().each(function(node) {
+                toRemove.forEach(function(id) {
+                    var node = editor.getGraph().getNodeMap()[id];
                     if(node) {
-                        if(node.getID() == nodeID) {
-                            var ph = node.remove(false).created[0];
+                        var ph = node.remove(false).created[0];
+                        if(id == me.getID()) {
                             ph && placeholders.push(ph);
                         }
-                        else
-                            node.remove(false);
+                        else if(ph) {
+                            var placeholder = editor.getGraph().getNodeMap()[ph.id];
+                            placeholder && placeholder.remove(false);
+                        }
                     }
                 });
             }
             else {
-                toRemove.each(function(node) {
+                toRemove.each(function(id) {
+                    var node = editor.getGraph().getNodeMap()[id];
                     node && node.getGraphics().getHighlightBox && node.getGraphics().unHighlight();
                 });
             }
@@ -374,36 +383,35 @@ var AbstractNode = Class.create( {
     },
 
     /**
-     * Removes this node and all nodes that will end up disconnected from the
-     * Proband as a result. Pushes action onto actionStack.
+     * Returns true if this node is related to the node with the id nodeID
      *
      * @method isRelatedTo
-     * @param node {AbstractNode} any node in the graph
-     * @param [visited=[]] {Array} a list of nodes that shouldn't be considered
+     * @param nodeID {Number} id of any node in the graph
+     * @param [visited=[]] {Array} a list of IDs of nodes that shouldn't be considered
      * @return {Array} an array in the form of [result, visitedNodes]
      * @example
      var malePerson = editor.getGraph().addPerson(100,100, "M", 20);
-     var femalePerson = editor.getGraph().addPerson(300,100, "F", 20);
+     var femalePerson = editor.getGraph().addPerson(300,100, "F", 21);
 
-     malePerson.isRelatedTo(femalePerson) // -> [false, [malePerson]]
+     malePerson.isRelatedTo(femalePerson.getID()) // -> [false, [20]]
      */
-    isRelatedTo: function(node, visited) {
+    isRelatedTo: function(nodeID, visited) {
         var visitedNodes = (visited) ? visited : [];
-        if(visitedNodes.indexOf(this) >= 0) {
+        if(!editor.getGraph().getNodeMap()[nodeID] || visitedNodes.indexOf(this.getID()) >= 0) {
             return [false, visitedNodes];
         }
-        visitedNodes.push(this);
-        if(node == this) {
+        visitedNodes.push(this.getID());
+        if(nodeID == this.getID()) {
             return [true, visitedNodes];
         }
         else {
             var result = false;
-            var neighbors = this.getNeighbors();
-            neighbors = neighbors.without.apply(neighbors, visitedNodes);
-            neighbors.each(function(neighbor) {
-                var result = neighbor.isRelatedTo(node, visitedNodes);
-                visitedNodes = result[1];
-                result[0] && (result = true);
+            this.getNeighbors().forEach(function(neighbor) {
+                if(visitedNodes.indexOf(neighbor.getID()) < 0) {
+                    var isNeighborRelated = neighbor.isRelatedTo(nodeID, visitedNodes);
+                    visitedNodes = isNeighborRelated[1];
+                    isNeighborRelated[0] && (result = true);
+                }
             });
             return [result, visitedNodes];
         }
