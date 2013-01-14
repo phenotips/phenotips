@@ -178,7 +178,7 @@ var SaveLoadEngine = Class.create( {
         this.probandData.firstName = this.unescapeRestData(data.querySelector("property[name='first_name'] > value"));
         this.probandData.lastName = this.unescapeRestData(data.querySelector("property[name='last_name'] > value"));
         this.probandDataLoaded = true;
-        if (!this.graphLoaded) {
+        if (this.graphLoaded) {
             this.updateProbandData();
         }
     },
