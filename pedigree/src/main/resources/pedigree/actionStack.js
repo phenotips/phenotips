@@ -31,18 +31,20 @@ var ActionStack = Class.create({
 
     redo: function() {
         document.fire("pedigree:actionEvent", {actionType: "redo"})
-        var o = this.getStack()[this.getIndex()];
-        this.setIndex(this.getIndex() + 1)
-        if (o && o.redo) {
-            o.redo(o);
-        }
-        else if(o.markerType == "start") {
-            var targetID = o.id;
-            while(this.getStack()[this.getIndex()] && this.getStack()[this.getIndex()].markerType != "end"
-                                                   && this.getStack()[this.getIndex()].id != targetID) {
-                this.redo();
+        var action = this.getStack()[this.getIndex()];
+        if(action) {
+            this.setIndex(this.getIndex() + 1)
+            if (action.redo) {
+                action.redo(action);
             }
-            this.getStack()[this.getIndex()] && this.setIndex(this.getIndex() + 1);
+            else if(action.markerType == "start") {
+                var targetID = action.id;
+                while(this.getStack()[this.getIndex()] && this.getStack()[this.getIndex()].markerType != "end"
+                    && this.getStack()[this.getIndex()].id != targetID) {
+                    this.redo();
+                }
+                this.getStack()[this.getIndex()] && this.setIndex(this.getIndex() + 1);
+            }
         }
     },
 
