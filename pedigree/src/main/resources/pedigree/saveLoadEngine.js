@@ -54,41 +54,49 @@ var SaveLoadEngine = Class.create( {
                 nodes.persons.push();
         });
 
+        //TODO:
+        //ajax request post
         return nodes;
     },
 
     load: function(graphObj) {
-        if(this.isValidGraphObject(graphObj)) {
-            editor.getGraph().getNodeMap()[1] && editor.getGraph().getNodeMap()[1].remove(true, true);      //clears the graph
-            var probandX = editor.getWorkspace().getWidth()/2;
-            var probandY = editor.getWorkspace().getHeight()/2;
-            var xOffset = probandX - graphObj.proband.x;
-            var yOffset = probandY - graphObj.proband.y;
-            var people = graphObj.persons.concat(graphObj.proband, graphObj.placeHolders, graphObj.personGroups);
-            people.forEach(function(info) {
-                info.x = info.x + xOffset;
-                info.y = info.y + yOffset;
-                var newPerson = editor.getGraph()["add" + info.type](info.x, info.y, info.gender, info.id);
-                newPerson.loadInfo(info);
-            });
-            graphObj.partnerships.forEach(function(info) {
-                info.x = info.x + xOffset;
-                info.y = info.y + yOffset;
-                var partner1 = editor.getGraph().getNodeMap()[info.partner1ID],
-                    partner2 = editor.getGraph().getNodeMap()[info.partner2ID];
-                if(partner1 && partner2)
-                    editor.getGraph().addPartnership(info.x, info.y, partner1, partner2, info.id);
-            });
-            graphObj.pregnancies.forEach(function(info) {
-                info.x = info.x + xOffset;
-                info.y = info.y + yOffset;
-                var partnership = editor.getGraph().getNodeMap()[info.partnershipID];
-                if(partnership) {
-                    var preg = editor.getGraph().addPregnancy(info.x, info.y, partnership, info.id);
-                    preg.loadInfo(info);
-                }
-            });
-            this.serialize();
+        if(graphObj) {
+            if(this.isValidGraphObject(graphObj)) {
+                editor.getGraph().getNodeMap()[1] && editor.getGraph().getNodeMap()[1].remove(true, true);      //clears the graph
+                var probandX = editor.getWorkspace().getWidth()/2;
+                var probandY = editor.getWorkspace().getHeight()/2;
+                var xOffset = probandX - graphObj.proband.x;
+                var yOffset = probandY - graphObj.proband.y;
+                var people = graphObj.persons.concat(graphObj.proband, graphObj.placeHolders, graphObj.personGroups);
+                people.forEach(function(info) {
+                    info.x = info.x + xOffset;
+                    info.y = info.y + yOffset;
+                    var newPerson = editor.getGraph()["add" + info.type](info.x, info.y, info.gender, info.id);
+                    newPerson.loadInfo(info);
+                });
+                graphObj.partnerships.forEach(function(info) {
+                    info.x = info.x + xOffset;
+                    info.y = info.y + yOffset;
+                    var partner1 = editor.getGraph().getNodeMap()[info.partner1ID],
+                        partner2 = editor.getGraph().getNodeMap()[info.partner2ID];
+                    if(partner1 && partner2)
+                        editor.getGraph().addPartnership(info.x, info.y, partner1, partner2, info.id);
+                });
+                graphObj.pregnancies.forEach(function(info) {
+                    info.x = info.x + xOffset;
+                    info.y = info.y + yOffset;
+                    var partnership = editor.getGraph().getNodeMap()[info.partnershipID];
+                    if(partnership) {
+                        var preg = editor.getGraph().addPregnancy(info.x, info.y, partnership, info.id);
+                        preg.loadInfo(info);
+                    }
+                });
+                this.serialize();
+            }
+        }
+        else {
+            //TODO:
+            //Ajax request get
         }
     },
 
