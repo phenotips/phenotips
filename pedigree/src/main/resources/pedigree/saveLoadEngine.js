@@ -51,7 +51,7 @@ var SaveLoadEngine = Class.create( {
             if(personInfo.id == 1)
                 nodes.proband = personInfo;
             else
-                nodes.persons.push();
+                nodes.persons.push(personInfo);
         });
 
         //TODO:
