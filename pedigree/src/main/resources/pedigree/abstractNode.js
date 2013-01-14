@@ -453,7 +453,7 @@ var AbstractNode = Class.create( {
             if(this.getX() != info.x)
                 this.setX(info.x, false, null);
             if(this.getY() != info.y)
-                this.setY(info.y, false, null.y);
+                this.setY(info.y, false, null);
             return true;
         }
         return false;
