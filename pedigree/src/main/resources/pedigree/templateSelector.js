@@ -9,11 +9,11 @@
 
 var TemplateSelector = Class.create( {
 
-    initialize: function() {
+    initialize: function(isStartupTemplateSelector) {
         this.mainDiv = new Element('div', {'class': 'template-picture-container'});
         this.mainDiv.update("Loading list of templates...");
-        this.dialog = new MS.widgets.ModalPopup(this.mainDiv, false, {extraClassName: "pedigree-template-chooser", title: "Please select a pedigree template", displayCloseButton: false});
-        this.dialog.show();
+        this.dialog = new MS.widgets.ModalPopup(this.mainDiv, false, {extraClassName: "pedigree-template-chooser", title: "Please select a pedigree template", displayCloseButton: !isStartupTemplateSelector});
+        isStartupTemplateSelector && this.dialog.show();
         new Ajax.Request(new XWiki.Document('WebHome').getRestURL('objects/ClinicalInformationCode.PedigreeClass/'), {
             method: 'GET',
             onSuccess: this.onTemplateListAvailable.bind(this)
@@ -44,5 +44,13 @@ var TemplateSelector = Class.create( {
     onTemplateSelected: function(event, pictureBox) {
         this.dialog.close();
         editor.getSaveLoadEngine().load(pictureBox.pedigreeData);
+    },
+
+    show: function() {
+        this.dialog.show();
+    },
+
+    hide: function() {
+        this.dialog.close();
     }
 });
