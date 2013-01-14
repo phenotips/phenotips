@@ -427,7 +427,7 @@ NodeMenu = Class.create({
             }
         },
         'checkbox' : function (container, inactive) {
-            this._toggleFieldVisibility(container, inactive);
+            // FIXME: Not implemented
         },
         'text' : function (container, disabled) {
             var target = container.down('input[type=text]');
@@ -436,16 +436,16 @@ NodeMenu = Class.create({
             }
         },
         'date-picker' : function (container, inactive) {
-            this._toggleFieldVisibility(container, inactive);
+            // FIXME: Not implemented
         },
         'disease-picker' : function (container, inactive) {
-            this._toggleFieldVisibility(container, inactive);
+            // FIXME: Not implemented
         },
         'select' : function (container, inactive) {
-            this._toggleFieldVisibility(container, inactive);
+            // FIXME: Not implemented
         },
         'hidden' : function (container, inactive) {
-            this._toggleFieldVisibility(container, inactive);
+            // FIXME: Not implemented
         }
     }
 });

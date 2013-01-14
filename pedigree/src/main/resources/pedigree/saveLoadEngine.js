@@ -68,7 +68,9 @@ var SaveLoadEngine = Class.create( {
                 var probandY = editor.getWorkspace().getHeight()/2;
                 var xOffset = probandX - graphObj.proband.x;
                 var yOffset = probandY - graphObj.proband.y;
-                var people = graphObj.persons.concat(graphObj.proband, graphObj.placeHolders, graphObj.personGroups);
+                var people = graphObj.persons;
+                people.unshift(graphObj.proband);
+                people = people.concat(graphObj.placeHolders, graphObj.personGroups);
                 people.forEach(function(info) {
                     info.x = info.x + xOffset;
                     info.y = info.y + yOffset;
@@ -106,10 +108,18 @@ var SaveLoadEngine = Class.create( {
                 });
                 this.serialize();
             }
-        }
-        else {
-            //TODO:
-            //Ajax request get
+        } else {
+            new Ajax.Request(XWiki.currentDocument.getRestURL('objects/ClinicalInformationCode.PedigreeClass/0/'), {
+                method: 'GET', onSuccess: function (response) {
+                    var tempNode = document.createElement('div');
+                    tempNode.innerHTML = response.responseXML.documentElement.querySelector("property[name='data'] > value").textContent.replace(/&amp;/, '&');
+                    if (tempNode.textContent.trim()) {
+                        this.load(JSON.parse(tempNode.textContent));
+                    } else {
+                        new TemplateSelector(true);
+                    }
+                }.bind(this)
+            })
         }
     },
 
