@@ -503,7 +503,7 @@ $!value
       <section__variant-info>
         <cache>0</cache>
         <customDisplay>{{velocity output=false}}
-#set($customValues = {"ClinicalInformationCode.VariantClass" : "variants table"})
+#set($customValues = {"ClinicalInformationCode.VariantClass" : "variants table", "ClinicalInformationCode.InvestigationClass" : "investigations table"})
 #set($hideClassFields = true)
 {{/velocity}}
 
@@ -576,8 +576,6 @@ $!value
         <value>medical_developmental_history</value>
         <value>reports_history</value>
         <value>extended_negative_phenotype</value>
-        <value>images</value>
-        <value>files</value>
       </activeFields>
     </property>
     <property>
@@ -642,6 +640,12 @@ $!value
         <value>ClinicalInformationCode.MeasurementsClass</value>
         <value>growth-charts</value>
       </section__measurements>
+    </property>
+    <property>
+      <section__medical_history/>
+    </property>
+    <property>
+      <section__other/>
     </property>
     <property>
       <section__patient-info>
@@ -1003,71 +1007,71 @@ $!value
   "partnerships": [
     {
       "type": "Partnership",
-      "x": 665.5,
-      "y": 99.5,
-      "id": 3,
-      "partner1ID": 1,
-      "partner2ID": 2,
+      "x": 960,
+      "y": 312.5,
+      "id": 4,
+      "partner1ID": 2,
+      "partner2ID": 3,
       "childlessStatus": null,
       "childlessReason": ""
     },
     {
       "type": "Partnership",
-      "x": 1065.5,
-      "y": -100.5,
-      "id": 7,
-      "partner1ID": 5,
-      "partner2ID": 6,
+      "x": 1360,
+      "y": 112.5,
+      "id": 8,
+      "partner1ID": 6,
+      "partner2ID": 7,
       "childlessStatus": null,
       "childlessReason": ""
     },
     {
       "type": "Partnership",
-      "x": 1265.5,
-      "y": -300.5,
-      "id": 11,
-      "partner1ID": 9,
-      "partner2ID": 10,
+      "x": 560,
+      "y": 112.5,
+      "id": 12,
+      "partner1ID": 10,
+      "partner2ID": 11,
       "childlessStatus": null,
       "childlessReason": ""
     },
     {
       "type": "Partnership",
-      "x": 865.5,
-      "y": -300.5,
-      "id": 15,
-      "partner1ID": 13,
-      "partner2ID": 14,
+      "x": 1560,
+      "y": -87.5,
+      "id": 16,
+      "partner1ID": 14,
+      "partner2ID": 15,
       "childlessStatus": null,
       "childlessReason": ""
     },
     {
       "type": "Partnership",
-      "x": 265.5,
-      "y": -100.5,
-      "id": 19,
-      "partner1ID": 17,
-      "partner2ID": 18,
+      "x": 1160,
+      "y": -87.5,
+      "id": 20,
+      "partner1ID": 18,
+      "partner2ID": 19,
       "childlessStatus": null,
       "childlessReason": ""
     },
     {
       "type": "Partnership",
-      "x": 465.5,
-      "y": -300.5,
-      "id": 23,
-      "partner1ID": 21,
-      "partner2ID": 22,
+      "x": 760,
+      "y": -87.5,
+      "id": 24,
+      "partner1ID": 22,
+      "partner2ID": 23,
       "childlessStatus": null,
       "childlessReason": ""
     },
     {
       "type": "Partnership",
-      "x": 65.5,
-      "y": -300.5,
-      "id": 27,
-      "partner1ID": 25,
-      "partner2ID": 26,
+      "x": 360,
+      "y": -87.5,
+      "id": 28,
+      "partner1ID": 26,
+      "partner2ID": 27,
       "childlessStatus": null,
       "childlessReason": ""
     }
@@ -1075,10 +1079,10 @@ $!value
   "pregnancies": [
     {
       "type": "Pregnancy",
-      "x": 665.5,
-      "y": 179.5,
-      "id": 4,
-      "partnershipID": 3,
+      "x": 960,
+      "y": 392.5,
+      "id": 5,
+      "partnershipID": 4,
       "gender": "F",
       "childrenIDs": [
         1
@@ -1086,68 +1090,68 @@ $!value
     },
     {
       "type": "Pregnancy",
-      "x": 1065.5,
-      "y": -20.5,
-      "id": 8,
-      "partnershipID": 7,
+      "x": 1360,
+      "y": 192.5,
+      "id": 9,
+      "partnershipID": 8,
       "gender": "M",
+      "childrenIDs": [
+        3
+      ]
+    },
+    {
+      "type": "Pregnancy",
+      "x": 560,
+      "y": 192.5,
+      "id": 13,
+      "partnershipID": 12,
+      "gender": "F",
       "childrenIDs": [
         2
       ]
     },
     {
       "type": "Pregnancy",
-      "x": 1265.5,
-      "y": -220.5,
-      "id": 12,
-      "partnershipID": 11,
+      "x": 1560,
+      "y": -7.5,
+      "id": 17,
+      "partnershipID": 16,
       "gender": "M",
+      "childrenIDs": [
+        7
+      ]
+    },
+    {
+      "type": "Pregnancy",
+      "x": 1160,
+      "y": -7.5,
+      "id": 21,
+      "partnershipID": 20,
+      "gender": "F",
       "childrenIDs": [
         6
       ]
     },
     {
       "type": "Pregnancy",
-      "x": 865.5,
-      "y": -220.5,
-      "id": 16,
-      "partnershipID": 15,
+      "x": 760,
+      "y": -7.5,
+      "id": 25,
+      "partnershipID": 24,
       "gender": "F",
       "childrenIDs": [
-        5
+        10
       ]
     },
     {
       "type": "Pregnancy",
-      "x": 265.5,
-      "y": -20.5,
-      "id": 20,
-      "partnershipID": 19,
-      "gender": "F",
-      "childrenIDs": [
-        1
-      ]
-    },
-    {
-      "type": "Pregnancy",
-      "x": 465.5,
-      "y": -220.5,
-      "id": 24,
-      "partnershipID": 23,
+      "x": 360,
+      "y": -7.5,
+      "id": 29,
+      "partnershipID": 28,
       "gender": "M",
       "childrenIDs": [
-        18
-      ]
-    },
-    {
-      "type": "Pregnancy",
-      "x": 65.5,
-      "y": -220.5,
-      "id": 28,
-      "partnershipID": 27,
-      "gender": "F",
-      "childrenIDs": [
-        17
+        11
       ]
     }
   ],
@@ -1155,26 +1159,9 @@ $!value
   "persons": [
     {
       "type": "Person",
-      "x": 1065.5,
-      "y": 99.5,
+      "x": 560,
+      "y": 312.5,
       "id": 2,
-      "gender": "M",
-      "fName": "",
-      "lName": "",
-      "dob": "",
-      "disorders": [],
-      "isAdopted": false,
-      "lifeStatus": "alive",
-      "dod": "",
-      "gestationAge": null,
-      "childlessStatus": null,
-      "childlessReason": ""
-    },
-    {
-      "type": "Person",
-      "x": 865.5,
-      "y": -100.5,
-      "id": 5,
       "gender": "F",
       "fName": "",
       "lName": "",
@@ -1189,26 +1176,26 @@ $!value
     },
     {
       "type": "Person",
-      "x": 1265.5,
-      "y": -100.5,
+      "x": 1360,
+      "y": 312.5,
+      "id": 3,
+      "gender": "M",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 1160,
+      "y": 112.5,
       "id": 6,
-      "gender": "M",
-      "fName": "",
-      "lName": "",
-      "dob": "",
-      "disorders": [],
-      "isAdopted": false,
-      "lifeStatus": "alive",
-      "dod": "",
-      "gestationAge": null,
-      "childlessStatus": null,
-      "childlessReason": ""
-    },
-    {
-      "type": "Person",
-      "x": 1165.5,
-      "y": -300.5,
-      "id": 9,
       "gender": "F",
       "fName": "",
       "lName": "",
@@ -1223,26 +1210,26 @@ $!value
     },
     {
       "type": "Person",
-      "x": 1365.5,
-      "y": -300.5,
+      "x": 1560,
+      "y": 112.5,
+      "id": 7,
+      "gender": "M",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 760,
+      "y": 112.5,
       "id": 10,
-      "gender": "M",
-      "fName": "",
-      "lName": "",
-      "dob": "",
-      "disorders": [],
-      "isAdopted": false,
-      "lifeStatus": "alive",
-      "dod": "",
-      "gestationAge": null,
-      "childlessStatus": null,
-      "childlessReason": ""
-    },
-    {
-      "type": "Person",
-      "x": 765.5,
-      "y": -300.5,
-      "id": 13,
       "gender": "F",
       "fName": "",
       "lName": "",
@@ -1257,26 +1244,26 @@ $!value
     },
     {
       "type": "Person",
-      "x": 965.5,
-      "y": -300.5,
+      "x": 360,
+      "y": 112.5,
+      "id": 11,
+      "gender": "M",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 1460,
+      "y": -87.5,
       "id": 14,
-      "gender": "M",
-      "fName": "",
-      "lName": "",
-      "dob": "",
-      "disorders": [],
-      "isAdopted": false,
-      "lifeStatus": "alive",
-      "dod": "",
-      "gestationAge": null,
-      "childlessStatus": null,
-      "childlessReason": ""
-    },
-    {
-      "type": "Person",
-      "x": 65.5,
-      "y": -100.5,
-      "id": 17,
       "gender": "F",
       "fName": "",
       "lName": "",
@@ -1291,26 +1278,26 @@ $!value
     },
     {
       "type": "Person",
-      "x": 465.5,
-      "y": -100.5,
+      "x": 1660,
+      "y": -87.5,
+      "id": 15,
+      "gender": "M",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 1060,
+      "y": -87.5,
       "id": 18,
-      "gender": "M",
-      "fName": "",
-      "lName": "",
-      "dob": "",
-      "disorders": [],
-      "isAdopted": false,
-      "lifeStatus": "alive",
-      "dod": "",
-      "gestationAge": null,
-      "childlessStatus": null,
-      "childlessReason": ""
-    },
-    {
-      "type": "Person",
-      "x": 365.5,
-      "y": -300.5,
-      "id": 21,
       "gender": "F",
       "fName": "",
       "lName": "",
@@ -1325,26 +1312,26 @@ $!value
     },
     {
       "type": "Person",
-      "x": 565.5,
-      "y": -300.5,
+      "x": 1260,
+      "y": -87.5,
+      "id": 19,
+      "gender": "M",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 660,
+      "y": -87.5,
       "id": 22,
-      "gender": "M",
-      "fName": "",
-      "lName": "",
-      "dob": "",
-      "disorders": [],
-      "isAdopted": false,
-      "lifeStatus": "alive",
-      "dod": "",
-      "gestationAge": null,
-      "childlessStatus": null,
-      "childlessReason": ""
-    },
-    {
-      "type": "Person",
-      "x": -34.5,
-      "y": -300.5,
-      "id": 25,
       "gender": "F",
       "fName": "",
       "lName": "",
@@ -1359,9 +1346,43 @@ $!value
     },
     {
       "type": "Person",
-      "x": 165.5,
-      "y": -300.5,
+      "x": 860,
+      "y": -87.5,
+      "id": 23,
+      "gender": "M",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 260,
+      "y": -87.5,
       "id": 26,
+      "gender": "F",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 460,
+      "y": -87.5,
+      "id": 27,
       "gender": "M",
       "fName": "",
       "lName": "",
@@ -1377,8 +1398,8 @@ $!value
   ],
   "proband": {
     "type": "Person",
-    "x": 265.5,
-    "y": 99.5,
+    "x": 960,
+    "y": 512.5,
     "id": 1,
     "gender": "F",
     "fName": "",

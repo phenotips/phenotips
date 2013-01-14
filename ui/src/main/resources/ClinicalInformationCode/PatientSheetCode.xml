@@ -4825,7 +4825,7 @@ $doc.display('prenatal_phenotype')
 ## Family history
 ##
 #macro(__reportSection__family_history)
-#if ("$!activeFields.contains('consanguinity')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('consanguinity')doc.display('miscarriages')$doc.display('family_comments')$doc.display('pedigree')" != ''))
+#if (("$!activeFields.contains('consanguinity')" != 'false' || "$!activeFields.contains('miscarriages')" != 'false' || "$!activeFields.contains('pedigree')" != 'false') &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('consanguinity')doc.display('miscarriages')$doc.display('family_comments')$doc.display('pedigree')" != ''))
 (% class="clear clinical-info family_history-info chapter #__markIfMandatory('family_history')" %)(((
 == $!{class.get('family_history').prettyName} ==
 (((
@@ -4838,7 +4838,17 @@ $doc.display('pedigree')
 #set($pedigreeObj = $doc.getObject('ClinicalInformationCode.PedigreeClass'))
 #if ($pedigreeObj)
 #set($data = $pedigreeObj.getProperty('data').value)
-#if ($data != '')#set($pAction = 'Edit pedigree')#else#set($pAction = 'Draw pedigree')#end
+#if ("$!data" != '')
+  #set ($pAction = 'Edit pedigree')
+  #set ($image = $pedigreeObj.getProperty('image').value)
+  #if ("$!image" != '')
+    {{html clean="false"}}
+      $!image
+    {{/html}}
+  #end
+#else
+  #set ($pAction = 'Draw pedigree')
+#end
 (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=ClinicalInformationCode.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]]
 #end
 )))
