@@ -78,9 +78,9 @@ var SaveLoadEngine = Class.create( {
                     info.x = info.x + xOffset;
                     info.y = info.y + yOffset;
                     var newPerson = editor.getGraph()["add" + info.type](info.x, info.y, info.gender, info.id);
-                    if(info.id > maxID) {
+                    if(info.id >= maxID) {
                         maxID = info.id;
-                        editor.getGraph().setIdCount(maxID);
+                        editor.getGraph().setIdCount(maxID + 1);
                     }
                     newPerson.loadInfo(info);
                 });
@@ -89,9 +89,9 @@ var SaveLoadEngine = Class.create( {
                     info.y = info.y + yOffset;
                     var partner1 = editor.getGraph().getNodeMap()[info.partner1ID],
                         partner2 = editor.getGraph().getNodeMap()[info.partner2ID];
-                    if(info.id > maxID) {
+                    if(info.id >= maxID) {
                         maxID = info.id;
-                        editor.getGraph().setIdCount(maxID);
+                        editor.getGraph().setIdCount(maxID + 1);
                     }
                     if(partner1 && partner2)
                         editor.getGraph().addPartnership(info.x, info.y, partner1, partner2, info.id);
@@ -102,9 +102,9 @@ var SaveLoadEngine = Class.create( {
                     var partnership = editor.getGraph().getNodeMap()[info.partnershipID];
                     if(partnership) {
                         var preg = editor.getGraph().addPregnancy(info.x, info.y, partnership, info.id);
-                        if(info.id > maxID) {
+                        if(info.id >= maxID) {
                             maxID = info.id;
-                            editor.getGraph().setIdCount(maxID);
+                            editor.getGraph().setIdCount(maxID + 1);
                         }
                         preg.loadInfo(info);
                     }
