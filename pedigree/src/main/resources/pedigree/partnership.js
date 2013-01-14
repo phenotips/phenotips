@@ -381,6 +381,7 @@ var Partnership = Class.create(AbstractNode, {
             p1.getType() == "PlaceHolder" && p1.remove(false);
             p2.getType() == "PlaceHolder" && p2.remove(false);
             this.getGraphics().remove();
+            return $super(false);
         }
     },
 

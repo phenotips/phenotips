@@ -198,6 +198,7 @@ var Pregnancy = Class.create(AbstractNode, {
             });
             this.getGraphics().remove();
             this.getPartnership().removePregnancy(me);
+            return $super(false);
         }
     },
 
