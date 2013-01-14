@@ -83,6 +83,6 @@ START_OPTS="$START_OPTS -Dsolr.solr.home=${PRGDIR}/solrconfig/"
 # org.eclipse.jetty.server.Request.maxFormContentSize property.
 # Note that setting this value too high can leave your server vulnerable to denial of
 # service attacks.
-XWIKI_OPTS="$XWIKI_OPTS -Dorg.eclipse.jetty.server.Request.maxFormContentSize=1000000"
+START_OPTS="$START_OPTS -Dorg.eclipse.jetty.server.Request.maxFormContentSize=1000000"
 
 java $START_OPTS $3 $4 $5 $6 $7 $8 $9 -jar $JETTY_HOME/start.jar OPTIONS=All
