@@ -52,17 +52,19 @@ var ActionStack = Class.create({
         document.fire("pedigree:actionEvent", {actionType: "undo"})
         if(this.getIndex() > 0) {
             this.setIndex(this.getIndex() - 1);
-            var o = this.getStack()[this.getIndex()];
-            if (o && o.undo) {
-                o.undo(o);
-            }
-            else if(o.markerType == "end") {
-                var targetID = o.id;
-                while(this.getStack()[this.getIndex()-1].markerType != "start"
-                                    && this.getStack()[this.getIndex()-1].id != targetID && this.getIndex() > 0) {
-                    this.undo();
+            var action = this.getStack()[this.getIndex()];
+            if(action) {
+                if (action.undo) {
+                    action.undo(action);
                 }
-                this.setIndex(this.getIndex() - 1);
+                else if(action.markerType == "end") {
+                    var targetID = action.id;
+                    while(this.getStack()[this.getIndex()-1].markerType != "start"
+                        && this.getStack()[this.getIndex()-1].id != targetID && this.getIndex() > 0) {
+                        this.undo();
+                    }
+                    this.setIndex(this.getIndex() - 1);
+                }
             }
         }
     },
