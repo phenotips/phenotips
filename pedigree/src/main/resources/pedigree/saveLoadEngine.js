@@ -8,6 +8,8 @@
 var SaveLoadEngine = Class.create( {
 
     initialize: function() {
+        this.probandDataLoaded = false;
+        this.graphLoaded = false;
         var me = this;
         this._timerID = null;
         document.observe("pedigree:actionEvent", function(event) {
@@ -17,6 +19,10 @@ var SaveLoadEngine = Class.create( {
                     me._timerID = me.serialize();
                 }).delay(3);
             }
+        });
+        new Ajax.Request(XWiki.currentDocument.getRestURL('objects/ClinicalInformationCode.PatientClass/0'), {
+            method: "GET",
+            onSuccess: this.onProbandDataReady.bind(this)
         });
     },
 
@@ -63,9 +69,9 @@ var SaveLoadEngine = Class.create( {
     },
 
     load: function(graphObj) {
-        var maxID = editor.getGraph().getIdCount();
         if(graphObj) {
             if(this.isValidGraphObject(graphObj)) {
+                var maxID = editor.getGraph().getIdCount();
                 editor.getGraph().getNodeMap()[1] && editor.getGraph().getNodeMap()[1].remove(true, true);      //clears the graph
                 var probandX = editor.getWorkspace().getWidth()/2;
                 var probandY = editor.getWorkspace().getHeight()/2;
@@ -109,6 +115,9 @@ var SaveLoadEngine = Class.create( {
                         preg.loadInfo(info);
                     }
                 });
+                if (this.probandDataLoaded) {
+                    this.updateProbandData();
+                }
                 this.serialize();
             }
         } else {
@@ -161,5 +170,27 @@ var SaveLoadEngine = Class.create( {
             }
         }
         return true;
+    },
+
+    onProbandDataReady : function(response) {
+        this.probandData = {};
+        var data = response.responseXML.documentElement;
+        this.probandData.firstName = this.unescapeRestData(data.querySelector("property[name='first_name'] > value"));
+        this.probandData.lastName = this.unescapeRestData(data.querySelector("property[name='last_name'] > value"));
+        this.probandDataLoaded = true;
+        if (!this.graphLoaded) {
+            this.updateProbandData();
+        }
+    },
+
+    updateProbandData : function() {
+        editor.getGraph().getProband().setFirstName(this.probandData.firstName);
+        editor.getGraph().getProband().setLastName(this.probandData.lastName);
+    },
+
+    unescapeRestData: function(dataNode) {
+        var tempNode = document.createElement('div');
+        tempNode.innerHTML = dataNode.textContent.replace(/&amp;/, '&');
+        return tempNode.textContent;
     }
 });
