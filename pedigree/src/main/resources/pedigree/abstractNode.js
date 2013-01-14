@@ -172,7 +172,7 @@ var AbstractNode = Class.create( {
      * @method remove
      * @param [isRecursive=false] {Boolean} if true, will remove all nodes that will end up disconnected from the
      * Proband
-     * @param [skipConfirmation] {Boolean} if true, no confirmation box will pop up
+     * @param [skipConfirmation=false] {Boolean} if true, no confirmation box will pop up
      * @return {Object} in the form
      *
          {
