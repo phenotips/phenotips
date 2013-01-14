@@ -7,7 +7,7 @@ var Graph = Class.create({
         this._pregnancyNodes = [];
         this._personGroupNodes = [];
         this._personNodes = [];
-        this.idCount = 1;
+        this._idCount = 1;
         this._nodeMap = {};
         this._currentHoveredNode = null;
         this._currentDraggable = null;
@@ -34,7 +34,15 @@ var Graph = Class.create({
     },
 
     generateID: function() {
-        return this.idCount++;
+        return this._idCount++;
+    },
+
+    getIdCount: function() {
+        return this._idCount
+    },
+
+    setIdCount: function(maxID) {
+        this._idCount = maxID;
     },
 
     getProband: function() {
