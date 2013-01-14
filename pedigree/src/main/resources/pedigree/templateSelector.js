@@ -23,11 +23,12 @@ var TemplateSelector = Class.create( {
         window.show();
 
         var template1 = {
+            proband: {type: "Person", x: 9, y: 395, gender: "F", id: 1},
             placeHolders : [],
             partnerships: [],
             pregnancies: [],
             personGroups: [],
-            persons: [{type: "Person", x: 960, y: 395, gender: "F", id: 1}]
+            persons: []
         };
         pictureBox1.observe('click', function(){window.close();editor.getSaveLoadEngine().load(template1)});
         var closeButton = $$('div.msdialog-close')[0];

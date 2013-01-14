@@ -9,11 +9,6 @@ var Graph = Class.create({
         this._personNodes = [];
         this.idCount = 1;
         this._nodeMap = {};
-
-        var w = editor.getWorkspace().getWidth();
-        var h = editor.getWorkspace().getHeight();
-        this._proband = this.addPerson(w/2, h/2, 'M', this.generateID());
-
         this._currentHoveredNode = null;
         this._currentDraggable = null;
     },
