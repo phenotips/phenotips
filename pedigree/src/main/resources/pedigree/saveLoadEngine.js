@@ -47,7 +47,11 @@ var SaveLoadEngine = Class.create( {
             nodes.personGroups.push(personGroup.getInfo());
         });
         editor.getGraph().getPersonNodes().forEach(function(person) {
-            nodes.persons.push(person.getInfo());
+            var personInfo = person.getInfo();
+            if(personInfo.id == 1)
+                nodes.proband = personInfo;
+            else
+                nodes.persons.push();
         });
 
         return nodes;
@@ -56,18 +60,28 @@ var SaveLoadEngine = Class.create( {
     load: function(graphObj) {
         if(this.isValidGraphObject(graphObj)) {
             editor.getGraph().getNodeMap()[1] && editor.getGraph().getNodeMap()[1].remove(true, true);      //clears the graph
-            var people = graphObj.persons.concat(graphObj.placeHolders, graphObj.personGroups);
+            var probandX = editor.getWorkspace().getWidth()/2;
+            var probandY = editor.getWorkspace().getHeight()/2;
+            var xOffset = probandX - graphObj.proband.x;
+            var yOffset = probandY - graphObj.proband.y;
+            var people = graphObj.persons.concat(graphObj.proband, graphObj.placeHolders, graphObj.personGroups);
             people.forEach(function(info) {
+                info.x = info.x + xOffset;
+                info.y = info.y + yOffset;
                 var newPerson = editor.getGraph()["add" + info.type](info.x, info.y, info.gender, info.id);
                 newPerson.loadInfo(info);
             });
             graphObj.partnerships.forEach(function(info) {
+                info.x = info.x + xOffset;
+                info.y = info.y + yOffset;
                 var partner1 = editor.getGraph().getNodeMap()[info.partner1ID],
                     partner2 = editor.getGraph().getNodeMap()[info.partner2ID];
                 if(partner1 && partner2)
                     editor.getGraph().addPartnership(info.x, info.y, partner1, partner2, info.id);
             });
             graphObj.pregnancies.forEach(function(info) {
+                info.x = info.x + xOffset;
+                info.y = info.y + yOffset;
                 var partnership = editor.getGraph().getNodeMap()[info.partnershipID];
                 if(partnership) {
                     var preg = editor.getGraph().addPregnancy(info.x, info.y, partnership, info.id);
@@ -79,8 +93,8 @@ var SaveLoadEngine = Class.create( {
     },
 
     isValidGraphObject: function(graphObj) {
-        var foundProband = false;
-        var missingProperty = (Object.prototype.toString.call(graphObj.persons) != '[object Array]')
+        var missingProperty = !graphObj.proband
+            || (Object.prototype.toString.call(graphObj.persons) != '[object Array]')
             || (Object.prototype.toString.call(graphObj.personGroups) != '[object Array]')
             || (Object.prototype.toString.call(graphObj.pregnancies) != '[object Array]')
             || (Object.prototype.toString.call(graphObj.partnerships) != '[object Array]')
@@ -90,7 +104,7 @@ var SaveLoadEngine = Class.create( {
         var validBasics = function(node) {
             return (node.id && node.type && node.x && node.y)
         };
-        var people = graphObj.persons.concat(graphObj.personGroups, graphObj.placeHolders);
+        var people = graphObj.persons.concat(graphObj.proband, graphObj.personGroups, graphObj.placeHolders);
         for (var i = 0; i < people.length; i++) {
             if(!validBasics(people[i]) || !people[i].gender)
                 return false;
