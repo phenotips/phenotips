@@ -21,7 +21,7 @@
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.0</syntaxId>
+  <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>#set ($scales = {
   'weight03' : {'min' : 1.4, 'max' : 19.4, 'step': 0.2, 'labelStep' : 1, 'minX' : 0, 'maxX' : 36, 'stepX': 1, 'labelStepX' : 3, 'llabel' : 'Weight (kg)', 'rlabel' : 'Weight (kg)', 'blabel' : 'Age (months)', 'tlabel' : 'Age (months)', 'title' : 'Weight for age, birth to 36 months'},
