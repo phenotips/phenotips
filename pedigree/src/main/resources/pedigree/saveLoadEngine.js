@@ -14,10 +14,10 @@ var SaveLoadEngine = Class.create( {
         this._timerID = null;
         document.observe("pedigree:actionEvent", function(event) {
             if(typeof me._timerID != "number") {
-                me.serialize();
-                (function(){
-                    me._timerID = me.serialize();
-                }).delay(3);
+                me._timerID = function() {
+                    me._timerID = null;
+                    me.serialize();
+                }.delay(30);
             }
         });
         new Ajax.Request(XWiki.currentDocument.getRestURL('objects/ClinicalInformationCode.PatientClass/0'), {
