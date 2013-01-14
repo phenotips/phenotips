@@ -232,8 +232,9 @@ var Person = Class.create(AbstractPerson, {
     },
 
     addParents: function($super, partnership) {
-        $super(partnership);
+        var returnValue = $super(partnership);
         partnership.getChildlessStatus() && this.setAdopted(true);
+        return returnValue;
     },
 
     addParentsAction: function(partnership) {
