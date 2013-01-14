@@ -300,5 +300,21 @@ var Workspace = Class.create({
         if (editor.getNodeMenu()) {
             editor.getNodeMenu().reposition();
         }
+    },
+
+    centerAroundNode: function(nodeID) {
+        var node = editor.getGraph().getNodeMap()[nodeID];
+        if(node) {
+            var x = node.getX(),
+                y = node.getY();
+            var xOffset = this.getWidth()/this.zoomCoefficient;
+            var yOffset = this.getHeight()/this.zoomCoefficient;
+            this.panTo(x - xOffset/2, y - yOffset/2);
+        }
+    },
+
+    resetZoomPan: function() {
+        this.centerAroundNode(1);
+        this.zoom(1.2000000000000002-.6);
     }
 });
