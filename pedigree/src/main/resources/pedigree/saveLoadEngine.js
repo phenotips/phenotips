@@ -60,11 +60,18 @@ var SaveLoadEngine = Class.create( {
                 nodes.persons.push(personInfo);
         });
 
+        var image = $('canvas');
+        var background = image.getElementsByClassName('panning-background')[0];
+        var backgroundPosition = background.nextSibling;
+        var backgroundParent =  background.parentNode;
+        backgroundParent.removeChild(background);
+        var bbox = image.down().getBBox();
         new Ajax.Request(XWiki.currentDocument.getRestURL('objects/ClinicalInformationCode.PedigreeClass/0', 'method=PUT'), {
             method: 'POST',
             onSuccess: function() {new XWiki.widgets.Notification("Successfuly saved");},
-            parameters: {"property#data": JSON.stringify(nodes), "property#image": $('canvas').innerHTML}
+            parameters: {"property#data": JSON.stringify(nodes), "property#image": image.innerHTML.replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + " \"width=\"500\" height=\"500\"")}
         });
+        backgroundParent.insertBefore(background, backgroundPosition);
         return nodes;
     },
 
