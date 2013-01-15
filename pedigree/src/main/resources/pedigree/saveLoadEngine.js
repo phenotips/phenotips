@@ -20,7 +20,7 @@ var SaveLoadEngine = Class.create( {
                 }.delay(30);
             }
         });
-        new Ajax.Request(XWiki.currentDocument.getRestURL('objects/ClinicalInformationCode.PatientClass/0'), {
+        new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PatientClass/0'), {
             method: "GET",
             onSuccess: this.onProbandDataReady.bind(this)
         });
@@ -66,7 +66,7 @@ var SaveLoadEngine = Class.create( {
         var backgroundParent =  background.parentNode;
         backgroundParent.removeChild(background);
         var bbox = image.down().getBBox();
-        new Ajax.Request(XWiki.currentDocument.getRestURL('objects/ClinicalInformationCode.PedigreeClass/0', 'method=PUT'), {
+        new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0', 'method=PUT'), {
             method: 'POST',
             onSuccess: function() {new XWiki.widgets.Notification("Successfuly saved");},
             parameters: {"property#data": JSON.stringify(nodes), "property#image": image.innerHTML.replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + " \"width=\"500\" height=\"500\"")}
@@ -128,7 +128,7 @@ var SaveLoadEngine = Class.create( {
                 this.serialize();
             }
         } else {
-            new Ajax.Request(XWiki.currentDocument.getRestURL('objects/ClinicalInformationCode.PedigreeClass/0/'), {
+            new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0/'), {
                 method: 'GET', onSuccess: function (response) {
                     var tempNode = document.createElement('div');
                     tempNode.innerHTML = response.responseXML.documentElement.querySelector("property[name='data'] > value").textContent.replace(/&amp;/, '&');

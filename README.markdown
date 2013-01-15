@@ -96,9 +96,9 @@ Building the entire project is as simple as `mvn install`, but first the environ
         </settings>
 
 * Clone the sources of the project locally, using one of:
-    * `git clone git://github.com/compbio-UofT/cidb.git` if you need a read-only clone
-    * `git clone git@github.com:compbio-UofT-/cidb.git` if you also want to commit changes back to the project (and you have the right to do so)
-    * download an [archive of the current code](https://github.com/compbio-UofT/cidb/downloads) if you don't want to use version control at all
+    * `git clone git://github.com/compbio-UofT/phenotips.git` if you need a read-only clone
+    * `git clone git@github.com:compbio-UofT/phenotips.git` if you also want to commit changes back to the project (and you have the right to do so)
+    * download an [archive of the current code](https://github.com/compbio-UofT/phenotips/downloads) if you don't want to use version control at all
 * Execute `mvn install` at the command line to build the project
     * note that the first build will take a while longer, because all the required dependencies are downloaded, but all the subsequent builds should only take seconds
 

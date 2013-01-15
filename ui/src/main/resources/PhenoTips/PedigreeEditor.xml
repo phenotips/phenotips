@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>PhenoTips</web>
+  <name>PedigreeEditor</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>PhenoTips.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1340918250000</creationDate>
+  <date>1344125229000</date>
+  <contentUpdateDate>1344125229000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Pedigree editor#if ($request.id): $request.id#end</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity output=false}}
+$xwiki.jsfx.use('js/scriptaculous/controls.js')##
+$xwiki.jsfx.use('js/scriptaculous/slider.js')##
+$xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/raphael.js')##
+$xwiki.jsx.use('XWiki.DateTimePicker')##
+$xwiki.ssx.use('XWiki.DateTimePicker')##
+$xwiki.jsx.use('PhenoTips.Widgets')##
+$xwiki.ssx.use('PhenoTips.Widgets')##
+$xwiki.jsfx.use('uicomponents/pedigree/nodeMenu.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/nodeTypeOptions.js')##
+$xwiki.ssfx.use('uicomponents/pedigree/editor.css', true)##
+$xwiki.jsfx.use('uicomponents/pedigree/raphaelzpd.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/ageCalc.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/graphicHelpers.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/disorder.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/legend.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/layout.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/saveLoadEngine.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/templateSelector.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/abstractHoverbox.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/partnershipHoverbox.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/personHoverbox.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/groupHoverbox.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/abstractNode.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/abstractNodeVisuals.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/abstractPerson.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/abstractPersonVisuals.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/personGroup.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/personGroupVisuals.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/pregnancy.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/pregnancyVisuals.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/partnership.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/partnershipVisuals.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/person.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/personVisuals.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/placeHolder.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/placeHolderVisuals.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/kdTree.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/nodeIndex.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/graph.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/actionStack.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/workspace.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/pedigree.js')##
+{{/velocity}}
+
+{{html}}
+&lt;div id="editor-menu"&gt;
+&lt;div class="action-group internal-actions"&gt;
+&lt;span class="menu-item new" id="action-new"&gt;New node&lt;/span&gt;
+&lt;span class="menu-item undo" id="action-undo"&gt;Undo&lt;/span&gt;
+&lt;span class="menu-item redo" id="action-redo"&gt;Redo&lt;/span&gt;
+&lt;span class="menu-item layout" id="action-layout"&gt;Automatic layout&lt;/span&gt;
+&lt;span class="menu-item clear" id="action-clear"&gt;Clear all&lt;/span&gt;
+&lt;/div&gt;
+&lt;div class="action-group external-actions"&gt;
+&lt;span class="menu-item print" id="action-print"&gt;Printable version&lt;/span&gt;
+&lt;span class="menu-item save" id="action-save"&gt;Save&lt;/span&gt;
+&lt;!--&lt;span class="menu-item export" id="action-export"&gt;Export&lt;/span&gt;--&gt;
+&lt;span class="menu-item close" id="action-close"&gt;Close&lt;/span&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id="workspace"&gt;
+&lt;div id="canvas"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="clearfloats"&gt;&lt;/div&gt;
+{{/html}}
+</content>
+</xwikidoc>

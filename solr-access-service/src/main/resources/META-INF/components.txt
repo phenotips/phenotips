@@ -1,2 +1,2 @@
-edu.toronto.cs.cidb.solr.HPOScriptService
-edu.toronto.cs.cidb.solr.OmimScriptService
+edu.toronto.cs.phenotips.solr.HPOScriptService
+edu.toronto.cs.phenotips.solr.OmimScriptService

@@ -37,7 +37,7 @@ NodeMenu = Class.create({
             if (!item.hasClassName('initialized')) {
                 // Create the Suggest.
                 item._suggest = new MS.widgets.Suggest(item, {
-                    script: "$xwiki.getURL('ClinicalInformationCode.OmimService', 'get')?outputSyntax=plain&",
+                    script: "$xwiki.getURL('PhenoTips.OmimService', 'get')?outputSyntax=plain&",
                     varname: "q",
                     noresults: "No matching terms",
                     json: true,

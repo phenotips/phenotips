@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>PhenoTips</web>
+  <name>PhenotypeDisplay</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>PhenoTips.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1322705141000</creationDate>
+  <date>1323794605000</date>
+  <contentUpdateDate>1323794605000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+#set($phenotypeDisplayTools = $services.phenotype)
+#set ($data = $services.phenotypeMapping.get($name))
+#if ("$!{data}" != '')
+  $phenotypeDisplayTools.setMode($context.action)##
+  $phenotypeDisplayTools.setDocument($doc)##
+  #if ($object.getProperty("negative_${name}"))
+    #set ($nname = "negative_${name}")##
+    #set ($nvalue = $object.getProperty("negative_${name}").value)##
+    $!phenotypeDisplayTools.use($prefix, $name, $nname)##
+    $!phenotypeDisplayTools.setSelectedValues($value, $nvalue)##
+  #else
+    $!phenotypeDisplayTools.use($prefix, $name)##
+    $!phenotypeDisplayTools.setSelectedValues($value)##
+  #end
+  {{html clean=false}}$phenotypeDisplayTools.display($data){{/html}}##
+  $!phenotypeDisplayTools.clear()##
+#end
+{{/velocity}}</content>
+</xwikidoc>

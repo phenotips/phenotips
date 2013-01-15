@@ -1159,7 +1159,7 @@
       <showinformation>0</showinformation>
     </property>
     <property>
-      <skin>ClinicalInformationCode.Skin</skin>
+      <skin>PhenoTips.Skin</skin>
     </property>
     <property>
       <stylesheet/>

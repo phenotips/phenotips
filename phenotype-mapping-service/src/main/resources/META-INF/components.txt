@@ -1,6 +1,6 @@
-edu.toronto.cs.cidb.hpoa.PhenotypeMappingScriptService
-edu.toronto.cs.cidb.hpoa.ontology.HPO
-edu.toronto.cs.cidb.hpoa.annotation.GeneHPOAnnotations
-edu.toronto.cs.cidb.hpoa.annotation.OmimHPOAnnotations
-edu.toronto.cs.cidb.hpoa.prediction.BNPredictor
-edu.toronto.cs.cidb.hpoa.prediction.ICPredictor
+edu.toronto.cs.phenotips.hpoa.PhenotypeMappingScriptService
+edu.toronto.cs.phenotips.hpoa.ontology.HPO
+edu.toronto.cs.phenotips.hpoa.annotation.GeneHPOAnnotations
+edu.toronto.cs.phenotips.hpoa.annotation.OmimHPOAnnotations
+edu.toronto.cs.phenotips.hpoa.prediction.BNPredictor
+edu.toronto.cs.phenotips.hpoa.prediction.ICPredictor

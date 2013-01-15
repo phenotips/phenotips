@@ -25,7 +25,7 @@
   <hidden>false</hidden>
   <object>
     <class>
-      <name>ClinicalInformationCode.DBConfigurationClass</name>
+      <name>PhenoTips.DBConfigurationClass</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -35,7 +35,7 @@
       <validationScript/>
       <activeFields>
         <cache>0</cache>
-        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>input</displayType>
         <multiSelect>1</multiSelect>
@@ -94,7 +94,7 @@ $value
 &lt;input type="hidden" name="$prefix$name" value=""/&gt;
 &lt;/div&gt;
 $xwiki.jsfx.use('js/scriptaculous/scriptaculous.js')##
-$xwiki.ssx.use('ClinicalInformationCode.DBConfigurationClass')##
+$xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
 &lt;script type="text/javascript" defer="defer"&gt;
 document.observe("xwiki:dom:loaded", function() {
   Sortable.create("$prefix$name", {tag : 'li', handle : 'move'});
@@ -145,7 +145,7 @@ $!value
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </dateOfBirthFormat>
       <idField>
-        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <name>idField</name>
         <number>3</number>
@@ -196,7 +196,7 @@ $!value
 
 //Patient information: //
 
-{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>input</displayType>
         <multiSelect>1</multiSelect>
@@ -217,7 +217,7 @@ $!value
       </livetableColumns>
       <mandatoryFields>
         <cache>0</cache>
-        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
@@ -323,7 +323,7 @@ $!value
       </relativeReportHint>
       <section__diagnosis-info>
         <cache>0</cache>
-        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
@@ -344,7 +344,7 @@ $!value
       </section__diagnosis-info>
       <section__family-history>
         <cache>0</cache>
-        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
@@ -366,11 +366,11 @@ $!value
       <section__measurements>
         <cache>0</cache>
         <customDisplay>{{velocity output=false}}
-#set($customValues = {"ClinicalInformationCode.MeasurementsClass" : "measurements table", "growth-charts" : "charts"})
+#set($customValues = {"PhenoTips.MeasurementsClass" : "measurements table", "growth-charts" : "charts"})
 #set($hideClassFields = true)
 {{/velocity}}
 
-{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}
+{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}
 
 {{velocity output=false}}
 #set($customClassName = '')
@@ -397,7 +397,7 @@ $!value
       </section__measurements>
       <section__medical_history>
         <cache>0</cache>
-        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
@@ -439,7 +439,7 @@ $!value
       </section__other>
       <section__patient-info>
         <cache>0</cache>
-        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
@@ -460,7 +460,7 @@ $!value
       </section__patient-info>
       <section__phenotype-info>
         <cache>0</cache>
-        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
@@ -481,7 +481,7 @@ $!value
       </section__phenotype-info>
       <section__prenatal_phenotype-info>
         <cache>0</cache>
-        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
@@ -503,11 +503,11 @@ $!value
       <section__variant-info>
         <cache>0</cache>
         <customDisplay>{{velocity output=false}}
-#set($customValues = {"ClinicalInformationCode.VariantClass" : "variants table", "ClinicalInformationCode.InvestigationClass" : "investigations table"})
+#set($customValues = {"PhenoTips.VariantClass" : "variants table", "PhenoTips.InvestigationClass" : "investigations table"})
 #set($hideClassFields = true)
 {{/velocity}}
 
-{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}
+{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}
 
 {{velocity output=false}}
 #set($customClassName = '')
@@ -533,7 +533,7 @@ $!value
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </section__variant-info>
       <tagProperty>
-        <customDisplay>{{include document="ClinicalInformationCode.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <name>tagProperty</name>
         <number>6</number>
@@ -548,7 +548,7 @@ $!value
     </class>
     <name>data.WebHome</name>
     <number>0</number>
-    <className>ClinicalInformationCode.DBConfigurationClass</className>
+    <className>PhenoTips.DBConfigurationClass</className>
     <guid>380d3252-75ab-4be3-8b4b-d212e9939b6f</guid>
     <property>
       <activeFields>
@@ -614,13 +614,13 @@ $!value
       <mandatoryFields/>
     </property>
     <property>
-      <patientClass>ClinicalInformationCode.PatientClass</patientClass>
+      <patientClass>PhenoTips.PatientClass</patientClass>
     </property>
     <property>
-      <patientTemplate>ClinicalInformationCode.PatientTemplate</patientTemplate>
+      <patientTemplate>PhenoTips.PatientTemplate</patientTemplate>
     </property>
     <property>
-      <phenotypeMapping>ClinicalInformationCode.FPhenotypeMapping</phenotypeMapping>
+      <phenotypeMapping>PhenoTips.FPhenotypeMapping</phenotypeMapping>
     </property>
     <property>
       <relativeReportHint>Patient (MRN)</relativeReportHint>
@@ -637,7 +637,7 @@ $!value
     </property>
     <property>
       <section__measurements>
-        <value>ClinicalInformationCode.MeasurementsClass</value>
+        <value>PhenoTips.MeasurementsClass</value>
         <value>growth-charts</value>
       </section__measurements>
     </property>
@@ -670,7 +670,7 @@ $!value
     </property>
     <property>
       <section__variant-info>
-        <value>ClinicalInformationCode.VariantClass</value>
+        <value>PhenoTips.VariantClass</value>
       </section__variant-info>
     </property>
     <property>
@@ -679,7 +679,7 @@ $!value
   </object>
   <object>
     <class>
-      <name>ClinicalInformationCode.MenuConfigurationClass</name>
+      <name>PhenoTips.MenuConfigurationClass</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -819,7 +819,7 @@ $!value
     </class>
     <name>data.WebHome</name>
     <number>0</number>
-    <className>ClinicalInformationCode.MenuConfigurationClass</className>
+    <className>PhenoTips.MenuConfigurationClass</className>
     <guid>522661a1-1a9a-4d2f-937e-a959d53a4ef7</guid>
     <property>
       <enableDeleteTool>
@@ -854,7 +854,7 @@ $!value
   </object>
   <object>
     <class>
-      <name>ClinicalInformationCode.PedigreeClass</name>
+      <name>PhenoTips.PedigreeClass</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -910,7 +910,7 @@ $!value
     </class>
     <name>data.WebHome</name>
     <number>0</number>
-    <className>ClinicalInformationCode.PedigreeClass</className>
+    <className>PhenoTips.PedigreeClass</className>
     <guid>d47bf21d-9bfd-4cf3-8b4e-3ed955ba546a</guid>
     <property>
       <data>{
@@ -943,7 +943,7 @@ $!value
   </object>
   <object>
     <class>
-      <name>ClinicalInformationCode.PedigreeClass</name>
+      <name>PhenoTips.PedigreeClass</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -999,7 +999,7 @@ $!value
     </class>
     <name>data.WebHome</name>
     <number>1</number>
-    <className>ClinicalInformationCode.PedigreeClass</className>
+    <className>PhenoTips.PedigreeClass</className>
     <guid>93bcc2c5-7dd0-4112-a8f4-4b10deb3a824</guid>
     <property>
       <data>{
@@ -1615,7 +1615,7 @@ $!value
       <codeToExecute/>
     </property>
     <property>
-      <configurationClass>ClinicalInformationCode.DBConfigurationClass</configurationClass>
+      <configurationClass>PhenoTips.DBConfigurationClass</configurationClass>
     </property>
     <property>
       <configureGlobally>0</configureGlobally>
@@ -1777,7 +1777,7 @@ $!value
       <codeToExecute/>
     </property>
     <property>
-      <configurationClass>ClinicalInformationCode.MenuConfigurationClass</configurationClass>
+      <configurationClass>PhenoTips.MenuConfigurationClass</configurationClass>
     </property>
     <property>
       <configureGlobally>0</configureGlobally>
@@ -1798,5 +1798,5 @@ $!value
       <propertiesToShow/>
     </property>
   </object>
-  <content>{{include document="ClinicalInformationCode.DBWebHomeSheet" /}}</content>
+  <content>{{include document="PhenoTips.DBWebHomeSheet" /}}</content>
 </xwikidoc>
