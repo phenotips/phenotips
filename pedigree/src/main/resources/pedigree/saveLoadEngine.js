@@ -66,9 +66,10 @@ var SaveLoadEngine = Class.create( {
         var backgroundParent =  background.parentNode;
         backgroundParent.removeChild(background);
         var bbox = image.down().getBBox();
+        var savingNotification = new XWiki.widgets.Notification("Saving");
         new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0', 'method=PUT'), {
             method: 'POST',
-            onSuccess: function() {new XWiki.widgets.Notification("Successfuly saved");},
+            onSuccess: function() {savingNotification.replace(new XWiki.widgets.Notification("Successfuly saved"));},
             parameters: {"property#data": JSON.stringify(nodes), "property#image": image.innerHTML.replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + " \"width=\"500\" height=\"500\"")}
         });
         backgroundParent.insertBefore(background, backgroundPosition);
