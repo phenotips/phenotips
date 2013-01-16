@@ -138,16 +138,6 @@ var PedigreeEditor = Class.create({
     },
 
     /**
-     * Returns the template selector which appears on startup
-     *
-     * @method getStartupTemplateSelector
-     * @return {TemplateSelector}
-     */
-    getStartupTemplateSelector: function() {
-        return this._startupTemplateSelector
-    },
-
-    /**
      * Returns the user triggered template selector
      *
      * @method getTemplateSelector
