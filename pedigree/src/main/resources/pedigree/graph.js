@@ -49,6 +49,39 @@ var Graph = Class.create({
         return this.getNodeMap()[1];
     },
 
+    getAllNodes: function() {
+        var pregs = this.getPregnancyNodes(),
+            partnerships = this.getPartnershipNodes(),
+            placeHolders = this.getPlaceHolderNodes(),
+            persons = this.getPersonNodes(),
+            personGroups = this.getPersonGroupNodes();
+
+        return pregs.concat(partnerships, placeHolders, personGroups, persons.reverse());
+    },
+
+    clearGraph: function(removeProband) {
+        var nodes = this.getAllNodes();
+        var length = removeProband ? nodes.length : nodes.length - 1;
+        for(var i = 0 ; i< length ; i++) {
+            nodes[i] && nodes[i].remove(false);
+        }
+    },
+
+    clearGraphAction: function() {
+        var lastAction = editor.getActionStack().peek()
+        if(!lastAction || lastAction.property != "clearGraph") {
+            var saveData = editor.getSaveLoadEngine().serialize();
+            this.clearGraph(false);
+            var undo = function() {
+                editor.getSaveLoadEngine().load(saveData);
+            };
+            var redo = function() {
+                editor.getGraph().clearGraph(false);
+            };
+            editor.getActionStack().push({undo: undo, redo:redo, property: "clearGraph"});
+        }
+    },
+
     addPartnership : function(x, y, node1, node2, id) {
         var partnership = new Partnership(x, y, node1, node2, id);
         this.getNodeMap()[partnership.getID()] = partnership;

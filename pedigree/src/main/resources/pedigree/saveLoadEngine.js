@@ -79,7 +79,7 @@ var SaveLoadEngine = Class.create( {
         if(graphObj) {
             if(this.isValidGraphObject(graphObj)) {
                 var maxID = editor.getGraph().getIdCount();
-                editor.getGraph().getNodeMap()[1] && editor.getGraph().getNodeMap()[1].remove(true, true);      //clears the graph
+                editor.getGraph().clearGraph(true);
                 var probandX = editor.getWorkspace().getWidth()/2;
                 var probandY = editor.getWorkspace().getHeight()/2;
                 var xOffset = probandX - graphObj.proband.x;
