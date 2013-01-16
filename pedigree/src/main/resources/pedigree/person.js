@@ -821,8 +821,9 @@ var Person = Class.create(AbstractPerson, {
             var hasTwoKnownParents = parents && parents.getPartners()[0].getType() == "Person" && parents.getPartners()[1].getType() == "Person";
             var childlessParents = parents && parents.getChildlessStatus();
             if(hasTwoKnownParents && singleChild && !childlessParents || hasChildren) {
+                var phInfo = this.convertToPlaceholder().getInfo()
                 var returnValue = $super(isRecursive, skipConfirmation);
-                returnValue.created && returnValue.created.push(this.convertToPlaceholder().getInfo())
+                returnValue.created && returnValue.created.push(phInfo)
                 return returnValue;
             }
             else {
