@@ -476,7 +476,7 @@ var Person = Class.create(AbstractPerson, {
      * @param newDate a javascript Date object
      */
     setConceptionDate: function(newDate) {
-        this._conceptionDate = newDate;
+        this._conceptionDate = newDate ? (new Date(newDate)) : '';
         this.getGraphics().updateAgeLabel();
     },
 
@@ -545,6 +545,7 @@ var Person = Class.create(AbstractPerson, {
      * a later date than conception date
      */
     setBirthDate: function(newDate) {
+        newDate = newDate ? (new Date(newDate)) : '';
         if (!newDate || newDate && !this.getDeathDate() || newDate.getDate() < this.getDeathDate()) {
             this._birthDate = newDate;
             this.getGraphics().updateAgeLabel();
@@ -581,6 +582,7 @@ var Person = Class.create(AbstractPerson, {
      * a later date than conception date
      */
     setDeathDate: function(deathDate) {
+        deathDate = deathDate ? (new Date(deathDate)) : '';
         if(!deathDate || deathDate && !this.getBirthDate() || deathDate.getDate()>this.getBirthDate().getDate()) {
             this._deathDate =  deathDate;
             this._deathDate && (this.getLifeStatus() == 'alive') && this.setLifeStatus('deceased');
