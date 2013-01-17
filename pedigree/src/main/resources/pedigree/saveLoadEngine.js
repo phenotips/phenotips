@@ -158,6 +158,19 @@ var SaveLoadEngine = Class.create( {
         return successfulLoad;
     },
 
+    loadTemplateAction: function(graphObj) {
+        var saveBeforeAction = this.serialize();
+        if(this.load(graphObj)) {
+            var undo = function() {
+                editor.getSaveLoadEngine().load(saveBeforeAction);
+            };
+            var redo = function() {
+                editor.getSaveLoadEngine().load(graphObj);
+            };
+            editor.getActionStack().push({undo: undo, redo: redo, property: "loadTemplate"});
+        }
+    },
+
     isValidGraphObject: function(graphObj) {
         var missingProperty = !graphObj.proband
             || (Object.prototype.toString.call(graphObj.persons) != '[object Array]')
