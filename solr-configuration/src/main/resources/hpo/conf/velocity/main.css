@@ -18,6 +18,18 @@
   margin-left: 20px;
 }
 
+.parsed_query_header {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 10pt;
+  font-weight: bold;
+}
+
+.parsed_query {
+  font-family: Courier, Courier New, monospaced;
+  font-size: 10pt;
+  font-weight: normal;
+}
+
 body {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 10pt;
@@ -54,7 +66,6 @@ a {
 .navigators ul li {
   color: #999;
   padding: 2px;
-  text-transform: capitalize;
 }
 
 
@@ -156,6 +167,10 @@ a {
   width:60%;
 }
 
+.result-body{
+  background: #ddd;
+}
+
 .mlt{
   
 }
@@ -181,4 +196,13 @@ li.show {
 
 .group-value{
   font-weight: bold;
+}
+
+.error {
+  color: white;
+  background-color: red;
+  left: 210px;
+  width:80%;
+  position: relative;
+
 }

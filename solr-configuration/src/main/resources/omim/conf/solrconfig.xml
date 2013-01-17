@@ -29,25 +29,13 @@
        have your own custom plugins.
     -->
 
-  <!-- Set this to 'false' if you want solr to continue working after
-       it has encountered an severe configuration error.  In a
-       production environment, you may want solr to keep working even
-       if one handler is mis-configured.
-
-       You may also set this to false using by setting the system
-       property:
-
-         -Dsolr.abortOnConfigurationError=false
-    -->
-  <abortOnConfigurationError>${solr.abortOnConfigurationError:true}</abortOnConfigurationError>
-
   <!-- Controls what version of Lucene various components of Solr
        adhere to.  Generally, you want to use the latest version to
        get all bug fixes and improvements. It is highly recommended
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>LUCENE_34</luceneMatchVersion>
+  <luceneMatchVersion>LUCENE_40</luceneMatchVersion>
 
   <!-- Data Directory
 
@@ -61,163 +49,44 @@
 
   <!-- The DirectoryFactory to use for indexes.
 
-       solr.StandardDirectoryFactory, the default, is filesystem
+       solr.StandardDirectoryFactory is filesystem
        based and tries to pick the best implementation for the current
-       JVM and platform.  One can force a particular implementation
-       via solr.MMapDirectoryFactory, solr.NIOFSDirectoryFactory, or
-       solr.SimpleFSDirectoryFactory.
+       JVM and platform.  solr.NRTCachingDirectoryFactory, the default,
+       wraps solr.StandardDirectoryFactory and caches small files in memory
+       for better NRT performance.
+
+       One can force a particular implementation via solr.MMapDirectoryFactory,
+       solr.NIOFSDirectoryFactory, or solr.SimpleFSDirectoryFactory.
 
        solr.RAMDirectoryFactory is memory based, not
        persistent, and doesn't work with replication.
     -->
   <directoryFactory name="DirectoryFactory"
-                    class="${solr.directoryFactory:solr.StandardDirectoryFactory}"/>
+                    class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/>
 
-
-  <!-- Index Defaults
-
-       Values here affect all index writers and act as a default
-       unless overridden.
-
-       WARNING: See also the <mainIndex> section below for parameters
-       that overfor Solr's main Lucene index.
-    -->
-  <indexDefaults>
-
-    <useCompoundFile>false</useCompoundFile>
-
+  <indexConfig>
     <mergeFactor>10</mergeFactor>
     <!-- Sets the amount of RAM that may be used by Lucene indexing
          for buffering added documents and deletions before they are
          flushed to the Directory.  -->
     <ramBufferSizeMB>64</ramBufferSizeMB>
-    <!-- If both ramBufferSizeMB and maxBufferedDocs is set, then
-         Lucene will flush based on whichever limit is hit first.
-      -->
-    <!-- <maxBufferedDocs>1000</maxBufferedDocs> -->
 
-    <maxFieldLength>10000</maxFieldLength>
     <writeLockTimeout>1000</writeLockTimeout>
     <commitLockTimeout>10000</commitLockTimeout>
-
-    <!-- LockFactory
-
-         This option specifies which Lucene LockFactory implementation
-         to use.
-
-         single = SingleInstanceLockFactory - suggested for a
-                  read-only index or when there is no possibility of
-                  another process trying to modify the index.
-         native = NativeFSLockFactory - uses OS native file locking.
-                  Do not use when multiple solr webapps in the same
-                  JVM are attempting to share a single index.
-         simple = SimpleFSLockFactory  - uses a plain file for locking
-
-         (For backwards compatibility with Solr 1.2, 'simple' is the
-         default if not specified.)
-
-         More details on the nuances of each LockFactory...
-         http://wiki.apache.org/lucene-java/AvailableLockFactories
-    -->
-    <lockType>native</lockType>
 
     <!-- Expert: Controls how often Lucene loads terms into memory
          Default is 128 and is likely good for most everyone.
       -->
     <!-- <termIndexInterval>256</termIndexInterval> -->
-  </indexDefaults>
 
-  <!-- Main Index
-
-       Values here override the values in the <indexDefaults> section
-       for the main on disk index.
-    -->
-  <mainIndex>
-    <useCompoundFile>true</useCompoundFile>
-    <ramBufferSizeMB>64</ramBufferSizeMB>
-    <mergeFactor>10</mergeFactor>
-
-    <!-- Unlock On Startup
-
-         If true, unlock any held write or commit locks on startup.
-         This defeats the locking mechanism that allows multiple
-         processes to safely access a lucene index, and should be used
-         with care.
-
-         This is not needed if lock type is 'none' or 'single'
-     -->
     <unlockOnStartup>true</unlockOnStartup>
-
-    <!-- If true, IndexReaders will be reopened (often more efficient)
-         instead of closed and then opened.
-      -->
-    <reopenReaders>true</reopenReaders>
-
-    <!-- Commit Deletion Policy
-
-         Custom deletion policies can specified here. The class must
-         implement org.apache.lucene.index.IndexDeletionPolicy.
-
-         http://lucene.apache.org/java/2_9_1/api/all/org/apache/lucene/index/IndexDeletionPolicy.html
-
-         The standard Solr IndexDeletionPolicy implementation supports
-         deleting index commit points on number of commits, age of
-         commit point and optimized status.
-
-         The latest commit point should always be preserved regardless
-         of the criteria.
-    -->
-    <deletionPolicy class="solr.SolrDeletionPolicy">
-      <!-- The number of commit points to be kept -->
-      <str name="maxCommitsToKeep">1</str>
-      <!-- The number of optimized commit points to be kept -->
-      <str name="maxOptimizedCommitsToKeep">0</str>
-      <!--
-          Delete all commit points once they have reached the given age.
-          Supports DateMathParser syntax e.g.
-        -->
-      <!--
-         <str name="maxCommitAge">30MINUTES</str>
-         <str name="maxCommitAge">1DAY</str>
-      -->
-    </deletionPolicy>
-
-    <!-- Lucene Infostream
-
-         To aid in advanced debugging, Lucene provides an "InfoStream"
-         of detailed information when indexing.
-
-         Setting The value to true will instruct the underlying Lucene
-         IndexWriter to write its debugging info the specified file
-      -->
-     <infoStream file="INFOSTREAM.txt">false</infoStream>
-
-  </mainIndex>
+  </indexConfig>
 
   <!-- The default high-performance update handler -->
   <updateHandler class="solr.DirectUpdateHandler2">
-
-    <!-- AutoCommit
-
-         Perform a <commit/> automatically under certain conditions.
-         Instead of enabling autoCommit, consider using "commitWithin"
-         when adding documents.
-
-         http://wiki.apache.org/solr/UpdateXmlMessages
-
-         maxDocs - Maximum number of documents to add since the last
-                   commit before automatically triggering a new commit.
-
-         maxTime - Maximum amount of time that is allowed to pass
-                   since a document was added before automaticly
-                   triggering a new commit.
-      -->
-    <!--
-       <autoCommit>
-         <maxDocs>10000</maxDocs>
-         <maxTime>1000</maxTime>
-       </autoCommit>
-      -->
+    <autoSoftCommit>
+      <maxTime>1000</maxTime>
+    </autoSoftCommit>
   </updateHandler>
 
   <query>
@@ -414,17 +283,21 @@
        This section contains instructions for how the SolrDispatchFilter
        should behave when processing requests for this SolrCore.
 
-       handleSelect affects the behavior of requests such as /select?qt=XXX
+       handleSelect is a legacy option that affects the behavior of requests
+       such as /select?qt=XXX
 
        handleSelect="true" will cause the SolrDispatchFilter to process
-       the request and will result in consistent error handling and
-       formatting for all types of requests.
+       the request and dispatch the query to a handler specified by the
+       "qt" param, assuming "/select" isn't already registered.
 
        handleSelect="false" will cause the SolrDispatchFilter to
-       ignore "/select" requests and fallback to using the legacy
-       SolrServlet and it's Solr 1.1 style error formatting
+       ignore "/select" requests, resulting in a 404 unless a handler
+       is explicitly registered with the name "/select"
+
+       handleSelect="true" is not recommended for new users, but is the default
+       for backwards compatibility
     -->
-  <requestDispatcher handleSelect="true" >
+  <requestDispatcher handleSelect="false" >
     <!-- Request Parsing
 
          These settings indicate how Solr Requests may be parsed, and
@@ -505,16 +378,16 @@
 
        http://wiki.apache.org/solr/SolrRequestHandler
 
-       Incoming queries will be dispatched to the correct handler
-       based on the path or the qt (query type) param.
+       Incoming queries will be dispatched to a specific handler by name
+       based on the path specified in the request.
 
-       Names starting with a '/' are accessed with the path equal to
-       the registered name.  Names without a leading '/' are accessed
-       with: http://host/app/[core/]select?qt=name
-
-       If a /select request is processed with out a qt param
-       specified, the requestHandler that declares default="true" will
-       be used.
+       Legacy behavior: If the request path uses "/select" but no Request
+       Handler has that name, and if handleSelect="true" has been specified in
+       the requestDispatcher, then the Request Handler is dispatched based on
+       the qt parameter.  Handlers without a leading '/' are accessed this way
+       like so: http://host/app/[core/]select?qt=name  If no qt is
+       given, then the requestHandler that declares default="true" will be
+       used or the one named "standard".
 
        If a Request Handler is declared with startup="lazy", then it will
        not be initialized until the first request that uses it.
@@ -529,13 +402,14 @@
        of SearchComponents (see below) and supports distributed
        queries across multiple shards
     -->
-  <requestHandler name="search" class="solr.SearchHandler" default="true">
+  <requestHandler name="/select" class="solr.SearchHandler">
     <!-- default values for query parameters can be specified, these
          will be overridden by parameters in the request
       -->
      <lst name="defaults">
        <str name="echoParams">explicit</str>
        <int name="rows">10</int>
+       <str name="df">text</str>
      </lst>
     <!-- In addition to defaults, "appends" params can be specified
          to identify values which should be appended to the list of
@@ -556,55 +430,27 @@
      </arr>
     </requestHandler>
 
-  <!-- XML Update Request Handler.
+
+  <!-- Update Request Handler.
 
        http://wiki.apache.org/solr/UpdateXmlMessages
 
        The canonical Request Handler for Modifying the Index through
-       commands specified using XML.
+       commands specified using XML, JSON, CSV, or JAVABIN
 
        Note: Since solr1.1 requestHandlers requires a valid content
        type header if posted in the body. For example, curl now
        requires: -H 'Content-type:text/xml; charset=utf-8'
+
+       To override the request content type and force a specific
+       Content-type, use the request parameter:
+         ?update.contentType=text/csv
+
+       This handler will pick a response format to match the input
+       if the 'wt' parameter is not explicit
     -->
   <requestHandler name="/update"
-                  class="solr.XmlUpdateRequestHandler" />
-
-  <!-- Binary Update Request Handler
-       http://wiki.apache.org/solr/javabin
-    -->
-  <requestHandler name="/update/javabin"
-                  class="solr.BinaryUpdateRequestHandler" />
-
-
-  <!-- Solr Cell Update Request Handler
-
-       http://wiki.apache.org/solr/ExtractingRequestHandler
-
-    -->
-  <requestHandler name="/update/extract"
-                  startup="lazy"
-                  class="solr.extraction.ExtractingRequestHandler" >
-    <lst name="defaults">
-      <!-- All the main content goes into "text"... if you need to return
-           the extracted text or do highlighting, use a stored field. -->
-      <str name="fmap.content">text</str>
-      <str name="lowernames">true</str>
-      <str name="uprefix">ignored_</str>
-
-      <!-- capture link hrefs but ignore div attributes -->
-      <str name="captureAttr">true</str>
-      <str name="fmap.a">links</str>
-      <str name="fmap.div">ignored_</str>
-    </lst>
-  </requestHandler>
-
-  <!-- XSLT Update Request Handler
-       Transforms incoming XML with stylesheet identified by tr=
-  -->
-  <requestHandler name="/update/xslt"
-                   startup="lazy"
-                   class="solr.XsltUpdateRequestHandler"/>
+                  class="solr.UpdateRequestHandler" />
 
   <!-- ping/healthcheck -->
   <requestHandler name="/admin/ping" class="solr.PingRequestHandler">
@@ -625,53 +471,24 @@
        http://wiki.apache.org/solr/SpellCheckComponent
     -->
   <searchComponent name="spellcheck" class="solr.SpellCheckComponent">
-
     <str name="queryAnalyzerFieldType">textSpell</str>
 
     <!-- Multiple "Spell Checkers" can be declared and used by this
          component
       -->
 
-    <!-- a spellchecker built from a field of the main index, and
-         written to disk
-      -->
+    <!-- a spellchecker built from a field of the main index -->
     <lst name="spellchecker">
       <str name="name">default</str>
-      <str name="field">name</str>
+      <str name="classname">solr.IndexBasedSpellChecker</str>
+      <str name="field">textSpell</str>
       <str name="spellcheckIndexDir">spellchecker</str>
       <str name="buildOnCommit">true</str>
-      <!-- uncomment this to require terms to occur in 1% of the documents in order to be included in the dictionary
-      	<float name="thresholdTokenFrequency">.01</float>
+      <!-- Could be tried out:
+      <str name="distanceMeasure">org.apache.lucene.search.spell.NGramDistance</str>
+      <str name="distanceMeasure">org.apache.lucene.search.spell.JaroWinklerDistance</str>
       -->
     </lst>
-
-    <!-- a spellchecker that uses a different distance measure -->
-    <!--
-       <lst name="spellchecker">
-         <str name="name">jarowinkler</str>
-         <str name="field">spell</str>
-         <str name="distanceMeasure">
-           org.apache.lucene.search.spell.JaroWinklerDistance
-         </str>
-         <str name="spellcheckIndexDir">spellcheckerJaro</str>
-       </lst>
-     -->
-
-    <!-- a spellchecker that use an alternate comparator
-
-         comparatorClass be one of:
-          1. score (default)
-          2. freq (Frequency first, then score)
-          3. A fully qualified class name
-      -->
-    <!--
-       <lst name="spellchecker">
-         <str name="name">freq</str>
-         <str name="field">lowerfilt</str>
-         <str name="spellcheckIndexDir">spellcheckerFreq</str>
-         <str name="comparatorClass">freq</str>
-         <str name="buildOnCommit">true</str>
-      -->
   </searchComponent>
 
   <!-- Legacy config for the admin interface -->
