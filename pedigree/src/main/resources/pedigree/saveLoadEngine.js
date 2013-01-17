@@ -89,6 +89,7 @@ var SaveLoadEngine = Class.create( {
     },
 
     load: function(graphObj) {
+        var successfulLoad = false;
         if(graphObj) {
             if(this.isValidGraphObject(graphObj)) {
                 var maxID = editor.getGraph().getIdCount();
@@ -139,6 +140,7 @@ var SaveLoadEngine = Class.create( {
                     this.updateProbandData();
                 }
                 this.serialize();
+                successfulLoad = true;
             }
         } else {
             new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0/'), {
@@ -146,13 +148,14 @@ var SaveLoadEngine = Class.create( {
                     var tempNode = document.createElement('div');
                     tempNode.innerHTML = response.responseXML.documentElement.querySelector("property[name='data'] > value").textContent.replace(/&amp;/, '&');
                     if (tempNode.textContent.trim()) {
-                        this.load(JSON.parse(tempNode.textContent));
+                        successfulLoad = this.load(JSON.parse(tempNode.textContent));
                     } else {
                         new TemplateSelector(true);
                     }
                 }.bind(this)
             })
         }
+        return successfulLoad;
     },
 
     isValidGraphObject: function(graphObj) {
