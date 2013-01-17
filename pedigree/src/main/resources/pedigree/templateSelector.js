@@ -10,15 +10,22 @@
 var TemplateSelector = Class.create( {
 
     initialize: function(isStartupTemplateSelector) {
+        this._isStartupTemplateSelector = isStartupTemplateSelector;
         this.mainDiv = new Element('div', {'class': 'template-picture-container'});
         this.mainDiv.update("Loading list of templates...");
-        this.dialog = new MS.widgets.ModalPopup(this.mainDiv, false, {extraClassName: "pedigree-template-chooser", title: "Please select a pedigree template", displayCloseButton: !isStartupTemplateSelector});
+        var closeShortcut = isStartupTemplateSelector ? [] : ['Esc'];
+        this.dialog = new MS.widgets.ModalPopup(this.mainDiv, {close: {method : this.closeDialog.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-template-chooser", title: "Please select a pedigree template", displayCloseButton: !isStartupTemplateSelector});
         isStartupTemplateSelector && this.dialog.show();
         new Ajax.Request(new XWiki.Document('WebHome').getRestURL('objects/PhenoTips.PedigreeClass/'), {
             method: 'GET',
             onSuccess: this.onTemplateListAvailable.bind(this)
         });
     },
+
+    isStartupTemplateSelector: function() {
+        return this._isStartupTemplateSelector;
+    },
+
     onTemplateListAvailable: function(response) {
         this.mainDiv.update();
         var objects = response.responseXML.documentElement.getElementsByTagName('objectSummary');
@@ -33,6 +40,10 @@ var TemplateSelector = Class.create( {
         }
     },
 
+    closeDialog: function() {
+        this.dialog.closeDialog();
+    },
+
     onTemplateAvailable: function(pictureBox, response) {
         pictureBox.innerHTML = response.responseXML.documentElement.querySelector("property[name='data'] > value").textContent.replace(/&amp;/, '&');
         pictureBox.pedigreeData = JSON.parse(pictureBox.textContent);
@@ -43,7 +54,13 @@ var TemplateSelector = Class.create( {
 
     onTemplateSelected: function(event, pictureBox) {
         this.dialog.close();
-        editor.getSaveLoadEngine().load(pictureBox.pedigreeData);
+        alert(this.isStartupTemplateSelector())
+        if(this.isStartupTemplateSelector()) {
+            editor.getSaveLoadEngine().load(pictureBox.pedigreeData);
+        }
+        else {
+            editor.getSaveLoadEngine().loadTemplateAction(pictureBox.pedigreeData);
+        }
     },
 
     show: function() {
