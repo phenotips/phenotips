@@ -54,7 +54,6 @@ var TemplateSelector = Class.create( {
 
     onTemplateSelected: function(event, pictureBox) {
         this.dialog.close();
-        alert(this.isStartupTemplateSelector())
         if(this.isStartupTemplateSelector()) {
             editor.getSaveLoadEngine().load(pictureBox.pedigreeData);
         }
