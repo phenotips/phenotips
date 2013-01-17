@@ -727,11 +727,11 @@ var Person = Class.create(AbstractPerson, {
      */
     canBeParentOf: function($super, otherNode) {
         var preliminary = $super(otherNode);
-        var incompatibleBirthDate = this.getBirthDate() && otherNode.getBirthDate() && this.getBirthDate() < otherNode.getBirthDate();
-        var incompatibleDeathDate = this.getDeathDate() && otherNode.getBirthDate() && this.getDeathDate() < otherNode.getBirthDate().clone().setDate(otherNode.getBirthDate().getDate()-700);
-
+        if(otherNode.getBirthDate) {
+            var incompatibleBirthDate = this.getBirthDate() && otherNode.getBirthDate() && this.getBirthDate() < otherNode.getBirthDate();
+            var incompatibleDeathDate = this.getDeathDate() && otherNode.getBirthDate() && this.getDeathDate() < otherNode.getBirthDate().clone().setDate(otherNode.getBirthDate().getDate()-700);
+        }
         return preliminary && !incompatibleBirthDate && !incompatibleDeathDate && !this.isFetus();
-
     },
 
     /*
