@@ -358,26 +358,26 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
     var no = this.no = element.down('label.no');
     var na = this.na = element.down('label.na');
 
-    this.yesInput = this.yes.down('input');
-    this.noInput = this.no.down('input');
-    this.naInput = this.na.down('input');
+    this.yesInput = this.yes &amp;&amp; this.yes.down('input');
+    this.noInput = this.no &amp;&amp; this.no.down('input');
+    this.naInput = this.na &amp;&amp; this.na.down('input');
 
     var _onYes = this._onYes.bindAsEventListener(this);
     var _onNo = this._onNo.bindAsEventListener(this);
     var _onNA = this._onNA.bindAsEventListener(this);
     var _onUnselect = this._onUnselect.bindAsEventListener(this);
 
-    this.yes.observe('click', _onYes);
-    this.no.observe('click', _onNo);
-    this.na.observe('click', _onNA);
+    this.yes &amp;&amp; this.yes.observe('click', _onYes);
+    this.no &amp;&amp; this.no.observe('click', _onNo);
+    this.na &amp;&amp; this.na.observe('click', _onNA);
     //this.element.observe('click', _onUnselect);
     document.observe('ynpicker:change', this._sync.bindAsEventListener(this));
 
-    this.yesInput.observe('suggest:change', function(event) {
+    if (this.yesInput) this.yesInput.observe('suggest:change', function(event) {
       var input = event.findElement();
       _this._onSelect(input.checked ? 'yes' : 'na');
     });
-    this.noInput.observe('suggest:change', function(event) {
+    if (this.noInput) this.noInput.observe('suggest:change', function(event) {
       var input = event.findElement();
       _this._onSelect(input.checked ? 'no' : 'na');
     });
@@ -469,7 +469,7 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
     }
     if (label.hasClassName('na')) {
       this.naInput.checked = true;
-      this.na.addClassName('selected');
+      this.na &amp;&amp; this.na.addClassName('selected');
       this.label &amp;&amp; this.label.addClassName('na-selected');
       this.yesInput.checked = false;
       this.yes.removeClassName('selected');
@@ -479,8 +479,8 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
       this.label &amp;&amp; this.label.removeClassName('no-selected');
       this.element.up('li') &amp;&amp; this.element.up('li').removeClassName('accepted');
     } else if (label.hasClassName('no')) {
-      this.naInput.checked = false;
-      this.na.removeClassName('selected');
+      this.na &amp;&amp; (this.naInput.checked = false);
+      this.na &amp;&amp; this.na.removeClassName('selected');
       this.yesInput.checked = false;
       this.yes.removeClassName('selected');
       this.label &amp;&amp; this.label.removeClassName('yes-selected');
@@ -489,8 +489,8 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
       this.label &amp;&amp; this.label.addClassName('no-selected');
       this.element.up('li') &amp;&amp; this.element.up('li').removeClassName('accepted');
     } else {
-      this.naInput.checked = false;
-      this.na.removeClassName('selected');
+      this.na &amp;&amp; (this.naInput.checked = false);
+      this.na &amp;&amp; this.na.removeClassName('selected');
       this.yesInput.checked = true;
       this.yes.addClassName('selected');
       this.label &amp;&amp; this.label.addClassName('yes-selected');
