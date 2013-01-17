@@ -12,6 +12,7 @@ var SaveLoadEngine = Class.create( {
         this.graphLoaded = false;
         var me = this;
         this._timerID = null;
+        this._saveInProgress = false;
         document.observe("pedigree:actionEvent", function(event) {
             if(typeof me._timerID != "number") {
                 me._timerID = function() {
@@ -31,6 +32,11 @@ var SaveLoadEngine = Class.create( {
     },
 
     serialize: function() {
+        var me = this;
+        if (this._saveInProgress) {
+            // Don't send parallel save requests
+            return;
+        }
         this.resetTimerID();
         var nodes = {
             placeHolders : [],
@@ -69,6 +75,12 @@ var SaveLoadEngine = Class.create( {
         var savingNotification = new XWiki.widgets.Notification("Saving");
         new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0', 'method=PUT'), {
             method: 'POST',
+            onCreate: function() {
+                me._saveInProgress = true;
+            },
+            onComplete: function() {
+                me._saveInProgress = false;
+            },
             onSuccess: function() {savingNotification.replace(new XWiki.widgets.Notification("Successfuly saved"));},
             parameters: {"property#data": JSON.stringify(nodes), "property#image": image.innerHTML.replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + " \"width=\"500\" height=\"500\"")}
         });
