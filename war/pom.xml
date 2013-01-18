@@ -93,6 +93,12 @@
       <artifactId>obo2solr</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>pedigree-editor</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -139,6 +145,14 @@
             %regex[WEB-INF/lib/log4j-(?!over-slf4j).*.jar],
             WEB-INF/lib/activation-*.jar
           </packagingExcludes>
+          <overlays>
+            <overlay>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>pedigree-editor</artifactId>
+              <type>jar</type>
+              <targetPath>resources/uicomponents/</targetPath>
+            </overlay>
+          </overlays>
         </configuration>
       </plugin>
       <!-- Ensure that some modules are not added as dependencies. -->

@@ -29,14 +29,6 @@
       <outputDirectory>webapps/phenotips/WEB-INF/lib</outputDirectory>
       <unpack>false</unpack>
     </dependencySet>
-    <!-- Unpack the pedigree editor -->
-    <dependencySet>
-      <includes>
-        <include>${project.groupId}:pedigree-editor</include>
-      </includes>
-      <outputDirectory>/webapps/phenotips/resources/uicomponents/</outputDirectory>
-      <unpack>true</unpack>
-    </dependencySet>
     <!-- Unpack the HSQLDB database files to package it in the distribution -->
     <dependencySet>
       <includes>
