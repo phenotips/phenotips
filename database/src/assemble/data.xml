@@ -21,6 +21,7 @@
 -->
 
 <assembly>
+  <id>package</id>
   <formats>
     <format>zip</format>
   </formats>

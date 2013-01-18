@@ -34,7 +34,7 @@
   <packaging>pom</packaging>
   <description>ZIP packaging of the XWiki-based phenotype database interface, stored as an HSQLDB database dump.</description>
   <properties>
-    <xwiki.db.connection.url>jdbc:hsqldb:file:${project.build.directory}/data/xwiki_db;shutdown=true</xwiki.db.connection.url>
+    <xwiki.db.connection.url>jdbc:hsqldb:file:${project.build.directory}/data/database/xwiki_db;shutdown=true</xwiki.db.connection.url>
   </properties>
   <!-- Required for the exec:exec plugin execution below. Doesn't seem to work as an exec plugin
        dependency -->
@@ -42,11 +42,11 @@
     <dependency>
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
-      <version>2.2.8</version>
+      <version>2.2.9</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>wiki-ui</artifactId>
+      <artifactId>phenotips-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
       <scope>provided</scope>
@@ -62,21 +62,6 @@
           <groupId>org.xwiki.commons</groupId>
           <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
           <version>${xwiki.version}</version>
-          <configuration>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>wiki-ui</artifactId>
-            <outputDirectory>${project.build.directory}/xar</outputDirectory>
-          </configuration>
-          <executions>
-            <execution>
-              <!-- Right phase is prepare-package, but it is only in maven-2.1
-              <phase>prepare-package</phase>-->
-              <phase>package</phase>
-              <goals>
-                <goal>unxar</goal>
-              </goals>
-            </execution>
-          </executions>
         </plugin>
         <!-- Step 3: Import the XAR content into the Database -->
         <plugin>
@@ -84,7 +69,6 @@
           <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
           <version>${xwiki.version}</version>
           <configuration>
-            <sourceDirectory>${project.build.directory}/xar</sourceDirectory>
             <hibernateConfig>
               ${project.build.directory}/maven-shared-archive-resources/hibernate.cfg.xml
             </hibernateConfig>
@@ -93,21 +77,36 @@
             <dependency>
               <groupId>org.hsqldb</groupId>
               <artifactId>hsqldb</artifactId>
-              <version>2.2.8</version>
+              <version>2.2.9</version>
             </dependency>
-            <!-- We need the Servlet API dep since it's used by the Packager and since it has
-                 a provided scope in XWiki core it's not inherited as part of transitive deps -->
+            <dependency>
+              <groupId>org.xwiki.platform</groupId>
+              <artifactId>xwiki-platform-activitystream-api</artifactId>
+              <version>${xwiki.version}</version>
+              <scope>compile</scope>
+            </dependency>
+            <dependency>
+              <groupId>org.xwiki.platform</groupId>
+              <artifactId>xwiki-platform-annotation-io</artifactId>
+              <version>${xwiki.version}</version>
+              <scope>compile</scope>
+            </dependency>
+            <dependency>
+              <groupId>org.xwiki.platform</groupId>
+              <artifactId>xwiki-platform-rendering-wikimacro-store</artifactId>
+              <version>${xwiki.version}</version>
+              <scope>compile</scope>
+            </dependency>
             <dependency>
               <groupId>javax.servlet</groupId>
               <artifactId>servlet-api</artifactId>
               <version>2.4</version>
+              <scope>compile</scope>
             </dependency>
           </dependencies>
           <executions>
             <execution>
-              <!-- Right phase is prepare-package, but it is only in maven-2.1
-              <phase>prepare-package</phase>-->
-              <phase>package</phase>
+              <phase>prepare-package</phase>
               <goals>
                 <goal>import</goal>
               </goals>
@@ -119,6 +118,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <configuration>
+            <appendAssemblyId>false</appendAssemblyId>
             <descriptors>
               <descriptor>${basedir}/src/assemble/data.xml</descriptor>
             </descriptors>
@@ -134,7 +134,6 @@
         </plugin>
           <plugin>
             <artifactId>maven-remote-resources-plugin</artifactId>
-            <version>1.2.1</version>
             <executions>
               <execution>
                 <id>xwiki-platform-tool-configuration-resources</id>
@@ -144,17 +143,17 @@
                 </goals>
                 <configuration>
                   <resourceBundles>
-                    <resourceBundle>org.xwiki.platform:xwiki-platform-tool-configuration-resources:3.3</resourceBundle>
+                    <resourceBundle>org.xwiki.platform:xwiki-platform-tool-configuration-resources:4.4</resourceBundle>
                   </resourceBundles>
                   <properties>
-                    <xwikiDbConnectionUrl>jdbc:hsqldb:file:${project.build.directory}/data/xwiki_db;shutdown=true</xwikiDbConnectionUrl>
+                    <xwikiDbConnectionUrl>jdbc:hsqldb:file:${project.build.directory}/data/database/xwiki_db;shutdown=true</xwikiDbConnectionUrl>
                     <xwikiDbConnectionUsername>sa</xwikiDbConnectionUsername>
                     <xwikiDbConnectionPassword />
                     <xwikiDbConnectionDriverClass>org.hsqldb.jdbcDriver</xwikiDbConnectionDriverClass>
                     <xwikiDbDialect>org.hibernate.dialect.HSQLDialect</xwikiDbDialect>
                     <xwikiDbHbmXwiki>xwiki.hbm.xml</xwikiDbHbmXwiki>
                     <xwikiDbHbmFeeds>feeds.hbm.xml</xwikiDbHbmFeeds>
-                    <xwikiDbHbmCommonExtraMappings />
+                    <xwikiDbHbmCommonExtraMappings>activitystream.hbm.xml</xwikiDbHbmCommonExtraMappings>
                     <xwikiCfgPlugins>\
   com.xpn.xwiki.monitor.api.MonitorPlugin,\
   com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
@@ -163,19 +162,14 @@
   com.xpn.xwiki.plugin.skinx.CssSkinFileExtensionPlugin,\
   com.xpn.xwiki.plugin.skinx.LinkExtensionPlugin,\
   com.xpn.xwiki.plugin.feed.FeedPlugin,\
-  com.xpn.xwiki.plugin.ldap.LDAPPlugin,\
   com.xpn.xwiki.plugin.google.GooglePlugin,\
   com.xpn.xwiki.plugin.mail.MailPlugin,\
   com.xpn.xwiki.plugin.packaging.PackagePlugin,\
-  com.xpn.xwiki.plugin.query.QueryPlugin,\
   com.xpn.xwiki.plugin.svg.SVGPlugin,\
   com.xpn.xwiki.plugin.charts.ChartingPlugin,\
   com.xpn.xwiki.plugin.fileupload.FileUploadPlugin,\
   com.xpn.xwiki.plugin.image.ImagePlugin,\
-  com.xpn.xwiki.plugin.userdirectory.UserDirectoryPlugin,\
-  com.xpn.xwiki.plugin.usertools.XWikiUserManagementToolsImpl,\
   com.xpn.xwiki.plugin.zipexplorer.ZipExplorerPlugin,\
-  com.xpn.xwiki.plugin.autotag.AutoTagPlugin,\
   com.xpn.xwiki.plugin.lucene.LucenePlugin,\
   com.xpn.xwiki.plugin.diff.DiffPlugin,\
   com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin,\
@@ -191,8 +185,6 @@
                     <xwikiCfgDefaultSkin>colibri</xwikiCfgDefaultSkin>
                     <xwikiCfgDefaultBaseSkin>colibri</xwikiCfgDefaultBaseSkin>
                     <xwikiCfgEncoding>UTF-8</xwikiCfgEncoding>
-                    <xwikiCfgAdditionalProperties>xwiki.work.dir=data</xwikiCfgAdditionalProperties>
-                    <xwikiPropertiesContainerPersistentDirectory>data</xwikiPropertiesContainerPersistentDirectory>
                   </properties>
                 </configuration>
               </execution>

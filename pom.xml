@@ -52,6 +52,8 @@
   <properties>
     <xwiki.version>4.4</xwiki.version>
     <slf4j.version>1.7.2</slf4j.version>
+    <enforcer.skip>false</enforcer.skip>
+    <checkstyle.skip>false</checkstyle.skip>
   </properties>
 
   <dependencyManagement>
@@ -72,13 +74,440 @@
   </dependencyManagement>
 
   <build>
-   <extensions>
+    <defaultGoal>install</defaultGoal>
+    <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-webdav-jackrabbit</artifactId>
         <version>2.2</version>
       </extension>
+      <extension>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
+        <version>4.5-SNAPSHOT</version>
+      </extension>
     </extensions>
+    <plugins>
+      <!-- Show compiler warnings -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgument>-Xlint:all</compilerArgument>
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
+        </configuration>
+      </plugin>
+
+      <!-- We want to force packaging the license resources in the produced XWiki artifacts -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>xwiki-license-resources</id>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <resourceBundles>
+                <resourceBundle>org.xwiki.commons:xwiki-commons-tool-license-resources:${xwiki.version}</resourceBundle>
+              </resourceBundles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <!-- Lock down plugin version for build reproducibility -->
+        <version>1.1</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.xwiki.commons</groupId>
+            <artifactId>xwiki-commons-tool-enforcer-dependencies</artifactId>
+            <version>${xwiki.version}</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <!-- Check that all Maven plugins have versions defined -->
+          <execution>
+            <id>enforce-plugins</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requirePluginVersions>
+                  <message>Best Practice is to always define plugin versions!</message>
+                  <banLatest>false</banLatest>
+                  <banRelease>false</banRelease>
+                  <banSnapshots>false</banSnapshots>
+                </requirePluginVersions>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using commons-lang3 and not commons-lang -->
+          <execution>
+            <id>enforce-commons-lang3</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>false</searchTransitive>
+                  <message>
+                    Best practice is to use Commons Lang 3.x
+                  </message>
+                  <excludes>
+                    <exclude>commons-lang:commons-lang</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-no-legacy-dependencies</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <xwikiBannedDependencies implementation="org.xwiki.tool.enforcer.XWikiBannedDependencies">
+                  <searchTransitive>true</searchTransitive>
+                  <message>Don't depend on a XWiki Legacy module!</message>
+                  <excludes>
+                    <exclude>.*xwiki.*:.*-legacy-.*</exclude>
+                  </excludes>
+                </xwikiBannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <skip>${enforcer.skip}</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <!-- Apply checkstyle rules and fail the build in case of errors. The checkstyle config
+             files are taken from the build-tools JAR module.-->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.9.1</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.xwiki.commons</groupId>
+              <artifactId>xwiki-commons-tool-verification-resources</artifactId>
+              <version>${xwiki.version}</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <consoleOutput>true</consoleOutput>
+            <!-- We use this to disable checkstyle when the clover profile is executed since there's a
+                 conflict between checkstyle and clover. Namely the clovered code doesn't pass our
+                 checkstyle rules -->
+            <skip>${checkstyle.skip}</skip>
+            <configLocation>checkstyle.xml</configLocation>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- Check license headers and fail the build if they're missing or not matching the defined format -->
+        <plugin>
+          <groupId>com.mycila.maven-license-plugin</groupId>
+          <artifactId>maven-license-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.9.0</version>
+          <configuration>
+            <skip>${xwiki.license.skip}</skip>
+            <header>license.txt</header>
+            <strictCheck>true</strictCheck>
+            <headerDefinitions>
+              <!-- Our style for XML headers isn't standard so we need to define it in a custom manner.
+                   See xwiki-commons-tool-validation-resources module -->
+              <headerDefinition>license-xml-definition.xml</headerDefinition>
+              <headerDefinition>license-script-definition.xml</headerDefinition>
+              <headerDefinition>license-batch-definition.xml</headerDefinition>
+            </headerDefinitions>
+            <!-- Our Java and XML styles aren't the default so we need to change the mapping -->
+            <mapping>
+              <java>SLASHSTAR_STYLE</java>
+              <aj>SLASHSTAR_STYLE</aj>
+            </mapping>
+            <!-- We're only interested in checking our sources and our POMs -->
+            <includes>
+              <include>src/**</include>
+              <include>pom.xml</include>
+            </includes>
+            <excludes>
+              <!-- At the moment we don't have a comment syntax for components.txt files so we need to exclude them
+                   from the check -->
+              <exclude>**/components.txt</exclude>
+              <exclude>**/component-overrides.txt</exclude>
+              <!-- Since there's no comment syntax for Maven IT tests's goal.txt file we need to exclude it -->
+              <exclude>**/it/**/goals.txt</exclude>
+              <exclude>**/goal.txt</exclude>
+            </excludes>
+          </configuration>
+          <!-- Add a dependency since this is where the maven-license-plugin plugin will find the license.txt file -->
+          <dependencies>
+            <dependency>
+              <groupId>org.xwiki.commons</groupId>
+              <artifactId>xwiki-commons-tool-verification-resources</artifactId>
+              <version>${xwiki.version}</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.6</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.3</version>
+        </plugin>
+        <plugin>
+          <!-- Since 2.0-beta-9 maven-release-plugin uses remote tagging by default. Remote tagging implies that SCM
+               information is not fetched from the local working copy but from the SCM pom configuration. This forces
+               us to specify SCM configuration in every module which has its own lifecycle. Inheritance can't be used
+               for SCM configuration since a released parent pom contains SCM information about its tag and not about
+               the trunk. We could have globally set remoteTagging to false but we haven't since we prefer to follow
+               maven conventions as much as possible. -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.3.2</version>
+          <configuration>
+            <!-- By default the release plugin will execute the "clean" and "verify" goals but won't perform an
+                 "install". This is causing problems since several modules will fail to build during release:prepare.
+                 See http://tinyurl.com/354vwe for more details. Thus we're forcing the execution of the "install"
+                 goal. -->
+            <preparationGoals>clean install</preparationGoals>
+            <!-- Avoid site generation during the release:perform to speed up release process -->
+            <goals>deploy</goals>
+            <mavenExecutorId>forked-path</mavenExecutorId>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.5</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.1.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.9</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.5.1</version>
+          <!-- We're using Java 1.6 is required -->
+          <configuration>
+            <source>1.6</source>
+            <target>1.6</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.12.3</version>
+          <!-- Rule is to put tests in *Test classes -->
+          <configuration>
+            <includes>
+              <include>**/*Test.class</include>
+            </includes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.4</version>
+          <configuration>
+            <!-- Add some useful information about the extension in the manifest file. -->
+            <archive>
+              <manifestEntries>
+                <XWiki-Extension-Id>${project.groupId}:${project.artifactId}</XWiki-Extension-Id>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.5.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.2</version>
+          <configuration>
+            <!-- Add some useful information about the extension in the manifest file. -->
+            <archive>
+              <manifestEntries>
+                <XWiki-Extension-Id>${project.groupId}:${project.artifactId}</XWiki-Extension-Id>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.7</version>
+          <!-- We're deploying to Nexus using the WebDAV protocol -->
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.maven.wagon</groupId>
+              <artifactId>wagon-webdav-jackrabbit</artifactId>
+              <version>2.2</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>clirr-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.5</version>
+          <executions>
+            <execution>
+              <id>clirr-check</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <comparisonVersion>${clirr.previous.version}</comparisonVersion>
+            <skip>${clirr.skip}</skip>
+            <excludes>
+              <exclude>**/internal/**</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.8.1</version>
+          <configuration>
+            <!-- Always exclude the internal package since it's not user-public -->
+            <excludePackageNames>*.internal.*</excludePackageNames>
+            <!-- Make sure javadoc has enough memory -->
+            <maxmemory>300m</maxmemory>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.2</version>
+          <!-- Site Plugin doesn’t automatically pull the Apache Wagon implementation -->
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.maven.wagon</groupId>
+              <artifactId>wagon-webdav-jackrabbit</artifactId>
+              <version>2.2</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <reportPlugins>
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                  <!-- Since contacting the Maven Repositories can take a very long time, tell the plugin not to display
+                       the repository locations of the dependencies in the report. -->
+                  <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                </configuration>
+                <reports>
+                  <report>summary</report>
+                  <report>index</report>
+                  <report>dependencies</report>
+                  <report>dependency-convergence</report>
+                  <report>mailing-list</report>
+                  <report>issue-tracking</report>
+                  <report>scm</report>
+                </reports>
+              </plugin>
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                  <!-- Always exclude the internal package since it's not user-public -->
+                  <excludePackageNames>*.internal.*</excludePackageNames>
+                  <!-- Make sure javadoc has enough memory -->
+                  <maxmemory>300m</maxmemory>
+                </configuration>
+                <!-- Don't generate test javadoc -->
+                <reports>
+                  <report>javadoc</report>
+                </reports>
+              </plugin>
+            </reportPlugins>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <modules>
@@ -93,6 +522,7 @@
     <module>phenotype-mapping-service</module>
     <module>ui</module>
     <module>database</module>
+    <module>war</module>
     <module>distribution</module>
   </modules>
 </project>

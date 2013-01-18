@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <assembly>
+  <id>package</id>
   <formats>
     <format>zip</format>
   </formats>
   <includeBaseDirectory>true</includeBaseDirectory>
   <dependencySets>
-    <!-- XWiki webapp. -->
+    <!-- Phenotips webapp. -->
     <dependencySet>
       <includes>
-        <include>org.xwiki.enterprise:xwiki-enterprise-web</include>
+        <include>${project.groupId}:phenotips-war</include>
       </includes>
-      <outputDirectory>webapps/xwiki</outputDirectory>
+      <outputDirectory>webapps/phenotips</outputDirectory>
       <unpack>true</unpack>
       <unpackOptions>
         <excludes>
@@ -25,21 +26,7 @@
       <includes>
         <include>org.hsqldb:hsqldb</include>
       </includes>
-      <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
-      <unpack>false</unpack>
-    </dependencySet>
-    <!-- Add Phenotips specific jars and dependencies. -->
-    <dependencySet>
-      <includes>
-        <include>${project.groupId}:solr-access-service</include>
-        <include>${project.groupId}:ncbieutils-access-service</include>
-        <include>${project.groupId}:phenotype-mapping-service</include>
-        <include>${project.groupId}:obo2solr</include>
-        <include>${project.groupId}:patient-update-listeners</include>
-        <include>${project.groupId}:patient-tools</include>
-        <include>org.apache.commons:commons-math3</include>
-      </includes>
-      <outputDirectory>webapps/xwiki/WEB-INF/lib</outputDirectory>
+      <outputDirectory>webapps/phenotips/WEB-INF/lib</outputDirectory>
       <unpack>false</unpack>
     </dependencySet>
     <!-- Unpack the pedigree editor -->
@@ -47,7 +34,7 @@
       <includes>
         <include>${project.groupId}:pedigree-editor</include>
       </includes>
-      <outputDirectory>/webapps/xwiki/resources/uicomponents/</outputDirectory>
+      <outputDirectory>/webapps/phenotips/resources/uicomponents/</outputDirectory>
       <unpack>true</unpack>
     </dependencySet>
     <!-- Unpack the HSQLDB database files to package it in the distribution -->
@@ -55,7 +42,7 @@
       <includes>
         <include>${project.groupId}:database-zip</include>
       </includes>
-      <outputDirectory>/data/database</outputDirectory>
+      <outputDirectory>/data</outputDirectory>
       <unpack>true</unpack>
     </dependencySet>
     <!-- "solr" webapp. -->
@@ -104,7 +91,7 @@
   <files>
     <file>
       <source>${basedir}/src/main/resources/xhtml2fo.xsl</source>
-      <outputDirectory>webapps/xwiki/WEB-INF/classes</outputDirectory>
+      <outputDirectory>webapps/phenotips/WEB-INF/classes</outputDirectory>
     </file>
     <file>
       <source>${basedir}/src/main/resources/logback.xml</source>
@@ -112,15 +99,15 @@
     </file>
     <file>
       <source>${basedir}/src/main/resources/xwiki.js</source>
-      <outputDirectory>webapps/xwiki/resources/js/xwiki</outputDirectory>
+      <outputDirectory>webapps/phenotips/resources/js/xwiki</outputDirectory>
     </file>
     <file>
       <source>${basedir}/src/main/resources/livetable.js</source>
-      <outputDirectory>webapps/xwiki/resources/js/xwiki/table</outputDirectory>
+      <outputDirectory>webapps/phenotips/resources/js/xwiki/table</outputDirectory>
     </file>
     <file>
       <source>${basedir}/src/main/resources/autosave.js</source>
-      <outputDirectory>webapps/xwiki/resources/js/xwiki/editors</outputDirectory>
+      <outputDirectory>webapps/phenotips/resources/js/xwiki/editors</outputDirectory>
     </file>
   </files>
 </assembly>

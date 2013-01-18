@@ -28,9 +28,9 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.enterprise</groupId>
-      <artifactId>xwiki-enterprise-web</artifactId>
-      <version>${xwiki.version}</version>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-war</artifactId>
+      <version>${project.version}</version>
       <type>war</type>
       <optional>true</optional>
     </dependency>
@@ -46,41 +46,6 @@
       <artifactId>database-zip</artifactId>
       <version>${project.version}</version>
       <type>zip</type>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>solr-access-service</artifactId>
-      <version>${project.version}</version>
-      <type>jar</type>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>patient-tools</artifactId>
-      <version>${project.version}</version>
-      <type>jar</type>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>ncbieutils-access-service</artifactId>
-      <version>${project.version}</version>
-      <type>jar</type>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>phenotype-mapping-service</artifactId>
-      <version>${project.version}</version>
-      <type>jar</type>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>patient-update-listeners</artifactId>
-      <version>${project.version}</version>
-      <type>jar</type>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -112,6 +77,9 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
+          <configuration>
+            <appendAssemblyId>false</appendAssemblyId>
+          </configuration>
           <executions>
             <execution>
               <id>make-assembly</id>
