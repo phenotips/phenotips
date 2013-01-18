@@ -2636,9 +2636,48 @@ document.observe('xwiki:dom:loaded', function() {
         service.target.select('li').each(function (item) {
           if (item.down('input[type=checkbox]')) {return;}
           var idElt = item.down('.id');
+          var nameElt = item.down('.title');
           var id = idElt &amp;&amp; idElt.title;
           var name = item.down('.title a') &amp;&amp; item.down('.title a').innerHTML || item.down('.title') &amp;&amp; item.down('.title').innerHTML;
+          var categoryElt = item.down('.term-category');
           if (id &amp;&amp; name) {
+           if (service.suggestFor.hasClassName('generateYesNo')) {
+              // generate yn pickers
+              var positiveName = service.suggestFor.name.replace(/__suggested$/, '');
+              var negativeName = positiveName.replace(/(_\d+)_/, "$1_negative_");
+              var ynpicker = YesNoPicker.generatePickerElement([
+                    {type: 'yes', name: positiveName, id: '', selected: isValueSelected(positiveName, id)},
+                    {type: 'no' , name: negativeName, id: '', selected: isValueSelected(negativeName, id)}
+                  ], id, name, true, nameElt);
+              item.insert({top: ynpicker});
+
+              ynpicker.select('label').invoke('observe', 'click', function(event) {
+               var option = Event.findElement(event);
+               var input = option.down('input[type="checkbox"]');
+               if (!input) {return;}
+               if (input.checked) {
+                 var negative = option.hasClassName('no');
+                 var categoryClone = categoryElt.clone(true);
+                 if (negative) {
+                     categoryClone.insert(new Element('input', {type: 'hidden', name : 'fieldName', value : input.name}));
+                 }
+                 service.suggestFor._suggestPicker.silent = true;
+                 service.suggestFor._suggestPicker.acceptSuggestion({'id' : id, 'value' : name, 'category' : categoryClone, 'negative' : negative});
+                 service.suggestFor._suggestPicker.silent = false;
+                 new XWiki.widgets.Notification('Added "' + name + '"', 'done');
+               } else {
+                 var existingValue = $(service.suggestFor.id + '_' + input.value);
+                 if (existingValue) {
+                   existingValue.checked = false;
+                   new XWiki.widgets.Notification('Removed "' + name + '"', 'done');
+                 }
+               }
+            });
+
+            // enableHighlightChecked(ynpicker.down('.yes input'));
+            // enableHighlightChecked(ynpicker.down('.no input'));
+           } else {
+            // generate simple checkboxes
             var trigger = new Element('input', {'type' :  'checkbox', 'value' : id, 'title' : 'Select'});
             var existingValue = $(service.suggestFor.id + '_' + id);
             if (existingValue &amp;&amp; existingValue.checked) {
@@ -2658,10 +2697,11 @@ document.observe('xwiki:dom:loaded', function() {
                  var existingValue = $(service.suggestFor.id + '_' + input.value);
                  if (existingValue) {
                    existingValue.checked = false;
-                   new XWiki.widgets.Notification('The OMIM disease "' + input.__suggestion.value + '" was removed from the patient\'s diagnosis.', 'done');
+                   new XWiki.widgets.Notification('Removed "' + input.__suggestion.value + '"', 'done');
                  }
                }
             });
+           } // generate simple checkboxes, not yn pickers
           }
         });
     }

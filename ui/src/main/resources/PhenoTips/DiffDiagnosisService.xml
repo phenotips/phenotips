@@ -52,6 +52,11 @@
   &lt;li class="phenotype"&gt;
     &lt;span class="id" title="${item.id}"&gt;[${item.id}]&lt;/span&gt;
     &lt;span class="title"&gt;${item.name}&lt;/span&gt;
+    &lt;span class="hidden term-category"&gt;
+    #foreach ($c in $services.hpo.get($item.id).get('term_category'))
+      &lt;input type="hidden" value="$c"&gt;
+    #end
+    &lt;/span&gt;
   &lt;/li&gt;
   #end
 #end## foreach item

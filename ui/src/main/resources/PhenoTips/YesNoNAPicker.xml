@@ -468,7 +468,7 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
       return;
     }
     if (label.hasClassName('na')) {
-      this.naInput.checked = true;
+      this.na &amp;&amp; (this.naInput.checked = true);
       this.na &amp;&amp; this.na.addClassName('selected');
       this.label &amp;&amp; this.label.addClassName('na-selected');
       this.yesInput.checked = false;
@@ -512,7 +512,7 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
        b.selected &amp;&amp; (bInput.checked = true);
        if (b.name) {
          bInput.name = b.name;
-         bInput.id = b.name + "_" + value;
+         bInput.id = typeof b.id != "undefined" ? b.id : (b.name + "_" + value);
          bLabel.htmlFor = bInput.id;
        }
        bInput.hide();
