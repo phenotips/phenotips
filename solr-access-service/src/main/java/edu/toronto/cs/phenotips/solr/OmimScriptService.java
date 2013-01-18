@@ -71,9 +71,19 @@ public class OmimScriptService extends AbstractSolrScriptService
 
     public List<SearchResult> getDifferentialPhenotypes(Collection<String> phenotypes, int limit)
     {
+        return getDifferentialPhenotypes(phenotypes, Collections.<String> emptyList(), limit);
+    }
+
+    public List<SearchResult> getDifferentialPhenotypes(Collection<String> phenotypes, Collection<String> nphenotypes,
+        int limit)
+    {
         Map<String, String> params = new HashMap<String, String>();
         HPOScriptService hpoService = (HPOScriptService) this.service;
-        params.put(CommonParams.Q, "symptom:" + StringUtils.join(phenotypes, " symptom:").replaceAll("HP:", "HP\\\\:"));
+        String q = "symptom:" + StringUtils.join(phenotypes, " symptom:");
+        if (nphenotypes.size() > 0) {
+            q += " not_symptom:" + StringUtils.join(nphenotypes, " not_symptom:");
+        }
+        params.put(CommonParams.Q, q.replaceAll("HP:", "HP\\\\:"));
         params.put(CommonParams.ROWS, "100");
         params.put(CommonParams.START, "0");
         params.put(CommonParams.DEBUG_QUERY, "true");
@@ -101,7 +111,7 @@ public class OmimScriptService extends AbstractSolrScriptService
             String omimId = (String) disorder.getFieldValue(ID_FIELD_NAME);
             float score = ((SimpleOrderedMap<Float>) explanations.get(omimId)).get("value");
             for (Object hpoId : disorder.getFieldValues("actual_symptom")) {
-                if (allAncestors.contains(hpoId)) {
+                if (allAncestors.contains(hpoId) || nphenotypes.contains(hpoId)) {
                     continue;
                 }
                 cummulativeScore.addTo((String) hpoId, (double) score);

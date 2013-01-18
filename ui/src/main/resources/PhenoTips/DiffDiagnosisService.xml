@@ -38,8 +38,12 @@
     #foreach($i in $request.getParameterValues('symptom'))
       #set ($discard = $data.add($i))
     #end
+    #set ($ndata = $collectionstool.set)
+    #foreach($i in $request.getParameterValues('not_symptom'))
+      #set ($discard = $ndata.add($i))
+    #end
     #if ("$!{request.format}" == 'html')
-#set ($results = $_service.getDifferentialPhenotypes($data, $limit))
+#set ($results = $_service.getDifferentialPhenotypes($data, $ndata, $limit))
 #if ($results.size() &gt; 0)
 {{html clean="false"  wiki="false"}}##
 &lt;ul&gt;
