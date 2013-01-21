@@ -7,7 +7,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>distribution-wiki</artifactId>
-  <name>Phenotype Database - Wiki-based Distribution</name>
+  <name>PhenoTips - Wiki-based Distribution</name>
   <packaging>pom</packaging>
   <description>Distribution including a Jetty server, Solr, and an UI based on XWiki</description>
   <properties>

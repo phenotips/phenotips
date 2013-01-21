@@ -30,7 +30,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>database-zip</artifactId>
-  <name>Phenotype Database - HSQLDB Database for XWiki</name>
+  <name>PhenoTips - HSQLDB Database for XWiki</name>
   <packaging>pom</packaging>
   <description>ZIP packaging of the XWiki-based phenotype database interface, stored as an HSQLDB database dump.</description>
   <properties>

@@ -8,5 +8,5 @@
   </parent>
   <artifactId>solr-configuration</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>Phenotype Database - Solr configuration files</name>
+  <name>PhenoTips - Solr configuration files</name>
 </project>
