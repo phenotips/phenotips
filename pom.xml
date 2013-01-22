@@ -50,7 +50,7 @@
   </distributionManagement>
 
   <properties>
-    <xwiki.version>4.4</xwiki.version>
+    <xwiki.version>4.4.1</xwiki.version>
     <slf4j.version>1.7.2</slf4j.version>
   </properties>
 
