@@ -34,10 +34,9 @@ var PersonGroup = Class.create(AbstractPerson, {
      * not connected to the proband
      */
     remove: function($super, isRecursive, skipConfirmation) {
-        editor.getGraph().removePersonGroup(this);
         var parents = this.getParentPartnership();
         if(!isRecursive && parents && parents.getChildren().length == 1) {
-            var placeholder = editor.getGraph().addPlaceHolder(this.getX(), this.getY(), "U", true);
+            var placeholder = editor.getGraph().addPlaceHolder(this.getX(), this.getY(), "U");
             parents.removeChild(this);
             parents.addChild(placeholder);
         }
