@@ -30,7 +30,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>obo2solr</artifactId>
-  <name>Phenotype Database - OBO to Solr conversion</name>
+  <name>PhenoTips - OBO to Solr conversion</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>

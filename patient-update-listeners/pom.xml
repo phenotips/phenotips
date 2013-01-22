@@ -30,7 +30,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>patient-update-listeners</artifactId>
-  <name>Phenotype Database - Listeners for updating computed Patient fields</name>
+  <name>PhenoTips - Listeners for updating computed Patient fields</name>
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>

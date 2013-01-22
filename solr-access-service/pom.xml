@@ -30,7 +30,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>solr-access-service</artifactId>
-  <name>Phenotype Database - Solr Access Service</name>
+  <name>PhenoTips - Solr Access Service</name>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

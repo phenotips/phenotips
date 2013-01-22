@@ -5,8 +5,8 @@
     <artifactId>phenotips</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>wiki-ui</artifactId>
-  <name>Phenotype Database - Wiki-based interface</name>
+  <artifactId>phenotips-ui</artifactId>
+  <name>PhenoTips - Wiki-based interface</name>
   <packaging>xar</packaging>
   <dependencies>
     <dependency>

@@ -38,8 +38,12 @@
     #foreach($i in $request.getParameterValues('symptom'))
       #set ($discard = $data.add($i))
     #end
+    #set ($ndata = $collectionstool.set)
+    #foreach($i in $request.getParameterValues('not_symptom'))
+      #set ($discard = $ndata.add($i))
+    #end
     #if ("$!{request.format}" == 'html')
-#set ($results = $_service.getDifferentialPhenotypes($data, $limit))
+#set ($results = $_service.getDifferentialPhenotypes($data, $ndata, $limit))
 #if ($results.size() &gt; 0)
 {{html clean="false"  wiki="false"}}##
 &lt;ul&gt;
@@ -48,6 +52,11 @@
   &lt;li class="phenotype"&gt;
     &lt;span class="id" title="${item.id}"&gt;[${item.id}]&lt;/span&gt;
     &lt;span class="title"&gt;${item.name}&lt;/span&gt;
+    &lt;span class="hidden term-category"&gt;
+    #foreach ($c in $services.hpo.get($item.id).get('term_category'))
+      &lt;input type="hidden" value="$c"&gt;
+    #end
+    &lt;/span&gt;
   &lt;/li&gt;
   #end
 #end## foreach item

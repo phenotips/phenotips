@@ -21,6 +21,7 @@ package edu.toronto.cs.phenotips.solr;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,6 +55,11 @@ import edu.toronto.cs.phenotips.obo2solr.TermData;
 @Singleton
 public class HPOScriptService extends AbstractSolrScriptService
 {
+    /**
+     * The name of the Alternative ID field, used for older aliases of updated HPO terms.
+     */
+    protected static final String ALTERNATIVE_ID_FIELD_NAME = "alt_id";
+
     /**
      * Get the HPO IDs of the specified phenotype and all its ancestors.
      * 
@@ -152,5 +158,17 @@ public class HPOScriptService extends AbstractSolrScriptService
     protected String getName()
     {
         return "hpo";
+    }
+
+    @Override
+    public SolrDocument get(String id)
+    {
+        SolrDocument result = super.get(id);
+        if (result == null) {
+            Map<String, String> queryParameters = new HashMap<String, String>();
+            queryParameters.put(ALTERNATIVE_ID_FIELD_NAME, id);
+            result = get(queryParameters);
+        }
+        return result;
     }
 }

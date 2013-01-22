@@ -364,7 +364,6 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
         }
         result.put("spellcheck", Boolean.toString(true));
         result.put("spellcheck.collate", Boolean.toString(true));
-        result.put("spellcheck.onlyMorePopular", Boolean.toString(true));
         return result;
     }
 
