@@ -42,6 +42,7 @@ var PedigreeEditor = Class.create({
         this._graph = new Graph();
         this._actionStack = new ActionStack();
         this._saveLoadEngine = new SaveLoadEngine();
+        this._saveLoadIndicator = new SaveLoadIndicator();
         this._templateSelector = new TemplateSelector();
         this._saveLoadEngine.load();
 

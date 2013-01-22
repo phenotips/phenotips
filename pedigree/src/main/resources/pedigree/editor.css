@@ -100,6 +100,13 @@
 #editor-menu .close {
   background-image: url("$xwiki.getSkinFile('icons/silk/bullet_go.png')");
 }
+.loading-indicator {
+    background-image: url("$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')");
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100px;
+    width: 200px;
+}
 #editor-menu .menu-item:hover {
   box-shadow: #fff 0 0 6px 0;
 }

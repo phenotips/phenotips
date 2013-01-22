@@ -72,7 +72,7 @@ var SaveLoadEngine = Class.create( {
         var backgroundParent =  background.parentNode;
         backgroundParent.removeChild(background);
         var bbox = image.down().getBBox();
-        var savingNotification = new XWiki.widgets.Notification("Saving");
+        var savingNotification = new XWiki.widgets.Notification("Saving", "inprogress");
         new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0', 'method=PUT'), {
             method: 'POST',
             onCreate: function() {
@@ -91,60 +91,68 @@ var SaveLoadEngine = Class.create( {
     load: function(graphObj) {
         var successfulLoad = false;
         if(graphObj) {
-            if(this.isValidGraphObject(graphObj)) {
-                var maxID = editor.getGraph().getIdCount();
-                editor.getGraph().clearGraph(true);
-                var probandX = editor.getWorkspace().getWidth()/2;
-                var probandY = editor.getWorkspace().getHeight()/2;
-                var xOffset = probandX - graphObj.proband.x;
-                var yOffset = probandY - graphObj.proband.y;
-                var people = graphObj.persons;
-                people.unshift(graphObj.proband);
-                people = people.concat(graphObj.placeHolders, graphObj.personGroups);
-                people.forEach(function(info) {
-                    info.x = info.x + xOffset;
-                    info.y = info.y + yOffset;
-                    var newPerson = editor.getGraph()["add" + info.type](info.x, info.y, info.gender, info.id);
-                    if(info.id >= maxID) {
-                        maxID = info.id;
-                        editor.getGraph().setIdCount(maxID + 1);
-                    }
-                    newPerson.loadInfo(info);
-                });
-                graphObj.partnerships.forEach(function(info) {
-                    info.x = info.x + xOffset;
-                    info.y = info.y + yOffset;
-                    var partner1 = editor.getGraph().getNodeMap()[info.partner1ID],
-                        partner2 = editor.getGraph().getNodeMap()[info.partner2ID];
-                    if(info.id >= maxID) {
-                        maxID = info.id;
-                        editor.getGraph().setIdCount(maxID + 1);
-                    }
-                    if(partner1 && partner2)
-                        editor.getGraph().addPartnership(info.x, info.y, partner1, partner2, info.id);
-                });
-                graphObj.pregnancies.forEach(function(info) {
-                    info.x = info.x + xOffset;
-                    info.y = info.y + yOffset;
-                    var partnership = editor.getGraph().getNodeMap()[info.partnershipID];
-                    if(partnership) {
-                        var preg = editor.getGraph().addPregnancy(info.x, info.y, partnership, info.id);
+            document.fire("pedigree:load:start");
+            (function() {
+                if(this.isValidGraphObject(graphObj)) {
+                    var maxID = editor.getGraph().getIdCount();
+                    editor.getGraph().clearGraph(true);
+                    var probandX = editor.getWorkspace().getWidth()/2;
+                    var probandY = editor.getWorkspace().getHeight()/2;
+                    var xOffset = probandX - graphObj.proband.x;
+                    var yOffset = probandY - graphObj.proband.y;
+                    var people = graphObj.persons;
+                    people.unshift(graphObj.proband);
+                    people = people.concat(graphObj.placeHolders, graphObj.personGroups);
+                    people.forEach(function(info) {
+                        info.x = info.x + xOffset;
+                        info.y = info.y + yOffset;
+                        var newPerson = editor.getGraph()["add" + info.type](info.x, info.y, info.gender, info.id);
                         if(info.id >= maxID) {
                             maxID = info.id;
                             editor.getGraph().setIdCount(maxID + 1);
                         }
-                        preg.loadInfo(info);
+                        newPerson.loadInfo(info);
+                    });
+                    graphObj.partnerships.forEach(function(info) {
+                        info.x = info.x + xOffset;
+                        info.y = info.y + yOffset;
+                        var partner1 = editor.getGraph().getNodeMap()[info.partner1ID],
+                            partner2 = editor.getGraph().getNodeMap()[info.partner2ID];
+                        if(info.id >= maxID) {
+                            maxID = info.id;
+                            editor.getGraph().setIdCount(maxID + 1);
+                        }
+                        if(partner1 && partner2)
+                            editor.getGraph().addPartnership(info.x, info.y, partner1, partner2, info.id);
+                    });
+                    graphObj.pregnancies.forEach(function(info) {
+                        info.x = info.x + xOffset;
+                        info.y = info.y + yOffset;
+                        var partnership = editor.getGraph().getNodeMap()[info.partnershipID];
+                        if(partnership) {
+                            var preg = editor.getGraph().addPregnancy(info.x, info.y, partnership, info.id);
+                            if(info.id >= maxID) {
+                                maxID = info.id;
+                                editor.getGraph().setIdCount(maxID + 1);
+                            }
+                            preg.loadInfo(info);
+                        }
+                    });
+                    if (this.probandDataLoaded) {
+                        this.updateProbandData();
                     }
-                });
-                if (this.probandDataLoaded) {
-                    this.updateProbandData();
+                    this.serialize();
+                    document.fire("pedigree:load:finish");
+                    successfulLoad = true;
                 }
-                this.serialize();
-                successfulLoad = true;
-            }
+            }).bind(this).delay();
         } else {
             new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PedigreeClass/0/'), {
-                method: 'GET', onSuccess: function (response) {
+                method: 'GET',
+                onCreate: function() {
+                    document.fire("pedigree:load:start");
+                },
+                onSuccess: function (response) {
                     var tempNode = document.createElement('div');
                     tempNode.innerHTML = response.responseXML.documentElement.querySelector("property[name='data'] > value").textContent.replace(/&amp;/, '&');
                     if (tempNode.textContent.trim()) {
