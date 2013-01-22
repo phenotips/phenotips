@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>edu.toronto.cs.phenotips</groupId>
-  <artifactId>phenotips</artifactId>
+  <artifactId>phenotips-parent</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -505,18 +505,9 @@
   </build>
 
   <modules>
-    <module>solr-configuration</module>
-    <module>jetty-resources</module>
+    <module>components</module>
+    <module>resources</module>
     <module>pedigree</module>
-    <module>obo2solr</module>
-    <module>solr-access-service</module>
-    <module>patient-update-listeners</module>
-    <module>patient-tools</module>
-    <module>ncbieutils-access-service</module>
-    <module>phenotype-mapping-service</module>
-    <module>ui</module>
-    <module>database</module>
-    <module>war</module>
     <module>distribution</module>
   </modules>
 </project>

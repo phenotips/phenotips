@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>edu.toronto.cs.phenotips</groupId>
-    <artifactId>phenotips</artifactId>
+    <artifactId>phenotips-distribution</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>database-zip</artifactId>
