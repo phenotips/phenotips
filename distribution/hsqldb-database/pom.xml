@@ -26,11 +26,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>edu.toronto.cs.phenotips</groupId>
-    <artifactId>phenotips</artifactId>
+    <artifactId>phenotips-distribution</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>database-zip</artifactId>
-  <name>PhenoTips - HSQLDB Database for XWiki</name>
+  <name>PhenoTips - HSQLDB Database</name>
   <packaging>pom</packaging>
   <description>ZIP packaging of the XWiki-based phenotype database interface, stored as an HSQLDB database dump.</description>
   <properties>

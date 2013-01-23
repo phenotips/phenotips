@@ -26,11 +26,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>edu.toronto.cs.phenotips</groupId>
-    <artifactId>phenotips</artifactId>
+    <artifactId>phenotips-distribution</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>phenotips-war</artifactId>
-  <name>Phenotips - War package</name>
+  <name>PhenoTips - War package</name>
   <packaging>war</packaging>
   <properties>
     <!-- By default we don't include Legacy modules and thus we don't need to exclude the non legacy JARs -->

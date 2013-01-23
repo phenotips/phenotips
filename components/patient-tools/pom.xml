@@ -26,11 +26,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>edu.toronto.cs.phenotips</groupId>
-    <artifactId>phenotips</artifactId>
+    <artifactId>phenotips-components</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>solr-access-service</artifactId>
-  <name>PhenoTips - Solr Access Service</name>
+  <artifactId>patient-tools</artifactId>
+  <name>PhenoTips - Various Tools</name>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -43,8 +43,18 @@
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-observation-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-cache-api</artifactId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-bridge</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
@@ -52,18 +62,18 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.solr</groupId>
-      <artifactId>solr-solrj</artifactId>
-      <version>4.0.0</version>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-math3</artifactId>
+      <version>3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>solr-access-service</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>obo2solr</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <!-- Test dependencies -->
     <dependency>
@@ -81,5 +91,6 @@
   </dependencies>
   <properties>
     <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
   </properties>
 </project>
