@@ -1,7 +1,7 @@
 
 /**
- * A general superclass for nodes on the Pedigree graph. Contains information about related nodes
- * and some properties specific for people. Creates an instance of AbstractNodeVisuals on initialization
+ * A general superclass for Person nodes on the Pedigree graph. Contains information about related nodes
+ * and some properties specific for people. Creates an instance of AbstractPersonVisuals on initialization
  *
  * @class AbstractPerson
  * @extends AbstractNode
