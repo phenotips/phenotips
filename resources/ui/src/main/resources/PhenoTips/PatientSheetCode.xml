@@ -3496,8 +3496,6 @@ input[type=text]:focus, textarea:focus {
   margin: 0;
   color: $theme.buttonPrimaryTextColor;
   background-color: $theme.buttonPrimaryBackgroundColor;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
   border-radius: 2px;
 }
 .suggestItem .related-terms a, .suggestItem .browse-related-terms a {
@@ -3698,8 +3696,6 @@ label.selected, label.subterm-selected {
   font-weight: bold;
   padding-left: 4px;
   margin-left: -4px;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
   border-radius: 2px;
 }
 label.subterm-selected {
@@ -3757,8 +3753,6 @@ input.wrongValue {
 .emphasized-box {
   background: $theme.backgroundSecondaryColor;
   border: 1px solid $theme.backgroundSecondaryColor;
-  -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.15);
-  -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.15);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.15);
 }
 .quick-search-box {
@@ -4003,12 +3997,10 @@ input.wrongValue {
 /** -------------------------------------------- **/
 /** Suggestions **/
 .accepted-suggestions li .delete-tool, .clear-tool {
-    background-color: $theme.buttonPrimaryBackgroundColor;
-    color: $theme.buttonPrimaryTextColor;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-    padding: 2px;
+  background-color: $theme.buttonPrimaryBackgroundColor;
+  color: $theme.buttonPrimaryTextColor;
+  border-radius: 3px;
+  padding: 2px;
 }
 /** -------------------------------------------- **/
 /** Negative phenotypes **/
@@ -4054,20 +4046,14 @@ input.wrongValue {
 .enable-columns .predefined-entries {
  -moz-column-count: 2;
  -webkit-column-count: 2;
- -o-column-count: 2;
- -ms-column-count: 2;
  column-count: 2;
 }
 .enable-columns .predefined-entries .subsection {
   -webkit-column-break-before:avoid;
   -moz-column-break-before:avoid;
-  -o-column-break-before:avoid;
-  -ms-column-break-before:avoid;
   column-break-before:avoid;
   webkit-column-break-inside:avoid;
   -moz-column-break-inside:avoid;
-  -o-column-break-inside:avoid;
-  -ms-column-break-inside:avoid;
   column-break-inside:avoid;
   display: table;
 }</code>
