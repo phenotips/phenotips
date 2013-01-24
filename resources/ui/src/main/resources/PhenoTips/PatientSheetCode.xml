@@ -2386,6 +2386,14 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
     <property>
       <code>document.observe('xwiki:dom:loaded', function() {
+  // Edit buttons for every heading in view mode
+  var editButton = $('tmActionEdit');
+  if (editButton) {
+    $$('h2[id]').each(function(title) {
+      var editLink = new Element('a', {'class' : 'action-edit', 'href' : editButton.href + '#' + title.id}).update('Edit');
+      title.insert(editLink);
+    });
+  }
   if (!$('inline')) {return;}
 
   // , .chapter.phenotype-info .negative_phenotype-group
@@ -3543,6 +3551,19 @@ input[type=text]:focus, textarea:focus {
   margin: 3.5em 0 1em;
   padding: 5px 10px;
   position: relative;
+}
+h2 a.action-edit {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  text-indent: 40px;
+  background: transparent url("$xwiki.getSkinFile('edit-s-gray.png')") center center no-repeat;
+  visibility: hidden;
+  overflow: hidden;
+  margin: 0 .5em;
+}
+.chapter:hover a.action-edit {
+  visibility: visible;
 }
 .phenotype-info {
   border: 0 none;
