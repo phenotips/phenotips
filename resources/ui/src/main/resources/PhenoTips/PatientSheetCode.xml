@@ -1047,6 +1047,14 @@ document.observe('dom:loaded', function() {
     // ------------------------------------------------------------------------
     selectionSummary = $('current-phenotype-selection');
     if (selectionSummary) {
+        selectionSummary._updateVisibility = function() {
+           if (!this.down('.group-contents input[type="checkbox"]')) {
+             this.up().hide();
+           } else {
+             this.up().show();
+           }
+        }.bind(selectionSummary);
+
         $$('.browse-phenotype-categories .phenotype-group h3').each(function(groupTitle) {
            var group = new Element('div', {'class' : 'summary-group', id : 'summary-group-' + groupTitle.id});
            group.insert({
@@ -1060,6 +1068,7 @@ document.observe('dom:loaded', function() {
              } else {
                this.show();
              }
+             selectionSummary._updateVisibility();
            }.bind(group);
            group._find = function(value, type) {
              return this.down('.group-contents .' + type + ' input[value="' + value + '"]');
@@ -1145,6 +1154,7 @@ document.observe('dom:loaded', function() {
              this._silentRemove(inputElt.value, type);
           }
         }.bind(selectionSummary);
+        selectionSummary._updateVisibility();
     }
     // -----------------------------------------------------------------
     // Create and attach the suggests
