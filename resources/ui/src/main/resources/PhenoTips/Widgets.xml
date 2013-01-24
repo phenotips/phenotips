@@ -806,9 +806,20 @@
                           noHighlight :true }) );
     }
     if (this.fld.hasClassName('accept-value')) {
+       var customItemId = this.fld.value.replace(/[^a-z0-9_]+/gi, "_");
+       var customItemCategoryInfo = this.fld.next('input[name="_category"]');
+       var customItemCategories = customItemCategoryInfo &amp;&amp; customItemCategoryInfo.value.split(",") || [];
+       var customItemCategoriesElt = new Element('div', {'class' : 'hidden term-category'});
+       var categoryFieldName = this.fld.name + "__" + customItemId + "__category";
+       customItemCategories.each(function (c) {
+         if (c) {
+           customItemCategoriesElt.insert(new Element('input', {'type' : 'hidden', name: categoryFieldName, value: c}));
+         }
+       });
        list.addItem(this.generateListItem({
-         id: this.fld.value,
+         id: customItemId,
          value: this.fld.value,
+         category: customItemCategoriesElt,
          info: new Element('div', {'class' : 'hint'}).update('(your text, not a standard term)')
        }, 'custom-value'));
     }
