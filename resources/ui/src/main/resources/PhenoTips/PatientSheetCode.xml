@@ -544,11 +544,22 @@ document.observe('dom:loaded', function() {
       var tocSticky = new StickyBox(toc, docContent, {shadowSize : 6});
     }
   }
-  var summary = $('current-phenotype-selection') &amp;&amp; $('current-phenotype-selection').up('.selector-panel');;
+  var summaryContent = $('current-phenotype-selection');
+  var summary = summaryContent &amp;&amp; summaryContent.up('.selector-panel');;
   if (summary) {
     var container = summary.up();//alert(container);
     summary.addClassName('absolute');
-    var sSticky  = new StickyBox(summary, container, {shadowSize : 25, isSticky : function(element) {return element.hasClassName('third-width') &amp;&amp; element.getHeight() &lt; element.previous().getHeight()}});
+    var sSticky  = new StickyBox(summary, container, {shadowSize : 40, resize: true, isSticky : function(element) {return element.hasClassName('half-width') &amp;&amp; element.getHeight() &lt; element.previous().getHeight()}});
+    summary.observe('size:changed', function(event) {
+      if (!event.memo) {
+         summaryContent.style.height = '';
+         summaryContent.style.overflow = '';
+      } else {
+         summaryContent.style.height = (summaryContent.getHeight() + (event.memo.diff || 0)) + 'px';
+         summaryContent.style.overflow = 'auto';
+         summary.style.overflow = '';
+      }
+    });
   }
 });</code>
     </property>
@@ -3585,17 +3596,42 @@ h1, h2, h3, h4 {
   border-top: 1px dotted $theme.borderColor;
 }
 .browse-phenotype-categories {
-  margin-top: .5em;
+  margin: .5em .75% 0em !important;
   padding-right: .75%;
-  margin-right: .75% !important;
-  border-right: 3px solid $theme.borderColor;
 }
 .current-phenotype-selection {
-  margin-top: .5em;
+  padding: 0 !important;
+  background-color: #FFFFFF;
+  border: 1px solid #FFFFFF;
+  border-radius: 4px;
+  box-shadow: 0 1px 8px #DDDDDD inset;
+  float: right;
   margin-left: 0 !important;
   margin-right: 0 !important;
-  padding-left: 0 !important;
-  float: left;
+  margin-top: 0.5em;
+}
+#current-phenotype-selection {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.current-phenotype-selection &gt; h3 {
+    background: none repeat scroll 0 0 #333333;
+    border: 0 none;
+    border-radius: 4px 4px 0 0;
+    color: #FFFFFF;
+    margin: 0 !important;
+    padding: 0.4em 1em;
+    text-shadow: none;
+}
+.current-phenotype-selection h3 {
+  margin-left: 1em;
+  margin-right: 1em;
+}
+.current-phenotype-selection.half-width {
+  width: 47.5%;
+}
+#current-phenotype-selection .summary-group {
+  margin: 1em;
 }
 #current-phenotype-selection .summary-item {
   padding-left: 18px;
@@ -4812,7 +4848,7 @@ table.extradata-list td.bmi_percentile {
       #__qsBox("$!{class.name}_$!{obj.number}_phenotype" "$!{__qsBoxCssClass}")
         #if ($context.action == 'edit')
           (% class="selector-panels"%)(((
-          (% class="twothird-width selector-panel browser browse-phenotype-categories force-collapse"%)(((
+          (% class="half-width selector-panel browser browse-phenotype-categories force-collapse"%)(((
           (% class="browser-title"%)
           === **Browse categories** ===
 (% class="background-search diffDiagnosis-search phenotype-group collapsible-group hidden" title="Phenotypes that are likely to help improve differential diagnosis"%)(((
@@ -4826,7 +4862,7 @@ table.extradata-list td.bmi_percentile {
           )))
         #if ($xcontext.action == 'edit')
           )))## browse-phenotype-categories
-          (% class="third-width selector-panel current-phenotype-selection"%)(((
+          (% class="half-width selector-panel current-phenotype-selection"%)(((
           === **Current selection** ===
              (% id="current-phenotype-selection"%)((()))
           )))

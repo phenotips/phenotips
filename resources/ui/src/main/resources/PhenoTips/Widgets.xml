@@ -2923,6 +2923,7 @@ console.log(categories);
       <code>StickyBox = Class.create({
     options : {
       shadowSize : 6,
+      resize : false,
       isSticky : function(element) {return true}
     },
     initialize : function(stickyElement, stickyAreaElement, options) {
@@ -2944,7 +2945,18 @@ console.log(categories);
       if (!this.options.isSticky(this.stickyElement) || this.stickyElement.getHeight() &gt;= this.stickyAreaElement.getHeight()) {
         return;
       }
+      this.stickyElement.style.height = '';
+      this.stickyElement.style.overflow = '';
+      this.stickyElement.fire('size:changed');
       this.boxHeight = this.stickyElement.getHeight();
+      var maxBoxHeight = document.viewport.getHeight() - 2*this.options.shadowSize;
+      if (this.options.resize) {
+         var memo =  {'diff' : (maxBoxHeight - this.boxHeight), 'original': this.boxHeight};
+         this.boxHeight = maxBoxHeight;
+         this.stickyElement.style.height = this.boxHeight + "px";
+         this.stickyElement.style.overflow = 'auto';
+         this.stickyElement.fire('size:changed', memo);
+      }
       this.boxWidth = this.stickyElement.getWidth();
       this.boxMinTop = this.stickyAreaElement.cumulativeOffset().top + this.options.shadowSize ;
       this.boxMaxTop = this.stickyAreaElement.cumulativeOffset().top + this.stickyAreaElement.getHeight() - this.boxHeight;
