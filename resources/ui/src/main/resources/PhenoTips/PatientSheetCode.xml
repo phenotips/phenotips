@@ -1049,9 +1049,9 @@ document.observe('dom:loaded', function() {
     if (selectionSummary) {
         selectionSummary._updateVisibility = function() {
            if (!this.down('.group-contents input[type="checkbox"]')) {
-             this.up().hide();
+             this.up().style.visibility = 'hidden';
            } else {
-             this.up().show();
+             this.up().style.visibility = '';
            }
         }.bind(selectionSummary);
 
