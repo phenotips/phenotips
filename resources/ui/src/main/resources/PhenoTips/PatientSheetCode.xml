@@ -2401,7 +2401,7 @@ document.observe('xwiki:dom:loaded', function() {
     });
   });
   $$('.chapter:not(.patient-info)').each(function(item) {
-     if (!item.down('input[type=checkbox]:checked') &amp;&amp; !item.down('.extradata-list td input[type=text]')) {
+     if (!(window.location.hash &amp;&amp; item.down(window.location.hash))) {
        item.addClassName('collapsed');
      }
   });
