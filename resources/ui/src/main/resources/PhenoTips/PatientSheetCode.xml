@@ -3461,18 +3461,16 @@ hr {
   clear: both;
 }
 input[type=text], textarea {
+  border-color: $theme.pageContentBackgroundColor;
   width: 100%;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
   border-radius: 4px;
+  box-shadow: 0 1px 2px #aaa inset;
 }
 textarea {
   width: 98%;
 }
 input[type=text]:focus, textarea:focus {
   border-color: $theme.linkColor;
-  -moz-box-shadow: 0 0 4px $theme.borderColor;
-  box-shadow: 0 0 4px $theme.borderColor;
 }
 .fullScreenEditLinkContainer {
   display: none !important;
