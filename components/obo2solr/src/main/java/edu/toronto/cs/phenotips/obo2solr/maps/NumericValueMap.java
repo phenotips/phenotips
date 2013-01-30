@@ -25,40 +25,39 @@ import java.util.Set;
 
 interface NumericValueMap<K, N extends Number>
 {
+    N addTo(K key, N value);
 
-    public N addTo(K key, N value);
+    N reset(K key);
 
-    public N reset(K key);
+    N get(K key);
 
-    public N get(K key);
+    N safeGet(K key);
 
-    public N safeGet(K key);
+    List<K> sort();
 
-    public List<K> sort();
+    List<K> sort(final boolean descending);
 
-    public List<K> sort(final boolean descending);
+    K getMax();
 
-    public K getMax();
+    K getMin();
 
-    public K getMin();
+    N getMaxValue();
 
-    public N getMaxValue();
+    N getMinValue();
 
-    public N getMinValue();
+    void clear();
 
-    public void clear();
+    boolean containsKey(K key);
 
-    public boolean containsKey(K key);
+    boolean isEmpty();
 
-    public boolean isEmpty();
+    Set<K> keySet();
 
-    public Set<K> keySet();
+    N put(K key, N value);
 
-    public N put(K key, N value);
+    void putAll(Map< ? extends K, ? extends N> m);
 
-    public void putAll(Map< ? extends K, ? extends N> m);
+    N remove(K key);
 
-    public N remove(K key);
-
-    public int size();
+    int size();
 }

@@ -62,6 +62,12 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
      */
     protected static final String ID_FIELD_NAME = "id";
 
+    /**
+     * Object used to mark in the cache that a document doesn't exist, since null means that the cache doesn't contain
+     * the requested entry.
+     */
+    private static final SolrDocument EMPTY_MARKER = new SolrDocument();
+
     /** Logging helper object. */
     @Inject
     protected Logger logger;
@@ -69,12 +75,15 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     /** The Solr server instance used. */
     protected SolrServer server;
 
-    @Inject
-    protected CacheManager cacheFactory;
-
+    /**
+     * Cache for the recently accessed documents; useful since the ontology rarely changes, so a search should always
+     * return the same thing.
+     */
     protected Cache<SolrDocument> cache;
 
-    private static final SolrDocument EMPTY_MARKER = new SolrDocument();
+    /** Cache factory needed for creating the document cache. */
+    @Inject
+    protected CacheManager cacheFactory;
 
     @Override
     public void initialize() throws InitializationException
@@ -367,6 +376,12 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
         return result;
     }
 
+    /**
+     * Serialize a Map into a String.
+     *
+     * @param map the map to serialize
+     * @return a String serialization of the map
+     */
     private String dumpMap(Map<String, ? > map)
     {
         StringBuilder out = new StringBuilder();

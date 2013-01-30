@@ -9,13 +9,13 @@ import edu.toronto.cs.phenotips.obo2solr.maps.SetMap;
 
 public class TermData extends SetMap<String, String>
 {
-    public final static String ID_FIELD_NAME = "id";
+    public static final String ID_FIELD_NAME = "id";
 
-    public final static String PARENT_FIELD_NAME = "is_a";
+    public static final String PARENT_FIELD_NAME = "is_a";
 
-    public final static String TERM_CATEGORY_FIELD_NAME = "term_category";
+    public static final String TERM_CATEGORY_FIELD_NAME = "term_category";
 
-    public final static String PARENT_ID_REGEX = "^(HP\\:[0-9]{7})\\s*!\\s*.*";
+    public static final String PARENT_ID_REGEX = "^(HP\\:[0-9]{7})\\s*!\\s*.*";
 
     private String id;
 

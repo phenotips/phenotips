@@ -19,38 +19,63 @@
  */
 package edu.toronto.cs.phenotips.solr;
 
-public class SearchResult implements Comparable<SearchResult>
+/**
+ * @version $Id$
+ */
+public class SuggestedPhenotype implements Comparable<SuggestedPhenotype>
 {
+    /** HPO identifier of the phenotype. */
     private final String id;
 
+    /** The name of the phenotype in the HPO ontology. */
     private final String name;
 
+    /** "Score" of this suggestion, the information gain provided by it. */
     private final double score;
 
-    public SearchResult(String id, String name, double score)
+    /**
+     * Constructor initializing all the required fields.
+     * 
+     * @param id see {@link #id}
+     * @param name see {@link #name}
+     * @param score see {@link #score}
+     */
+    public SuggestedPhenotype(String id, String name, double score)
     {
         this.id = id;
         this.name = name;
         this.score = score;
     }
 
+    /**
+     * @return HPO identifier of the phenotype, in the {@code HP:1234567} format
+     * @see #id
+     */
     public String getId()
     {
         return this.id;
     }
 
+    /**
+     * @return the name of the phenotype in the HPO ontology
+     * @see #name
+     */
     public String getName()
     {
         return this.name;
     }
 
+    /**
+     * @return the information gain provided by this phenotype, a number between 0 and 1
+     * @see #score
+     */
     public double getScore()
     {
         return this.score;
     }
 
     @Override
-    public int compareTo(SearchResult other)
+    public int compareTo(SuggestedPhenotype other)
     {
         if (other == null) {
             return 0;
@@ -82,7 +107,7 @@ public class SearchResult implements Comparable<SearchResult>
         if (getClass() != obj.getClass()) {
             return false;
         }
-        SearchResult other = (SearchResult) obj;
+        SuggestedPhenotype other = (SuggestedPhenotype) obj;
         if (this.id == null) {
             if (other.id != null) {
                 return false;
