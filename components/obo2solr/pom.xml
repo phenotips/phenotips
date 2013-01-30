@@ -54,6 +54,6 @@
     </dependency>
   </dependencies>
   <properties>
-    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+    <checkstyle.skip>true</checkstyle.skip>
   </properties>
 </project>

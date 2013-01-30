@@ -90,7 +90,6 @@
     </dependency>
   </dependencies>
   <properties>
-    <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
-    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+    <checkstyle.skip>true</checkstyle.skip>
   </properties>
 </project>

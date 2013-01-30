@@ -92,6 +92,39 @@
         </configuration>
       </plugin>
 
+      <plugin>
+        <!-- Run Checkstyle -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <!-- Check license headers -->
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <!-- API backwards compatibility check -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>clirr-maven-plugin</artifactId>
+        <configuration>
+          <!-- List of specific CLIRR excludes.
+               See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
+          -->
+          <ignored>
+            <!-- Remove the following ignores after we release the current version as final -->
+            <difference>
+              <className>edu/toronto/cs/phenotips/solr/SearchResult</className>
+              <differenceType>8001</differenceType>
+              <justification>Renamed to SuggestedPhenotype.</justification>
+            </difference>
+          </ignored>
+          <excludes>
+            <exclude>**/internal/**</exclude>
+            <exclude>**/test/**</exclude>
+            <!-- Remove the following excludes after we release the current version as final -->
+          </excludes>
+        </configuration>
+      </plugin>
       <!-- We want to force packaging the license resources in the produced XWiki artifacts -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -222,7 +255,7 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>1.9.0</version>
           <configuration>
-            <skip>${xwiki.license.skip}</skip>
+            <skip>${license.skip}</skip>
             <header>license.txt</header>
             <strictCheck>true</strictCheck>
             <headerDefinitions>
@@ -238,8 +271,13 @@
               <aj>SLASHSTAR_STYLE</aj>
             </mapping>
             <!-- We're only interested in checking our sources and our POMs -->
+            <!-- At the moment, only check the license headers in Java, XML and shell script files -->
+            <!-- FIXME: fix other types of files as well -->
             <includes>
-              <include>src/**</include>
+              <include>src/**/*.java</include>
+              <include>src/**/*.xml</include>
+              <include>src/**/*.bat</include>
+              <include>src/**/*.sh</include>
               <include>pom.xml</include>
             </includes>
             <excludes>
