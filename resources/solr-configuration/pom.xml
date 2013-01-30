@@ -8,4 +8,8 @@
   <artifactId>solr-configuration</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>PhenoTips - Solr configuration files</name>
+
+  <properties>
+    <license.skip>true</license.skip>
+  </properties>
 </project>
