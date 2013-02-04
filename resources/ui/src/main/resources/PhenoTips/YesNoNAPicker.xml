@@ -484,7 +484,7 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
     var value = element.value;
     var selected = element.checked;
     var label = element.parentNode;
-    if (value != this.yesInput.value || !selected || !label) {
+    if (value != this.yesInput.value || !selected || !label || (this.yesInput.name != element.name &amp;&amp; this.noInput.name != element.name)) {
       return;
     }
     if (label.hasClassName('na')) {
