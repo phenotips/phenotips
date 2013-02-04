@@ -730,7 +730,7 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
   <content>{{velocity}}
 $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
 $xwiki.ssx.use('PhenoTips.YesNoNAPicker')##
-#set ($doDisplay = ($xcontext.action == 'edit' || $value != ''))
+#set ($doDisplay = ($xcontext.action == 'edit' || "$!value" != ''))
 {{html clean=false wiki=false}}##
 #if ($xcontext.action == 'edit')&lt;span class="yes-no-picker"&gt;&lt;label class="na"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="" #if($value == '')checked="checked"#end /&gt;NA&lt;/label&gt;&lt;label class="yes"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="1" #if($value == '1')checked="checked"#end /&gt;Y&lt;/label&gt;&lt;label class="no"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="0" #if($value == '0')checked="checked" #end/&gt;N&lt;/label&gt;&lt;/span&gt;#elseif ($value == '0')NO #{end}#if ($doDisplay)&lt;label class="yes-no-picker-label"&gt;$!object.xWikiClass.get($name).prettyName&lt;/label&gt;#end{{/html}}{{velocity}}
 </content>
