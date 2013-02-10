@@ -48,7 +48,7 @@ JETTY_HOME=jetty
 
 # If no START_OPTS env variable has been defined use default values.
 if [ -z "$START_OPTS" ] ; then
-  START_OPTS="-Xmx512m -XX:MaxPermSize=128m"
+  START_OPTS="-Xmx512m -XX:MaxPermSize=196m"
 fi
 
 # The port on which to start Jetty can be passed to this script as the first argument
