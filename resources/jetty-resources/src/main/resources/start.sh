@@ -42,8 +42,6 @@ done
 PRGDIR=`dirname "$PRG"`
 cd "$PRGDIR"
 
-echo $PRGDIR
-
 JETTY_HOME=jetty
 
 # If no START_OPTS env variable has been defined use default values.
