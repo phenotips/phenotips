@@ -74,7 +74,6 @@ mkdir -p $XWIKI_DATA_DIR 2>/dev/null
 
 # Ensure the logs directory exists as otherwise Jetty reports an error
 mkdir -p $XWIKI_DATA_DIR/logs 2>/dev/null
-mkdir -p jetty/logs 2>/dev/null
 
 # Ensure the work directory exists so that Jetty uses it for its temporary files.
 mkdir -p $JETTY_HOME/work 2>/dev/null
