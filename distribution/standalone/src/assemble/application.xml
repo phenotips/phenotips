@@ -38,7 +38,6 @@
         <excludes>
           <exclude>**/xwiki.js</exclude>
           <exclude>**/livetable.js</exclude>
-          <exclude>**/autosave.js</exclude>
         </excludes>
       </unpackOptions>
     </dependencySet>
@@ -117,10 +116,6 @@
     <file>
       <source>${basedir}/src/main/resources/livetable.js</source>
       <outputDirectory>webapps/phenotips/resources/js/xwiki/table</outputDirectory>
-    </file>
-    <file>
-      <source>${basedir}/src/main/resources/autosave.js</source>
-      <outputDirectory>webapps/phenotips/resources/js/xwiki/editors</outputDirectory>
     </file>
   </files>
 </assembly>
