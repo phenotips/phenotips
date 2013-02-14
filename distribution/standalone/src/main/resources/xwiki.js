@@ -358,8 +358,13 @@ Object.extend(XWiki, {
           var spans = document.body.select("span.wikicreatelink");
           for (var i = 0; i < spans.length; i++) {
               spans[i].down('a').observe('click', function(event) {
-                  new Ajax.Request(event.findElement('a').href + '&xpage=createinline&ajax=1', {
+                  // Remove the fragment identifier from the link URL.
+                  new Ajax.Request(event.findElement('a').href.replace(/#.*$/, ''), {
                       method:'get',
+                      parameters: {
+                        xpage: 'createinline',
+                        ajax: 1
+                      },
                       onSuccess: function(transport) {
                           var redirect = transport.getHeader('redirect');
                           if (redirect) {
@@ -1272,8 +1277,8 @@ document.observe('xwiki:dom:loading', function() {
 /**
  * Small JS improvement, which automatically hides and reinserts the default text for input fields, acting as a tip.
  *
- * To activate this behavior on an input element, add the "withTip" classname to it or pass it as the 'element' value
- * of the memo of a 'xwiki:addBehavior:withTip' event.
+ * To activate this behavior on an input element, set a "placeholder" attribute, or add the "withTip" classname to it,
+ * or pass it as the 'element' value of the memo of a 'xwiki:addBehavior:withTip' event.
  */
 (function(){
   var placeholderPolyfill;
@@ -1287,7 +1292,7 @@ document.observe('xwiki:dom:loading', function() {
       }
     }
   } else {
-    // For browsers that don't support the 'placeholder' attribute, we simmulate it with 'focus' and 'blur' event handlers.
+    // For browsers that don't support the 'placeholder' attribute, we simulate it with 'focus' and 'blur' event handlers.
     var onFocus = function() {
       if (this.value == this.defaultValue) {
         this.value = '';
