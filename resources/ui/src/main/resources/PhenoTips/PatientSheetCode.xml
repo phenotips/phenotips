@@ -4674,7 +4674,7 @@ table.extradata-list td.bmi_percentile {
     ##&lt;h3 class="section"&gt;Quick phenotype search&lt;/h3&gt;
     &lt;table&gt;&lt;tbody&gt;&lt;tr&gt;
     &lt;td&gt;&lt;label for="quick-phenotype-search"&gt;Quick phenotype search:&lt;/label&gt;&lt;/td&gt;&lt;td class="input"&gt;
-    &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip generateYesNo' value='Enter keywords and choose among suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
+    &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip generateYesNo' placeholder='Enter keywords and choose among suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
     &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
   &lt;/fieldset&gt;
   {{/html}}
