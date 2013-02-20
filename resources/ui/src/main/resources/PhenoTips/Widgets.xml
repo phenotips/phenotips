@@ -4136,8 +4136,12 @@ div.resultContainer div.sourceContent.loading {
   font-size: .8em;
   vertical-align: middle;
 }
-.expand-tool.disabled, .expand-tool.locked {
+.expand-tool.locked {
   color: #ccc;
+  cursor: default;
+}
+.expand-tool.disabled {
+  visibility: hidden;
   cursor: default;
 }
 .select-tool {
