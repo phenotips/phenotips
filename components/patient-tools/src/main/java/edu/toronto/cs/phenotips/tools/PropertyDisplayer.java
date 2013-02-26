@@ -60,31 +60,27 @@ public class PropertyDisplayer
 
     protected HPOScriptService ontologyService;
 
+    private final FormData data;
+
     protected final String[] fieldNames;
 
     protected final String propertyName;
 
     private List<FormSection> sections = new LinkedList<FormSection>();
 
-    PropertyDisplayer(Collection<Map<String, ? >> template, String propertyName, HPOScriptService ontologyService,
-        String fieldName, Collection<String> selected)
+    PropertyDisplayer(Collection<Map<String, ? >> template, FormData data, HPOScriptService ontologyService)
     {
-        this(template, propertyName, ontologyService, fieldName, null, selected, null);
-    }
-
-    PropertyDisplayer(Collection<Map<String, ? >> template, String propertyName, HPOScriptService ontologyService,
-        String yesFieldName, String noFieldName, Collection<String> yesSelected, Collection<String> noSelected)
-    {
+        this.data = data;
         this.ontologyService = ontologyService;
         this.fieldNames = new String[2];
-        this.fieldNames[0] = yesFieldName;
-        this.fieldNames[1] = noFieldName;
-        this.propertyName = propertyName;
+        this.fieldNames[0] = data.getPositiveFieldName();
+        this.fieldNames[1] = data.getNegativeFieldName();
+        this.propertyName = data.getPositivePropertyName();
         List<String> customYesSelected = new LinkedList<String>();
-        customYesSelected.addAll(yesSelected);
+        customYesSelected.addAll(data.getSelectedValues());
         List<String> customNoSelected = new LinkedList<String>();
-        if (noFieldName != null) {
-            customNoSelected.addAll(noSelected);
+        if (data.getNegativeFieldName() != null) {
+            customNoSelected.addAll(data.getSelectedNegativeValues());
         }
         for (Map<String, ? > sectionTemplate : template) {
             if (isSection(sectionTemplate)) {
@@ -113,11 +109,11 @@ public class PropertyDisplayer
         }
     }
 
-    public String display(DisplayMode mode)
+    public String display()
     {
         StringBuilder str = new StringBuilder();
         for (FormSection section : this.sections) {
-            str.append(section.display(mode, this.fieldNames));
+            str.append(section.display(this.data.getMode(), this.fieldNames));
         }
         return str.toString();
     }
