@@ -4763,6 +4763,24 @@ table.extradata-list td.bmi_percentile {
   #end
 #end
 
+#macro (__measurements_displayCompact)
+  #set($dataClass = $xwiki.getDocument('PhenoTips.MeasurementsClass').xWikiClass)
+  #if ($dataClass)
+    #set($dataObjects = $doc.getObjects('PhenoTips.MeasurementsClass'))
+    #if ($dataObjects.size() == 0)
+      (% class="hint" %)None specified
+    #else
+      (% class="extradata-list" %)
+      #foreach ($o in $dataObjects)
+        #foreach($prop in $dataClass.properties)
+           #if (!$prop.name.endsWith('_evaluation') &amp;&amp; "$!o.getProperty($prop.getName()).value" != '')
+             |= ${prop.prettyName}: | $doc.display($prop.getName(), $o) | $!doc.display("${prop.getName()}_evaluation", $o)
+          #end
+        #end
+      #end## foreach object
+    #end## if $dataObjects.size()
+  #end## if dataclass
+#end
 
 ## =====================================================================
 ##
@@ -4836,8 +4854,9 @@ table.extradata-list td.bmi_percentile {
 #if ($config &amp;&amp; $config.getProperty('section__measurements').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
 (% class="clear measurement-info chapter" %)(((
 == Measurements ==
+#if ($xcontext.action != 'export')
 #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
-#if ($xcontext.action != 'export' &amp;&amp; $config.getProperty('section__measurements').value.contains('growth-charts'))
+#if ($config.getProperty('section__measurements').value.contains('growth-charts'))
 (% class="growth-charts-section" %)(((
 === Growth charts ===
 (% class="expand-tools" %)(((
@@ -4849,6 +4868,9 @@ table.extradata-list td.bmi_percentile {
 )))##charts
 )))
 (% class="clear"%)((()))
+#end
+#else
+#__measurements_displayCompact()
 #end
 )))##chapter
 #end
