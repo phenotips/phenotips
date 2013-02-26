@@ -1113,8 +1113,9 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #livetable("patients" $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
 #if($hasEdit)
-  {{html clean="false" wiki="false"}}&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord', 'view', 'doCreate=1')" method="post"&gt;&lt;div&gt;
+  {{html clean="false" wiki="false"}}&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+    &lt;input type="hidden" name="doCreate" value="1" /&gt;
     &lt;input type="hidden" name="className" value="$patientClassName" /&gt;
     &lt;input type="hidden" name="classTemplate" value="$!{config.getProperty('patientTemplate').value}" /&gt;
     &lt;input type="hidden" name="idField" value="$!{config.getProperty('idField').value}" /&gt;
