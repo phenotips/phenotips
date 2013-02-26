@@ -54,9 +54,26 @@
     #set ($nvalue = $object.getProperty("negative_${name}").value)##
     $!phenotypeDisplayTools.use($prefix, $name, $nname)##
     $!phenotypeDisplayTools.setSelectedValues($value, $nvalue)##
+    #set ($customCategories = {})
+    #set ($customNCategories = {})
+    #foreach ($categoryMapping in $doc.getObjects('PhenoTips.PhenotypeCategoryClass'))
+      #if ($categoryMapping.getProperty('target_property_name').value == $name)
+        #set ($discard = $customCategories.put($categoryMapping.getProperty('target_property_value').value, $categoryMapping.getProperty('target_property_category').value))
+      #elseif ($categoryMapping.getProperty('target_property_name').value == $nname)
+        #set ($discard = $customNCategories.put($categoryMapping.getProperty('target_property_value').value, $categoryMapping.getProperty('target_property_category').value))
+      #end
+    #end
+    $!phenotypeDisplayTools.setCustomCategories($customCategories, $customNCategories)##
   #else
     $!phenotypeDisplayTools.use($prefix, $name)##
     $!phenotypeDisplayTools.setSelectedValues($value)##
+    #set ($customCategories = {})
+    #foreach ($categoryMapping in $doc.getObjects('PhenoTips.PhenotypeCategoryClass'))
+      #if ($categoryMapping.getProperty('target_property_name').value == $name)
+        #set ($discard = $customCategories.put($categoryMapping.getProperty('target_property_value').value, $categoryMapping.getProperty('target_property_category').value))
+      #end
+    #end
+    $!phenotypeDisplayTools.setCustomCategories($customCategories)##
   #end
   {{html clean=false}}$phenotypeDisplayTools.display($data){{/html}}##
   $!phenotypeDisplayTools.clear()##

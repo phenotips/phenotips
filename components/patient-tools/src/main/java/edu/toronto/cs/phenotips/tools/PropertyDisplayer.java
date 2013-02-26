@@ -90,10 +90,16 @@ public class PropertyDisplayer
         Map<String, List<String>> yCustomCategories = new HashMap<String, List<String>>();
         Map<String, List<String>> nCustomCategories = new HashMap<String, List<String>>();
         for (String value : customYesSelected) {
-            yCustomCategories.put(value, this.getCategoriesFromOntology(value));
+            List<String> categories = new LinkedList<String>();
+            categories.addAll(this.getCategoriesFromOntology(value));
+            categories.addAll(this.getCategoriesFromCustomMapping(value, data.getCustomCategories()));
+            yCustomCategories.put(value, categories);
         }
         for (String value : customNoSelected) {
-            nCustomCategories.put(value, this.getCategoriesFromOntology(value));
+            List<String> categories = new LinkedList<String>();
+            categories.addAll(this.getCategoriesFromOntology(value));
+            categories.addAll(this.getCategoriesFromCustomMapping(value, data.getCustomNegativeCategories()));
+            nCustomCategories.put(value, categories);
         }
         for (FormSection section : this.sections) {
             List<String> yCustomFieldIDs = this.assignCustomFields(section, yCustomCategories);
@@ -241,6 +247,16 @@ public class PropertyDisplayer
         if (termObj != null && termObj.get(INDEXED_CATEGORY_KEY) != null
             && List.class.isAssignableFrom(termObj.get(INDEXED_CATEGORY_KEY).getClass())) {
             return (List<String>) termObj.get(INDEXED_CATEGORY_KEY);
+        }
+        return new LinkedList<String>();
+    }
+
+    private List<String> getCategoriesFromCustomMapping(String value, Map<String, List<String>> customCategories)
+    {
+        for (Map.Entry<String, List<String>> category : customCategories.entrySet()) {
+            if (StringUtils.equals(value, category.getKey())) {
+                return category.getValue();
+            }
         }
         return new LinkedList<String>();
     }

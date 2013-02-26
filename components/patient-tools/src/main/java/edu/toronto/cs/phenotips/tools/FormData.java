@@ -43,6 +43,10 @@ public class FormData
 
     private Collection<String> selectedNegativeValues;
 
+    private Map<String, List<String>> customCategories;
+
+    private Map<String, List<String>> customNegativeCategories;
+
     /**
      * @return the mode
      */
@@ -153,5 +157,37 @@ public class FormData
     public void setSelectedNegativeValues(Collection<String> selectedNegativeValues)
     {
         this.selectedNegativeValues = selectedNegativeValues;
+    }
+
+    /**
+     * @return the customCategories
+     */
+    public Map<String, List<String>> getCustomCategories()
+    {
+        return this.customCategories;
+    }
+
+    /**
+     * @param customCategories the customCategories to set
+     */
+    public void setCustomCategories(Map<String, List<String>> customCategories)
+    {
+        this.customCategories = customCategories;
+    }
+
+    /**
+     * @return the customNegativeCategories
+     */
+    public Map<String, List<String>> getCustomNegativeCategories()
+    {
+        return this.customNegativeCategories;
+    }
+
+    /**
+     * @param customNegativeCategories the customNegativeCategories to set
+     */
+    public void setCustomNegativeCategories(Map<String, List<String>> customNegativeCategories)
+    {
+        this.customNegativeCategories = customNegativeCategories;
     }
 }

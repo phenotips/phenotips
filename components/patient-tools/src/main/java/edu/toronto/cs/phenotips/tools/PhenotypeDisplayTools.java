@@ -89,6 +89,18 @@ public class PhenotypeDisplayTools implements ScriptService
         getFormData().setSelectedNegativeValues(nValues);
     }
 
+    public void setCustomCategories(Map<String, List<String>> customCategories)
+    {
+        getFormData().setCustomCategories(customCategories);
+    }
+
+    public void setCustomCategories(Map<String, List<String>> customCategories,
+        Map<String, List<String>> customNCategories)
+    {
+        getFormData().setCustomCategories(customCategories);
+        getFormData().setCustomNegativeCategories(customNCategories);
+    }
+
     public void setMode(String mode)
     {
         getFormData().setMode(DisplayMode.get(mode));

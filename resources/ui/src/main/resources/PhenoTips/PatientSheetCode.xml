@@ -1276,6 +1276,9 @@ document.observe('dom:loaded', function() {
                     suggestion.down('.suggestCategory').insert({
                       top : new Element('input', {type: 'hidden', name : 'fieldName', value : negativeName, 'class' : 'no'})
                     });
+                    suggestion.down('.suggestCategory').select('input[name]').each(function(category) {
+                      category.name = category.name.replace(/(_\d+)_/, "$1_negative_");
+                    });
                   });
                 }
               });
