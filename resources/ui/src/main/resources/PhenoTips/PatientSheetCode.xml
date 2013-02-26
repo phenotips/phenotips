@@ -5031,6 +5031,7 @@ $doc.display('reports_history')
 ## =================================================================
 ## More information
 #macro(__reportSection__other)
+#if ($xcontext.action != 'export')
 (% class="clear clinical-info other-info chapter" %)(((
 == Additional files ==
 (((
@@ -5046,6 +5047,7 @@ $doc.display('reports_history')
 #end
 )))
 )))##chapter
+#end## if action != export
 #end
 
 ##

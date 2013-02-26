@@ -59,6 +59,17 @@
 #_measurementCharts($chartOptions)
 #end
 
+#if ($xcontext.action == 'export' &amp;&amp; $doc.getObject('PhenoTips.ExternalImageClass'))
+#foreach ($o in $doc.getObjects('PhenoTips.ExternalImageClass'))
+#if ("$!{o.getProperty('file').value}" != '' &amp;&amp; ${o.getProperty('print').value} == '1')
+{{html clean=false}}#pagebreak(){{/html}}
+image:@$!{o.getProperty('file').value}
+
+$!{o.getProperty('comments').value}
+#end
+#end
+#end
+
 #end## class exists
 {{/velocity}}</content>
 </xwikidoc>
