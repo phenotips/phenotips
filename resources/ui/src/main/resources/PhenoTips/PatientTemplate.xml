@@ -916,7 +916,7 @@
       <data>
         <customDisplay/>
         <disabled>0</disabled>
-        <editor>---</editor>
+        <editor>PureText</editor>
         <name>data</name>
         <number>1</number>
         <picker>0</picker>
@@ -928,11 +928,50 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </data>
+      <description>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>description</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>Description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <image>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>image</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Image</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </image>
     </class>
     <name>PhenoTips.PatientTemplate</name>
     <number>0</number>
     <className>PhenoTips.PedigreeClass</className>
     <guid>09879ef6-e139-47bc-adce-6feedb4c4d70</guid>
+    <property>
+      <data/>
+    </property>
+    <property>
+      <description/>
+    </property>
+    <property>
+      <image/>
+    </property>
   </object>
   <content/>
 </xwikidoc>
