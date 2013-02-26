@@ -2727,14 +2727,14 @@ document.observe('xwiki:dom:loaded', function() {
             // enableHighlightChecked(ynpicker.down('.no input'));
            } else {
             // generate simple checkboxes
-            var trigger = new Element('input', {'type' :  'checkbox', 'value' : id, 'title' : 'Select'});
+            var trigger = new Element('input', {'type' :  'checkbox', 'value' : id, 'title' : 'Select', id : 'result__' + id});
             var existingValue = $(service.suggestFor.id + '_' + id);
             if (existingValue &amp;&amp; existingValue.checked) {
               trigger.checked = true;
             }
             trigger.__suggestion = {'id' : id, 'value' : name};
-            idElt.wrap('label');
-            idElt.up('label').insert({'top' : trigger});
+            nameElt.wrap('label', {'for' : 'result__' + id});
+            idElt.insert({'before' : trigger});
             trigger.observe('click', function(event) {
                var input = Event.findElement(event, 'input[type=checkbox]');
                if (input.checked) {
