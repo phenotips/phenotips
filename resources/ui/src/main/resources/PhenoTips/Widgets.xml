@@ -837,7 +837,7 @@
          }
        });
        list.addItem(this.generateListItem({
-         id: customItemId,
+         id: this.fld.value,
          value: this.fld.value,
          category: customItemCategoriesElt,
          info: new Element('div', {'class' : 'hint'}).update('(your text, not a standard term)')
