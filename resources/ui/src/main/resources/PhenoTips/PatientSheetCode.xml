@@ -1127,6 +1127,105 @@ document.observe('dom:loaded', function() {
              }
         }.bind(selectionSummary);
 
+        selectionSummary._preparePreview = function(pdItem) {
+          var details ='';
+          var commentPreview = pdItem.down('.comments-preview');
+          var comment = pdItem.down('.comments textarea');
+          if (comment) {
+             if (!commentPreview) {
+               commentPreview = new Element('dd', {'class' : 'comments-preview preview' });
+               comment.up().insert({after: commentPreview});
+             }
+             commentPreview.update(comment.value);
+             commentPreview.title = comment.value;
+             details += comment.value;
+          } else {
+            if (commentPreview) {commentPreview.update('');}
+          }
+          var onsetPreview = pdItem.down('.onset-preview');
+          var onset = false;
+          pdItem.select('.age_of_onset input[type="radio"]').each(function(item) {
+            if (item.checked &amp;&amp; item.value != '') {
+              onset = item;
+            }
+          });
+          if (onset) {
+             if (!onsetPreview) {
+               onsetPreview = new Element('dd', {'class' : 'onset-preview preview' });
+               onset.up('dd').insert({after: onsetPreview});
+             }
+             onsetPreview.update(onset.title);
+             details += onset.title;
+          } else {
+            if (onsetPreview) {onsetPreview.update('');}
+          }
+          var progressionPreview = pdItem.down('.progression-preview');
+          var progression = false;
+          pdItem.select('.pace_of_progression input[type="radio"]').each(function(item) {
+            if (item.checked &amp;&amp; item.value != '') {
+              progression = item;
+            }
+          });
+          if (progression) {
+             if (!progressionPreview) {
+               progressionPreview = new Element('dd', {'class' : 'progression-preview preview' });
+               progression.up('dd').insert({after: progressionPreview});
+             }
+             progressionPreview.update(progression.title);
+             details += progression.title;
+          } else {
+            if (progressionPreview) {progressionPreview.update('');}
+          }
+          var noPreview = pdItem.down('.no-preview');
+          if (details.strip() == '') {
+            if (!noPreview) {
+               noPreview = new Element('dd', {'class' : 'no-preview preview' });
+               pdItem.insert({bottom: noPreview});
+            }
+            noPreview.update('No additional information.');
+          } else {
+            noPreview &amp;&amp; noPreview.update('');
+          }
+
+          pdItem.addClassName('collapsed');
+        }.bind(selectionSummary);
+
+        selectionSummary._focusDetails = function(info) {
+          var pfTarget;
+          if (typeof (info.findElement) == 'function') {
+            pdTarget = info.findElement('.phenotype-details');
+          } else if (typeof (info.up) == 'function') {
+            pdTarget = info;
+          } else {
+            return;
+          }
+          if (this._crtFocus &amp;&amp; pdTarget != this._crtFocus) {
+             this._crtFocus.removeClassName('focused');
+             this._preparePreview(this._crtFocus);
+          }
+          if (pdTarget) {
+             this._crtFocus = pdTarget;
+             pdTarget.addClassName('focused');
+             pdTarget.removeClassName('collapsed');
+             var doneBtn = pdTarget.down('.action-done');
+             if (!doneBtn) {
+               doneBtn = new Element('div', {'class' : 'action-done'}).update('×');
+               pdTarget.insert(doneBtn);
+               doneBtn.observe('click', function(event) {
+                 event.stop();
+                 selectionSummary._preparePreview(pdTarget);
+                 pdTarget.removeClassName('focused');
+               });
+             }
+          } else {
+             delete this._crtFocus;
+          }
+        }.bind(selectionSummary);
+
+        document.observe("click", function(event) {
+           selectionSummary._focusDetails(event);
+        });
+
         selectionSummary._updateSummary = function(inputElt, type, forceUpdate) {
           if (!inputElt || !inputElt.value) {return}
           var sectionId = inputElt.up('.phenotype-group') &amp;&amp; inputElt.up('.phenotype-group').down('h3');
@@ -1152,8 +1251,7 @@ document.observe('dom:loaded', function() {
                newItem.__source = inputElt;
                var tools = new Element('span', {'class' : 'tools hint'});
                var deleteTool = new Element('span', {'class' : 'tool'}).update('Delete');
-               var detailsTool = new Element('span', {'class' : 'tool'}).update('Details...');
-               tools.insert(deleteTool);//.insert(' · ').insert(detailsTool);
+               tools.insert(deleteTool);
                deleteTool.observe('click', function(event) {
                  var source = event.findElement('.summary-item').__source;
                  if (source._ynpicker) {
@@ -1162,10 +1260,116 @@ document.observe('dom:loaded', function() {
                    source.click();
                  }
                });
+               var detailsUrl = $('phenotype-meta-add-action') &amp;&amp; $('phenotype-meta-add-action').value;
+             if (detailsUrl) {
+               var detailsTool = new Element('span', {'class' : 'tool'}).update('Add details');
+               var clearTool = new Element('span', {'class' : 'tool'}).update('Clear details');
+               tools.insert(' · ').insert(detailsTool).insert(clearTool);
                detailsTool.observe('click', function(event) {
-                 alert('Coming soon:\n- specify onset age and end age for this symptom,\n- add comments,\n- upload relevant images.');
+                 var source = event.findElement('.summary-item');
+                 var detailsElt = new Element('div', {'class' : 'phenotype-details loading'}).update('Loading...');
+                 source.insert(detailsElt);
+                 event.findElement().hide();
+                 clearTool.__target = detailsElt;
+                 clearTool.show();
+
+                 var addTrigger = event.findElement();
+                 if (addTrigger.disabled) {
+                   return;
+                 }
+                 var url = detailsUrl.replace(/([&amp;?]classname=)(.*?)([&amp;$])/, "$1$2&amp;$2_target_property_name=" + inputElt.name + "&amp;$2_target_property_value=" + inputElt.value + "$3");
+                 new Ajax.Request(url, {
+                   onCreate : function() {
+                     addTrigger.disabled = true
+                     addTrigger._x_notif = new XWiki.widgets.Notification('Adding...', 'inprogress');
+                   },
+                   onSuccess : function (response) {
+                     addTrigger._x_notif.hide();
+                     detailsElt.update(response.responseText);
+                     detailsElt.removeClassName('loading');
+                     selectionSummary._focusDetails(detailsElt);
+                     detailsElt.select('input, textarea').invoke('observe', 'focus', function(event){selectionSummary._focusDetails(detailsElt)});
+                     var deleteUrl = detailsElt.down('input[name="delete-action"]');
+                     if (deleteUrl) {
+                       deleteUrl = deleteUrl.value;
+                       deleteUrl &amp;&amp; (clearTool.__url = deleteUrl);
+                     }
+                     Event.fire(document, 'xwiki:dom:updated', {'elements' : [detailsElt]});
+                   }.bind(this),
+                   onFailure : function(response) {
+                     var failureReason = response.statusText;
+                     if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+                       failureReason = 'Server not responding';
+                     }
+                     if (addTrigger._x_notif) {
+                       addTrigger._x_notif.replace(new XWiki.widgets.Notification("Failed: " + failureReason, "error"));
+                     } else {
+                       new XWiki.widgets.Notification(this.interactionParameters.failureMessageText + failureReason, "error");
+                     }
+                   },
+                   on1223 : function(response) {
+                     response.request.options.onSuccess(response);
+                   },
+                   on0 : function(response) {
+                     response.request.options.onFailure(response);
+                   },
+                   onComplete : function() {
+                     addTrigger.disabled = false
+                   }
+                 });
                });
+               var existingDetails = $('phenotypeMeta__' + inputElt.name + '__' + inputElt.value);
+               if (existingDetails) {
+                  var detailsElt = new Element('div', {'class' : 'phenotype-details'});
+                  var deleteUrl = existingDetails.next('input[name="delete-action"]');
+                  if (deleteUrl) {
+                     deleteUrl = deleteUrl.value;
+                     deleteUrl &amp;&amp; (clearTool.__url = deleteUrl);
+                     clearTool.__target = detailsElt;
+                  }
+                  detailsElt.update(existingDetails);
+                  selectionSummary._preparePreview(detailsElt);
+                  detailsElt.select('input, textarea').invoke('observe', 'focus', function(event){selectionSummary._focusDetails(detailsElt)});
+                  detailsTool.hide();
+               }  else {
+                  clearTool.hide();
+               }
+               clearTool.observe('click', function(event) {
+                 event.stop();
+                 var deleteTrigger = event.element();
+                 if (deleteTrigger.disabled) {
+                    return;
+                 }
+                 if (deleteTrigger.__target) {
+                   deleteTrigger.__target.remove();
+                   delete deleteTrigger.__target;
+                 }
+                 if (deleteTrigger.__url) {
+                   new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.__url, {
+                     onCreate : function() {
+                       deleteTrigger.disabled = true
+                     },
+                     onSuccess : function() {
+                       if (deleteTrigger.__target) {
+                         deleteTrigger.__target.remove();
+                         delete deleteTrigger.__target;
+                       }
+                       delete deleteTrigger.__url;
+                       deleteTrigger.hide();
+                       detailsTool.show();
+                     },
+                     onComplete : function() {
+                       deleteTrigger.disabled = false;
+                     }
+                   },
+                   {
+                      confirmationText : "Are you sure you wish to delete this information?"
+                   });
+                 }
+               });// clearTool.observe('click'
+             } // detailsUrl exists
                newItem.insert(tools);
+               detailsElt &amp;&amp; newItem.insert(detailsElt);
                group._add(newItem);
                group._updateGroupVisibility();
                Event.fire(document, "summary-item:added", {element: newItem});
@@ -4589,6 +4793,218 @@ table.extradata-list td.bmi_percentile {
       <use>onDemand</use>
     </property>
   </object>
+  <object>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>3</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>6b031d72-7733-4ce5-905f-b999ec0c3165</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.phenotype-details {
+  background-color: #F9F9F9;
+  background-position: left center;
+  background-repeat: no-repeat;
+  border-radius: 0 .5em .5em .5em;
+  border: 1px solid #FFF;
+  color: $theme.textSecondaryColor;
+  font-size: 87.5%;
+  margin-left: 20px;
+  padding: .5em 20px;
+  position: relative;
+  width: 80%;
+}
+.phenotype-details.collapsed {
+  background-position: 99% .25em;
+  background-image: url("$xwiki.getSkinFile('edit-s-gray.png')");
+  cursor: pointer;
+  padding-left: 16px;
+}
+.phenotype-details dd&gt;ul {
+  list-style-type: none;
+  margin: 0;
+}
+.phenotype-details dd&gt;ul {
+  -moz-column-count: 2;
+  -webkit-column-count: 2;
+  column-count: 2;
+}
+.phenotype-details dd ul ul {
+  list-style-type: none;
+  margin-left: 1.2em;
+}
+.phenotype-details .comments-preview {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-height: 1.2em;
+}
+
+.phenotype-details input[type="text"] {
+  padding: 0;
+  width: 50%;
+  color: $theme.textSecondaryColor;
+  font-size: 87.5%;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+.phenotype-details .action-done {
+  cursor: pointer;
+  font-size: 2em;
+  position: absolute;
+  right: 0.25em;
+  top: 0;
+}
+.phenotype-details .action-done:hover {
+  color: $theme.linkColor;
+}
+.phenotype-details.collapsed dt,
+.phenotype-details.collapsed dd,
+.phenotype-details.collapsed .action-done,
+.phenotype-details.focused .preview {
+  display: none;
+}
+
+.phenotype-details.collapsed .preview {
+  display: block;
+}
+
+.phenotype-details.focused {
+  background-image: none;
+  box-shadow: 0 2px 5px #999;
+}
+
+.phenotype-details dt label {
+  color: $theme.textColor;
+}
+
+.phenotype-details.focused input {
+  color: $theme.textColor;
+  box-shadow: 0 1px 2px #aaa inset !important;
+  background: #FFF !important;
+  border-color: #FFF !important;
+}
+
+.phenotype-details .attachment-list .attachment-item,
+.phenotype-details .attachment-list .attachment-item input {
+  display: none;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+}
+.phenotype-details .attachment-list .attachment-item.selected,
+.phenotype-details .attachment-list .attachment-preview {
+  display: block;
+  width: 100%;
+  max-height: inherit;
+  height: auto;
+}
+.phenotype-details .attachment-list .attachment-item.image {
+  max-width: 100%;
+}
+.phenotype-details .attachment-list .attachment-item.selected label {
+  padding: 3px 0 3px 20px;
+}
+.phenotype-details .attachment-list .attachment-item.image label {
+  padding: 0 !important;
+}
+.phenotype-details .attachment-item img {
+  max-width: 100% !important;
+  max-height: inherit !important;
+}
+.phenotype-details .attachment-list .attachment-item .view {
+  background-color: $theme.pageContentBackgroundColor;
+  bottom: 0;
+  padding: 5px;
+}
+.phenotype-details .actions {
+  float: right;
+}</code>
+    </property>
+    <property>
+      <name>Phenotype details</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
   <content>{{include document="PhenoTips.ChartServiceMacros" /}}
 
 {{velocity output=false}}
@@ -4787,6 +5203,48 @@ table.extradata-list td.bmi_percentile {
 
 ## =====================================================================
 ##
+## PHENOTYPE METADATA
+##
+##
+#macro (__phenotypeMeta_displayEntry $targetObj)
+    #set($dataClass = $targetObj.xWikiClass)
+    #set($enabledProperties = ['age_of_onset', 'pace_of_progression', 'comments', 'supporting_images', 'supporting_documents'])
+    #set($targetId = "phenotypeMeta__$!{targetObj.getProperty('target_property_name').value}__$!{targetObj.getProperty('target_property_value').value}")
+    {{html wiki="true" clean="false"}}##
+    {{html wiki="false" clean="false"}}&lt;dl id="$targetId"&gt;{{/html}}##
+      #foreach($prop in $dataClass.properties)##
+        #if ($enabledProperties.contains($prop.name))#set($displayMode='')#else#set($displayMode=' hidden')#end##
+        &lt;dt class="${prop.name}${displayMode}"&gt;&lt;label for=""&gt;${prop.prettyName}:&lt;/label&gt;&lt;/dt&gt;##
+        &lt;dd class="${prop.name}${displayMode}"&gt;$doc.display($prop.getName(), $targetObj)&lt;/dd&gt;##
+      #end##
+    &lt;/dl&gt;##
+    &lt;input type="hidden" name="delete-action" value="$doc.getURL('objectremove', "classname=${targetObj.xWikiClass.name}&amp;amp;classid=${targetObj.number}&amp;amp;form_token=$!{services.csrf.getToken()}")"/&gt;##
+    {{/html}}
+#end
+
+#macro (__phenotypeMeta_displayLastEntry)
+  #set($dataClassName = 'PhenoTips.PhenotypeMetaClass')
+  #set ($objects = $doc.getObjects($dataClassName))
+  #if ($objects.size() &gt; 0)
+    #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
+    #__phenotypeMeta_displayEntry($targetObj $mode)
+  #end
+#end
+
+#macro (__phenotypeMeta_displayAll)
+  #set($dataClassName = 'PhenoTips.PhenotypeMetaClass')
+  #set ($objects = $doc.getObjects($dataClassName))
+  #if ($objects.size() &gt; 0)
+    (% class="hidden" %)(((
+    #foreach ($pmObj in $objects)
+      #__phenotypeMeta_displayEntry($pmObj)
+    #end
+    )))
+  #end
+#end
+
+## =====================================================================
+##
 ## SECTIONS DISPLAY
 ##
 ##
@@ -4921,10 +5379,13 @@ table.extradata-list td.bmi_percentile {
             $doc.display('phenotype')##
           )))
         #if ($xcontext.action == 'edit')
+          #__phenotypeMeta_displayAll('edit')##
           )))## browse-phenotype-categories
           (% class="half-width selector-panel current-phenotype-selection"%)(((
           === **Current selection** ===
-             (% id="current-phenotype-selection"%)((()))
+             (% id="current-phenotype-selection"%)(((
+              {{html clean="false"}}&lt;input type="hidden" id="phenotype-meta-add-action" value="$doc.getURL('objectadd', "classname=PhenoTips.PhenotypeMetaClass&amp;amp;xredirect=$escapetool.url($doc.getURL('edit', 'xaction=lastmeta&amp;xpage=plain'))&amp;amp;form_token=$!{services.csrf.getToken()}")"/&gt;{{/html}}
+             )))
           )))
           (% class="clear"%)((()))
           )))## selector-panels
@@ -5082,6 +5543,8 @@ $doc.display('reports_history')
 {{velocity}}
 #if ("$!{request.xaction}" == 'lastentry')
   #__extradata_displayLastEntry($request.dataClassName $request.withLabel)
+#elseif ("$!{request.xaction}" == 'lastmeta')
+  #__phenotypeMeta_displayLastEntry()
 #else
 #if ($xcontext.action != 'export')
 (% id="table-of-contents" %)(((
