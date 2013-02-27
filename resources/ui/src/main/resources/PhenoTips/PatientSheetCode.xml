@@ -4892,19 +4892,6 @@ table.extradata-list td.bmi_percentile {
   cursor: pointer;
   padding-left: 16px;
 }
-.phenotype-details dd&gt;ul {
-  list-style-type: none;
-  margin: 0;
-}
-.phenotype-details dd&gt;ul {
-  -moz-column-count: 2;
-  -webkit-column-count: 2;
-  column-count: 2;
-}
-.phenotype-details dd ul ul {
-  list-style-type: none;
-  margin-left: 1.2em;
-}
 .phenotype-details .comments-preview {
   display: block;
   overflow: hidden;

@@ -56,7 +56,6 @@
       <cache>0</cache>
       <classname/>
       <customDisplay>{{velocity}}
-#if ($xcontext.action == 'edit')
 #set ($order = [
   'HP:0011007',
   'HP:0003577',
@@ -71,39 +70,10 @@
   'HP:0003596',
   'HP:0003584'
 ])
-#set ($firstLevel = true)
-##
-##
-#macro (_displayItem $itemId $itemName $itemDetails)
-  &lt;label for="${prefix}${name}_${itemId}" title="$!{itemDetails}"&gt;&lt;input type="radio" id="${prefix}${name}_${itemId}" #if("$!{value}" == $itemId)checked="checked"#end name="$prefix$name" value="$itemId" title="${itemName}"/&gt;${itemName}&lt;/label&gt;
-#end
-##
-##
-#macro (_displayChildren $rootId)
-  #set($childrenList = $services.hpo.search({'is_a': $rootId}))
-  #if ($childrenList.numFound &gt; 0)
-  &lt;ul&gt;
-  #if ($firstLevel)&lt;li&gt;#_displayItem('', 'Unknown')&lt;/li&gt;#set($firstLevel = false)#end
-  #set($macro.childrenMap = {})
-  #foreach($item in $childrenList)
-    #set ($discard = $macro.childrenMap.put($item.id, $item))
-  #end
-  #foreach($orderedItemId in $order)
-    #set ($foreach.item = $macro.childrenMap.get($orderedItemId))
-    #if ("$!{foreach.item}" != '' &amp;&amp; "$!foreach.item.id" != '')&lt;li&gt;#_displayItem("${foreach.item.id}", "${foreach.item.name}", "${foreach.item.def}")#_displayChildren($foreach.item.id)&lt;/li&gt;#end
-  #end
-  &lt;/ul&gt;
-  #end
-#end
-
-{{html wiki=false clean=false}}
-#_displayChildren('HP:0011007')
-{{/html}}
-#elseif ("$!{value}" != '')
-  $services.hpo.get($value).name
-#end
+#set ($startWith = 'HP:0011007')
 {{/velocity}}
-</customDisplay>
+
+{{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <idField/>
@@ -143,7 +113,6 @@
       <cache>0</cache>
       <classname/>
       <customDisplay>{{velocity}}
-#if ($xcontext.action == 'edit')
 #set ($order = [
   'HP:0003680',
   'HP:0003677',
@@ -151,39 +120,10 @@
   'HP:0003678',
   'HP:0003682'
 ])
-#set ($firstLevel = true)
-##
-##
-#macro (_displayItem $itemId $itemName)
-  &lt;label for="${prefix}${name}_${itemId}"&gt;&lt;input type="radio" id="${prefix}${name}_${itemId}" #if("$!{value}" == $itemId)checked="checked"#end name="$prefix$name" value="$itemId" title="${itemName}"/&gt;${itemName}&lt;/label&gt;
-#end
-##
-##
-#macro (_displayChildren $rootId)
-  #set($childrenList = $services.hpo.search({'is_a': $rootId}))
-  #if ($childrenList.numFound &gt; 0)
-  &lt;ul&gt;
-  #if ($firstLevel)&lt;li&gt;#_displayItem('', 'Unknown')&lt;/li&gt;#set($firstLevel = false)#end
-  #set($macro.childrenMap = {})
-  #foreach($item in $childrenList)
-    #set ($discard = $macro.childrenMap.put($item.id, $item))
-  #end
-  #foreach($orderedItemId in $order)
-    #set ($foreach.item = $macro.childrenMap.get($orderedItemId))
-    #if ("$!{foreach.item}" != '' &amp;&amp; "$!foreach.item.id" != '')&lt;li&gt;#_displayItem("${foreach.item.id}", "${foreach.item.name}")#_displayChildren($foreach.item.id)&lt;/li&gt;#end
-  #end
-  &lt;/ul&gt;
-  #end
-#end
-
-{{html wiki=false clean=false}}
-#_displayChildren('HP:0003679')
-{{/html}}
-#elseif ("$!{value}" != '')
-  $services.hpo.get($value).name
-#end
+#set ($startWith = 'HP:0003679')
 {{/velocity}}
-</customDisplay>
+
+{{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <idField/>
