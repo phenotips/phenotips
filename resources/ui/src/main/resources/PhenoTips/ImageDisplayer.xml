@@ -1246,7 +1246,7 @@
     #set($options.manage = true)
   #end
 #end
-#if ($object.getxWikiClass().get($property).getProperty('multiSelect').value == 0)
+#if ($object.getxWikiClass().get($property).getProperty('multiSelect').value != 1)
   #set($options.inputType = 'radio')
   #if ("$!{value}" == '')
     #set ($propValue = [])
