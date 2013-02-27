@@ -1133,16 +1133,16 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
       <groups>
         <cache>0</cache>
         <disabled>0</disabled>
-        <displayType>select</displayType>
+        <displayType>input</displayType>
         <multiSelect>1</multiSelect>
         <name>groups</name>
         <number>1</number>
+        <picker>1</picker>
         <prettyName>Groups</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
         <size>5</size>
         <unmodifiable>0</unmodifiable>
-        <usesList>1</usesList>
         <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
       </groups>
       <levels>
@@ -1162,16 +1162,16 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
       <users>
         <cache>0</cache>
         <disabled>0</disabled>
-        <displayType>select</displayType>
+        <displayType>input</displayType>
         <multiSelect>1</multiSelect>
         <name>users</name>
         <number>3</number>
+        <picker>1</picker>
         <prettyName>Users</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
         <size>5</size>
         <unmodifiable>0</unmodifiable>
-        <usesList>1</usesList>
         <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
       </users>
     </class>
@@ -1213,16 +1213,16 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
       <groups>
         <cache>0</cache>
         <disabled>0</disabled>
-        <displayType>select</displayType>
+        <displayType>input</displayType>
         <multiSelect>1</multiSelect>
         <name>groups</name>
         <number>1</number>
+        <picker>1</picker>
         <prettyName>Groups</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
         <size>5</size>
         <unmodifiable>0</unmodifiable>
-        <usesList>1</usesList>
         <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
       </groups>
       <levels>
@@ -1242,16 +1242,16 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
       <users>
         <cache>0</cache>
         <disabled>0</disabled>
-        <displayType>select</displayType>
+        <displayType>input</displayType>
         <multiSelect>1</multiSelect>
         <name>users</name>
         <number>3</number>
+        <picker>1</picker>
         <prettyName>Users</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
         <size>5</size>
         <unmodifiable>0</unmodifiable>
-        <usesList>1</usesList>
         <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
       </users>
     </class>
