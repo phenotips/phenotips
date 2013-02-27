@@ -1231,7 +1231,7 @@
   ## In external mode
   #set ($targetDoc = $xwiki.getDocument("$!{request.doc}"))
   #set ($property = "$!{request.property}")
-  #set ($object = $targetDoc.getObject("$!{request.classname}", $util.parseInt("$!{request.object}")))
+  #set ($object = $targetDoc.getObject("$!{request.classname}", $mathtool.toInteger("$!{request.object}")))
   #set ($propValue = $object.getProperty("$!{request.property}").value)
   #if ("$!{propValue.size()}" == '')
     #set ($propValue = [])

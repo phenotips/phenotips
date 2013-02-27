@@ -47,11 +47,11 @@
 #if ($xcontext.action == 'get')
   #set ($rows = -1)
   #if ("$!request.rows" != '')
-    #set ($rows = $util.parseInt($request.rows))
+    #set ($rows = $mathtool.toInteger($request.rows))
   #end
   #set ($start = 0)
   #if ("$!request.start" != '')
-    #set ($start = $util.parseInt($request.start))
+    #set ($start = $mathtool.toInteger($request.start))
   #end
   #set ($results = $services.hpo.search("$!request.q", "$!request.sort", $rows, $start))
   #if ("$!request.format" == 'xml')
