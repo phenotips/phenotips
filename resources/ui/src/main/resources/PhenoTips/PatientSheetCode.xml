@@ -4578,6 +4578,13 @@ table.extradata-list td.bmi_percentile {
   background-color: $theme.pageContentBackgroundColor;
   bottom: 0;
   padding: 5px;
+}
+
+.extradata-list .relative_type {
+  width: 50%;
+}
+.extradata-list .relative_of {
+  width: 45%;
 }</code>
     </property>
     <property>
@@ -5269,16 +5276,13 @@ table.extradata-list td.bmi_percentile {
 
 #if ("$!activeFields.contains('relative')" != 'false' &amp;&amp; ($context.action == 'edit' || ($doc.display('relative') != '' &amp;&amp; $doc.display('relative_of') != '')))
   ----
-  (% class="fieldset family_study" %)(((
-  #if ($xcontext.action == 'edit')
-    (% class="half-width relative" %)(((
-  #end
-    #__label('' 'section' 'Family study:') $doc.display('relative') #__label('relative_of' 'section' 'of')
-  #if ($xcontext.action == 'edit')
+  #set ($targetClassName = 'PhenoTips.RelativeClass')
+  #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
+    (% class="clear relatives-info" %)(((
+    === Family study ===
+    #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
     )))
   #end
-    #__displayFormatted('half-width' 'relative_of' "$!{config.getProperty('relativeReportHint').value}" '' 'hint')##
-  )))##fieldset
 #end
 
 #if ("$!activeFields.contains('age_of_onset')" != 'false')
