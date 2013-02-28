@@ -80,9 +80,11 @@ public class PropertyDisplayer
         this.propertyName = data.getPositivePropertyName();
         this.prepareMetaData();
         List<String> customYesSelected = new LinkedList<String>();
-        customYesSelected.addAll(data.getSelectedValues());
+        if (data.getSelectedValues() != null) {
+            customYesSelected.addAll(data.getSelectedValues());
+        }
         List<String> customNoSelected = new LinkedList<String>();
-        if (data.getNegativeFieldName() != null) {
+        if (data.getNegativeFieldName() != null && data.getSelectedNegativeValues() != null) {
             customNoSelected.addAll(data.getSelectedNegativeValues());
         }
         for (Map<String, ? > sectionTemplate : template) {
@@ -265,7 +267,7 @@ public class PropertyDisplayer
     private List<String> getCategoriesFromCustomMapping(String value, Map<String, List<String>> customCategories)
     {
         for (Map.Entry<String, List<String>> category : customCategories.entrySet()) {
-            if (StringUtils.equals(value, category.getKey())) {
+            if (StringUtils.equals(value, category.getKey()) && category.getValue() != null) {
                 return category.getValue();
             }
         }
