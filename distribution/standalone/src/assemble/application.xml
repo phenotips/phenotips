@@ -102,10 +102,6 @@
   </dependencySets>
   <files>
     <file>
-      <source>${basedir}/src/main/resources/xhtml2fo.xsl</source>
-      <outputDirectory>webapps/phenotips/WEB-INF/classes</outputDirectory>
-    </file>
-    <file>
       <source>${basedir}/src/main/resources/logback.xml</source>
       <outputDirectory>webapps/solr/WEB-INF/classes</outputDirectory>
     </file>
