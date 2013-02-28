@@ -5418,27 +5418,31 @@ $doc.display('miscarriages')
 #__displayIfNotEmpty('mode_of_inheritance')
 #__displayIfNotEmpty('family_comments')
 
-=== Pedigree ===
-$doc.display('pedigree')
-#set($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))
+#set ($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))
 #if ($pedigreeObj)
-#set($data = $pedigreeObj.getProperty('data').value)
+#set ($data = $!pedigreeObj.getProperty('data').value)
+#set ($image = $pedigreeObj.getProperty('image').value)
+#end## pedigree obj exists
+#if ($xcontext.action == 'edit' || "$!{doc.display('pedigree')}" != '' || "$!data" != '')
+=== Pedigree ===
+$!doc.display('pedigree')
+#if ($xcontext.action == 'edit')
 #if ("$!data" != '')
   #set ($pAction = 'Edit pedigree')
-  #set ($image = $pedigreeObj.getProperty('image').value)
-  #if ("$!image" != '')
+#else
+  #set ($pAction = 'Draw pedigree')
+#end## pedigree data exists
+(% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]]
+#end## action == edit
+#if ("$!image" != '')
     {{html clean="false"}}
       $!image
     {{/html}}
   #end
-#else
-  #set ($pAction = 'Draw pedigree')
-#end
-(% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]]
-#end
+#end## action == edit || data
 )))
 )))##chapter
-#end
+#end## if &lt;should show this section&gt;
 #end
 
 ## =================================================================
