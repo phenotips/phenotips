@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.xpn.xwiki.api.Document;
+
 /**
  * @version $Id$
  * @since 1.0M2
@@ -30,6 +32,8 @@ import java.util.Map;
 public class FormData
 {
     private DisplayMode mode;
+
+    private Document doc;
 
     private String positiveFieldName;
 
@@ -61,6 +65,22 @@ public class FormData
     public void setMode(DisplayMode mode)
     {
         this.mode = mode;
+    }
+
+    /**
+     * @return the doc
+     */
+    public Document getDocument()
+    {
+        return this.doc;
+    }
+
+    /**
+     * @param doc the doc to set
+     */
+    public void setDocument(Document doc)
+    {
+        this.doc = doc;
     }
 
     /**

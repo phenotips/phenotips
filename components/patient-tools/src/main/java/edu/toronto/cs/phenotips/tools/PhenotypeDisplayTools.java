@@ -48,8 +48,6 @@ public class PhenotypeDisplayTools implements ScriptService
 {
     private static final String CONTEXT_KEY = "pdt.data";
 
-    private static final String DOCUMENT_KEY = "pdt.document";
-
     private static final String MESSAGES_KEY = "pdt.messages";
 
     @Inject
@@ -75,7 +73,7 @@ public class PhenotypeDisplayTools implements ScriptService
 
     public void setDocument(Document document)
     {
-        this.execution.getContext().setProperty(DOCUMENT_KEY, document);
+        getFormData().setDocument(document);
     }
 
     public void setSelectedValues(Collection<String> values)
@@ -121,7 +119,6 @@ public class PhenotypeDisplayTools implements ScriptService
     public void clear()
     {
         this.execution.getContext().removeProperty(CONTEXT_KEY);
-        this.execution.getContext().removeProperty(DOCUMENT_KEY);
         if (this.execution.getContext().hasProperty(MESSAGES_KEY)) {
             this.execution.getContext().removeProperty(MESSAGES_KEY);
         }
