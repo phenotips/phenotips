@@ -112,7 +112,7 @@ $value
 &lt;/ul&gt;
 &lt;input type="hidden" name="$prefix$name" value=""/&gt;
 &lt;/div&gt;
-$xwiki.jsfx.use('js/scriptaculous/scriptaculous.js')##
+$xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
 &lt;script type="text/javascript" defer="defer"&gt;
 document.observe("xwiki:dom:loaded", function() {
