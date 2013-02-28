@@ -29,22 +29,21 @@ public class FormField extends AbstractFormElement
 
     private final String value;
 
+    private final String metaData;
+
     private final boolean[] selection;
 
     private final boolean expandable;
 
     private final String hint;
 
-    FormField(String value, String title, String hint, boolean expandable, String name, boolean selected)
-    {
-        this(value, title, hint, expandable, selected, false);
-    }
-
-    FormField(String value, String title, String hint, boolean expandable, boolean yesSelected, boolean noSelected)
+    FormField(String value, String title, String hint, String metaData, boolean expandable, boolean yesSelected,
+        boolean noSelected)
     {
         super(title);
         this.value = value;
         this.hint = hint;
+        this.metaData = metaData;
         this.expandable = expandable;
         this.selection = new boolean[2];
         this.selection[YES] = yesSelected;
@@ -84,7 +83,7 @@ public class FormField extends AbstractFormElement
     {
         String selectionMarker = isSelected(YES) ? "yes-selected" : isSelected(NO) ? "no-selected" : null;
         return (selectionMarker != null) ? ("<div class='value-checked " + selectionMarker + "'>"
-            + XMLUtils.escapeElementContent(this.title) + "</div>") : "";
+            + XMLUtils.escapeElementContent(this.title) + this.metaData + "</div>") : "";
     }
 
     private String generateCheckbox(String name, String value, String title, boolean selected, String labelClass,

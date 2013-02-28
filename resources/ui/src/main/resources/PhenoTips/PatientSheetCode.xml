@@ -1277,7 +1277,7 @@ document.observe('dom:loaded', function() {
                  if (addTrigger.disabled) {
                    return;
                  }
-                 var url = detailsUrl.replace(/([&amp;?]classname=)(.*?)([&amp;$])/, "$1$2&amp;$2_target_property_name=" + inputElt.name + "&amp;$2_target_property_value=" + inputElt.value + "$3");
+                 var url = detailsUrl.replace(/([&amp;?]classname=)(.*?)([&amp;$])/, "$1$2&amp;$2_target_property_name=" + inputElt.name.replace(/^.*_\d+_/, '') + "&amp;$2_target_property_value=" + inputElt.value + "$3");
                  new Ajax.Request(url, {
                    onCreate : function() {
                      addTrigger.disabled = true
@@ -5196,7 +5196,7 @@ table.extradata-list td.bmi_percentile {
 #macro (__phenotypeMeta_displayEntry $targetObj)
     #set($dataClass = $targetObj.xWikiClass)
     #set($enabledProperties = ['age_of_onset', 'pace_of_progression', 'comments', 'supporting_images', 'supporting_documents'])
-    #set($targetId = "phenotypeMeta__$!{targetObj.getProperty('target_property_name').value}__$!{targetObj.getProperty('target_property_value').value}")
+    #set($targetId = "phenotypeMeta__$!{class.name}_$!{obj.number}_$!{targetObj.getProperty('target_property_name').value}__$!{targetObj.getProperty('target_property_value').value}")
     {{html wiki="true" clean="false"}}##
     {{html wiki="false" clean="false"}}&lt;dl id="$targetId"&gt;{{/html}}##
       #foreach($prop in $dataClass.properties)##

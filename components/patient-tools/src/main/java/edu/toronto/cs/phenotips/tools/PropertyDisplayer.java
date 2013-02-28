@@ -28,6 +28,8 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 
+import com.xpn.xwiki.api.Property;
+
 import edu.toronto.cs.phenotips.solr.HPOScriptService;
 
 public class PropertyDisplayer
@@ -54,8 +56,6 @@ public class PropertyDisplayer
 
     private static final String INDEXED_CATEGORY_KEY = "term_category";
 
-    private static final String DEFAULT_SECTION_TITLE = "Other";
-
     private static final String INDEXED_PARENT_KEY = "is_a";
 
     protected HPOScriptService ontologyService;
@@ -65,6 +65,8 @@ public class PropertyDisplayer
     protected final String[] fieldNames;
 
     protected final String propertyName;
+
+    private Map<String, Map<String, String>> metadata;
 
     private List<FormSection> sections = new LinkedList<FormSection>();
 
@@ -76,6 +78,7 @@ public class PropertyDisplayer
         this.fieldNames[0] = data.getPositiveFieldName();
         this.fieldNames[1] = data.getNegativeFieldName();
         this.propertyName = data.getPositivePropertyName();
+        this.prepareMetaData();
         List<String> customYesSelected = new LinkedList<String>();
         customYesSelected.addAll(data.getSelectedValues());
         List<String> customNoSelected = new LinkedList<String>();
@@ -197,7 +200,15 @@ public class PropertyDisplayer
         if (id.equals(hint) && title != null) {
             hint = title;
         }
-        return new FormField(id, StringUtils.defaultIfEmpty(title, hint), hint, expandable, yesSelected, noSelected);
+        String metadata = "";
+        Map<String, String> metadataValues = this.metadata.get(id);
+        if (metadataValues != null) {
+            metadata =
+                metadataValues.get(noSelected ? this.data.getNegativePropertyName() : this.data
+                    .getPositivePropertyName());
+        }
+        return new FormField(id, StringUtils.defaultIfEmpty(title, hint), hint, StringUtils.defaultString(metadata),
+            expandable, yesSelected, noSelected);
     }
 
     private FormElement generateField(String id, String title, boolean yesSelected, boolean noSelected)
@@ -259,5 +270,39 @@ public class PropertyDisplayer
             }
         }
         return new LinkedList<String>();
+    }
+
+    private void prepareMetaData()
+    {
+        this.metadata = new HashMap<String, Map<String, String>>();
+        for (com.xpn.xwiki.api.Object o : this.data.getDocument().getObjects("PhenoTips.PhenotypeMetaClass")) {
+            String name = "";
+            String category = "";
+            StringBuilder value = new StringBuilder();
+            for (String propname : o.getxWikiClass().getEnabledPropertyNames()) {
+                Property property = o.getProperty(propname);
+                Object propvalue = property.getValue();
+                if (propvalue == null) {
+                    continue;
+                }
+                if (StringUtils.equals("target_property_name", propname)) {
+                    category = propvalue.toString();
+                } else if (StringUtils.equals("target_property_value", propname)) {
+                    name = propvalue.toString();
+                } else {
+                    value.append(o.get(propname).toString().replaceAll("\\{\\{/?html[^}]*+}}", "").replaceAll(
+                        "<(/?)p>", "<$1dd>"));
+                }
+            }
+            if (StringUtils.isNotBlank(name) && value.length() > 0) {
+                Map<String, String> subvalues = this.metadata.get(name);
+                if (subvalues == null) {
+                    subvalues = new HashMap<String, String>();
+                    this.metadata.put(name, subvalues);
+                }
+                subvalues.put(category, "<div class='phenotype-details'><dl>" + value.toString() + "</dl></div>");
+            }
+
+        }
     }
 }
