@@ -144,8 +144,8 @@ document.observe("xwiki:dom:loaded", function() {
 #if ($xcontext.action == 'edit' || $xcontext.action == 'admin')
 {{html wiki=false clean=false}}
 &lt;select name="$prefix$name" id="$prefix$iname"&gt;
-#foreach ($val in ['MM/dd/yyyy', 'MM/yyyy', 'MMMM yyyy'])
-  &lt;option #if ($val == $value) selected="selected"#end value="$val"&gt;$val (e.g. $xwiki.formatDate($util.date, $val))&lt;/option&gt;
+#foreach ($val in ['MM/dd/yyyy', 'dd/MM/yyyy', 'MM/yyyy', 'MMMM yyyy'])
+  &lt;option #if ($val == $value) selected="selected"#end value="$val"&gt;$val (e.g. $xwiki.formatDate($util.date, $val) for today)&lt;/option&gt;
 #end
 &lt;/select&gt;
 {{/html}}
