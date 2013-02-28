@@ -62,6 +62,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/disorder.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/legend.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/layout.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/saveLoadEngine.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/saveLoadIndicator.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/templateSelector.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/abstractHoverbox.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/partnershipHoverbox.js')##
