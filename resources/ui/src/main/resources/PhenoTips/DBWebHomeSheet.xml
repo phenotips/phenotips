@@ -706,6 +706,7 @@
   $$('.xwiki-livetable-topfilters-container .toggle-filters').invoke('observe', 'click', function() {
     $('patients-topfilters').toggleClassName('collapsed');
   });
+  $('patients-topfilters').addClassName('collapsed');
 });</code>
     </property>
     <property>
@@ -1079,7 +1080,8 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
       "_actions" : {"actions": ["edit", "delete"]}
 })
 #foreach($column in $columns)
-      #set($discard = $columnsProperties.put($column, { "type" : "text", "link" : "view", "size" : 7, "filterable" : false, "sortable": true  }))
+      #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0))
+      #set($discard = $columnsProperties.put($column, { "type" : "text", "link" : "view", "size" : 7, "filterable" : $isFilterable, "sortable": true  }))
 #end
 #if (!$configuredColumns.contains('date_of_birth'))
   #set($discard = $columns.add('date_of_birth'))
