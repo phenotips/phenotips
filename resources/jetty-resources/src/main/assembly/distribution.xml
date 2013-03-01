@@ -36,21 +36,9 @@
       </includes>
     </dependencySet>
     <dependencySet>
-      <!-- JSP-related jars must go in jetty/lib/jsp-2.1 -->
-      <outputDirectory>/jetty/lib/jsp-2.1</outputDirectory>
-      <includes>
-        <include>*:*jsp*</include>
-        <include>*:ecj*</include>
-        <include>*:el-api*</include>
-      </includes>
-    </dependencySet>
-    <dependencySet>
       <outputDirectory>/jetty/lib</outputDirectory>
       <excludes>
         <exclude>org.eclipse.jetty:jetty-start</exclude>
-        <exclude>*:*jsp*</exclude>
-        <exclude>*:ecj*</exclude>
-        <exclude>*:el-api*</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
