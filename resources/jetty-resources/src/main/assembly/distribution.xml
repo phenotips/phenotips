@@ -39,7 +39,21 @@
       <outputDirectory>/jetty/lib</outputDirectory>
       <excludes>
         <exclude>org.eclipse.jetty:jetty-start</exclude>
+        <!-- jetty-start.jar's  start.config file (see http://wiki.eclipse.org/Jetty/Feature/Start.jar) expects the
+             Servlet API JAR to be named servlet-api-3.0.jar. However Jetty names it javax.servlet-<version>.jar, thus
+             we need to rename it. -->
+        <exclude>org.eclipse.jetty.orbit:javax.servlet</exclude>
       </excludes>
+    </dependencySet>
+    <!-- jetty-start.jar's  start.config file (see http://wiki.eclipse.org/Jetty/Feature/Start.jar) expects the
+         Servlet API JAR to be named servlet-api-3.0.jar. However Jetty names it javax.servlet-<version>.jar, thus
+         we need to rename it. -->
+    <dependencySet>
+      <outputFileNameMapping>servlet-api-3.0.jar</outputFileNameMapping>
+      <outputDirectory>/jetty/lib</outputDirectory>
+      <includes>
+        <include>org.eclipse.jetty.orbit:javax.servlet</include>
+      </includes>
     </dependencySet>
   </dependencySets>
   <fileSets>
