@@ -72,7 +72,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <xwiki.version>4.4.1</xwiki.version>
+    <xwiki.version>4.5.1</xwiki.version>
     <slf4j.version>1.7.2</slf4j.version>
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>
