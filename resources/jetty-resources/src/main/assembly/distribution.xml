@@ -34,6 +34,8 @@
       <includes>
         <include>org.eclipse.jetty:jetty-start</include>
       </includes>
+      <!-- Needed to prevent warning since our project has a pom packaging and is not producing any artifact -->
+      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <dependencySet>
       <outputDirectory>/jetty/lib</outputDirectory>
@@ -44,6 +46,8 @@
              we need to rename it. -->
         <exclude>org.eclipse.jetty.orbit:javax.servlet</exclude>
       </excludes>
+      <!-- Needed to prevent warning since our project has a pom packaging and is not producing any artifact -->
+      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <!-- jetty-start.jar's  start.config file (see http://wiki.eclipse.org/Jetty/Feature/Start.jar) expects the
          Servlet API JAR to be named servlet-api-3.0.jar. However Jetty names it javax.servlet-<version>.jar, thus
@@ -54,6 +58,8 @@
       <includes>
         <include>org.eclipse.jetty.orbit:javax.servlet</include>
       </includes>
+      <!-- Needed to prevent warning since our project has a pom packaging and is not producing any artifact -->
+      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>
   <fileSets>
