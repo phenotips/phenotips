@@ -76,6 +76,7 @@
     <slf4j.version>1.7.2</slf4j.version>
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>
+    <clirr.skip>false</clirr.skip>
   </properties>
 
   <dependencyManagement>
