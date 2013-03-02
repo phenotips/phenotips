@@ -31,6 +31,12 @@
   <packaging>pom</packaging>
   <name>PhenoTips - Resource packages</name>
 
+  <properties>
+    <!-- Resource packages have no Java code, speedup by skipping Clirr and Checkstyle checks -->
+    <checkstyle.skip>true</checkstyle.skip>
+    <clirr.skip>true</clirr.skip>
+  </properties>
+
   <modules>
     <module>jetty-resources</module>
     <module>solr-configuration</module>

@@ -31,6 +31,12 @@
   <packaging>pom</packaging>
   <name>PhenoTips - Distribution packages</name>
 
+  <properties>
+    <!-- Distribution packages have no Java code, speedup by skipping Clirr and Checkstyle checks -->
+    <checkstyle.skip>true</checkstyle.skip>
+    <clirr.skip>true</clirr.skip>
+  </properties>
+
   <modules>
     <module>hsqldb-database</module>
     <module>war</module>
