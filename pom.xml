@@ -145,30 +145,6 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
-            <difference>
-              <className>edu/toronto/cs/phenotips/solr/SearchResult</className>
-              <differenceType>8001</differenceType>
-              <justification>Renamed to SuggestedPhenotype.</justification>
-            </difference>
-            <difference>
-              <className>edu/toronto/cs/phenotips/tools/PhenotypeDisplayTools</className>
-              <method>void setSelectedValues(java.lang.String, java.util.Collection)</method>
-              <differenceType>7002</differenceType>
-              <justification>Removed unneeded internal method (should have been private)</justification>
-            </difference>
-            <difference>
-              <className>edu/toronto/cs/phenotips/tools/PhenotypeDisplayTools</className>
-              <method>void useProperty(java.lang.String, java.lang.String, java.lang.String)</method>
-              <differenceType>7002</differenceType>
-              <justification>Removed unneeded internal method (should have been private)</justification>
-            </difference>
-            <difference>
-              <className>edu/toronto/cs/phenotips/tools/PropertyDisplayer</className>
-              <method>java.lang.String display(edu.toronto.cs.phenotips.tools.DisplayMode)</method>
-              <differenceType>7004</differenceType>
-              <to>java.lang.String display()</to>
-              <justification>Encapsulated display configuration in a configuration bean.</justification>
-            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
