@@ -34,7 +34,6 @@ import org.xwiki.container.Container;
 import org.xwiki.container.servlet.ServletRequest;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
@@ -74,10 +73,6 @@ public class FreePhenotypeCategoryUpdater implements EventListener
     /** Needed for getting access to the request. */
     @Inject
     private Container container;
-
-    @Inject
-    @Named("current")
-    private DocumentReferenceResolver<EntityReference> currentReferenceDocumentReferenceResolver;
 
     @Override
     public String getName()
@@ -168,8 +163,7 @@ public class FreePhenotypeCategoryUpdater implements EventListener
             }
             if (targetMappingObject == null) {
                 targetMappingObject =
-                    doc.getXObject(this.currentReferenceDocumentReferenceResolver.resolve(CATEGORY_CLASS_REFERENCE),
-                        doc.createXObject(CATEGORY_CLASS_REFERENCE, context));
+                    doc.getXObject(CATEGORY_CLASS_REFERENCE, doc.createXObject(CATEGORY_CLASS_REFERENCE, context));
             }
         } catch (XWikiException ex) {
             // Storage error, shouldn't happen
