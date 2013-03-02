@@ -45,7 +45,7 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.classes.BaseClass;
 
 /**
- * Update the Onset aggregated property whenever the congenital, year or month properties are specified in the request.
+ * Store the target category specified for free text phenotypes.
  * 
  * @version $Id$
  */
