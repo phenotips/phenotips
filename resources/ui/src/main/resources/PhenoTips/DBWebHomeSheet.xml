@@ -1082,19 +1082,14 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
       #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0))
       #set($discard = $columnsProperties.put($column, { "type" : "text", "link" : "view", "size" : 7, "filterable" : $isFilterable, "sortable": true  }))
 #end
-#if (!$configuredColumns.contains('date_of_birth'))
-  #set($discard = $columns.add('date_of_birth'))
-  #set($discard = $columnsProperties.put('date_of_birth', { "type" : "hidden" }))
+#foreach ($filterableColumn in ['date_of_birth', 'omim_id', 'phenotype'])
+  #if (!$configuredColumns.contains($filterableColumn))
+    #set($discard = $columns.add($filterableColumn))
+    #set($discard = $columnsProperties.put($filterableColumn, { "type" : "hidden" }))
+  #end
 #end
 #set($tagProperty = "$!{config.getProperty('tagProperty').value}")
 #if ($tagProperty != '')
-      #if ($columnsProperties.containsKey($tagProperty))
-        #set($discard = $columnsProperties.put($tagProperty, { "type" : "text", "filterable" : false, "sortable": false  }))
-      #else
-        #set($discard = $columns.add($tagProperty))
-        #set($discard = $columnsProperties.put($tagProperty, { "type" : "hidden"}))
-      #end
-      ###set($topFilters = $doc.getRenderedContent("{{valuecloud classname='${patientClassName}' property='${tagProperty}' nameService='hpo' enableJoinMode='1' collapsed='0'/}}", "xwiki/2.1"))
       #set($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
 == Filters ==
 
