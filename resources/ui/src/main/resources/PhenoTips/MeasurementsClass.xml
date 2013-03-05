@@ -125,8 +125,8 @@
 #if ("$!wValue" == '' || "$!hValue" == '' || "$!wValue" == '0' || "$!hValue" == '0')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getBMIPercentile($male, $age, $wValue, $hValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getBMIStandardDeviation($male, $age, $wValue, $hValue)))
+  #set ($pValue = $services.measurements.bmi.valueToPercentile($male, $age, $wValue, $hValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.bmi.valueToStandardDeviation($male, $age, $wValue, $hValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -184,8 +184,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getEarLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getEarLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.ear.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.ear.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -221,8 +221,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getEarLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getEarLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.ear.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.ear.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -258,8 +258,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getFootLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getFootLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.foot.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.foot.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -295,8 +295,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getFootLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getFootLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.foot.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.foot.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -332,8 +332,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getHandLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getHandLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.hand.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.hand.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -369,8 +369,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getHandLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getHandLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.hand.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.hand.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -393,8 +393,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getHCPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getHCStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.hc.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.hc.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -443,8 +443,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getHeightPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getHeightStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.height.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.height.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -480,8 +480,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getInnerCanthalDistancePercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getInnerCanthalDistanceStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.icd.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.icd.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -517,8 +517,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getInterpupilaryDistancePercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getInterpupilaryDistanceStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.ipd.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.ipd.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -554,8 +554,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getOuterCanthalDistancePercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getOuterCanthalDistanceStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.ocd.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.ocd.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -591,8 +591,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getPalmLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getPalmLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.palm.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.palm.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -628,8 +628,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getPalmLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getPalmLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.palm.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.palm.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -665,8 +665,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getPalpebralFissureLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getPalpebralFissureLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.pfl.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.pfl.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
@@ -702,8 +702,8 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.measurements.getWeightPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.getWeightStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.weight.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.weight.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
