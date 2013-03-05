@@ -17,23 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package edu.toronto.cs.phenotips.tools;
+package edu.toronto.cs.phenotips.measurements;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.csrf.internal.DefaultCSRFToken;
 import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
 import org.xwiki.test.jmock.annotation.MockingRequirement;
 
-import edu.toronto.cs.phenotips.tools.PercentileTools;
-
 /**
- * Tests for the {@link DefaultCSRFToken} component.
+ * Tests for the {@link PercentileTools} component.
  * 
  * @version $Id$
- * @since 2.5M2
+ * @since 1.0M1
  */
 @MockingRequirement(PercentileTools.class)
 public class PercentileToolsTest extends AbstractMockingComponentTestCase<PercentileTools>

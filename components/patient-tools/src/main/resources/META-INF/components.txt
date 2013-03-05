@@ -1,3 +1,2 @@
-edu.toronto.cs.phenotips.tools.PercentileTools
 edu.toronto.cs.phenotips.tools.PhenotypeDisplayTools
 edu.toronto.cs.phenotips.tools.PhenotypeMappingService

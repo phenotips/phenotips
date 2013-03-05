@@ -146,6 +146,11 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
+            <difference>
+              <className>edu/toronto/cs/phenotips/tools/PercentileTools</className>
+              <differenceType>8001</differenceType>
+              <justification>Moved to a separate module.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

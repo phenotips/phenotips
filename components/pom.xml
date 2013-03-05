@@ -35,6 +35,7 @@
     <module>obo2solr</module>
     <module>solr-access-service</module>
     <module>patient-update-listeners</module>
+    <module>patient-measurements</module>
     <module>patient-tools</module>
     <module>ncbieutils-access-service</module>
     <module>phenotype-mapping-service</module>
