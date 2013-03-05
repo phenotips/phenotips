@@ -27,16 +27,16 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 /**
- * Tests for the {@link PercentileTools} component.
+ * Tests for the {@link MeasurementsScriptService} component.
  * 
  * @version $Id$
  * @since 1.0M1
  */
-public class PercentileToolsTest
+public class MeasurementsScriptServiceTest
 {
     @Rule
-    public final MockitoComponentMockingRule<PercentileTools> mocker =
-        new MockitoComponentMockingRule<PercentileTools>(PercentileTools.class);
+    public final MockitoComponentMockingRule<MeasurementsScriptService> mocker =
+        new MockitoComponentMockingRule<MeasurementsScriptService>(MeasurementsScriptService.class);
 
     @Test
     public void testPercentileComputation() throws ComponentLookupException

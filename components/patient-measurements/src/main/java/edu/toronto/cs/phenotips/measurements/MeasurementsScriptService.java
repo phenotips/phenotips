@@ -43,9 +43,9 @@ import org.xwiki.script.service.ScriptService;
  * @version $Id$
  */
 @Component
-@Named("percentile")
+@Named("measurements")
 @Singleton
-public class PercentileTools implements ScriptService, Initializable
+public class MeasurementsScriptService implements ScriptService, Initializable
 {
     /** Fuzzy value representing a measurement value considered extremely below normal. */
     private static final String VALUE_EXTREME_BELOW_NORMAL = "extreme-below-normal";
@@ -233,7 +233,7 @@ public class PercentileTools implements ScriptService, Initializable
      * @param ageInMonths the age of the measurement, in months
      * @param weightInKilograms the measured weight, in kilograms
      * @param heightInCentimeters the measured length for children under 24 months, or measured height for older
-     *        children, in centimeters
+     *            children, in centimeters
      * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
      */
     public int getBMIPercentile(boolean male, int ageInMonths, double weightInKilograms, double heightInCentimeters)
@@ -250,7 +250,7 @@ public class PercentileTools implements ScriptService, Initializable
      * @param ageInMonths the age of the measurement, in months
      * @param weightInKilograms the measured weight, in kilograms
      * @param heightInCentimeters the measured length for children under 24 months, or measured height for older
-     *        children, in centimeters
+     *            children, in centimeters
      * @return a number specifying how many standard deviations does this measurement deviate from the mean
      */
     public double getBMIStandardDeviation(boolean male, int ageInMonths, double weightInKilograms,
@@ -267,7 +267,7 @@ public class PercentileTools implements ScriptService, Initializable
      * 
      * @param weightInKilograms the measured weight, in kilograms
      * @param heightInCentimeters the measured length for children under 24 months, or measured height for older
-     *        children, in centimeters
+     *            children, in centimeters
      * @return the BMI value
      */
     public double getBMI(double weightInKilograms, double heightInCentimeters)
@@ -372,7 +372,7 @@ public class PercentileTools implements ScriptService, Initializable
      * @param male {@code true} for boys, {@code false} for girls
      * @param ageInMonths the age of the measurement, in months
      * @param heightInCentimeters the measured length for children under 24 months, or measured height for older
-     *        children, in centimeters
+     *            children, in centimeters
      * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
      */
     public int getHeightPercentile(boolean male, int ageInMonths, double heightInCentimeters)
@@ -387,7 +387,7 @@ public class PercentileTools implements ScriptService, Initializable
      * @param male {@code true} for boys, {@code false} for girls
      * @param ageInMonths the age of the measurement, in months
      * @param heightInCentimeters the measured length for children under 24 months, or measured height for older
-     *        children, in centimeters
+     *            children, in centimeters
      * @return a number specifying how many standard deviations does this measurement deviate from the mean
      */
     public double getHeightStandardDeviation(boolean male, int ageInMonths, double heightInCentimeters)
@@ -550,8 +550,7 @@ public class PercentileTools implements ScriptService, Initializable
      * @param innerCanthalDistanceInCentimeters the measured inner canthal distance, in centimeters
      * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
      */
-    public int getInnerCanthalDistancePercentile(boolean male, int ageInMonths,
-        double innerCanthalDistanceInCentimeters)
+    public int getInnerCanthalDistancePercentile(boolean male, int ageInMonths, double innerCanthalDistanceInCentimeters)
     {
         LMS lms = getLMSForAge(this.icdForAge, ageInMonths);
         return valueToPercentile(innerCanthalDistanceInCentimeters, lms);
@@ -670,8 +669,7 @@ public class PercentileTools implements ScriptService, Initializable
      * @param outerCanthalDistanceInCentimeters the measured outer canthal distance, in centimeters
      * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
      */
-    public int getOuterCanthalDistancePercentile(boolean male, int ageInMonths,
-        double outerCanthalDistanceInCentimeters)
+    public int getOuterCanthalDistancePercentile(boolean male, int ageInMonths, double outerCanthalDistanceInCentimeters)
     {
         LMS lms = getLMSForAge(this.ocdForAge, ageInMonths);
         return valueToPercentile(outerCanthalDistanceInCentimeters, lms);
@@ -1079,7 +1077,7 @@ public class PercentileTools implements ScriptService, Initializable
      * the given Box-Cox triplet.
      * 
      * @param percentile the target percentile to extract from the normal distribution, a number between 0 and 100
-     *        (inclusive)
+     *            (inclusive)
      * @param m the M value, the median
      * @param l the L value, the power
      * @param s the S value, the generalized coefficient of variation
@@ -1124,12 +1122,14 @@ public class PercentileTools implements ScriptService, Initializable
     {
         BufferedReader in = null;
         try {
-            in = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader()
-                .getResourceAsStream(filename), "UTF-8"));
+            in =
+                new BufferedReader(new InputStreamReader(
+                    this.getClass().getClassLoader().getResourceAsStream(filename), "UTF-8"));
         } catch (UnsupportedEncodingException ex) {
             // This should never happen, UTF-8 is always present
-            in = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader()
-                .getResourceAsStream(filename)));
+            in =
+                new BufferedReader(
+                    new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(filename)));
         }
         String line;
         try {
@@ -1157,8 +1157,7 @@ public class PercentileTools implements ScriptService, Initializable
             }
         } catch (IOException ex) {
             // This shouldn't happen
-            this.logger.error("Failed to read data table [{}]: {}",
-                new Object[] {filename, ex.getMessage(), ex});
+            this.logger.error("Failed to read data table [{}]: {}", new Object[] {filename, ex.getMessage(), ex});
         }
     }
 
@@ -1168,7 +1167,7 @@ public class PercentileTools implements ScriptService, Initializable
      * found in the list, then return that entry. If there's no entry for the requested month, but there are valid
      * entries in previous and later months, a linear interpolation of the nearest surrounding entries is computed and
      * returned. Otherwise, if the requested month is beyond the last valid entry, return the last valid entry.
-     *
+     * 
      * @param list the standard list of measurements where to look in
      * @param ageInMonths the target age (in months) for which to compute the LMS triplet
      * @return a LMS triplet computed according to the rules above, possibly {@code null}
@@ -1197,9 +1196,9 @@ public class PercentileTools implements ScriptService, Initializable
             LMS lowerLMS = list.get(lowerAge);
             LMS upperLMS = list.get(upperAge);
             double delta = ((double) ageInMonths - lowerAge) / (upperAge - lowerAge);
-            result = new LMS(lowerLMS.l + (upperLMS.l - lowerLMS.l) * delta,
-                lowerLMS.m + (upperLMS.m - lowerLMS.m) * delta,
-                lowerLMS.s + (upperLMS.s - lowerLMS.s) * delta);
+            result =
+                new LMS(lowerLMS.l + (upperLMS.l - lowerLMS.l) * delta, lowerLMS.m + (upperLMS.m - lowerLMS.m) * delta,
+                    lowerLMS.s + (upperLMS.s - lowerLMS.s) * delta);
         }
         return result;
     }
