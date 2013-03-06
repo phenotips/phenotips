@@ -19,6 +19,10 @@
  */
 package edu.toronto.cs.phenotips.measurements;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -75,9 +79,35 @@ public class MeasurementsScriptService implements ScriptService
     {
         try {
             return this.componentManager.get().getInstance(MeasurementHandler.class, measurementType);
-        } catch (ComponentLookupException e) {
+        } catch (ComponentLookupException ex) {
             this.logger.warn("Requested unknown measurement type [{}]", measurementType);
             return null;
+        }
+    }
+
+    /**
+     * Get all the measurements handlers.
+     * 
+     * @param measurementType the type of measurement to return
+     * @return the requested handler, {@code null} if not found
+     */
+    public List<MeasurementHandler> getAvailableMeasurementHandlers()
+    {
+        try {
+            return this.componentManager.get().getInstanceList(MeasurementHandler.class);
+        } catch (ComponentLookupException ex) {
+            this.logger.warn("Failed to list available measurement types", ex);
+            return Collections.emptyList();
+        }
+    }
+
+    public Set<String> getAvailableMeasurementNames()
+    {
+        try {
+            return this.componentManager.get().getInstanceMap(MeasurementHandler.class).keySet();
+        } catch (ComponentLookupException ex) {
+            this.logger.warn("Failed to list available measurement types", ex);
+            return Collections.emptySet();
         }
     }
 
