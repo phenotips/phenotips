@@ -400,7 +400,7 @@
       <number>10</number>
       <prettyName/>
       <script>{{velocity}}
-#set ($dValue = $object.getProperty('head_circumference').value)
+#set ($dValue = $object.getProperty('hc').value)
 #set ($age = $object.getProperty('age').value)
 #set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
 #if ("$!dValue" == '')

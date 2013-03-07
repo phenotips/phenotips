@@ -53,7 +53,7 @@
 #set ($hcMeasurements = [])
 #set ($ocdMeasurements = [])
 #set ($icdMeasurements = [])
-#set ($measurements = {'weight' : [], 'height' : [], 'head_circumference' : [], 'ocd' : [], 'icd' : []})
+#set ($measurements = {'weight' : [], 'height' : [], 'hc' : [], 'ocd' : [], 'icd' : []})
 #set ($ageLimits = {})
 #set ($sex = false)
 #set ($c = $xwiki.getDocument('PhenoTips.ChartGenerator').getContent())
@@ -87,7 +87,7 @@
     #if ($age &gt;=0)
       #_updateMeasurements($wMeasurements $o 'weight' $age)
       #_updateMeasurements($hMeasurements $o 'height' $age)
-      #_updateMeasurements($hcMeasurements $o 'head_circumference' $age)
+      #_updateMeasurements($hcMeasurements $o 'hc' $age)
       #_updateMeasurements($ocdMeasurements $o 'ocd' $age)
       #_updateMeasurements($icdMeasurements $o 'icd' $age)
     #end
@@ -118,7 +118,7 @@
   #set ($ages = $request.getParameterValues('a'))
   #_buildMeasurementFromRequest($wMeasurements 'w', 'weight')
   #_buildMeasurementFromRequest($hMeasurements 'h', 'height')
-  #_buildMeasurementFromRequest($hcMeasurements 'c' 'head_circumference')
+  #_buildMeasurementFromRequest($hcMeasurements 'c' 'hc')
   #_buildMeasurementFromRequest($ocdMeasurements 'ocd' 'ocd')
   #_buildMeasurementFromRequest($icdMeasurements 'icd' 'icd')
   #set ($sex = ($request.getParameter('s') != 'F'))
@@ -220,7 +220,7 @@ $format##
   ## ---------------------------------------------------------
   #_generateCharts($wMeasurements, 'weight' 'weight' 'w' 'Weight for age')
   #_generateCharts($hMeasurements, 'height' 'height' 'h' 'Height for age')
-  #if ($ageLimits.get('head_circumference').min &lt;= 36)
+  #if ($ageLimits.get('hc').min &lt;= 36)
     #_generateChart($hcMeasurements, 'hc03' 'c' 'Head circumference for age')
   #end
   #_generateCharts($ocdMeasurements, 'ocd' 'ocd' 'ocd' 'Outer canthal distance for age')

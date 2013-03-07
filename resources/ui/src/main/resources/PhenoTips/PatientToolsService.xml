@@ -52,7 +52,7 @@
 ##
   #set ($weight = $mathtool.toDouble("$!request.w"))
   #set ($height = $mathtool.toDouble("$!request.h"))
-  #set ($head_c = $mathtool.toDouble("$!request.c"))
+  #set ($hc = $mathtool.toDouble("$!request.c"))
   #set ($ocd = $mathtool.toDouble("$!request.ocd"))
   #set ($icd = $mathtool.toDouble("$!request.icd"))
   #set ($pfl = $mathtool.toDouble("$!request.pfl"))
@@ -93,11 +93,11 @@
        })
        #set($discard = $valueMapping.add($data))
      #end
-     #if ($head_c != 0)
-       #set($data = {'id' : 'head_c',
-                     'value' : $head_c,
-                     'percentile' : $!services.measurements.hc.valueToPercentile($sex, $age, $head_c),
-                     'deviation' : $!services.measurements.hc.valueToStandardDeviation($sex, $age, $head_c)
+     #if ($hc != 0)
+       #set($data = {'id' : 'hc',
+                     'value' : $hc,
+                     'percentile' : $!services.measurements.hc.valueToPercentile($sex, $age, $hc),
+                     'deviation' : $!services.measurements.hc.valueToStandardDeviation($sex, $age, $hc)
        })
        #set($discard = $valueMapping.add($data))
      #end

@@ -2196,7 +2196,7 @@ document.observe('xwiki:dom:loaded', function() {
         values : ['date', 'age', 'actions']
       }, {
         name : 'general',
-        values : ['weight', 'weight_evaluation', 'height', 'height_evaluation', 'bmi', 'bmi_evaluation', 'head_circumference', 'hc_evaluation']
+        values : ['weight', 'weight_evaluation', 'height', 'height_evaluation', 'bmi', 'bmi_evaluation', 'hc', 'hc_evaluation']
       }, {
         name : 'face',
         values : ['ocd', 'ocd_evaluation', 'icd', 'icd_evaluation', 'pfl', 'pfl_evaluation', 'ipd', 'ipd_evaluation']
@@ -2239,7 +2239,7 @@ document.observe('xwiki:dom:loaded', function() {
 
     return createReqParam('w', row.down('td.weight input'), forceParam) +
            createReqParam('h', row.down('td.height input'), forceParam) +
-           createReqParam('c', row.down('td.head_circumference input'), forceParam) +
+           createReqParam('c', row.down('td.hc input'), forceParam) +
            createReqParam('ocd', row.down('td.ocd input'), forceParam) +
            createReqParam('icd', row.down('td.icd input'), forceParam) +
            createReqParam('pfl', row.down('td.pfl input'), forceParam) +
@@ -2416,7 +2416,7 @@ document.observe('xwiki:dom:loaded', function() {
            'extreme-above-normal': findFormElementForPhenotype('HP:0000098')
          }
        },
-       head_c : {
+       hc : {
          evaluation : row.down('td.hc_evaluation'),
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0000252'),
@@ -4461,7 +4461,7 @@ form .extradata-list tr:hover td {
 table.extradata-list td.weight,
 table.extradata-list td.height,
 table.extradata-list td.bmi,
-table.extradata-list td.head_circumference {
+table.extradata-list td.hc {
   padding-left: .5em;
 }
 table.extradata-list td.date,
