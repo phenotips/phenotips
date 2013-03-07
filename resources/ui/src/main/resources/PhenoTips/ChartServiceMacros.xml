@@ -225,7 +225,7 @@ $format##
   #end
   #_generateCharts($ocdMeasurements, 'ocd' 'ocd' 'ocd' 'Outer canthal distance for age')
   #if ($ageLimits.get('head_circumference').max &gt;= 24)
-    #_generateCharts($ocdMeasurements, 'icd' 'icd' 'icd' 'Inner canthal distance for age')
+    #_generateCharts($icdMeasurements, 'icd' 'icd' 'icd' 'Inner canthal distance for age')
   #end
 #end
 
