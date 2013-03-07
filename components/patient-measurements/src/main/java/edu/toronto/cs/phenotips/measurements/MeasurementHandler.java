@@ -73,4 +73,12 @@ public interface MeasurementHandler
      * @return the measurement (usually in centimeters or kilograms) that falls on the target standard deviation
      */
     double standardDeviationToValue(boolean male, int ageInMonths, double targetDeviation);
+
+    /**
+     * Some measurements should be taken on both sides of the body, since they can differ, for example different left
+     * and right ear lengths. This method is used to indicate those measurements.
+     * 
+     * @return {@code true} if measurements on both sides should be recorded
+     */
+    boolean isDoubleSided();
 }

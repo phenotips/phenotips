@@ -40,4 +40,10 @@ public class FootLengthMeasurementHandler extends AbstractMeasurementHandler
     {
         return "foot";
     }
+
+    @Override
+    public boolean isDoubleSided()
+    {
+        return true;
+    }
 }

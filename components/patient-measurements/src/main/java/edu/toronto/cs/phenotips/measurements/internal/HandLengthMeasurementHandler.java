@@ -40,4 +40,10 @@ public class HandLengthMeasurementHandler extends AbstractMeasurementHandler
     {
         return "hand";
     }
+
+    @Override
+    public boolean isDoubleSided()
+    {
+        return true;
+    }
 }

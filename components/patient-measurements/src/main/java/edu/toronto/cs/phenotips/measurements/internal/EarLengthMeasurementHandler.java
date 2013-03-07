@@ -40,4 +40,10 @@ public class EarLengthMeasurementHandler extends AbstractMeasurementHandler
     {
         return "ear";
     }
+
+    @Override
+    public boolean isDoubleSided()
+    {
+        return true;
+    }
 }

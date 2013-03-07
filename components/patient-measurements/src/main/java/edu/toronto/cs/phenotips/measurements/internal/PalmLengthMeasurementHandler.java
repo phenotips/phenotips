@@ -40,4 +40,10 @@ public class PalmLengthMeasurementHandler extends AbstractMeasurementHandler
     {
         return "palm";
     }
+
+    @Override
+    public boolean isDoubleSided()
+    {
+        return true;
+    }
 }

@@ -139,6 +139,12 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     }
 
     @Override
+    public boolean isDoubleSided()
+    {
+        return false;
+    }
+
+    @Override
     public void initialize() throws InitializationException
     {
         readData();
