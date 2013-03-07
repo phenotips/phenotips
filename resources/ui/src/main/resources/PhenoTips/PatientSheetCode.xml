@@ -2395,7 +2395,7 @@ document.observe('xwiki:dom:loaded', function() {
     if (qs == '') {return;}
     var sex = $(document.documentElement).down('input[name$=gender]:checked');
 
-    var url = measurementsService + "?" + qs + createReqParamSex('s', sex);
+    var url = measurementsService + "?" + qs + createReqParamSex('s', sex) + "&amp;outputSyntax=plain";
 
     var targets = {
        bmi : {

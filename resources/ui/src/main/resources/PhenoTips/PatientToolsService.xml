@@ -43,7 +43,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{velocity}}{{html clean="false"}}
+  <content>{{velocity}}
 #if ($xcontext.action == 'get')
   #macro (dashIfEmpty $val)#if ("$!val" == '' || ($val.class.name.endsWith('Integer') &amp;&amp; $val &lt; 0) || ($val.class.name.endsWith('Double') &amp;&amp; $val.isNaN($val)))-#elseif ($val.class.name.endsWith('Integer'))$val#else$mathtool.roundTo(2, $val)#end#end
   $response.setContentType('application/json')
@@ -106,6 +106,6 @@
   #end
 
   }
-#end{{/html}}{{/velocity}}
+#end{{/velocity}}
 </content>
 </xwikidoc>
