@@ -88,8 +88,8 @@ public class MeasurementsScriptService implements ScriptService
     /**
      * Get all the measurements handlers.
      * 
-     * @param measurementType the type of measurement to return
-     * @return the requested handler, {@code null} if not found
+     * @return a list of all the measurement handlers, or an empty list if there was a problem retrieving the actual
+     *         list
      */
     public List<MeasurementHandler> getAvailableMeasurementHandlers()
     {
