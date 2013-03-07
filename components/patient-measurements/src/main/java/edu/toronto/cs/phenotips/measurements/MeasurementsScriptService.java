@@ -101,6 +101,12 @@ public class MeasurementsScriptService implements ScriptService
         }
     }
 
+    /**
+     * Get the names of all the measurements handlers.
+     * 
+     * @return a set with the names of all the measurement handlers, or an empty set if there was a problem retrieving
+     *         the actual values
+     */
     public Set<String> getAvailableMeasurementNames()
     {
         try {
