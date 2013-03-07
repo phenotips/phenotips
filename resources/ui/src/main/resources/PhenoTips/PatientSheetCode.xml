@@ -2267,7 +2267,7 @@ document.observe('xwiki:dom:loaded', function() {
     var bDateObj = Date.parseISO_8601(birthDate.alt || '');
     var cDateObj = Date.parseISO_8601(crtDate.alt || '');
     if (!bDateObj || !cDateObj) {return ''}
-    var age = (cDateObj.getFullYear() - bDateObj.getFullYear()) * 12 + (cDateObj.getMonth() - bDateObj.getMonth());
+    var age = (cDateObj.getFullYear() - bDateObj.getFullYear()) * 12 + (cDateObj.getMonth() - bDateObj.getMonth()) + (cDateObj.getDate() &lt; bDateObj.getDate() ? -1 : 0);
     if (age &gt;= 0) {
       var displayedAge = '';
       if (age == 0) {
