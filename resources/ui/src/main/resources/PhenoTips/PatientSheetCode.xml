@@ -2395,7 +2395,7 @@ document.observe('xwiki:dom:loaded', function() {
     if (qs == '') {return;}
     var sex = $(document.documentElement).down('input[name$=gender]:checked');
 
-    var url = measurementsService + "?" + qs + createReqParamSex('s', sex) + "&amp;outputSyntax=plain";
+    var url = measurementsService;
 
     var targets = {
        bmi : {
@@ -2482,7 +2482,8 @@ document.observe('xwiki:dom:loaded', function() {
     var requestID = ++lastRequestID;
 
     var ajx = new Ajax.Request(url, {
-       method: 'get',
+       method: 'post',
+       parameters:  qs + createReqParamSex('s', sex) + '&amp;outputSyntax=plain',
        requestHeaders: {Accept : "application/json"},
        onSuccess: function(response) {
           if (requestID &lt; lastRequestID) {return;}
