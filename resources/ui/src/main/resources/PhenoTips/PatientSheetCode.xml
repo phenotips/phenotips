@@ -2237,9 +2237,9 @@ document.observe('xwiki:dom:loaded', function() {
     //if (!date) {return '';}
     var birthDate = $(document.documentElement).down('input[name$=date_of_birth]');
 
-    return createReqParam('w', row.down('td.weight input'), forceParam) +
-           createReqParam('h', row.down('td.height input'), forceParam) +
-           createReqParam('c', row.down('td.hc input'), forceParam) +
+    return createReqParam('weight', row.down('td.weight input'), forceParam) +
+           createReqParam('height', row.down('td.height input'), forceParam) +
+           createReqParam('hc', row.down('td.hc input'), forceParam) +
            createReqParam('ocd', row.down('td.ocd input'), forceParam) +
            createReqParam('icd', row.down('td.icd input'), forceParam) +
            createReqParam('pfl', row.down('td.pfl input'), forceParam) +

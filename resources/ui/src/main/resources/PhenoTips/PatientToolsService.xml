@@ -50,153 +50,40 @@
   #set ($age = $mathtool.toInteger("$!request.a"))
   #set ($sex = ("$!request.s" != 'F'))
 ##
-  #set ($weight = $mathtool.toDouble("$!request.w"))
-  #set ($height = $mathtool.toDouble("$!request.h"))
-  #set ($hc = $mathtool.toDouble("$!request.c"))
-  #set ($ocd = $mathtool.toDouble("$!request.ocd"))
-  #set ($icd = $mathtool.toDouble("$!request.icd"))
-  #set ($pfl = $mathtool.toDouble("$!request.pfl"))
-  #set ($ipd = $mathtool.toDouble("$!request.ipd"))
-  #set ($ear = $mathtool.toDouble("$!request.ear"))
-  #set ($hand = $mathtool.toDouble("$!request.hand"))
-  #set ($palm = $mathtool.toDouble("$!request.palm"))
-  #set ($foot = $mathtool.toDouble("$!request.foot"))
-  #set ($ear_right = $mathtool.toDouble("$!request.ear_right"))
-  #set ($hand_right = $mathtool.toDouble("$!request.hand_right"))
-  #set ($palm_right = $mathtool.toDouble("$!request.palm_right"))
-  #set ($foot_right = $mathtool.toDouble("$!request.foot_right"))
-##
   #set ($valueMapping = [])
 ##
-  #if ($weight != 0 &amp;&amp; $height != 0)
-    #set($data = {'id' : 'bmi', 'value' : $!mathtool.roundTo(2, $services.measurements.bmi.computeBMI($weight, $height))})
-    #if ("$!request.a" != '')
-       #set($discard = $data.put('percentile', $!services.measurements.bmi.valueToPercentile($sex, $age, $weight, $height)))
-       #set($discard = $data.put('deviation', $!services.measurements.bmi.valueToStandardDeviation($sex, $age, $weight, $height)))
-    #end
-    #set($discard = $valueMapping.add($data))
-  #end
   #if ("$!request.a" != '')
-     #if ($weight != 0)
-       #set($data = {'id' : 'weight',
-                     'value' : $weight,
-                     'percentile' : $!services.measurements.weight.valueToPercentile($sex, $age, $weight),
-                     'deviation' : $!services.measurements.weight.valueToStandardDeviation($sex, $age, $weight)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ("$!height" != '' &amp;&amp; $height != 0)
-       #set($data = {'id' : 'height',
-                     'value' : $height,
-                     'percentile' : $!services.measurements.height.valueToPercentile($sex, $age, $height),
-                     'deviation' : $!services.measurements.height.valueToStandardDeviation($sex, $age, $height)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ($hc != 0)
-       #set($data = {'id' : 'hc',
-                     'value' : $hc,
-                     'percentile' : $!services.measurements.hc.valueToPercentile($sex, $age, $hc),
-                     'deviation' : $!services.measurements.hc.valueToStandardDeviation($sex, $age, $hc)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ($ocd != 0)
-       #set($data = {'id' : 'ocd',
-                     'value' : $ocd,
-                     'percentile' : $!services.measurements.ocd.valueToPercentile($sex, $age, $ocd),
-                     'deviation' : $!services.measurements.ocd.valueToStandardDeviation($sex, $age, $ocd)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ($icd != 0)
-       #set($data = {'id' : 'icd',
-                     'value' : $icd,
-                     'percentile' : $!services.measurements.icd.valueToPercentile($sex, $age, $icd),
-                     'deviation' : $!services.measurements.icd.valueToStandardDeviation($sex, $age, $icd)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ($pfl != 0)
-       #set($data = {'id' : 'pfl',
-                     'value' : $pfl,
-                     'percentile' : $!services.measurements.pfl.valueToPercentile($sex, $age, $pfl),
-                     'deviation' : $!services.measurements.pfl.valueToStandardDeviation($sex, $age, $pfl)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ($ipd != 0)
-       #set($data = {'id' : 'ipd',
-                     'value' : $ipd,
-                     'percentile' : $!services.measurements.ipd.valueToPercentile($sex, $age, $ipd),
-                     'deviation' : $!services.measurements.ipd.valueToStandardDeviation($sex, $age, $ipd)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ($ear != 0)
-       #set($data = {'id' : 'ear',
-                     'value' : $ear,
-                     'percentile' : $!services.measurements.ear.valueToPercentile($sex, $age, $ear),
-                     'deviation' : $!services.measurements.ear.valueToStandardDeviation($sex, $age, $ear)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ($hand != 0)
-       #set($data = {'id' : 'hand',
-                     'value' : $hand,
-                     'percentile' : $!services.measurements.hand.valueToPercentile($sex, $age, $hand),
-                     'deviation' : $!services.measurements.hand.valueToStandardDeviation($sex, $age, $hand)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ($palm != 0)
-       #set($data = {'id' : 'palm',
-                     'value' : $palm,
-                     'percentile' : $!services.measurements.palm.valueToPercentile($sex, $age, $palm),
-                     'deviation' : $!services.measurements.palm.valueToStandardDeviation($sex, $age, $palm)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ($foot != 0)
-       #set($data = {'id' : 'foot',
-                     'value' : $foot,
-                     'percentile' : $!services.measurements.foot.valueToPercentile($sex, $age, $foot),
-                     'deviation' : $!services.measurements.foot.valueToStandardDeviation($sex, $age, $foot)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ($ear_right != 0)
-       #set($data = {'id' : 'ear_right',
-                     'value' : $ear_right,
-                     'percentile' : $!services.measurements.ear.valueToPercentile($sex, $age, $ear_right),
-                     'deviation' : $!services.measurements.ear.valueToStandardDeviation($sex, $age, $ear_right)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ($hand_right != 0)
-       #set($data = {'id' : 'hand_right',
-                     'value' : $hand_right,
-                     'percentile' : $!services.measurements.hand.valueToPercentile($sex, $age, $hand_right),
-                     'deviation' : $!services.measurements.hand.valueToStandardDeviation($sex, $age, $hand_right)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ($palm_right != 0)
-       #set($data = {'id' : 'palm_right',
-                     'value' : $palm_right,
-                     'percentile' : $!services.measurements.palm.valueToPercentile($sex, $age, $palm_right),
-                     'deviation' : $!services.measurements.palm.valueToStandardDeviation($sex, $age, $palm_right)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
-     #if ($foot_right != 0)
-       #set($data = {'id' : 'foot_right',
-                     'value' : $foot_right,
-                     'percentile' : $!services.measurements.foot.valueToPercentile($sex, $age, $foot_right),
-                     'deviation' : $!services.measurements.foot.valueToStandardDeviation($sex, $age, $foot_right)
-       })
-       #set($discard = $valueMapping.add($data))
-     #end
+    #foreach($measurement in $services.measurements.getAvailableMeasurementHandlers())
+      #set ($value = $mathtool.toDouble("$!request.get($measurement.name)"))
+      #if ("$!value" != '' &amp;&amp; $value != 0)
+        #set($data = {'id' : $measurement.name,
+                      'value' : $value,
+                      'percentile' : $!$measurement.valueToPercentile($sex, $age, $value),
+                      'deviation' : $!measurement.valueToStandardDeviation($sex, $age, $value)
+        })
+        #set($discard = $valueMapping.add($data))
+      #end
+      #if ($measurement.isDoubleSided())
+        #set ($value = $mathtool.toDouble("$!request.get(""${measurement.name}_right"")"))
+        #if ("$!value" != '' &amp;&amp; $value != 0)
+          #set($data = {'id' : "${measurement.name}_right",
+                        'value' : $value,
+                        'percentile' : $!measurement.valueToPercentile($sex, $age, $value),
+                        'deviation' : $!measurement.valueToStandardDeviation($sex, $age, $value)
+          })
+          #set($discard = $valueMapping.add($data))
+        #end
+      #end
+    #end
+    ## BMI is special, it's computed from two different measurements
+    #set ($weight = $mathtool.toDouble("$!request.weight"))
+    #set ($height = $mathtool.toDouble("$!request.height"))
+    #if ("$!weight" != '' &amp;&amp; $weight != 0 &amp;&amp; "$!height" != '' &amp;&amp; $height != 0)
+      #set($data = {'id' : 'bmi', 'value' : $!mathtool.roundTo(2, $services.measurements.bmi.computeBMI($weight, $height))})
+        #set($discard = $data.put('percentile', $!services.measurements.bmi.valueToPercentile($sex, $age, $weight, $height)))
+        #set($discard = $data.put('deviation', $!services.measurements.bmi.valueToStandardDeviation($sex, $age, $weight, $height)))
+      #set($discard = $valueMapping.add($data))
+    #end
   #end##age
   {
   #foreach ($entry in $valueMapping)
