@@ -380,6 +380,19 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </hand_right_evaluation>
+    <hc>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>hc</name>
+      <number>9</number>
+      <numberType>float</numberType>
+      <prettyName>Head circ. (cm)</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+    </hc>
     <hc_evaluation>
       <customDisplay/>
       <disabled>0</disabled>
@@ -404,19 +417,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </hc_evaluation>
-    <head_circumference>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <name>head_circumference</name>
-      <number>9</number>
-      <numberType>float</numberType>
-      <prettyName>Head circ. (cm)</prettyName>
-      <size>30</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-    </head_circumference>
     <height>
       <customDisplay/>
       <disabled>0</disabled>

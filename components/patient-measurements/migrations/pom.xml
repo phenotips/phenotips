@@ -27,12 +27,18 @@
     <artifactId>phenotips-components</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-measurements</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Patient measurements</name>
-
-  <modules>
-    <module>api</module>
-    <module>migrations</module>
-  </modules>
+  <artifactId>patient-measurements-migrations</artifactId>
+  <name>PhenoTips - Patient measurements - Data migrations</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+  </dependencies>
 </project>
