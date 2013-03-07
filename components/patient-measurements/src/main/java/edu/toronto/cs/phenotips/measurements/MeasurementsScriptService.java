@@ -96,7 +96,7 @@ public class MeasurementsScriptService implements ScriptService
         try {
             return this.componentManager.get().getInstanceList(MeasurementHandler.class);
         } catch (ComponentLookupException ex) {
-            this.logger.warn("Failed to list available measurement types", ex);
+            this.logger.warn("Failed to list available measurements", ex);
             return Collections.emptyList();
         }
     }
