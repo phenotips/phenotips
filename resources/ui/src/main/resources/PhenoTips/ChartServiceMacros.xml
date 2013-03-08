@@ -133,18 +133,20 @@ $format##
 ## Generate charts for a specific measurement
 ## ---------------------------------------------------------
 #macro (_generateCharts $measurements $chartName $sourceName $paramName $title)
-  #if ($ageLimits.get($sourceName).min &lt; 24 || $ageLimits.get($sourceName).max &lt; 36)
-    #_generateChart($measurements, "${chartName}03" $paramName $title)
-  #end
-  #if ($ageLimits.get($sourceName).max &gt;= 36)
-    #_generateChart($measurements, "${chartName}220" $paramName $title)
+  #if (!$measurements.isEmpty())
+    #if ($ageLimits.get($sourceName).min &lt; 24 || $ageLimits.get($sourceName).max &lt; 36)
+      #_generateChart($measurements, "${chartName}03" $paramName $title)
+    #end
+    #if ($ageLimits.get($sourceName).max &gt;= 36)
+      #_generateChart($measurements, "${chartName}220" $paramName $title)
+    #end
   #end
 #end
 ## ---------------------------------------------------------
 ## Generate chart for a specific measurement and age span
 ## ---------------------------------------------------------
 #macro (_generateChart $measurements $chartName $paramName $title)
-  #if ($measurements.size() &gt; 0)
+  #if (!$measurements.isEmpty())
     #set ($chart = $chartName)
     #set ($svg = "#evaluate($c)")
     #set ($queryString = "n=${chartName}#if(!$sex)&amp;s=F#end")
@@ -214,7 +216,7 @@ $format##
   ## ---------------------------------------------------------
   #_generateCharts($measurements.get('weight'), 'weight' 'weight' 'weight' 'Weight for age')
   #_generateCharts($measurements.get('height'), 'height' 'height' 'height' 'Height for age')
-  #if ($ageLimits.get('hc').min &lt;= 36)
+  #if (!$measurements.get('hc').isEmpty() &amp;&amp; $ageLimits.get('hc').min &lt;= 36)
     #_generateChart($measurements.get('hc'), 'hc03' 'hc' 'Head circumference for age')
   #end
   #_generateCharts($measurements.get('ocd'), 'ocd' 'ocd' 'ocd' 'Outer canthal distance for age')
