@@ -5420,7 +5420,7 @@ $doc.display('miscarriages')
 
 #__displayIfNotEmpty('mode_of_inheritance')
 #__displayIfNotEmpty('family_comments')
-
+#*
 #set ($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))
 #if ($pedigreeObj)
 #set ($data = $!pedigreeObj.getProperty('data').value)
@@ -5443,6 +5443,7 @@ $!doc.display('pedigree')
     {{/html}}
   #end
 #end## action == edit || data
+*#
 )))
 )))##chapter
 #end## if &lt;should show this section&gt;
