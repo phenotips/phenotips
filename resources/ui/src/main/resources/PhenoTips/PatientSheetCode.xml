@@ -5413,9 +5413,11 @@ $doc.display('prenatal_phenotype')
 #if (("$!activeFields.contains('consanguinity')" != 'false' || "$!activeFields.contains('miscarriages')" != 'false'|| "$!activeFields.contains('mode_of_inheritance')" != 'false' || "$!activeFields.contains('pedigree')" != 'false') &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('consanguinity')$doc.display('miscarriages')$doc.display('mode_of_inheritance')$doc.display('family_comments')$doc.display('pedigree')" != ''))
 (% class="clear clinical-info family_history-info chapter #__markIfMandatory('family_history')" %)(((
 == $!{class.get('family_history').prettyName} ==
+
 (((
-$doc.display('consanguinity')##
+$doc.display('consanguinity')
 $doc.display('miscarriages')
+
 #__displayIfNotEmpty('mode_of_inheritance')
 #__displayIfNotEmpty('family_comments')
 
