@@ -2633,19 +2633,19 @@ $xwiki.ssx.use($xwiki.getSpacePreference('colorTheme'))</meta>
       <showRightPanels>0</showRightPanels>
     </property>
     <property>
-      <showannotations/>
+      <showannotations>0</showannotations>
     </property>
     <property>
-      <showattachments/>
+      <showattachments>0</showattachments>
     </property>
     <property>
-      <showcomments/>
+      <showcomments>0</showcomments>
     </property>
     <property>
-      <showhistory/>
+      <showhistory>0</showhistory>
     </property>
     <property>
-      <showinformation/>
+      <showinformation>0</showinformation>
     </property>
     <property>
       <skin>PhenoTips.Skin</skin>
