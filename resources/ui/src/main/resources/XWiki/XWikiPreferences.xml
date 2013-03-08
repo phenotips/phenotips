@@ -2630,7 +2630,7 @@ $xwiki.ssx.use($xwiki.getSpacePreference('colorTheme'))</meta>
       <showLeftPanels>0</showLeftPanels>
     </property>
     <property>
-      <showRightPanels>1</showRightPanels>
+      <showRightPanels>0</showRightPanels>
     </property>
     <property>
       <showannotations/>
