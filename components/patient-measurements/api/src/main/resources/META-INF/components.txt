@@ -11,4 +11,5 @@ edu.toronto.cs.phenotips.measurements.internal.OuterCanthalDistanceMeasurementHa
 edu.toronto.cs.phenotips.measurements.internal.PalmLengthMeasurementHandler
 edu.toronto.cs.phenotips.measurements.internal.PalpebralFissureLengthMeasurementHandler
 edu.toronto.cs.phenotips.measurements.internal.PhiltrumLengthMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.SittingHeightMeasurementHandler
 edu.toronto.cs.phenotips.measurements.internal.WeightMeasurementHandler
