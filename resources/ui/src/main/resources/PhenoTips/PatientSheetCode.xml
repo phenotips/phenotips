@@ -5329,7 +5329,7 @@ table.extradata-list td.bmi_percentile {
 ## Phenotype information
 ##
 #macro(__reportSection__phenotype_info)
-#if ($xcontext.action == 'edit' || ("$doc.display('unaffected')$doc.display('phenotype')$doc.display('negative_phenotype')" != '' &amp;&amp; $doc.display('unaffected') != 'No'))
+#if ($xcontext.action == 'edit' || "$doc.display('phenotype')$doc.display('negative_phenotype')" != '' || $doc.display('unaffected') != 'No')
 #if ("$!activeFields.contains('unaffected')" != 'false')
   (% class="controlled-group complete-hide" %)(((
 #end
