@@ -132,6 +132,81 @@
         </executions>
       </plugin>
       <plugin>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>xwiki-platform-tool-configuration-resources</id>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <resourceBundles>
+                <resourceBundle>org.xwiki.platform:xwiki-platform-tool-configuration-resources:${xwiki.version}</resourceBundle>
+              </resourceBundles>
+              <properties>
+                <xwikiDbConnectionUrl>jdbc:hsqldb:file:${environment.permanentDirectory}/database/xwiki_db;shutdown=true</xwikiDbConnectionUrl>
+                <xwikiDbConnectionUsername>sa</xwikiDbConnectionUsername>
+                <xwikiDbConnectionPassword />
+                <xwikiDbConnectionDriverClass>org.hsqldb.jdbcDriver</xwikiDbConnectionDriverClass>
+                <xwikiDbDialect>org.hibernate.dialect.HSQLDialect</xwikiDbDialect>
+                <xwikiDbHbmXwiki>xwiki.hbm.xml</xwikiDbHbmXwiki>
+                <xwikiDbHbmFeeds>feeds.hbm.xml</xwikiDbHbmFeeds>
+                <xwikiDbHbmCommonExtraMappings>activitystream.hbm.xml</xwikiDbHbmCommonExtraMappings>
+                <xwikiCfgPlugins>\
+  com.xpn.xwiki.monitor.api.MonitorPlugin,\
+  com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.JsSkinFileExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.JsResourceSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssSkinFileExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssResourceSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.LinkExtensionPlugin,\
+  com.xpn.xwiki.plugin.feed.FeedPlugin,\
+  com.xpn.xwiki.plugin.mail.MailPlugin,\
+  com.xpn.xwiki.plugin.packaging.PackagePlugin,\
+  com.xpn.xwiki.plugin.svg.SVGPlugin,\
+  com.xpn.xwiki.plugin.fileupload.FileUploadPlugin,\
+  com.xpn.xwiki.plugin.image.ImagePlugin,\
+  com.xpn.xwiki.plugin.zipexplorer.ZipExplorerPlugin,\
+  com.xpn.xwiki.plugin.lucene.LucenePlugin,\
+  com.xpn.xwiki.plugin.diff.DiffPlugin,\
+  com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin,\
+  com.xpn.xwiki.plugin.jodatime.JodaTimePlugin,\
+  com.xpn.xwiki.plugin.scheduler.SchedulerPlugin,\
+  com.xpn.xwiki.plugin.mailsender.MailSenderPlugin,\
+  com.xpn.xwiki.plugin.activitystream.plugin.ActivityStreamPlugin, \
+  com.xpn.xwiki.plugin.watchlist.WatchListPlugin, \
+  com.xpn.xwiki.plugin.tag.TagPlugin</xwikiCfgPlugins>
+                <xwikiCfgVirtual>0</xwikiCfgVirtual>
+                <xwikiCfgVirtualUsepath>0</xwikiCfgVirtualUsepath>
+                <xwikiCfgEditCommentMandatory>0</xwikiCfgEditCommentMandatory>
+                <xwikiCfgDefaultSkin>colibri</xwikiCfgDefaultSkin>
+                <xwikiCfgDefaultBaseSkin>colibri</xwikiCfgDefaultBaseSkin>
+                <xwikiCfgEncoding>UTF-8</xwikiCfgEncoding>
+                <xwikiCfgAdditionalProperties>
+xwiki.plugin.watchlist.automaticwatch=none
+xwiki.authentication.group.allgroupimplicit=1
+xwiki.section.edit=0
+xwiki.backlinks=0
+xwiki.showviewaction=0
+xwiki.defaultweb=data
+xwiki.usedefaultweb=1
+xwiki.usedefaultaction=0
+xwiki.monitor=0
+                </xwikiCfgAdditionalProperties>
+                <xwikiPropertiesEnvironmentPermanentDirectory>/var/lib/phenotips/</xwikiPropertiesEnvironmentPermanentDirectory>
+                <xwikiPropertiesAdditionalProperties>
+model.reference.default.space=data
+extension.repositories=maven-xwiki:maven:http://nexus.xwiki.org/nexus/content/groups/public
+extension.repositories=maven-phenotips:maven:http://nexus.cs.toronto.edu/nexus/content/repositories/releases/
+extension.repositories=extensions.xwiki.org:xwiki:http://extensions.xwiki.org/xwiki/rest/
+                </xwikiPropertiesAdditionalProperties>
+              </properties>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
@@ -146,6 +221,8 @@
               <targetPath>WEB-INF</targetPath>
               <includes>
                 <include>xwiki.cfg</include>
+                <include>xwiki.properties</include>
+                <include>hibernate.cfg.xml</include>
               </includes>
             </resource>
           </webResources>
