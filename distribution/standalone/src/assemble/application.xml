@@ -105,13 +105,5 @@
       <source>${basedir}/src/main/resources/logback.xml</source>
       <outputDirectory>webapps/solr/WEB-INF/classes</outputDirectory>
     </file>
-    <file>
-      <source>${basedir}/src/main/resources/xwiki.js</source>
-      <outputDirectory>webapps/phenotips/resources/js/xwiki</outputDirectory>
-    </file>
-    <file>
-      <source>${basedir}/src/main/resources/livetable.js</source>
-      <outputDirectory>webapps/phenotips/resources/js/xwiki/table</outputDirectory>
-    </file>
   </files>
 </assembly>
