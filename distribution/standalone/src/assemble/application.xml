@@ -34,12 +34,6 @@
       </includes>
       <outputDirectory>webapps/phenotips</outputDirectory>
       <unpack>true</unpack>
-      <unpackOptions>
-        <excludes>
-          <exclude>**/xwiki.js</exclude>
-          <exclude>**/livetable.js</exclude>
-        </excludes>
-      </unpackOptions>
     </dependencySet>
     <!-- Add JDBC driver for the database to use. -->
     <dependencySet>
