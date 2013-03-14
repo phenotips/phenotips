@@ -2528,7 +2528,7 @@ console.log(categories);
     var info = new Element("dl");
     for (var section in this.options.resultInfo) {
       var sOptions = this.options.resultInfo[section];
-      sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/, '').replace(/\s+/, "-");
+      sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, "-");
       var selector = sOptions.selector;
       if (!selector) {
         continue;
