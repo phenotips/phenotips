@@ -108,7 +108,7 @@ public class FreePhenotypeCategoryUpdater implements EventListener
             for (String phenotype : (List<String>) patientRecordObj.getListValue(targetPropertyName)) {
                 if (!phenotype.matches("HP:[0-9]+")) {
                     List<String> category =
-                        getParameter(targetPropertyName + "__" + phenotype.replaceAll("[^a-z0-9_]+", "_")
+                        getParameter(targetPropertyName + "__" + phenotype.replaceAll("[^a-zA-Z0-9_]+", "_")
                             + "__category", patientRecordObj.getNumber());
                     if (category != null && !category.isEmpty()) {
                         storeCategory(phenotype, category, targetPropertyName, doc, context);
