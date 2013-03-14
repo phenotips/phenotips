@@ -98,12 +98,18 @@ public class PropertyDisplayer
             List<String> categories = new LinkedList<String>();
             categories.addAll(this.getCategoriesFromOntology(value));
             categories.addAll(this.getCategoriesFromCustomMapping(value, data.getCustomCategories()));
+            if (categories.isEmpty()) {
+                categories.add("HP:0000118");
+            }
             yCustomCategories.put(value, categories);
         }
         for (String value : customNoSelected) {
             List<String> categories = new LinkedList<String>();
             categories.addAll(this.getCategoriesFromOntology(value));
             categories.addAll(this.getCategoriesFromCustomMapping(value, data.getCustomNegativeCategories()));
+            if (categories.isEmpty()) {
+                categories.add("HP:0000118");
+            }
             nCustomCategories.put(value, categories);
         }
         for (FormSection section : this.sections) {
