@@ -85,7 +85,7 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>phenotips-${project.version}-${maven.build.timestamp}</finalName>
+    <finalName>${project.artifactId}-${project.version}-${maven.build.timestamp}</finalName>
     <pluginManagement>
       <plugins>
         <plugin>
