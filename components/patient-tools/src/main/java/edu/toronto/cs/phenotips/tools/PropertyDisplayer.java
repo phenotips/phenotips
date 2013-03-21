@@ -20,6 +20,7 @@
 package edu.toronto.cs.phenotips.tools;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -245,6 +246,9 @@ public class PropertyDisplayer
 
     private String getLabelFromOntology(String id)
     {
+        if (!id.startsWith("HP:")) {
+            return id;
+        }
         SolrDocument phObj = this.ontologyService.get(id);
         if (phObj != null) {
             return (String) phObj.get(INDEXED_NAME_KEY);
@@ -254,6 +258,9 @@ public class PropertyDisplayer
 
     private boolean hasDescendantsInOntology(String id)
     {
+        if (!id.startsWith("HP:")) {
+            return false;
+        }
         Map<String, String> params = new HashMap<String, String>();
         params.put(INDEXED_PARENT_KEY, id);
         return (this.ontologyService.get(params) != null);
@@ -262,6 +269,9 @@ public class PropertyDisplayer
     @SuppressWarnings("unchecked")
     private List<String> getCategoriesFromOntology(String value)
     {
+        if (!value.startsWith("HP:")) {
+            return Collections.emptyList();
+        }
         SolrDocument termObj = this.ontologyService.get(value);
         if (termObj != null && termObj.get(INDEXED_CATEGORY_KEY) != null
             && List.class.isAssignableFrom(termObj.get(INDEXED_CATEGORY_KEY).getClass())) {
