@@ -21,6 +21,13 @@ package edu.toronto.cs.phenotips.measurements;
 
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.inject.Provider;
 
 import junit.framework.Assert;
@@ -43,6 +50,8 @@ import edu.toronto.cs.phenotips.measurements.internal.HeightMeasurementHandler;
  */
 public class MeasurementsScriptServiceTest
 {
+    ParameterizedType cmType = new DefaultParameterizedType(null, Provider.class, ComponentManager.class);
+
     @Rule
     public final MockitoComponentMockingRule<MeasurementsScriptService> mocker =
         new MockitoComponentMockingRule<MeasurementsScriptService>(MeasurementsScriptService.class);
@@ -50,10 +59,7 @@ public class MeasurementsScriptServiceTest
     @Test
     public void testGetWithNonExistentHint() throws ComponentLookupException
     {
-        Provider<ComponentManager> provider =
-            this.mocker.getInstance(new DefaultParameterizedType(null, Provider.class, ComponentManager.class),
-                "context");
-
+        Provider<ComponentManager> provider = this.mocker.getInstance(this.cmType, "context");
         ComponentManager cm = Mockito.mock(ComponentManager.class);
         when(provider.get()).thenReturn(cm);
         when(cm.getInstance(MeasurementHandler.class, "nothing")).thenThrow(new ComponentLookupException(""));
@@ -63,15 +69,86 @@ public class MeasurementsScriptServiceTest
     @Test
     public void testGetWithValidHint() throws ComponentLookupException
     {
-        Provider<ComponentManager> provider =
-            this.mocker.getInstance(new DefaultParameterizedType(null, Provider.class, ComponentManager.class),
-                "context");
-
+        Provider<ComponentManager> provider = this.mocker.getInstance(this.cmType, "context");
         ComponentManager cm = Mockito.mock(ComponentManager.class);
         when(provider.get()).thenReturn(cm);
         HeightMeasurementHandler handler = new HeightMeasurementHandler();
         when(cm.getInstance(MeasurementHandler.class, "height")).thenReturn(handler);
         Assert.assertEquals(handler, this.mocker.getComponentUnderTest().get("height"));
+    }
+
+    @Test
+    public void testGetAvailableMeasurementHandlers() throws ComponentLookupException
+    {
+        Provider<ComponentManager> provider = this.mocker.getInstance(this.cmType, "context");
+        ComponentManager cm = Mockito.mock(ComponentManager.class);
+        when(provider.get()).thenReturn(cm);
+        List< ? super MeasurementHandler> toReturn = new ArrayList<MeasurementHandler>();
+        toReturn.add(Mockito.mock(MeasurementHandler.class));
+        when(cm.getInstanceList(MeasurementHandler.class)).thenReturn((List<Object>) toReturn);
+        List<MeasurementHandler> response = this.mocker.getComponentUnderTest().getAvailableMeasurementHandlers();
+        Assert.assertEquals(toReturn, response);
+    }
+
+    @Test
+    public void testGetAvailableMeasurementHandlersWithNull() throws ComponentLookupException
+    {
+        Provider<ComponentManager> provider = this.mocker.getInstance(this.cmType, "context");
+        ComponentManager cm = Mockito.mock(ComponentManager.class);
+        when(provider.get()).thenReturn(cm);
+        when(cm.getInstanceList(MeasurementHandler.class)).thenReturn(null);
+        List<MeasurementHandler> response = this.mocker.getComponentUnderTest().getAvailableMeasurementHandlers();
+        Assert.assertNotNull(response);
+        Assert.assertTrue(response.isEmpty());
+    }
+
+    @Test
+    public void testGetAvailableMeasurementHandlersWithException() throws ComponentLookupException
+    {
+        Provider<ComponentManager> provider = this.mocker.getInstance(this.cmType, "context");
+        ComponentManager cm = Mockito.mock(ComponentManager.class);
+        when(provider.get()).thenReturn(cm);
+        when(cm.getInstanceList(MeasurementHandler.class)).thenThrow(new ComponentLookupException(""));
+        List<MeasurementHandler> response = this.mocker.getComponentUnderTest().getAvailableMeasurementHandlers();
+        Assert.assertNotNull(response);
+        Assert.assertTrue(response.isEmpty());
+    }
+
+    @Test
+    public void testGetAvailableMeasurementNames() throws ComponentLookupException
+    {
+        Provider<ComponentManager> provider = this.mocker.getInstance(this.cmType, "context");
+        ComponentManager cm = Mockito.mock(ComponentManager.class);
+        when(provider.get()).thenReturn(cm);
+        Map<String, ? super MeasurementHandler> toReturn = new HashMap<String, MeasurementHandler>();
+        toReturn.put("hand", Mockito.mock(MeasurementHandler.class));
+        when(cm.getInstanceMap(MeasurementHandler.class)).thenReturn((Map<String, Object>) toReturn);
+        Set<String> response = this.mocker.getComponentUnderTest().getAvailableMeasurementNames();
+        Assert.assertEquals(toReturn.keySet(), response);
+    }
+
+    @Test
+    public void testGetAvailableMeasurementNamesWithNull() throws ComponentLookupException
+    {
+        Provider<ComponentManager> provider = this.mocker.getInstance(this.cmType, "context");
+        ComponentManager cm = Mockito.mock(ComponentManager.class);
+        when(provider.get()).thenReturn(cm);
+        when(cm.getInstanceMap(MeasurementHandler.class)).thenReturn(null);
+        Set<String> response = this.mocker.getComponentUnderTest().getAvailableMeasurementNames();
+        Assert.assertNotNull(response);
+        Assert.assertTrue(response.isEmpty());
+    }
+
+    @Test
+    public void testGetAvailableMeasurementNamesWithException() throws ComponentLookupException
+    {
+        Provider<ComponentManager> provider = this.mocker.getInstance(this.cmType, "context");
+        ComponentManager cm = Mockito.mock(ComponentManager.class);
+        when(provider.get()).thenReturn(cm);
+        when(cm.getInstanceMap(MeasurementHandler.class)).thenThrow(new ComponentLookupException(""));
+        Set<String> response = this.mocker.getComponentUnderTest().getAvailableMeasurementNames();
+        Assert.assertNotNull(response);
+        Assert.assertTrue(response.isEmpty());
     }
 
     @Test

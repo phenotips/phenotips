@@ -89,4 +89,10 @@ public class IPDTest
         Assert.assertEquals(5.49, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 36, 1.88), 1E-2);
         Assert.assertEquals(4.782, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 30, 0), 1E-2);
     }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isDoubleSided());
+    }
 }

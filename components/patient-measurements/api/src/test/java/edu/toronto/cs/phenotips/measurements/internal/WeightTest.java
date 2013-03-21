@@ -99,7 +99,13 @@ public class WeightTest
             1.0E-2);
         Assert.assertEquals(49.04, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 359, -1.175),
             1.0E-2);
-        Assert.assertEquals(0, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 359,
-            Integer.MIN_VALUE), 1.0E-2);
+        Assert.assertEquals(0,
+            this.mocker.getComponentUnderTest().standardDeviationToValue(false, 359, Integer.MIN_VALUE), 1.0E-2);
+    }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isDoubleSided());
     }
 }

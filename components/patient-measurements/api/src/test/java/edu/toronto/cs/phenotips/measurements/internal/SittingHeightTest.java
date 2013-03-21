@@ -111,4 +111,10 @@ public class SittingHeightTest
         Assert.assertEquals(53.45, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 30, 0), 1E-2);
         Assert.assertEquals(87.5, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 1000, 0), 1E-2);
     }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isDoubleSided());
+    }
 }

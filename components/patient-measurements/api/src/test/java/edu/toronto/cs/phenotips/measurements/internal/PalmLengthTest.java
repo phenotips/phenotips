@@ -87,4 +87,10 @@ public class PalmLengthTest
         Assert.assertEquals(7.3, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 36, 1.881), 1E-2);
         Assert.assertEquals(6.237, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 30, 0), 1E-2);
     }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isDoubleSided());
+    }
 }

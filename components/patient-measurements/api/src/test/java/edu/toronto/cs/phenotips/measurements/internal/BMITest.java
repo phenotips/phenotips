@@ -188,4 +188,10 @@ public class BMITest
     {
         return (BMIMeasurementHandler) this.mocker.getComponentUnderTest();
     }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isDoubleSided());
+    }
 }

@@ -99,4 +99,10 @@ public class HandLengthTest
         Assert.assertEquals(12.45, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 36, 1.881), 1E-2);
         Assert.assertEquals(10.9, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 30, 0), 1E-2);
     }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isDoubleSided());
+    }
 }

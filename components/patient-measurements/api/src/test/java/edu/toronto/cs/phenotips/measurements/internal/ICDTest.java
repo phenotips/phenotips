@@ -87,4 +87,10 @@ public class ICDTest
         Assert.assertEquals(3.05, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 16, 2), 1.0E-2);
         Assert.assertEquals(2.6925, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 30, 0), 1.0E-2);
     }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isDoubleSided());
+    }
 }

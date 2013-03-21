@@ -115,4 +115,10 @@ public class FootLengthTest
         Assert.assertEquals(14.4875, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 30, 0), 1E-2);
         Assert.assertEquals(23.975, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 1000, 0), 1E-2);
     }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isDoubleSided());
+    }
 }

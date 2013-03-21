@@ -88,4 +88,10 @@ public class EarLengthTest
         Assert.assertEquals(5.89, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 36, 2), 1E-2);
         Assert.assertEquals(5.015, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 30, 0), 1E-2);
     }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isDoubleSided());
+    }
 }

@@ -87,4 +87,10 @@ public class OCDTest
         Assert.assertEquals(8.33, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 16, 1.88), 1E-2);
         Assert.assertEquals(7.4725, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 30, 0), 1E-2);
     }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isDoubleSided());
+    }
 }

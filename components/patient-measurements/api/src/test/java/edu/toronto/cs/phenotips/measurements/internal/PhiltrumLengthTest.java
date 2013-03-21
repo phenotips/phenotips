@@ -99,4 +99,10 @@ public class PhiltrumLengthTest
         Assert.assertEquals(1.496, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 45, 0), 1E-2);
         Assert.assertEquals(1.775, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 1000, 0), 1E-2);
     }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isDoubleSided());
+    }
 }

@@ -87,4 +87,10 @@ public class PFLTest
         Assert.assertEquals(2.78, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 36, 2), 1E-2);
         Assert.assertEquals(2.432, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 30, 0), 1E-2);
     }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isDoubleSided());
+    }
 }

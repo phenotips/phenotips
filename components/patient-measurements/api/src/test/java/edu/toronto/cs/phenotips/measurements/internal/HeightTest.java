@@ -93,4 +93,10 @@ public class HeightTest
         Assert.assertEquals(173.0, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 359, 1.497),
             1.0E-2);
     }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isDoubleSided());
+    }
 }

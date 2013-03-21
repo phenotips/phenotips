@@ -91,4 +91,10 @@ public class HeadCircumferenceTest
         Assert.assertEquals(49.80, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 24, 1.645),
             1.0E-2);
     }
+
+    @Test
+    public void testIsDoubleSided() throws ComponentLookupException
+    {
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isDoubleSided());
+    }
 }
