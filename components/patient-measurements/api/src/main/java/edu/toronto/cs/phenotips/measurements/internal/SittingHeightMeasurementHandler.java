@@ -40,10 +40,4 @@ public class SittingHeightMeasurementHandler extends AbstractMeasurementHandler
     {
         return "sitting";
     }
-
-    @Override
-    public boolean isDoubleSided()
-    {
-        return true;
-    }
 }
