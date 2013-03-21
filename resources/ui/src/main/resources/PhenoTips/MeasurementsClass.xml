@@ -85,6 +85,46 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
     </age>
+    <armspan>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>armspan</name>
+      <number>39</number>
+      <numberType>float</numberType>
+      <prettyName>Arm span (cm)</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+    </armspan>
+    <armspan_evaluation>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>armspan_evaluation</name>
+      <number>40</number>
+      <prettyName/>
+      <script>{{velocity}}
+#set ($dValue = $object.getProperty('armspan').value)
+#set ($hValue = $object.getProperty('height').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '' || "$!hValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($dValue = $dValue - $hValue)
+  #set ($pValue = $services.measurements.armspan.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.armspan.valueToStandardDeviation($male, $age, $dValue)))
+##  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+  #set ($dValue = "~= Height#if ($dValue != 0)#if($dValue &gt;= 0) + #else - #end$mathtool.abs($dValue)cm#end")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+    </armspan_evaluation>
     <bmi>
       <customDisplay>{{velocity}}
 #if ($xcontext.action != 'edit' || $request.editor != 'object')
@@ -676,6 +716,80 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </pfl_evaluation>
+    <philtrum>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>philtrum</name>
+      <number>35</number>
+      <numberType>float</numberType>
+      <prettyName>Philtrum length (cm)</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+    </philtrum>
+    <philtrum_evaluation>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>philtrum_evaluation</name>
+      <number>36</number>
+      <prettyName/>
+      <script>{{velocity}}
+#set ($dValue = $object.getProperty('philtrum').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.philtrum.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.philtrum.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+    </philtrum_evaluation>
+    <sitting>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>sitting</name>
+      <number>37</number>
+      <numberType>float</numberType>
+      <prettyName>Sitting height (cm)</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+    </sitting>
+    <sitting_evaluation>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>sitting_evaluation</name>
+      <number>38</number>
+      <prettyName/>
+      <script>{{velocity}}
+#set ($dValue = $object.getProperty('sitting').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.sitting.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.sitting.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+    </sitting_evaluation>
     <weight>
       <customDisplay/>
       <disabled>0</disabled>

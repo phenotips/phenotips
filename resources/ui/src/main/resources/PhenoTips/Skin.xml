@@ -44,6 +44,39 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <attachment>
+    <filename>ratios-icon-s.png</filename>
+    <filesize>549</filesize>
+    <author>XWiki.Admin</author>
+    <date>1363905937000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAQAAAAngNWGAAAACXBIWXMAABcSAAAXEgFnn9JSAAAA
+B3RJTUUH3QMVFisPvHdHFgAAAAJiS0dEAP+Hj8y/AAABtklEQVQoU2XRS0sUUBQA4K/UFJnJTKMw
+wUX0ArUcN5KZUCY4RgWViRqMgZILNc13MGkFRqQFZdgDH9GqVY9di6gkMLr/aVo4jmNxNvec+93D
+PfdK2QyFqvSZSkefSoVZu5lFox6XRDJ5xGU9Gu3YBg2Ii26dT1ej4gYy0F5LHujNxJDxrOyeFWUb
+sMO8FdMa7VfsmFXBCXuUOW3Ce28kUigwqVVUvWcWDWr1StBhzJLXupU6Z0oBFcbcMWlC0gfBum9+
+C4JPnnvovml3VXBNszoRUUWKRHwUBC/VO+qgcsVOaXGVUdVqM3PmSgiCeNbsMSeNMrINFqoVBEc2
+3y8NR/6Ho4Lg8D8dR+hXkwWL/REEN+zMgrX6adK2CeUaFgTBz61/EnPdWUokxdKlUt+tWfdV0JQF
+k0rIM+RiSop8M1YlrVn02FwGXjAsV4oWSbly1Pmhyrgv5jT45VD6OknxFCmq9Uko0W5RvhcWzCv0
+zrgceRL61GzCmPNueyJhlzmLZuUrtyDulmaxLXjGbpWGTGo367O36rSb0eu4qAaxDbjPFZ06dek2
+6Kllyx4ZclOXTp3aHEj5C58T1CMV/tRNAAAAAElFTkSuQmCC
+</content>
+  </attachment>
+  <attachment>
+    <filename>head-icon-s.png</filename>
+    <filesize>235</filesize>
+    <author>XWiki.Admin</author>
+    <date>1363902620000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAVCAYAAABPPm7SAAAAsklEQVQ4y2NgwA5YgdgUiP2B2B3I
+02cgAdgD8S8g/o+GfwOxFSHNCVg0ouMEXJpFidAMwl+BmBGbAXOINACEu7EZcIkEAz6jawY56QsJ
+BvwAYl50A/6TgEGxJEmpARLo3iDVABFkzetINACEO5AN2EOGAS3IBiwkw4B0ZAO8yDDADj0QTxCp
+8S8QHwNiLmypkRgDHuDLjduIMGAzLs2gxGRBhAHe+FygR4QBbvgM0Ke7AQD+P9Vh46YDYAAAAABJ
+RU5ErkJggg==
+</content>
+  </attachment>
+  <attachment>
     <filename>check-s.png</filename>
     <filesize>326</filesize>
     <author>xwiki:XWiki.Admin</author>

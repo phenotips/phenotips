@@ -2196,16 +2196,22 @@ document.observe('xwiki:dom:loaded', function() {
         values : ['date', 'age', 'actions']
       }, {
         name : 'general',
-        values : ['weight', 'weight_evaluation', 'height', 'height_evaluation', 'bmi', 'bmi_evaluation', 'hc', 'hc_evaluation']
+        values : ['weight', 'weight_evaluation', 'height', 'height_evaluation', 'bmi', 'bmi_evaluation']
+      }, {
+        name : 'ratios',
+        values : ['armspan', 'armspan_evaluation', 'sitting', 'sitting_evaluation']
       }, {
         name : 'face',
+        values : ['hc', 'hc_evaluation', 'philtrum', 'philtrum_evaluation', 'ear', 'ear_evaluation', 'ear_right', 'ear_right_evaluation']
+      }, {
+        name : 'eyes',
         values : ['ocd', 'ocd_evaluation', 'icd', 'icd_evaluation', 'pfl', 'pfl_evaluation', 'ipd', 'ipd_evaluation']
       }, {
         name : 'left-side',
-        values : ['ear', 'ear_evaluation', 'hand', 'hand_evaluation', 'palm', 'palm_evaluation', 'foot', 'foot_evaluation']
+        values : ['hand', 'hand_evaluation', 'palm', 'palm_evaluation', 'foot', 'foot_evaluation']
       }, {
         name : 'right-side',
-        values : ['ear_right', 'ear_right_evaluation', 'hand_right', 'hand_right_evaluation', 'palm_right', 'palm_right_evaluation', 'foot_right', 'foot_right_evaluation']
+        values : ['hand_right', 'hand_right_evaluation', 'palm_right', 'palm_right_evaluation', 'foot_right', 'foot_right_evaluation']
       }
     ];
     rowMapping.each(function (data) {
@@ -2239,6 +2245,7 @@ document.observe('xwiki:dom:loaded', function() {
 
     return createReqParam('weight', row.down('td.weight input'), forceParam) +
            createReqParam('height', row.down('td.height input'), forceParam) +
+           createReqParam('bmi', row.down('td.bmi input'), forceParam) +
            createReqParam('hc', row.down('td.hc input'), forceParam) +
            createReqParam('ocd', row.down('td.ocd input'), forceParam) +
            createReqParam('icd', row.down('td.icd input'), forceParam) +
@@ -2252,6 +2259,9 @@ document.observe('xwiki:dom:loaded', function() {
            createReqParam('hand_right', row.down('td.hand_right input'), forceParam) +
            createReqParam('palm_right', row.down('td.palm_right input'), forceParam) +
            createReqParam('foot_right', row.down('td.foot_right input'), forceParam) +
+           createReqParam('philtrum', row.down('td.philtrum input'), forceParam) +
+           createReqParam('armspan', row.down('td.armspan input'), forceParam) +
+           createReqParam('sitting', row.down('td.sitting input'), forceParam) +
            createReqParamAge('a', date, birthDate, forceParam);
   }
 
@@ -2476,6 +2486,15 @@ document.observe('xwiki:dom:loaded', function() {
            'extreme-below-normal': findFormElementForPhenotype('HP:0001764'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001833')
          }
+       },
+       philtrum : {
+         evaluation : row.down('td.philtrum_evaluation')
+       },
+       armspan : {
+         evaluation : row.down('td.armspan_evaluation')
+       },
+       sitting : {
+         evaluation : row.down('td.sitting_evaluation')
        }
     };
 
@@ -4530,6 +4549,14 @@ table.extradata-list td.bmi_percentile {
   opacity: .4;
 }
 .extradata-list .face-group .icon {
+  background-image: url("$xwiki.getSkinFile('head-icon-s.png')");
+  opacity: .4;
+}
+.extradata-list .ratios-group .icon {
+  background-image: url("$xwiki.getSkinFile('ratios-icon-s.png')");
+  opacity: .4;
+}
+.extradata-list .eyes-group .icon {
   background-image: url("$xwiki.getSkinFile('eye.png')");
 }
 .extradata-list .organs-group .icon {

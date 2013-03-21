@@ -84,10 +84,22 @@
         #set($discard = $data.put('deviation', $!services.measurements.bmi.valueToStandardDeviation($sex, $age, $weight, $height)))
       #set($discard = $valueMapping.add($data))
     #end
+    ## Arm span is also special, it's computed as the difference from height
+    #set ($armspan = $mathtool.toDouble("$!request.armspan"))
+    #set ($height = $mathtool.toDouble("$!request.height"))
+    #if ("$!armspan" != '' &amp;&amp; $armspan != 0 &amp;&amp; "$!height" != '' &amp;&amp; $height != 0)
+      #set ($dValue = $armspan - $height)
+      #set ($dValue = $mathtool.roundTo(2, $dValue))
+      #set($data = {'id' : 'armspan', 'value' : $dValue})
+      #set($discard = $data.put('evaluation', "~= Height#if ($dValue != 0)#if($dValue &gt;= 0) + #else - #end$mathtool.abs($dValue)cm#end"))
+      #set($discard = $valueMapping.add($data))
+    #end
   #end##age
   {
   #foreach ($entry in $valueMapping)
-    #if ("$!entry.value" == '' || $entry.percentile &lt; 0)
+    #if ("$!entry.evaluation" != '')
+      #set ($dValue = $entry.evaluation)
+    #elseif ("$!entry.value" == '' || $entry.percentile &lt; 0)
       #set ($dValue = '-')
     #else
       #set ($pValue = $entry.percentile)
