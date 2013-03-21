@@ -94,7 +94,11 @@ public class MeasurementsScriptService implements ScriptService
     public List<MeasurementHandler> getAvailableMeasurementHandlers()
     {
         try {
-            return this.componentManager.get().getInstanceList(MeasurementHandler.class);
+            List<MeasurementHandler> result = this.componentManager.get().getInstanceList(MeasurementHandler.class);
+            if (result == null) {
+                result = Collections.emptyList();
+            }
+            return result;
         } catch (ComponentLookupException ex) {
             this.logger.warn("Failed to list available measurements", ex);
             return Collections.emptyList();
@@ -110,11 +114,17 @@ public class MeasurementsScriptService implements ScriptService
     public Set<String> getAvailableMeasurementNames()
     {
         try {
-            return this.componentManager.get().getInstanceMap(MeasurementHandler.class).keySet();
+            Map<String, MeasurementHandler> handlers =
+                this.componentManager.get().getInstanceMap(MeasurementHandler.class);
+            if (handlers != null) {
+                Set<String> result = new TreeSet<String>();
+                result.addAll(handlers.keySet());
+                return result;
+            }
         } catch (ComponentLookupException ex) {
             this.logger.warn("Failed to list available measurement types", ex);
-            return Collections.emptySet();
         }
+        return Collections.emptySet();
     }
 
     /**

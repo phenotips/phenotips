@@ -21,6 +21,7 @@ package edu.toronto.cs.phenotips.measurements.internal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -152,20 +153,24 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
 
     /**
      * Read the LMS triplets for this feature from a resource file.
+     *
+     * @throws InitializationException if the resource file is missing
      */
-    private void readData()
+    private void readData() throws InitializationException
     {
         BufferedReader in = null;
         String filename = getName() + ".csv";
         this.measurementsForAgeBoys = new ArrayList<LMS>();
         this.measurementsForAgeGirls = new ArrayList<LMS>();
+        InputStream inStream = this.getClass().getResourceAsStream(filename);
+        if (inStream == null) {
+            throw new InitializationException("Missing measurements tables for [" + this.getName() + "]");
+        }
         try {
-            in = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(filename), "UTF-8"));
+            in = new BufferedReader(new InputStreamReader(inStream, "UTF-8"));
         } catch (UnsupportedEncodingException ex) {
             // This should never happen, UTF-8 is always present
-            in =
-                new BufferedReader(
-                    new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(filename)));
+            in = new BufferedReader(new InputStreamReader(inStream));
         }
         String line;
         try {
