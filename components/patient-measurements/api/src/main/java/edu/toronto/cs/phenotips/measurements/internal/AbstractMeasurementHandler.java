@@ -35,6 +35,8 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 
 import edu.toronto.cs.phenotips.measurements.MeasurementHandler;
+import edu.toronto.cs.phenotips.measurements.MeasurementsChartConfiguration;
+import edu.toronto.cs.phenotips.measurements.MeasurementsChartConfigurationsFactory;
 
 /**
  * Base class for implementing a {@link MeasurementHandler}.
@@ -86,6 +88,10 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     @Inject
     private Logger logger;
 
+    /** Provides access to the charts configurations. */
+    @Inject
+    private MeasurementsChartConfigurationsFactory settingsFactory;
+
     /**
      * Table storing the LMS triplets for each month of the normal development of boys corresponding to this measurement
      * type.
@@ -97,6 +103,9 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
      * measurement type.
      */
     private List<LMS> measurementsForAgeGirls;
+
+    /** The list of chart settings configured for this measurement. */
+    private List<MeasurementsChartConfiguration> chartConfigurations;
 
     /**
      * Get the name of this specific kind of measurements.
@@ -146,9 +155,16 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     }
 
     @Override
+    public List<MeasurementsChartConfiguration> getChartsConfigurations()
+    {
+        return this.chartConfigurations;
+    }
+
+    @Override
     public void initialize() throws InitializationException
     {
         readData();
+        this.chartConfigurations = this.settingsFactory.loadConfigurationsForMeasurementType(getName());
     }
 
     /**

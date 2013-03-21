@@ -19,6 +19,8 @@
  */
 package edu.toronto.cs.phenotips.measurements;
 
+import java.util.List;
+
 import org.xwiki.component.annotation.Role;
 
 /**
@@ -81,4 +83,11 @@ public interface MeasurementHandler
      * @return {@code true} if measurements on both sides should be recorded
      */
     boolean isDoubleSided();
+
+    /**
+     * Get the list of charts configured for this type of measurement.
+     *
+     * @return a list of chart configurations, or an empty list if no charts are configured for this measurement
+     */
+    List<MeasurementsChartConfiguration> getChartsConfigurations();
 }
