@@ -20,19 +20,25 @@
 package edu.toronto.cs.phenotips.measurements;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.script.service.ScriptService;
+
+import edu.toronto.cs.phenotips.measurements.internal.AbstractMeasurementHandler;
 
 /**
  * Bridge offering access to specific {@link MeasurementHandler measurement handlers} to scripts.
@@ -98,6 +104,7 @@ public class MeasurementsScriptService implements ScriptService
             if (result == null) {
                 result = Collections.emptyList();
             }
+            Collections.sort(result, MeasurementSorter.instance);
             return result;
         } catch (ComponentLookupException ex) {
             this.logger.warn("Failed to list available measurements", ex);
@@ -117,7 +124,7 @@ public class MeasurementsScriptService implements ScriptService
             Map<String, MeasurementHandler> handlers =
                 this.componentManager.get().getInstanceMap(MeasurementHandler.class);
             if (handlers != null) {
-                Set<String> result = new TreeSet<String>();
+                Set<String> result = new TreeSet<String>(MeasurementNameSorter.instance);
                 result.addAll(handlers.keySet());
                 return result;
             }
@@ -167,5 +174,63 @@ public class MeasurementsScriptService implements ScriptService
             returnValue = VALUE_ABOVE_NORMAL;
         }
         return returnValue;
+    }
+
+    /**
+     * Temporary mechanism for sorting measurements, uses a hardcoded list of measurements in the desired order.
+     *
+     * @version $Id$
+     */
+    private static final class MeasurementSorter implements Comparator<MeasurementHandler>
+    {
+        /** Hardcoded list of measurements and their order. */
+        private static final String[] TARGET_ORDER = new String[] {"weight", "height", "bmi", "armspan", "sitting",
+            "hc", "philtrum", "ear", "ocd", "icd", "pfl", "ipd", "hand", "palm", "foot"};
+
+        /** Singleton instance. */
+        private static MeasurementSorter instance = new MeasurementSorter();
+
+        @Override
+        public int compare(MeasurementHandler o1, MeasurementHandler o2)
+        {
+            String n1 = ((AbstractMeasurementHandler) o1).getName();
+            String n2 = ((AbstractMeasurementHandler) o2).getName();
+            int p1 = ArrayUtils.indexOf(TARGET_ORDER, n1);
+            int p2 = ArrayUtils.indexOf(TARGET_ORDER, n2);
+            if (p1 == -1 && p2 == -1) {
+                return n1.compareTo(n2);
+            } else if (p1 == -1) {
+                return 1;
+            } else if (p2 == -1) {
+                return -1;
+            }
+            return p1 - p2;
+        }
+    }
+
+    /**
+     * Temporary mechanism for sorting measurements, uses a hardcoded list of measurements in the desired order.
+     *
+     * @version $Id$
+     */
+    private static final class MeasurementNameSorter implements Comparator<String>
+    {
+        /** Singleton instance. */
+        private static MeasurementNameSorter instance = new MeasurementNameSorter();
+
+        @Override
+        public int compare(String n1, String n2)
+        {
+            int p1 = ArrayUtils.indexOf(MeasurementSorter.TARGET_ORDER, n1);
+            int p2 = ArrayUtils.indexOf(MeasurementSorter.TARGET_ORDER, n2);
+            if (p1 == -1 && p2 == -1) {
+                return n1.compareTo(n2);
+            } else if (p1 == -1) {
+                return 1;
+            } else if (p2 == -1) {
+                return -1;
+            }
+            return p1 - p2;
+        }
     }
 }
