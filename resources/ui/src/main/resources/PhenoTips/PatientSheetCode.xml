@@ -5450,21 +5450,21 @@ $doc.display('miscarriages')
 #*
 #set ($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))
 #if ($pedigreeObj)
-#set ($data = $!pedigreeObj.getProperty('data').value)
-#set ($image = $pedigreeObj.getProperty('image').value)
+  #set ($data = $!pedigreeObj.getProperty('data').value)
+  #set ($image = $pedigreeObj.getProperty('image').value)
 #end## pedigree obj exists
 #if ($xcontext.action == 'edit' || "$!{doc.display('pedigree')}" != '' || "$!data" != '')
-=== Pedigree ===
-$!doc.display('pedigree')
-#if ($xcontext.action == 'edit')
-#if ("$!data" != '')
-  #set ($pAction = 'Edit pedigree')
-#else
-  #set ($pAction = 'Draw pedigree')
-#end## pedigree data exists
-(% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]]
-#end## action == edit
-#if ("$!image" != '')
+  === Pedigree ===
+  $!doc.display('pedigree')
+  #if ($xcontext.action == 'edit')
+    #if ("$!data" != '')
+      #set ($pAction = 'Edit pedigree')
+    #else
+      #set ($pAction = 'Draw pedigree')
+    #end## pedigree data exists
+    (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]]
+  #end## action == edit
+  #if ("$!image" != '')
     {{html clean="false"}}
       $!image
     {{/html}}
