@@ -53,7 +53,7 @@ public class PhiltrumLengthTest
         Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(true, 60, 1.528));
         Assert.assertEquals(98, this.mocker.getComponentUnderTest().valueToPercentile(true, 60, 1.87));
         Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(true, 45, 1.496));
-        Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(true, 1000, 1.775));
+        Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(true, 1000, 1.86));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class PhiltrumLengthTest
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 60, 1.528), 1E-2);
         Assert.assertEquals(2, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 60, 1.87), 1E-2);
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 45, 1.496), 1E-2);
-        Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 1000, 1.775), 1E-2);
+        Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 1000, 1.86), 1E-2);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class PhiltrumLengthTest
         Assert.assertEquals(1.528, this.mocker.getComponentUnderTest().percentileToValue(true, 60, 50), 1E-2);
         Assert.assertEquals(1.87, this.mocker.getComponentUnderTest().percentileToValue(true, 60, 98), 1E-2);
         Assert.assertEquals(1.496, this.mocker.getComponentUnderTest().percentileToValue(true, 45, 50), 1E-2);
-        Assert.assertEquals(1.775, this.mocker.getComponentUnderTest().percentileToValue(true, 1000, 50), 1E-2);
+        Assert.assertEquals(1.86, this.mocker.getComponentUnderTest().percentileToValue(true, 1000, 50), 1E-2);
     }
 
     @Test
@@ -97,7 +97,7 @@ public class PhiltrumLengthTest
         Assert.assertEquals(1.528, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 60, 0), 1E-2);
         Assert.assertEquals(1.87, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 60, 2), 1E-2);
         Assert.assertEquals(1.496, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 45, 0), 1E-2);
-        Assert.assertEquals(1.775, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 1000, 0), 1E-2);
+        Assert.assertEquals(1.86, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 1000, 0), 1E-2);
     }
 
     @Test

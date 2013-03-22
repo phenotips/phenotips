@@ -49,7 +49,7 @@ public class SittingHeightTest
         Assert.assertEquals(100, this.mocker.getComponentUnderTest().valueToPercentile(true, 12, 1000));
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToPercentile(false, 12, 0));
         Assert.assertEquals(100, this.mocker.getComponentUnderTest().valueToPercentile(false, 12, 1000));
-        Assert.assertEquals(16, this.mocker.getComponentUnderTest().valueToPercentile(true, 36, 54.3));
+        Assert.assertEquals(16, this.mocker.getComponentUnderTest().valueToPercentile(true, 36, 54.4));
         Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(true, 36, 56.5));
         Assert.assertEquals(84, this.mocker.getComponentUnderTest().valueToPercentile(true, 36, 58.6));
         Assert.assertEquals(50, this.mocker.getComponentUnderTest().valueToPercentile(true, 30, 54.725));
@@ -66,7 +66,7 @@ public class SittingHeightTest
     {
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 0, 35), 1E-2);
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(false, 0, 34.8), 1E-2);
-        Assert.assertEquals(-1, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 36, 54.3), 1E-2);
+        Assert.assertEquals(-1, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 36, 54.4), 1E-2);
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 36, 56.5), 1E-2);
         Assert.assertEquals(1, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 36, 58.6), 1E-2);
         Assert.assertEquals(0, this.mocker.getComponentUnderTest().valueToStandardDeviation(true, 30, 54.725), 1E-2);
@@ -83,7 +83,7 @@ public class SittingHeightTest
     {
         Assert.assertEquals(35, this.mocker.getComponentUnderTest().percentileToValue(true, 0, 50), 1.0E-2);
         Assert.assertEquals(34.8, this.mocker.getComponentUnderTest().percentileToValue(false, 0, 50), 1.0E-2);
-        Assert.assertEquals(54.3, this.mocker.getComponentUnderTest().percentileToValue(true, 36, 16), 1.0E-1);
+        Assert.assertEquals(54.4, this.mocker.getComponentUnderTest().percentileToValue(true, 36, 16), 1.0E-1);
         Assert.assertEquals(56.5, this.mocker.getComponentUnderTest().percentileToValue(true, 36, 50), 1.0E-2);
         Assert.assertEquals(58.6, this.mocker.getComponentUnderTest().percentileToValue(true, 36, 84), 1.0E-1);
         Assert.assertEquals(54.725, this.mocker.getComponentUnderTest().percentileToValue(true, 30, 50), 1.0E-2);
@@ -100,7 +100,7 @@ public class SittingHeightTest
     {
         Assert.assertEquals(35, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 0, 0), 1E-2);
         Assert.assertEquals(34.8, this.mocker.getComponentUnderTest().standardDeviationToValue(false, 0, 0), 1E-2);
-        Assert.assertEquals(54.3, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 36, -1), 1E-2);
+        Assert.assertEquals(54.4, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 36, -1), 1E-2);
         Assert.assertEquals(56.5, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 36, 0), 1E-2);
         Assert.assertEquals(58.6, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 36, 1), 1E-2);
         Assert.assertEquals(54.725, this.mocker.getComponentUnderTest().standardDeviationToValue(true, 30, 0), 1E-2);
