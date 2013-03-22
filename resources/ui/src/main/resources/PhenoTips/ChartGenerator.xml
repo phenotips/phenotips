@@ -359,12 +359,20 @@ tspan.girl {
   #end
   #foreach ($m in $measurements)
     #if ($m.a &gt;= $chartConfiguration.lowerAgeLimit &amp;&amp; $m.a &lt; $chartConfiguration.upperAgeLimit)
-      #set ($x = $mathtool.mul($mathtool.add(0.5, $mathtool.sub($m.a, $chartConfiguration.lowerAgeLimit)), $xscale))
-      #set ($y = $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($m.x, $chartConfiguration.lowerValueLimit), $yscale)))
       #getValuePercentile($m.a $m.x)
       #getValueSD($m.a $m.x)
       #set ($d = $mathtool.roundTo(2, $d))
-      &lt;circle cx="$x" cy="$y" fill="#getPercentileColor($p)" stroke="black" stroke-width="4" r="7" title="$p pctl (#if ($d &gt;= 0)+#end${d}SD)"/&gt;
+      #set ($x = $mathtool.mul($mathtool.add(0.5, $mathtool.sub($m.a, $chartConfiguration.lowerAgeLimit)), $xscale))
+      #set ($y = $mathtool.sub($graphHeight, $mathtool.mul($mathtool.sub($m.x, $chartConfiguration.lowerValueLimit), $yscale)))
+      #if ($y &gt; $mathtool.sub($graphHeight, 10))
+        #set ($y = $graphHeight - 4)
+        &lt;path d="M $x $y l 7 -14 h -14 z" fill="#getPercentileColor($p)" stroke="black" stroke-width="4" title="$mathtool.roundTo(2, $m.x), $p pctl (#if ($d &gt;= 0)+#end${d}SD)"/&gt;
+      #elseif ($y &lt; 10)
+        #set ($y = 4)
+        &lt;path d="M $x $y l 7 14 h -14 z" fill="#getPercentileColor($p)" stroke="black" stroke-width="4" title="$mathtool.roundTo(2, $m.x), $p pctl (#if ($d &gt;= 0)+#end${d}SD)"/&gt;
+      #else
+        &lt;circle cx="$x" cy="$y" fill="#getPercentileColor($p)" stroke="black" stroke-width="4" r="8" title="$mathtool.roundTo(2, $m.x), $p pctl (#if ($d &gt;= 0)+#end${d}SD)"/&gt;
+      #end
     #end
   #end
   &lt;/g&gt;
