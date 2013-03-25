@@ -2729,7 +2729,7 @@ $xwiki.ssx.use($xwiki.getSpacePreference('colorTheme'))</meta>
       <stylesheets>style.css</stylesheets>
     </property>
     <property>
-      <title>#if ($doc.name != 'WebHome')$tdoc.getRenderedTitle("plain/1.0") | #{end}$xwiki.getDocument("$!{doc.space}.WebHome").getRenderedTitle("plain/1.0")</title>
+      <title>#if ($doc.name != 'WebHome')$tdoc.getRenderedTitle("plain/1.0") | #{end}$!xwiki.getDocument("$!{doc.space}.WebHome").getRenderedTitle("plain/1.0")</title>
     </property>
     <property>
       <upload_maxsize>33554432</upload_maxsize>
