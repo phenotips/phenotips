@@ -3689,7 +3689,7 @@ document.observe('xwiki:dom:loaded', function() {
 #document-head #document-authors .sep {
   margin: 0 .5em;
 }
-#document-head #document-authors  .document-creator {
+#document-head #document-authors .document-author {
   color: $theme.textColor;
   font-weight: bold;
 }
