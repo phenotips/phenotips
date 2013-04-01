@@ -379,7 +379,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
             result.put(CommonParams.ROWS, rows + "");
         }
         result.put(CommonParams.Q, query);
-        if (!StringUtils.isBlank(sort)) {
+        if (StringUtils.isNotBlank(sort)) {
             result.put(CommonParams.SORT, sort);
         }
         result.put("spellcheck", Boolean.toString(true));
