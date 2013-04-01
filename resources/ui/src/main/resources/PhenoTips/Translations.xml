@@ -44,9 +44,9 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>patient.livetable.doc.name=Report name
-patient.livetable.doc.creator=Created by
+patient.livetable.doc.creator=Reported by
 patient.livetable.doc.author=Last modified by
-patient.livetable.doc.creationDate=Creation date
+patient.livetable.doc.creationDate=Report date
 patient.livetable.doc.date=Last modification date
 patient.livetable.last_name=Last name
 patient.livetable.first_name=First name
