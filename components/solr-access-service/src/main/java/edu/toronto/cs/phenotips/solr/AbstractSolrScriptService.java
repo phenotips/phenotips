@@ -280,21 +280,26 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     private SolrDocumentList search(MapSolrParams params)
     {
         try {
-            QueryResponse response = this.server.query(params);
+            NamedList<Object> newParams = params.toNamedList();
+            if (newParams.get(CommonParams.FL) == null) {
+                newParams.add(CommonParams.FL, "* score");
+            }
+            QueryResponse response = this.server.query(MapSolrParams.toSolrParams(newParams));
             SolrDocumentList results = response.getResults();
-            if (results.size() == 0 && response.getSpellCheckResponse() != null
-                && !response.getSpellCheckResponse().isCorrectlySpelled()) {
+            if (response.getSpellCheckResponse() != null && !response.getSpellCheckResponse().isCorrectlySpelled()) {
                 String suggestedQuery = response.getSpellCheckResponse().getCollatedResult();
                 if (StringUtils.isEmpty(suggestedQuery)) {
-                    return new SolrDocumentList();
+                    return results;
                 }
-                NamedList<Object> newParams = params.toNamedList();
                 newParams.remove(CommonParams.Q);
                 newParams.add(CommonParams.Q, suggestedQuery);
-                return this.server.query(MapSolrParams.toSolrParams(newParams)).getResults();
-            } else {
-                return results;
+                SolrDocumentList spellcheckResults =
+                    this.server.query(MapSolrParams.toSolrParams(newParams)).getResults();
+                if (results.getMaxScore() < spellcheckResults.getMaxScore()) {
+                    results = spellcheckResults;
+                }
             }
+            return results;
         } catch (SolrServerException ex) {
             this.logger.error("Failed to search: {}", ex.getMessage(), ex);
         }
