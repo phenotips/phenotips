@@ -124,6 +124,38 @@
       </analyzer>
     </fieldType>
 
+    <fieldtype name="exact_match" class="solr.TextField" positionIncrementGap="1000">
+      <analyzer type="index">
+        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1 SOLR_END_MARKER" />
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+        <filter class="solr.LowerCaseFilterFactory" />
+      </analyzer>
+      <analyzer type="query">
+        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1 SOLR_END_MARKER" />
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+        <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="false"/>
+        <filter class="solr.LowerCaseFilterFactory" />
+      </analyzer>
+    </fieldtype>
+
+    <fieldtype name="prefix_match" class="solr.TextField" positionIncrementGap="1000">
+      <analyzer type="index">
+        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1" />
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+        <filter class="solr.LowerCaseFilterFactory" />
+      </analyzer>
+      <analyzer type="query">
+        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^(.*)$" replacement="SOLR_START_MARKER $1*" />
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+        <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="false"/>
+        <filter class="solr.LowerCaseFilterFactory" />
+      </analyzer>
+    </fieldtype>
+
     <!-- Since fields of this type are by default not stored or indexed,
          any data added to them will be ignored outright.  -->
     <fieldtype name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
@@ -133,8 +165,12 @@
     <field name="id" type="string" indexed="true" stored="true" required="true" />
     <field name="alt_id" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="name" type="text_general" indexed="true" stored="true"/>
+    <field name="nameExact" type="exact_match" indexed="true" stored="false" omitNorms="true"/>
+    <field name="namePrefix" type="prefix_match" indexed="true" stored="false" omitNorms="true"/>
     <field name="nameSort" type="string" indexed="true" stored="false"/>
     <field name="synonym" type="text_general" indexed="true" stored="true" multiValued="true"/>
+    <field name="synonymExact" type="exact_match" indexed="true" stored="false" multiValued="true"  omitNorms="true"/>
+    <field name="synonymPrefix" type="prefix_match" indexed="true" stored="false" multiValued="true"  omitNorms="true"/>
     <field name="def" type="text_general" indexed="true" stored="true"/>
     <field name="comment" type="text_general" indexed="true" stored="true"/>
     <field name="xref" type="text_ws" indexed="true" stored="true" multiValued="true"/>
@@ -160,6 +196,10 @@
   <uniqueKey>id</uniqueKey>
 
   <copyField source="name" dest="nameSort"/>
+  <copyField source="name" dest="nameExact"/>
+  <copyField source="name" dest="namePrefix"/>
+  <copyField source="synonym" dest="synonymExact"/>
+  <copyField source="synonym" dest="synonymPrefix"/>
   <copyField source="*" dest="text"/>
   <copyField source="*" dest="phonetic"/>
   <copyField source="*" dest="textSpell"/>

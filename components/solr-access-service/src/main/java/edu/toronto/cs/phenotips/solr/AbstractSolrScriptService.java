@@ -34,6 +34,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.MapSolrParams;
+import org.apache.solr.common.util.NamedList;
 import org.slf4j.Logger;
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -219,6 +220,19 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     }
 
     /**
+     * Advanced search using custom search parameters. At least the {@code q} parameter should be set, but any other
+     * parameters supported by Solr can be specified in this map.
+     *
+     * @param searchParameters a map of parameters, the keys should be parameters that Solr understands
+     * @return the list of matching documents, empty if there are no matching terms
+     */
+    public SolrDocumentList customSearch(final Map<String, String> searchParameters)
+    {
+        MapSolrParams params = new MapSolrParams(searchParameters);
+        return search(params);
+    }
+
+    /**
      * Get the top hit corresponding to the specified query.
      * 
      * @param fieldValues the map of values to search for, where each key is the name of an indexed field and the value
@@ -274,10 +288,10 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
                 if (StringUtils.isEmpty(suggestedQuery)) {
                     return new SolrDocumentList();
                 }
-                MapSolrParams newParams =
-                    new MapSolrParams(getSolrQuery(suggestedQuery, params.get(CommonParams.SORT),
-                        params.getInt(CommonParams.ROWS, -1), params.getInt(CommonParams.START, 0)));
-                return this.server.query(newParams).getResults();
+                NamedList<Object> newParams = params.toNamedList();
+                newParams.remove(CommonParams.Q);
+                newParams.add(CommonParams.Q, suggestedQuery);
+                return this.server.query(MapSolrParams.toSolrParams(newParams)).getResults();
             } else {
                 return results;
             }

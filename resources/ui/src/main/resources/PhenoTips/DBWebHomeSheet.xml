@@ -363,11 +363,15 @@
         "hpo" : {
             script: "$xwiki.getURL('PhenoTips.SolrService', 'get')?",
             queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
-                           'name' : { 'stub': true, 'boost': 1500 },
-                           'synonym' : { 'stub': true, 'boost': 1 },
-                           'is_a' : { 'stub': true},
-                           'text' : { 'stub': true, 'default': true },
-                           'id' : {'activationRegex' : 'HP:[0-9]+', 'stub': true, 'boost' : 50}
+                           'name' : {'wordBoost': 10, 'phraseBoost': 20, 'stubBoost': 8},
+                           'nameExact' : {'phraseBoost': 100},
+                           'namePrefix' : {'phraseBoost': 30},
+                           'synonym' : {'wordBoost': 6, 'phraseBoost': 15, 'stubBoost': 4},
+                           'synonymExact' : {'phraseBoost': 70},
+                           'synonymPrefix' : {'phraseBoost': 20},
+                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1, 'stubTrigger': true},
+                           'id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}},
+                           'alt_id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}}
                          }, {
                            'term_category': ['HP:0000118']
                          }),

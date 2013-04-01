@@ -45,15 +45,27 @@
   <hidden>false</hidden>
   <content>{{velocity}}{{html clean="false"}}
 #if ($xcontext.action == 'get')
-  #set ($rows = -1)
-  #if ("$!request.rows" != '')
-    #set ($rows = $mathtool.toInteger($request.rows))
+  #if ("$!{request.defType}" != '')
+    #set ($parameters = {})
+    #foreach ($param in $request.parameterMap.entrySet())
+      #set ($foreach.value = '')
+      #foreach ($value in $param.value)
+        #set ($foreach.parent.value = $foreach.parent.value.concat($value))
+      #end
+      #set ($discard = $parameters.put($param.key, $foreach.value))
+    #end
+    #set ($results = $services.hpo.customSearch($parameters))
+  #else
+    #set ($rows = -1)
+    #if ("$!request.rows" != '')
+      #set ($rows = $mathtool.toInteger($request.rows))
+    #end
+    #set ($start = 0)
+    #if ("$!request.start" != '')
+      #set ($start = $mathtool.toInteger($request.start))
+    #end
+    #set ($results = $services.hpo.search("$!request.q", "$!request.sort", $rows, $start))
   #end
-  #set ($start = 0)
-  #if ("$!request.start" != '')
-    #set ($start = $mathtool.toInteger($request.start))
-  #end
-  #set ($results = $services.hpo.search("$!request.q", "$!request.sort", $rows, $start))
   #if ("$!request.format" == 'xml')
     $response.setContentType('text/xml')
 &lt;response&gt;

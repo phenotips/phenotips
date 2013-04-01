@@ -429,6 +429,10 @@
 
       // create ajax request
       var query = this.fld.value.strip();
+      var parameters = {};
+      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.generateParameters) == "function") {
+        parameters = this.options.queryProcessor.generateParameters(query);
+      }
       if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.processQuery) == "function") {
         query = this.options.queryProcessor.processQuery(query);
       }
@@ -443,6 +447,7 @@
 
       var ajx = new Ajax.Request(url, {
         method: method,
+        parameters: parameters,
         requestHeaders: headers,
         onSuccess: this.setSuggestions.bindAsEventListener(this, source, requestId),
         onFailure: function (response) {
@@ -1979,15 +1984,46 @@ return MS;
 
   processQuery: function(query)
   {
-    return this.restrictQuery(this.inflateQuery(query));
+    return this.inflateQuery(query);
   },
 
-  restrictQuery : function(query)
+  generateParameters: function(query)
+  {
+    var parameters = {'defType': 'edismax', 'spellcheck.collate': true, 'spellcheck': true, 'lowercaseOperators': false};
+    if (this.setupMandatoryQuery(query, parameters)) {
+      return parameters;
+    }
+    this.restrictQuery(query, parameters);
+    this.setupQueryFields(query, parameters);
+    return parameters;
+  },
+
+  setupMandatoryQuery : function(query, parameters)
+  {
+    var txt = query.strip();
+    var mandatoryQuery = "";
+    var hasMandatoryFields = false;
+    for (var field in this.queryFields) {
+      var fieldOptions = this.queryFields[field];
+      var activationRegex = fieldOptions['activationRegex'];
+      if (!fieldOptions['mandatory'] || !activationRegex || !txt.match(activationRegex)) {
+        continue;
+      }
+      mandatoryQuery += field + ":" + (fieldOptions['transform'] ? fieldOptions['transform'](query) : query) + " ";
+      hasMandatoryFields = true;
+    }
+    if (mandatoryQuery) {
+      parameters.fq = mandatoryQuery.strip();
+    }
+    return hasMandatoryFields;
+  },
+
+  restrictQuery : function(query, parameters)
   {
     if (!this.restriction) {
-      return query;
+      return;
     }
-    var result = "+(" + query + ") ";
+    var result = "";
     for (var rField in this.restriction) {
       var restrictionString = "+(";
       for (var i = 0; i &lt; this.restriction[rField].length; ++i) {
@@ -1996,66 +2032,59 @@ return MS;
       restrictionString = restrictionString.strip() + ") ";
       result += restrictionString;
     }
-    return result.strip();
+    if (result) {
+      parameters.fq = result.strip();
+    }
+  },
+
+  setupQueryFields : function(query, parameters)
+  {
+    var txt = query.strip();
+    var wordFields = "";
+    var phraseFields = "";
+    var boostQuery = "";
+    var lastWord = query.replace(/.*\W/g, '');
+    for (var field in this.queryFields) {
+      var fieldOptions = this.queryFields[field];
+      var activationRegex = fieldOptions['activationRegex'];
+      if (activationRegex &amp;&amp; !txt.match(activationRegex)) {
+        continue;
+      }
+      if (fieldOptions['wordBoost']) {
+        wordFields += field + "^" + fieldOptions['wordBoost'] + " ";
+      }
+      if (fieldOptions['phraseBoost']) {
+        phraseFields += field + "^" + fieldOptions['phraseBoost'] + (fieldOptions['phraseSlop'] ? "~" + fieldOptions['phraseSlop'] : "") + " ";
+      }
+      if (lastWord &amp;&amp; fieldOptions['stubBoost']) {
+        boostQuery += field + ":\"" + lastWord.replace(/:/g, "\\:")+ "*\"^" + fieldOptions['stubBoost'] + " ";
+      }
+    }
+    if (wordFields) {
+      parameters.qf = wordFields.strip();
+    }
+    if (phraseFields) {
+      parameters.pf = phraseFields.strip();
+    }
+    if (boostQuery) {
+      parameters.bq = boostQuery.strip();
+    }
   },
 
   inflateQuery : function(query)
   {
-    var txt = query.strip();
-    var result = "";
+    var lastWord = query.replace(/.*\W/g, '');
+    if (!lastWord) {
+      return query;
+    }
+    var result = query;
 
     for (var field in this.queryFields) {
-      var fieldOptions = this.queryFields[field];
-      var activationRegex = fieldOptions['activationRegex'];
-      if (activationRegex) {
-        if (!txt.match(new RegExp(activationRegex, "i"))) {
-          continue;
-        }
-        if (activationRegex == activationRegex.toUpperCase()) {
-          txt = txt.toUpperCase();
-        } else if (activationRegex == activationRegex.toLowerCase()) {
-          txt = txt.toLowerCase();
-        }
-        this.getQueryPieces(txt).each(function(word) {
-          result += this.generateQueryForField(field, word, true);
-        }.bind(this));
-        // only one such field allowed; ignore all other fields
-        if (result != "") {
-          return result.strip();
-        }
+      if (this.queryFields[field].stubTrigger) {
+        result += " " + field + ":" + lastWord.replace(/:/g, "\\:") + "*";
       }
     }
-
-    this.getQueryPieces(txt).each(function(word) {
-      for (var field in this.queryFields) {
-        result += this.generateQueryForField(field, word, false);
-      }
-    }.bind(this));
     return result.strip();
-  },
-
-  getQueryPieces : function(txt) {
-    return txt.replace(/[^a-zA-Z0-9 :]/g, ' ').strip().split(/ +/);
-  },
-
-  generateQueryForField : function (field, word, matchAll)
-  {
-    var result = "";
-    var fieldOptions = this.queryFields[field];
-    var suffixes = [""];
-    if (fieldOptions['stub']) {
-      suffixes.push("*");
-    }
-    word = word.replace(/:/g, "\\:");
-    result += matchAll ? "+(" : "";
-    suffixes.each(function(suffix) {
-      if (!fieldOptions['default']) {
-        result += field + ":";
-      }
-      result += word + suffix + (fieldOptions['boost'] ? "^" + fieldOptions['boost'] : "") + " ";
-    });
-    result += matchAll ? ") " : " ";
-    return result;
   }
 });
   return MS;
@@ -2193,10 +2222,12 @@ return MS;
     },
     noresults: "No sub-terms",
     targetQueryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
-                           'id' : {'activationRegex' : 'HP:[0-9]+', 'stub': true, 'boost' : 50}
+                           'id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}},
+                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1, 'stubTrigger': true}
                          }),
     expandQueryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
-                            'is_a' : { 'stub': false, 'activationRegex' : 'HP:[0-9]+' }
+                           'is_a' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}},
+                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1, 'stubTrigger': true}
                          }),
     showParents : true,
     showRoot : true,
@@ -2234,6 +2265,10 @@ return MS;
   load : function(id) {
       this.setContent(this.loadingMessage);
       var query = id;
+      var parameters = {};
+      if (this.options.targetQueryProcessor != null &amp;&amp; typeof(this.options.targetQueryProcessor.generateParameters) == "function") {
+        parameters = this.options.targetQueryProcessor.generateParameters(query);
+      }
       if (this.options.targetQueryProcessor != null &amp;&amp; typeof(this.options.targetQueryProcessor.processQuery) == "function") {
         query = this.options.targetQueryProcessor.processQuery(query);
       }
@@ -2243,6 +2278,7 @@ return MS;
 
       var ajx = new Ajax.Request(url, {
         method: this.options.method,
+        parameters: parameters,
         requestHeaders: headers,
         onSuccess: function (response) {
           this.setContent(this.buildTree(this._getDataFromResponse(response)));
@@ -2294,6 +2330,10 @@ console.log(categories);
 
   expand : function (element, doPopulate) {
       var query = element.__termId;
+      var parameters = {};
+      if (this.options.expandQueryProcessor != null &amp;&amp; typeof(this.options.expandQueryProcessor.generateParameters) == "function") {
+        parameters = this.options.expandQueryProcessor.generateParameters(query);
+      }
       if (this.options.expandQueryProcessor != null &amp;&amp; typeof(this.options.expandQueryProcessor.processQuery) == "function") {
         query = this.options.expandQueryProcessor.processQuery(query);
       }
@@ -2304,6 +2344,7 @@ console.log(categories);
       var ajx = new Ajax.Request(url, {
         method: this.options.method,
         requestHeaders: headers,
+        parameters: parameters,
         onCreate: function() {this._lockExpandTool(element)}.bind(this),
         onSuccess: function (response) {
           var memo = {};
