@@ -274,9 +274,6 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
                 if (StringUtils.isEmpty(suggestedQuery)) {
                     return new SolrDocumentList();
                 }
-                // The spellcheck doesn't preserve the identifiers, manually
-                // correct this
-                suggestedQuery = suggestedQuery.replaceAll("term_category:hip", "term_category:HP");
                 MapSolrParams newParams =
                     new MapSolrParams(getSolrQuery(suggestedQuery, params.get(CommonParams.SORT),
                         params.getInt(CommonParams.ROWS, -1), params.getInt(CommonParams.START, 0)));
