@@ -21,7 +21,8 @@ package edu.toronto.cs.phenotips.solr;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -33,6 +34,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.CommonParams;
+import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.MapSolrParams;
 import org.apache.solr.common.util.NamedList;
 import org.slf4j.Logger;
@@ -291,7 +293,19 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
                 if (StringUtils.isEmpty(suggestedQuery)) {
                     return results;
                 }
+                Pattern p = Pattern.compile("(\\w++):(\\w++)\\*$", Pattern.CASE_INSENSITIVE);
+                Matcher originalStub = p.matcher((String) newParams.get(CommonParams.Q));
                 newParams.remove(CommonParams.Q);
+                Matcher newStub = p.matcher(suggestedQuery);
+                if (originalStub.find() && newStub.find()) {
+                    suggestedQuery += ' ' + originalStub.group() + "^1.5 " + originalStub.group(2) + "^1.5";
+                    String boostQuery = (String) newParams.get(DisMaxParams.BQ);
+                    if (boostQuery != null) {
+                        boostQuery += ' ' + boostQuery.replace(originalStub.group(2), newStub.group(2));
+                        newParams.remove(DisMaxParams.BQ);
+                        newParams.add(DisMaxParams.BQ, boostQuery);
+                    }
+                }
                 newParams.add(CommonParams.Q, suggestedQuery);
                 SolrDocumentList spellcheckResults =
                     this.server.query(MapSolrParams.toSolrParams(newParams)).getResults();
@@ -402,7 +416,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     {
         StringBuilder out = new StringBuilder();
         out.append('{');
-        for (Entry<String, ? > entry : map.entrySet()) {
+        for (Map.Entry<String, ? > entry : map.entrySet()) {
             out.append(entry.getKey() + ':' + entry.getValue() + '\n');
         }
         out.append('}');

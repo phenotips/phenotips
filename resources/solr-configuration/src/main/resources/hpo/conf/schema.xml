@@ -103,10 +103,12 @@
       </analyzer>
     </fieldtype>
 
-    <!-- Field used to construct a spellcheck index from. It does basic
+    <!-- Field for exact matching of the terms in the query, without stemming
+         or other disruptive text processing filters applied to it.
+         It is also used to construct a spellcheck index from. It does basic
          tokenization and lowercasing, since it's only used as a source of
          valid words. -->
-    <fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="text_spell" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
@@ -165,10 +167,12 @@
     <field name="id" type="string" indexed="true" stored="true" required="true" />
     <field name="alt_id" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="name" type="text_general" indexed="true" stored="true"/>
+    <field name="nameSpell" type="text_spell" indexed="true" stored="false"/>
     <field name="nameExact" type="exact_match" indexed="true" stored="false" omitNorms="true"/>
     <field name="namePrefix" type="prefix_match" indexed="true" stored="false" omitNorms="true"/>
     <field name="nameSort" type="string" indexed="true" stored="false"/>
     <field name="synonym" type="text_general" indexed="true" stored="true" multiValued="true"/>
+    <field name="synonymSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
     <field name="synonymExact" type="exact_match" indexed="true" stored="false" multiValued="true"  omitNorms="true"/>
     <field name="synonymPrefix" type="prefix_match" indexed="true" stored="false" multiValued="true"  omitNorms="true"/>
     <field name="def" type="text_general" indexed="true" stored="true"/>
@@ -181,7 +185,7 @@
          via copyField further on in this schema).  -->
     <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
     <field name="phonetic" type="phonetic" indexed="true" stored="false" multiValued="true"/>
-    <field name="textSpell" type="textSpell" indexed="true" stored="false" multiValued="true"/>
+    <field name="textSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
 
     <!-- Catchall text field that indexes tokens both normally and in reverse for efficient
          leading wildcard queries. -->
@@ -196,8 +200,10 @@
   <uniqueKey>id</uniqueKey>
 
   <copyField source="name" dest="nameSort"/>
+  <copyField source="name" dest="nameSpell"/>
   <copyField source="name" dest="nameExact"/>
   <copyField source="name" dest="namePrefix"/>
+  <copyField source="synonym" dest="synonymSpell"/>
   <copyField source="synonym" dest="synonymExact"/>
   <copyField source="synonym" dest="synonymPrefix"/>
   <copyField source="*" dest="text"/>

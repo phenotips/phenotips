@@ -2057,7 +2057,7 @@ return MS;
         phraseFields += field + "^" + fieldOptions['phraseBoost'] + (fieldOptions['phraseSlop'] ? "~" + fieldOptions['phraseSlop'] : "") + " ";
       }
       if (lastWord &amp;&amp; fieldOptions['stubBoost']) {
-        boostQuery += field + ":\"" + lastWord.replace(/:/g, "\\:")+ "*\"^" + fieldOptions['stubBoost'] + " ";
+        boostQuery += field + ":" + lastWord.replace(/:/g, "\\:")+ "*^" + fieldOptions['stubBoost'] + " ";
       }
     }
     if (wordFields) {

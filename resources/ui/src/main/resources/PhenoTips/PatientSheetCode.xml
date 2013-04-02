@@ -931,13 +931,16 @@ document.observe('dom:loaded', function() {
         "hpo" : {
             script: "$xwiki.getURL('PhenoTips.SolrService', 'get')?",
             queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
-                           'name' : {'wordBoost': 10, 'phraseBoost': 20, 'stubBoost': 8},
+                           'name' : {'wordBoost': 10, 'phraseBoost': 20},
+                           'nameSpell' : {'wordBoost': 18, 'phraseBoost': 36, 'stubBoost': 14},
                            'nameExact' : {'phraseBoost': 100},
                            'namePrefix' : {'phraseBoost': 30},
-                           'synonym' : {'wordBoost': 6, 'phraseBoost': 15, 'stubBoost': 4},
+                           'synonym' : {'wordBoost': 6, 'phraseBoost': 15},
+                           'synonymSpell' : {'wordBoost': 10, 'phraseBoost': 25, 'stubBoost': 7},
                            'synonymExact' : {'phraseBoost': 70},
                            'synonymPrefix' : {'phraseBoost': 20},
-                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1, 'stubTrigger': true},
+                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1},
+                           'textSpell' : {'wordBoost': 2, 'phraseBoost': 5, 'stubBoost': 2, 'stubTrigger': true},
                            'id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}},
                            'alt_id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}}
                          }, {
