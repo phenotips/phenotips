@@ -4036,8 +4036,6 @@ input.wrongValue {
   font-weight: bold;
 }
 .quick-search-box input {
-  color: $theme.textPrimaryColor;
-  font-style: italic;
   background-image: url("$xwiki.getSkinFile('icons/xwiki/search.png')");
   background-position: right center;
   background-repeat: no-repeat;
