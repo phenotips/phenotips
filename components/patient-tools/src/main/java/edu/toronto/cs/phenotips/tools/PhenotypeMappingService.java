@@ -32,6 +32,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
 import org.apache.commons.io.output.NullWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
@@ -207,7 +208,8 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
     }
 
     /**
-     * Get the configuration for a specific property, taking into account the current space.
+     * Get the configuration for a specific property, taking into account the configuration for the current user and
+     * current space.
      *
      * @param mappingName the name of the configuration to return
      * @return configuration object, should be a Map
@@ -299,16 +301,42 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
     }
 
     /**
-     * Determine which document was configured as the mapping source in the current space's preferences.
+     * Determine which document was configured as the mapping source in the current user's preferences, or, if missing,
+     * in the current space's preferences.
      *
      * @return a document reference, as configured in the space preferences
      */
     private DocumentReference getMappingDocument()
     {
+        DocumentReference mapping = getCurrentUserConfiguration();
+        if (mapping == null) {
+            mapping = getCurrentSpaceConfiguration();
+        }
+        return mapping;
+    }
+
+    private DocumentReference getCurrentUserConfiguration()
+    {
+        DocumentReference currentUserRef = this.bridge.getCurrentUserReference();
+        DocumentReference classDocRef =
+            new DocumentReference(currentUserRef.getWikiReference().getName(), "XWiki", "ConfigurationClass");
+        int settingsObject = this.bridge.getObjectNumber(currentUserRef, classDocRef, "property", "phenotips_mapping");
+        if (settingsObject != -1) {
+            String targetMappingName =
+                (String) this.bridge.getProperty(currentUserRef, classDocRef, settingsObject, "value");
+            if (StringUtils.isNotEmpty(targetMappingName)) {
+                return new DocumentReference(this.resolver.resolve(targetMappingName, EntityType.DOCUMENT));
+            }
+        }
+        return null;
+    }
+
+    private DocumentReference getCurrentSpaceConfiguration()
+    {
         DocumentReference currentDocRef = this.bridge.getCurrentDocumentReference();
         DocumentReference homeDocRef = new DocumentReference("WebHome", currentDocRef.getLastSpaceReference());
-        DocumentReference classDocRef = new DocumentReference(
-            currentDocRef.getWikiReference().getName(), "PhenoTips", "DBConfigurationClass");
+        DocumentReference classDocRef =
+            new DocumentReference(currentDocRef.getWikiReference().getName(), "PhenoTips", "DBConfigurationClass");
         String targetMappingName = (String) this.bridge.getProperty(homeDocRef, classDocRef, "phenotypeMapping");
         return new DocumentReference(this.resolver.resolve(targetMappingName, EntityType.DOCUMENT));
     }

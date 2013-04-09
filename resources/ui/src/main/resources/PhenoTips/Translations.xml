@@ -72,5 +72,8 @@ admin.dbconfig=Database and form configuration
 admin.menuconfig=Menu configuration
 admin.ontology=Ontology index
 
-saveandview=Save</content>
+saveandview=Save
+
+phenotips.profile.preferences=PhenoTips preferences
+phenotips.profile.preferences.mapping=Preferred mapping</content>
 </xwikidoc>
