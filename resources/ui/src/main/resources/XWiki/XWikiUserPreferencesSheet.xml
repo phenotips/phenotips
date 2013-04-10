@@ -81,6 +81,7 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
         #set ($mappingPreferencesObject = $doc.getObject('XWiki.ConfigurationClass', 'property', 'phenotips_mapping', false))
         #if (!$mappingPreferencesObject)
           #set ($mappingPreferencesObject = $doc.newObject('XWiki.ConfigurationClass'))
+          #set ($discard = $mappingPreferencesObject.set('property', 'phenotips_mapping'))
           #set ($discard = $doc.save($msg.get('phenotips.profile.preferences.mapping.addedObject'), true))
         #end
         &lt;dd&gt;$doc.display('value', $mappingPreferencesObject)&lt;/dd&gt;
