@@ -48,18 +48,30 @@
 {{velocity filter="indent"}}
 #if ($xcontext.action == 'get' &amp;&amp; "$!request.q" != '')##
   #set ($_service = $services.omim)
-  #set ($limit = $mathtool.toInteger("$!{request.limit}"))
-  #if (!($limit &gt; 0))
-    #set ($limit = 20)
-  #end
-  #set ($start = $mathtool.toInteger("$!{request.start}"))
-  #if (!($start &gt;= 0))
+  #if ("$!{request.defType}" != '')
+    #set ($parameters = {})
+    #foreach ($param in $request.parameterMap.entrySet())
+      #set ($foreach.value = '')
+      #foreach ($value in $param.value)
+        #set ($foreach.parent.value = $foreach.parent.value.concat($value))
+      #end
+      #set ($discard = $parameters.put($param.key, $foreach.value))
+    #end
+    #set ($results = $_service.customSearch($parameters))
+  #else
+    #set ($rows = 20)
+    #if ("$!request.rows" != '')
+      #set ($rows = $mathtool.toInteger($request.rows))
+    #end
     #set ($start = 0)
+    #if ("$!request.start" != '')
+      #set ($start = $mathtool.toInteger($request.start))
+    #end
+    #set ($results = $_service.search("$!request.q", "$!request.sort", $rows, $start))
   #end
   #if ("$!{request.format}" == 'html')
 $response.setHeader("X-ReqNo", "$!request.reqNo")##
 {{html clean="false"  wiki="false"}}##
-#set ($results = $_service.search("$!request.q", $limit, $start))
 #if ($results.size() &gt; 0)
 &lt;ul&gt;
 #foreach($item in $results)
@@ -77,7 +89,7 @@ $response.setHeader("X-ReqNo", "$!request.reqNo")##
 #end
   {{/html}}
   #else
-    #json__respondJSON($_service.search("$!request.q", $limit, $start))
+    #json__respondJSON($results)
   #end
 #end
 {{/velocity}}</content>

@@ -977,6 +977,13 @@ document.observe('dom:loaded', function() {
         },
         "omim" : {
             script: "$xwiki.getURL('PhenoTips.OmimService', 'get')?outputSyntax=plain&amp;",
+            queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
+                           'name' : {'wordBoost': 20, 'phraseBoost': 40},
+                           'nameSpell' : {'wordBoost': 50, 'phraseBoost': 100, 'stubBoost': 20},
+                           'keywords' : {'wordBoost': 2, 'phraseBoost': 6, 'stubBoost': 2},
+                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1},
+                           'textSpell' : {'wordBoost': 2, 'phraseBoost': 5, 'stubBoost': 2, 'stubTrigger': true}
+                         }),
             varname: "q",
             noresults: "No matching terms",
             json: true,
