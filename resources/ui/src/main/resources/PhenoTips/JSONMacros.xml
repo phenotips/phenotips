@@ -52,7 +52,7 @@
 
     #end
   }
-  #elseif ($data.size() &gt;= 0)
+  #elseif ($data.size())
     [
     #foreach ($item in $data)
       #json__displayJSONFragment($item)#if ($foreach.hasNext()),#end
