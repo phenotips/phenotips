@@ -5006,6 +5006,8 @@ table.extradata-list td.bmi_percentile {
   width: 100%;
   max-height: inherit;
   height: auto;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 .phenotype-details .attachment-list .attachment-item.image {
   max-width: 100%;
