@@ -318,6 +318,9 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
     private DocumentReference getCurrentUserConfiguration()
     {
         DocumentReference currentUserRef = this.bridge.getCurrentUserReference();
+        if (currentUserRef == null) {
+            return null;
+        }
         DocumentReference classDocRef =
             new DocumentReference(currentUserRef.getWikiReference().getName(), "XWiki", "ConfigurationClass");
         int settingsObject = this.bridge.getObjectNumber(currentUserRef, classDocRef, "property", "phenotips_mapping");
