@@ -87,6 +87,9 @@ public class MeasurementAgeUpdater implements EventListener
             return;
         }
         for (BaseObject measurement : objects) {
+            if (measurement == null) {
+                continue;
+            }
             Date measurementDate = measurement.getDateValue("date");
             if (measurementDate == null) {
                 PropertyInterface prop = null;
