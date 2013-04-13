@@ -357,7 +357,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
                 value = "";
             }
             String[] pieces =
-                value.replaceAll("[^a-zA-Z0-9 :]/", " ").replace(FIELD_VALUE_SEPARATOR, "\\" + FIELD_VALUE_SEPARATOR)
+                value.replaceAll("[^a-zA-Z0-9 :]", " ").replace(FIELD_VALUE_SEPARATOR, "\\" + FIELD_VALUE_SEPARATOR)
                     .trim().split("\\s+");
             for (String val : pieces) {
                 query.append(field.getKey()).append(FIELD_VALUE_SEPARATOR).append(val).append(" ");
