@@ -5205,7 +5205,7 @@ table.extradata-list td.bmi_percentile {
   #if ($objects.size() &gt; 0)
     #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
     #set($dataClass = $targetObj.xWikiClass)
-    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}"&gt;#if ("$!{withLabel}" == 'true'){{html clean="false" wiki="false"}}${prop.prettyName}:{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
+    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}"&gt;#if ("$!{withLabel}" == 'true'){{html clean="false" wiki="false"}}&lt;label &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
   #end
 #end
 
