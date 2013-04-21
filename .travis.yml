@@ -9,7 +9,7 @@ install: mvn dependency:resolve -Dsilent -T2.0C
 notifications:
   irc:
     channels:
-      - "irc.freenode.org#ccm"
+      - "irc.freenode.org#phenotips"
     on_success: change
     on_failure: always
     use_notice: true
