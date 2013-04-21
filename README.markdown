@@ -1,3 +1,6 @@
+## Current Build Status ##
+[![Build Status](https://travis-ci.org/compbio-UofT/phenotips.png)](https://travis-ci.org/compbio-UofT/phenotips.png)
+
 # About #
 
 This project mainly aims at providing **an easy way to collect clinical phenotypes using a standardized vocabulary**, thus alllowing for **straight-forward cross-referencing with gene and disease databases**.
