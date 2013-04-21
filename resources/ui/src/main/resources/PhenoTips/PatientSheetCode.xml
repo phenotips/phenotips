@@ -5322,6 +5322,7 @@ table.extradata-list td.bmi_percentile {
   ----
   #__displayIfNotEmpty('age_of_onset')
 #end
+(% class="clear" %)((()))
 #if ("$!activeFields.contains('indication_for_referral')" != 'false')
   ----
   #__displayIfNotEmpty('indication_for_referral')
