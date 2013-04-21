@@ -5061,7 +5061,7 @@ table.extradata-list td.bmi_percentile {
 #end
 
 #macro (__display $propName)
-(% class="displayed-value"%)(((#if ("$!{doc.display($propName)}" == '')-#else${doc.display($propName)}#end)))##
+(% class="displayed-value"%)(((#if($xcontext.action == 'edit' || ($doc.display($propName) != ''))${doc.display($propName)}#{else}-#{end})))##
 #end
 
 #macro (__displayIfNotEmpty $propName)
@@ -5332,6 +5332,7 @@ table.extradata-list td.bmi_percentile {
   #__displayIfNotEmpty('age_of_onset')
 #end
 (% class="clear" %)((()))
+  ----
 #__displayIfNotEmpty('indication_for_referral')
 )))##chapter
 #end
