@@ -1053,7 +1053,9 @@ h1 {
       <use>onDemand</use>
     </property>
   </object>
-  <content>{{html wiki=false clean=false}}&lt;div class="general-tools"&gt;&lt;a href="#patients"&gt;Browse patients&lt;/a&gt; · &lt;label for="create-patient-record"&gt;New patient record&lt;/label&gt;&lt;/div&gt;{{/html}}
+  <content>{{velocity}}
+{{html wiki=false clean=false}}<div class="general-tools"><a href="#patients">Browse patients</a>
+#if($hasEdit). <label for="create-patient-record">New patient record</label>#end</div>{{/html}}{{/velocity}}
 
 = Phenotype  database =
 
