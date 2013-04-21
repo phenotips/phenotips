@@ -12,5 +12,7 @@ notifications:
       - "irc.freenode.org#ccm"
     on_success: change
     on_failure: always
+    use_notice: true
+    skip_join: true
     template:
       - "%{repository} (%{branch}:%{commit} by %{author}): %{message} (%{build_url})" 
