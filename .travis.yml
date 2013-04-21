@@ -4,6 +4,8 @@ jdk:
   - oraclejdk7
   - openjdk6
 
+install: mvn install
+
 
 notifications:
   irc:
