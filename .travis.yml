@@ -4,6 +4,7 @@ jdk:
   - oraclejdk7
   - openjdk6
 
+install: mvn dependency:resolve -Dsilent -T2.0C
 
 notifications:
   irc:
