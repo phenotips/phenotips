@@ -256,6 +256,7 @@ var Partnership = Class.create(AbstractNode, {
             };
             editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
         }
+        return child;
     },
 
     /*
