@@ -66,6 +66,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/nodeIndex.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/graph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/actionStack.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/workspace.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/saveLoadIndicator.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/pedigree.js')##
 {{/velocity}}
 
