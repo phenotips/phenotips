@@ -33,7 +33,7 @@ var AbstractHoverbox = Class.create({
         this._handles = this.generateHandles();
         this._currentHandles = this._handles;
         this._buttons = this.generateButtons();
-        this._boxOnHover = editor.getPaper().rect(x, y, this._width, this._height, 5).attr(editor.attributes.boxOnHover);
+        this._boxOnHover = editor.getPaper().rect(x, y, this._width, this._height, 5).attr(PedigreeEditor.attributes.boxOnHover);
         this._backElements = editor.getPaper().set(this._boxOnHover, this._connections);
         this._backElements.insertBefore(nodeShapes.flatten());
         var mask = this._boxOnHover.clone().attr({fill: 'green', opacity: 0});
@@ -163,7 +163,7 @@ var AbstractHoverbox = Class.create({
      * @return {Raphael.st} the generated button
      */
     createButton: function(x, y, svgPath, attributes, onClick, className, type) {
-        var iconScale = editor.attributes.radius * 0.014,
+        var iconScale = PedigreeEditor.attributes.radius * 0.014,
             icon = editor.getPaper().path(svgPath).attr(attributes);
 
         icon.transform(["t" , x , y, "s", iconScale, iconScale, 0, 0]);
@@ -175,17 +175,17 @@ var AbstractHoverbox = Class.create({
             onClick && onClick();
             button.isClicked = !button.isClicked;
             if(button.isClicked)
-                mask.attr(editor.attributes.btnMaskClick);
+                mask.attr(PedigreeEditor.attributes.btnMaskClick);
             else
-                mask.attr(editor.attributes.btnMaskHoverOn);
+                mask.attr(PedigreeEditor.attributes.btnMaskHoverOn);
         };
         button.click(clickFunct);
-        button.mousedown(function(){mask.attr(editor.attributes.btnMaskClick)});
+        button.mousedown(function(){mask.attr(PedigreeEditor.attributes.btnMaskClick)});
         button.hover(function() {
-                mask.attr(editor.attributes.btnMaskHoverOn)
+                mask.attr(PedigreeEditor.attributes.btnMaskHoverOn)
             },
             function() {
-                mask.attr(editor.attributes.btnMaskHoverOff)
+                mask.attr(PedigreeEditor.attributes.btnMaskHoverOff)
             });
         className && button.forEach(function(element) {
             element.node.setAttribute('class', className);
@@ -207,7 +207,7 @@ var AbstractHoverbox = Class.create({
             me.toggleMenu(!me.isMenuToggled());
         };
         var path = "M2.021,9.748L2.021,9.748V9.746V9.748zM2.022,9.746l5.771,5.773l-5.772,5.771l2.122,2.123l7.894-7.895L4.143,7.623L2.022,9.746zM12.248,23.269h14.419V20.27H12.248V23.269zM16.583,17.019h10.084V14.02H16.583V17.019zM12.248,7.769v3.001h14.419V7.769H12.248z";
-        var attributes = editor.attributes.menuBtnIcon;
+        var attributes = PedigreeEditor.attributes.menuBtnIcon;
         var x = this.getX() + this.getWidth() - 18 - this.getWidth()/40;
         var y = this.getY() + this.getHeight()/40;
         var className = "menu-trigger";
@@ -226,7 +226,7 @@ var AbstractHoverbox = Class.create({
             me.getNode().removeAction();
         };
         var path = "M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z";
-        var attributes = editor.attributes.deleteBtnIcon;
+        var attributes = PedigreeEditor.attributes.deleteBtnIcon;
         var x = this.getX() + this.getWidth()/40;
         var y = this.getY() + this.getHeight()/40;
         return this.createButton(x, y, path, attributes, action, "delete");
@@ -305,8 +305,8 @@ var AbstractHoverbox = Class.create({
     generateHandle: function(type, orbX, orbY) {
         var path = [["M", this.getNodeX(), this.getNodeY()],["L", orbX, orbY]],
             connection = editor.getPaper().path(path).attr({"stroke-width": 4, stroke: "gray"}),
-            orbRadius = editor.attributes.radius/7,
-            orbHue = editor.attributes.orbHue,
+            orbRadius = PedigreeEditor.attributes.radius/7,
+            orbHue = PedigreeEditor.attributes.orbHue,
             orb = generateOrb(editor.getPaper(), orbX, orbY, orbRadius*1.1, orbHue).attr("cursor", "pointer");
 //            adoptionPath = [["M", orbX - orbRadius/2, orbY + orbRadius*1.3],["L", (orbX - orbRadius * 1.3), orbY + orbRadius*1.3],["L", (orbX - orbRadius * 1.3), orbY - orbRadius*1.3],["L", (orbX - orbRadius / 2), orbY - orbRadius*1.3],["M", orbX + orbRadius/2, orbY + orbRadius*1.3],["L", (orbX + orbRadius * 1.3), orbY + orbRadius*1.3],["L", (orbX + orbRadius * 1.3), orbY - orbRadius*1.3],["L", (orbX + orbRadius / 2), orbY - orbRadius*1.3]],
 //            adoptionSymbol = editor.getPaper().path(adoptionPath).attr({"stroke-width": 2, stroke: "#484848", opacity: 1});

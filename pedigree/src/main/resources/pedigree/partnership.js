@@ -145,7 +145,7 @@ var Partnership = Class.create(AbstractNode, {
     createPregnancy: function() {
         //var id = this.getID();
         //var pos = editor.findPosition({below: id}, ['pregnancy']);
-        return editor.getGraph().addPregnancy(this.getX(), this.getY() + editor.attributes.radius * 2, this);
+        return editor.getGraph().addPregnancy(this.getX(), this.getY() + PedigreeEditor.attributes.radius * 2, this);
     },
 
     /*

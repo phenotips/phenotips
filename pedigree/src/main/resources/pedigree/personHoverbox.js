@@ -18,20 +18,20 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @param centerY the y coordinate on the Raphael canvas at which the hoverbox will be centered
      */
     initialize: function($super, personNode, centerX, centerY, nodeShapes) {
-        var radius = editor.attributes.radius * 2;
+        var radius = PedigreeEditor.attributes.radius * 2;
         $super(personNode, centerX - radius, centerY - radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);
         this._isMenuToggled = false;
-        var r = editor.attributes.radius;
+        var r = PedigreeEditor.attributes.radius;
     },
 
     /**
      * Creates four handles around the node. Returns a Raphael set.
      */
     generateHandles: function($super) {
-        this._upHandle = this.generateHandle('parent', this.getNodeX(), this.getNodeY() - (editor.attributes.radius * 1.6));
-        this._downHandle = this.generateHandle('child', this.getNodeX(), this.getNodeY() + (editor.attributes.radius * 1.6));
-        this._rightHandle = this.generateHandle('partner', this.getNodeX() + (editor.attributes.radius * 1.6), this.getNodeY());
-        this._leftHandle = this.generateHandle('partner', this.getNodeX() - (editor.attributes.radius * 1.6), this.getNodeY());
+        this._upHandle = this.generateHandle('parent', this.getNodeX(), this.getNodeY() - (PedigreeEditor.attributes.radius * 1.6));
+        this._downHandle = this.generateHandle('child', this.getNodeX(), this.getNodeY() + (PedigreeEditor.attributes.radius * 1.6));
+        this._rightHandle = this.generateHandle('partner', this.getNodeX() + (PedigreeEditor.attributes.radius * 1.6), this.getNodeY());
+        this._leftHandle = this.generateHandle('partner', this.getNodeX() - (PedigreeEditor.attributes.radius * 1.6), this.getNodeY());
         return $super().push(this._upHandle, this._downHandle, this._rightHandle, this._leftHandle);
     },
     /**
@@ -169,14 +169,14 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
             }
             else if(handleType == "child") {
                 //this.getNode().createChild();
-                var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + editor.attributes.radius * 2.3));
-                editor.getNodeTypeOptions().show(this.getNode(), position.x, position.y);
+                var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.radius * 2.3));
+                editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
                 this.disable();
             }
             else if(handleType == "parent") {
                 this.getNode().createParentsAction();
             }
-            curHovered && curHovered.getGraphics().getHoverBox().getBoxOnHover().attr(editor.attributes.boxOnHover);
+            curHovered && curHovered.getGraphics().getHoverBox().getBoxOnHover().attr(PedigreeEditor.attributes.boxOnHover);
         }
         editor.getGraph().setCurrentHoveredNode(null);
         editor.getGraph().setCurrentDraggable(null);

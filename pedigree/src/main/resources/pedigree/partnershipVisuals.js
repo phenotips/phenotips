@@ -13,7 +13,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         $super(partnership, x,y);
         this._childlessShape = null;
         this._childlessStatusLabel = null;
-        this._junctionShape = editor.getPaper().circle(x,y, editor.attributes.partnershipRadius).attr({fill: '#EA5E48', stroke: 'black', 'stroke-width':2});
+        this._junctionShape = editor.getPaper().circle(x,y, PedigreeEditor.attributes.partnershipRadius).attr({fill: '#EA5E48', stroke: 'black', 'stroke-width':2});
         this._junctionShape.insertBefore(editor.getGraph().getProband().getGraphics().getAllGraphics().flatten());
 
         //TODO: find out whether there is an arc
@@ -24,7 +24,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         });
         this._hoverBox = new PartnershipHoverbox(partnership, x, y, this.getShapes());
         this.area = null;
-        this._idLabel = editor.getPaper().text(x, y-20, editor.DEBUG_MODE ? partnership.getID() : "").attr(editor.attributes.dragMeLabel).insertAfter(this._junctionShape.flatten());
+        this._idLabel = editor.getPaper().text(x, y-20, editor.DEBUG_MODE ? partnership.getID() : "").attr(PedigreeEditor.attributes.dragMeLabel).insertAfter(this._junctionShape.flatten());
     },
 
     grow: function() {
@@ -81,7 +81,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             }
         }
         else {
-            this.getConnections()[connectionIndex] = editor.getPaper().path(path).attr(editor.attributes.partnershipLines).toBack();
+            this.getConnections()[connectionIndex] = editor.getPaper().path(path).attr(PedigreeEditor.attributes.partnershipLines).toBack();
         }
     },
 
@@ -110,7 +110,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             }
         }
         else {
-            return editor.getPaper().path(path).attr(editor.attributes.partnershipLines).toBack();
+            return editor.getPaper().path(path).attr(PedigreeEditor.attributes.partnershipLines).toBack();
         }
     },
 

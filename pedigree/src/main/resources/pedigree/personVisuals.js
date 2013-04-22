@@ -30,12 +30,12 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     setGenderSymbol: function($super) {
         if(this.getNode().getLifeStatus() == 'aborted') {
             this._genderSymbol && this._genderSymbol.remove();
-            var side = editor.attributes.radius * Math.sqrt(3.5),
+            var side = PedigreeEditor.attributes.radius * Math.sqrt(3.5),
                 height = side/Math.sqrt(2),
                 x = this.getX() - height,
                 y = this.getY();
             var shape = editor.getPaper().path(["M",x, y, 'l', height, -height, 'l', height, height,"z"]);
-            shape.attr(editor.attributes.nodeShape);
+            shape.attr(PedigreeEditor.attributes.nodeShape);
             this._genderShape = shape;
             shape = editor.getPaper().set(shape.glow({width: 5, fill: true, opacity: 0.1}).transform(["t",3,3,"..."]), shape);
 
@@ -49,9 +49,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             }
             else {
                 x = this.getX();
-                y = this.getY() + editor.attributes.radius/1.4;
+                y = this.getY() + PedigreeEditor.attributes.radius/1.4;
                 var text = (this.getNode().getGender() == 'M') ? "Male" : "Female";
-                var genderLabel = editor.getPaper().text(x, y, text).attr(editor.attributes.label);
+                var genderLabel = editor.getPaper().text(x, y, text).attr(PedigreeEditor.attributes.label);
                 this._genderSymbol = editor.getPaper().set(shape, genderLabel);
             }
         }
@@ -88,7 +88,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.getNode().getLastName() && (text += ' ' + this.getNode().getLastName());
         this._nameLabel && this._nameLabel.remove();
         if(text.strip() != '') {
-            this._nameLabel = editor.getPaper().text(this.getX(), this.getY() + editor.attributes.radius, text);
+            this._nameLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius, text);
             this.getNameLabel().attr({'font-size': 18, 'font-family': 'Cambria'});
         }
         else {
@@ -125,7 +125,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             person = this.getNode();
         if(this.getNode().getLifeStatus() == 'aborted') {
 
-            var side = editor.attributes.radius * Math.sqrt(3.5),
+            var side = PedigreeEditor.attributes.radius * Math.sqrt(3.5),
                 height = side/Math.sqrt(2),
                 delta = (height * 2)/(person.getDisorders().length),
                 x1 = this.getX() - height,
@@ -145,7 +145,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 y1 = y2;
             }
             if(this.getNode().isProband()) {
-                disorderShapes.transform(["...s", 1.04, 1.04, this.getX(), this.getY()-editor.attributes.radius]);
+                disorderShapes.transform(["...s", 1.04, 1.04, this.getX(), this.getY()-PedigreeEditor.attributes.radius]);
             }
         }
         else {
@@ -154,7 +154,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
 
             for(var i = 0; i < person.getDisorders().length; i++) {
                 var color = gradient(editor.getLegend().getDisorder(person.getDisorders()[i]['id']).getColor(), (i * disorderAngle)+delta);
-                disorderShapes.push(sector(editor.getPaper(), this.getX(), this.getY(), editor.attributes.radius,
+                disorderShapes.push(sector(editor.getPaper(), this.getX(), this.getY(), PedigreeEditor.attributes.radius,
                     person.getGender(), i * disorderAngle, (i+1) * disorderAngle, color));
             }
 
@@ -173,7 +173,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     drawDeadShape: function() {
         var x, y;
         if(this.getNode().getLifeStatus() == 'aborted') {
-            var side = editor.attributes.radius * Math.sqrt(3.5),
+            var side = PedigreeEditor.attributes.radius * Math.sqrt(3.5),
                 height = side/Math.sqrt(2);
             x = this.getX() - height/1.5;
             y = this.getY() + height/3;
@@ -184,10 +184,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             x = this.getX();
             y = this.getY();
             var
-                x1 = x - (10/8) * editor.attributes.radius,
-                y1 = y + (10/8) * editor.attributes.radius,
-                x2 = x + (10/8) * editor.attributes.radius,
-                y2 = y - (10/8) * editor.attributes.radius;
+                x1 = x - (10/8) * PedigreeEditor.attributes.radius,
+                y1 = y + (10/8) * PedigreeEditor.attributes.radius,
+                x2 = x + (10/8) * PedigreeEditor.attributes.radius,
+                y2 = y - (10/8) * PedigreeEditor.attributes.radius;
             this._deadShape = editor.getPaper().path(["M", x1,y1,"L",x2, y2]).attr("stroke-width", 3);
         }
         this._deadShape.insertAfter(this.getHoverBox().getFrontElements().flatten());
@@ -253,7 +253,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     drawUnbornShape: function() {
         this._unbornShape && this._unbornShape.remove();
         if(this.getNode().getLifeStatus() == 'unborn') {
-            this._unbornShape = editor.getPaper().text(this.getX(), this.getY(), "P").attr(editor.attributes.unbornShape);
+            this._unbornShape = editor.getPaper().text(this.getX(), this.getY(), "P").attr(PedigreeEditor.attributes.unbornShape);
             this._unbornShape.insertBefore(this.getHoverBox().getFrontElements());
         }
     },
@@ -327,7 +327,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         if(!this.getChildlessStatusLabel()) {
             var labels = this.getLabels();
             for(var i = 0; i<labels.length; i++) {
-                labels[i].stop().animate({"y": labels[i].oy + editor.attributes.radius/1.5}, 200,">");
+                labels[i].stop().animate({"y": labels[i].oy + PedigreeEditor.attributes.radius/1.5}, 200,">");
             }
         }
     },
@@ -359,12 +359,12 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     drawLabels: function() {
         var labels = this.getLabels(),
-            selectionOffset = (this.isSelected() && !this.getChildlessStatusLabel()) ? editor.attributes.radius/1.5 : 0,
-            childlessOffset = (this.getChildlessStatusLabel()) ? editor.attributes.radius/2 : 0,
-            startY = this.getY() + editor.attributes.radius * 1.7 + selectionOffset + childlessOffset;
+            selectionOffset = (this.isSelected() && !this.getChildlessStatusLabel()) ? PedigreeEditor.attributes.radius/1.5 : 0,
+            childlessOffset = (this.getChildlessStatusLabel()) ? PedigreeEditor.attributes.radius/2 : 0,
+            startY = this.getY() + PedigreeEditor.attributes.radius * 1.7 + selectionOffset + childlessOffset;
         for (var i = 0; i < labels.length; i++) {
             labels[i].attr("y", startY + 11);
-            labels[i].attr(editor.attributes.label);
+            labels[i].attr(PedigreeEditor.attributes.label);
             labels[i].oy = (labels[i].attr("y") - selectionOffset);
             startY = labels[i].getBBox().y2;
         }

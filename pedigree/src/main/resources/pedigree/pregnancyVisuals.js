@@ -3,11 +3,11 @@ var PregnancyVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, pregnancy, x, y) {
         $super(pregnancy, x,y);
-        this._junctionShape = editor.getPaper().circle(x,y, editor.attributes.partnershipRadius/3).attr({fill: 'black', stroke: 'none'});
-        this._junctionMask = editor.getPaper().circle(x,y, editor.attributes.partnershipRadius*2).attr({fill: 'black', stroke: 'none', opacity: 0});
+        this._junctionShape = editor.getPaper().circle(x,y, PedigreeEditor.attributes.partnershipRadius/3).attr({fill: 'black', stroke: 'none'});
+        this._junctionMask = editor.getPaper().circle(x,y, PedigreeEditor.attributes.partnershipRadius*2).attr({fill: 'black', stroke: 'none', opacity: 0});
         this._junctionSet = editor.getPaper().set(this._junctionShape, this._junctionMask);
         this._junctionSet.insertBefore(editor.getGraph().getProband().getGraphics().getAllGraphics().flatten());
-        this._idLabel = editor.getPaper().text(x, y-20, editor.DEBUG_MODE ? pregnancy.getID() : "").attr(editor.attributes.dragMeLabel).insertAfter(this._junctionShape.flatten());
+        this._idLabel = editor.getPaper().text(x, y-20, editor.DEBUG_MODE ? pregnancy.getID() : "").attr(PedigreeEditor.attributes.dragMeLabel).insertAfter(this._junctionShape.flatten());
         this.grow = this.grow.bind(this);
         this.shrink = this.shrink.bind(this);
         this.onClick = this.onClick.bind(this);
@@ -72,7 +72,7 @@ var PregnancyVisuals = Class.create(AbstractNodeVisuals, {
      * @animate set to true if you want to animate a transition to the new location
      */
     updateChildConnection: function(child, childX, childY, junctionX, junctionY, animate) {
-        var radius = (child.getGender && child.getGender() == "U") ? editor.attributes.radius * (Math.sqrt(6)/2) : child.getGraphics().getRadius();
+        var radius = (child.getGender && child.getGender() == "U") ? PedigreeEditor.attributes.radius * (Math.sqrt(6)/2) : child.getGraphics().getRadius();
         var topCoordinate = childY - radius;
         var xDistance = (childX - junctionX);
         var yDistance = (childY - junctionY)/2;

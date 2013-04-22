@@ -5,27 +5,6 @@
  */
 var PedigreeEditor = Class.create({
 
-//Graphical attributes for graphical elements in the editor
-    attributes: {
-        radius: 40,
-        unbornShape: {'font-size': 50, 'font-family': 'Cambria'},
-        nodeShape: {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
-        boxOnHover : {fill: "gray", stroke: "none",opacity: 1, "fill-opacity":.25},
-        menuBtnIcon : {fill: "#1F1F1F", stroke: "none"},
-        deleteBtnIcon : {fill: "#990000", stroke: "none"},
-        btnMaskHoverOn : {opacity:.6, stroke: 'none'},
-        btnMaskHoverOff : {opacity:0},
-        btnMaskClick: {opacity:1},
-        orbHue : .53,
-        phShape: {fill: "white","fill-opacity": 0, "stroke": 'black', "stroke-dasharray": "- "},
-        dragMeLabel: {'font-size': 14, 'font-family': 'Tahoma'},
-        descendantGroupLabel: {'font-size': 20, 'font-family': 'Tahoma'},
-        label: {'font-size': 18, 'font-family': 'Cambria'},
-        disorderShapes: {},
-        partnershipRadius: 6,
-        partnershipLines : {"stroke-width": 2, stroke : '#2E2E56'}
-    },
-
     /*
      * Initializes the workspace, menu, top menu-bar, child creation bubble, legend, layout and the Raphael elements.
      */
@@ -314,6 +293,27 @@ var PedigreeEditor = Class.create({
 });
 
 var editor;
+
+//attributes for graphical elements in the editor
+PedigreeEditor.attributes = {
+    radius: 40,
+    unbornShape: {'font-size': 50, 'font-family': 'Cambria'},
+    nodeShape: {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
+    boxOnHover : {fill: "gray", stroke: "none",opacity: 1, "fill-opacity":.25},
+    menuBtnIcon : {fill: "#1F1F1F", stroke: "none"},
+    deleteBtnIcon : {fill: "#990000", stroke: "none"},
+    btnMaskHoverOn : {opacity:.6, stroke: 'none'},
+    btnMaskHoverOff : {opacity:0},
+    btnMaskClick: {opacity:1},
+    orbHue : .53,
+        phShape: {fill: "white","fill-opacity": 0, "stroke": 'black', "stroke-dasharray": "- "},
+    dragMeLabel: {'font-size': 14, 'font-family': 'Tahoma'},
+    descendantGroupLabel: {'font-size': 20, 'font-family': 'Tahoma'},
+    label: {'font-size': 18, 'font-family': 'Cambria'},
+    disorderShapes: {},
+    partnershipRadius: 6,
+        partnershipLines : {"stroke-width": 2, stroke : '#2E2E56'}
+};
 
 document.observe("dom:loaded",function() {
     editor = new PedigreeEditor();

@@ -17,7 +17,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      * @param y the y coordinate on the Raphael canvas at which the hoverbox will be centered
      */
     initialize: function($super, partnership, junctionX, junctionY, shapes) {
-        var radius = editor.attributes.radius;
+        var radius = PedigreeEditor.attributes.radius;
         this._isMenuToggled = false;
         $super(partnership, junctionX - radius/1.5, junctionY - radius/2, radius*(4/3), radius*1.7, junctionX, junctionY, shapes);
     },
@@ -26,7 +26,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      * Creates four handles around the node. Returns a Raphael set.
      */
     generateHandles: function($super) {
-        this._downHandle = this.generateHandle('child', this.getNodeX(), this.getNodeY() + (editor.attributes.radius *.8));
+        this._downHandle = this.generateHandle('child', this.getNodeX(), this.getNodeY() + (PedigreeEditor.attributes.radius *.8));
         return $super().push(this._downHandle);
     },
 
@@ -94,10 +94,10 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         }
         else if (!isDrag && handleType == "child") {
             //this.getNode().createChild();
-            var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + editor.attributes.radius * 2.3));
-            editor.getNodeTypeOptions().show(this.getNode(), position.x, position.y);
+            var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.radius * 2.3));
+            editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
             this.disable();
-            curHovered && curHovered.getGraphics().getHoverBox().getBoxOnHover().attr(editor.attributes.boxOnHover);
+            curHovered && curHovered.getGraphics().getHoverBox().getBoxOnHover().attr(PedigreeEditor.attributes.boxOnHover);
         }
         editor.getGraph().setCurrentHoveredNode(null);
         editor.getGraph().setCurrentDraggable(null);

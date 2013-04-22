@@ -168,10 +168,10 @@ var ChildlessBehaviorVisuals = {
             y = this.getY(),
             r, lowY;
         if(this.getNode().getType() == "Partnership") {
-            r = editor.attributes.partnershipRadius;
+            r = PedigreeEditor.attributes.partnershipRadius;
             lowY = 2 * r + y;
         } else {
-            r = editor.attributes.radius;
+            r = PedigreeEditor.attributes.radius;
             lowY = 1.6 * r + y;
         }
 
@@ -203,7 +203,7 @@ var ChildlessBehaviorVisuals = {
         var text =  "";
         this.getNode().getChildlessReason() && (text += this.getNode().getChildlessReason());
         if(text.strip() != '') {
-            this._childlessStatusLabel = editor.getPaper().text(this.getX(), this.getY() + editor.attributes.radius * 2, "(" + text.slice(0, 14) +")" );
+            this._childlessStatusLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius * 2, "(" + text.slice(0, 14) +")" );
             this._childlessStatusLabel.attr({'font-size': 18, 'font-family': 'Cambria'});
         }
         else {

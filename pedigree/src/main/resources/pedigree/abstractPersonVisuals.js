@@ -11,16 +11,16 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, node, x, y) {
         this._icon = null;
-        this._radius = editor.attributes.radius;
+        this._radius = PedigreeEditor.attributes.radius;
         $super(node, x, y);
-        this._width = editor.attributes.radius * 4;
+        this._width = PedigreeEditor.attributes.radius * 4;
         this._adoptedShape = null;
         this.setIcon();
         this._highlightBox = editor.getPaper().rect(this.getX()-(this._width/2), this.getY()-(this._width/2),
-            this._width, this._width, 5).attr(editor.attributes.boxOnHover);
+            this._width, this._width, 5).attr(PedigreeEditor.attributes.boxOnHover);
         this._highlightBox.attr({fill: 'black', opacity: 0, 'fill-opacity': 0});
         this._highlightBox.insertBefore(this.getIcon().flatten());
-        this._idLabel = editor.getPaper().text(x, y,  editor.DEBUG_MODE ? node.getID() : "").attr(editor.attributes.dragMeLabel).insertAfter(this._icon.flatten());
+        this._idLabel = editor.getPaper().text(x, y,  editor.DEBUG_MODE ? node.getID() : "").attr(PedigreeEditor.attributes.dragMeLabel).insertAfter(this._icon.flatten());
     },
 
     /*
@@ -98,7 +98,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      */
     drawAdoptedShape: function() {
         this._adoptedShape && this._adoptedShape.remove();
-        var r = editor.attributes.radius,
+        var r = PedigreeEditor.attributes.radius,
             x1 = this.getX() - ((0.8) * r),
             x2 = this.getX() + ((0.8) * r),
             y = this.getY() - ((1.3) * r),
@@ -170,15 +170,15 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         var shape,
             x = this.getX(),
             y = this.getY(),
-            radius = this._radius = this._radius = (this.getNode().getGender() == 'U') ? editor.attributes.radius * (Math.sqrt(3)/2) : editor.attributes.radius;
+            radius = this._radius = this._radius = (this.getNode().getGender() == 'U') ? PedigreeEditor.attributes.radius * (Math.sqrt(3)/2) : PedigreeEditor.attributes.radius;
 
         if (this.getNode().getGender() == 'F') {
-            shape = editor.getPaper().circle(x, y, editor.attributes.radius);
+            shape = editor.getPaper().circle(x, y, PedigreeEditor.attributes.radius);
         }
         else {
             shape = editor.getPaper().rect(x - radius, y - radius, radius * 2, radius * 2);
         }
-        shape.attr(editor.attributes.nodeShape);
+        shape.attr(PedigreeEditor.attributes.nodeShape);
         shape = (this.getNode().getGender() == 'U') ? shape.transform("...r45") : shape;
         this._genderShape = shape;
 

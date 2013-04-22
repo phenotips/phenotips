@@ -18,7 +18,7 @@ var GroupHoverbox = Class.create(AbstractHoverbox, {
      * @param centerY the y coordinate on the Raphael canvas at which the hoverbox will be centered
      */
     initialize: function($super, personNode, centerX, centerY, nodeShapes) {
-        var radius = editor.attributes.radius * 2;
+        var radius = PedigreeEditor.attributes.radius * 2;
         $super(personNode, centerX - radius, centerY - radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);
        },
 

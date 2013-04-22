@@ -11,9 +11,9 @@ var PersonGroupVisuals = Class.create(AbstractPersonVisuals, {
 
     initialize: function($super, node, x, y) {
         $super(node,x,y);
-        var label = editor.getPaper().text(x, y, "n").attr(editor.attributes.descendantGroupLabel);
-        label.insertAfter(this._icon.flatten());
-        this._icon.push(label);
+        this.label = editor.getPaper().text(x, y, "n").attr(PedigreeEditor.attributes.descendantGroupLabel);
+        this.label.insertAfter(this._icon.flatten());
+        this._icon.push(this.label);
         this._hoverBox = new GroupHoverbox(node, x, y, this._icon);
     },
 

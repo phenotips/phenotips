@@ -20,9 +20,9 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
      */
     setGenderSymbol: function($super) {
         $super();
-        var shape = this.getGenderSymbol().attr(editor.attributes.phShape);
-        var text = editor.getPaper().text(this.getX(), this.getY() - editor.attributes.radius/20, editor.DEBUG_MODE ? "" : "CLICK ME \nOR \nDRAG ME");
-        text.attr(editor.attributes.dragMeLabel);
+        var shape = this.getGenderSymbol().attr(PedigreeEditor.attributes.phShape);
+        var text = editor.getPaper().text(this.getX(), this.getY() - PedigreeEditor.attributes.radius/20, editor.DEBUG_MODE ? "" : "CLICK ME \nOR \nDRAG ME");
+        text.attr(PedigreeEditor.attributes.dragMeLabel);
         shape.push(text);
         shape.attr("cursor", "pointer");
         shape.ox = shape.getBBox().x;
@@ -94,9 +94,9 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
                     me.setPos(absOx, absOy, false);
                     if(me.getNode().getGender() == "U") {
                         var x = me.getX(),
-                            y = me.getY() + editor.attributes.radius,
+                            y = me.getY() + PedigreeEditor.attributes.radius,
                             position = editor.getWorkspace().canvasToDiv(x, y);
-                        editor.getNodeTypeOptions().show(me.getNode(), position.x, position.y);
+                        editor.getNodetypeSelectionBubble().show(me.getNode(), position.x, position.y);
                     }
                     else {
                         me.getNode().createNodeAction("Person", me.getNode().getGender());

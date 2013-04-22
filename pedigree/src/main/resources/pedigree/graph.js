@@ -190,7 +190,7 @@ var Graph = Class.create({
                 function() {
                     me._currentHoveredNode = node;
                     node.getGraphics().getHoverBox().setHovered(true);
-                    node.getGraphics().getHoverBox().getBoxOnHover().attr(editor.attributes.boxOnHover);
+                    node.getGraphics().getHoverBox().getBoxOnHover().attr(PedigreeEditor.attributes.boxOnHover);
 
                     if(me.getCurrentDraggable().getType() == 'PlaceHolder' && me.getCurrentDraggable().canMergeWith(node)) {
                         me.getCurrentDraggable().validHoveredNode = node;
@@ -221,7 +221,7 @@ var Graph = Class.create({
                 function() {
                     me.getCurrentDraggable() && (me.getCurrentDraggable().validHoveredNode = null);
                     node.getGraphics().getHoverBox().setHovered(false);
-                    node.getGraphics().getHoverBox().getBoxOnHover().attr(editor.attributes.boxOnHover).attr('opacity', 0);
+                    node.getGraphics().getHoverBox().getBoxOnHover().attr(PedigreeEditor.attributes.boxOnHover).attr('opacity', 0);
                     me._currentHoveredNode = null;
                     node.validPartnerSelected = node.validChildSelected =  node.validParentSelected = node.validParentsSelected = false;
                 });
