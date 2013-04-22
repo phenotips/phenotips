@@ -1,21 +1,22 @@
-/*
+
+/**
  * The main class of the Pedigree Editor, responsible for initializing all the basic elements of the app.
  * Contains wrapper methods for the most commonly used functions.
  * This class should be initialized only once.
+ *
+ * @class PedigreeEditor
+ * @constructor
  */
 var PedigreeEditor = Class.create({
-
-    /*
-     * Initializes the workspace, menu, top menu-bar, child creation bubble, legend, layout and the Raphael elements.
-     */
     initialize: function() {
         this.DEBUG_MODE = false;
         window.editor = this;
 
+        //initialize the elements of the app
         this._workspace = new Workspace();
         this._nodeMenu = this.generateNodeMenu();
         this._partnershipMenu = this.generatePartnershipMenu();
-        this._nodeTypeOptions = new NodeTypeOptions();
+        this._nodetypeSelectionBubble = new NodetypeSelectionBubble();
         this._legend = new Legend();
         this._nodeIndex = new NodeIndex();
         this._graph = new Graph();
@@ -25,6 +26,7 @@ var PedigreeEditor = Class.create({
         this._templateSelector = new TemplateSelector();
         this._saveLoadEngine.load();
 
+        //attach actions to buttons on the top bar
         var undoButton = $('action-undo');
         undoButton && undoButton.on("click", function(event) {
             editor.getActionStack().undo();
@@ -50,26 +52,30 @@ var PedigreeEditor = Class.create({
         });
     },
 
+    /**
+     * Returns the graph node with the corresponding nodeID
+     * @method getNode
+     * @param {Number} nodeID The id of the desired node
+     * @return {AbstractNode} the node whose id is nodeID
+     */
     getNode: function(nodeID) {
         return editor.getGraph().getNodeMap()[nodeID];
     },
 
-    /*
-     * Returns the Graph object, responsible for managing nodes in the editor
+    /**
+     * @method getGraph
+     * @return {Graph} (responsible for managing nodes in the editor)
      */
     getGraph: function() {
         return this._graph;
     },
 
+    /**
+     * @method getActionStack
+     * @return {ActionStack} (responsible undoing and redoing actions)
+     */
     getActionStack: function() {
         return this._actionStack;
-    },
-
-    /*
-     * Returns the menu object
-     */
-    getNodeMenu: function() {
-        return this._nodeMenu;
     },
 
     /**
@@ -80,47 +86,47 @@ var PedigreeEditor = Class.create({
         return this._nodetypeSelectionBubble;
     },
 
-    /*
-     * Returns the NodeIndex object responsible for the graphical layout of nodes
+    /**
+     * @method getNodeIndex
+     * @return {NodeIndex} (indexes nodes and arranges the layout)
      */
     getNodeIndex: function() {
         return this._nodeIndex;
     },
 
-    /*
-     * Returns the Workspace object responsible managing the canvas
+    /**
+     * @method getWorkspace
+     * @return {Workspace}
      */
     getWorkspace: function() {
         return this._workspace;
     },
 
-    /*
-     * Returns the Legend object responsible for managing and displaying the disorder legend
+    /**
+     * @method getLegend
+     * @return {Legend} Responsible for managing and displaying the disorder legend
      */
     getLegend: function() {
         return this._legend;
     },
 
-    /*
-     * Returns the Raphael paper object
+    /**
+     * @method getPaper
+     * @return {Workspace.paper} Raphael paper element
      */
     getPaper: function() {
         return this.getWorkspace().getPaper();
     },
 
     /**
-     * Returns the engine for saving and loading
-     *
      * @method getSaveLoadEngine
-     * @return {SaveLoadEngine}
+     * @return {SaveLoadEngine} Engine responsible for saving and loading operations
      */
     getSaveLoadEngine: function() {
         return this._saveLoadEngine;
     },
 
     /**
-     * Returns the user triggered template selector
-     *
      * @method getTemplateSelector
      * @return {TemplateSelector}
      */
@@ -128,8 +134,11 @@ var PedigreeEditor = Class.create({
         return this._templateSelector
     },
 
-    /*
-     * Creates and returns the menu for Person nodes
+    /**
+     * Creates the context menu for Person nodes
+     *
+     * @method generateNodeMenu
+     * @return {NodeMenu}
      */
     generateNodeMenu: function() {
         var _this = this;
@@ -236,15 +245,19 @@ var PedigreeEditor = Class.create({
         ]);
     },
 
-    /*
-     * Returns the menu of the partnership node
+    /**
+     * @method getNodeMenu
+     * @return {NodeMenu} Context menu for nodes
      */
-    getPartnershipMenu: function() {
-        return this._partnershipMenu;
+    getNodeMenu: function() {
+        return this._nodeMenu;
     },
 
-    /*
-     * Creates and returns the menu for Partnership nodes
+    /**
+     * Creates the context menu for Partnership nodes
+     *
+     * @method generatePartnershipMenu
+     * @return {NodeMenu}
      */
     generatePartnershipMenu: function() {
         var _this = this;
@@ -274,21 +287,34 @@ var PedigreeEditor = Class.create({
         ]);
     },
 
+    /**
+     * @method getPartnershipMenu
+     * @return {NodeMenu} The context menu for Partnership nodes
+     */
+    getPartnershipMenu: function() {
+        return this._partnershipMenu;
+    },
+
+    /**
+     * Starts a timer to save the application state every 30 seconds
+     *
+     * @method initializeSave
+     */
     initializeSave: function() {
         setInterval(function(){editor.getGraph().serialize()},30000);
     },
 
-    // WRAPPERS FOR THE NODE INDEX & GRID FUNCITONS
-    getGridUnitX : function () {
-      return this.getNodeIndex().gridUnit.x;
-    },
-
-    getGridUnitY : function () {
-      return this.getNodeIndex().gridUnit.y;
-    },
-
-    findPosition : function (relativeNodePosition, ids) {
-      return this.getNodeIndex().findPosition(relativeNodePosition, ids);
+    /**
+     * Find the best position to insert one or more new neighbors for an existing node
+     *
+     * @method findPosition
+     * @param relativePosition an object with one field, which can be either 'above', 'below', 'side', or 'join', whose value indicated the id of a node
+     * @param identifiers an array of new ids for which positions must be found
+     *
+     * @return an object where each field is one of the ids given as input, and the value is the point where that node should be placed
+     */
+    findPosition : function (relativePosition, identifiers) {
+      return this.getNodeIndex().findPosition(relativePosition, identifiers);
     }
 });
 
