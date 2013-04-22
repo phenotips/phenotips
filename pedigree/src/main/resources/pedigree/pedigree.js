@@ -93,11 +93,12 @@ var PedigreeEditor = Class.create({
         return this._nodeMenu;
     },
 
-    /*
-     * Returns the NodeTypeOptions object
+    /**
+     * @method getNodetypeSelectionBubble
+     * @return {NodetypeSelectionBubble} (floating window with initialization options for new nodes)
      */
-    getNodeTypeOptions: function() {
-        return this._nodeTypeOptions;
+    getNodetypeSelectionBubble: function() {
+        return this._nodetypeSelectionBubble;
     },
 
     /*
