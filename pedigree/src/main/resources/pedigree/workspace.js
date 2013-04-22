@@ -6,7 +6,7 @@
 
 var Workspace = Class.create({
 
-    initialize: function(graphics) {
+    initialize: function() {
         var me = this;
         this.canvas = new Element('div', {'id' : 'canvas'});
         this.workArea = new Element('div', {'id' : 'work-area'}).update(this.canvas);
