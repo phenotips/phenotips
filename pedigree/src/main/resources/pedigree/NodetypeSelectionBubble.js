@@ -251,11 +251,11 @@ var NodetypeSelectionBubble = Class.create({
         return !!this._node;
     },
 
-    decrementNumNodes: function() {
+    _decrementNumNodes: function() {
         return this.numPersonGroupNodes > 1 ? --this.numPersonGroupNodes : this.numPersonGroupNodes;
     },
 
-    incrementNumNodes: function() {
+    _incrementNumNodes: function() {
         return this.numPersonGroupNodes < 9 ? ++this.numPersonGroupNodes : this.numPersonGroupNodes;
     },
 
@@ -280,8 +280,8 @@ var NodetypeSelectionBubble = Class.create({
         var plusBtn = new Element("span", {
             "class": 'plus-button'
         }).update("+");
-        minusBtn.observe("click", function() {me.decrementNumNodes(); svgContainer.update(generateIcon())});
-        plusBtn.observe("click", function() {me.incrementNumNodes(); svgContainer.update(generateIcon())});
+        minusBtn.observe("click", function() {me._decrementNumNodes(); svgContainer.update(generateIcon())});
+        plusBtn.observe("click", function() {me._incrementNumNodes(); svgContainer.update(generateIcon())});
         createBtn.observe("click", function() {
             me._node.createNodeAction("PersonGroup", "U").setNumPersons(me.numPersonGroupNodes);
         });
@@ -313,8 +313,8 @@ var NodetypeSelectionBubble = Class.create({
         var plusBtn = new Element("span", {
             "class": 'plus-button'
         }).update("+");
-        minusBtn.observe("click", function() {me.decrementNumNodes(); svgContainer.update(generateIcon())});
-        plusBtn.observe("click", function() {me.incrementNumNodes(); svgContainer.update(generateIcon())});
+        minusBtn.observe("click", function() {me._decrementNumNodes(); svgContainer.update(generateIcon())});
+        plusBtn.observe("click", function() {me._incrementNumNodes(); svgContainer.update(generateIcon())});
         createBtn.observe("click", function() {
             me._node.createNodeAction("PersonGroup", "U").setNumPersons(me.numPersonGroupNodes);
         });
