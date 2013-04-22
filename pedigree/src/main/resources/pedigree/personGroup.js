@@ -47,7 +47,6 @@ var PersonGroup = Class.create(AbstractPerson, {
     setNumPersons: function(numPersons) {
         this._numPersons = numPersons;
         this.getGraphics().setNumPersons(numPersons);
-        return numPersons;
     },
 
     getNumPersons: function() {
