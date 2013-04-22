@@ -1,7 +1,10 @@
-/*
- * Workspace is responsible for initializing the Raphael canvas, the zoom/pan controls and the menu bar
- * on the top. It includes functions for managing the Raphael paper object and coordinate transformation methods
+/**
+ * Workspace contains the Raphael canvas, the zoom/pan controls and the menu bar
+ * on the top. The class includes functions for managing the Raphael paper object and coordinate transformation methods
  * for taking pan and zoom levels into account.
+ *
+ * @class Workspace
+ * @constructor
  */
 
 var Workspace = Class.create({
@@ -50,38 +53,51 @@ var Workspace = Class.create({
         me.background.drag(move, start, end);
     },
 
-    /*
+    /**
      * Returns the Raphael paper object.
+     *
+     * @method getPaper
+     * @return {Object} Raphael Paper element
      */
     getPaper: function() {
         return this._paper;
     },
 
-    /*
-     * Returns the div element containing the Workspace elements.
+    /**
+     * Returns the div element containing everything except the top menu bar
+     *
+     * @method getWorkArea
+     * @return {HTMLElement}
      */
     getWorkArea: function() {
         return this.workArea;
     },
 
-    /*
-     * Returns the width of the canvas
+    /**
+     * Returns width of the work area
+     *
+     * @method getWidth
+     * @return {Number}
      */
     getWidth: function() {
         return this.width;
     },
 
-    /*
-     * Returns the height of the canvas
+    /**
+     * Returns height of the work area
+     *
+     * @method getHeight
+     * @return {Number}
      */
     getHeight: function() {
         return this.height;
     },
 
-    /*
-     * Adjust the canvas viewbox by the given zoom coefficient
+    /**
+     * Adjusts the canvas viewbox to the given zoom coefficient
      *
-     * @param zoomCoefficient the fraction which will be applied to the original zoom level
+     * @method zoom
+     * @param {Number} zoomCoefficient The zooming ratio
      */
     zoom: function(zoomCoefficient) {
         zoomCoefficient += .6;
@@ -94,8 +110,10 @@ var Workspace = Class.create({
         this.background.attr({x: this.viewBoxX, y: this.viewBoxY, width: newWidth, height: newHeight});
     },
 
-    /*
+    /**
      * Creates the menu on the top
+     *
+     * @method generateTopMenu
      */
     generateTopMenu: function() {
         var menu = new Element('div', {'id' : 'editor-menu'});
@@ -137,8 +155,10 @@ var Workspace = Class.create({
         submenus.each(_createSubmenu);
     },
 
-    /*
+    /**
      * Creates the controls for panning and zooming
+     *
+     * @method generateViewControls
      */
     generateViewControls : function() {
         var _this = this;
@@ -215,12 +235,14 @@ var Workspace = Class.create({
         this.getWorkArea().insert(this.__controls);
     },
 
-    /*
+    /**
      * Converts the coordinates relative to the Raphael canvas to coordinates relative to the canvas div
      * and returns them
      *
-     * @param canvasX the x coordinate relative to the Raphael canvas (ie with pan/zoom transformations)
-     * @param canvasY the y coordinate relative to the Raphael canvas (ie with pan/zoom transformations)
+     * @method canvasToDiv
+     * @param {Number} canvasX The x coordinate relative to the Raphael canvas (ie with pan/zoom transformations)
+     * @param {Number} canvasY The y coordinate relative to the Raphael canvas (ie with pan/zoom transformations)
+     * @return {{x: number, y: number}} Object with coordinates
      */
     canvasToDiv: function(canvasX,canvasY) {
         return {
@@ -229,12 +251,14 @@ var Workspace = Class.create({
         }
     },
 
-    /*
+    /**
      * Converts the coordinates relative to the canvas div to coordinates relative to the Raphael canvas
      * by applying zoom/pan transformations and returns them.
      *
-     * @param divX the x coordinate relative to the canvas div (ie without pan/zoom transformations)
-     * @param divY the y coordinate relative to the canvas div (ie without pan/zoom transformations)
+     * @method divToCanvas
+     * @param {Number} divX The x coordinate relative to the canvas
+     * @param {Number} divY The y coordinate relative to the canvas
+     * @return {{x: number, y: number}} Object with coordinates
      */
     divToCanvas: function(divX,divY) {
         return {
@@ -243,12 +267,14 @@ var Workspace = Class.create({
         }
     },
 
-    /*
+    /**
      * Converts the coordinates relative to the browser viewport to coordinates relative to the canvas div,
-     * and returns them
+     * and returns them.
      *
-     * @param absX the x coordinate relative to the browser viewport
-     * @param absY the y coordinate relative to the browser viewport
+     * @method viewportToDiv
+     * @param {Number} absX The x coordinate relative to the viewport
+     * @param {Number} absY The y coordinate relative to the viewport
+     * @return {{x: number, y: number}} Object with coordinates
      */
     viewportToDiv : function (absX, absY) {
         return {
@@ -257,11 +283,12 @@ var Workspace = Class.create({
         };
     },
 
-    /*
+    /**
      * Animates a transformation of the viewbox to the given coordinate
      *
-     * @param x the x coordinate (relative to the Raphael canvas)
-     * @param y the y coordinate (relative to the Raphael canvas)
+     * @method panTo
+     * @param {number} x The x coordinate relative to the Raphael canvas
+     * @param {number} y The y coordinate relative to the Raphael canvas
      */
     panTo: function(x, y) {
         var me = this,
@@ -274,7 +301,8 @@ var Workspace = Class.create({
             xStep = xDisplacement/(fps*numSeconds),
             yStep = yDisplacement/(fps*numSeconds);
         var progress = 0;
-        function draw() {
+
+        (function draw() {
             setTimeout(function() {
                 if(progress++ < fps * numSeconds) {
                     me.viewBoxX += xStep;
@@ -283,12 +311,13 @@ var Workspace = Class.create({
                     draw();
                 }
             }, 1000 / fps);
-        }
-        draw();
+        })();
     },
 
-    /*
+    /**
      * Adjusts the canvas size to the current viewport dimensions.
+     *
+     * @method adjustSizeToScreen
      */
     adjustSizeToScreen : function() {
         var screenDimensions = document.viewport.getDimensions();
@@ -302,6 +331,12 @@ var Workspace = Class.create({
         }
     },
 
+    /**
+     * Pans the canvas to put the node with the given id at the center.
+     *
+     * @method adjustSizeToScreen
+     * @param {number} nodeID The id of the node
+     */
     centerAroundNode: function(nodeID) {
         var node = editor.getGraph().getNodeMap()[nodeID];
         if(node) {
@@ -313,6 +348,11 @@ var Workspace = Class.create({
         }
     },
 
+    /**
+     * Centers the canvas around the proband and resets the zoom to the original value.
+     *
+     * @method resetZoomPan
+     */
     resetZoomPan: function() {
         this.centerAroundNode(1);
         this.zoom(1.2000000000000002-.6);
