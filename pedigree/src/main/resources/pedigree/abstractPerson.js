@@ -352,7 +352,9 @@ var AbstractPerson = Class.create(AbstractNode, {
     addPartnership: function(partnership) {
        if(this.getPartners().indexOf(partnership.getPartnerOf(this)) == -1) {
            this._partnershipNodes.push(partnership);
+           return partnership;
        }
+       return null;
     },
 
     /**
@@ -371,6 +373,7 @@ var AbstractPerson = Class.create(AbstractNode, {
             if(target)
                 this._partnershipNodes = this._partnershipNodes.without(target);
         }
+        return partnership;
     },
 
     /**
@@ -392,6 +395,7 @@ var AbstractPerson = Class.create(AbstractNode, {
             //document.fire('pedigree:parents:added', {'node' : partnership, 'relatedNodes' : [mother, father], 'sourceNode' : this});
             return this.addParents(partnership);
         }
+        return null;
     },
 
     /**
