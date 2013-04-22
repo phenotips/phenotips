@@ -1,5 +1,7 @@
 ## Current Build Status ##
-[![Build Status](https://travis-ci.org/compbio-UofT/phenotips.png)](https://travis-ci.org/compbio-UofT/phenotips.png)
+Travis CI :[![Build Status](https://travis-ci.org/compbio-UofT/phenotips.png)](https://travis-ci.org/compbio-UofT/phenotips.png)
+
+Jenkins CI : [![Build Status](http://ci.cs.toronto.edu/jenkins/job/phenotips/badge/icon)](http://ci.cs.toronto.edu/jenkins/job/phenotips/)
 
 # About #
 
