@@ -1,12 +1,15 @@
-/*
+/**
  * PersonGroup is node that represents a grouping of an unknown number of nodes ("n"). This type of
  * node is usually used to indicate the existence of relatives without providing any other information.
  * Therefore the options for this node are limited.
  *
- * @param x the x coordinate on the Raphael canvas at which the node drawing will be centered
- * @param the y coordinate on the Raphael canvas at which the node drawing will be centered
- * @param gender either 'M', 'F' or 'U' depending on the gender
- * @param id a unique ID number
+ * @class PersonGroup
+ * @constructor
+ *
+ * @param {Number} x The x coordinate on the Raphael canvas at which the node drawing will be centered
+ * @param {Number} y The y coordinate on the Raphael canvas at which the node drawing will be centered
+ * @param {String} gender Either 'M', 'F' or 'U' depending on the gender
+ * @param {Number} id Unique ID number
  */
 
 var PersonGroup = Class.create(AbstractPerson, {
@@ -17,22 +20,27 @@ var PersonGroup = Class.create(AbstractPerson, {
         this._numPersons = 1;
     },
 
-    /*
-     * Initializes the object responsible for creating graphics for this PlaceHolder
+    /**
+     * Initializes the object responsible for creating graphics for this PersonGroup
      *
-     * @param x the x coordinate on the canvas at which the node is centered
-     * @param y the y coordinate on the canvas at which the node is centered
+     * @method generateGraphics
+     * @param {Number} x The x coordinate of hte PersonGroup Node
+     * @param {Number} y The y coordinate of hte PersonGroup Node
+     * @returns {PersonGroupVisuals}
      */
     generateGraphics: function(x, y) {
         return new PersonGroupVisuals(this, x, y);
     },
 
-    /*
+    /**
      * Deletes this node, it's placeholder partners and children and optionally
      * removes all the other nodes that are unrelated to the proband node.
      *
-     * @param isRecursive set to true if you want to remove related nodes that are
+     * @method remove
+     * @param [$super]
+     * @param {boolean} isRecursive Set to true if you want to remove related nodes that are
      * not connected to the proband
+     * @param {boolean} skipConfirmation If true, will not display a confirmation pop-up
      */
     remove: function($super, isRecursive, skipConfirmation) {
         var parents = this.getParentPartnership();
@@ -44,11 +52,23 @@ var PersonGroup = Class.create(AbstractPerson, {
         return $super(isRecursive, skipConfirmation);
     },
 
+    /**
+     * Changes the number of people who are in this PersonGroup
+     *
+     * @method setNumPersons
+     * @param {Number} numPersons The number of people in this grouping
+     */
     setNumPersons: function(numPersons) {
         this._numPersons = numPersons;
         this.getGraphics().setNumPersons(numPersons);
     },
 
+    /**
+     * Returns the number of people who are in this PersonGroup
+     *
+     * @method getNumPersons
+     * @return {Number}
+     */
     getNumPersons: function() {
         return this._numPersons;
     },
@@ -78,6 +98,7 @@ var PersonGroup = Class.create(AbstractPerson, {
      * Applies the properties found in info to this node.
      *
      * @method loadInfo
+     * @param [$super]
      * @param info {Object} and object in the form
      *
      {
