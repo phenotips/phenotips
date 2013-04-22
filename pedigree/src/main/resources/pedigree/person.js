@@ -176,7 +176,8 @@ var Person = Class.create(AbstractPerson, {
     },
 
     addChildAction: function(child) {
-        if(this.addChild(child)) {
+        var child;
+        if(child = this.addChild(child)) {
             var childID = child.getID(),
                 nodeID = this.getID(),
                 p = child.getParentPregnancy(),
@@ -207,8 +208,8 @@ var Person = Class.create(AbstractPerson, {
     },
 
     createParentsAction: function() {
-        var partnership = this.createParents();
-        if(partnership) {
+        var partnership;
+        if(partnership = this.createParents()) {
             var nodeID = this.getID(),
                 part = partnership.getInfo(),
                 preg = partnership.getPregnancies()[0].getInfo(),
@@ -245,7 +246,8 @@ var Person = Class.create(AbstractPerson, {
     },
 
     addParentsAction: function(partnership) {
-        if(this.addParents(partnership)) {
+        var parentPartnership;
+        if(parentPartnership = this.addParents(partnership)) {
             var nodeID = this.getID(),
                 partID = partnership.getID(),
                 preg = this.getParentPregnancy().getInfo();
@@ -268,33 +270,33 @@ var Person = Class.create(AbstractPerson, {
     },
 
     addParentAction: function(parent) {
-        var partnership = this.addParent(parent);
-        if(partnership && parent) {
+        var partnership;
+        if(partnership = this.addParent(parent)) {
             var parentID = parent.getID(),
                 nodeID = this.getID(),
                 part = partnership.getInfo(),
                 partner = partnership.getPartnerOf(parent).getInfo(),
                 preg = partnership.getPregnancies()[0].getInfo();
+
+            var redoFunct = function() {
+                var child = editor.getGraph().getNodeMap()[nodeID];
+                var par = editor.getGraph().getNodeMap()[parentID];
+                if(child && par) {
+                    var ph =  editor.getGraph().addPlaceHolder(partner.x, partner.y, partner.gender, partner.id);
+                    var partnership = editor.getGraph().addPartnership(part.x, part.y, par, ph, part.id);
+                    var pregnancy = editor.getGraph().addPregnancy(preg.x, preg.y, partnership, preg.id);
+                    pregnancy.addChild(child);
+                }
+            };
+            var undoFunct = function() {
+                var partnership = editor.getGraph().getNodeMap()[part.id];
+                partnership && partnership.remove();
+                var ph = editor.getGraph().getNodeMap()[partner.id];
+                ph && ph.remove(false);
+
+            };
+            editor.getActionStack().push({undo: undoFunct, redo: redoFunct});
         }
-
-        var redoFunct = function() {
-            var child = editor.getGraph().getNodeMap()[nodeID];
-            var par = editor.getGraph().getNodeMap()[parentID];
-            if(child && par) {
-                var ph =  editor.getGraph().addPlaceHolder(partner.x, partner.y, partner.gender, partner.id);
-                var partnership = editor.getGraph().addPartnership(part.x, part.y, par, ph, part.id);
-                var pregnancy = editor.getGraph().addPregnancy(preg.x, preg.y, partnership, preg.id);
-                pregnancy.addChild(child);
-            }
-        };
-        var undoFunct = function() {
-            var partnership = editor.getGraph().getNodeMap()[part.id];
-            partnership && partnership.remove();
-            var ph = editor.getGraph().getNodeMap()[partner.id];
-            ph && ph.remove(false);
-
-        };
-        editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
         return partnership;
     },
 
