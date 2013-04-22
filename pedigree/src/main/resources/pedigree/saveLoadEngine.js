@@ -192,6 +192,7 @@ var SaveLoadEngine = Class.create( {
             return (node.id && node.type && node.x && node.y)
         };
         var people = graphObj.persons.concat(graphObj.proband, graphObj.personGroups, graphObj.placeHolders);
+        var foundProband;
         for (var i = 0; i < people.length; i++) {
             if(!validBasics(people[i]) || !people[i].gender)
                 return false;
