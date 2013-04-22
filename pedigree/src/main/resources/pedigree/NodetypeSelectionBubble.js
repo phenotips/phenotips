@@ -1,7 +1,8 @@
-/*
- * NodeTypeOptions is the bubble that appears when the child creation handle bubble is clicked.
- * The user chooses a gender or property from the bubble, and creates the child with the corresponding
- * property.
+/**
+ * The UI element ("bubble") that contains options for the creation of a new node.
+ *
+ * @class NodetypeSelectionBubble
+ * @constructor
  */
 
 var NodetypeSelectionBubble = Class.create({
@@ -97,11 +98,13 @@ var NodetypeSelectionBubble = Class.create({
 
     },
 
-    /*
-     * Creates a button in the bubble corresponding do the defenition from the skeleton
+    /**
+     * Creates a button in the bubble corresponding do the definition from the skeleton
      *
-     * @param data the definition object from the bubble skeleton
-     * @param callback the function executed by the button
+     * @method _createOption
+     * @param {Object} data The definition object from the bubble skeleton
+     * @return {HTMLElement} The span containing the button
+     * @private
      */
     _createOption : function(data) {
         var i = 1;
@@ -126,6 +129,13 @@ var NodetypeSelectionBubble = Class.create({
         return container;
     },
 
+    /**
+     * Creates an arrow button that expands or shrinks the bubble
+     *
+     * @method generateExpandArrow
+     * @param {Object} data The definition object from the bubble skeleton
+     * @return {HTMLElement} The span containing the button
+     */
     generateExpandArrow: function(data) {
         var expandArrow = new Element('span', {
             'class' : 'expand-arrow collapsed',
@@ -158,18 +168,24 @@ var NodetypeSelectionBubble = Class.create({
         return expandArrow;
     },
 
-    /*
+    /**
      * Creates a line to separate buttons in the bubble
+     *
+     * @method _generateSeparator
+     * @return {HTMLElement}
+     * @private
      */
     _generateSeparator : function() {
         return new Element('span', {'class' : 'separator'}).update(' | ');
     },
 
-    /*
+    /**
      * Repositions the bubble to the given coordinates coordinates
      *
-     * @param x the x coordinate in the viewport
-     * @param y the y coordinate in the viewport
+     * @method _positionAt
+     * @param {Number} x The x coordinate in the viewport
+     * @param {Number} y The y coordinate in the viewport
+     * @private
      */
     _positionAt : function(x, y) {
         y = Math.round(y);
@@ -188,12 +204,13 @@ var NodetypeSelectionBubble = Class.create({
         this.element.style.left = Math.round(x - dx) + "px";
     },
 
-    /*
+    /**
      * Displays the bubble for the specified node
      *
-     * @param node the node for which the bubble is displayed
-     * @param x the x coordinate in the viewport
-     * @param y the y coordinate in the viewport
+     * @method show
+     * @param {AbstractNode} node The node for which the bubble is displayed
+     * @param {Number} x The x coordinate in the viewport
+     * @param {Number} y The y coordinate in the viewport
      */
     show : function(node, x, y) {
         this._node = node;
@@ -211,8 +228,10 @@ var NodetypeSelectionBubble = Class.create({
         document.observe('mousedown', this._onClickOutside);
     },
 
-    /*
+    /**
      * Hides the bubble from the viewport
+     *
+     * @method hide
      */
     hide : function() {
         document.stopObserving('click', this._onClickOutside);
@@ -231,10 +250,12 @@ var NodetypeSelectionBubble = Class.create({
         this.numPersonGroupNodes = 1;
     },
 
-    /*
-     * Hides the bubble if the user clicks outside the bubble
+    /**
+     * Hides the bubble if the user clicks outside
      *
-     * @event the click event
+     * @method _onClickOutside
+     * @param {Event} event
+     * @private
      */
     _onClickOutside: function (event) {
         if (this.isActive()) {
@@ -244,21 +265,43 @@ var NodetypeSelectionBubble = Class.create({
         }
     },
 
-    /*
+    /**
      * Returns true if the bubble is currently visible
+     *
+     * @method isActive
+     * @return {boolean}
      */
     isActive : function() {
         return !!this._node;
     },
 
+    /**
+     * Decrement the number of nodes to be created
+     *
+     * @method _decrementNumNodes
+     * @return {number} The resulting number of nodes to be created
+     * @private
+     */
     _decrementNumNodes: function() {
         return this.numPersonGroupNodes > 1 ? --this.numPersonGroupNodes : this.numPersonGroupNodes;
     },
 
+    /**
+     * Increment the number of nodes to be created
+     *
+     * @method _incrementNumNodes
+     * @return {number} The resulting number of nodes to be created
+     * @private
+     */
     _incrementNumNodes: function() {
         return this.numPersonGroupNodes < 9 ? ++this.numPersonGroupNodes : this.numPersonGroupNodes;
     },
 
+    /**
+     * Expand the bubble and show additional options for creation of PersonGroup nodes
+     *
+     * @method expandPersonGroup
+     */
     expandPersonGroup: function() {
         //create rhombus icon
         // put counter on top of rhombus
@@ -299,6 +342,11 @@ var NodetypeSelectionBubble = Class.create({
         //this.element.morph('background:#00ff00; height:' + (height + 20) + 'px;');
     },
 
+    /**
+     * Expand the bubble and show additional options for creation of twin nodes
+     *
+     * @method expandTwins
+     */
     expandTwins: function() {
         var me = this;
         var generateIcon = function(){
