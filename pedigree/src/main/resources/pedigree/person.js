@@ -98,6 +98,7 @@ var Person = Class.create(AbstractPerson, {
             };
             editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
         }
+        return child;
     },
 
     createPartnerAction: function() {
@@ -132,7 +133,9 @@ var Person = Class.create(AbstractPerson, {
                 thePartner && thePartner.remove(false);
             };
             editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
+            return partnership.getPartnerOf(this);
         }
+        return null;
     },
 
     addPartnerAction: function(partner) {
@@ -167,7 +170,9 @@ var Person = Class.create(AbstractPerson, {
                 partner && partner.remove(false);
             };
             editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
+            return partnership.getPartnerOf(this);
         }
+        return null;
     },
 
     addChildAction: function(child) {
@@ -198,6 +203,7 @@ var Person = Class.create(AbstractPerson, {
             };
             editor.getActionStack().push({undo: undoFunct, redo: redoFunct});
         }
+        return child;
     },
 
     createParentsAction: function() {
@@ -229,6 +235,7 @@ var Person = Class.create(AbstractPerson, {
             };
             editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
         }
+        return partnership;
     },
 
     addParents: function($super, partnership) {
@@ -257,6 +264,7 @@ var Person = Class.create(AbstractPerson, {
             };
             editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
         }
+        return parentPartnership;
     },
 
     addParentAction: function(parent) {
@@ -287,6 +295,7 @@ var Person = Class.create(AbstractPerson, {
 
         };
         editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
+        return partnership;
     },
 
     /*
@@ -296,7 +305,7 @@ var Person = Class.create(AbstractPerson, {
      */
     addPartnership: function($super, partnership) {
         this.getGraphics().getHoverBox().hideChildHandle();
-        $super(partnership);
+        return $super(partnership);
     },
 
     /*
@@ -306,7 +315,7 @@ var Person = Class.create(AbstractPerson, {
      */
     removePartnership: function($super, partnership) {
         this.getGraphics().getHoverBox().unhideChildHandle();
-        $super(partnership);
+        return $super(partnership);
     },
 
     /*
@@ -322,6 +331,7 @@ var Person = Class.create(AbstractPerson, {
         else {
             this.getGraphics().getHoverBox().unHideParentHandle();
         }
+        return pregnancy;
     },
 
     /*
@@ -385,6 +395,7 @@ var Person = Class.create(AbstractPerson, {
                 newValue: lastName
             });
         }
+        return lastName;
     },
 
     /*
@@ -396,6 +407,7 @@ var Person = Class.create(AbstractPerson, {
         lastName && (lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1));
         this._lastName = lastName;
         this.getGraphics().updateNameLabel();
+        return lastName;
     },
     /*
      * Returns the status of this Person, which can be "alive", "deceased", "stillborn", "unborn" or "aborted"
@@ -445,6 +457,7 @@ var Person = Class.create(AbstractPerson, {
                     childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive : this.isFetus()}
                 });
         }
+        this.getLifeStatus();
     },
 
     setLifeStatusAction: function(newStatus) {
@@ -461,6 +474,7 @@ var Person = Class.create(AbstractPerson, {
                 newValue: newStatus
             });
         }
+        return this.getLifeStatus();
     },
 
     /*
@@ -478,6 +492,7 @@ var Person = Class.create(AbstractPerson, {
     setConceptionDate: function(newDate) {
         this._conceptionDate = newDate ? (new Date(newDate)) : '';
         this.getGraphics().updateAgeLabel();
+        return this.getConceptionDate();
     },
 
     /*
@@ -529,6 +544,7 @@ var Person = Class.create(AbstractPerson, {
                 newValue: newDate
             });
         }
+        return this.getGestationAge();
     },
 
     /*
@@ -550,6 +566,7 @@ var Person = Class.create(AbstractPerson, {
             this._birthDate = newDate;
             this.getGraphics().updateAgeLabel();
         }
+        return this.getBirthDate();
     },
 
     setBirthDateAction: function(newDate) {
@@ -566,6 +583,7 @@ var Person = Class.create(AbstractPerson, {
                 newValue: newDate
             });
         }
+        return this.getBirthDate();
     },
 
     /*
@@ -588,6 +606,7 @@ var Person = Class.create(AbstractPerson, {
             this._deathDate && (this.getLifeStatus() == 'alive') && this.setLifeStatus('deceased');
         }
         this.getGraphics().updateAgeLabel();
+        return this.getDeathDate();
     },
 
     setDeathDateAction: function(newDate) {
@@ -629,6 +648,7 @@ var Person = Class.create(AbstractPerson, {
             this.getDisorders().push(disorder);
         }
         forceDisplay && this.getGraphics().updateDisorderShapes();
+        return this.getDisorders();
     },
 
     addDisorderAction: function(disorder) {
@@ -646,6 +666,7 @@ var Person = Class.create(AbstractPerson, {
                 }
             })
         }
+        return this.getDisorders();
     },
 
     /*
@@ -665,6 +686,7 @@ var Person = Class.create(AbstractPerson, {
             alert("This person doesn't have the specified disorder");
         }
         forceDisplay && this.getGraphics().updateDisorderShapes();
+        return this.getDisorders();
     },
 
     /*
@@ -690,6 +712,7 @@ var Person = Class.create(AbstractPerson, {
             }
         });
         this.getGraphics().updateDisorderShapes();
+        return this.getDisorders();
     },
 
     setDisordersAction: function(disorders) {
@@ -704,6 +727,7 @@ var Person = Class.create(AbstractPerson, {
             oldValue: prevDisorders,
             newValue: disorders
         });
+        return this.getDisorders();
     },
 
     /*
@@ -774,6 +798,7 @@ var Person = Class.create(AbstractPerson, {
                 });
             }
         }
+        return this.getChildlessStatus();
     },
 
     setChildlessStatusAction: function(status) {
@@ -800,6 +825,7 @@ var Person = Class.create(AbstractPerson, {
             editor.getActionStack().push({undo: undo, redo: redo});
             editor.getActionStack().pushEndMarker(markerID);
         }
+        return this.getChildlessStatus();
     },
 
     /*
