@@ -48,8 +48,9 @@ var AbstractHoverbox = Class.create({
 
     /**
      * Returns the x coordinate of the hoverbox
+     *
      * @method getX
-     * @return {Number} the x coordinate in pixels
+     * @return {Number} The x coordinate in pixels
      */
     getX: function() {
         return this._relativeX;
@@ -57,8 +58,9 @@ var AbstractHoverbox = Class.create({
 
     /**
      * Returns the y coordinate of the hoverbox
+     *
      * @method getY
-     * @return {Number} the y coordinate in pixels
+     * @return {Number} The y coordinate in pixels
      */
     getY: function() {
         return this._relativeY;
@@ -66,8 +68,9 @@ var AbstractHoverbox = Class.create({
 
     /**
      * Returns the x coordinate of the attached node
+     *
      * @method getNodeX
-     * @return {Number} the x coordinate in pixels
+     * @return {Number} The x coordinate in pixels
      */
     getNodeX: function() {
         return this._nodeX;
@@ -75,8 +78,9 @@ var AbstractHoverbox = Class.create({
 
     /**
      * Returns the y coordinate of the attached node
+     *
      * @method getNodeY
-     * @return {Number} the y coordinate in pixels
+     * @return {Number} The y coordinate in pixels
      */
     getNodeY: function() {
         return this._nodeY;
@@ -84,8 +88,9 @@ var AbstractHoverbox = Class.create({
 
     /**
      * Returns the width of the hoverbox
+     *
      * @method getWidth
-     * @return {Number} the width in pixels
+     * @return {Number} The width in pixels
      */
     getWidth: function() {
         return this._width;
@@ -93,8 +98,9 @@ var AbstractHoverbox = Class.create({
 
     /**
      * Returns the height of the hoverbox
+     *
      * @method getHeight
-     * @return {Number} the height in pixels
+     * @return {Number} The height in pixels
      */
     getHeight: function() {
         return this._height;
@@ -102,8 +108,9 @@ var AbstractHoverbox = Class.create({
 
     /**
      * Returns the node for which the hoverbox is drawn
+     *
      * @method getNode
-     * @return {AbstractNode} can be either a Partnership or a Person
+     * @return {AbstractNode} Can be either a Partnership or a Person
      */
     getNode: function() {
         return this._node;
@@ -111,8 +118,9 @@ var AbstractHoverbox = Class.create({
 
     /**
      * Creates the buttons used in this hoverbox
+     *
      * @method generateButtons
-     * @return {Raphael.st} a set of buttons
+     * @return {Raphael.st} A set of buttons
      */
     generateButtons: function() {
         return editor.getPaper().set();
@@ -120,8 +128,9 @@ var AbstractHoverbox = Class.create({
 
     /**
      * Returns Raphael set of the buttons in this hoverbox
+     *
      * @method getButtons
-     * @return {Raphael.st} a set of buttons
+     * @return {Raphael.st} A set of buttons
      */
     getButtons: function() {
         return this._buttons;
@@ -129,8 +138,9 @@ var AbstractHoverbox = Class.create({
 
     /**
      * Creates the handles used in this hoverbox
+     *
      * @method generateHandles
-     * @return {Raphael.st} a set of handles
+     * @return {Raphael.st} A set of handles
      */
     generateHandles: function() {
         return editor.getPaper().set();
@@ -138,8 +148,9 @@ var AbstractHoverbox = Class.create({
 
     /**
      * Returns a Raphael set of the currently visible handles
+     *
      * @method getCurrentHandles
-     * @return {Raphael.st} a set of handles
+     * @return {Raphael.st} A set of handles
      */
     getCurrentHandles: function() {
         return this._currentHandles;
@@ -147,8 +158,9 @@ var AbstractHoverbox = Class.create({
 
     /**
      * Returns the a Raphael set containing the four draggable handles
+     *
      * @method getHandles
-     * @return {Raphael.st} a set of handles
+     * @return {Raphael.st} A set of handles
      */
     getHandles: function() {
         return this._handles;
@@ -156,13 +168,18 @@ var AbstractHoverbox = Class.create({
 
     /**
      * Generates a button and places it on the hoverbox
+     *
      * @method createButton
-     * @param x {Number} the x coordinate of the button
-     * @param y {Number} the y coordinate of the button
-     * @param svgPath {Number|Array} the x coordinate of the button
-     * @return {Raphael.st} the generated button
+     * @param {Number} x The x coordinate of the button
+     * @param {Number} y The y coordinate of the button
+     * @param {String|Array} svgPath The svg path for the button
+     * @param {Object} attributes The svg attributes
+     * @param {Function} onClick Callback for the button
+     * @param {String} className The class attribute for the button
+     *
+     * @return {Raphael.st} The generated button
      */
-    createButton: function(x, y, svgPath, attributes, onClick, className, type) {
+    createButton: function(x, y, svgPath, attributes, onClick, className) {
         var iconScale = PedigreeEditor.attributes.radius * 0.014,
             icon = editor.getPaper().path(svgPath).attr(attributes);
 
@@ -191,7 +208,6 @@ var AbstractHoverbox = Class.create({
             element.node.setAttribute('class', className);
         });
         button.icon = icon;
-        button.type = type;
         return button;
     },
 
@@ -199,7 +215,7 @@ var AbstractHoverbox = Class.create({
      * Creates a show-menu button
      *
      * @method generateMenuBtn
-     * @return {Raphael.st} the generated button
+     * @return {Raphael.st} The generated button
      */
     generateMenuBtn: function() {
         var me = this;
@@ -210,10 +226,8 @@ var AbstractHoverbox = Class.create({
         var attributes = PedigreeEditor.attributes.menuBtnIcon;
         var x = this.getX() + this.getWidth() - 18 - this.getWidth()/40;
         var y = this.getY() + this.getHeight()/40;
-        var className = "menu-trigger";
-        return this.createButton(x, y, path, attributes, action, className);
+        return this.createButton(x, y, path, attributes, action, "menu-trigger");
     },
-
     /**
      * Creates and returns a delete button (big red X).
      *
