@@ -19,5 +19,13 @@ var PersonGroupVisuals = Class.create(AbstractPersonVisuals, {
 
     getAllGraphics: function ($super) {
         return this.getHoverBox().getBackElements().concat($super()).push(this.getHoverBox().getFrontElements());
+    },
+
+    setNumPersons: function(numPersons) {
+        this._icon.pop();
+        this.label.remove();
+        var text = (numPersons && numPersons > 1) ? String(numPersons) : "n";
+        this.label = editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditor.attributes.descendantGroupLabel);
+        this._icon.push(this.label);
     }
 });

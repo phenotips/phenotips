@@ -14,6 +14,7 @@ var PersonGroup = Class.create(AbstractPerson, {
     initialize: function($super, x, y, gender, id) {
         this._type = "PersonGroup";
         $super(x, y, gender, id);
+        this._numPersons = 1;
     },
 
     /*
@@ -41,5 +42,62 @@ var PersonGroup = Class.create(AbstractPerson, {
             parents.addChild(placeholder);
         }
         return $super(isRecursive, skipConfirmation);
+    },
+
+    setNumPersons: function(numPersons) {
+        this._numPersons = numPersons;
+        this.getGraphics().setNumPersons(numPersons);
+        return numPersons;
+    },
+
+    getNumPersons: function() {
+        return this._numPersons;
+    },
+
+    /**
+     * Returns an object containing all the information about this node.
+     *
+     * @method getInfo
+     * @return {Object} in the form
+     *
+     {
+     type: // (type of the node),
+     x:  // (x coordinate)
+     y:  // (y coordinate)
+     id: // id of the node
+     gender: //gender of the node
+     numPersons: //number of people in this grouping
+     }
+     */
+    getInfo: function($super) {
+        var info = $super();
+        info['numPersons'] = this.getNumPersons();
+        return info;
+    },
+
+    /**
+     * Applies the properties found in info to this node.
+     *
+     * @method loadInfo
+     * @param info {Object} and object in the form
+     *
+     {
+     type: // (type of the node),
+     x:  // (x coordinate)
+     y:  // (y coordinate)
+     id: // id of the node
+     gender: //gender of the node
+     numPersons: //number of people in this grouping
+     }
+     * @return {Boolean} true if info was successfully loaded
+     */
+    loadInfo: function($super, info) {
+        if($super(info) && info.numPersons) {
+            if(this.getNumPersons() != info.numPersons) {
+                this.setNumPersons(info.numPersons);
+            }
+            return true;
+        }
+        return false;
     }
 });
