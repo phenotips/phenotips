@@ -1,0 +1,16 @@
+edu.toronto.cs.phenotips.measurements.MeasurementsScriptService
+edu.toronto.cs.phenotips.measurements.internal.DefaultMeasurementsChartConfigurationsFactory
+edu.toronto.cs.phenotips.measurements.internal.BMIMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.EarLengthMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.FootLengthMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.HandLengthMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.HeadCircumferenceMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.HeightMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.InnerCanthalDistanceMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.InterPupilaryDistanceMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.OuterCanthalDistanceMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.PalmLengthMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.PalpebralFissureLengthMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.PhiltrumLengthMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.SittingHeightMeasurementHandler
+edu.toronto.cs.phenotips.measurements.internal.WeightMeasurementHandler

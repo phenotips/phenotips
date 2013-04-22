@@ -31,6 +31,9 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
+import org.apache.commons.io.output.NullWriter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.velocity.VelocityContext;
 import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.event.AbstractDocumentEvent;
@@ -48,6 +51,9 @@ import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
 import org.xwiki.script.ScriptContextManager;
 import org.xwiki.script.service.ScriptService;
+import org.xwiki.velocity.VelocityEngine;
+import org.xwiki.velocity.VelocityManager;
+import org.xwiki.velocity.XWikiVelocityException;
 
 /**
  * Provides access to the phenotype mappings configured for the current space. The field mappings are defined by a
@@ -91,6 +97,12 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
     @Inject
     @Named("groovy")
     private ScriptEngineFactory groovy;
+
+    /**
+     * Velocity engine manager used for running the script containing the mapping.
+     */
+    @Inject
+    private VelocityManager velocityManager;
 
     /**
      * Provides access to the script context.
@@ -196,7 +208,8 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
     }
 
     /**
-     * Get the configuration for a specific property, taking into account the current space.
+     * Get the configuration for a specific property, taking into account the configuration for the current user and
+     * current space.
      *
      * @param mappingName the name of the configuration to return
      * @return configuration object, should be a Map
@@ -206,22 +219,58 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
         DocumentReference mappingDoc = getMappingDocument();
         Object result = getMapping(mappingDoc, mappingName);
         if (result == null) {
-            ScriptEngine e = this.groovy.getScriptEngine();
-            ScriptContext c = this.scmanager.getScriptContext();
+            Map<String, Object> mappings;
             try {
-                e.eval(this.bridge.getDocumentContentForDefaultLanguage(mappingDoc), c);
+                if (this.bridge.getDocumentContentForDefaultLanguage(mappingDoc).contains("{{velocity")) {
+                    mappings = parseVelocityMapping(mappingDoc);
+                } else {
+                    mappings = parseGroovyMapping(mappingDoc);
+                }
+                result = mappings.get(mappingName);
             } catch (Exception ex) {
-                this.logger.error("Failed to parse mapping document [{}]", mappingDoc, ex);
-                return null;
+                this.logger.warn("Failed to access mapping: {}", ex.getMessage());
             }
+        }
+        return result;
+    }
+
+    private Map<String, Object> parseGroovyMapping(DocumentReference mappingDoc)
+    {
+        ScriptEngine e = this.groovy.getScriptEngine();
+        ScriptContext c = this.scmanager.getScriptContext();
+        try {
+            e.eval(this.bridge.getDocumentContentForDefaultLanguage(mappingDoc), c);
+        } catch (Exception ex) {
+            this.logger.error("Failed to parse mapping document [{}]", mappingDoc, ex);
+            return null;
+        }
+        this.observationManager.addEvent(this.getName(), new DocumentUpdatedEvent(mappingDoc));
+        this.observationManager.addEvent(this.getName(), new DocumentDeletedEvent(mappingDoc));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> mappings = (Map<String, Object>) c.getAttribute("mappings");
+        setMappings(mappingDoc, mappings);
+        return mappings;
+    }
+
+    private Map<String, Object> parseVelocityMapping(DocumentReference mappingDoc)
+    {
+        try {
+            VelocityEngine e = this.velocityManager.getVelocityEngine();
+            VelocityContext c = this.velocityManager.getVelocityContext();
+            e.evaluate(c, new NullWriter(), mappingDoc.getName(),
+                this.bridge.getDocumentContentForDefaultLanguage(mappingDoc));
             this.observationManager.addEvent(this.getName(), new DocumentUpdatedEvent(mappingDoc));
             this.observationManager.addEvent(this.getName(), new DocumentDeletedEvent(mappingDoc));
             @SuppressWarnings("unchecked")
-            Map<String, Object> mappings = (Map<String, Object>) c.getAttribute("mappings");
+            Map<String, Object> mappings = (Map<String, Object>) c.get("mappings");
             setMappings(mappingDoc, mappings);
-            result = mappings.get(mappingName);
+            return mappings;
+        } catch (XWikiVelocityException ex) {
+            this.logger.error("Failed to get a VelocityEngine instance", ex);
+        } catch (Exception ex) {
+            this.logger.error("Failed to parse mapping document [{}]", mappingDoc, ex);
         }
-        return result;
+        return null;
     }
 
     /**
@@ -252,16 +301,45 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
     }
 
     /**
-     * Determine which document was configured as the mapping source in the current space's preferences.
+     * Determine which document was configured as the mapping source in the current user's preferences, or, if missing,
+     * in the current space's preferences.
      *
      * @return a document reference, as configured in the space preferences
      */
     private DocumentReference getMappingDocument()
     {
+        DocumentReference mapping = getCurrentUserConfiguration();
+        if (mapping == null) {
+            mapping = getCurrentSpaceConfiguration();
+        }
+        return mapping;
+    }
+
+    private DocumentReference getCurrentUserConfiguration()
+    {
+        DocumentReference currentUserRef = this.bridge.getCurrentUserReference();
+        if (currentUserRef == null) {
+            return null;
+        }
+        DocumentReference classDocRef =
+            new DocumentReference(currentUserRef.getWikiReference().getName(), "XWiki", "ConfigurationClass");
+        int settingsObject = this.bridge.getObjectNumber(currentUserRef, classDocRef, "property", "phenotips_mapping");
+        if (settingsObject != -1) {
+            String targetMappingName =
+                (String) this.bridge.getProperty(currentUserRef, classDocRef, settingsObject, "value");
+            if (StringUtils.isNotEmpty(targetMappingName)) {
+                return new DocumentReference(this.resolver.resolve(targetMappingName, EntityType.DOCUMENT));
+            }
+        }
+        return null;
+    }
+
+    private DocumentReference getCurrentSpaceConfiguration()
+    {
         DocumentReference currentDocRef = this.bridge.getCurrentDocumentReference();
         DocumentReference homeDocRef = new DocumentReference("WebHome", currentDocRef.getLastSpaceReference());
-        DocumentReference classDocRef = new DocumentReference(
-            currentDocRef.getWikiReference().getName(), "PhenoTips", "DBConfigurationClass");
+        DocumentReference classDocRef =
+            new DocumentReference(currentDocRef.getWikiReference().getName(), "PhenoTips", "DBConfigurationClass");
         String targetMappingName = (String) this.bridge.getProperty(homeDocRef, classDocRef, "phenotypeMapping");
         return new DocumentReference(this.resolver.resolve(targetMappingName, EntityType.DOCUMENT));
     }

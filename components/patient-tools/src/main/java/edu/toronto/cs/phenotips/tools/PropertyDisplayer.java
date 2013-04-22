@@ -20,6 +20,7 @@
 package edu.toronto.cs.phenotips.tools;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +28,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+
+import com.xpn.xwiki.api.Property;
 
 import edu.toronto.cs.phenotips.solr.HPOScriptService;
 
@@ -54,37 +57,36 @@ public class PropertyDisplayer
 
     private static final String INDEXED_CATEGORY_KEY = "term_category";
 
-    private static final String DEFAULT_SECTION_TITLE = "Other";
-
     private static final String INDEXED_PARENT_KEY = "is_a";
 
     protected HPOScriptService ontologyService;
+
+    private final FormData data;
 
     protected final String[] fieldNames;
 
     protected final String propertyName;
 
+    private Map<String, Map<String, String>> metadata;
+
     private List<FormSection> sections = new LinkedList<FormSection>();
 
-    PropertyDisplayer(Collection<Map<String, ? >> template, String propertyName, HPOScriptService ontologyService,
-        String fieldName, Collection<String> selected)
+    PropertyDisplayer(Collection<Map<String, ? >> template, FormData data, HPOScriptService ontologyService)
     {
-        this(template, propertyName, ontologyService, fieldName, null, selected, null);
-    }
-
-    PropertyDisplayer(Collection<Map<String, ? >> template, String propertyName, HPOScriptService ontologyService,
-        String yesFieldName, String noFieldName, Collection<String> yesSelected, Collection<String> noSelected)
-    {
+        this.data = data;
         this.ontologyService = ontologyService;
         this.fieldNames = new String[2];
-        this.fieldNames[0] = yesFieldName;
-        this.fieldNames[1] = noFieldName;
-        this.propertyName = propertyName;
+        this.fieldNames[0] = data.getPositiveFieldName();
+        this.fieldNames[1] = data.getNegativeFieldName();
+        this.propertyName = data.getPositivePropertyName();
+        this.prepareMetaData();
         List<String> customYesSelected = new LinkedList<String>();
-        customYesSelected.addAll(yesSelected);
+        if (data.getSelectedValues() != null) {
+            customYesSelected.addAll(data.getSelectedValues());
+        }
         List<String> customNoSelected = new LinkedList<String>();
-        if (noFieldName != null) {
-            customNoSelected.addAll(noSelected);
+        if (data.getNegativeFieldName() != null && data.getSelectedNegativeValues() != null) {
+            customNoSelected.addAll(data.getSelectedNegativeValues());
         }
         for (Map<String, ? > sectionTemplate : template) {
             if (isSection(sectionTemplate)) {
@@ -94,10 +96,22 @@ public class PropertyDisplayer
         Map<String, List<String>> yCustomCategories = new HashMap<String, List<String>>();
         Map<String, List<String>> nCustomCategories = new HashMap<String, List<String>>();
         for (String value : customYesSelected) {
-            yCustomCategories.put(value, this.getCategoriesFromOntology(value));
+            List<String> categories = new LinkedList<String>();
+            categories.addAll(this.getCategoriesFromOntology(value));
+            categories.addAll(this.getCategoriesFromCustomMapping(value, data.getCustomCategories()));
+            if (categories.isEmpty()) {
+                categories.add("HP:0000118");
+            }
+            yCustomCategories.put(value, categories);
         }
         for (String value : customNoSelected) {
-            nCustomCategories.put(value, this.getCategoriesFromOntology(value));
+            List<String> categories = new LinkedList<String>();
+            categories.addAll(this.getCategoriesFromOntology(value));
+            categories.addAll(this.getCategoriesFromCustomMapping(value, data.getCustomNegativeCategories()));
+            if (categories.isEmpty()) {
+                categories.add("HP:0000118");
+            }
+            nCustomCategories.put(value, categories);
         }
         for (FormSection section : this.sections) {
             List<String> yCustomFieldIDs = this.assignCustomFields(section, yCustomCategories);
@@ -113,11 +127,11 @@ public class PropertyDisplayer
         }
     }
 
-    public String display(DisplayMode mode)
+    public String display()
     {
         StringBuilder str = new StringBuilder();
         for (FormSection section : this.sections) {
-            str.append(section.display(mode, this.fieldNames));
+            str.append(section.display(this.data.getMode(), this.fieldNames));
         }
         return str.toString();
     }
@@ -195,7 +209,15 @@ public class PropertyDisplayer
         if (id.equals(hint) && title != null) {
             hint = title;
         }
-        return new FormField(id, StringUtils.defaultIfEmpty(title, hint), hint, expandable, yesSelected, noSelected);
+        String metadata = "";
+        Map<String, String> metadataValues = this.metadata.get(id);
+        if (metadataValues != null) {
+            metadata =
+                metadataValues.get(noSelected ? this.data.getNegativePropertyName() : this.data
+                    .getPositivePropertyName());
+        }
+        return new FormField(id, StringUtils.defaultIfEmpty(title, hint), hint, StringUtils.defaultString(metadata),
+            expandable, yesSelected, noSelected);
     }
 
     private FormElement generateField(String id, String title, boolean yesSelected, boolean noSelected)
@@ -224,6 +246,9 @@ public class PropertyDisplayer
 
     private String getLabelFromOntology(String id)
     {
+        if (!id.startsWith("HP:")) {
+            return id;
+        }
         SolrDocument phObj = this.ontologyService.get(id);
         if (phObj != null) {
             return (String) phObj.get(INDEXED_NAME_KEY);
@@ -233,6 +258,9 @@ public class PropertyDisplayer
 
     private boolean hasDescendantsInOntology(String id)
     {
+        if (!id.startsWith("HP:")) {
+            return false;
+        }
         Map<String, String> params = new HashMap<String, String>();
         params.put(INDEXED_PARENT_KEY, id);
         return (this.ontologyService.get(params) != null);
@@ -241,11 +269,58 @@ public class PropertyDisplayer
     @SuppressWarnings("unchecked")
     private List<String> getCategoriesFromOntology(String value)
     {
+        if (!value.startsWith("HP:")) {
+            return Collections.emptyList();
+        }
         SolrDocument termObj = this.ontologyService.get(value);
         if (termObj != null && termObj.get(INDEXED_CATEGORY_KEY) != null
             && List.class.isAssignableFrom(termObj.get(INDEXED_CATEGORY_KEY).getClass())) {
             return (List<String>) termObj.get(INDEXED_CATEGORY_KEY);
         }
         return new LinkedList<String>();
+    }
+
+    private List<String> getCategoriesFromCustomMapping(String value, Map<String, List<String>> customCategories)
+    {
+        for (Map.Entry<String, List<String>> category : customCategories.entrySet()) {
+            if (StringUtils.equals(value, category.getKey()) && category.getValue() != null) {
+                return category.getValue();
+            }
+        }
+        return new LinkedList<String>();
+    }
+
+    private void prepareMetaData()
+    {
+        this.metadata = new HashMap<String, Map<String, String>>();
+        for (com.xpn.xwiki.api.Object o : this.data.getDocument().getObjects("PhenoTips.PhenotypeMetaClass")) {
+            String name = "";
+            String category = "";
+            StringBuilder value = new StringBuilder();
+            for (String propname : o.getxWikiClass().getEnabledPropertyNames()) {
+                Property property = o.getProperty(propname);
+                Object propvalue = property.getValue();
+                if (propvalue == null) {
+                    continue;
+                }
+                if (StringUtils.equals("target_property_name", propname)) {
+                    category = propvalue.toString();
+                } else if (StringUtils.equals("target_property_value", propname)) {
+                    name = propvalue.toString();
+                } else {
+                    value.append(o.get(propname).toString().replaceAll("\\{\\{/?html[^}]*+}}", "").replaceAll(
+                        "<(/?)p>", "<$1dd>"));
+                }
+            }
+            if (StringUtils.isNotBlank(name) && value.length() > 0) {
+                Map<String, String> subvalues = this.metadata.get(name);
+                if (subvalues == null) {
+                    subvalues = new HashMap<String, String>();
+                    this.metadata.put(name, subvalues);
+                }
+                subvalues.put(category, "<div class='phenotype-details'><dl>" + value.toString() + "</dl></div>");
+            }
+
+        }
     }
 }

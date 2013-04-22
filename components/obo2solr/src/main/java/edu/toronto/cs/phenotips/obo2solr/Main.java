@@ -40,7 +40,7 @@ public class Main
 
     public static final String HELP_OPTION = "h";
 
-    public static void main(String args[])
+    public static void main(String[] args)
     {
         Options options = generateOptions();
         try {
@@ -55,7 +55,7 @@ public class Main
             File input = paramPrep.getInputFileHandler(cmd.getOptionValue(OBO_DB_LOCATION_OPTION));
             File output =
                 paramPrep.getOutputFileHandler(cmd.getOptionValue(OUTPUT_XML_LOCATION_OPTION,
-                DEFAULT_OUTPUT_XML_LOCATION));
+                    DEFAULT_OUTPUT_XML_LOCATION));
             Map<String, Double> fieldSelection =
                 paramPrep.getFieldSelection(cmd.getOptionValue(INDEX_FILEDS_OPTION, ""));
             generator.transform(input, output, fieldSelection);
@@ -68,11 +68,10 @@ public class Main
     protected static Options generateOptions()
     {
         Options options = new Options();
-        options
-            .addOption(OBO_DB_LOCATION_OPTION, "obo-db-location", true,
+        options.addOption(OBO_DB_LOCATION_OPTION, "obo-db-location", true,
             "Path or URL of the input database (MANDATORY).");
-        options.addOption(OUTPUT_XML_LOCATION_OPTION, "output-file", true,
-            "Path of the output file. Default: " + DEFAULT_OUTPUT_XML_LOCATION);
+        options.addOption(OUTPUT_XML_LOCATION_OPTION, "output-file", true, "Path of the output file. Default: "
+            + DEFAULT_OUTPUT_XML_LOCATION);
         options.addOption(INDEX_FILEDS_OPTION, "fields-to-index", true,
             "Fields to index. By default, all fields are marked for indexing.");
         options.addOption(HELP_OPTION, "help", false, "Displays help and exits.");

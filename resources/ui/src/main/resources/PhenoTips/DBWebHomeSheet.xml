@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <xwikidoc>
   <web>PhenoTips</web>
   <name>DBWebHomeSheet</name>
@@ -343,11 +363,18 @@
         "hpo" : {
             script: "$xwiki.getURL('PhenoTips.SolrService', 'get')?",
             queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
-                           'name' : { 'stub': true, 'boost': 1500 },
-                           'synonym' : { 'stub': true, 'boost': 1 },
-                           'is_a' : { 'stub': true},
-                           'text' : { 'stub': true, 'default': true },
-                           'id' : {'activationRegex' : 'HP:[0-9]+', 'stub': true, 'boost' : 50}
+                           'name' : {'wordBoost': 10, 'phraseBoost': 20},
+                           'nameSpell' : {'wordBoost': 18, 'phraseBoost': 36, 'stubBoost': 14},
+                           'nameExact' : {'phraseBoost': 100},
+                           'namePrefix' : {'phraseBoost': 30},
+                           'synonym' : {'wordBoost': 6, 'phraseBoost': 15},
+                           'synonymSpell' : {'wordBoost': 10, 'phraseBoost': 25, 'stubBoost': 7},
+                           'synonymExact' : {'phraseBoost': 70},
+                           'synonymPrefix' : {'phraseBoost': 20},
+                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1},
+                           'textSpell' : {'wordBoost': 2, 'phraseBoost': 5, 'stubBoost': 2, 'stubTrigger': true},
+                           'id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}},
+                           'alt_id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}}
                          }, {
                            'term_category': ['HP:0000118']
                          }),
@@ -686,6 +713,7 @@
   $$('.xwiki-livetable-topfilters-container .toggle-filters').invoke('observe', 'click', function() {
     $('patients-topfilters').toggleClassName('collapsed');
   });
+  $('patients-topfilters').addClassName('collapsed');
 });</code>
     </property>
     <property>
@@ -831,11 +859,6 @@ h1 {
 }
 
 #patients-topfilters.collapsed .filters {
-  display: none;
-}
-
-/* FIXME: Hide the avatar in the user picker until we fix the suggest style. */
-.suggestList img {
   display: none;
 }</code>
     </property>
@@ -1030,13 +1053,19 @@ h1 {
       <use>onDemand</use>
     </property>
   </object>
-  <content>{{html wiki=false clean=false}}&lt;div class="general-tools"&gt;&lt;a href="#patients"&gt;Browse patients&lt;/a&gt; · &lt;label for="create-patient-record"&gt;New patient record&lt;/label&gt;&lt;/div&gt;{{/html}}
+  <content>{{velocity}}
+{{html wiki=false clean=false}}<div class="general-tools"><a href="#patients">Browse patients</a>
+#if($hasEdit). <label for="create-patient-record">New patient record</label>#end</div>{{/html}}{{/velocity}}
 
 = Phenotype  database =
 
 {{include document="PhenoTips.DatabaseFilters" /}}
 
 {{velocity}}
+$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
+$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
 $xwiki.ssx.use('PhenoTips.DBWebHomeSheet')##
 $xwiki.ssx.use('PhenoTips.DatabaseFilters')##
 $xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
@@ -1059,21 +1088,17 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
       "_actions" : {"actions": ["edit", "delete"]}
 })
 #foreach($column in $columns)
-      #set($discard = $columnsProperties.put($column, { "type" : "text", "link" : "view", "size" : 7, "filterable" : false, "sortable": true  }))
+      #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0))
+      #set($discard = $columnsProperties.put($column, { "type" : "text", "link" : "view", "size" : 7, "filterable" : $isFilterable, "sortable": true  }))
 #end
-#if (!$configuredColumns.contains('date_of_birth'))
-  #set($discard = $columns.add('date_of_birth'))
-  #set($discard = $columnsProperties.put('date_of_birth', { "type" : "hidden" }))
+#foreach ($filterableColumn in ['date_of_birth', 'omim_id', 'phenotype'])
+  #if (!$configuredColumns.contains($filterableColumn))
+    #set($discard = $columns.add($filterableColumn))
+    #set($discard = $columnsProperties.put($filterableColumn, { "type" : "hidden" }))
+  #end
 #end
 #set($tagProperty = "$!{config.getProperty('tagProperty').value}")
 #if ($tagProperty != '')
-      #if ($columnsProperties.containsKey($tagProperty))
-        #set($discard = $columnsProperties.put($tagProperty, { "type" : "text", "filterable" : false, "sortable": false  }))
-      #else
-        #set($discard = $columns.add($tagProperty))
-        #set($discard = $columnsProperties.put($tagProperty, { "type" : "hidden"}))
-      #end
-      ###set($topFilters = $doc.getRenderedContent("{{valuecloud classname='${patientClassName}' property='${tagProperty}' nameService='hpo' enableJoinMode='1' collapsed='0'/}}", "xwiki/2.1"))
       #set($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
 == Filters ==
 
@@ -1093,8 +1118,9 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #livetable("patients" $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
 #if($hasEdit)
-  {{html clean="false" wiki="false"}}&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord', 'view', 'doCreate=1')" method="post"&gt;&lt;div&gt;
+  {{html clean="false" wiki="false"}}&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+    &lt;input type="hidden" name="doCreate" value="1" /&gt;
     &lt;input type="hidden" name="className" value="$patientClassName" /&gt;
     &lt;input type="hidden" name="classTemplate" value="$!{config.getProperty('patientTemplate').value}" /&gt;
     &lt;input type="hidden" name="idField" value="$!{config.getProperty('idField').value}" /&gt;

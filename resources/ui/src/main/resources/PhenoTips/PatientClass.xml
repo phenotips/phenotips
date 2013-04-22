@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <xwikidoc>
   <web>PhenoTips</web>
   <name>PatientClass</name>
@@ -32,12 +52,54 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
+    <age_of_onset>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay>{{velocity}}
+#set ($order = [
+  'HP:0011007',
+  'HP:0003577',
+  'HP:0011460',
+  'HP:0011461',
+  'HP:0003623',
+  'HP:0003593',
+  'HP:0011463',
+  'HP:0003621',
+  'HP:0003581',
+  'HP:0011462',
+  'HP:0003596',
+  'HP:0003584'
+])
+#set ($startWith = 'HP:0011007')
+{{/velocity}}
+
+{{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <idField/>
+      <multiSelect>0</multiSelect>
+      <name>age_of_onset</name>
+      <number>9</number>
+      <picker>0</picker>
+      <prettyName>Age of onset</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+    </age_of_onset>
     <comments>
       <customDisplay/>
       <disabled>0</disabled>
       <editor>---</editor>
       <name>comments</name>
-      <number>26</number>
+      <number>28</number>
       <picker>0</picker>
       <prettyName>Additional comments</prettyName>
       <rows>5</rows>
@@ -54,7 +116,7 @@
       <displayFormType>select</displayFormType>
       <displayType/>
       <name>consanguinity</name>
-      <number>12</number>
+      <number>14</number>
       <prettyName>Consanguinity</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -196,7 +258,7 @@
       <idField/>
       <multiSelect>1</multiSelect>
       <name>extended_negative_phenotype</name>
-      <number>31</number>
+      <number>33</number>
       <picker>0</picker>
       <prettyName>extended_negative_phenotype</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -220,7 +282,7 @@
       <idField/>
       <multiSelect>1</multiSelect>
       <name>extended_negative_prenatal_phenotype</name>
-      <number>32</number>
+      <number>34</number>
       <picker>0</picker>
       <prettyName>extended_negative_prenatal_phenotype</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -244,7 +306,7 @@
       <idField/>
       <multiSelect>1</multiSelect>
       <name>extended_phenotype</name>
-      <number>29</number>
+      <number>31</number>
       <picker>0</picker>
       <prettyName>extended_phenotype</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -268,7 +330,7 @@
       <idField/>
       <multiSelect>1</multiSelect>
       <name>extended_prenatal_phenotype</name>
-      <number>30</number>
+      <number>32</number>
       <picker>0</picker>
       <prettyName>extended_prenatal_phenotype</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -301,7 +363,7 @@
       <disabled>0</disabled>
       <editor>---</editor>
       <name>family_comments</name>
-      <number>24</number>
+      <number>26</number>
       <picker>0</picker>
       <prettyName>List health conditions found in family (describe the relationship with proband)</prettyName>
       <rows>5</rows>
@@ -323,7 +385,7 @@
       <displayType>select</displayType>
       <multiSelect>1</multiSelect>
       <name>family_history</name>
-      <number>23</number>
+      <number>25</number>
       <picker>0</picker>
       <prettyName>Family History</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -375,7 +437,7 @@
       <customDisplay/>
       <disabled>0</disabled>
       <name>gestation</name>
-      <number>22</number>
+      <number>24</number>
       <numberType>integer</numberType>
       <prettyName>Gestation at delivery (weeks)</prettyName>
       <size>30</size>
@@ -388,7 +450,7 @@
       <customDisplay/>
       <disabled>0</disabled>
       <name>health_card</name>
-      <number>9</number>
+      <number>11</number>
       <picker>0</picker>
       <prettyName>Provincial Health Card #</prettyName>
       <size>30</size>
@@ -415,7 +477,7 @@
       <disabled>0</disabled>
       <editor>PureText</editor>
       <name>indication_for_referral</name>
-      <number>15</number>
+      <number>17</number>
       <picker>0</picker>
       <prettyName>Indication for referral</prettyName>
       <rows>2</rows>
@@ -443,7 +505,7 @@
       <disabled>0</disabled>
       <editor>---</editor>
       <name>medical_developmental_history</name>
-      <number>27</number>
+      <number>29</number>
       <picker>0</picker>
       <prettyName>Medical and developmental history</prettyName>
       <rows>5</rows>
@@ -460,13 +522,63 @@
       <displayFormType>select</displayFormType>
       <displayType/>
       <name>miscarriages</name>
-      <number>13</number>
+      <number>15</number>
       <prettyName>Parents with at least 3 miscarriages</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </miscarriages>
+    <mode_of_inheritance>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay>{{velocity}}
+#set ($order = [
+  'HP:0003745',
+
+  'HP:0000006',
+  'HP:0001470',
+  'HP:0001475',
+  'HP:0001444',
+  'HP:0001452',
+
+  'HP:0000007',
+
+  'HP:0010985',
+  'HP:0001417',
+  'HP:0001423',
+  'HP:0001419',
+  'HP:0001450',
+
+  'HP:0001426',
+  'HP:0010984',
+  'HP:0010983',
+  'HP:0010982'
+])
+#set ($startWith = 'HP:0000005')
+{{/velocity}}
+
+{{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <idField/>
+      <multiSelect>0</multiSelect>
+      <name>mode_of_inheritance</name>
+      <number>10</number>
+      <picker>0</picker>
+      <prettyName>Mode of inheritance</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+    </mode_of_inheritance>
     <negative_phenotype>
       <cache>0</cache>
       <classname/>
@@ -476,7 +588,7 @@
       <idField/>
       <multiSelect>1</multiSelect>
       <name>negative_phenotype</name>
-      <number>18</number>
+      <number>20</number>
       <picker>0</picker>
       <prettyName>Symptoms NOT observed in this patient</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -500,7 +612,7 @@
       <idField/>
       <multiSelect>1</multiSelect>
       <name>negative_prenatal_phenotype</name>
-      <number>20</number>
+      <number>22</number>
       <picker>0</picker>
       <prettyName>negative_prenatal_phenotype</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -524,7 +636,7 @@
       <idField/>
       <multiSelect>1</multiSelect>
       <name>omim_id</name>
-      <number>14</number>
+      <number>16</number>
       <picker>0</picker>
       <prettyName>OMIM disorder</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -609,7 +721,7 @@
       <idField/>
       <multiSelect>0</multiSelect>
       <name>pedigree</name>
-      <number>25</number>
+      <number>27</number>
       <picker>0</picker>
       <prettyName>Pedigree</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -638,7 +750,7 @@
       <idField/>
       <multiSelect>1</multiSelect>
       <name>phenotype</name>
-      <number>17</number>
+      <number>19</number>
       <picker>0</picker>
       <prettyName>Clinical symptoms &amp; physical findings</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -658,7 +770,7 @@
       <disabled>0</disabled>
       <editor>---</editor>
       <name>prenatal_comments</name>
-      <number>21</number>
+      <number>23</number>
       <picker>0</picker>
       <prettyName>Notes</prettyName>
       <rows>5</rows>
@@ -682,7 +794,7 @@
       <idField/>
       <multiSelect>1</multiSelect>
       <name>prenatal_phenotype</name>
-      <number>19</number>
+      <number>21</number>
       <picker>0</picker>
       <prettyName>Prenatal and Perinatal History</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -704,7 +816,7 @@
       <displayType>radio</displayType>
       <multiSelect>0</multiSelect>
       <name>relative</name>
-      <number>10</number>
+      <number>12</number>
       <picker>0</picker>
       <prettyName>Relative</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -727,7 +839,7 @@
       <idField/>
       <multiSelect>0</multiSelect>
       <name>relative_of</name>
-      <number>11</number>
+      <number>13</number>
       <picker>1</picker>
       <prettyName>relative_of</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -751,7 +863,7 @@
       <idField/>
       <multiSelect>1</multiSelect>
       <name>reports_history</name>
-      <number>28</number>
+      <number>30</number>
       <picker>0</picker>
       <prettyName>Reports</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -773,7 +885,7 @@
       <displayFormType>checkbox</displayFormType>
       <displayType/>
       <name>unaffected</name>
-      <number>16</number>
+      <number>18</number>
       <prettyName>This patient is clinically normal</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>

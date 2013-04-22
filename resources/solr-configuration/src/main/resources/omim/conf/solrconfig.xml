@@ -471,7 +471,7 @@
        http://wiki.apache.org/solr/SpellCheckComponent
     -->
   <searchComponent name="spellcheck" class="solr.SpellCheckComponent">
-    <str name="queryAnalyzerFieldType">textSpell</str>
+    <str name="queryAnalyzerFieldType">text_spell</str>
 
     <!-- Multiple "Spell Checkers" can be declared and used by this
          component

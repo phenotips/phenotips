@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <xwikidoc>
   <web>PhenoTips</web>
   <name>IndexOntology</name>
@@ -341,7 +361,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 &lt;label for="ontology-url"&gt;Ontology&lt;/label&gt;
 &lt;span class="xHint"&gt;The URL of a file containing the ontology you wish to index in &lt;a href="http://www.bioontology.org/wiki/index.php/OboInOwl:Main_Page" rel="_blank"&gt;OBO format&lt;/a&gt;.&lt;/span&gt;
 &lt;/dt&gt;
-&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-url" value="http://compbio.charite.de/svn/hpo/trunk/src/ontology/human-phenotype-ontology.obo"/&gt;&lt;/dd&gt;
+&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-url" value="http://compbio.charite.de/hudson/job/hpo/lastStableBuild/artifact/ontology/release/hp.obo"/&gt;&lt;/dd&gt;
 &lt;dt&gt;
 &lt;label for="ontology-fields"&gt;Fields to index&lt;/label&gt;
 &lt;span class="xHint"&gt;A comma separated list on fields to be indexed for this term (e.g. "id,name,def,synonym,is_a"). Alternatively, you can choose to boost the weight of some fields, as follows: "id:50,name,def,synonym,is_a:0.1". If no fields are specified, all the fields in each term will be indexed, with the default weight 1.&lt;/span&gt;

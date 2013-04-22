@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <xwikidoc>
   <web>XWiki</web>
   <name>XWikiPreferences</name>
@@ -1018,6 +1038,36 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </tags>
+    <timezone>
+      <customDisplay>{{velocity}}
+      #if ($xcontext.action == 'admin' || $xcontext.action == 'edit' || $xcontext.action == 'inline')
+        {{html}}
+          #if($xwiki.jodatime)
+            &lt;select id='$prefix$name' name='$prefix$name'&gt;
+              &lt;option value="" #if($value == $tz)selected="selected"#end&gt;$msg.get('XWiki.XWikiPreferences_timezone_default')&lt;/option&gt;
+              #foreach($tz in $xwiki.jodatime.getServerTimezone().getAvailableIDs())
+                &lt;option value="$tz" #if($value == $tz)selected="selected"#end&gt;$tz&lt;/option&gt;
+              #end
+            &lt;/select&gt;
+          #else
+            &lt;input id='$prefix$name' name='$prefix$name' type="text" value="$!value"/&gt;
+          #end
+        {{/html}}
+      #else
+        $value
+      #end
+      {{/velocity}}</customDisplay>
+      <disabled>0</disabled>
+      <name>timezone</name>
+      <number>71</number>
+      <picker>0</picker>
+      <prettyName>Timezone</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </timezone>
     <title>
       <customDisplay/>
       <disabled>0</disabled>
@@ -1226,10 +1276,10 @@
       <allow>1</allow>
     </property>
     <property>
-      <groups>XWiki.XWikiAdminGroup,</groups>
+      <groups>XWiki.XWikiAdminGroup</groups>
     </property>
     <property>
-      <levels>admin,edit,undelete</levels>
+      <levels>admin,edit,undelete,delete</levels>
     </property>
     <property>
       <users/>
@@ -2397,6 +2447,36 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </tags>
+      <timezone>
+        <customDisplay>{{velocity}}
+        #if ($xcontext.action == 'admin' || $xcontext.action == 'edit' || $xcontext.action == 'inline')
+          {{html}}
+            #if($xwiki.jodatime)
+              &lt;select id='$prefix$name' name='$prefix$name'&gt;
+                &lt;option value="" #if($value == $tz)selected="selected"#end&gt;$msg.get('XWiki.XWikiPreferences_timezone_default')&lt;/option&gt;
+                #foreach($tz in $xwiki.jodatime.getServerTimezone().getAvailableIDs())
+                  &lt;option value="$tz" #if($value == $tz)selected="selected"#end&gt;$tz&lt;/option&gt;
+                #end
+              &lt;/select&gt;
+            #else
+              &lt;input id='$prefix$name' name='$prefix$name' type="text" value="$!value"/&gt;
+            #end
+          {{/html}}
+        #else
+          $value
+        #end
+        {{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>timezone</name>
+        <number>71</number>
+        <picker>0</picker>
+        <prettyName>Timezone</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </timezone>
       <title>
         <customDisplay/>
         <disabled>0</disabled>
@@ -2610,22 +2690,22 @@ $xwiki.ssx.use($xwiki.getSpacePreference('colorTheme'))</meta>
       <showLeftPanels>0</showLeftPanels>
     </property>
     <property>
-      <showRightPanels>1</showRightPanels>
+      <showRightPanels>0</showRightPanels>
     </property>
     <property>
-      <showannotations/>
+      <showannotations>0</showannotations>
     </property>
     <property>
-      <showattachments/>
+      <showattachments>0</showattachments>
     </property>
     <property>
-      <showcomments/>
+      <showcomments>0</showcomments>
     </property>
     <property>
-      <showhistory/>
+      <showhistory>0</showhistory>
     </property>
     <property>
-      <showinformation/>
+      <showinformation>0</showinformation>
     </property>
     <property>
       <skin>PhenoTips.Skin</skin>
@@ -2649,7 +2729,7 @@ $xwiki.ssx.use($xwiki.getSpacePreference('colorTheme'))</meta>
       <stylesheets>style.css</stylesheets>
     </property>
     <property>
-      <title>#if ($doc.name != 'WebHome')$tdoc.getRenderedTitle("plain/1.0") | #{end}$xwiki.getDocument("$!{doc.space}.WebHome").getRenderedTitle("plain/1.0")</title>
+      <title>#if ($doc.name != 'WebHome')$tdoc.getRenderedTitle("plain/1.0") | #{end}$!xwiki.getDocument("$!{doc.space}.WebHome").getRenderedTitle("plain/1.0")</title>
     </property>
     <property>
       <upload_maxsize>33554432</upload_maxsize>

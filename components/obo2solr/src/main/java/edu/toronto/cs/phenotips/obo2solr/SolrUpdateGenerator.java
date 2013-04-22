@@ -39,25 +39,25 @@ import org.xml.sax.helpers.AttributesImpl;
 
 public class SolrUpdateGenerator
 {
-    private final static String TERM_MARKER = "[Term]";
+    private static final String TERM_MARKER = "[Term]";
 
-    private final static String ROOT_ELEMENT_NAME = "add";
+    private static final String ROOT_ELEMENT_NAME = "add";
 
-    private final static String TERM_ELEMENT_NAME = "doc";
+    private static final String TERM_ELEMENT_NAME = "doc";
 
-    private final static String FIELD_ELEMENT_NAME = "field";
+    private static final String FIELD_ELEMENT_NAME = "field";
 
-    private final static String FIELD_ATTRIBUTE_NAME = "name";
+    private static final String FIELD_ATTRIBUTE_NAME = "name";
 
-    private final static String FIELD_ATTRIBUTE_BOOST = "boost";
+    private static final String FIELD_ATTRIBUTE_BOOST = "boost";
 
-    private final static String FIELD_NAME_VALUE_SEPARATOR = "\\s*:\\s+";
+    private static final String FIELD_NAME_VALUE_SEPARATOR = "\\s*:\\s+";
 
     private AttributesImpl atts;
 
     private ContentHandler hd;
 
-    private int counter = 0;
+    private int counter;
 
     private TermData crtTerm = new TermData();
 
@@ -90,12 +90,11 @@ public class SolrUpdateGenerator
                     ++this.counter;
                     continue;
                 }
-                String pieces[] = line.split(FIELD_NAME_VALUE_SEPARATOR, 2);
+                String[] pieces = line.split(FIELD_NAME_VALUE_SEPARATOR, 2);
                 if (pieces.length != 2) {
                     continue;
                 }
-                String name = pieces[0], value = pieces[1];
-                loadField(name, value);
+                loadField(pieces[0], pieces[1]);
             }
             if (this.counter > 0) {
                 storeCrtTerm();
@@ -156,12 +155,11 @@ public class SolrUpdateGenerator
                     ++this.counter;
                     continue;
                 }
-                String pieces[] = line.split(FIELD_NAME_VALUE_SEPARATOR, 2);
+                String[] pieces = line.split(FIELD_NAME_VALUE_SEPARATOR, 2);
                 if (pieces.length != 2) {
                     continue;
                 }
-                String name = pieces[0], value = pieces[1];
-                loadField(name, value);
+                loadField(pieces[0], pieces[1]);
             }
             if (this.counter > 0) {
                 storeCrtTerm();
@@ -223,7 +221,6 @@ public class SolrUpdateGenerator
         if (!(isFieldSelected(name))) {
             return;
         }
-        // System.out.println("Adding " + name + " " + value.replaceAll("\"([^\"]+)\".*", "$1"));
         this.crtTerm.addTo(name, value.replaceAll("\"([^\"]+)\".*", "$1"));
     }
 

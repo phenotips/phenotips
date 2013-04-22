@@ -103,10 +103,12 @@
       </analyzer>
     </fieldtype>
 
-    <!-- Field used to construct a spellcheck index from. It does basic
+    <!-- Field for exact matching of the terms in the query, without stemming
+         or other disruptive text processing filters applied to it.
+         It is also used to construct a spellcheck index from. It does basic
          tokenization and lowercasing, since it's only used as a source of
          valid words. -->
-    <fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100">
+    <fieldType name="text_spell" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
@@ -132,6 +134,7 @@
   <fields>
     <field name="id" type="string" indexed="true" stored="true" required="true" />
     <field name="name" type="text_general" indexed="true" stored="true"/>
+    <field name="nameSpell" type="text_spell" indexed="true" stored="false"/>
     <field name="nameSort" type="string" indexed="true" stored="false"/>
     <field name="symptom" type="text_ws" indexed="true" stored="false" multiValued="true"/>
     <field name="actual_symptom" type="text_ws" indexed="true" stored="true" multiValued="true"/>
@@ -139,12 +142,12 @@
     <field name="actual_not_symptom" type="text_ws" indexed="true" stored="true" multiValued="true"/>
     <field name="keywords" type="text_general" indexed="true" stored="false" multiValued="true"/>
     <field name="not_keywords" type="text_general" indexed="true" stored="false" multiValued="true"/>
+    <field name="GENE" type="text_ws" indexed="true" stored="true" multiValued="true"/>
 
     <!-- Catchall field, containing all other searchable text fields (implemented
          via copyField further on in this schema).  -->
     <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
-    <field name="phonetic" type="phonetic" indexed="true" stored="false" multiValued="true"/>
-    <field name="textSpell" type="textSpell" indexed="true" stored="false" multiValued="true"/>
+    <field name="textSpell" type="text_spell" indexed="true" stored="false" multiValued="true"/>
 
     <!-- Catchall text field that indexes tokens both normally and in reverse for efficient
          leading wildcard queries. -->
@@ -159,7 +162,7 @@
   <uniqueKey>id</uniqueKey>
 
   <copyField source="name" dest="nameSort"/>
+  <copyField source="name" dest="nameSpell"/>
   <copyField source="*" dest="text"/>
-  <copyField source="*" dest="phonetic"/>
   <copyField source="*" dest="textSpell"/>
 </schema>

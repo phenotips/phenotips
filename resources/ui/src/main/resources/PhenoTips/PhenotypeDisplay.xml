@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <xwikidoc>
   <web>PhenoTips</web>
   <name>PhenotypeDisplay</name>
@@ -34,9 +54,26 @@
     #set ($nvalue = $object.getProperty("negative_${name}").value)##
     $!phenotypeDisplayTools.use($prefix, $name, $nname)##
     $!phenotypeDisplayTools.setSelectedValues($value, $nvalue)##
+    #set ($customCategories = {})
+    #set ($customNCategories = {})
+    #foreach ($categoryMapping in $doc.getObjects('PhenoTips.PhenotypeCategoryClass'))
+      #if ($categoryMapping.getProperty('target_property_name').value == $name)
+        #set ($discard = $customCategories.put($categoryMapping.getProperty('target_property_value').value, $categoryMapping.getProperty('target_property_category').value))
+      #elseif ($categoryMapping.getProperty('target_property_name').value == $nname)
+        #set ($discard = $customNCategories.put($categoryMapping.getProperty('target_property_value').value, $categoryMapping.getProperty('target_property_category').value))
+      #end
+    #end
+    $!phenotypeDisplayTools.setCustomCategories($customCategories, $customNCategories)##
   #else
     $!phenotypeDisplayTools.use($prefix, $name)##
     $!phenotypeDisplayTools.setSelectedValues($value)##
+    #set ($customCategories = {})
+    #foreach ($categoryMapping in $doc.getObjects('PhenoTips.PhenotypeCategoryClass'))
+      #if ($categoryMapping.getProperty('target_property_name').value == $name)
+        #set ($discard = $customCategories.put($categoryMapping.getProperty('target_property_value').value, $categoryMapping.getProperty('target_property_category').value))
+      #end
+    #end
+    $!phenotypeDisplayTools.setCustomCategories($customCategories)##
   #end
   {{html clean=false}}$phenotypeDisplayTools.display($data){{/html}}##
   $!phenotypeDisplayTools.clear()##

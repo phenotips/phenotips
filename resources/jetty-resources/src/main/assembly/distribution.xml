@@ -1,4 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <assembly>
   <id>distribution</id>
   <formats>
@@ -13,24 +34,32 @@
       <includes>
         <include>org.eclipse.jetty:jetty-start</include>
       </includes>
-    </dependencySet>
-    <dependencySet>
-      <!-- JSP-related jars must go in jetty/lib/jsp-2.1 -->
-      <outputDirectory>/jetty/lib/jsp-2.1</outputDirectory>
-      <includes>
-        <include>*:*jsp*</include>
-        <include>*:ecj*</include>
-        <include>*:el-api*</include>
-      </includes>
+      <!-- Needed to prevent warning since our project has a pom packaging and is not producing any artifact -->
+      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <dependencySet>
       <outputDirectory>/jetty/lib</outputDirectory>
       <excludes>
         <exclude>org.eclipse.jetty:jetty-start</exclude>
-        <exclude>*:*jsp*</exclude>
-        <exclude>*:ecj*</exclude>
-        <exclude>*:el-api*</exclude>
+        <!-- jetty-start.jar's  start.config file (see http://wiki.eclipse.org/Jetty/Feature/Start.jar) expects the
+             Servlet API JAR to be named servlet-api-3.0.jar. However Jetty names it javax.servlet-<version>.jar, thus
+             we need to rename it. -->
+        <exclude>org.eclipse.jetty.orbit:javax.servlet</exclude>
       </excludes>
+      <!-- Needed to prevent warning since our project has a pom packaging and is not producing any artifact -->
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+    <!-- jetty-start.jar's  start.config file (see http://wiki.eclipse.org/Jetty/Feature/Start.jar) expects the
+         Servlet API JAR to be named servlet-api-3.0.jar. However Jetty names it javax.servlet-<version>.jar, thus
+         we need to rename it. -->
+    <dependencySet>
+      <outputFileNameMapping>servlet-api-3.0.jar</outputFileNameMapping>
+      <outputDirectory>/jetty/lib</outputDirectory>
+      <includes>
+        <include>org.eclipse.jetty.orbit:javax.servlet</include>
+      </includes>
+      <!-- Needed to prevent warning since our project has a pom packaging and is not producing any artifact -->
+      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>
   <fileSets>

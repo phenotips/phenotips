@@ -1,3 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -48,11 +70,65 @@
     </snapshotRepository>
   </distributionManagement>
 
+  <repositories>
+    <repository>
+      <id>uoft-releases</id>
+      <name>UofT Releases repository</name>
+      <url>http://nexus.cs.toronto.edu/nexus/content/repositories/releases/</url>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>fail</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>uoft-snapshots</id>
+      <name>UofT Releases repository</name>
+      <url>http://nexus.cs.toronto.edu/nexus/content/repositories/snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+        <checksumPolicy>fail</checksumPolicy>
+      </releases>
+      <snapshots>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>uoft-externals</id>
+      <name>UofT external repositories mirror</name>
+      <url>http://nexus.cs.toronto.edu/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>uoft-externals</id>
+      <name>UofT external repositories mirror</name>
+      <url>http://nexus.cs.toronto.edu/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
   <properties>
-    <xwiki.version>4.4.1</xwiki.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <xwiki.version>4.5.3</xwiki.version>
     <slf4j.version>1.7.2</slf4j.version>
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>
+    <clirr.skip>false</clirr.skip>
   </properties>
 
   <dependencyManagement>
@@ -68,6 +144,16 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
+      </dependency>
+      <!-- Most plugins depend on the servlet API -->
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <!-- Note: The 2.4 version is not technically correct as 2.4 corresponds to a specification
+             # and is not an implementation version. The central repo would need to be fixed... -->
+        <version>2.4</version>
+        <!-- It should always be provided, otherwise containers will complain about it. -->
+        <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -92,6 +178,39 @@
         </configuration>
       </plugin>
 
+      <plugin>
+        <!-- Run Checkstyle -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <!-- Check license headers -->
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <!-- API backwards compatibility check -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>clirr-maven-plugin</artifactId>
+        <configuration>
+          <!-- List of specific CLIRR excludes.
+               See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
+          -->
+          <ignored>
+            <!-- Remove the following ignores after we release the current version as final -->
+            <difference>
+              <className>edu/toronto/cs/phenotips/tools/PercentileTools</className>
+              <differenceType>8001</differenceType>
+              <justification>Moved to a separate module.</justification>
+            </difference>
+          </ignored>
+          <excludes>
+            <exclude>**/internal/**</exclude>
+            <exclude>**/test/**</exclude>
+            <!-- Remove the following excludes after we release the current version as final -->
+          </excludes>
+        </configuration>
+      </plugin>
       <!-- We want to force packaging the license resources in the produced XWiki artifacts -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -222,7 +341,7 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>1.9.0</version>
           <configuration>
-            <skip>${xwiki.license.skip}</skip>
+            <skip>${license.skip}</skip>
             <header>license.txt</header>
             <strictCheck>true</strictCheck>
             <headerDefinitions>
@@ -238,8 +357,13 @@
               <aj>SLASHSTAR_STYLE</aj>
             </mapping>
             <!-- We're only interested in checking our sources and our POMs -->
+            <!-- At the moment, only check the license headers in Java, XML and shell script files -->
+            <!-- FIXME: fix other types of files as well -->
             <includes>
-              <include>src/**</include>
+              <include>src/**/*.java</include>
+              <include>src/**/*.xml</include>
+              <include>src/**/*.bat</include>
+              <include>src/**/*.sh</include>
               <include>pom.xml</include>
             </includes>
             <excludes>
@@ -251,6 +375,7 @@
               <exclude>**/it/**/goals.txt</exclude>
               <exclude>**/goal.txt</exclude>
             </excludes>
+            <useDefaultExcludes>false</useDefaultExcludes>
           </configuration>
           <!-- Add a dependency since this is where the maven-license-plugin plugin will find the license.txt file -->
           <dependencies>
@@ -370,13 +495,13 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.3</version>
+          <version>2.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.5.1</version>
+          <version>2.7</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -506,6 +631,65 @@
       </plugins>
     </pluginManagement>
   </build>
+  <profiles>
+    <profile>
+      <!-- Profile used when the release plugin executes. We want javadocs and source jars to be released
+           + ensure we sign files using GPG. -->
+      <id>release</id>
+      <activation>
+        <property>
+          <!-- This property is automatically defined by the Maven release plugin when executing
+               a release. Thus this profile will be automatically enabled when releasing -->
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <configuration>
+                  <useAgent>true</useAgent>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <modules>
     <module>components</module>

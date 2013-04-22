@@ -47,10 +47,7 @@ import edu.toronto.cs.phenotips.obo2solr.maps.CounterMap;
 import edu.toronto.cs.phenotips.obo2solr.maps.SumMap;
 
 /**
- * Provides access to the Solr server, with the main purpose of providing access to the HPO ontology, and secondary
- * purposes of re-indexing the ontology and clearing the index completely. There are two ways of accessing the HPO
- * ontology: getting a single term by its identifier, or searching for terms matching a given query in the Lucene query
- * language.
+ * Provides access to the Solr server, with the main purpose of providing access to the OMIM ontology.
  * 
  * @version $Id$
  */
@@ -59,6 +56,7 @@ import edu.toronto.cs.phenotips.obo2solr.maps.SumMap;
 @Singleton
 public class OmimScriptService extends AbstractSolrScriptService
 {
+    /** Provides access to the HPO ontology, for converting IDs into names and for getting all term ancestors. */
     @Inject
     @Named("hpo")
     private ScriptService service;
@@ -69,31 +67,39 @@ public class OmimScriptService extends AbstractSolrScriptService
         return "omim";
     }
 
-    public List<SearchResult> getDifferentialPhenotypes(Collection<String> phenotypes, int limit)
+    /**
+     * Compute a list of phenotypes to investigate, which maximize the probability of getting more accurate automatic
+     * diagnosis suggestions.
+     *
+     * @param phenotypes the list of already selected phenotypes
+     * @param limit the maximum number of phenotypes to return
+     * @return a list of phenotype suggestions
+     * @deprecated use {@link #getDifferentialPhenotypes(Collection, Collection, int)} which also has support for
+     *             negative phenotypes
+     */
+    @Deprecated
+    public List<SuggestedPhenotype> getDifferentialPhenotypes(Collection<String> phenotypes, int limit)
     {
         return getDifferentialPhenotypes(phenotypes, Collections.<String> emptyList(), limit);
     }
 
-    public List<SearchResult> getDifferentialPhenotypes(Collection<String> phenotypes, Collection<String> nphenotypes,
-        int limit)
+    /**
+     * Compute a list of phenotypes to investigate, which maximize the probability of getting more accurate automatic
+     * diagnosis suggestions.
+     *
+     * @param phenotypes the list of already selected phenotypes
+     * @param nphenotypes phenotypes that are not observed in the patient
+     * @param limit the maximum number of phenotypes to return
+     * @return a list of phenotype suggestions
+     */
+    public List<SuggestedPhenotype> getDifferentialPhenotypes(Collection<String> phenotypes,
+        Collection<String> nphenotypes, int limit)
     {
-        Map<String, String> params = new HashMap<String, String>();
         HPOScriptService hpoService = (HPOScriptService) this.service;
-        String q = "symptom:" + StringUtils.join(phenotypes, " symptom:");
-        if (nphenotypes.size() > 0) {
-            q += " not_symptom:" + StringUtils.join(nphenotypes, " not_symptom:");
-        }
-        params.put(CommonParams.Q, q.replaceAll("HP:", "HP\\\\:"));
-        params.put(CommonParams.ROWS, "100");
-        params.put(CommonParams.START, "0");
-        params.put(CommonParams.DEBUG_QUERY, "true");
-        params.put(CommonParams.EXPLAIN_STRUCT, "true");
-
-        MapSolrParams solrParams = new MapSolrParams(params);
         QueryResponse response;
-        List<SearchResult> result = new LinkedList<SearchResult>();
+        List<SuggestedPhenotype> result = new LinkedList<SuggestedPhenotype>();
         try {
-            response = this.server.query(solrParams);
+            response = this.server.query(prepareParams(phenotypes, nphenotypes));
         } catch (SolrServerException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -124,11 +130,35 @@ public class OmimScriptService extends AbstractSolrScriptService
                 if (term == null) {
                     continue;
                 }
-                result.add(new SearchResult(hpoId, (String) term.getFieldValue("name"), cummulativeScore.get(hpoId)
-                    / (matchCounter.get(hpoId) * matchCounter.get(hpoId))));
+                result.add(new SuggestedPhenotype(hpoId, (String) term.getFieldValue("name"),
+                    cummulativeScore.get(hpoId) / (matchCounter.get(hpoId) * matchCounter.get(hpoId))));
             }
             Collections.sort(result);
         }
         return result.subList(0, limit);
+    }
+
+    /**
+     * Prepare the map of parameters that can be passed to a Solr query, in order to get a list of diseases matching the
+     * selected positive and negative phenotypes.
+     *
+     * @param phenotypes the list of already selected phenotypes
+     * @param nphenotypes phenotypes that are not observed in the patient
+     * @return the computed Solr query parameters
+     */
+    private MapSolrParams prepareParams(Collection<String> phenotypes, Collection<String> nphenotypes)
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        String q = "symptom:" + StringUtils.join(phenotypes, " symptom:");
+        if (nphenotypes.size() > 0) {
+            q += "  not_symptom:" + StringUtils.join(nphenotypes, " not_symptom:");
+        }
+        params.put(CommonParams.Q, q.replaceAll("HP:", "HP\\\\:"));
+        params.put(CommonParams.ROWS, "100");
+        params.put(CommonParams.START, "0");
+        params.put(CommonParams.DEBUG_QUERY, Boolean.toString(true));
+        params.put(CommonParams.EXPLAIN_STRUCT, Boolean.toString(true));
+
+        return new MapSolrParams(params);
     }
 }

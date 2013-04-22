@@ -1,4 +1,23 @@
 #!/bin/sh
+# ---------------------------------------------------------------------------
+# See the NOTICE file distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation; either version 2.1 of
+# the License, or (at your option) any later version.
+#
+# This software is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this software; if not, write to the Free
+# Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+# 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+# ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
 # Optional ENV vars
@@ -23,13 +42,11 @@ done
 PRGDIR=`dirname "$PRG"`
 cd "$PRGDIR"
 
-echo $PRGDIR
-
 JETTY_HOME=jetty
 
 # If no START_OPTS env variable has been defined use default values.
 if [ -z "$START_OPTS" ] ; then
-  START_OPTS="-Xmx512m -XX:MaxPermSize=128m"
+  START_OPTS="-Xmx512m -XX:MaxPermSize=192m"
 fi
 
 # The port on which to start Jetty can be passed to this script as the first argument
@@ -57,7 +74,6 @@ mkdir -p $XWIKI_DATA_DIR 2>/dev/null
 
 # Ensure the logs directory exists as otherwise Jetty reports an error
 mkdir -p $XWIKI_DATA_DIR/logs 2>/dev/null
-mkdir -p jetty/logs 2>/dev/null
 
 # Ensure the work directory exists so that Jetty uses it for its temporary files.
 mkdir -p $JETTY_HOME/work 2>/dev/null
@@ -85,4 +101,4 @@ START_OPTS="$START_OPTS -Dsolr.solr.home=${PRGDIR}/solrconfig/"
 # service attacks.
 START_OPTS="$START_OPTS -Dorg.eclipse.jetty.server.Request.maxFormContentSize=1000000"
 
-java $START_OPTS $3 $4 $5 $6 $7 $8 $9 -jar $JETTY_HOME/start.jar OPTIONS=All
+java $START_OPTS $3 $4 $5 $6 $7 $8 $9 -jar $JETTY_HOME/start.jar

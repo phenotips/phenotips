@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <xwikidoc>
   <web>PhenoTips</web>
   <name>YesNoNAPicker</name>
@@ -464,7 +484,7 @@ zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
     var value = element.value;
     var selected = element.checked;
     var label = element.parentNode;
-    if (value != this.yesInput.value || !selected || !label) {
+    if (value != this.yesInput.value || !selected || !label || (this.yesInput.name != element.name &amp;&amp; this.noInput.name != element.name)) {
       return;
     }
     if (label.hasClassName('na')) {
@@ -710,8 +730,8 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
   <content>{{velocity}}
 $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
 $xwiki.ssx.use('PhenoTips.YesNoNAPicker')##
-#set ($doDisplay = ($xcontext.action == 'edit' || $value != ''))
+#set ($doDisplay = ($xcontext.action == 'edit' || "$!value" != ''))
 {{html clean=false wiki=false}}##
-#if ($xcontext.action == 'edit')&lt;span class="yes-no-picker"&gt;&lt;label class="na"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="" #if($value == '')checked="checked"#end /&gt;NA&lt;/label&gt;&lt;label class="yes"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="1" #if($value == '1')checked="checked"#end /&gt;Y&lt;/label&gt;&lt;label class="no"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="0" #if($value == '0')checked="checked" #end/&gt;N&lt;/label&gt;&lt;/span&gt;#elseif ($value == '0')NO #{end}#if ($doDisplay)&lt;label class="yes-no-picker-label"&gt;$!object.xWikiClass.get($name).prettyName&lt;/label&gt;#end{{/html}}{{velocity}}
+#if ($xcontext.action == 'edit')&lt;span class="yes-no-picker"&gt;&lt;label class="na"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="" #if($value == '')checked="checked"#end /&gt;NA&lt;/label&gt;&lt;label class="yes"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="1" #if($value == '1')checked="checked"#end /&gt;Y&lt;/label&gt;&lt;label class="no"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="0" #if($value == '0')checked="checked" #end/&gt;N&lt;/label&gt;&lt;/span&gt;#elseif ($value == '0')NO #{end}#if ($doDisplay)&lt;label class="yes-no-picker-label"&gt;$!object.xWikiClass.get($name).prettyName&lt;/label&gt;#end{{/html}}{{/velocity}}
 </content>
 </xwikidoc>

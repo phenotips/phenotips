@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <xwikidoc>
   <web>PhenoTips</web>
   <name>MeasurementsClass</name>
@@ -65,6 +85,46 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
     </age>
+    <armspan>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>armspan</name>
+      <number>39</number>
+      <numberType>float</numberType>
+      <prettyName>Arm span (cm)</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+    </armspan>
+    <armspan_evaluation>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>armspan_evaluation</name>
+      <number>40</number>
+      <prettyName/>
+      <script>{{velocity}}
+#set ($dValue = $object.getProperty('armspan').value)
+#set ($hValue = $object.getProperty('height').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '' || "$!hValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($dValue = $dValue - $hValue)
+  #set ($pValue = $services.measurements.armspan.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.armspan.valueToStandardDeviation($male, $age, $dValue)))
+##  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+  #set ($dValue = "~= Height#if ($dValue != 0)#if($dValue &gt;= 0) + #else - #end$mathtool.abs($dValue)cm#end")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+    </armspan_evaluation>
     <bmi>
       <customDisplay>{{velocity}}
 #if ($xcontext.action != 'edit' || $request.editor != 'object')
@@ -105,11 +165,11 @@
 #if ("$!wValue" == '' || "$!hValue" == '' || "$!wValue" == '0' || "$!hValue" == '0')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getBMIPercentile($male, $age, $wValue, $hValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getBMIStandardDeviation($male, $age, $wValue, $hValue)))
+  #set ($pValue = $services.measurements.bmi.valueToPercentile($male, $age, $wValue, $hValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.bmi.valueToStandardDeviation($male, $age, $wValue, $hValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -164,11 +224,11 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getEarLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getEarLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.ear.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.ear.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -201,11 +261,11 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getEarLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getEarLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.ear.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.ear.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -238,11 +298,11 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getFootLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getFootLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.foot.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.foot.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -275,11 +335,11 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getFootLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getFootLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.foot.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.foot.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -312,11 +372,11 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getHandLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getHandLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.hand.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.hand.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -349,45 +409,21 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getHandLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getHandLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.hand.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.hand.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </hand_right_evaluation>
-    <hc_evaluation>
+    <hc>
       <customDisplay/>
       <disabled>0</disabled>
-      <name>hc_evaluation</name>
-      <number>10</number>
-      <prettyName/>
-      <script>{{velocity}}
-#set ($dValue = $object.getProperty('head_circumference').value)
-#set ($age = $object.getProperty('age').value)
-#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
-#if ("$!dValue" == '')
-  #set ($dValue = '-')
-#else
-  #set ($pValue = $services.percentile.getHCPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getHCStandardDeviation($male, $age, $dValue)))
-  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
-#end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
-{{/velocity}}</script>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
-    </hc_evaluation>
-    <head_circumference>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <name>head_circumference</name>
+      <name>hc</name>
       <number>9</number>
       <numberType>float</numberType>
       <prettyName>Head circ. (cm)</prettyName>
@@ -396,7 +432,31 @@
       <validationMessage/>
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-    </head_circumference>
+    </hc>
+    <hc_evaluation>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>hc_evaluation</name>
+      <number>10</number>
+      <prettyName/>
+      <script>{{velocity}}
+#set ($dValue = $object.getProperty('hc').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.hc.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.hc.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+    </hc_evaluation>
     <height>
       <customDisplay/>
       <disabled>0</disabled>
@@ -423,11 +483,11 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getHeightPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getHeightStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.height.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.height.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -460,11 +520,11 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getInnerCanthalDistancePercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getInnerCanthalDistanceStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.icd.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.icd.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -497,11 +557,11 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getInterpupilaryDistancePercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getInterpupilaryDistanceStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.ipd.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.ipd.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -534,11 +594,11 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getOuterCanthalDistancePercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getOuterCanthalDistanceStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.ocd.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.ocd.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -571,11 +631,11 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getPalmLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getPalmLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.palm.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.palm.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -608,11 +668,11 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getPalmLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getPalmLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.palm.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.palm.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -645,17 +705,91 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getPalpebralFissureLengthPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getPalpebralFissureLengthStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.pfl.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.pfl.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </pfl_evaluation>
+    <philtrum>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>philtrum</name>
+      <number>35</number>
+      <numberType>float</numberType>
+      <prettyName>Philtrum length (cm)</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+    </philtrum>
+    <philtrum_evaluation>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>philtrum_evaluation</name>
+      <number>36</number>
+      <prettyName/>
+      <script>{{velocity}}
+#set ($dValue = $object.getProperty('philtrum').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.philtrum.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.philtrum.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+    </philtrum_evaluation>
+    <sitting>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>sitting</name>
+      <number>37</number>
+      <numberType>float</numberType>
+      <prettyName>Sitting height (cm)</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+    </sitting>
+    <sitting_evaluation>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>sitting_evaluation</name>
+      <number>38</number>
+      <prettyName/>
+      <script>{{velocity}}
+#set ($dValue = $object.getProperty('sitting').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.sitting.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.sitting.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+{{/velocity}}</script>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+    </sitting_evaluation>
     <weight>
       <customDisplay/>
       <disabled>0</disabled>
@@ -682,11 +816,11 @@
 #if ("$!dValue" == '')
   #set ($dValue = '-')
 #else
-  #set ($pValue = $services.percentile.getWeightPercentile($male, $age, $dValue))
-  #set ($sdValue = $mathtool.roundTo(2, $services.percentile.getWeightStandardDeviation($male, $age, $dValue)))
+  #set ($pValue = $services.measurements.weight.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.weight.valueToStandardDeviation($male, $age, $dValue)))
   #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
 #end
-(% class="${name} displayed-value $!{services.percentile.getFuzzyValue($!sdValue)}" %)(((${dValue})))
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)(((${dValue})))
 {{/velocity}}</script>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>

@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <xwikidoc>
   <web>PhenoTips</web>
   <name>ChartServiceMacros</name>
@@ -28,16 +48,17 @@
 ## ---------------------------------------------------------
 ## Initialization of 'global' vars
 ## ---------------------------------------------------------
-#set ($wMeasurements = [])
-#set ($hMeasurements = [])
-#set ($hcMeasurements = [])
-#set ($ocdMeasurements = [])
-#set ($icdMeasurements = [])
-#set ($measurements = {'weight' : [], 'height' : [], 'head_circumference' : [], 'ocd' : [], 'icd' : []})
+#set ($measurements = {})
 #set ($ageLimits = {})
+#foreach ($measurementName in $services.measurements.getAvailableMeasurementNames())
+  #set ($discard = $measurements.put($measurementName, []))
+  #set ($discard = $ageLimits.put($measurementName, {'max': -1, 'min': 100000}))
+#end
 #set ($sex = false)
 #set ($c = $xwiki.getDocument('PhenoTips.ChartGenerator').getContent())
 #set ($service = $xwiki.getDocument('PhenoTips.ChartService'))
+##
+##
 ## ---------------------------------------------------------
 ## Build measurements data from objects
 ## ---------------------------------------------------------
@@ -45,18 +66,15 @@
   #if (!$obj.getProperty('date_of_birth').value)
     #break
   #end
-  #macro (_updateMeasurements $measurements $o $sourceName $age)
-    #if ("$!{o.getProperty($sourceName).value}" != '')
-      #if ("$!ageLimits.get($sourceName)" == '')
-        #set ($discard = $ageLimits.put($sourceName, {}))
+  #macro (_updateMeasurements $measurements $o $measurementName $age)
+    #if ("$!{o.getProperty($measurementName).value}" != '')
+      #if (!($ageLimits.get($measurementName).min &lt;= $age))
+        #set ($ageLimits.get($measurementName).min = $age)
       #end
-      #if (!($ageLimits.get($sourceName).min &lt;= $age))
-        #set ($ageLimits.get($sourceName).min = $age)
+      #if (!($ageLimits.get($measurementName).max &gt;= $age))
+        #set ($ageLimits.get($measurementName).max = $age)
       #end
-      #if (!($ageLimits.get($sourceName).max &gt;= $age))
-        #set ($ageLimits.get($sourceName).max = $age)
-      #end
-      #set ($discard = $measurements.add({'a': $age, 'x' : $o.getProperty($sourceName).value}))
+      #set ($discard = $measurements.add({'a': $age, 'x' : $o.getProperty($measurementName).value}))
     #end
   #end
   #set ($bDate = $xwiki.jodatime.getMutableDateTime($obj.getProperty('date_of_birth').value.time).toMutableDateTime($xwiki.jodatime.getUTCTimezone()))
@@ -64,47 +82,44 @@
     #set ($mDate = $xwiki.jodatime.getMutableDateTime($o.getProperty('date').value.time).toMutableDateTime($xwiki.jodatime.getUTCTimezone()))
     #set ($age = $mDate.toInstant().minus($bDate.toInstant().getMillis()).toDateTime($xwiki.jodatime.getUTCTimezone()))
     #set ($age = ($age.year - 1970) * 12 + $age.monthOfYear - 1)
-    #if ($age &gt;=0)
-      #_updateMeasurements($wMeasurements $o 'weight' $age)
-      #_updateMeasurements($hMeasurements $o 'height' $age)
-      #_updateMeasurements($hcMeasurements $o 'head_circumference' $age)
-      #_updateMeasurements($ocdMeasurements $o 'ocd' $age)
-      #_updateMeasurements($icdMeasurements $o 'icd' $age)
+    #if ($age &gt;= 0)
+      #foreach ($measurementName in $services.measurements.getAvailableMeasurementNames())
+        #_updateMeasurements($measurements.get($measurementName) $o $measurementName $age)
+      #end
     #end
   #end
   #set ($sex = $obj.getProperty('gender').value != 'F')
 #end
+##
+##
 ## ---------------------------------------------------------
 ## Build measurements data from request
 ## ---------------------------------------------------------
 #macro (_buildMeasurementsFromRequest)
-  #macro (_buildMeasurementFromRequest $measurements $paramName $sourceName)
-    #foreach ($m in $request.getParameterValues($paramName))
+  #macro (_buildMeasurementFromRequest $measurements $measurementName)
+    #foreach ($m in $request.getParameterValues($measurementName))
       #if ("$!{m}" != '')
         #set ($age = $mathtool.toInteger($ages.get($foreach.index)))
-        #if ("$!ageLimits.get($sourceName)" == '')
-          #set ($discard = $ageLimits.put($sourceName, {}))
+        #if (!($ageLimits.get($measurementName).min &lt;= $age))
+          #set ($ageLimits.get($measurementName).min = $age)
         #end
-        #if (!($ageLimits.get($sourceName).min &lt;= $age))
-          #set ($ageLimits.get($sourceName).min = $age)
-        #end
-        #if (!($ageLimits.get($sourceName).max &gt;= $age))
-          #set ($ageLimits.get($sourceName).max = $age)
+        #if (!($ageLimits.get($measurementName).max &gt;= $age))
+          #set ($ageLimits.get($measurementName).max = $age)
         #end
         #set ($discard = $measurements.add({'a': $age, 'x' : $mathtool.toDouble($m)}))
       #end
     #end
   #end
   #set ($ages = $request.getParameterValues('a'))
-  #_buildMeasurementFromRequest($wMeasurements 'w', 'weight')
-  #_buildMeasurementFromRequest($hMeasurements 'h', 'height')
-  #_buildMeasurementFromRequest($hcMeasurements 'c' 'head_circumference')
-  #_buildMeasurementFromRequest($ocdMeasurements 'ocd' 'ocd')
-  #_buildMeasurementFromRequest($icdMeasurements 'icd' 'icd')
+  #foreach ($measurementName in $services.measurements.getAvailableMeasurementNames())
+    #_buildMeasurementFromRequest($measurements.get($measurementName) $measurementName)
+  #end
   #set ($sex = ($request.getParameter('s') != 'F'))
 #end
+##
+##
 ## ---------------------------------------------------------
-## Detect compatible image "format" based on the crt browser
+## Detect compatible image "format" based on the current browser
 ## ---------------------------------------------------------
 #macro(_detectChartFormat)
   #set($userAgentStr = $request.getHeader("User-Agent"))
@@ -115,27 +130,41 @@
   #end
 $format##
 #end
+##
+##
 ## ---------------------------------------------------------
 ## Generate charts for a specific measurement
 ## ---------------------------------------------------------
-#macro (_generateCharts $measurements $chartName $sourceName $paramName $title)
-  #if ($ageLimits.get($sourceName).min &lt; 24 || $ageLimits.get($sourceName).max &lt; 36)
-    #_generateChart($measurements, "${chartName}03" $paramName $title)
-  #end
-  #if ($ageLimits.get($sourceName).max &gt;= 36)
-    #_generateChart($measurements, "${chartName}220" $paramName $title)
+#macro (_generateCharts $measurements $measurementName)
+  #if (!$measurements.isEmpty())
+    #set ($chartConfigurations = [])
+    #foreach ($chartConfiguration in $services.measurements.get($measurementName).getChartsConfigurations())
+      #if ($chartConfiguration.lowerAgeLimit &lt;= $ageLimits.get($measurementName).min)
+        #set ($chartConfigurations = [])
+      #end
+      #set ($discard = $chartConfigurations.add($chartConfiguration))
+      #if ($chartConfiguration.upperAgeLimit &gt; $ageLimits.get($measurementName).max)
+        #break
+      #end
+    #end
+    #foreach ($chartConfiguration in $chartConfigurations)
+      #_generateChart($measurements, $chartConfiguration)
+    #end
   #end
 #end
+##
+##
 ## ---------------------------------------------------------
 ## Generate chart for a specific measurement and age span
 ## ---------------------------------------------------------
-#macro (_generateChart $measurements $chartName $paramName $title)
-  #if ($measurements.size() &gt; 0)
-    #set ($chart = $chartName)
+#macro (_generateChart $measurements $chartConfiguration)
+  #if (!$measurements.isEmpty())
     #set ($svg = "#evaluate($c)")
-    #set ($queryString = "n=${chartName}#if(!$sex)&amp;s=F#end")
+    #set ($queryString = "n=${chartConfiguration.measurementType}#if(!$sex)&amp;s=F#end")
     #foreach ($m in $measurements)
-      #set ($queryString = "${queryString}&amp;a=${m.a}&amp;${paramName}=${m.x}")
+      #if ($m.a &gt;= $chartConfiguration.lowerAgeLimit &amp;&amp; $m.a &lt; $chartConfiguration.upperAgeLimit)
+        #set ($queryString = "${queryString}&amp;a=${m.a}&amp;${chartConfiguration.measurementType}=${m.x}")
+      #end
     #end
     #if ($options.format == 'raster' || "#_detectChartFormat()" == 'raster')
       #set ($svg = $svg.replaceAll('\{\{/?html.*?}}', '').trim())
@@ -154,7 +183,7 @@ $format##
       #end
     #else
       #if ($options.format == 'raster')
-        #set ($img = "&lt;img style='width:100%' title='$title' src='$src'/&gt;")
+        #set ($img = "&lt;img style='width:100%' title='$chartConfiguration.chartTitle' src='$src'/&gt;")
       #else
         #set ($img = $svg.replaceAll('\{\{/?html.*?}}', '').trim())
       #end
@@ -168,6 +197,9 @@ $format##
     #end
   #end
 #end
+##
+##
+##
 ## ---------------------------------------------------------
 ## Decide which method to use for building measurement data
 ## ---------------------------------------------------------
@@ -180,35 +212,16 @@ $format##
 ## Decide what charts to display and in which format
 ## ---------------------------------------------------------
 #if ($options.chartName)
-  ## ---------------------------------------------------------
-  ## Generate the selected chart
-  ## ---------------------------------------------------------
-  #if ($options.chartName.startsWith('weight'))
-    #_generateChart($wMeasurements, $options.chartName 'w' '')
-  #elseif ($options.chartName.startsWith('height'))
-    #_generateChart($hMeasurements, $options.chartName 'h' '')
-  #elseif ($options.chartName.startsWith('hc'))
-    #_generateChart($hcMeasurements, $options.chartName 'c' '')
-  #elseif ($options.chartName.startsWith('ocd'))
-    #_generateChart($ocdMeasurements, $options.chartName 'ocd' '')
-  #elseif ($options.chartName.startsWith('icd'))
-    #_generateChart($icdMeasurements, $options.chartName 'icd' '')
-  #end
+  #_generateCharts($measurements.get($options.chartName), $options.chartName)
 #else
   ## ---------------------------------------------------------
   ## Generate all the charts for all the available data
   ## ---------------------------------------------------------
-  #_generateCharts($wMeasurements, 'weight' 'weight' 'w' 'Weight for age')
-  #_generateCharts($hMeasurements, 'height' 'height' 'h' 'Height for age')
-  #if ($ageLimits.get('head_circumference').min &lt;= 36)
-    #_generateChart($hcMeasurements, 'hc03' 'c' 'Head circumference for age')
-  #end
-  #_generateCharts($ocdMeasurements, 'ocd' 'ocd' 'ocd' 'Outer canthal distance for age')
-  #if ($ageLimits.get('head_circumference').max &gt;= 24)
-    #_generateCharts($ocdMeasurements, 'icd' 'icd' 'icd' 'Inner canthal distance for age')
+  #foreach ($measurementName in $services.measurements.getAvailableMeasurementNames())
+    #_generateCharts($measurements.get($measurementName), $measurementName)
   #end
 #end
-
+##
 ## ---------------------------------------------------------
 ## All done
 ## ---------------------------------------------------------

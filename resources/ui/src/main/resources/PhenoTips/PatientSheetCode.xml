@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <xwikidoc>
   <web>PhenoTips</web>
   <name>PatientSheetCode</name>
@@ -911,11 +931,18 @@ document.observe('dom:loaded', function() {
         "hpo" : {
             script: "$xwiki.getURL('PhenoTips.SolrService', 'get')?",
             queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
-                           'name' : { 'stub': true, 'boost': 1500 },
-                           'synonym' : { 'stub': true, 'boost': 1400 },
-                           'is_a' : { 'stub': true},
-                           'text' : { 'stub': true, 'default': true },
-                           'id' : {'activationRegex' : 'HP:[0-9]+', 'stub': true, 'boost' : 50}
+                           'name' : {'wordBoost': 10, 'phraseBoost': 20},
+                           'nameSpell' : {'wordBoost': 18, 'phraseBoost': 36, 'stubBoost': 14},
+                           'nameExact' : {'phraseBoost': 100},
+                           'namePrefix' : {'phraseBoost': 30},
+                           'synonym' : {'wordBoost': 6, 'phraseBoost': 15},
+                           'synonymSpell' : {'wordBoost': 10, 'phraseBoost': 25, 'stubBoost': 7},
+                           'synonymExact' : {'phraseBoost': 70},
+                           'synonymPrefix' : {'phraseBoost': 20},
+                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1},
+                           'textSpell' : {'wordBoost': 2, 'phraseBoost': 5, 'stubBoost': 2, 'stubTrigger': true},
+                           'id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}},
+                           'alt_id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}}
                          }, {
                            'term_category': ['HP:0000118']
                          }),
@@ -950,6 +977,13 @@ document.observe('dom:loaded', function() {
         },
         "omim" : {
             script: "$xwiki.getURL('PhenoTips.OmimService', 'get')?outputSyntax=plain&amp;",
+            queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
+                           'name' : {'wordBoost': 20, 'phraseBoost': 40},
+                           'nameSpell' : {'wordBoost': 50, 'phraseBoost': 100, 'stubBoost': 20},
+                           'keywords' : {'wordBoost': 2, 'phraseBoost': 6, 'stubBoost': 2},
+                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1},
+                           'textSpell' : {'wordBoost': 2, 'phraseBoost': 5, 'stubBoost': 2, 'stubTrigger': true}
+                         }),
             varname: "q",
             noresults: "No matching terms",
             json: true,
@@ -1107,6 +1141,105 @@ document.observe('dom:loaded', function() {
              }
         }.bind(selectionSummary);
 
+        selectionSummary._preparePreview = function(pdItem) {
+          var details ='';
+          var commentPreview = pdItem.down('.comments-preview');
+          var comment = pdItem.down('.comments textarea');
+          if (comment) {
+             if (!commentPreview) {
+               commentPreview = new Element('dd', {'class' : 'comments-preview preview' });
+               comment.up().insert({after: commentPreview});
+             }
+             commentPreview.update(comment.value);
+             commentPreview.title = comment.value;
+             details += comment.value;
+          } else {
+            if (commentPreview) {commentPreview.update('');}
+          }
+          var onsetPreview = pdItem.down('.onset-preview');
+          var onset = false;
+          pdItem.select('.age_of_onset input[type="radio"]').each(function(item) {
+            if (item.checked &amp;&amp; item.value != '') {
+              onset = item;
+            }
+          });
+          if (onset) {
+             if (!onsetPreview) {
+               onsetPreview = new Element('dd', {'class' : 'onset-preview preview' });
+               onset.up('dd').insert({after: onsetPreview});
+             }
+             onsetPreview.update(onset.title);
+             details += onset.title;
+          } else {
+            if (onsetPreview) {onsetPreview.update('');}
+          }
+          var progressionPreview = pdItem.down('.progression-preview');
+          var progression = false;
+          pdItem.select('.pace_of_progression input[type="radio"]').each(function(item) {
+            if (item.checked &amp;&amp; item.value != '') {
+              progression = item;
+            }
+          });
+          if (progression) {
+             if (!progressionPreview) {
+               progressionPreview = new Element('dd', {'class' : 'progression-preview preview' });
+               progression.up('dd').insert({after: progressionPreview});
+             }
+             progressionPreview.update(progression.title);
+             details += progression.title;
+          } else {
+            if (progressionPreview) {progressionPreview.update('');}
+          }
+          var noPreview = pdItem.down('.no-preview');
+          if (details.strip() == '') {
+            if (!noPreview) {
+               noPreview = new Element('dd', {'class' : 'no-preview preview' });
+               pdItem.insert({bottom: noPreview});
+            }
+            noPreview.update('No additional information.');
+          } else {
+            noPreview &amp;&amp; noPreview.update('');
+          }
+
+          pdItem.addClassName('collapsed');
+        }.bind(selectionSummary);
+
+        selectionSummary._focusDetails = function(info) {
+          var pfTarget;
+          if (typeof (info.findElement) == 'function') {
+            pdTarget = info.findElement('.phenotype-details');
+          } else if (typeof (info.up) == 'function') {
+            pdTarget = info;
+          } else {
+            return;
+          }
+          if (this._crtFocus &amp;&amp; pdTarget != this._crtFocus) {
+             this._crtFocus.removeClassName('focused');
+             this._preparePreview(this._crtFocus);
+          }
+          if (pdTarget) {
+             this._crtFocus = pdTarget;
+             pdTarget.addClassName('focused');
+             pdTarget.removeClassName('collapsed');
+             var doneBtn = pdTarget.down('.action-done');
+             if (!doneBtn) {
+               doneBtn = new Element('div', {'class' : 'action-done'}).update('×');
+               pdTarget.insert(doneBtn);
+               doneBtn.observe('click', function(event) {
+                 event.stop();
+                 selectionSummary._preparePreview(pdTarget);
+                 pdTarget.removeClassName('focused');
+               });
+             }
+          } else {
+             delete this._crtFocus;
+          }
+        }.bind(selectionSummary);
+
+        document.observe("click", function(event) {
+           selectionSummary._focusDetails(event);
+        });
+
         selectionSummary._updateSummary = function(inputElt, type, forceUpdate) {
           if (!inputElt || !inputElt.value) {return}
           var sectionId = inputElt.up('.phenotype-group') &amp;&amp; inputElt.up('.phenotype-group').down('h3');
@@ -1132,8 +1265,7 @@ document.observe('dom:loaded', function() {
                newItem.__source = inputElt;
                var tools = new Element('span', {'class' : 'tools hint'});
                var deleteTool = new Element('span', {'class' : 'tool'}).update('Delete');
-               var detailsTool = new Element('span', {'class' : 'tool'}).update('Details...');
-               tools.insert(deleteTool);//.insert(' · ').insert(detailsTool);
+               tools.insert(deleteTool);
                deleteTool.observe('click', function(event) {
                  var source = event.findElement('.summary-item').__source;
                  if (source._ynpicker) {
@@ -1142,10 +1274,116 @@ document.observe('dom:loaded', function() {
                    source.click();
                  }
                });
+               var detailsUrl = $('phenotype-meta-add-action') &amp;&amp; $('phenotype-meta-add-action').value;
+             if (detailsUrl) {
+               var detailsTool = new Element('span', {'class' : 'tool'}).update('Add details');
+               var clearTool = new Element('span', {'class' : 'tool'}).update('Clear details');
+               tools.insert(' · ').insert(detailsTool).insert(clearTool);
                detailsTool.observe('click', function(event) {
-                 alert('Coming soon:\n- specify onset age and end age for this symptom,\n- add comments,\n- upload relevant images.');
+                 var source = event.findElement('.summary-item');
+                 var detailsElt = new Element('div', {'class' : 'phenotype-details loading'}).update('Loading...');
+                 source.insert(detailsElt);
+                 event.findElement().hide();
+                 clearTool.__target = detailsElt;
+                 clearTool.show();
+
+                 var addTrigger = event.findElement();
+                 if (addTrigger.disabled) {
+                   return;
+                 }
+                 var url = detailsUrl.replace(/([&amp;?]classname=)(.*?)([&amp;$])/, "$1$2&amp;$2_target_property_name=" + inputElt.name.replace(/^.*_\d+_/, '') + "&amp;$2_target_property_value=" + inputElt.value + "$3");
+                 new Ajax.Request(url, {
+                   onCreate : function() {
+                     addTrigger.disabled = true
+                     addTrigger._x_notif = new XWiki.widgets.Notification('Adding...', 'inprogress');
+                   },
+                   onSuccess : function (response) {
+                     addTrigger._x_notif.hide();
+                     detailsElt.update(response.responseText);
+                     detailsElt.removeClassName('loading');
+                     selectionSummary._focusDetails(detailsElt);
+                     detailsElt.select('input, textarea').invoke('observe', 'focus', function(event){selectionSummary._focusDetails(detailsElt)});
+                     var deleteUrl = detailsElt.down('input[name="delete-action"]');
+                     if (deleteUrl) {
+                       deleteUrl = deleteUrl.value;
+                       deleteUrl &amp;&amp; (clearTool.__url = deleteUrl);
+                     }
+                     Event.fire(document, 'xwiki:dom:updated', {'elements' : [detailsElt]});
+                   }.bind(this),
+                   onFailure : function(response) {
+                     var failureReason = response.statusText;
+                     if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+                       failureReason = 'Server not responding';
+                     }
+                     if (addTrigger._x_notif) {
+                       addTrigger._x_notif.replace(new XWiki.widgets.Notification("Failed: " + failureReason, "error"));
+                     } else {
+                       new XWiki.widgets.Notification(this.interactionParameters.failureMessageText + failureReason, "error");
+                     }
+                   },
+                   on1223 : function(response) {
+                     response.request.options.onSuccess(response);
+                   },
+                   on0 : function(response) {
+                     response.request.options.onFailure(response);
+                   },
+                   onComplete : function() {
+                     addTrigger.disabled = false
+                   }
+                 });
                });
+               var existingDetails = $('phenotypeMeta__' + inputElt.name + '__' + inputElt.value);
+               if (existingDetails) {
+                  var detailsElt = new Element('div', {'class' : 'phenotype-details'});
+                  var deleteUrl = existingDetails.next('input[name="delete-action"]');
+                  if (deleteUrl) {
+                     deleteUrl = deleteUrl.value;
+                     deleteUrl &amp;&amp; (clearTool.__url = deleteUrl);
+                     clearTool.__target = detailsElt;
+                  }
+                  detailsElt.update(existingDetails);
+                  selectionSummary._preparePreview(detailsElt);
+                  detailsElt.select('input, textarea').invoke('observe', 'focus', function(event){selectionSummary._focusDetails(detailsElt)});
+                  detailsTool.hide();
+               }  else {
+                  clearTool.hide();
+               }
+               clearTool.observe('click', function(event) {
+                 event.stop();
+                 var deleteTrigger = event.element();
+                 if (deleteTrigger.disabled) {
+                    return;
+                 }
+                 if (deleteTrigger.__target) {
+                   deleteTrigger.__target.remove();
+                   delete deleteTrigger.__target;
+                 }
+                 if (deleteTrigger.__url) {
+                   new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.__url, {
+                     onCreate : function() {
+                       deleteTrigger.disabled = true
+                     },
+                     onSuccess : function() {
+                       if (deleteTrigger.__target) {
+                         deleteTrigger.__target.remove();
+                         delete deleteTrigger.__target;
+                       }
+                       delete deleteTrigger.__url;
+                       deleteTrigger.hide();
+                       detailsTool.show();
+                     },
+                     onComplete : function() {
+                       deleteTrigger.disabled = false;
+                     }
+                   },
+                   {
+                      confirmationText : "Are you sure you wish to delete this information?"
+                   });
+                 }
+               });// clearTool.observe('click'
+             } // detailsUrl exists
                newItem.insert(tools);
+               detailsElt &amp;&amp; newItem.insert(detailsElt);
                group._add(newItem);
                group._updateGroupVisibility();
                Event.fire(document, "summary-item:added", {element: newItem});
@@ -1255,6 +1493,9 @@ document.observe('dom:loaded', function() {
                     }
                     suggestion.down('.suggestCategory').insert({
                       top : new Element('input', {type: 'hidden', name : 'fieldName', value : negativeName, 'class' : 'no'})
+                    });
+                    suggestion.down('.suggestCategory').select('input[name]').each(function(category) {
+                      category.name = category.name.replace(/(_\d+)_/, "$1_negative_");
                     });
                   });
                 }
@@ -1969,16 +2210,22 @@ document.observe('xwiki:dom:loaded', function() {
         values : ['date', 'age', 'actions']
       }, {
         name : 'general',
-        values : ['weight', 'weight_evaluation', 'height', 'height_evaluation', 'bmi', 'bmi_evaluation', 'head_circumference', 'hc_evaluation']
+        values : ['weight', 'weight_evaluation', 'height', 'height_evaluation', 'bmi', 'bmi_evaluation']
+      }, {
+        name : 'ratios',
+        values : ['armspan', 'armspan_evaluation', 'sitting', 'sitting_evaluation']
       }, {
         name : 'face',
+        values : ['hc', 'hc_evaluation', 'philtrum', 'philtrum_evaluation', 'ear', 'ear_evaluation', 'ear_right', 'ear_right_evaluation']
+      }, {
+        name : 'eyes',
         values : ['ocd', 'ocd_evaluation', 'icd', 'icd_evaluation', 'pfl', 'pfl_evaluation', 'ipd', 'ipd_evaluation']
       }, {
         name : 'left-side',
-        values : ['ear', 'ear_evaluation', 'hand', 'hand_evaluation', 'palm', 'palm_evaluation', 'foot', 'foot_evaluation']
+        values : ['hand', 'hand_evaluation', 'palm', 'palm_evaluation', 'foot', 'foot_evaluation']
       }, {
         name : 'right-side',
-        values : ['ear_right', 'ear_right_evaluation', 'hand_right', 'hand_right_evaluation', 'palm_right', 'palm_right_evaluation', 'foot_right', 'foot_right_evaluation']
+        values : ['hand_right', 'hand_right_evaluation', 'palm_right', 'palm_right_evaluation', 'foot_right', 'foot_right_evaluation']
       }
     ];
     rowMapping.each(function (data) {
@@ -2010,9 +2257,10 @@ document.observe('xwiki:dom:loaded', function() {
     //if (!date) {return '';}
     var birthDate = $(document.documentElement).down('input[name$=date_of_birth]');
 
-    return createReqParam('w', row.down('td.weight input'), forceParam) +
-           createReqParam('h', row.down('td.height input'), forceParam) +
-           createReqParam('c', row.down('td.head_circumference input'), forceParam) +
+    return createReqParam('weight', row.down('td.weight input'), forceParam) +
+           createReqParam('height', row.down('td.height input'), forceParam) +
+           createReqParam('bmi', row.down('td.bmi input'), forceParam) +
+           createReqParam('hc', row.down('td.hc input'), forceParam) +
            createReqParam('ocd', row.down('td.ocd input'), forceParam) +
            createReqParam('icd', row.down('td.icd input'), forceParam) +
            createReqParam('pfl', row.down('td.pfl input'), forceParam) +
@@ -2025,6 +2273,9 @@ document.observe('xwiki:dom:loaded', function() {
            createReqParam('hand_right', row.down('td.hand_right input'), forceParam) +
            createReqParam('palm_right', row.down('td.palm_right input'), forceParam) +
            createReqParam('foot_right', row.down('td.foot_right input'), forceParam) +
+           createReqParam('philtrum', row.down('td.philtrum input'), forceParam) +
+           createReqParam('armspan', row.down('td.armspan input'), forceParam) +
+           createReqParam('sitting', row.down('td.sitting input'), forceParam) +
            createReqParamAge('a', date, birthDate, forceParam);
   }
 
@@ -2040,7 +2291,7 @@ document.observe('xwiki:dom:loaded', function() {
     var bDateObj = Date.parseISO_8601(birthDate.alt || '');
     var cDateObj = Date.parseISO_8601(crtDate.alt || '');
     if (!bDateObj || !cDateObj) {return ''}
-    var age = (cDateObj.getFullYear() - bDateObj.getFullYear()) * 12 + (cDateObj.getMonth() - bDateObj.getMonth());
+    var age = (cDateObj.getFullYear() - bDateObj.getFullYear()) * 12 + (cDateObj.getMonth() - bDateObj.getMonth()) + (cDateObj.getDate() &lt; bDateObj.getDate() ? -1 : 0);
     if (age &gt;= 0) {
       var displayedAge = '';
       if (age == 0) {
@@ -2168,7 +2419,7 @@ document.observe('xwiki:dom:loaded', function() {
     if (qs == '') {return;}
     var sex = $(document.documentElement).down('input[name$=gender]:checked');
 
-    var url = measurementsService + "?" + qs + createReqParamSex('s', sex);
+    var url = measurementsService;
 
     var targets = {
        bmi : {
@@ -2189,7 +2440,7 @@ document.observe('xwiki:dom:loaded', function() {
            'extreme-above-normal': findFormElementForPhenotype('HP:0000098')
          }
        },
-       head_c : {
+       hc : {
          evaluation : row.down('td.hc_evaluation'),
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0000252'),
@@ -2249,13 +2500,23 @@ document.observe('xwiki:dom:loaded', function() {
            'extreme-below-normal': findFormElementForPhenotype('HP:0001764'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001833')
          }
+       },
+       philtrum : {
+         evaluation : row.down('td.philtrum_evaluation')
+       },
+       armspan : {
+         evaluation : row.down('td.armspan_evaluation')
+       },
+       sitting : {
+         evaluation : row.down('td.sitting_evaluation')
        }
     };
 
     var requestID = ++lastRequestID;
 
     var ajx = new Ajax.Request(url, {
-       method: 'get',
+       method: 'post',
+       parameters:  qs + createReqParamSex('s', sex) + '&amp;outputSyntax=plain',
        requestHeaders: {Accept : "application/json"},
        onSuccess: function(response) {
           if (requestID &lt; lastRequestID) {return;}
@@ -2707,14 +2968,14 @@ document.observe('xwiki:dom:loaded', function() {
             // enableHighlightChecked(ynpicker.down('.no input'));
            } else {
             // generate simple checkboxes
-            var trigger = new Element('input', {'type' :  'checkbox', 'value' : id, 'title' : 'Select'});
+            var trigger = new Element('input', {'type' :  'checkbox', 'value' : id, 'title' : 'Select', id : 'result__' + id});
             var existingValue = $(service.suggestFor.id + '_' + id);
             if (existingValue &amp;&amp; existingValue.checked) {
               trigger.checked = true;
             }
             trigger.__suggestion = {'id' : id, 'value' : name};
-            idElt.wrap('label');
-            idElt.up('label').insert({'top' : trigger});
+            nameElt.wrap('label', {'for' : 'result__' + id});
+            idElt.insert({'before' : trigger});
             trigger.observe('click', function(event) {
                var input = Event.findElement(event, 'input[type=checkbox]');
                if (input.checked) {
@@ -3442,7 +3703,7 @@ document.observe('xwiki:dom:loaded', function() {
 #document-head #document-authors .sep {
   margin: 0 .5em;
 }
-#document-head #document-authors  .document-creator {
+#document-head #document-authors .document-author {
   color: $theme.textColor;
   font-weight: bold;
 }
@@ -3782,8 +4043,6 @@ input.wrongValue {
   font-weight: bold;
 }
 .quick-search-box input {
-  color: $theme.textPrimaryColor;
-  font-style: italic;
   background-image: url("$xwiki.getSkinFile('icons/xwiki/search.png')");
   background-position: right center;
   background-repeat: no-repeat;
@@ -4234,7 +4493,7 @@ form .extradata-list tr:hover td {
 table.extradata-list td.weight,
 table.extradata-list td.height,
 table.extradata-list td.bmi,
-table.extradata-list td.head_circumference {
+table.extradata-list td.hc {
   padding-left: .5em;
 }
 table.extradata-list td.date,
@@ -4302,6 +4561,14 @@ table.extradata-list td.bmi_percentile {
   opacity: .4;
 }
 .extradata-list .face-group .icon {
+  background-image: url("$xwiki.getSkinFile('head-icon-s.png')");
+  opacity: .4;
+}
+.extradata-list .ratios-group .icon {
+  background-image: url("$xwiki.getSkinFile('ratios-icon-s.png')");
+  opacity: .4;
+}
+.extradata-list .eyes-group .icon {
   background-image: url("$xwiki.getSkinFile('eye.png')");
 }
 .extradata-list .organs-group .icon {
@@ -4351,6 +4618,13 @@ table.extradata-list td.bmi_percentile {
   background-color: $theme.pageContentBackgroundColor;
   bottom: 0;
   padding: 5px;
+}
+
+.extradata-list .relative_type {
+  width: 50%;
+}
+.extradata-list .relative_of {
+  width: 45%;
 }</code>
     </property>
     <property>
@@ -4566,6 +4840,207 @@ table.extradata-list td.bmi_percentile {
       <use>onDemand</use>
     </property>
   </object>
+  <object>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>3</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>6b031d72-7733-4ce5-905f-b999ec0c3165</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.phenotype-details {
+  background-color: #F9F9F9;
+  background-position: left center;
+  background-repeat: no-repeat;
+  border-radius: 0 .5em .5em .5em;
+  border: 1px solid #FFF;
+  color: $theme.textSecondaryColor;
+  font-size: 87.5%;
+  margin-left: 20px;
+  padding: .5em 20px;
+  position: relative;
+  width: 80%;
+}
+.phenotype-details.collapsed {
+  background-position: 99% .25em;
+  background-image: url("$xwiki.getSkinFile('edit-s-gray.png')");
+  cursor: pointer;
+  padding-left: 16px;
+}
+.phenotype-details .comments-preview {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-height: 1.2em;
+}
+
+.phenotype-details input[type="text"] {
+  padding: 0;
+  width: 50%;
+  color: $theme.textSecondaryColor;
+  font-size: 87.5%;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+.phenotype-details .action-done {
+  cursor: pointer;
+  font-size: 2em;
+  position: absolute;
+  right: 0.25em;
+  top: 0;
+}
+.phenotype-details .action-done:hover {
+  color: $theme.linkColor;
+}
+.phenotype-details.collapsed dt,
+.phenotype-details.collapsed dd,
+.phenotype-details.collapsed .action-done,
+.phenotype-details.focused .preview {
+  display: none;
+}
+
+.phenotype-details.collapsed .preview {
+  display: block;
+}
+
+.phenotype-details.focused {
+  background-image: none;
+  box-shadow: 0 2px 5px #999;
+}
+
+.phenotype-details dt label {
+  color: $theme.textColor;
+}
+
+.phenotype-details.focused input {
+  color: $theme.textColor;
+  box-shadow: 0 1px 2px #aaa inset !important;
+  background: #FFF !important;
+  border-color: #FFF !important;
+}
+
+.phenotype-details .attachment-list .attachment-item,
+.phenotype-details .attachment-list .attachment-item input {
+  display: none;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+}
+.phenotype-details .attachment-list .attachment-item.selected,
+.phenotype-details .attachment-list .attachment-preview {
+  display: block;
+  width: 100%;
+  max-height: inherit;
+  height: auto;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.phenotype-details .attachment-list .attachment-item.image {
+  max-width: 100%;
+}
+.phenotype-details .attachment-list .attachment-item.selected label {
+  padding: 3px 0 3px 20px;
+}
+.phenotype-details .attachment-list .attachment-item.image label {
+  padding: 0 !important;
+}
+.phenotype-details .attachment-item img {
+  max-width: 100% !important;
+  max-height: inherit !important;
+}
+.phenotype-details .attachment-list .attachment-item .view {
+  background-color: $theme.pageContentBackgroundColor;
+  bottom: 0;
+  padding: 5px;
+}
+.phenotype-details .actions {
+  float: right;
+}</code>
+    </property>
+    <property>
+      <name>Phenotype details</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
   <content>{{include document="PhenoTips.ChartServiceMacros" /}}
 
 {{velocity output=false}}
@@ -4586,7 +5061,7 @@ table.extradata-list td.bmi_percentile {
 #end
 
 #macro (__display $propName)
-(% class="displayed-value"%)(((#if ("$!{doc.display($propName)}" == '')-#else${doc.display($propName)}#end)))##
+(% class="displayed-value"%)(((#if($xcontext.action == 'edit' || ($doc.display($propName) != ''))${doc.display($propName)}#{else}-#{end})))##
 #end
 
 #macro (__displayIfNotEmpty $propName)
@@ -4654,7 +5129,7 @@ table.extradata-list td.bmi_percentile {
     ##&lt;h3 class="section"&gt;Quick phenotype search&lt;/h3&gt;
     &lt;table&gt;&lt;tbody&gt;&lt;tr&gt;
     &lt;td&gt;&lt;label for="quick-phenotype-search"&gt;Quick phenotype search:&lt;/label&gt;&lt;/td&gt;&lt;td class="input"&gt;
-    &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip generateYesNo' value='Enter keywords and choose among suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
+    &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip generateYesNo' placeholder='Enter keywords and choose among suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
     &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
   &lt;/fieldset&gt;
   {{/html}}
@@ -4739,10 +5214,70 @@ table.extradata-list td.bmi_percentile {
   #if ($objects.size() &gt; 0)
     #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
     #set($dataClass = $targetObj.xWikiClass)
-    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}"&gt;#if ("$!{withLabel}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="hint" &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
+    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}"&gt;#if ("$!{withLabel}" == 'true'){{html clean="false" wiki="false"}}&lt;label &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
   #end
 #end
 
+#macro (__measurements_displayCompact)
+  #set($dataClass = $xwiki.getDocument('PhenoTips.MeasurementsClass').xWikiClass)
+  #if ($dataClass)
+    #set($dataObjects = $doc.getObjects('PhenoTips.MeasurementsClass'))
+    #if ($dataObjects.size() == 0)
+      (% class="hint" %)None specified
+    #else
+      (% class="extradata-list" %)
+      #foreach ($o in $dataObjects)
+        #foreach($prop in $dataClass.properties)
+           #if (!$prop.name.endsWith('_evaluation') &amp;&amp; "$!o.getProperty($prop.getName()).value" != '')
+             |= ${prop.prettyName}: | $doc.display($prop.getName(), $o) | $!doc.display("${prop.getName()}_evaluation", $o)
+          #end
+        #end
+      #end## foreach object
+    #end## if $dataObjects.size()
+  #end## if dataclass
+#end
+
+## =====================================================================
+##
+## PHENOTYPE METADATA
+##
+##
+#macro (__phenotypeMeta_displayEntry $targetObj)
+    #set($dataClass = $targetObj.xWikiClass)
+    #set($enabledProperties = ['age_of_onset', 'pace_of_progression', 'comments', 'supporting_images', 'supporting_documents'])
+    #set($targetId = "phenotypeMeta__$!{class.name}_$!{obj.number}_$!{targetObj.getProperty('target_property_name').value}__$!{targetObj.getProperty('target_property_value').value}")
+    {{html wiki="true" clean="false"}}##
+    {{html wiki="false" clean="false"}}&lt;dl id="$targetId"&gt;{{/html}}##
+      #foreach($prop in $dataClass.properties)##
+        #if ($enabledProperties.contains($prop.name))#set($displayMode='')#else#set($displayMode=' hidden')#end##
+        &lt;dt class="${prop.name}${displayMode}"&gt;&lt;label for=""&gt;${prop.prettyName}:&lt;/label&gt;&lt;/dt&gt;##
+        &lt;dd class="${prop.name}${displayMode}"&gt;$doc.display($prop.getName(), $targetObj)&lt;/dd&gt;##
+      #end##
+    &lt;/dl&gt;##
+    &lt;input type="hidden" name="delete-action" value="$doc.getURL('objectremove', "classname=${targetObj.xWikiClass.name}&amp;amp;classid=${targetObj.number}&amp;amp;form_token=$!{services.csrf.getToken()}")"/&gt;##
+    {{/html}}
+#end
+
+#macro (__phenotypeMeta_displayLastEntry)
+  #set($dataClassName = 'PhenoTips.PhenotypeMetaClass')
+  #set ($objects = $doc.getObjects($dataClassName))
+  #if ($objects.size() &gt; 0)
+    #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
+    #__phenotypeMeta_displayEntry($targetObj $mode)
+  #end
+#end
+
+#macro (__phenotypeMeta_displayAll)
+  #set($dataClassName = 'PhenoTips.PhenotypeMetaClass')
+  #set ($objects = $doc.getObjects($dataClassName))
+  #if ($objects.size() &gt; 0)
+    (% class="hidden" %)(((
+    #foreach ($pmObj in $objects)
+      #__phenotypeMeta_displayEntry($pmObj)
+    #end
+    )))
+  #end
+#end
 
 ## =====================================================================
 ##
@@ -4783,28 +5318,24 @@ table.extradata-list td.bmi_percentile {
 
 #if ("$!activeFields.contains('relative')" != 'false' &amp;&amp; ($context.action == 'edit' || ($doc.display('relative') != '' &amp;&amp; $doc.display('relative_of') != '')))
   ----
-  (% class="fieldset family_study" %)(((
-  #if ($xcontext.action == 'edit')
-    (% class="half-width relative" %)(((
-  #end
-    #__label('' 'section' 'Family study:') $doc.display('relative') #__label('relative_of' 'section' 'of')
-  #if ($xcontext.action == 'edit')
+  #set ($targetClassName = 'PhenoTips.RelativeClass')
+  #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
+    (% class="clear relatives-info" %)(((
+    === Family study ===
+    #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
     )))
   #end
-    #__displayFormatted('half-width' 'relative_of' "$!{config.getProperty('relativeReportHint').value}" '' 'hint')##
-  )))##fieldset
 #end
 
-#if ("$!activeFields.contains('onset')" != 'false')
-  #if ($context.action == 'edit')
+#if ("$!activeFields.contains('age_of_onset')" != 'false')
   ----
-    $doc.display('onset')
-  #else
-    #__displayFormatted('2-col' 'onset' '' '' 'section')
-  #end
+  #__displayIfNotEmpty('age_of_onset')
 #end
 (% class="clear" %)((()))
-#__displayIfNotEmpty('indication_for_referral')
+#if ("$!activeFields.contains('indication_for_referral')" != 'false')
+  ----
+  #__displayIfNotEmpty('indication_for_referral')
+#end
 )))##chapter
 #end
 
@@ -4816,8 +5347,9 @@ table.extradata-list td.bmi_percentile {
 #if ($config &amp;&amp; $config.getProperty('section__measurements').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
 (% class="clear measurement-info chapter" %)(((
 == Measurements ==
+#if ($xcontext.action != 'export')
 #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
-#if ($xcontext.action != 'export' &amp;&amp; $config.getProperty('section__measurements').value.contains('growth-charts'))
+#if ($config.getProperty('section__measurements').value.contains('growth-charts'))
 (% class="growth-charts-section" %)(((
 === Growth charts ===
 (% class="expand-tools" %)(((
@@ -4830,6 +5362,9 @@ table.extradata-list td.bmi_percentile {
 )))
 (% class="clear"%)((()))
 #end
+#else
+#__measurements_displayCompact()
+#end
 )))##chapter
 #end
 #end
@@ -4838,7 +5373,7 @@ table.extradata-list td.bmi_percentile {
 ## Phenotype information
 ##
 #macro(__reportSection__phenotype_info)
-#if ($xcontext.action == 'edit' || "$doc.display('unaffected')$doc.display('phenotype')$doc.display('negative_phenotype')" != '')
+#if ($xcontext.action == 'edit' || "$doc.display('phenotype')$doc.display('negative_phenotype')" != '' || $doc.display('unaffected') != 'No')
 #if ("$!activeFields.contains('unaffected')" != 'false')
   (% class="controlled-group complete-hide" %)(((
 #end
@@ -4876,10 +5411,13 @@ table.extradata-list td.bmi_percentile {
             $doc.display('phenotype')##
           )))
         #if ($xcontext.action == 'edit')
+          #__phenotypeMeta_displayAll('edit')##
           )))## browse-phenotype-categories
           (% class="half-width selector-panel current-phenotype-selection"%)(((
           === **Current selection** ===
-             (% id="current-phenotype-selection"%)((()))
+             (% id="current-phenotype-selection"%)(((
+              {{html clean="false"}}&lt;input type="hidden" id="phenotype-meta-add-action" value="$doc.getURL('objectadd', "classname=PhenoTips.PhenotypeMetaClass&amp;amp;xredirect=$escapetool.url($doc.getURL('edit', 'xaction=lastmeta&amp;xpage=plain'))&amp;amp;form_token=$!{services.csrf.getToken()}")"/&gt;{{/html}}
+             )))
           )))
           (% class="clear"%)((()))
           )))## selector-panels
@@ -4916,35 +5454,43 @@ $doc.display('prenatal_phenotype')
 ## Family history
 ##
 #macro(__reportSection__family_history)
-#if (("$!activeFields.contains('consanguinity')" != 'false' || "$!activeFields.contains('miscarriages')" != 'false' || "$!activeFields.contains('pedigree')" != 'false') &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('consanguinity')doc.display('miscarriages')$doc.display('family_comments')$doc.display('pedigree')" != ''))
+#if (("$!activeFields.contains('consanguinity')" != 'false' || "$!activeFields.contains('miscarriages')" != 'false'|| "$!activeFields.contains('mode_of_inheritance')" != 'false' || "$!activeFields.contains('pedigree')" != 'false') &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('consanguinity')$doc.display('miscarriages')$doc.display('mode_of_inheritance')$doc.display('family_comments')$doc.display('pedigree')" != ''))
 (% class="clear clinical-info family_history-info chapter #__markIfMandatory('family_history')" %)(((
 == $!{class.get('family_history').prettyName} ==
-(((
-$doc.display('consanguinity')##
-$doc.display('miscarriages')
-#__displayIfNotEmpty('family_comments')
 
-=== Pedigree ===
-$doc.display('pedigree')
-#set($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))
+(((
+$doc.display('consanguinity')
+$doc.display('miscarriages')
+
+#__displayIfNotEmpty('mode_of_inheritance')
+#__displayIfNotEmpty('family_comments')
+#*
+#set ($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))
 #if ($pedigreeObj)
-#set($data = $pedigreeObj.getProperty('data').value)
-#if ("$!data" != '')
-  #set ($pAction = 'Edit pedigree')
+  #set ($data = $!pedigreeObj.getProperty('data').value)
   #set ($image = $pedigreeObj.getProperty('image').value)
+#end## pedigree obj exists
+#if ($xcontext.action == 'edit' || "$!{doc.display('pedigree')}" != '' || "$!data" != '')
+  === Pedigree ===
+  $!doc.display('pedigree')
+  #if ($xcontext.action == 'edit')
+    #if ("$!data" != '')
+      #set ($pAction = 'Edit pedigree')
+    #else
+      #set ($pAction = 'Draw pedigree')
+    #end## pedigree data exists
+    (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]]
+  #end## action == edit
   #if ("$!image" != '')
     {{html clean="false"}}
       $!image
     {{/html}}
   #end
-#else
-  #set ($pAction = 'Draw pedigree')
-#end
-(% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]]
-#end
+#end## action == edit || data
+*#
 )))
 )))##chapter
-#end
+#end## if &lt;should show this section&gt;
 #end
 
 ## =================================================================
@@ -5011,6 +5557,7 @@ $doc.display('reports_history')
 ## =================================================================
 ## More information
 #macro(__reportSection__other)
+#if ($xcontext.action == 'edit' || ($xcontext.action != 'export' &amp;&amp; (!$doc.getObjects('PhenoTips.ExternalFileClass').isEmpty() || !$doc.getObjects('PhenoTips.ExternalImageClass').isEmpty())))
 (% class="clear clinical-info other-info chapter" %)(((
 == Additional files ==
 (((
@@ -5026,6 +5573,7 @@ $doc.display('reports_history')
 #end
 )))
 )))##chapter
+#end## if action != export
 #end
 
 ##
@@ -5035,6 +5583,8 @@ $doc.display('reports_history')
 {{velocity}}
 #if ("$!{request.xaction}" == 'lastentry')
   #__extradata_displayLastEntry($request.dataClassName $request.withLabel)
+#elseif ("$!{request.xaction}" == 'lastmeta')
+  #__phenotypeMeta_displayLastEntry()
 #else
 #if ($xcontext.action != 'export')
 (% id="table-of-contents" %)(((

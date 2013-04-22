@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <xwikidoc>
   <web>PhenoTips</web>
   <name>ImageDisplayer</name>
@@ -1211,7 +1231,7 @@
   ## In external mode
   #set ($targetDoc = $xwiki.getDocument("$!{request.doc}"))
   #set ($property = "$!{request.property}")
-  #set ($object = $targetDoc.getObject("$!{request.classname}", $util.parseInt("$!{request.object}")))
+  #set ($object = $targetDoc.getObject("$!{request.classname}", $mathtool.toInteger("$!{request.object}")))
   #set ($propValue = $object.getProperty("$!{request.property}").value)
   #if ("$!{propValue.size()}" == '')
     #set ($propValue = [])
@@ -1226,7 +1246,7 @@
     #set($options.manage = true)
   #end
 #end
-#if ($object.getxWikiClass().get($property).getProperty('multiSelect').value == 0)
+#if ($object.getxWikiClass().get($property).getProperty('multiSelect').value != 1)
   #set($options.inputType = 'radio')
   #if ("$!{value}" == '')
     #set ($propValue = [])
@@ -1263,7 +1283,7 @@
   #if ($options.manage)
   &lt;a class='action delete' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($context.action, $request.queryString))}")" title="Delete"&gt;Delete&lt;/a&gt;##
   #end
-  #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||width="100" title="${attachment.filename}"]])))#else##
+  #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||title="${attachment.filename}"]])))#else##
  &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="Open $!{attachment.filename}"&gt; [open]&lt;/a&gt;#end##
   &lt;/div&gt;{{/html}}##
 #end

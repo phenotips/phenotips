@@ -21,7 +21,8 @@ package edu.toronto.cs.phenotips.solr;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -33,7 +34,9 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.CommonParams;
+import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.MapSolrParams;
+import org.apache.solr.common.util.NamedList;
 import org.slf4j.Logger;
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -62,6 +65,12 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
      */
     protected static final String ID_FIELD_NAME = "id";
 
+    /**
+     * Object used to mark in the cache that a document doesn't exist, since null means that the cache doesn't contain
+     * the requested entry.
+     */
+    private static final SolrDocument EMPTY_MARKER = new SolrDocument();
+
     /** Logging helper object. */
     @Inject
     protected Logger logger;
@@ -69,12 +78,15 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     /** The Solr server instance used. */
     protected SolrServer server;
 
-    @Inject
-    protected CacheManager cacheFactory;
-
+    /**
+     * Cache for the recently accessed documents; useful since the ontology rarely changes, so a search should always
+     * return the same thing.
+     */
     protected Cache<SolrDocument> cache;
 
-    private static final SolrDocument EMPTY_MARKER = new SolrDocument();
+    /** Cache factory needed for creating the document cache. */
+    @Inject
+    protected CacheManager cacheFactory;
 
     @Override
     public void initialize() throws InitializationException
@@ -210,6 +222,19 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     }
 
     /**
+     * Advanced search using custom search parameters. At least the {@code q} parameter should be set, but any other
+     * parameters supported by Solr can be specified in this map.
+     *
+     * @param searchParameters a map of parameters, the keys should be parameters that Solr understands
+     * @return the list of matching documents, empty if there are no matching terms
+     */
+    public SolrDocumentList customSearch(final Map<String, String> searchParameters)
+    {
+        MapSolrParams params = new MapSolrParams(searchParameters);
+        return search(params);
+    }
+
+    /**
      * Get the top hit corresponding to the specified query.
      * 
      * @param fieldValues the map of values to search for, where each key is the name of an indexed field and the value
@@ -257,24 +282,38 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     private SolrDocumentList search(MapSolrParams params)
     {
         try {
-            QueryResponse response = this.server.query(params);
+            NamedList<Object> newParams = params.toNamedList();
+            if (newParams.get(CommonParams.FL) == null) {
+                newParams.add(CommonParams.FL, "* score");
+            }
+            QueryResponse response = this.server.query(MapSolrParams.toSolrParams(newParams));
             SolrDocumentList results = response.getResults();
-            if (results.size() == 0 && response.getSpellCheckResponse() != null
-                && !response.getSpellCheckResponse().isCorrectlySpelled()) {
+            if (response.getSpellCheckResponse() != null && !response.getSpellCheckResponse().isCorrectlySpelled()) {
                 String suggestedQuery = response.getSpellCheckResponse().getCollatedResult();
                 if (StringUtils.isEmpty(suggestedQuery)) {
-                    return new SolrDocumentList();
+                    return results;
                 }
-                // The spellcheck doesn't preserve the identifiers, manually
-                // correct this
-                suggestedQuery = suggestedQuery.replaceAll("term_category:hip", "term_category:HP");
-                MapSolrParams newParams =
-                    new MapSolrParams(getSolrQuery(suggestedQuery, params.get(CommonParams.SORT),
-                        params.getInt(CommonParams.ROWS, -1), params.getInt(CommonParams.START, 0)));
-                return this.server.query(newParams).getResults();
-            } else {
-                return results;
+                Pattern p = Pattern.compile("(\\w++):(\\w++)\\*$", Pattern.CASE_INSENSITIVE);
+                Matcher originalStub = p.matcher((String) newParams.get(CommonParams.Q));
+                newParams.remove(CommonParams.Q);
+                Matcher newStub = p.matcher(suggestedQuery);
+                if (originalStub.find() && newStub.find()) {
+                    suggestedQuery += ' ' + originalStub.group() + "^1.5 " + originalStub.group(2) + "^1.5";
+                    String boostQuery = (String) newParams.get(DisMaxParams.BQ);
+                    if (boostQuery != null) {
+                        boostQuery += ' ' + boostQuery.replace(originalStub.group(2), newStub.group(2));
+                        newParams.remove(DisMaxParams.BQ);
+                        newParams.add(DisMaxParams.BQ, boostQuery);
+                    }
+                }
+                newParams.add(CommonParams.Q, suggestedQuery);
+                SolrDocumentList spellcheckResults =
+                    this.server.query(MapSolrParams.toSolrParams(newParams)).getResults();
+                if (results.getMaxScore() < spellcheckResults.getMaxScore()) {
+                    results = spellcheckResults;
+                }
             }
+            return results;
         } catch (SolrServerException ex) {
             this.logger.error("Failed to search: {}", ex.getMessage(), ex);
         }
@@ -318,7 +357,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
                 value = "";
             }
             String[] pieces =
-                value.replaceAll("[^a-zA-Z0-9 :]/", " ").replace(FIELD_VALUE_SEPARATOR, "\\" + FIELD_VALUE_SEPARATOR)
+                value.replaceAll("[^a-zA-Z0-9 :]", " ").replace(FIELD_VALUE_SEPARATOR, "\\" + FIELD_VALUE_SEPARATOR)
                     .trim().split("\\s+");
             for (String val : pieces) {
                 query.append(field.getKey()).append(FIELD_VALUE_SEPARATOR).append(val).append(" ");
@@ -359,7 +398,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
             result.put(CommonParams.ROWS, rows + "");
         }
         result.put(CommonParams.Q, query);
-        if (!StringUtils.isBlank(sort)) {
+        if (StringUtils.isNotBlank(sort)) {
             result.put(CommonParams.SORT, sort);
         }
         result.put("spellcheck", Boolean.toString(true));
@@ -367,11 +406,17 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
         return result;
     }
 
+    /**
+     * Serialize a Map into a String.
+     *
+     * @param map the map to serialize
+     * @return a String serialization of the map
+     */
     private String dumpMap(Map<String, ? > map)
     {
         StringBuilder out = new StringBuilder();
         out.append('{');
-        for (Entry<String, ? > entry : map.entrySet()) {
+        for (Map.Entry<String, ? > entry : map.entrySet()) {
             out.append(entry.getKey() + ':' + entry.getValue() + '\n');
         }
         out.append('}');

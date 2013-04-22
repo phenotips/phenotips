@@ -21,5 +21,5 @@ package edu.toronto.cs.phenotips.obo2solr.maps;
 
 interface MapOperator<K, N extends Number>
 {
-    public NumericValueMap<K, N> apply(NumericValueMap<K, N> a, NumericValueMap<K, N> b);
+    NumericValueMap<K, N> apply(NumericValueMap<K, N> a, NumericValueMap<K, N> b);
 }

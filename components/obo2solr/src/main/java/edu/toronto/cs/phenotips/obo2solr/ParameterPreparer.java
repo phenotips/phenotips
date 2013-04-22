@@ -76,17 +76,18 @@ public class ParameterPreparer
     public Map<String, Double> getFieldSelection(String fieldSelection)
     {
         Map<String, Double> result = new HashMap<String, Double>();
-        String fields[] = fieldSelection.split(FIELD_SEP);
+        String[] fields = fieldSelection.split(FIELD_SEP);
         for (String field : fields) {
             if (!"".equals(field)) {
                 int boostPosition = field.indexOf(FIELD_BOOST_SEP);
                 if (boostPosition >= 0) {
-                    String parts[] = field.split(FIELD_BOOST_SEP, 2);
+                    String[] parts = field.split(FIELD_BOOST_SEP, 2);
                     String fieldName = parts[0];
                     double boost = DEFAULT_BOOST;
                     try {
                         boost = Double.parseDouble(parts[1]);
                     } catch (NumberFormatException ex) {
+                        // Shouldn't happen, just default to the default boost
                     }
                     result.put(fieldName, boost);
                 } else {
