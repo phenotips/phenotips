@@ -47,7 +47,7 @@
   [
     "type"       : "section",
     "title"      : "Behavior, Cognition and Development",
-    "categories" : ["HP:0001263", "HP:0000708", "HP:0001286"],
+    "categories" : ["HP:0011446"],
     "data"       : [
         ["id" : "HP:0001263"],
         ["id" : "HP:0010862"],
