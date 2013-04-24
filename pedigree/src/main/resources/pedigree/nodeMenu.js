@@ -1,7 +1,7 @@
 NodeMenu = Class.create({
     initialize : function(data) {
         this.canvas = editor.getWorkspace().canvas || $('body');
-        var menuBox = this.menuBox = new Element('div', {'class' : 'menu-box'});
+        this.menuBox = new Element('div', {'class' : 'menu-box'});
 
         this.closeButton = new Element('span', {'class' : 'close-button'}).update('×');
         this.menuBox.insert({'top': this.closeButton});
@@ -51,7 +51,7 @@ NodeMenu = Class.create({
                     parentContainer : $('body')
                 });
                 if (item.hasClassName('multi') && typeof(MS.widgets.SuggestPicker) != "undefined") {
-                    var suggestPicker = new MS.widgets.SuggestPicker(item, item._suggest, {
+                    item._suggestPicker = new MS.widgets.SuggestPicker(item, item._suggest, {
                         'showKey' : false,
                         'showTooltip' : false,
                         'showDeleteTool' : true,
@@ -62,7 +62,6 @@ NodeMenu = Class.create({
                         'listInsertionPosition' : 'after',
                         'acceptFreeText' : true
                     });
-                    item._suggestPicker = suggestPicker;
                 }
                 item.addClassName('initialized');
             }
@@ -130,7 +129,6 @@ NodeMenu = Class.create({
                 this._updatedDependency(field, dependency);
                 field.value = '';
             }.bindAsEventListener(this));
-            return true;
         }
     },
 
