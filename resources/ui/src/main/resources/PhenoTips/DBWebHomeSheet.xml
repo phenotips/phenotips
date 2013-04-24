@@ -1055,7 +1055,7 @@ h1 {
   </object>
   <content>{{velocity}}
 {{html wiki=false clean=false}}<div class="general-tools"><a href="#patients">Browse patients</a>
-#if($hasEdit). <label for="create-patient-record">New patient record</label>#end</div>{{/html}}{{/velocity}}
+#if($hasCreatePage). <label for="create-patient-record">New patient record</label>#end</div>{{/html}}{{/velocity}}
 
 = Phenotype  database =
 
@@ -1117,7 +1117,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 })
 #livetable("patients" $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
-#if($hasEdit)
+#if($hasCreatePage)
   {{html clean="false" wiki="false"}}&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
     &lt;input type="hidden" name="doCreate" value="1" /&gt;
