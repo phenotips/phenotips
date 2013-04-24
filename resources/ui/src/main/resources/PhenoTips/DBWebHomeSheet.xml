@@ -1097,13 +1097,11 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
     #set($discard = $columnsProperties.put($filterableColumn, { "type" : "hidden" }))
   #end
 #end
-#set($tagProperty = "$!{config.getProperty('tagProperty').value}")
-#if ($tagProperty != '')
-      #set($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
+
+#set($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
 == Filters ==
 
 {{velocity}}#__filters_display('xform'){{/velocity}})))", "xwiki/2.1"))
-#end
 #set($discard = $columns.add("_actions"))
 ##
 #set($options = {
