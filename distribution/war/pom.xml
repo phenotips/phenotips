@@ -118,6 +118,16 @@
       <artifactId>mysql-connector-java</artifactId>
       <version>5.1.23</version>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.0.11</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
