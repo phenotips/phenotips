@@ -74,6 +74,18 @@
   </Call>
 
   <!-- =========================================================== -->
+  <!-- Jetty lifecycle listener that prints a message to open a    -->
+  <!-- browser when the server is started. This is to provide      -->
+  <!-- information to newbies so that they know what to do after   -->
+  <!-- the server is started.                                      -->
+  <!-- =========================================================== -->
+  <Call name="addLifeCycleListener">
+    <Arg>
+      <New class="org.xwiki.tools.jetty.listener.NotifyListener" />
+    </Arg>
+  </Call>
+
+  <!-- =========================================================== -->
   <!-- Set handler Collection Structure                            -->
   <!-- =========================================================== -->
   <Set name="handler">
@@ -108,10 +120,20 @@
         <Set name="contexts">
           <Ref id="Contexts"/>
         </Set>
-        <Call name="setContextAttribute">
-          <Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
-          <Arg>.*/jsp-api-[^/]*\.jar$|.*/jsp-[^/]*\.jar$</Arg>
-        </Call>
+        <!-- Note: We don't need to define a "org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern" attribute
+             since 1) we don't use tlds and 2) starting with Jetty 8.x, jetty employs a Servlet 3.0 way of finding
+             tlds, see http://wiki.eclipse.org/Jetty/Howto/Configure_JSP#Jetty_8.x -->
+        <!-- Note: Once we start using Servlet 3.0 we'll need to set the attribute named
+             "org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern" to not incur too heavy startup times.
+             See http://wiki.eclipse.org/Jetty/Howto/Avoid_slow_deployment.
+
+             Example:
+
+               <Call name="setContextAttribute">
+                 <Arg>org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern</Arg>
+                 <Arg>.*/.*myPrefixedJarToScan1-[^/]\.jar$|.*/.*myPrefixedJarToScan2-[^/]\.jar$</Arg>
+               </Call>
+             -->
 
 
         <!-- Add a customize step to the deployment lifecycle -->
