@@ -253,7 +253,20 @@ extension.repositories=extensions.xwiki.org:xwiki:http://extensions.xwiki.org/xw
             WEB-INF/lib/batik-js-*.jar,
             WEB-INF/lib/commons-logging-*.jar,
             %regex[WEB-INF/lib/log4j-(?!over-slf4j).*.jar],
-            WEB-INF/lib/activation-*.jar
+            WEB-INF/lib/activation-*.jar,
+            WEB-INF/lib/commons-lang-2.5.jar,
+            WEB-INF/lib/asm-3.1.jar,
+            WEB-INF/lib/guava-12.0.jar,
+            WEB-INF/lib/jdom-1.0.jar,
+            WEB-INF/lib/jdom-1.1.jar,
+            WEB-INF/lib/log4j-over-slf4j-1.7.2.jar,
+            WEB-INF/lib/logback-classic-1.0.9.jar,
+            WEB-INF/lib/logback-core-1.0.9.jar,
+            WEB-INF/lib/plexus-utils-2.0.6.jar,
+            WEB-INF/lib/rome-0.9.jar,
+            WEB-INF/lib/slf4j-api-1.7.2.jar,
+            WEB-INF/lib/woodstox-core-asl-4.1.1.jar,
+            WEB-INF/lib/xercesImpl-2.10.0.jar
           </packagingExcludes>
           <overlays>
             <overlay>
