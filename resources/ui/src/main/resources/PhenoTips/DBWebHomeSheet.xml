@@ -1114,6 +1114,9 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 "topFilters"        : $topFilters,
 "resultPage"        : 'PhenoTips.LiveTableResults'
 })
+#if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
+  #set ($options.rowCount = $config.getProperty('livetableRows').value)
+#end
 #livetable("patients" $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
 #if($hasCreatePage)

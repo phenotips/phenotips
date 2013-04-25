@@ -657,6 +657,9 @@ $!value
       </livetableColumns>
     </property>
     <property>
+      <livetableRows/>
+    </property>
+    <property>
       <livetableSortColumn>external_id</livetableSortColumn>
     </property>
     <property>
@@ -1686,6 +1689,7 @@ $!value
         <value>idPrefix</value>
         <value>livetableColumns</value>
         <value>livetableSortColumn</value>
+        <value>livetableRows</value>
         <value>tagProperty</value>
         <value>activeSections</value>
         <value>activeFields</value>
