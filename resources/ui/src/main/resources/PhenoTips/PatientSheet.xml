@@ -69,7 +69,7 @@ $!{o.getProperty('comments').value}
 #end
 #end
 #end
-
+##
 #end## class exists
 {{/velocity}}</content>
 </xwikidoc>

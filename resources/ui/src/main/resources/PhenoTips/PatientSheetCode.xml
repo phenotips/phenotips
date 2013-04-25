@@ -5315,8 +5315,8 @@ table.extradata-list td.bmi_percentile {
   #__displayFormatted('2-col' 'date_of_birth' '' 'date' '')
   #__displayFormatted('2-col' 'gender' 'Sex:' 'gender' 'group-title')
   #__displayFormatted('2-col' 'health_card' '' '' '')
-
 #if ("$!activeFields.contains('relative')" != 'false' &amp;&amp; ($context.action == 'edit' || ($doc.display('relative') != '' &amp;&amp; $doc.display('relative_of') != '')))
+
   ----
   #set ($targetClassName = 'PhenoTips.RelativeClass')
   #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
@@ -5326,19 +5326,24 @@ table.extradata-list td.bmi_percentile {
     )))
   #end
 #end
-
 #if ("$!activeFields.contains('age_of_onset')" != 'false')
-  #if($doc.display('age_of_onset') != '')----#end
+  #if($doc.display('age_of_onset') != '')
+
+    ----
+  #end
   #__displayIfNotEmpty('age_of_onset')
 #end
 (% class="clear" %)((()))
 #if ("$!activeFields.contains('indication_for_referral')" != 'false')
-  #if($xcontext.action == 'edit' || ($doc.display('indication_for_referral') != ''))----#end
+  #if($xcontext.action == 'edit' || ($doc.display('indication_for_referral') != ''))
+
+    ----
+  #end
   #__displayIfNotEmpty('indication_for_referral')
 #end
 )))##chapter
 #end
-
+##
 ## =================================================================
 ## Measurements
 ##
@@ -5368,7 +5373,7 @@ table.extradata-list td.bmi_percentile {
 )))##chapter
 #end
 #end
-
+##
 ## =================================================================
 ## Phenotype information
 ##
@@ -5433,7 +5438,7 @@ table.extradata-list td.bmi_percentile {
 #end
 #end## section has content
 #end
-
+##
 ## =================================================================
 ## Prenatal information
 ##
@@ -5449,7 +5454,7 @@ $doc.display('prenatal_phenotype')
 )))##chapter
 #end
 #end
-
+##
 ## =================================================================
 ## Family history
 ##
@@ -5492,7 +5497,7 @@ $doc.display('miscarriages')
 )))##chapter
 #end## if &lt;should show this section&gt;
 #end
-
+##
 ## =================================================================
 ## Medical history
 ##
@@ -5511,7 +5516,7 @@ $doc.display('reports_history')
 )))##chapter
 #end
 #end
-
+##
 ## =================================================================
 ## Diagnosis information
 ##
@@ -5528,7 +5533,7 @@ $doc.display('reports_history')
 )))##chapter
 #end
 #end
-
+##
 ## =================================================================
 ## Variants information
 ##
@@ -5553,7 +5558,7 @@ $doc.display('reports_history')
 )))##chapter
 #end
 #end
-
+##
 ## =================================================================
 ## More information
 #macro(__reportSection__other)
@@ -5575,7 +5580,7 @@ $doc.display('reports_history')
 )))##chapter
 #end## if action != export
 #end
-
+##
 ##
 ## =====================================================================
 {{/velocity}}
@@ -5594,9 +5599,8 @@ $doc.display('reports_history')
 
 (% class="hide-toc hide-toc-ghost" %)((([[Hide table of contents&gt;&gt;#tmToC||id="tmHideToC" class="document-action" title="Hide table of contents"]])))
 )))
-
 #end
-
+##
 $xwiki.jsx.use('PhenoTips.TouchscreenEvents', {'minify' : false})##
 $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('PhenoTips.YesNoNAPicker', {'minify' : false})##
