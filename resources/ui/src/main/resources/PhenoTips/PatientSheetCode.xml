@@ -5328,12 +5328,12 @@ table.extradata-list td.bmi_percentile {
 #end
 
 #if ("$!activeFields.contains('age_of_onset')" != 'false')
-  ----
+  #if($doc.display('age_of_onset') != '')----#end
   #__displayIfNotEmpty('age_of_onset')
 #end
 (% class="clear" %)((()))
 #if ("$!activeFields.contains('indication_for_referral')" != 'false')
-  ----
+  #if($xcontext.action == 'edit' || ($doc.display('indication_for_referral') != ''))----#end
   #__displayIfNotEmpty('indication_for_referral')
 #end
 )))##chapter
