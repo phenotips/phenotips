@@ -561,7 +561,7 @@ $!value
       <section__variant-info>
         <cache>0</cache>
         <customDisplay>{{velocity output=false}}
-#set($customValues = {"PhenoTips.VariantClass" : "variants table"})
+#set($customValues = {"PhenoTips.VariantClass" : "variants table", "PhenoTips.InvestigationClass" : "investigations table"})
 #set($hideClassFields = true)
 {{/velocity}}
 
