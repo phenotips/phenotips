@@ -1054,8 +1054,7 @@ h1 {
     </property>
   </object>
   <content>{{velocity}}
-{{html wiki=false clean=false}}&lt;div class="general-tools"&gt;&lt;a href="#patients"&gt;Browse patients&lt;/a&gt;
-#if($hasCreatePage). &lt;label for="create-patient-record"&gt;New patient record&lt;/label&gt;#end&lt;/div&gt;{{/html}}{{/velocity}}
+{{html wiki=false clean=false}}&lt;div class="general-tools"&gt;&lt;a href="#patients"&gt;Browse patients&lt;/a&gt;#if($hasCreatePage) &#183; &lt;label for="create-patient-record"&gt;New patient record&lt;/label&gt;#end&lt;/div&gt;{{/html}}{{/velocity}}
 
 = Phenotype  database =
 
