@@ -89,7 +89,7 @@ $response.setHeader("X-ReqNo", "$!request.reqNo")##
 #end
   {{/html}}
   #else
-    #json__respondJSON($results)
+    #json__respondJSON($results, {})
   #end
 #end
 {{/velocity}}</content>

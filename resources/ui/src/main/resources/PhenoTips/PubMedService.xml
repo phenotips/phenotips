@@ -95,7 +95,7 @@ $response.setHeader("X-ReqNo", "$!request.reqNo")##
     $_service.getSuggestionsXML("$!request.q", $limit, $start)
   {{/html}}
   #else
-    #json__respondJSON($_service.getSuggestions("$!request.q", $limit, $start))
+    #json__respondJSON($_service.getSuggestions("$!request.q", $limit, $start), {})
   #end
 #end
 {{/velocity}}</content>

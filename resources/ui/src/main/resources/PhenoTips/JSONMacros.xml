@@ -64,9 +64,12 @@
   #end
 #end
 
-#macro(json__displayJSON $results)
+#macro(json__displayJSON $results $metadata)
 {
    "returnedrows" : "$results.size()",
+   #foreach ($k in $metadata.keySet())
+     "$k" : "$metadata.get($k)",
+   #end
    #if ("$!request.reqNo" != '')
      "reqNo" : $!{request.reqNo},
    #end
@@ -74,9 +77,9 @@
 }
 #end
 
-#macro(json__respondJSON $results)
+#macro(json__respondJSON $results $metadata)
   $response.setContentType('application/json')
-  #json__displayJSON($results)
+  #json__displayJSON($results $metadata)
 #end
 {{/velocity}}
 </content>
