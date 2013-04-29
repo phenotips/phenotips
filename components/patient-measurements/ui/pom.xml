@@ -24,16 +24,29 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>edu.toronto.cs.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>patient-measurements</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-measurements</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Patient measurements</name>
+  <artifactId>patient-measurements-ui</artifactId>
+  <name>PhenoTips - Patient measurements - Documents providing the measurements functionality in the UI</name>
+  <packaging>xar</packaging>
 
-  <modules>
-    <module>api</module>
-    <module>migrations</module>
-    <module>ui</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-measurements-api</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
+        <version>${xwiki.version}</version>
+      </extension>
+    </extensions>
+  </build>
 </project>
