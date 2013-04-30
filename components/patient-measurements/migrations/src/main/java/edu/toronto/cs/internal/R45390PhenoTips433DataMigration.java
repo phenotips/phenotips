@@ -72,13 +72,12 @@ public class R45390PhenoTips433DataMigration extends AbstractHibernateDataMigrat
     @Override
     public XWikiDBVersion getVersion()
     {
-        return new XWikiDBVersion(45381);
+        return new XWikiDBVersion(45390);
     }
 
     @Override
     public void hibernateMigrate() throws DataMigrationException, XWikiException
     {
-        // migrate data
         getStore().executeWrite(getXWikiContext(), new R45390Callback());
     }
 
