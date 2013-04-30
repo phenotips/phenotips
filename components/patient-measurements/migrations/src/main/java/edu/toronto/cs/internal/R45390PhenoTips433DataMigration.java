@@ -20,6 +20,7 @@
 
 package edu.toronto.cs.internal;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -30,8 +31,11 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -39,7 +43,6 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
-import com.xpn.xwiki.objects.classes.BaseClass;
 import com.xpn.xwiki.store.XWikiHibernateBaseStore.HibernateCallback;
 import com.xpn.xwiki.store.XWikiHibernateStore;
 import com.xpn.xwiki.store.migration.DataMigrationException;
@@ -58,10 +61,28 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 @Singleton
 public class R45390PhenoTips433DataMigration extends AbstractHibernateDataMigration
 {
+    /** The old class, without a wiki specified. */
+    private static final EntityReference OLD_CLASS = new EntityReference("MeasurementsClass", EntityType.DOCUMENT,
+        new EntityReference("ClinicalInformationCode", EntityType.SPACE));
+
+    /** The new class, without a wiki specified. */
+    private static final EntityReference NEW_CLASS = new EntityReference(OLD_CLASS.getName(), EntityType.DOCUMENT,
+        new EntityReference("PhenoTips", EntityType.SPACE));
+
     /** Resolves unprefixed document names to the current wiki. */
     @Inject
     @Named("current")
     private DocumentReferenceResolver<String> resolver;
+
+    /** Resolves class names to the current wiki. */
+    @Inject
+    @Named("current")
+    private DocumentReferenceResolver<EntityReference> entityResolver;
+
+    /** Serializes the class name without the wiki prefix, to be used in the database query. */
+    @Inject
+    @Named("compactwiki")
+    private EntityReferenceSerializer<String> serializer;
 
     @Override
     public String getDescription()
@@ -78,7 +99,7 @@ public class R45390PhenoTips433DataMigration extends AbstractHibernateDataMigrat
     @Override
     public void hibernateMigrate() throws DataMigrationException, XWikiException
     {
-        getStore().executeWrite(getXWikiContext(), new R45390Callback());
+        getStore().executeWrite(getXWikiContext(), new MigrateObjectsCallback());
     }
 
     /**
@@ -86,7 +107,7 @@ public class R45390PhenoTips433DataMigration extends AbstractHibernateDataMigrat
      * such documents and foreach such object, creates a new {@code PhenoTips.MeasurementsClass} object and copies all
      * the values from the deprecated object to the new one, and then deletes the old objects.
      */
-    private class R45390Callback implements HibernateCallback<Object>
+    private class MigrateObjectsCallback implements HibernateCallback<Object>
     {
         @Override
         public Object doInHibernate(Session session) throws HibernateException, XWikiException
@@ -94,30 +115,26 @@ public class R45390PhenoTips433DataMigration extends AbstractHibernateDataMigrat
             XWikiContext context = getXWikiContext();
             XWiki xwiki = context.getWiki();
             DocumentReference oldClassReference =
-                new DocumentReference(context.getDatabase(), "ClinicalInformationCode", "MeasurementsClass");
+                R45390PhenoTips433DataMigration.this.entityResolver.resolve(OLD_CLASS);
             DocumentReference newClassReference =
-                new DocumentReference(context.getDatabase(), "PhenoTips", oldClassReference.getName());
-            BaseClass newClass = xwiki.getXClass(newClassReference, context);
+                R45390PhenoTips433DataMigration.this.entityResolver.resolve(NEW_CLASS);
             Query q =
-                session.createQuery("select distinct o.name from BaseObject o"
-                    + " where o.className = 'ClinicalInformationCode.MeasurementsClass'");
+                session.createQuery("select distinct o.name from BaseObject o where o.className = '"
+                    + R45390PhenoTips433DataMigration.this.serializer.serialize(oldClassReference) + "'");
             List<String> documents = q.list();
             for (String docName : documents) {
                 XWikiDocument doc =
                     xwiki.getDocument(R45390PhenoTips433DataMigration.this.resolver.resolve(docName), context);
                 for (BaseObject oldObject : doc.getXObjects(oldClassReference)) {
-                    BaseObject newObject = doc.newXObject(newClassReference, context);
-                    BaseProperty value;
-                    for (String property : newClass.getPropertyList()) {
-                        value = (BaseProperty) oldObject.get(property);
-                        if (value != null && value.getValue() != null) {
-                            newObject.set(property, value.getValue(), context);
-                        }
-                    }
+                    BaseObject newObject = oldObject.duplicate();
+                    newObject.setXClassReference(newClassReference);
+                    doc.addXObject(newObject);
                     // "head_circumference" has been renamed to "hc"
-                    value = (BaseProperty) oldObject.get("head_circumference");
-                    if (value != null && value.getValue() != null) {
-                        newObject.set("hc", value.getValue(), context);
+                    BaseProperty hc = (BaseProperty) newObject.get("head_circumference");
+                    if (hc != null && hc.getValue() != null) {
+                        newObject.removeField(hc.getName());
+                        newObject.setFieldsToRemove(Collections.emptyList());
+                        newObject.safeput("hc", hc);
                     }
                 }
                 doc.removeXObjects(oldClassReference);
