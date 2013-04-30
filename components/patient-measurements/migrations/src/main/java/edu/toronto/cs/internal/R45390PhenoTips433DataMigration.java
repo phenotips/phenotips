@@ -144,7 +144,7 @@ public class R45390PhenoTips433DataMigration extends AbstractHibernateDataMigrat
                     // There's a bug in XWiki which prevents saving an object in the same session that it was loaded,
                     // so we must clear the session cache first.
                     session.clear();
-                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, true);
+                    ((XWikiHibernateStore) getStore()).saveXWikiDoc(doc, context, false);
                     session.flush();
                 } catch (DataMigrationException e) {
                     // We're in the middle of a migration, we're not expecting another migration
