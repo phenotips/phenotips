@@ -592,8 +592,8 @@
       <picker>0</picker>
       <prettyName>Symptoms NOT observed in this patient</prettyName>
       <relationalStorage>1</relationalStorage>
-      <separator>, </separator>
-      <separators>|, </separators>
+      <separator> </separator>
+      <separators/>
       <size>1</size>
       <sort>none</sort>
       <sql/>
