@@ -24,21 +24,20 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>edu.toronto.cs.phenotips</groupId>
-    <artifactId>phenotips-parent</artifactId>
+    <artifactId>patient-data</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-components</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Various Java components</name>
+  <artifactId>patient-data-ui</artifactId>
+  <name>PhenoTips - Patient data - Documents providing patient class, sheet and display code</name>
+  <packaging>xar</packaging>
 
-  <modules>
-    <module>obo2solr</module>
-    <module>solr-access-service</module>
-    <module>patient-update-listeners</module>
-    <module>patient-data</module>
-    <module>patient-measurements</module>
-    <module>patient-tools</module>
-    <module>ncbieutils-access-service</module>
-    <module>phenotype-mapping-service</module>
-  </modules>
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
+        <version>${xwiki.version}</version>
+      </extension>
+    </extensions>
+  </build>
 </project>
