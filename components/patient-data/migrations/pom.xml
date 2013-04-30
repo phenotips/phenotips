@@ -24,15 +24,21 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>edu.toronto.cs.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>patient-data</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-data</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Patient data</name>
-
-  <modules>
-    <module>migrations</module>
-    <module>ui</module>
-  </modules>
+  <artifactId>patient-data-migrations</artifactId>
+  <name>PhenoTips - Patient data - Data migrations</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+  </dependencies>
 </project>
