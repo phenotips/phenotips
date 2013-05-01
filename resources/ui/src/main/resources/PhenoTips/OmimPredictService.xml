@@ -51,7 +51,7 @@
   #if ("$!request.q" != '')##
     #set ($_service = $services.omim)
     #set ($limit = $mathtool.toInteger("$!{request.limit}"))
-    #if (!($limit &gt; 0))
+    #if (!$limit || $limit &lt; 0)
       #set ($limit = 20)
     #end
     #set ($data = [])
