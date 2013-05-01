@@ -204,7 +204,7 @@ $response.setContentType('text/csv')##
               ${code.replace('"', '""')}##
             #end
           #else
-            ${services.omim.getName($code).replace('"', '""')}##
+            ${services.omim.get($code).name.replace('"', '""')}##
           #end
           #if ($foreach.hasNext)
 
