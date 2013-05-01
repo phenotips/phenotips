@@ -1849,5 +1849,5 @@ $!value
       <propertiesToShow/>
     </property>
   </object>
-  <content>{{include document="PhenoTips.DBWebHomeSheet" /}}</content>
+  <content/>
 </xwikidoc>
