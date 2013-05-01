@@ -4608,7 +4608,7 @@ table.extradata-list td.bmi_percentile {
     width: 140px;
 }
 
-.extradata-list .file img {
+.extradata-list .file p img {
   max-width: 480px !important;
   max-height: 480px !important;
 }
