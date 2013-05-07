@@ -1,3 +1,16 @@
+/**
+ * Returns a raphael element representing a Pi-Chart-like slice of the icon representing the given gender
+ *
+ * @param canvas Raphael paper object
+ * @param {Number} xPosition
+ * @param {Number} yPosition
+ * @param {Number} radius Radius of the associated shape
+ * @param {String} gender Can be "M", "F" or "U"
+ * @param {Number} startAngle Has to be equal or greater than 0
+ * @param {Number} endAngle
+ * @param {String} color CSS color
+ * @return {Raphael.el}
+ */
 function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAngle, color) {
     var sectorPath,
         gen = gender,
@@ -96,6 +109,17 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
     }
 }
 
+/**
+ * Creates a 3D looking orb
+ *
+ * @method generateOrb
+ * @param canvas Raphael paper
+ * @param {Number} x X coordinate for the orb
+ * @param {Number} y Y coordinate for the orb
+ * @param {Number} r Radius of the orb
+ * @param {Number} hue Hue value between 0 and 1
+ * @return {Raphael.st}
+ */
 function generateOrb(canvas, x, y, r, hue) {
     hue = hue || 0;
     return canvas.set(
@@ -104,7 +128,10 @@ function generateOrb(canvas, x, y, r, hue) {
     );
 }
 
-
+/**
+ * Joins all the subsets into one set and returns it.
+ * @return {Raphael.st}
+ */
 Raphael.st.flatten = function () {
     var flattenedSet = new Raphael.st.constructor();
         this.forEach(function(element) {
@@ -113,10 +140,19 @@ Raphael.st.flatten = function () {
     return flattenedSet;
 };
 
+/**
+ * Returns set containing the given element
+ * @return {Raphael.st}
+ */
 Raphael.el.flatten = function () {
     return this.paper.set(this);
 };
 
+/**
+ * Returns a set containing the elements of this set and the given set. Doesn't modify the original sets.
+ * @param {Raphael.st} set
+ * @return {Raphael.st}
+ */
 Raphael.st.concat = function (set) {
     var newSet = this.copy();
     if(typeof(set.forEach) == 'function') {
@@ -130,6 +166,12 @@ Raphael.st.concat = function (set) {
     return newSet;
 };
 
+/**
+ * Returns True if this set contains target. Target has to be directly in this set, and not in a subset.
+ *
+ * @param {Raphael.st|Raphael.el} target
+ * @return {boolean}
+ */
 Raphael.st.contains = function (target) {
     var found = false;
     this.forEach(function(element) {
@@ -140,6 +182,10 @@ Raphael.st.contains = function (target) {
     return found;
 };
 
+/**
+ * Returns a new set containing the same elements as this set
+ * @return {Raphael.st}
+ */
 Raphael.st.copy = function() {
     var newSet = new Raphael.st.constructor();
     this.forEach(function(element) {
@@ -148,6 +194,7 @@ Raphael.st.copy = function() {
     return newSet;
 };
 
+//Animation helpers
 window.requestAnimFrame = (function(){
     return  window.requestAnimationFrame   ||
         window.webkitRequestAnimationFrame ||

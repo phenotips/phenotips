@@ -1,11 +1,17 @@
-function getAge(birth, death)
+/**
+ * Returns the age of a person with the given birth and death dates
+ * @param {Date} birthDate
+ * @param {Date} [deathDate]
+ * @return {String} Age formatted with years, months, days
+ */
+function getAge(birthDate, deathDate)
 {
     var now;
-    if (death == null){
+    if (deathDate == null){
     now = new Date();
     }
     else {
-    now = death;
+    now = deathDate;
     }
 
 
@@ -17,23 +23,23 @@ function getAge(birth, death)
     var aMonth = aDay * 30;
 
 
-    var age = now.getTime() - birth.getTime();
+    var age = now.getTime() - birthDate.getTime();
 
     if (age < 0) {
         return "not born yet"
     }
 
 
-    var years = (new Date(now.getTime() - aMonth* (birth.getMonth()) )).getFullYear()
-        - (new Date(birth.getTime() - aMonth* (birth.getMonth()) )).getFullYear();
+    var years = (new Date(now.getTime() - aMonth* (birthDate.getMonth()) )).getFullYear()
+        - (new Date(birthDate.getTime() - aMonth* (birthDate.getMonth()) )).getFullYear();
 
 
-    offsetNow = (new Date(now.getTime() - aDay* (birth.getDate() -1) ));
-    offsetBirth = (new Date(birth.getTime() - aDay* (birth.getDate() -1) ));
+    offsetNow = (new Date(now.getTime() - aDay* (birthDate.getDate() -1) ));
+    offsetBirth = (new Date(birthDate.getTime() - aDay* (birthDate.getDate() -1) ));
     if(years > 1){
         months = years*12 + ( offsetNow.getMonth() - offsetBirth.getMonth()) ;
     }else{
-        months = (now.getFullYear() - birth.getFullYear())*12 + ( offsetNow.getMonth() - offsetBirth.getMonth()) ;
+        months = (now.getFullYear() - birthDate.getFullYear())*12 + ( offsetNow.getMonth() - offsetBirth.getMonth()) ;
     }
 
     agestr="";

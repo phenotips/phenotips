@@ -35,7 +35,7 @@
 
     /**
      * Hides the the loading window
-     * @method show
+     * @method hide
      */
     hide: function() {
         this.dialog.close();

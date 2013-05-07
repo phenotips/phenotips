@@ -287,8 +287,8 @@ var Workspace = Class.create({
      * Animates a transformation of the viewbox to the given coordinate
      *
      * @method panTo
-     * @param {number} x The x coordinate relative to the Raphael canvas
-     * @param {number} y The y coordinate relative to the Raphael canvas
+     * @param {Number} x The x coordinate relative to the Raphael canvas
+     * @param {Number} y The y coordinate relative to the Raphael canvas
      */
     panTo: function(x, y) {
         var me = this,
@@ -335,7 +335,7 @@ var Workspace = Class.create({
      * Pans the canvas to put the node with the given id at the center.
      *
      * @method adjustSizeToScreen
-     * @param {number} nodeID The id of the node
+     * @param {Number} nodeID The id of the node
      */
     centerAroundNode: function(nodeID) {
         var node = editor.getGraph().getNodeMap()[nodeID];

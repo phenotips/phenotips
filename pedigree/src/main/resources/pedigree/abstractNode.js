@@ -4,9 +4,9 @@
  *
  * @class AbstractNode
  * @constructor
- * @param x {Number} the x coordinate on the canvas
- * @param y {Number} the y coordinate on the canvas
- * @param [id] {Number} the id of the node
+ * @param {Number} x The x coordinate on the canvas
+ * @param {Number} y The y coordinate on the canvas
+ * @param {Number} [id] The id of the node
  */
 
 var AbstractNode = Class.create( {
@@ -14,7 +14,7 @@ var AbstractNode = Class.create( {
     initialize: function(x, y, id) {
         !this._type && (this._type = "AbstractNode");
         this._id = id ? id : editor.getGraph().generateID();
-        this._graphics = this.generateGraphics(x, y);
+        this._graphics = this._generateGraphics(x, y);
     },
     
     /**
@@ -30,12 +30,13 @@ var AbstractNode = Class.create( {
     /**
      * Generates an instance of AbstractNodeVisuals
      *
-     * @method generateGraphics
-     * @param x {Number} the x coordinate of the node
-     * @param y {Number} the y coordinate of the node
+     * @method _generateGraphics
+     * @param {Number} x The x coordinate of the node
+     * @param {Number} y The y coordinate of the node
      * @return {AbstractNodeVisuals}
+     * @private
      */
-    generateGraphics: function(x, y) {
+    _generateGraphics: function(x, y) {
         return new AbstractNodeVisuals(this, x, y);
     },
 
@@ -63,9 +64,9 @@ var AbstractNode = Class.create( {
      * Changes the X coordinate of the node
      *
      * @method setX
-     * @param x {Number} the x coordinate on the canvas
-     * @param [animate] {Boolean} set to true if you want to animate the transition
-     * @param [callback] {Function} the function called at the end of the animation
+     * @param {Number} x The x coordinate on the canvas
+     * @param {Boolean} [animate] Set to true if you want to animate the transition
+     * @param {Function} [callback] The function called at the end of the animation
      */
     setX: function(x, animate, callback) {
         this.getGraphics().setX(x, animate, callback)
@@ -85,9 +86,9 @@ var AbstractNode = Class.create( {
      * Changes the Y coordinate of the node
      *
      * @method setY
-     * @param y {Number} the x coordinate on the canvas
-     * @param [animate] {Boolean} set to true if you want to animate the transition
-     * @param [callback] {Function} the function called at the end of the animation
+     * @param {Number} y The x coordinate on the canvas
+     * @param {Boolean} [animate] Set to true if you want to animate the transition
+     * @param {Function} [callback] The function called at the end of the animation
      */
     setY: function(y, animate, callback) {
         this.getGraphics().setY(y, animate, callback)
@@ -107,10 +108,10 @@ var AbstractNode = Class.create( {
      * Changes the position of the node to (x,y)
      *
      * @method setPos
-     * @param x {Number} the x coordinate on the canvas
-     * @param y {Number} the y coordinate on the canvas
-     * @param [animate] {Boolean} set to true if you want to animate the transition
-     * @param [callback] {Function} the function called at the end of the animation
+     * @param {Number} x The x coordinate on the canvas
+     * @param {Number} y The y coordinate on the canvas
+     * @param {Boolean} [animate] Set to true if you want to animate the transition
+     * @param {Function} [callback] The function called at the end of the animation
      */
     setPos: function(x,y, animate, callback) {
         this.getGraphics().setPos(x, y, animate, callback);
@@ -120,7 +121,7 @@ var AbstractNode = Class.create( {
      * Returns the type of this node
      *
      * @method getType
-     * @return {String} the type (eg. "Partnership", "Person", etc)
+     * @return {String} The type (eg. "Partnership", "Person", etc)
      */
     getType: function() {
         return this._type;
@@ -386,9 +387,9 @@ var AbstractNode = Class.create( {
      * Returns true if this node is related to the node with the id nodeID
      *
      * @method isRelatedTo
-     * @param nodeID {Number} id of any node in the graph
-     * @param [visited=[]] {Array} a list of IDs of nodes that shouldn't be considered
-     * @return {Array} an array in the form of [result, visitedNodes]
+     * @param {Number} nodeID ID of any node in the graph
+     * @param {Array} [visited=[]] A list of IDs of nodes that shouldn't be considered
+     * @return {Array} An array in the form of [result, visitedNodes]
      * @example
      var malePerson = editor.getGraph().addPerson(100,100, "M", 20);
      var femalePerson = editor.getGraph().addPerson(300,100, "F", 21);
@@ -438,7 +439,7 @@ var AbstractNode = Class.create( {
      * Applies the properties found in info to this node.
      *
      * @method loadInfo
-     * @param info {Object} and object in the form
+     * @param info Object in the form
      *
      {
         type: // (type of the node),
@@ -446,7 +447,7 @@ var AbstractNode = Class.create( {
         y:  // (y coordinate)
         id: // id of the node
      }
-     * @return {Boolean} true if info was successfully loaded
+     * @return {Boolean} True if info was successfully loaded
      */
     loadInfo: function(info) {
         if(info && info.id == this.getID() && info.type == this.getType()) {
@@ -504,7 +505,7 @@ var ChildlessBehavior = {
      * Changes the reason for this node's 'childless' or 'infertile' status
      *
      * @method setChildlessReason
-     * @param reason {String} a string that explains the condition (eg. "By Choice", "Vasectomy" etc)
+     * @param {String} reason Explanation for the condition (eg. "By Choice", "Vasectomy" etc)
      */
     setChildlessReason: function(reason) {
         if(this.getChildlessStatus() != null) {
@@ -517,7 +518,7 @@ var ChildlessBehavior = {
      * Changes the reason for this node's 'childless' or 'infertile' status and updates the action stack
      *
      * @method setChildlessReasonAction
-     * @param reason {String} a string that explains the condition (eg. "By Choice", "Vasectomy" etc)
+     * @param {String} reason Explanation for the condition (eg. "By Choice", "Vasectomy" etc)
      */
     setChildlessReasonAction: function(reason) {
         var prevReason = this.getChildlessReason();

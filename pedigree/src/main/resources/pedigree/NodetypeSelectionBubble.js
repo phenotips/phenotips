@@ -102,7 +102,7 @@ var NodetypeSelectionBubble = Class.create({
      * Creates a button in the bubble corresponding do the definition from the skeleton
      *
      * @method _createOption
-     * @param {Object} data The definition object from the bubble skeleton
+     * @param data The definition object from the bubble skeleton
      * @return {HTMLElement} The span containing the button
      * @private
      */
@@ -133,7 +133,7 @@ var NodetypeSelectionBubble = Class.create({
      * Creates an arrow button that expands or shrinks the bubble
      *
      * @method generateExpandArrow
-     * @param {Object} data The definition object from the bubble skeleton
+     * @param data The definition object from the bubble skeleton
      * @return {HTMLElement} The span containing the button
      */
     generateExpandArrow: function(data) {
@@ -279,7 +279,7 @@ var NodetypeSelectionBubble = Class.create({
      * Decrement the number of nodes to be created
      *
      * @method _decrementNumNodes
-     * @return {number} The resulting number of nodes to be created
+     * @return {Number} The resulting number of nodes to be created
      * @private
      */
     _decrementNumNodes: function() {
@@ -290,7 +290,7 @@ var NodetypeSelectionBubble = Class.create({
      * Increment the number of nodes to be created
      *
      * @method _incrementNumNodes
-     * @return {number} The resulting number of nodes to be created
+     * @return {Number} The resulting number of nodes to be created
      * @private
      */
     _incrementNumNodes: function() {

@@ -6,10 +6,10 @@
  * @class AbstractPerson
  * @extends AbstractNode
  * @constructor
- * @param x {Number} the x coordinate on the canvas
- * @param y {Number} the y coordinate on the canvas
- * @param gender {String} can be "M", "F", or "U"
- * @param [id] {Number} the id of the node
+ * @param {Number} x The x coordinate on the canvas
+ * @param {Number} y The y coordinate on the canvas
+ * @param {String} gender Can be "M", "F", or "U"
+ * @param {Number} [id] The id of the node
  */
 
 var AbstractPerson = Class.create(AbstractNode, {
@@ -26,12 +26,13 @@ var AbstractPerson = Class.create(AbstractNode, {
     /**
      * Initializes the object responsible for creating graphics for this node
      *
-     * @method generateGraphics
-     * @param x {Number} the x coordinate on the canvas at which the node is centered
-     * @param y {Number} the y coordinate on the canvas at which the node is centered
+     * @method _generateGraphics
+     * @param {Number} x The x coordinate on the canvas at which the node is centered
+     * @param {Number} y The y coordinate on the canvas at which the node is centered
      * @return {AbstractPersonVisuals}
+     * @private
      */
-    generateGraphics: function(x, y) {
+    _generateGraphics: function(x, y) {
         return new AbstractPersonVisuals(this, x, y);
     },
 
@@ -39,7 +40,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Returns the parents' Partnership node
      *
      * @method getParentPartnership
-     * @return {Null|Partnership} returns null if this person has no parents
+     * @return {Null|Partnership} null if this person has no parents
      */
     getParentPartnership: function() {
         var preg = this.getParentPregnancy();
@@ -63,7 +64,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Replaces the the parent Pregnancy associated with this node with the one passed in the parameter
      *
      * @method setParentPregnancy
-     * @param pregnancy {Pregnancy} a Pregnancy object that has this node listed as a child
+     * @param {Pregnancy} pregnancy A Pregnancy object that has this node listed as a child
      */
     setParentPregnancy: function(pregnancy) {
         this._parentPregnancy = pregnancy;
@@ -110,7 +111,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Defaults to "U" if string is not recognized
      *
      * @method parseGender
-     * @param gender {String} the string to be parsed
+     * @param {String} gender The string to be parsed
      * @return {String} the gender in the standard form ("M", "F", or "U")
      */
     parseGender: function(gender) {
@@ -152,8 +153,8 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Returns an array of nodes visited during the partner/twin traversal.
      *
      * @method setGender
-     * @param gender {String} should be "U", "F", or "M" depending on the gender
-     * @param [visitedNodes] {Array} an array of nodes that were visited during the traversal up until
+     * @param {String} gender Should be "U", "F", or "M" depending on the gender
+     * @param {Array} [visitedNodes] An array of nodes that were visited during the traversal up until
      *  this node. OMIT this parameter. It is used for internal functionality.
      * @return {Array} list of twins and partners of this node
      */
@@ -186,7 +187,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * if they are affected. Updates the action stack.
      *
      * @method setGenderAction
-     * @param gender {String} should be "M", "F", or "U"
+     * @param {String} gender Should be "M", "F", or "U"
      */
     setGenderAction: function(gender) {
         var prevGenders = this.getTwinPartnerGenders();
@@ -205,7 +206,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Changes the adoption status of this Person to isAdopted. Updates the graphics.
      *
      * @method setAdopted
-     * @param isAdopted {Boolean} set to true if you want to mark the Person adopted
+     * @param {Boolean} isAdopted Set to true if you want to mark the Person adopted
      */
     setAdopted: function(isAdopted) {
         this._isAdopted = isAdopted;
@@ -231,7 +232,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * action stack.
      *
      * @method setAdoptedAction
-     * @param isAdopted {Boolean} set to true if you want to mark the Person adopted
+     * @param {Boolean} isAdopted Set to true if you want to mark the Person adopted
      */
     setAdoptedAction: function(isAdopted) {
         var oldStatus = this.isAdopted();
@@ -347,7 +348,8 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Adds a new partnership to the list of partnerships of this node
      *
      * @method addPartnership
-     * @param partnership {Partnership} should have this node as one of the partners
+     * @param {Partnership} partnership Should have this node as one of the partners
+     * @return {Null|Partnership} The added Partnership or null if it couldn't be added
      */
     addPartnership: function(partnership) {
        if(this.getPartners().indexOf(partnership.getPartnerOf(this)) == -1) {
@@ -361,7 +363,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Removes partnership from the list of partnerships
      *
      * @method removePartnership
-     * @param partnership {Partnership} should have this node as one of the partners
+     * @param {Partnership} partnership Should have this node as one of the partners
      */
     removePartnership: function(partnership) {
         if(partnership) {
@@ -373,7 +375,6 @@ var AbstractPerson = Class.create(AbstractNode, {
             if(target)
                 this._partnershipNodes = this._partnershipNodes.without(target);
         }
-        return partnership;
     },
 
     /**
@@ -381,7 +382,8 @@ var AbstractPerson = Class.create(AbstractNode, {
      * partnership
      *
      * @method createParents
-     * @return {Partnership} the resulting partnership between the two new parents
+     * @return {Null|Partnership} The resulting partnership between the two new parents or null if parents couldn't
+     * be created
      */
     createParents: function() {
         if(this.getParentPartnership() == null) {
@@ -403,13 +405,13 @@ var AbstractPerson = Class.create(AbstractNode, {
      *
      * @method addParents
      * @param partnership {Partnership}
-     * @return {Partnership} returns the partnership that was added9
+     * @return {Null|Partnership} the partnership that was added or null if it couldn't be added
      */
     addParents: function(partnership) {
-        if(this.getParentPartnership() == null) {
-            partnership.addChild(this);
+        if(this.getParentPartnership() == null && partnership.addChild(this)) {
+            return partnership;
         }
-        return partnership;
+        return null
     },
 
     /**
@@ -475,6 +477,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @param partner {Person|PlaceHolder}
      * @param [noChild=false] {Boolean} set true to refrain from creating a placeholder child
      * for the resulting partnership
+     * @return {Null|Partnership} The added Partnership or null if partner could not be added
      */
     addPartner: function(partner, noChild) {
         if(this.getPartners().indexOf(partner) != -1){
@@ -505,6 +508,7 @@ var AbstractPerson = Class.create(AbstractNode, {
             });
             return partnership;
         }
+        return null;
     },
 
     /**
@@ -546,8 +550,8 @@ var AbstractPerson = Class.create(AbstractNode, {
      * the child as a child of this partnership.
      *
      * @method createChild
-     * @param nodeType {String} the type for the new child. (eg. "Person", "PlaceHolder", "PersonGroup")
-     * @param nodeGender {String} can be "M", "F" or "U".
+     * @param {String} nodeType The type for the new child. (eg. "Person", "PlaceHolder", "PersonGroup")
+     * @param {String} nodeGender Can be "M", "F" or "U".
      */
     createChild: function(nodeType, nodeGender) {
         return this.createPartner(true, true).createChild(nodeType, nodeGender);
@@ -573,8 +577,8 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Returns all the nodes that come from the parent pregnancy.
      *
      * @method getTwins
-     * @param type {String} the type for the new child. (eg. "Person", "PlaceHolder", "PersonGroup")
-     * @return {Array} list of AbstractPerson objects.
+     * @param {String} type The type for the new child. (eg. "Person", "PlaceHolder", "PersonGroup")
+     * @return {Array} List of AbstractPerson objects.
      */
     getTwins: function(type) {
         return this.getParentPregnancy().getChildren(type).without(this);
@@ -654,6 +658,7 @@ var AbstractPerson = Class.create(AbstractNode, {
      * the record.
      *
      * @method remove
+     * @param [$super]
      * @param [isRecursive=false] {Boolean} set to true to remove all nodes that will result in being unrelated to the proband
      * @param [skipConfirmation=false] {Boolean} if true, no confirmation box will pop up
      * @return {Object} in the form
@@ -700,8 +705,8 @@ var AbstractPerson = Class.create(AbstractNode, {
      * in the process of the traversal
      *
      * @method getStepsToNode
-     * @param otherNode {AbstractNode} the node whose distance (in partnerships) from this node you're trying to calculate
-     * @param [visitedNodes] {Array} an array of nodes that were visited in the result of the traversal. This parameter is used
+     * @param {AbstractNode} otherNode The node whose distance (in partnerships) from this node you're trying to calculate
+     * @param {Array} [visitedNodes] An array of nodes that were visited in the result of the traversal. This parameter is used
      * internally so omit it when calling the function
      */
     getStepsToNode: function(otherNode, visitedNodes) {
@@ -759,7 +764,8 @@ var AbstractPerson = Class.create(AbstractNode, {
      * Applies the properties found in info to this node.
      *
      * @method loadInfo
-     * @param info {Object} and object in the form
+     * @param [$super]
+     * @param info Object in the form
      *
      {
      type: // (type of the node),

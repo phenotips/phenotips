@@ -1,12 +1,13 @@
-/*
- * The user interface for managing partnerships. Contains information about
- * connections, junction, and the children handle.
+/**
+ * Class for visualizing partnerships and organizing the graphical elements.
  *
- * @param partnership the Partnership for which the graphics are drawn
- * @param x the x coordinate of the junction node on the canvas
- * @param y the y coordinate of the junction node on the canvas
+ * @class PartnershipVisuals
+ * @extends AbstractNodeVisuals
+ * @constructor
+ * @param {Partnership} node The node for which the graphics are handled
+ * @param {Number} x The x coordinate on the canvas
+ * @param {Number} y The y coordinate on the canvas
  */
-
 var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, partnership, x, y) {
@@ -27,6 +28,11 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         this._idLabel = editor.getPaper().text(x, y-20, editor.DEBUG_MODE ? partnership.getID() : "").attr(PedigreeEditor.attributes.dragMeLabel).insertAfter(this._junctionShape.flatten());
     },
 
+    /**
+     * Expands the partnership circle
+     *
+     * @method grow
+     */
     grow: function() {
         this.area = this.getJunctionShape().clone().flatten().insertBefore(this.getJunctionShape().flatten());
         this.area.attr({'fill': '#587498', stroke: 'none'});
@@ -34,37 +40,48 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         this.area.animate(Raphael.animation({transform : "...S2"}, 400, 'bounce'));
     },
 
-    /*
+    /**
      * Returns the Partnership for which the graphics are drawn
+     *
+     * @method getPartnership
+     * @return {Partnership}
      */
     getPartnership: function() {
         return this._node;
     },
 
-    /*
-     * Returns the raphael shape that joins connections
+    /**
+     * Returns the circle that joins connections
+     *
+     * @method getJunctionShape
+     * @return {Raphael.st}
      */
     getJunctionShape: function() {
         return this._junctionShape;
     },
 
-    /*
+    /**
      * Returns an array containing the two partner connections
+     *
+     * @method getConnections
+     *
+     * @return {Array}
      */
     getConnections: function() {
         return this._connections;
     },
 
-    /*
+    /**
      * Updates the path of the connection for the given partner or creates a new
      * connection if it doesn't exist.
      *
-     * @param partner an AbstractPerson who's a partner in this Partnership
-     * @param partnerX X coordinate of the partner
-     * @param partnerY Y coordinate of the partner
-     * @junctionX the X coordinate of the junction
-     * @junctionY Y coordinate of the junction
-     * @animate set to true if you want to animate a transition to the new location
+     * @method updatePartnerConnection
+     * @param {AbstractPerson} partner A partner in this Partnership
+     * @param {Number} partnerX X coordinate of the partner
+     * @param {Number} partnerY Y coordinate of the partner
+     * @param {Number} junctionX X coordinate of the junction
+     * @param {Number} junctionY Y coordinate of the junction
+     * @param {Boolean} animate Set to True to animate the transition to the new location
      */
     updatePartnerConnection: function(partner, partnerX, partnerY, junctionX, junctionY, animate) {
         var radius = (partner.getGender() == 'U') ? partner.getGraphics().getRadius() * Math.sqrt(2) : partner.getGraphics().getRadius();
@@ -85,16 +102,18 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         }
     },
 
-    /*
+    /**
      * Updates the path of the connection for the given pregnancy or creates a new
      * connection if it doesn't exist.
      *
-     * @param preg pregnancy of this partnership
-     * @param pregX the X coordinate of the pregnancy
-     * @param pregY the Y coordinate of the pregnancy
-     * @partnershipX the X coordinate of the junction
-     * @partnershipY Y coordinate of the junction
-     * @animate set to true if you want to animate a transition to the new location
+     * @method updatePregnancyConnection
+     * @param {Pregnancy} preg Pregnancy associated with this partnership
+     * @param {Number} pregX X coordinate of the pregnancy
+     * @param {Number} pregY Y coordinate of the pregnancy
+     * @param {Number} partnershipX Y coordinate of the junction
+     * @param {Number} partnershipY Y coordinate of the junction
+     * @param {Boolean} animate Set to true to animate the transition to the new location
+     * @return {Raphael.el} The updated connection between the partnership and the pregnancy
      */
     updatePregnancyConnection: function(preg, pregX, pregY, partnershipX, partnershipY, animate) {
         var xDistance = (pregX - partnershipX);
@@ -108,21 +127,23 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             else {
                 preg.getGraphics().pregnancyConnection.attr({path: path});
             }
+            return preg.getGraphics().pregnancyConnection
         }
         else {
             return editor.getPaper().path(path).attr(PedigreeEditor.attributes.partnershipLines).toBack();
         }
     },
 
-    /*
+    /**
      * Changes the position of the junction to the coordinate (x,y) and updates all surrounding connections.
      *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param animate set to true if you want to animate the transition
-     * @param callback the function called at the end of the animation
+     * @method setPos
+     * @param {Number} x X coordinate relative to the Raphael canvas
+     * @param {Number} y Y coordinate relative to the Raphael canvas
+     * @param {Boolean} animate Set to True to animate the transition
+     * @param {Function} callback Executed at the end of the animation
      */
-    setPos: function(x,y, animate, callback) {
+    setPos: function(x, y, animate, callback) {
         var me = this;
         var junctionCallback = function () {
             me._absoluteX = x;
@@ -147,8 +168,10 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         }
     },
 
-    /*
+    /**
      * Removes all the graphical elements of this partnership from the canvas
+     *
+     * @method remove
      */
     remove: function() {
         this.getJunctionShape().remove();
@@ -159,13 +182,28 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         this.getChildlessStatusLabel() && this.getChildlessStatusLabel().remove();
     },
 
+    /**
+     * Returns a Raphael set of graphic elements of which the icon of the Partnership consists. Does not
+     * include hoverbox elements and labels.
+     *
+     * @method getShapes
+     * @return {Raphael.st}
+     */
     getShapes: function($super) {
         return $super().push(this.getJunctionShape());
     },
 
+    /**
+     * Returns a Raphael set of all the graphics and labels associated with this Partnership. Includes the hoverbox
+     * elements and labels
+     *
+     * @method getAllGraphics
+     * @return {Raphael.st}
+     */
     getAllGraphics: function($super) {
         return editor.getPaper().set(this.getHoverBox().getBackElements(), this._idLabel).concat($super()).push(this.getHoverBox().getFrontElements());
     }
 });
 
+//ATTACH CHILDLESS BEHAVIOR METHODS TO PARTNERSHIP
 PartnershipVisuals.addMethods(ChildlessBehaviorVisuals);

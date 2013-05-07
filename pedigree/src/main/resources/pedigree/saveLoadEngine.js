@@ -31,11 +31,16 @@ var SaveLoadEngine = Class.create( {
         this._timerID = null;
     },
 
+    /**
+     * Saves the state of the graph
+     *
+     * @return Serialization data for the entire graph
+     */
     serialize: function() {
         var me = this;
         if (this._saveInProgress) {
             // Don't send parallel save requests
-            return;
+            return null;
         }
         this.resetTimerID();
         var nodes = {

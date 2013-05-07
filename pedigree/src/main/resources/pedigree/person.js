@@ -1,14 +1,17 @@
-/*
+/**
  * Person is a class representing any AbstractPerson that has sufficient information to be
  * displayed on the final pedigree graph (printed or exported). Person objects
  * contain information about disorders, age and other relevant properties, as well
  * as graphical data to visualize this information.
  *
- * @param x the x coordinate on the Raphael canvas at which the node drawing will be centered
- * @param the y coordinate on the Raphael canvas at which the node drawing will be centered
- * @param gender either 'M', 'F' or 'U' depending on the gender
- * @param id a unique ID number
- * @param isProband set to true if this person is the proband
+ * @class Person
+ * @constructor
+ * @extends AbstractPerson
+ * @param {Number} x X coordinate on the Raphael canvas at which the node drawing will be centered
+ * @param {Number} y Y coordinate on the Raphael canvas at which the node drawing will be centered
+ * @param {String} gender 'M', 'F' or 'U' depending on the gender
+ * @param {Number} id Unique ID number
+ * @param {Boolean} isProband True if this person is the proband
  */
 
 var Person = Class.create(AbstractPerson, {
@@ -30,24 +33,40 @@ var Person = Class.create(AbstractPerson, {
         $super(x, y, gender, id);
     },
 
-    /*
+    /**
      * Initializes the object responsible for creating graphics for this Person
      *
-     * @param x the x coordinate on the canvas at which the node is centered
-     * @param y the y coordinate on the canvas at which the node is centered
+     * @method _generateGraphics
+     * @param {Number} x X coordinate on the Raphael canvas at which the node drawing will be centered
+     * @param {Number} y Y coordinate on the Raphael canvas at which the node drawing will be centered
+     * @return {PersonVisuals}
+     * @private
      */
-    generateGraphics: function(x, y) {
+    _generateGraphics: function(x, y) {
         return new PersonVisuals(this, x, y);
     },
 
-    /*
-     * Returns true if this node is the proband (i.e. the main patient)
+    /**
+     * Returns True if this node is the proband (i.e. the main patient)
+     *
+     * @method isProband
+     * @return {Boolean}
      */
     isProband: function() {
         return this._isProband;
     },
 
+    /**
+     * Creates a new partnership between this Person and partner
+     *
+     * @method addPartner
+     * @param [$super]
+     * @param {AbstractPerson} partner
+     * @param {Boolean} [noChild=false] Set to True if the partnership should not have a PlaceHolder child
+     * @return {Partnership}
+     */
     addPartner: function($super, partner, noChild) {
+        noChild || (noChild = false); //default value
         var partnership = $super(partner, noChild);
         if(partnership) {
             var status = partner.getType() == "Person" && partner.getChildlessStatus();
@@ -57,6 +76,15 @@ var Person = Class.create(AbstractPerson, {
         return partnership;
     },
 
+    /**
+     * Creates a Partnership with a new Placeholder and adds a new Person child to this Partnership. Adds
+     * entry in the action stack for this action.
+     *
+     * @method createNodeAction
+     * @param {String} type The type for the new child. (eg. "Person", "PlaceHolder", "PersonGroup")
+     * @param {String} gender "M", "F" or "U".
+     * @return {AbstractPerson} The created partner
+     */
     createNodeAction: function(type, gender) {
         var child = this.createChild(type, gender);
         var childless = this.getChildlessStatus();
@@ -101,6 +129,13 @@ var Person = Class.create(AbstractPerson, {
         return child;
     },
 
+    /**
+     * Creates a new partnership with a new Person node. Creates an action stack entry
+     * for the action.
+     *
+     * @method createPartnerAction
+     * @return {Null|Person} The newly created partner. Null in case partner could not be created.
+     */
     createPartnerAction: function() {
         var partnership = this.createPartner(false);
         if(partnership){
@@ -138,6 +173,13 @@ var Person = Class.create(AbstractPerson, {
         return null;
     },
 
+    /**
+     * Creates a new partnership with a new Person node and returns the partner. Creates an action stack entry
+     * for the action.
+     *
+     * @method addPartnerAction
+     * @return {Null|Person} The added partner. Null in case the partnership could not be created
+     */
     addPartnerAction: function(partner) {
         var partnership = this.addPartner(partner);
         if(partnership) {
@@ -175,8 +217,13 @@ var Person = Class.create(AbstractPerson, {
         return null;
     },
 
+    /**
+     * Makes child the child of this Person. Creates an action stack entry for the action.
+     *
+     * @method addChildAction
+     * @return {Null|Person} The added child. Null if the child could not be added
+     */
     addChildAction: function(child) {
-        var child;
         if(child = this.addChild(child)) {
             var childID = child.getID(),
                 nodeID = this.getID(),
@@ -207,6 +254,12 @@ var Person = Class.create(AbstractPerson, {
         return child;
     },
 
+    /**
+     * Creates a set of parents for this Person. Adds an action stack entry for the action
+     *
+     * @method createParentsAction
+     * @return {Null|Partnership} The partnership between the new parent nodes. Null if parents could not be added
+     */
     createParentsAction: function() {
         var partnership;
         if(partnership = this.createParents()) {
@@ -239,12 +292,27 @@ var Person = Class.create(AbstractPerson, {
         return partnership;
     },
 
+    /**
+     * Sets partnership as this Person's parent partnership
+     *
+     * @method addParents
+     * @param [$super]
+     * @param {Partnership} partnership
+     * @return {Null|Partnership} The added partnership or null if it couldn't be added
+     */
     addParents: function($super, partnership) {
         var returnValue = $super(partnership);
         partnership.getChildlessStatus() && this.setAdopted(true);
         return returnValue;
     },
 
+    /**
+     * Sets partnership as this Person's parent partnership. Creates entry in action stack for the action.
+     *
+     * @method addParentsAction
+     * @param {Partnership} partnership
+     * @return {Null|Partnership} The added partnership or null if it couldn't be added
+     */
     addParentsAction: function(partnership) {
         var parentPartnership;
         if(parentPartnership = this.addParents(partnership)) {
@@ -269,6 +337,13 @@ var Person = Class.create(AbstractPerson, {
         return parentPartnership;
     },
 
+    /**
+     * Sets parent as this Person's parent. Creates entry in action stack for the action.
+     *
+     * @method addParentAction
+     * @param {AbstractPerson} parent
+     * @return {Null|Partnership} The parent partnership or null if parent couldn't be added
+     */
     addParentAction: function(parent) {
         var partnership;
         if(partnership = this.addParent(parent)) {
@@ -300,30 +375,37 @@ var Person = Class.create(AbstractPerson, {
         return partnership;
     },
 
-    /*
+    /**
      * Adds a new partnership to the list of partnerships of this node
      *
-     * @param partnership is a Partnership object with this node as one of the partners
+     * @method addPartnership
+     * @param [$super]
+     * @param {Partnership} partnership Partnership with this node as one of the partners
+     * @return {null|Partnership} The added Partnership or null if it couldn't be added
      */
     addPartnership: function($super, partnership) {
         this.getGraphics().getHoverBox().hideChildHandle();
         return $super(partnership);
     },
 
-    /*
-     * Removes a partnership from the list of partnerships
+    /**
+     * Removes partnership from the list of partnerships
      *
-     * @param partnership is a Partnership object with this node as one of the partners
+     * @method removePartnership
+     * @param [$super]
+     * @param {Partnership} partnership Partnership with this node as one of the partners
      */
     removePartnership: function($super, partnership) {
         this.getGraphics().getHoverBox().unhideChildHandle();
         return $super(partnership);
     },
 
-    /*
+    /**
      * Replaces the parent Pregnancy
      *
-     * @param pregnancy is a Pregnancy object
+     * @method setParentPregnancy
+     * @param [$super]
+     * @param {Pregnancy} pregnancy
      */
     setParentPregnancy: function($super, pregnancy) {
         $super(pregnancy);
@@ -333,20 +415,23 @@ var Person = Class.create(AbstractPerson, {
         else {
             this.getGraphics().getHoverBox().unHideParentHandle();
         }
-        return pregnancy;
     },
 
-    /*
+    /**
      * Returns the first name of this Person
+     *
+     * @method getFirstName
+     * @return {String}
      */
     getFirstName: function() {
         return this._firstName;
     },
 
-    /*
+    /**
      * Replaces the first name of this Person with firstName, and displays the label
      *
-     * @param firstName any string that represents the first name of this Person
+     * @method setFirstName
+     * @param firstName
      */
     setFirstName: function(firstName) {
         firstName && (firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1));
@@ -354,12 +439,18 @@ var Person = Class.create(AbstractPerson, {
         this.getGraphics().updateNameLabel();
     },
 
+    /**
+     * Replaces the first name of this Person with firstName, and displays the label. Creates an entry in action stack.
+     *
+     * @method setFirstNameAction
+     * @param {String} firstName
+     */
     setFirstNameAction: function(firstName) {
         var oldName = this.getFirstName();
         var nodeID = this.getID();
         this.setFirstName(firstName);
         var actionElement = editor.getActionStack().peek();
-        if (actionElement.nodeID == nodeID && actionElement.property == 'FirstName') {
+        if (actionElement && actionElement.nodeID == nodeID && actionElement.property == 'FirstName') {
             actionElement.newValue = firstName;
         } else {
             editor.getActionStack().push({
@@ -373,19 +464,41 @@ var Person = Class.create(AbstractPerson, {
         }
     },
 
-    /*
+    /**
      * Returns the last name of this Person
+     *
+     * @method getLastName
+     * @return {String}
      */
     getLastName: function() {
         return this._lastName;
     },
 
+    /**
+     * Replaces the last name of this Person with lastName, and displays the label
+     *
+     * @method setLastName
+     * @param lastName
+     */
+    setLastName: function(lastName) {
+        lastName && (lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1));
+        this._lastName = lastName;
+        this.getGraphics().updateNameLabel();
+        return lastName;
+    },
+
+    /**
+     * Replaces the last name of this Person with lastName, and displays the label. Creates an entry in action stack.
+     *
+     * @method setLastName
+     * @param lastName
+     */
     setLastNameAction: function(lastName) {
         var oldName = this.getLastName();
         var nodeID = this.getID();
         this.setLastName(lastName);
         var actionElement = editor.getActionStack().peek();
-        if (actionElement.nodeID == nodeID && actionElement.property == 'LastName') {
+        if (actionElement && actionElement.nodeID == nodeID && actionElement.property == 'LastName') {
             actionElement.newValue = lastName;
         } else {
             editor.getActionStack().push({
@@ -400,44 +513,48 @@ var Person = Class.create(AbstractPerson, {
         return lastName;
     },
 
-    /*
-     * Replaces the last name of this Person with lastName, and displays the label
+    /**
+     * Returns the status of this Person
      *
-     * @param lastName any string that represents the last name of this Person
-     */
-    setLastName: function(lastName) {
-        lastName && (lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1));
-        this._lastName = lastName;
-        this.getGraphics().updateNameLabel();
-        return lastName;
-    },
-    /*
-     * Returns the status of this Person, which can be "alive", "deceased", "stillborn", "unborn" or "aborted"
+     * @method getLifeStatus
+     * @return {String} "alive", "deceased", "stillborn", "unborn" or "aborted"
      */
     getLifeStatus: function() {
         return this._lifeStatus;
     },
 
-    /*
-     * Returns true if this node's status is not 'alive' or 'deceased'.
+    /**
+     * Returns True if this node's status is not 'alive' or 'deceased'.
+     *
+     * @method isFetus
+     * @return {Boolean}
      */
     isFetus: function() {
         return (this.getLifeStatus() != 'alive' && this.getLifeStatus() != 'deceased');
     },
 
-    isValidLifeStatus: function(status) {
+    /**
+     * Returns True is status is 'unborn', 'stillborn', 'aborted', 'alive' or 'deceased'
+     *
+     * @method _isValidLifeStatus
+     * @param {String} status
+     * @returns {boolean}
+     * @private
+     */
+    _isValidLifeStatus: function(status) {
         return (status == 'unborn' || status == 'stillborn'
             || status == 'aborted'
             || status == 'alive' || status == 'deceased')
     },
 
-    /*
+    /**
      * Changes the life status of this Person to newStatus
      *
-     * @param newStatus can be "alive", "deceased", "stillborn", "unborn" or "aborted"
+     * @method setLifeStatus
+     * @param {String} newStatus "alive", "deceased", "stillborn", "unborn" or "aborted"
      */
     setLifeStatus: function(newStatus) {
-        if(this.isValidLifeStatus(newStatus)) {
+        if(this._isValidLifeStatus(newStatus)) {
             this._lifeStatus = newStatus;
 
             (newStatus != 'deceased') && this.setDeathDate("");
@@ -459,13 +576,18 @@ var Person = Class.create(AbstractPerson, {
                     childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive : this.isFetus()}
                 });
         }
-        this.getLifeStatus();
     },
 
+    /**
+     * Changes the life status of this Person to newStatus and creates an entry in action stack.
+     *
+     * @method setLifeStatusAction
+     * @param {String} newStatus "alive", "deceased", "stillborn", "unborn" or "aborted"
+     */
     setLifeStatusAction: function(newStatus) {
         var prevStatus = this.getLifeStatus();
         var nodeID = this.getID();
-        if(prevStatus != newStatus && this.isValidLifeStatus(newStatus)) {
+        if(prevStatus != newStatus && this._isValidLifeStatus(newStatus)) {
             this.setLifeStatus(newStatus);
             editor.getActionStack().push({
                 undo: AbstractNode.setPropertyActionUndo,
@@ -476,29 +598,34 @@ var Person = Class.create(AbstractPerson, {
                 newValue: newStatus
             });
         }
-        return this.getLifeStatus();
     },
 
-    /*
-     * Returns the date object for the conception date of this Person
+    /**
+     * Returns the date of the conception date of this Person
+     *
+     * @method getConceptionDate
+     * @return {Date}
      */
     getConceptionDate: function() {
         return this._conceptionDate;
     },
 
-    /*
+    /**
      * Replaces the conception date with newDate
      *
-     * @param newDate a javascript Date object
+     * @method setConceptionDate
+     * @param {Date} newDate Date of conception
      */
     setConceptionDate: function(newDate) {
         this._conceptionDate = newDate ? (new Date(newDate)) : '';
         this.getGraphics().updateAgeLabel();
-        return this.getConceptionDate();
     },
 
-    /*
+    /**
      * Returns the number of weeks since conception
+     *
+     * @method getGestationAge
+     * @return {Number}
      */
     getGestationAge: function() {
         if(this.getLifeStatus() == 'unborn' && this.getConceptionDate()) {
@@ -514,10 +641,11 @@ var Person = Class.create(AbstractPerson, {
         }
     },
 
-    /*
-     * Updates the conception age of the Person given the number of weeks passed since conception,
+    /**
+     * Updates the conception age of the Person given the number of weeks passed since conception
      *
-     * @param numWeeks a number greater than or equal to 0
+     * @method setGestationAge
+     * @param {Number} numWeeks Greater than or equal to 0
      */
     setGestationAge: function(numWeeks) {
         if(numWeeks){
@@ -532,35 +660,44 @@ var Person = Class.create(AbstractPerson, {
         }
     },
 
-    setGestationAgeAction: function(newDate) {
+    /**
+     * Updates the conception age of the Person given the number of weeks passed since conception.
+     * Creates entry in action stack
+     *
+     * @method setGestationAgeAction
+     * @param {Number} numWeeks Greater than or equal to 0
+     */
+    setGestationAgeAction: function(numWeeks) {
         var oldDate = this.getGestationAge();
         var nodeID = this.getID();
-        if(oldDate != newDate) {
-            this.setGestationAge(newDate);
+        if(oldDate != numWeeks) {
+            this.setGestationAge(numWeeks);
             editor.getActionStack().push({
                 undo: AbstractNode.setPropertyActionUndo,
                 redo: AbstractNode.setPropertyActionRedo,
                 nodeID: nodeID,
                 property: 'GestationAge',
                 oldValue: oldDate,
-                newValue: newDate
+                newValue: numWeeks
             });
         }
-        return this.getGestationAge();
     },
 
-    /*
-     * Returns the date object for the birth date of this Person
+    /**
+     * Returns the the birth date of this Person
+     *
+     * @method getBirthDate
+     * @return {Date}
      */
     getBirthDate: function() {
         return this._birthDate;
     },
 
-    /*
+    /**
      * Replaces the birth date with newDate
      *
-     * @param newDate a javascript Date object, that must be an earlier date than deathDate and
-     * a later date than conception date
+     * @method setBirthDate
+     * @param {Date} newDate Must be earlier date than deathDate and a later than conception date
      */
     setBirthDate: function(newDate) {
         newDate = newDate ? (new Date(newDate)) : '';
@@ -568,9 +705,15 @@ var Person = Class.create(AbstractPerson, {
             this._birthDate = newDate;
             this.getGraphics().updateAgeLabel();
         }
-        return this.getBirthDate();
     },
 
+    /**
+     * Replaces the birth date with newDate
+     * Creates entry in action stack
+     *
+     * @method setBirthDate
+     * @param {Date} newDate Must be earlier date than deathDate and a later than conception date
+     */
     setBirthDateAction: function(newDate) {
         var oldDate = this.getBirthDate();
         var nodeID = this.getID();
@@ -585,21 +728,24 @@ var Person = Class.create(AbstractPerson, {
                 newValue: newDate
             });
         }
-        return this.getBirthDate();
     },
 
-    /*
-     * Returns the date object for the death date of this Person
+    /**
+     * Returns the death date of this Person
+     *
+     * @method getDeathDate
+     * @return {Date}
      */
     getDeathDate: function() {
         return this._deathDate;
     },
 
-    /*
-     * Replaces the death date with newDate
+    /**
+     * Replaces the death date with deathDate
      *
-     * @param newDate a javascript Date object, that must be a later date than deathDate and
-     * a later date than conception date
+     *
+     * @method setDeathDate
+     * @param {Date} deathDate Must be a later date than birthDate
      */
     setDeathDate: function(deathDate) {
         deathDate = deathDate ? (new Date(deathDate)) : '';
@@ -611,6 +757,13 @@ var Person = Class.create(AbstractPerson, {
         return this.getDeathDate();
     },
 
+    /**
+     * Replaces the death date with newDate
+     * Creates entry in action stack
+     *
+     * @method setDeathDate
+     * @param {Date} newDate Must be a later date than birthDate
+     */
     setDeathDateAction: function(newDate) {
         var oldDate = this.getDeathDate();
         var nodeID = this.getID();
@@ -627,34 +780,40 @@ var Person = Class.create(AbstractPerson, {
         }
     },
 
-    /*
-     * Returns an array of objects with fields 'id' and 'value', where id is the id number
-     * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
-     * eg. [{id: 33244, value: 'Down Syndrome'}, {id: 13241, value: 'Huntington's Disease'}, ...]
+    /**
+     * Returns a list of disorders of this person.
+     *
+     * @method getDisorders
+     * @return {Array} List of Disorder objects.
      */
     getDisorders: function() {
         return this._disorders;
     },
 
-    /*
+    /**
      * Adds disorder to the list of this node's disorders and updates the Legend.
      *
-     * @param disorder an object with fields 'id' and 'value', where id is the id number
-     * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
-     * eg. {id: 33244, value: 'Down Syndrome'}
-     * @param forceDisplay set to true if you want to display the change on the canvas
+     * @method addDisorder
+     * @param {Disorder} disorder Disorder object
+     * @param [forceDisplay] True if you want to display the change on the canvas
      */
     addDisorder: function(disorder, forceDisplay) {
-        if(!this.hasDisorder(disorder['id'])) {
-            editor.getLegend().addCase(disorder, this);
+        if(!this.getDisorderByID(disorder.getDisorderID())) {
+            editor.getLegend().addCase(disorder.getDisorderID(), disorder.getName(), this.getID());
             this.getDisorders().push(disorder);
         }
         forceDisplay && this.getGraphics().updateDisorderShapes();
-        return this.getDisorders();
     },
 
+    /**
+     * Adds disorder to the list of this node's disorders and updates the Legend.
+     * Creates entry in action stack.
+     *
+     * @method addDisorderAction
+     * @param {Disorder} disorder
+     */
     addDisorderAction: function(disorder) {
-        if(!this.hasDisorder(disorder['id'])) {
+        if(!this.getDisorderByID(disorder.getDisorderID())) {
             var nodeID = this.getID();
             this.addDisorder(disorder, true);
             editor.getActionStack().push({
@@ -668,55 +827,58 @@ var Person = Class.create(AbstractPerson, {
                 }
             })
         }
-        return this.getDisorders();
     },
 
-    /*
+    /**
      * Removes disorder to the list of this node's disorders and updates the Legend.
      *
-     * @param disorder an object with fields 'id' and 'value', where id is the id number
-     * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
-     * eg. {id: 33244, value: 'Down Syndrome'}
-     * @param forceDisplay set to true if you want to display the change on the canvas
+     * @method removeDisorder
+     * @param {Disorder} disorder
+     * @param forceDisplay True if you want to display the change on the canvas
      */
     removeDisorder: function(disorder, forceDisplay) {
-        if(this.getDisorders().indexOf(disorder) >= 0) {
-            editor.getLegend().removeCase(disorder, this);
-            this._disorders = this.getDisorders().without(disorder);
+        var personsDisorder = null;
+        if(personsDisorder = this.getDisorderByID(disorder.getDisorderID())) {
+            editor.getLegend().removeCase(disorder.getDisorderID(), this.getID());
+            this._disorders = this.getDisorders().without(personsDisorder);
         }
         else {
             alert("This person doesn't have the specified disorder");
         }
         forceDisplay && this.getGraphics().updateDisorderShapes();
-        return this.getDisorders();
     },
 
-    /*
+    /**
      * Given a list of disorders, adds and removes the disorders of this node to match
      * the new list
      *
-     * @param disorderArray should be an array of objects with fields 'id' and 'value', where id is the id number
-     * for the disorder, taken from the OMIM database, and 'value' is the name of the disorder.
-     * eg. [{id: 33244, value: 'Down Syndrome'}, {id: 13241, value: 'Huntington's Disease'}, ...]
+     * @method setDisorders
+     * @param {Array} disorders List of Disorder objects
      */
     setDisorders: function(disorders) {
         var me = this;
         this.getDisorders().each(function(disorder) {
             var found = false;
             disorders.each(function(newDisorder) {
-                disorder['id'] == newDisorder['id'] && (found = true);
+                disorder.getDisorderID() == newDisorder.getDisorderID() && (found = true);
             });
-            !found && me.removeDisorder(disorder);
+            !found && me.removeDisorder(disorder, false);
         });
         disorders.each(function(newDisorder) {
-            if (!me.hasDisorder(newDisorder.id)) {
+            if (!me.getDisorderByID(newDisorder.getDisorderID())) {
                 me.addDisorder(newDisorder);
             }
         });
         this.getGraphics().updateDisorderShapes();
-        return this.getDisorders();
     },
 
+    /**
+     * Given a list of disorders, adds and removes the disorders of this node to match
+     * the new list. Adds entry in action stack.
+     *
+     * @method setDisorders
+     * @param {Array} disorders List of Disorder objects
+     */
     setDisordersAction: function(disorders) {
         var prevDisorders = this.getDisorders().clone();
         var nodeID = this.getID();
@@ -729,27 +891,31 @@ var Person = Class.create(AbstractPerson, {
             oldValue: prevDisorders,
             newValue: disorders
         });
-        return this.getDisorders();
     },
 
-    /*
-     * Returns true if this person has the disorder with id
+    /**
+     * Returns disorder with given id if this person has it. Returns null otherwise.
      *
-     * @param id a string id for the disorder, taken from the OMIM database
+     * @method getDisorderByID
+     * @param {Number} id Disorder ID, taken from the OMIM database
+     * @return {Disorder}
      */
-    hasDisorder: function(id) {
+    getDisorderByID: function(id) {
         for(var i = 0; i < this.getDisorders().length; i++) {
-            if(this.getDisorders()[i].id == id) {
-                return true;
+            if(this.getDisorders()[i].getDisorderID() == id) {
+                return this.getDisorders()[i];
             }
         }
-        return false;
+        return null;
     },
 
-    /*
-     * Returns true if this node can be a parent of otherNode
+    /**
+     * Returns True if this Person can be a parent of otherNode
      *
-     * @param otherNode is a Person
+     * @method canBeParentOf
+     * @param [$super]
+     * @param {Person} otherNode
+     * @return {Boolean}
      */
     canBeParentOf: function($super, otherNode) {
         var preliminary = $super(otherNode);
@@ -760,10 +926,11 @@ var Person = Class.create(AbstractPerson, {
         return preliminary && !incompatibleBirthDate && !incompatibleDeathDate && !this.isFetus();
     },
 
-    /*
-     * Replaces this Person with a placeholder without breaking all the connections.
+    /**
+     * Replaces this Person with a placeholder without breaking any the connections.
      *
-     * @param otherNode is a Person
+     * @method convertToPlaceholder
+     * @return {PlaceHolder}
      */
     convertToPlaceholder: function() {
         var me = this;
@@ -786,6 +953,15 @@ var Person = Class.create(AbstractPerson, {
         return placeholder;
     },
 
+    /**
+     * Changes the childless status of this Person. Nullifies the status if the given status is not
+     * "childless" or "infertile". Modifies the status of the partnerships as well.
+     *
+     * @method setChildlessStatus
+     * @param {String} status Can be "childless", "infertile" or null
+     * @param {Boolean} ignoreOthers If True, changing the status will not modify partnerships's statuses or
+     * detach any children
+     */
     setChildlessStatus: function(status, ignoreOthers) {
         if(!this.isValidChildlessStatus(status))
             status = null;
@@ -803,6 +979,14 @@ var Person = Class.create(AbstractPerson, {
         return this.getChildlessStatus();
     },
 
+    /**
+     * Changes the childless status of this Person. Nullifies the status if the given status is not
+     * "childless" or "infertile". Modifies the status of the partnerships as well.
+     * Creates a an entry in action stack.
+     *
+     * @method setChildlessStatusAction
+     * @param {String} status Can be "childless", "infertile" or null
+     */
     setChildlessStatusAction: function(status) {
         if(status != this.getChildlessStatus()) {
             var me = this;
@@ -830,12 +1014,28 @@ var Person = Class.create(AbstractPerson, {
         return this.getChildlessStatus();
     },
 
-    /*
+    /**
      * Deletes this node, it's placeholder partners and children and optionally
      * removes all the other nodes that are unrelated to the proband node.
      *
-     * @param isRecursive set to true if you want to remove related nodes that are
+     * @method remove
+     * @param [$super]
+     * @param {Boolean} isRecursive set to true if you want to remove related nodes that are
      * not connected to the proband
+     * @param {Boolean} skipConfirmation If True, will not display confirmation alert box
+     * @return {Object} in the form
+     *
+     {
+        confirmed: true/false,
+        affected: {
+            PersonNodes : [Person1, Person2, ...],
+            PartnershipNodes : [Partnership1, Partnership2, ...],
+            PregnancyNodes : [Pregnancy1, Pregnancy2, ...],
+            PersonGroupNodes : [PersonGroup1, PersonGroup2, ...],
+            PlaceHolderNodes : [PlaceHolder1, PlaceHolder2, ...]
+        },
+        created: [PlaceHolder1, PlaceHolder2, ...]
+     }
      */
     remove: function($super, isRecursive, skipConfirmation) {
         var me = this;
@@ -851,14 +1051,14 @@ var Person = Class.create(AbstractPerson, {
             var hasTwoKnownParents = parents && parents.getPartners()[0].getType() == "Person" && parents.getPartners()[1].getType() == "Person";
             var childlessParents = parents && parents.getChildlessStatus();
             if(hasTwoKnownParents && singleChild && !childlessParents || hasChildren) {
-                var phInfo = this.convertToPlaceholder().getInfo()
+                var phInfo = this.convertToPlaceholder().getInfo();
                 var returnValue = $super(isRecursive, skipConfirmation);
-                returnValue.created && returnValue.created.push(phInfo)
+                returnValue.created && returnValue.created.push(phInfo);
                 return returnValue;
             }
             else {
                 this.getDisorders().each(function(disorder) {
-                    editor.getLegend().removeCase(disorder, me);
+                    editor.getLegend().removeCase(disorder.getDisorderID(), me.getID());
                 });
                 this.getGraphics().getHoverBox().remove();
                 return $super(isRecursive, skipConfirmation);
@@ -869,8 +1069,10 @@ var Person = Class.create(AbstractPerson, {
         }
     },
 
-    /*
+    /**
      * Adds a placeholder child to all partnerships that are missing it.
+     *
+     * @method restorePlaceholders
      */
     restorePlaceholders: function() {
         var me = this;
@@ -883,18 +1085,25 @@ var Person = Class.create(AbstractPerson, {
         });
     },
 
-    /*
+    /**
      * Returns an object (to be accepted by the menu) with information about this Person
+     *
+     * @method getSummary
+     * @return {Object} Summary object for the menu
      */
     getSummary: function() {
         var childlessInactive = this.isFetus() || this.hasNonAdoptedChildren();
+        var disorders = [];
+        this.getDisorders().forEach(function(disorder) {
+            disorders.push({id: disorder.getDisorderID(), value: disorder.getName()});
+        });
         return {
             identifier:    {value : this.getID()},
             first_name:    {value : this.getFirstName()},
             last_name:     {value : this.getLastName()},
             gender:        {value : this.getGender(), inactive: (this.getGender() != 'U' && this.getPartners().length > 0)},
             date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus()},
-            disorders:     {value : this.getDisorders()},
+            disorders:     {value : disorders},
             adopted:       {value : this.isAdopted(), inactive: (this.isFetus() || (this.getParentPartnership() && this.getParentPartnership().getChildren("Person").length > 1))},
             state:         {value : this.getLifeStatus(), inactive: [(this.getPartnerships().length > 0) ? ['unborn','aborted','stillborn'] : ''].flatten()},
             date_of_death: {value : this.getDeathDate(), inactive: this.getLifeStatus() != 'deceased'},
@@ -904,21 +1113,38 @@ var Person = Class.create(AbstractPerson, {
         };
     },
 
+    /**
+     * Returns object with serialization data
+     *
+     * @method getInfo
+     * @param [$super]
+     * @return {Object}
+     */
     getInfo: function($super) {
         var info = $super();
         info['fName'] = this.getFirstName();
         info['lName'] = this.getLastName();
         info['dob'] = this.getBirthDate();
-        info['disorders'] = this.getDisorders().clone();
         info['isAdopted'] = this.isAdopted();
         info['lifeStatus'] = this.getLifeStatus();
         info['dod'] = this.getDeathDate();
         info['gestationAge'] = this.getGestationAge();
         info['childlessStatus'] = this.getChildlessStatus();
         info['childlessReason'] = this.getChildlessReason();
+        info['disorders'] = [];
+        this.getDisorders().forEach(function(disorder) {
+            info['disorders'].push({id: disorder.getDisorderID(), name: disorder.getName()})
+        });
         return info;
      },
 
+    /**
+     * Applies properties found in info to this Person
+     *
+     * @method loadInfo
+     * @param [$super]
+     * @param info Serialization data object
+     */
     loadInfo: function($super, info) {
         if($super(info)) {
             if(info.fName && this.getFirstName() != info.fName) {
@@ -931,7 +1157,11 @@ var Person = Class.create(AbstractPerson, {
                 this.setBirthDate(info.dob);
             }
             if(info.disorders) {
-                this.setDisorders(info.disorders);
+                var disorders = [];
+                info.disorders.forEach(function(disorder) {
+                    disorders.push(new Disorder(disorder.id, disorder.name))
+                });
+                this.setDisorders(disorders);
             }
             if(info.isAdopted && this.isAdopted() != info.isAdopted) {
                 this.setAdopted(info.isAdopted);
@@ -955,4 +1185,5 @@ var Person = Class.create(AbstractPerson, {
     }
 });
 
+//ATTACHES CHILDLESS BEHAVIOR METHODS TO THIS CLASS
 Person.addMethods(ChildlessBehavior);

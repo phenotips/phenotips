@@ -1,22 +1,19 @@
-/*
+/**
  * PersonHoverbox is a class for all the UI elements and graphics surrounding a Person node and
  * its labels. This includes the box that appears around the node when it's hovered by a mouse, as
  * well as the handles used for creating connections and creating new nodes.
  *
- * @param pedigree_node the
- * @param x the x coordinate on the Raphael canvas at which the node drawing will be centered
- * @param the y coordinate on the Raphael canvas at which the node drawing will be centered
- * @param gender either 'M', 'F' or 'U' depending on the gender
- * @param id a unique numerical ID number
+ * @class PersonHoverbox
+ * @extends AbstractHoverbox
+ * @constructor
+ * @param {Person} personNode The person for whom this hoverbox is being drawn.
+ * @param {Number} centerX The X coordinate for the center of the hoverbox
+ * @param {Number} centerY The Y coordinate for the center of the hoverbox
+ * @param {Raphael.st} nodeShapes All shapes associated with the person node
  */
 
 var PersonHoverbox = Class.create(AbstractHoverbox, {
 
-    /**
-     * @param personNode the Person around which the box is drawn
-     * @param centerX the x coordinate on the Raphael canvas at which the hoverbox will be centered
-     * @param centerY the y coordinate on the Raphael canvas at which the hoverbox will be centered
-     */
     initialize: function($super, personNode, centerX, centerY, nodeShapes) {
         var radius = PedigreeEditor.attributes.radius * 2;
         $super(personNode, centerX - radius, centerY - radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);
@@ -25,7 +22,10 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
     },
 
     /**
-     * Creates four handles around the node. Returns a Raphael set.
+     * Creates the handles used in this hoverbox
+     *
+     * @method generateHandles
+     * @return {Raphael.st} A set of handles
      */
     generateHandles: function($super) {
         this._upHandle = this.generateHandle('parent', this.getNodeX(), this.getNodeY() - (PedigreeEditor.attributes.radius * 1.6));
@@ -34,8 +34,12 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         this._leftHandle = this.generateHandle('partner', this.getNodeX() - (PedigreeEditor.attributes.radius * 1.6), this.getNodeY());
         return $super().push(this._upHandle, this._downHandle, this._rightHandle, this._leftHandle);
     },
+
     /**
-     * Creates remove and menu buttons. Returns a raphael set.
+     * Creates the buttons used in this hoverbox
+     *
+     * @method generateButtons
+     * @return {Raphael.st} A set of buttons
      */
     generateButtons: function($super) {
         var buttons = $super().push(this.generateMenuBtn());
@@ -43,16 +47,20 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         return buttons;
     },
 
-    /*
+    /**
      * Hides the partner and children handles
+     *
+     * @method hidePartnerHandles
      */
     hidePartnerHandles: function() {
         this.getCurrentHandles().exclude(this._rightHandle.hide());
         this.getCurrentHandles().exclude(this._leftHandle.hide());
     },
 
-    /*
-     * Unhides the partner and children handles
+    /**
+     * Displays the partner and children handles
+     *
+     * @method unhidePartnerHandles
      */
     unhidePartnerHandles: function() {
         if(this.isHovered() || this.isMenuToggled()) {
@@ -62,15 +70,20 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         (!this.getCurrentHandles().contains(this._rightHandle)) && this.getCurrentHandles().push(this._rightHandle);
         (!this.getCurrentHandles().contains(this._leftHandle)) && this.getCurrentHandles().push(this._leftHandle);
     },
-    /*
+
+    /**
      * Hides the child handle
+     *
+     * @method hideChildHandle
      */
     hideChildHandle: function() {
         this.getCurrentHandles().exclude(this._downHandle.hide());
     },
 
-    /*
-     * Unhides the child handle
+    /**
+     * Displays the child handle
+     *
+     * @method unhideChildHandle
      */
     unhideChildHandle: function() {
         if(this.isHovered() || this.isMenuToggled()) {
@@ -79,15 +92,19 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         (!this.getCurrentHandles().contains(this._downHandle)) && this.getCurrentHandles().push(this._downHandle);
     },
 
-    /*
+    /**
      * Hides the parent handle
+     *
+     * @method hideParentHandle
      */
     hideParentHandle: function() {
         this.getCurrentHandles().exclude(this._upHandle.hide());
     },
 
-    /*
-     * Unhides the parent handle
+    /**
+     * Displays the parent handle
+     *
+     * @method unHideParentHandle
      */
     unHideParentHandle: function() {
         if(this.isHovered() || this.isMenuToggled()) {
@@ -96,15 +113,20 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         this.getCurrentHandles().push(this._upHandle);
     },
 
-    /*
+    /**
      * Returns true if the menu for this node is open
+     *
+     * @method isMenuToggled
+     * @return {Boolean}
      */
     isMenuToggled: function() {
         return this._isMenuToggled;
     },
 
-    /*
+    /**
      * Shows/hides the menu for this node
+     *
+     * @method toggleMenu
      */
     toggleMenu: function(isMenuToggled) {
         this._isMenuToggled = isMenuToggled;
@@ -122,8 +144,10 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         }
     },
 
-    /*
-     * Fades the hoverbox graphics out
+    /**
+     * Hides the hoverbox with a fade out animation
+     *
+     * @method animateHideHoverZone
      */
     animateHideHoverZone: function($super) {
         if(!this.isMenuToggled()){
@@ -132,15 +156,22 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         }
     },
 
+    /**
+     * Displays the hoverbox with a fade in animation
+     *
+     * @method animateDrawHoverZone
+     */
     animateDrawHoverZone: function($super) {
         this.getNode().getParentPregnancy() && this.getNode().getParentPregnancy().getGraphics().grow();
         $super();
     },
 
-    /*
+    /**
      * Performs the appropriate action for clicking on the handle of type handleType
      *
-     * @param handleType can be either "child", "partner" or "parent"
+     * @method handleAction
+     * @param {String} handleType "child", "partner" or "parent"
+     * @param {Boolean} isDrag True if this handle is being dragged
      */
     handleAction : function(handleType, isDrag) {
         var curHovered = editor.getGraph().getCurrentHoveredNode();
@@ -180,7 +211,5 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         }
         editor.getGraph().setCurrentHoveredNode(null);
         editor.getGraph().setCurrentDraggable(null);
-    },
-
-
+    }
 });

@@ -1,11 +1,14 @@
-/*
+/**
  * Pregnancy is a node contained by a Partnership and is used to group and manage
  * monozygotic twins.
  *
- * @param x the x coordinate at which the pregnancy node will be placed
- * @param y the y coordinate at which the pregnancy node will be placed
- * @param partnership the partnership at which this node is rooted from
- * @param id the id of this node
+ * @class Pregnancy
+ * @extends AbstractNode
+ * @constructor
+ * @param {Number} x X coordinate at which the pregnancy node will be placed
+ * @param {Number} y Y coordinate at which the pregnancy node will be placed
+ * @param {Partnership} partnership The partnership that has this pregnancy
+ * @param {Number} id ID of this node
  */
 
 var Pregnancy = Class.create(AbstractNode, {
@@ -22,26 +25,34 @@ var Pregnancy = Class.create(AbstractNode, {
         partnership.addPregnancy(this);
     },
 
-    /*
+    /**
      * Generates and returns an instance of PregnancyVisuals
      *
-     * @param x,y the x and y coordinates of this pregnancy
+     * @method _generateGraphics
+     * @param {Number} x X coordinate on the canvas
+     * @param {Number} y X coordinate on the canvas
+     * @return {PregnancyVisuals}
+     * @private
      */
-    generateGraphics: function(x, y) {
+    _generateGraphics: function(x, y) {
         return new PregnancyVisuals(this, x, y);
     },
 
-    /*
-     * Returns "M", "F", or "U" to represent the gender of nodes in this pregnancy
+    /**
+     * Returns the gender of the twins in this pregnancy
+     *
+     * @method getGender
+     * @return {String} "M", "F", or "U"
      */
     getGender: function() {
         return this._gender;
     },
 
-    /*
+    /**
      * Changes the gender of this pregnancy
      *
-     * @param gender can be "M", "F", or "U"
+     * @method setGender
+     * @param {String} gender "M", "F", or "U"
      */
     setGender: function(gender) {
         if(this._gender != gender && !this.isGenderLocked()) {
@@ -54,8 +65,11 @@ var Pregnancy = Class.create(AbstractNode, {
         }
     },
 
-    /*
+    /**
      * Returns true if editing the gender of this pregnancy is currently impossible
+     *
+     * @method isGenderLocked
+     * @return {Boolean}
      */
     isGenderLocked: function() {
         var lockedGender = false;
@@ -68,19 +82,22 @@ var Pregnancy = Class.create(AbstractNode, {
         return lockedGender;
     },
 
-
-    /*
-     * Returns the partnership from which this node stems
+    /**
+     * Returns the partnership that has this pregnancy
+     *
+     * @method getPartnership
+     * @return {Partnership}
      */
     getPartnership: function() {
         return this._partnership;
     },
 
-    /*
+    /**
      * Returns an array of nodes that are children of this Pregnancy
      *
-     * @param type can filter the array to the specified type (eg. "PlaceHolder", "Person", etc).
-     * Multiple types can be passed (eg. getChildren(type1, type2,...,typeN)
+     * @method getChildren
+     * @param {String} [type]* Filters for types of children to include (such as "Person", "PlaceHolder, etc)
+     * @return {Array}
      */
     getChildren: function(type) {
         if(arguments.length == 0) {
@@ -97,19 +114,23 @@ var Pregnancy = Class.create(AbstractNode, {
         }
     },
 
-    /*
+    /**
      * Returns true if someNode is a child of this pregnancy.
      *
-     * @param someNode is an AbstractPerson
+     * @method hasChild
+     * @param {AbstractPerson} someNode
+     * @return {Boolean}
      */
     hasChild: function(someNode) {
         return this.getChildren(someNode.getType()).indexOf(someNode) > -1;
     },
 
-    /*
-     * Creates a new node and sets it as a child of this pregnancy. Returns the child.
+    /**
+     * Creates a new node and sets it as a child of this pregnancy
      *
-     * @param type can be any type of AbstractPerson
+     * @method createChild
+     * @param {String} type Any type of AbstractPerson
+     * @return {AbstractPerson} The created child or null if creation failed
      */
     createChild: function(type) {
         if(this.isChildTypeValid(type) ) {
@@ -120,8 +141,15 @@ var Pregnancy = Class.create(AbstractNode, {
             return child;
             //document.fire("pedigree:child:added", {node: child, 'relatedNodes' : [], 'sourceNode' : this});
         }
+        return null;
     },
 
+    /**
+     * Creates a new node and sets it as a child of this pregnancy.
+     * Creates action stack entry.
+     *
+     * @method createChildAction
+     */
     createChildAction: function() {
         var childInfo = this.createChild("PlaceHolder").getInfo();
         var nodeID = this.getID();
@@ -137,9 +165,10 @@ var Pregnancy = Class.create(AbstractNode, {
         editor.getActionStack().push({undo: undo, redo: redo});
     },
 
-    /*
-     * Attaches this pregnancy to someNode
+    /**
+     * Adds someNode as this pregnancy's child
      *
+     * @method addChild
      * @param someNode is an AbstractPerson
      */
     addChild: function(someNode) {
@@ -150,14 +179,14 @@ var Pregnancy = Class.create(AbstractNode, {
             this.getGraphics().addChild(someNode);
             this.updateActive()
         }
-        return someNode;
     },
 
-    /*
+    /**
      * Breaks the connection between the pregnancy and child.
      * Returns child;
      *
-     * @param child is an AbstractPerson
+     * @method removeChild
+     * @param {AbstractPerson} child Child of this pregnancy
      */
     removeChild: function(child) {
         this.getGraphics().removeChild(child);
@@ -173,15 +202,29 @@ var Pregnancy = Class.create(AbstractNode, {
         if(this.isPlaceHolderPregnancy() && (p[0].getType() == "PlaceHolder" || p[1].getType() == "PlaceHolder")) {
             this.remove(false);
         }
-        return child;
     },
 
-    /*
-     * Removes this pregnancy and all the visuals attached to it from the graph.
-     * Set isRecursive to true to remove all children, unless they have some other connection
-     * to the Proband
+    /**
+     * Breaks connections with all related nodes and removes this node from
+     * the record.
      *
-     * @param isRecursive can be true or false
+     * @method remove
+     * @param [$super]
+     * @param [isRecursive=false] {Boolean} set to true to remove all nodes that will result in being unrelated to the proband
+     * @param [skipConfirmation=false] {Boolean} if true, no confirmation box will pop up
+     * @return {Object} in the form
+     *
+     {
+     confirmed: true/false,
+     affected: {
+     PersonNodes : [Person1, Person2, ...],
+     PartnershipNodes : [Partnership1, Partnership2, ...],
+     PregnancyNodes : [Pregnancy1, Pregnancy2, ...],
+     PersonGroupNodes : [PersonGroup1, PersonGroup2, ...],
+     PlaceHolderNodes : [PlaceHolder1, PlaceHolder2, ...]
+     },
+     created: [PlaceHolder1, PlaceHolder2, ...]
+     }
      */
     remove: function($super, isRecursive, skipConfirmation) {
         editor.getGraph().removePregnancy(this);
@@ -202,41 +245,54 @@ var Pregnancy = Class.create(AbstractNode, {
         }
     },
 
-    /*
-     * Returns an array of children nodes of this pregnancy
+    /***
+     * Returns lower neighbors of this node in the tree graph
+     *
+     * @method getLowerNeighbors
+     * @return {Array}
      */
     getLowerNeighbors: function() {
         return this.getChildren();
     },
 
-    /*
-     * Returns an empty array
+    /**
+     * Returns side neighbors of this node in the tree graph
+     *
+     * @method getSideNeighbors
+     * @return {Array}
      */
     getSideNeighbors: function() {
         return [];
     },
 
-    /*
-     * Returns the parent partnership
+    /**
+     * Returns upper neighbors of this node in the tree graph
+     *
+     * @method getUpperNeighbors
+     * @return {Array}
      */
     getUpperNeighbors: function() {
         return this.getPartnership();
     },
 
-    /*
+    /**
      * Returns true if someNode can be a child of this pregnancy
      *
-     * @param someNode is an AbstractNode
+     * @method canBeParentOf
+     * @param {AbstractPerson} someNode
+     * @return {Boolean}
      */
     canBeParentOf: function(someNode) {
         var compatibleGender = someNode.getGender() == this.getGender() || this.getGender() == "U";
         return compatibleGender && this.isChildTypeValid(someNode.getType()) && this.getPartnership().canBeParentOf(someNode);
     },
 
-    /*
+    /**
      * Returns true if a child of type 'nodeType' can be added to this pregnancy
      *
+     * @method isChildTypeValid
      * @nodeType can be any type of AbstractNode, such as "Person", "PlaceHolder" and "PersonGroup"
+     * @return {Boolean}
      */
     isChildTypeValid: function(nodeType) {
         var validType = editor.getGraph()["add" + nodeType];
@@ -246,18 +302,22 @@ var Pregnancy = Class.create(AbstractNode, {
         return validType && validPlaceHolder && validPersonGroup && noPersonGroups;
     },
 
-    /*
+    /**
      * Returns true if the only child of this pregnancy is a PlaceHolder
+     *
+     * @method isPlaceHolderPregnancy
+     * @return {Boolean}
      */
     isPlaceHolderPregnancy: function() {
         var children = this.getChildren();
         return (children.length == 0) || (children.length = 1 && children[0].getType() == "PlaceHolder");
     },
 
-    /*
-     * Removes someNode from this pregnancy, and places it into a new one
+    /**
+     * Creates a new pregnancy for parent partnership and makes someNode a child of that pregnancy
      *
-     * @param someNode is an AbstractPerson
+     * @method separateFromPregnancy
+     * @param {AbstractPerson} someNode Child of this pregnancy
      */
     separateFromPregnancy: function(someNode) {
         if(this.hasChild(someNode)) {
@@ -266,6 +326,12 @@ var Pregnancy = Class.create(AbstractNode, {
         }
     },
 
+    /**
+     * Returns True if this pregnancy has any children that are not adopted
+     *
+     * @method hasNonAdoptedChildren
+     * @returns {Boolean}
+     */
     hasNonAdoptedChildren: function() {
         var children = this.getChildren("Person");
         for(var i = 0; i < children.length; i++) {
@@ -275,10 +341,11 @@ var Pregnancy = Class.create(AbstractNode, {
         return false;
     },
 
-    /*
-     * Toggles the pregnancy junction interactivity active and inactive
+    /**
+     * Toggles the pregnancy bubble interactivity active or inactive
      *
-     * @param isActive set to true if interacting with the junction is allowed
+     * @method setActive
+     * @param {Boolean} isActive Set to True to make pregnancy interactive
      */
     setActive: function(isActive) {
         if(this._isActive != isActive) {
@@ -287,15 +354,20 @@ var Pregnancy = Class.create(AbstractNode, {
         }
     },
 
-    /*
-     * Returns true if the user can currently interactively add new children to this pregnancy
+    /**
+     * Returns True if the user can currently interactively add new children to this pregnancy
+     *
+     * @method isActive
+     * @return {Boolean}
      */
     isActive: function() {
         return this._isActive;
     },
 
-    /*
+    /**
      * Checks whether the pregnancy junction should be active and updates the active status
+     *
+     * @method updateActive
      */
     updateActive: function() {
         var adoptedChild = this.getChildren()[0];
@@ -303,6 +375,13 @@ var Pregnancy = Class.create(AbstractNode, {
         this.setActive(this.getChildren("PlaceHolder", "PersonGroup").length == 0 && !adoptedChild);
     },
 
+    /**
+     * Returns object with serialization data
+     *
+     * @method getInfo
+     * @param [$super]
+     * @return {Object}
+     */
     getInfo: function($super) {
         var info = $super();
         info['partnershipID'] = this.getPartnership().getID();
@@ -314,6 +393,13 @@ var Pregnancy = Class.create(AbstractNode, {
         return info;
     },
 
+    /**
+     * Applies properties found in info to this Pregnancy
+     *
+     * @method loadInfo
+     * @param [$super]
+     * @param info
+     */
     loadInfo: function($super, info) {
         var me = this;
         if($super(info) && info.gender) {

@@ -4,9 +4,9 @@
  *
  * @class AbstractNodeVisuals
  * @constructor
- * @param node {AbstractNode} the node for which the graphics are drawn
- * @param x {Number} the x coordinate on the canvas
- * @param y {Number} the y coordinate on the canvas
+ * @param {AbstractNode} node The node for which the graphics are drawn
+ * @param {Number} x The x coordinate on the canvas
+ * @param {Number} y The y coordinate on the canvas
  */
 
 var AbstractNodeVisuals = Class.create({
@@ -21,7 +21,7 @@ var AbstractNodeVisuals = Class.create({
      * Returns the node for which the graphics are being drawn
      *
      * @method getNode
-     * @returns {AbstractNode}
+     * @return {AbstractNode}
      */
     getNode: function() {
         return this._node;
@@ -41,9 +41,9 @@ var AbstractNodeVisuals = Class.create({
      * Changes the X coordinate of the node
      *
      * @method setX
-     * @param x {Number} the target x coordinate on the canvas
-     * @param [animate] {Boolean} set to true if you want to animate the transition
-     * @param [callback] {Function} the function called at the end of the animation
+     * @param {Number} x The target x coordinate on the canvas
+     * @param {Boolean} [animate] Set to true if you want to animate the transition
+     * @param {Function} [callback] The function called at the end of the animation
      */
     setX: function(x, animate, callback) {
         this.setPos(x, this.getY(), animate, callback);
@@ -53,7 +53,7 @@ var AbstractNodeVisuals = Class.create({
      * Returns the current Y coordinate of this node on the canvas, taking into consideration transformation data.
      *
      * @method getY
-     * @return {Number} the y coordinate
+     * @return {Number} The y coordinate
      */
     getY: function() {
         return this._absoluteY;
@@ -63,9 +63,9 @@ var AbstractNodeVisuals = Class.create({
      * Changes the Y coordinate of the node
      *
      * @method setY
-     * @param y {Number} the target y coordinate on the canvas
-     * @param [animate] {Boolean} set to true if you want to animate the transition
-     * @param [callback] {Function} the function called at the end of the animation
+     * @param {Number} y The target y coordinate on the canvas
+     * @param {Boolean} [animate] Set to true if you want to animate the transition
+     * @param {Function} [callback] The function called at the end of the animation
      */
     setY: function(y, animate, callback) {
         this.setPos(this.getX(), y, animate, callback);
@@ -95,7 +95,7 @@ var AbstractNodeVisuals = Class.create({
      * Sets this node's selected property to isSelected. A selected node is a node with visible Hoverbox.
      *
      * @method setSelected
-     * @param isSelected {Boolean} true if the node is selected
+     * @param {Boolean} isSelected True if the node is selected
      */
     setSelected: function(isSelected) {
         this._isSelected = isSelected;

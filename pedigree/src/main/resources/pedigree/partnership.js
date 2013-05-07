@@ -27,24 +27,34 @@ var Partnership = Class.create(AbstractNode, {
        }
    },
 
-    /*
+    /**
      * Generates and returns an instance of PartnershipVisuals
      *
-     * @param x,y the x and y coordinates of this partnership
+     * @method _generateGraphics
+     * @param {Number} x X coordinate of this partnership
+     * @param {Number} y Y coordinate of this partnership
+     * @return {PartnershipVisuals}
+     * @private
      */
-    generateGraphics: function(x, y) {
+    _generateGraphics: function(x, y) {
         return new PartnershipVisuals(this, x, y);
     },
 
-    /*
+    /**
      * Returns an array containing the two partners. Partners are AbstractPerson objects
+     *
+     * @method getPartners
+     * @return {Array}
      */
     getPartners: function() {
         return this._partners;
     },
 
-    /*
+    /**
      * Returns the female partner in the partnership. Returns null if none of the parents are female
+     *
+     * @method getMother
+     * @return {AbstractPerson}
      */
     getMother: function() {
         if(this.getPartners()[0].getGender() == "F") {
@@ -58,8 +68,11 @@ var Partnership = Class.create(AbstractNode, {
         }
     },
 
-    /*
+    /**
      * Returns the male partner in the partnership. Returns null if none of the parents are male
+     *
+     * @method getFather
+     * @return {AbstractPerson}
      */
     getFather: function() {
         if(this.getPartners()[0].getGender() == "M") {
@@ -73,45 +86,50 @@ var Partnership = Class.create(AbstractNode, {
         }
     },
 
-    /*
+    /**
      * Returns the partner of someNode if someNode is a partner in this relationship. Otherwise, returns null.
      *
-     * @param someNode is an AbstractPerson
+     * @method getPartnerOf
+     * @param {AbstractPerson} someNode
      */
     getPartnerOf: function(someNode) {
+        var partner = null;
         if(someNode) {
             if(someNode.getID() == this.getPartners()[0].getID()) {
-                return this.getPartners()[1];
+                partner =  this.getPartners()[1];
             }
             else if(someNode.getID() == this.getPartners()[1].getID()) {
-                return this.getPartners()[0];
-            }
-            else {
-                return null;
+                partner = this.getPartners()[0];
             }
         }
+        return partner
     },
 
-    /*
-     * Returns true if someNode is a partner in this relationship.
+    /**
+     * Returns True if someNode is a partner in this relationship.
      *
-     * @param someNode is an AbstractPerson
+     * @method contains
+     * @param {AbstractNode} someNode
      */
     contains: function(someNode) {
         return (this.getPartners()[0] == someNode || this.getPartners()[1] == someNode);
     },
 
-    /*
+    /**
      * Returns an array of pregnancies stemming from this partnership.
+     *
+     * @method getPregnancies
+     * @return {Array}
      */
     getPregnancies: function() {
         return this._pregnancies;
     },
 
-    /*
+    /**
      * Returns an array of nodes that are children of this partnership
      *
-     * @param type can filter the array to the specified type (eg. "PlaceHolder", "Person", etc)
+     * @method getChildren
+     * @param {String} [type] Filter nodes to the specified type (eg. "PlaceHolder", "Person", etc)
      * Multiple types can be passed (eg. getChildren(type1, type2,...,typeN)
      */
     getChildren: function(type) {
@@ -123,10 +141,12 @@ var Partnership = Class.create(AbstractNode, {
         return children;
     },
 
-    /*
+    /**
      * Returns true if someNode is a child of this partnership.
      *
-     * @param someNode is an AbstractPerson
+     * @method hasChild
+     * @param {AbstractPerson} someNode is an AbstractPerson
+     * @return {Boolean}
      */
     hasChild: function(someNode) {
         var found = false;
@@ -139,8 +159,12 @@ var Partnership = Class.create(AbstractNode, {
         return found;
     },
 
-    /*
+    /**
      * Creates and returns a new Pregnancy for this partnership
+     *
+     * @method createPregnancy
+     * @return {Pregnancy}
+     * TODO: use layout algo to generate position for the pregnancy
      */
     createPregnancy: function() {
         //var id = this.getID();
@@ -148,8 +172,11 @@ var Partnership = Class.create(AbstractNode, {
         return editor.getGraph().addPregnancy(this.getX(), this.getY() + PedigreeEditor.attributes.radius * 2, this);
     },
 
-    /*
+    /**
      * Adds pregnancy to list of pregnancies associated with this partnership
+     *
+     * @method addPregnancy
+     * @param {Pregnancy} pregnancy
      */
     addPregnancy: function(pregnancy) {
         if(pregnancy && pregnancy.getType() == "Pregnancy") {
@@ -161,13 +188,14 @@ var Partnership = Class.create(AbstractNode, {
                 }
             });
             newPreg && this.getPregnancies().push(pregnancy);
-            return pregnancy;
         }
-        return null;
     },
 
-    /*
+    /**
      * Removes pregnancy from the list of pregnancies associated with this partnership
+     *
+     * @method removePregnancy
+     * @param {Pregnancy} pregnancy
      */
     removePregnancy: function(pregnancy) {
         this._pregnancies = this._pregnancies.without(pregnancy);
@@ -177,6 +205,13 @@ var Partnership = Class.create(AbstractNode, {
         }
     },
 
+    /**
+     * Returns true if this partnership has given pregnancy
+     *
+     * @method hasPregnancy
+     * @param {Pregnancy} pregnancy
+     * @return {Boolean}
+     */
     hasPregnancy: function(pregnancy) {
         if(pregnancy) {
             for(var i = 0; i<this.getPregnancies().length; i++) {
@@ -187,11 +222,13 @@ var Partnership = Class.create(AbstractNode, {
         return false;
     },
 
-    /*
-     * Creates a new pregnancy and a new child for that pregnancy. Returns the child.
+    /**
+     * Creates a new pregnancy and a new child for that pregnancy.
      *
-     * @param type the type of AbstractPerson that this child should be (eg. "Person", "PlaceHolder", etc)
-     * @param gender should be "M", "F", or "U"
+     * @method createChild
+     * @param {String} type (eg. "Person", "PlaceHolder", etc)
+     * @param {String} gender "M", "F", or "U"
+     * @return {AbstractPerson} The created child
      */
     createChild: function(type, gender) {
         var placeholders = this.getPlaceHolderPregnancies();
@@ -207,6 +244,14 @@ var Partnership = Class.create(AbstractNode, {
         }
     },
 
+    /**
+     * Creates child for this partnership and adds action to action stack
+     *
+     * @method createNodeAction
+     * @param {String} type (eg. "Person", "PlaceHolder", etc)
+     * @param {String} gender "M", "F", or "U"
+     * @return {AbstractPerson} The created child
+     */
     createNodeAction: function(type, gender) {
         var phPregnancyInfo,
             phInfo;
@@ -259,11 +304,13 @@ var Partnership = Class.create(AbstractNode, {
         return child;
     },
 
-    /*
+    /**
      * Adds someNode to the list of children of this partnership, and stores this partnership
-     * as it's parent partnership. Returns someNode.
+     * as it's parent partnership.
      *
-     * @param someNode is an AbstractPerson
+     * @method addChild
+     * @param {AbstractPerson} someNode
+     * @return {Null|AbstractPerson} The added child or null if child could not be added
      */
     addChild: function(someNode) {
         if(someNode && this.canBeParentOf(someNode)) {
@@ -275,13 +322,16 @@ var Partnership = Class.create(AbstractNode, {
             else {
                 this.createPregnancy().addChild(someNode);
             }
+            return someNode;
         }
-        return someNode;
+        return null;
     },
 
-    /*
-     * Generates an actionStack entry for adding a child
-     * @param child the child that is being added to this partnership
+    /**
+     * Adds child to this partnership and creates an action stack entry
+     *
+     * @method addChildAction
+     * @param {AbstractPerson} child
      */
     addChildAction: function(child) {
         if(this.addChild(child)) {
@@ -306,11 +356,12 @@ var Partnership = Class.create(AbstractNode, {
         }
     },
 
-    /*
+    /**
      * Removes someNode from the list of children of this partnership, and removes this partnership as its parents
      * reference. Returns someNode.
      *
-     * @param someNode is an AbstractPerson
+     * @method removeChild
+     * @param {AbstractPerson} someNode
      */
     removeChild: function(someNode) {
         if(someNode) {
@@ -318,9 +369,16 @@ var Partnership = Class.create(AbstractNode, {
             if(pregnancy && this.hasPregnancy(pregnancy))
                 pregnancy && pregnancy.removeChild(someNode);
         }
-        return someNode;
     },
 
+    /**
+     * Changes the status of this partnership. Nullifies the status if the given status is not
+     * "childless" or "infertile".
+     *
+     * @method setChildlessStatus
+     * @param {String} status Can be "childless", "infertile" or null
+     * @param {Boolean} ignoreChildren If True, changing the status will not detach any children
+     */
     setChildlessStatus: function(status, ignoreChildren) {
         if(status != this.getChildlessStatus()) {
             if(this.isValidChildlessStatus(status)) {
@@ -340,6 +398,12 @@ var Partnership = Class.create(AbstractNode, {
         }
     },
 
+    /**
+     * Returns True if this partnership has any children coming from the same pregnancy
+     *
+     * @method hasTwins
+     * @return {boolean}
+     */
     hasTwins: function() {
         var pregs = this.getPregnancies();
         for(var i = 0; i < pregs.length; i++) {
@@ -350,6 +414,12 @@ var Partnership = Class.create(AbstractNode, {
         return false;
     },
 
+    /**
+     * Returns True if this partnership has any children that are not adopted
+     *
+     * @method hasNonAdoptedChildren
+     * @return {Boolean}
+     */
     hasNonAdoptedChildren: function() {
         var pregs = this.getPregnancies();
         for(var i = 0; i < pregs.length; i++) {
@@ -359,12 +429,14 @@ var Partnership = Class.create(AbstractNode, {
         return false;
     },
 
-    /*
+    /**
      * Removes this partnership and all the visuals attached to it from the graph.
-     * Set isRecursive to true to remove all pregnancies and children, unless they have some other connection
-     * to the Proband
      *
-     * @param isRecursive can be true or false
+     * @method remove
+     * @param [$super]
+     * @param {Boolean} isRecursive Set to True to remove all pregnancies and children, unless they have some other
+     * connection to the Proband
+     * @param {Boolean} skipConfirmation If True, will not display a confirmation dialogue
      */
     remove: function($super, isRecursive, skipConfirmation) {
         if(isRecursive) {
@@ -395,22 +467,31 @@ var Partnership = Class.create(AbstractNode, {
         return $super().concat(this.getPregnancies());
     },
 
-    /*
-     * Returns an array containing the two partners of this relationship
+    /**
+     * Returns the partners in this partnership.
+     *
+     * @method getSideNeighbors
+     * @return {Array} In the form of [node1, node2]
      */
     getSideNeighbors: function() {
         return this.getPartners();
     },
 
-    /*
-     * Returns true if someNode can be a child of this partnership
+    /**
+     * Returns True if someNode can be a child of this partnership
+     *
+     * @method canBeParentOf
+     * @param {AbstractPerson} someNode
+     * @return {Boolean}
      */
     canBeParentOf: function(someNode) {
         return (this.getPartners()[0].canBeParentOf(someNode) && this.getPartners()[1].canBeParentOf(someNode));
     },
 
-    /*
+    /**
      * Creates a placeholder child for this partnership, if it has no children
+     *
+     * @method restorePlaceholders
      */
     restorePlaceholders: function() {
         if(!this.getPartners()[0].getChildlessStatus() &&
@@ -420,8 +501,11 @@ var Partnership = Class.create(AbstractNode, {
         }
     },
 
-    /*
+    /**
      * Returns a list of pregnancies with only a PlaceHolder child.
+     *
+     * @method getPlaceHolderPregnancies
+     * @return {Array} Array of Pregnancy objects
      */
     getPlaceHolderPregnancies: function() {
         var pregnancies = [];
@@ -431,8 +515,11 @@ var Partnership = Class.create(AbstractNode, {
         return pregnancies;
     },
 
-    /*
-     * Returns an object (to be accepted by the menu) with information about this Person
+    /**
+     * Returns an object (to be accepted by the menu) with information about this Partnership
+     *
+     * @method getSummary
+     * @return {Object}
      */
     getSummary: function() {
         var childlessInactive = this.hasNonAdoptedChildren();
@@ -443,6 +530,13 @@ var Partnership = Class.create(AbstractNode, {
         };
     },
 
+    /**
+     * Returns object with serialization data for this Partnership
+     *
+     * @method getInfo
+     * @param [$super]
+     * @return {Object}
+     */
     getInfo: function($super) {
         var info = $super();
         info['partner1ID'] = this.getPartners()[0].getID();
@@ -452,6 +546,14 @@ var Partnership = Class.create(AbstractNode, {
         return info;
     },
 
+    /**
+     * Applies properties found in info to this Partnership
+     *
+     * @method loadInfo
+     * @param [$super]
+     * @param info Serialization data
+     * @return {boolean} Returns true if data in info was successfully applied to this node
+     */
     loadInfo: function($super, info) {
         if($super(info)) {
             if(info.childlessStatus && info.childlessStatus != this.getChildlessStatus()) {
@@ -465,6 +567,13 @@ var Partnership = Class.create(AbstractNode, {
         return false;
     },
 
+    /**
+     * Changes the status of this partnership. Nullifies the status if the given status is not
+     * "childless" or "infertile". Adds an action stack entry for this action.
+     *
+     * @method setChildlessStatus
+     * @param {String} status Can be "childless", "infertile" or null
+     */
     setChildlessStatusAction: function(status) {
         if(status != this.getChildlessStatus() && (status || this.getChildlessStatus())) {
             var me = this,
@@ -480,7 +589,7 @@ var Partnership = Class.create(AbstractNode, {
                 }
             };
             var nodesBeforeChange = getPhInfo(); //PlaceHolder child and pregnancy before changing childlessStatus
-            this.setChildlessStatus(status);
+            this.setChildlessStatus(status, false);
             var nodesAfterChange = getPhInfo(); //PlaceHolder child and pregnancy after changing childlessStatus
 
             editor.getActionStack().push({
@@ -496,6 +605,12 @@ var Partnership = Class.create(AbstractNode, {
         }
     },
 
+    /**
+     * Changes the reason for this Partnership's childlessStatus. Adds an entry in the action stack for this action.
+     *
+     * @method setChildlessReasonAction
+     * @param {String} reason
+     */
     setChildlessReasonAction: function(reason) {
         var nodeID = this.getID();
         var prevReason = this.getChildlessReason();
@@ -512,8 +627,10 @@ var Partnership = Class.create(AbstractNode, {
     }
 });
 
+//ATTACH CHILDLESS BEHAVIOR METHODS TO PARTNERSHIP OBJECTS
 Partnership.addMethods(ChildlessBehavior);
 
+//HELPERS FOR CHILDLESS-RELATED METHODS
 Partnership.removeNodes = function(nodes) {
     Object.keys(nodes).forEach(function(key) {
         if(nodes[key]) {

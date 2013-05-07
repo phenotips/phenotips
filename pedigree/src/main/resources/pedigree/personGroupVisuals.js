@@ -1,10 +1,12 @@
-/*
- * A general superclass for the a graphic engine used by nodes on the Pedigree graph. Can display
- * a shape representing the gender of the attached node.
+/**
+ * Class for organizing graphics for PersonGroup nodes.
  *
- * @param node the AbstractPerson object for which this graphics are handled
- * @param x the x coordinate on the canvas
- * @param x the y coordinate on the canvas
+ * @class PersonGroupVisuals
+ * @constructor
+ * @extends AbstractPersonVisuals
+ * @param {PersonGroup} node The node for which this graphics are handled
+ * @param {Number} x The x coordinate on the canvas
+ * @param {Number} y The y coordinate on the canvas
  */
 
 var PersonGroupVisuals = Class.create(AbstractPersonVisuals, {
@@ -17,10 +19,23 @@ var PersonGroupVisuals = Class.create(AbstractPersonVisuals, {
         this._hoverBox = new GroupHoverbox(node, x, y, this._icon);
     },
 
+    /**
+     * Returns all the graphics associated with this PersonGroup
+     *
+     * @method getAllGraphics
+     * @param [$super]
+     * @return {Raphael.st} Raphael set containing graphics elements
+     */
     getAllGraphics: function ($super) {
         return this.getHoverBox().getBackElements().concat($super()).push(this.getHoverBox().getFrontElements());
     },
 
+    /**
+     * Changes the label for the number of people in this group
+     *
+     * @method setNumPersons
+     * @param {Number} numPersons The number of people in this group
+     */
     setNumPersons: function(numPersons) {
         this._icon.pop();
         this.label.remove();

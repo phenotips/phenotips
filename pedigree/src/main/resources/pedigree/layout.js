@@ -4,9 +4,12 @@
 var Layout = Class.create( {
 
     initialize: function() {
-        $('action-layout') && $('action-layout').observe('click', this.doLayout.bind(this));
+        $('action-layout').observe('click', this.doLayout.bind(this));
     },
 
+    /**
+     * Generate the perfect layout for this graph
+     */
     doLayout : function() {
         var abstractGraph = this._buildAbstractGraph();
         this._hierarchicalLayout(abstractGraph);
@@ -14,6 +17,11 @@ var Layout = Class.create( {
         this._updateLayout(abstractGraph);
     },
 
+    /**
+     * Build the skeleton for the layout - the specification for the hierarchy of nodes
+     * @return
+     * @private
+     */
     _buildAbstractGraph : function() {
         var graph = editor.getGraph().serialize();
         var abstractGraph = {};
@@ -40,10 +48,23 @@ var Layout = Class.create( {
         });
         return abstractGraph;
     },
+
+    /**
+     * Repositions the nodes in a hierarchical layout
+     * @param abstractGraph The specification for the hierarchy of nodes.
+     * @private
+     */
     _hierarchicalLayout : function(abstractGraph) {
     },
+
+    /**
+     * Modifies the layout to fix overlapping edges in the graph
+     * @param abstractGraph The specification for the hierarchy of nodes.
+     * @private
+     */
     _fixTangledPartnerships : function(abstractGraph) {
     },
+
     _updateLayout : function(abstractGraph) {
     }
 });

@@ -1,3 +1,6 @@
+/**
+ * Position tree. This stuff is black magic - be careful how you use it
+ */
 function kdTree(points, _metric, _dimensions) {
   
   var metric = _metric || function(a, b) {

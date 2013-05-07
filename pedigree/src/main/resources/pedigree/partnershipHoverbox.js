@@ -1,21 +1,19 @@
-/*
- * Hoverbox is a class for all the UI elements and graphics surrounding an individual node and
+/**
+ * PartnershipHoverbox is a class for all the UI elements and graphics surrounding a Partnership node and
  * its labels. This includes the box that appears around the node when it's hovered by a mouse, as
  * well as the handles used for creating connections and creating new nodes.
  *
- * @param x the x coordinate on the Raphael canvas at which the node drawing will be centered
- * @param the y coordinate on the Raphael canvas at which the node drawing will be centered
- * @param gender either 'M', 'F' or 'U' depending on the gender
- * @param id a unique numerical ID number
+ * @class PartnershipHoverbox
+ * @extends AbstractHoverbox
+ * @constructor
+ * @param {Partnership} partnership The Partnership for which the hoverbox is drawn
+ * @param {Number} junctionX The x coordinate around which the partnership bubble is centered
+ * @param {Number} junctionY The y coordinate around which the partnership bubble is centered
+ * @param {Raphael.st} shapes Raphaël set containing the graphical elements that make up the node
  */
 
 var PartnershipHoverbox = Class.create(AbstractHoverbox, {
 
-    /**
-     * @param partnership the partnership for which the hoverbox is drawn
-     * @param x the x coordinate on the Raphael canvas at which the hoverbox will be centered
-     * @param y the y coordinate on the Raphael canvas at which the hoverbox will be centered
-     */
     initialize: function($super, partnership, junctionX, junctionY, shapes) {
         var radius = PedigreeEditor.attributes.radius;
         this._isMenuToggled = false;
@@ -23,7 +21,10 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
     },
 
     /**
-     * Creates four handles around the node. Returns a Raphael set.
+     * Creates the handles used in this hoverbox
+     *
+     * @method generateHandles
+     * @return {Raphael.st} A set of handles
      */
     generateHandles: function($super) {
         this._downHandle = this.generateHandle('child', this.getNodeX(), this.getNodeY() + (PedigreeEditor.attributes.radius *.8));
@@ -31,7 +32,10 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
     },
 
     /**
-     * Creates delete button. Returns a raphael set.
+     * Creates the buttons used in this hoverbox
+     *
+     * @method generateButtons
+     * @return {Raphael.st} A set of buttons
      */
     generateButtons: function($super) {
         var deleteButton = this.generateDeleteBtn();
@@ -39,15 +43,19 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         return $super().push(deleteButton, menuButton);
     },
 
-    /*
+    /**
      * Hides the child handle
+     *
+     * @method hideChildHandle
      */
     hideChildHandle: function() {
         this.getCurrentHandles().exclude(this._downHandle.hide());
     },
 
-    /*
+    /**
      * Unhides the child handle
+     *
+     * @method unhideChildHandle
      */
     unhideChildHandle: function() {
         if(this.isHovered() || this.isMenuToggled()) {
@@ -56,15 +64,21 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         (!this.getCurrentHandles().contains(this._downHandle)) && this.getCurrentHandles().push(this._downHandle);
     },
 
-    /*
+    /**
      * Returns true if the menu is toggled for this partnership node
+     *
+     * @method isMenuToggled
+     * @return {Boolean}
      */
     isMenuToggled: function() {
         return this._isMenuToggled;
     },
 
-    /*
+    /**
      * Shows/hides the menu for this partnership node
+     *
+     * @method toggleMenu
+     * @param {Boolean} isMenuToggled Set to True to make the menu visible
      */
     toggleMenu: function(isMenuToggled) {
         this._isMenuToggled = isMenuToggled;
@@ -81,10 +95,12 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         }
     },
 
-    /*
+    /**
      * Performs the appropriate action for clicking on the handle of type handleType
      *
-     * @param handleType can be either "child", "partner" or "parent"
+     * @method handleAction
+     * @param {String} handleType Can be either "child", "partner" or "parent"
+     * @param {Boolean} isDrag Set to True if the handle is being dragged at the time of the action
      */
     handleAction : function(handleType, isDrag) {
         var curHovered = editor.getGraph().getCurrentHoveredNode();

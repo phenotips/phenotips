@@ -3,8 +3,8 @@
  *
  * @class ClassName
  * @constructor
- * @param x {Number} the x coordinate on the canvas
- * @param y {Number} the y coordinate on the canvas
+ * @param {Number} x The x coordinate on the canvas
+ * @param {Number} y The y coordinate on the canvas
  */
 
 var TemplateSelector = Class.create( {

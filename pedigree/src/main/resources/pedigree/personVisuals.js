@@ -1,11 +1,14 @@
-/*
- * A class responsible for handling the visual representation of a Person. The graphical elements include
- * the general shape of the node, the disorders, information labels and life status shapes.
+/**
+ * Class for organizing graphics for Person nodes.
  *
- * @param node the AbstractPerson object for which this graphics are handled
- * @param x the x coordinate on the canvas
- * @param x the y coordinate on the canvas
+ * @class PersonVisuals
+ * @extends AbstractPersonVisuals
+ * @constructor
+ * @param {Person} node The node for which the graphics are handled
+ * @param {Number} x The x coordinate on the canvas
+ * @param {Number} y The y coordinate on the canvas
  */
+
 
 var PersonVisuals = Class.create(AbstractPersonVisuals, {
     
@@ -23,9 +26,11 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._hoverBox = new PersonHoverbox(node, x, y, this.getGenderSymbol());
     },
 
-    /*
+    /**
      * Draws the icon for this Person depending on the gender, life status and whether this Person is the proband.
      * Updates the disorder shapes.
+     *
+     * @method setGenderSymbol
      */
     setGenderSymbol: function($super) {
         if(this.getNode().getLifeStatus() == 'aborted') {
@@ -71,15 +76,20 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.updateDisorderShapes();
     },
 
-    /*
-     * Returns a Raphaël set of all elements that are behind the gender symbol
+    /**
+     * Returns all graphical elements that are behind the gender symbol
+     *
+     * @method getBackElements
+     * @return {Raphael.st}
      */
     getBackElements: function() {
         return this.getHoverBox().getBackElements().concat(editor.getPaper().set(this.getChildlessStatusLabel(), this.getChildlessShape()));
     },
 
-    /*
+    /**
      * Updates the name label for this Person
+     *
+     * @method updateNameLabel
      */
     updateNameLabel: function() {
         this._nameLabel && this._nameLabel.remove();
@@ -97,22 +107,30 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.drawLabels();
     },
 
-    /*
-     * Returns the Raphaël element for this Person's name label
+    /**
+     * Returns the Person's name label
+     *
+     * @method getNameLabel
+     * @return {Raphael.el}
      */
     getNameLabel: function() {
         return this._nameLabel;
     },
 
-    /*
-     * Returns the Raphaël set with colorful blocks representing disorders
+    /**
+     * Returns colored blocks representing disorders
+     *
+     * @method getDisorderShapes
+     * @return {Raphael.st} Set of disorder shapes
      */
     getDisorderShapes: function() {
         return this._disorderShapes;
     },
 
-    /*
+    /**
      * Displays the disorders currently registered for this node.
+     *
+     * @method updateDisorderShapes
      */
     updateDisorderShapes: function() {
         this._disorderShapes && this._disorderShapes.remove();
@@ -122,14 +140,16 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             return angle +"-"+darker+":0-"+color+":100";
         };
         var disorderShapes = editor.getPaper().set(),
-            person = this.getNode();
+            person = this.getNode(),
+            delta,
+            color;
         if(this.getNode().getLifeStatus() == 'aborted') {
 
             var side = PedigreeEditor.attributes.radius * Math.sqrt(3.5),
                 height = side/Math.sqrt(2),
-                delta = (height * 2)/(person.getDisorders().length),
                 x1 = this.getX() - height,
                 y1 = this.getY();
+            delta = (height * 2)/(person.getDisorders().length);
 
             for(var k = 0; k < person.getDisorders().length; k++) {
                 var corner = [];
@@ -138,8 +158,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 if (x1 < this.getX() && x2 >= this.getX()) {
                     corner = ["L", this.getX(), this.getY()-height];
                 }
-                var slice = editor.getPaper().path(["M", x1, y1, corner,"L", x2, y2, 'L',this.getX(), this.getY(),'z']),
-                    color = gradient(editor.getLegend().getDisorder(this.getNode().getDisorders()[k]['id']).getColor(), 70);
+                var slice = editor.getPaper().path(["M", x1, y1, corner,"L", x2, y2, 'L',this.getX(), this.getY(),'z']);
+                color = gradient(editor.getLegend().getDisorderColor(this.getNode().getDisorders()[k].getDisorderID()), 70);
                 disorderShapes.push(slice.attr({fill: color, 'stroke-width':.5, stroke: 'none' }));
                 x1 = x2;
                 y1 = y2;
@@ -150,10 +170,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         else {
             var disorderAngle = (person.getDisorders().length == 0)?0:(360/person.getDisorders().length).round();
-            var delta = (360/(person.getDisorders().length))/2;
+            delta = (360/(person.getDisorders().length))/2;
 
             for(var i = 0; i < person.getDisorders().length; i++) {
-                var color = gradient(editor.getLegend().getDisorder(person.getDisorders()[i]['id']).getColor(), (i * disorderAngle)+delta);
+                color = gradient(editor.getLegend().getDisorderColor(person.getDisorders()[i].getDisorderID()), (i * disorderAngle)+delta);
                 disorderShapes.push(sector(editor.getPaper(), this.getX(), this.getY(), PedigreeEditor.attributes.radius,
                     person.getGender(), i * disorderAngle, (i+1) * disorderAngle, color));
             }
@@ -167,8 +187,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._disorderShapes.flatten().insertAfter(this.getGenderSymbol().flatten());
     },
 
-    /*
+    /**
      * Draws a line across the Person to display that he is dead (or aborted).
+     *
+     * @method drawDeadShape
      */
     drawDeadShape: function() {
         var x, y;
@@ -193,22 +215,30 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._deadShape.insertAfter(this.getHoverBox().getFrontElements().flatten());
     },
 
-    /*
-     * Returns the Raphaël element for the line drawn across a dead Person
+    /**
+     * Returns the line drawn across a dead Person's icon
+     *
+     * @method getDeadShape
+     * @return {Raphael.st}
      */
     getDeadShape: function() {
         return this._deadShape;
     },
 
-    /*
-     * Returns the Raphaël element for this Person's age label
+    /**
+     * Returns this Person's age label
+     *
+     * @method getAgeLabel
+     * @return {Raphael.el}
      */
     getAgeLabel: function() {
         return this._ageLabel;
     },
 
-    /*
+    /**
      * Updates the age label for this Person
+     *
+     * @method updateAgeLabel
      */
     updateAgeLabel: function() {
         var text,
@@ -240,15 +270,20 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.drawLabels();
     },
 
-    /*
-     * Returns the Raphaël element used to display this Person's 'unborn' life-status
+    /**
+     * Returns the shape marking a Person's 'unborn' life-status
+     *
+     * @method getUnbornShape
+     * @return {Raphael.el}
      */
     getUnbornShape: function() {
         return this._unbornShape;
     },
 
-    /*
+    /**
      * Draws a "P" on top of the node to display this Person's 'unborn' life-status
+     *
+     * @method drawUnbornShape
      */
     drawUnbornShape: function() {
         this._unbornShape && this._unbornShape.remove();
@@ -258,15 +293,20 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
     },
 
-    /*
-     * Returns the Raphaël element for this Person's age label
+    /**
+     * Returns this Person's stillbirth label
+     *
+     * @method getSBLabel
+     * @return {Raphael.el}
      */
     getSBLabel: function() {
         return this._stillBirthLabel;
     },
 
-    /*
+    /**
      * Updates the stillbirth label for this Person
+     *
+     * @method updateSBLabel
      */
     updateSBLabel: function() {
         var SBLabel;
@@ -276,8 +316,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.drawLabels();
     },
 
-    /*
+    /**
      * Displays the correct graphics to represent the current life status for this Person.
+     *
+     * @method updateLifeStatusShapes
      */
     updateLifeStatusShapes: function() {
         var status = this.getNode().getLifeStatus();
@@ -307,8 +349,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
     },
 
-    /*
+    /**
      * Marks this node as hovered, and moves the labels out of the way
+     *
+     * @method setSelected
      */
     setSelected: function($super, isSelected) {
         $super(isSelected);
@@ -320,8 +364,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
     },
 
-    /*
+    /**
      * Moves the labels down to make space for the hoverbox
+     *
+     * @method shiftLabels
      */
     shiftLabels: function() {
         if(!this.getChildlessStatusLabel()) {
@@ -331,8 +377,11 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             }
         }
     },
-    /*
+
+    /**
      * Animates the labels of this node to their original position under the node
+     *
+     * @method unshiftLabels
      */
     unshiftLabels: function() {
         if(!this.getChildlessStatusLabel()) {
@@ -343,8 +392,11 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
     },
 
-    /*
-     * Returns a Raphael set or element that contains the labels
+    /**
+     * Returns set of labels for this Person
+     *
+     * @method getLabels
+     * @return {Raphael.st}
      */
     getLabels: function() {
         var labels = editor.getPaper().set();
@@ -354,8 +406,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         return labels;
     },
 
-    /*
-     * Displays all the appropriate labels for this Person in the correct order
+    /**
+     * Displays all the appropriate labels for this Person in the correct layering order
+     *
+     * @method drawLabels
      */
     drawLabels: function() {
         var labels = this.getLabels(),
@@ -371,8 +425,11 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
     },
 
-    /*
-     * Returns a Raphael set with the gender icon, disorder shapes and life status shapes.
+    /**
+     * Returns set with the gender icon, disorder shapes and life status shapes.
+     *
+     * @method getShapes
+     * @return {Raphael.st}
      */
     getShapes: function($super) {
         var lifeStatusShapes = editor.getPaper().set();
@@ -383,20 +440,25 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         return $super().concat(editor.getPaper().set(this.getDisorderShapes(), lifeStatusShapes));
     },
 
-    /*
-     * Returns a Raphael set or element that contains all the graphics and labels associated with this Person.
+    /**
+     * Returns all the graphics and labels associated with this Person.
+     *
+     * @method getAllGraphics
+     * @return {Raphael.st}
      */
     getAllGraphics: function($super) {
         return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this.getHoverBox().getFrontElements());
     },
 
-    /*
-     * Changes the position of the node to (X,Y)
+    /**
+     * Changes the position of the node to (x,y)
      *
-     * @param x the x coordinate on the canvas
-     * @param y the y coordinate on the canvas
-     * @param animate set to true if you want to animate the transition
-     * @param callback a function that will be called at the end of the animation
+     * @method setPos
+     * @param [$super]
+     * @param {Number} x the x coordinate on the canvas
+     * @param {Number} y the y coordinate on the canvas
+     * @param {Boolean} animate set to true if you want to animate the transition
+     * @param {Function} callback a function that will be called at the end of the animation
      */
     setPos: function($super, x, y, animate, callback) {
     var funct;
@@ -411,16 +473,20 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         $super(x, y, animate, funct);
     },
 
-    /*
+    /**
      * [Helper for setPos] Saves the x and y values as current coordinates and updates connections with the new position
      *
-     * @param x the new x coordinate
-     * @param y the new y coordinate
+     * @method _updatePositionData
+     * @param [$super]
+     * @param {Number} x The new x coordinate
+     * @param {Number} y The new y coordinate
+     * @private
      */
-    updatePositionData: function($super, x, y) {
+    _updatePositionData: function($super, x, y) {
         this.getHoverBox().enable.bind(this.getHoverBox());
         $super(x, y)
     }
 });
 
+//ATTACHES CHILDLESS BEHAVIOR METHODS
 PersonVisuals.addMethods(ChildlessBehaviorVisuals);

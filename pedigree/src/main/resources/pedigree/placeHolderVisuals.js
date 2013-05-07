@@ -1,10 +1,12 @@
-/*
- * A class responsible for the graphic representation of a placeholder object.
- * Also handles dragging and clicking behavior of placeholders.
+/**
+ * Class for organizing graphics for PlaceHolder nodes.
  *
- * @param node the PlaceHolder object for which this graphics are handled
- * @param x the x coordinate on the canvas
- * @param x the y coordinate on the canvas
+ * @class PlaceHolderVisuals
+ * @extends AbstractPersonVisuals
+ * @constructor
+ * @param {PlaceHolder} node The node for which the graphics are handled
+ * @param {Number} x The x coordinate on the canvas
+ * @param {Number} y The y coordinate on the canvas
  */
 
 var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
@@ -14,9 +16,11 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
         //this.setDraggable();
     },
 
-    /*
+    /**
      * Sets/replaces the gender symbol with the symbol appropriate for the gender. Returns raphael set containing
      * the genderShape, a shadow behind it, and the text "drag me or click me".
+     *
+     * @method setGenderSymbol
      */
     setGenderSymbol: function($super) {
         $super();
@@ -33,8 +37,10 @@ var PlaceHolderVisuals = Class.create(AbstractPersonVisuals, {
         this.setDraggable();
     },
 
-    /*
+    /**
      * Handles the dragging and clicking behavior of the placeholder
+     *
+     * @method setDraggable
      */
     setDraggable: function() {
         var me = this,

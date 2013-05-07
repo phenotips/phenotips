@@ -5,7 +5,7 @@
  *
  * @class PersonGroup
  * @constructor
- *
+ * @extends AbstractPerson
  * @param {Number} x The x coordinate on the Raphael canvas at which the node drawing will be centered
  * @param {Number} y The y coordinate on the Raphael canvas at which the node drawing will be centered
  * @param {String} gender Either 'M', 'F' or 'U' depending on the gender
@@ -23,12 +23,12 @@ var PersonGroup = Class.create(AbstractPerson, {
     /**
      * Initializes the object responsible for creating graphics for this PersonGroup
      *
-     * @method generateGraphics
+     * @method _generateGraphics
      * @param {Number} x The x coordinate of hte PersonGroup Node
      * @param {Number} y The y coordinate of hte PersonGroup Node
-     * @returns {PersonGroupVisuals}
+     * @return {PersonGroupVisuals}
      */
-    generateGraphics: function(x, y) {
+    _generateGraphics: function(x, y) {
         return new PersonGroupVisuals(this, x, y);
     },
 
@@ -99,7 +99,7 @@ var PersonGroup = Class.create(AbstractPerson, {
      *
      * @method loadInfo
      * @param [$super]
-     * @param info {Object} and object in the form
+     * @param info Object in the form
      *
      {
      type: // (type of the node),

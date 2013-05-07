@@ -1,13 +1,16 @@
-/*
+/**
  * PlaceHolder objects act as reminders for the user that information about relatives is missing. A PlaceHolder
  * shares common traits with a Person, such as id, gender and position but it will not be displayed in the
  * final exported version of the graph. Placeholders use a dotted outline to distinguish themselves from
  * Person nodes.
  *
- * @param x the x coordinate on the Raphael canvas at which the node drawing will be centered
- * @param the y coordinate on the Raphael canvas at which the node drawing will be centered
- * @param gender either 'M', 'F' or 'U' depending on the gender
- * @param id a unique ID number
+ * @class PlaceHolder
+ * @extends AbstractPerson
+ * @constructor
+ * @param {Number} x X coordinate on the Raphael canvas at which the node drawing will be centered
+ * @param {Number} y Y coordinate on the Raphael canvas at which the node drawing will be centered
+ * @param {String} gender 'M', 'F' or 'U'
+ * @param {Number} id Unique ID number
  */
 
 var PlaceHolder = Class.create(AbstractPerson, {
@@ -17,16 +20,27 @@ var PlaceHolder = Class.create(AbstractPerson, {
         $super(x, y, gender, id);
     },
 
-    /*
+    /**
      * Initializes the object responsible for creating graphics for this PlaceHolder
      *
-     * @param x the x coordinate on the canvas at which the node is centered
-     * @param y the y coordinate on the canvas at which the node is centered
+     * @method _generateGraphics
+     * @param {Number} x X coordinate on the Raphael canvas at which the node drawing will be centered
+     * @param {Number} y Y coordinate on the Raphael canvas at which the node drawing will be centered
+     * @return {PlaceHolderVisuals}
+     * @private
      */
-    generateGraphics: function(x, y) {
+    _generateGraphics: function(x, y) {
         return new PlaceHolderVisuals(this, x, y);
     },
 
+    /**
+     * Replaces this PlaceHolder with new node of given type and gender.
+     * Creates an action stack entry
+     *
+     * @method createNodeAction
+     * @param {String} type "Person" or "PersonGroup"
+     * @param {String} gender "M", "F", or "U"
+     */
     createNodeAction: function(type, gender) {
         var replacement = editor.getGraph()["add" + type](this.getX(), this.getY(), gender);
         if(replacement) {
@@ -50,8 +64,14 @@ var PlaceHolder = Class.create(AbstractPerson, {
 
         }
     },
-    /*
-     * Creates a new Person in the place of this PlaceHolder and merges the PlaceHolder with the person
+
+    /**
+     * Replaces this PlaceHolder with new node of given type and gender.
+     * Creates an action stack entry
+     *
+     * @method createNodeAction
+     * @param {String} type "Person" or "PersonGroup"
+     * @param {String} gender "M", "F", or "U"
      */
     convertTo: function(type, gender) {
         var replacement = editor.getGraph()["add" + type](this.getX(), this.getY(), gender);
@@ -60,10 +80,12 @@ var PlaceHolder = Class.create(AbstractPerson, {
         //document.fire('pedigree:node:upgraded', {'node' : replacement, 'relatedNodes' : [], 'sourceNode' : this});
     },
 
-    /*
+    /**
      * Attributes all of the connections of this placeholder to person and removes the placeholder.
      *
-     * @param person a Person node
+     * @method merge
+     * @param {Person} person
+     * @return {Person} The person with which the node was merged or null if merge was unsuccessful
      */
     merge: function(person) {
         if(this.canMergeWith(person)) {
@@ -99,11 +121,13 @@ var PlaceHolder = Class.create(AbstractPerson, {
         return null;
     },
 
-    /*
+    /**
      * Returns true if this placeholder is not a partner, descendant or ancestor of person, and if person has
      * no parent conflict with the placeholder
      *
-     * @param person a Person node
+     * @method canMergeWith
+     * @param {Person} person
+     * @return {Boolean}
      */
     canMergeWith: function(person) {
         return (person.getGender() == this.getGender() || this.getGender() == 'U' || person.getGender() == "U" ) &&
@@ -113,26 +137,26 @@ var PlaceHolder = Class.create(AbstractPerson, {
             !person.isAncestorOf(this);
     },
 
-    /*
+    /**
      * Returns true if person has a different set of parents than this placeholder
+     *
+     * @method hasConflictingParents
+     * @return {Boolean}
      */
     hasConflictingParents: function(person) {
-        return (this.getParentPartnership() != null && person.getParentPartnership() != null && this.getParentPartnership() != person.getParentPartnership());
-//        var hasConflictingDads = this._father && node._father && this._father != node._father;
-//        var hasConflictingMoms = this._mother && node._mother && this._mother != node._mother;
-//        var notReversedParents = (this._mother && this._mother._gender != 'U') ||
-//            (this._father && this._father._gender != 'U') ||
-//            (node._mother && node._mother._gender != 'U') ||
-//            (node._father && node._father._gender != 'U') ||
-//            (this._mother && node._father && this._mother != node._father) ||
-//            (this._father && node._mother && this._father != node._mother);
-//
-//        return notReversedParents && (hasConflictingDads || hasConflictingMoms);
+        return (this.getParentPartnership() != null
+            && person.getParentPartnership() != null
+            && this.getParentPartnership() != person.getParentPartnership());
     },
 
-    /*
-     * Generates an actionStack entry for merging with a person and calls merge
-     * @param person the Person this placeholder is merged with
+    /**
+     * Attributes all of the connections of this placeholder to person and removes the placeholder.
+     * Creates entry in the action stack.
+     *
+     * @method merge
+     * @param {Person} person
+     * @param {Number} originalX The original x coordinate of the PlaceHolder
+     * @param {Number} originalY The original y coordinate of the PlaceHolder
      */
     mergeAction: function(person, originalX, originalY) {
         var me = this,

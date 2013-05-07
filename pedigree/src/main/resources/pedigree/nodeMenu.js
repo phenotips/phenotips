@@ -1,3 +1,23 @@
+/**
+ * NodeMenu is a UI Element containing options for AbstractNode elements
+ *
+ * @class NodeMenu
+ * @constructor
+ * @param {Array} data Contains objects corresponding to different menu items
+ *
+ {
+ [
+    {
+        'name' : the name of the menu item,
+        'label' : the text label above this menu option,
+        'type' : the type of form input. (eg. 'radio', 'date-picker', 'text', 'disease-picker', 'select'),
+        'values' : [
+                    {'actual' : actual value of the option, 'displayed' : the way the option will be seen in the menu} ...
+                    ]
+    }, ...
+ ]
+ }
+ */
 NodeMenu = Class.create({
     initialize : function(data) {
         this.canvas = editor.getWorkspace().canvas || $('body');
@@ -43,7 +63,7 @@ NodeMenu = Class.create({
                     json: true,
                     resultsParameter : "rows",
                     resultId : "id",
-                    resultValue : "Title",
+                    resultValue : "name",
                     resultInfo : {},
                     enableHierarchy: false,
                     fadeOnClear : false,
@@ -202,7 +222,7 @@ NodeMenu = Class.create({
               var container = this.up('.field-box');
               if (container) {
                 container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
-                  results.push({'id' : item.value, 'value' : item.next('.value') && item.next('.value').firstChild.nodeValue || item.value});
+                  results.push(new Disorder(item.value, item.next('.value') && item.next('.value').firstChild.nodeValue || item.value));
                 });
               }
               return [results];

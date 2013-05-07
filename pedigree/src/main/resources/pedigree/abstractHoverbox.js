@@ -5,14 +5,14 @@
  *
  * @class AbstractHoverbox
  * @constructor
- * @param node {AbstractNode} the node Person or Partnership for which the hoverbox is drawn
- * @param x {Number} the x coordinate for the hoverbox
- * @param y {Number} the y coordinate for the hoverbox
- * @param width {Number} the width in pixels
- * @param height {Number} the height in pixels
- * @param nodeX {Number} the x coordinate of the node for which the hoverbox is drawn
- * @param nodeY {Number} the y coordinate of the node for which the hoverbox is drawn
- * @param nodeShapes {Raphael.st} a Raphaël set containing the graphical elements that make up the node
+ * @param {AbstractNode} node The node Person or Partnership for which the hoverbox is drawn
+ * @param {Number} x The x coordinate for the hoverbox
+ * @param {Number} y The y coordinate for the hoverbox
+ * @param {Number} width The width in pixels
+ * @param {Number} height The height in pixels
+ * @param {Number} nodeX The x coordinate of the node for which the hoverbox is drawn
+ * @param {Number} nodeY The y coordinate of the node for which the hoverbox is drawn
+ * @param {Raphael.st} nodeShapes Raphaël set containing the graphical elements that make up the node
  */
 
 var AbstractHoverbox = Class.create({
@@ -173,7 +173,7 @@ var AbstractHoverbox = Class.create({
      * @param {Number} x The x coordinate of the button
      * @param {Number} y The y coordinate of the button
      * @param {String|Array} svgPath The svg path for the button
-     * @param {Object} attributes The svg attributes
+     * @param attributes The svg attributes
      * @param {Function} onClick Callback for the button
      * @param {String} className The class attribute for the button
      *
@@ -269,7 +269,7 @@ var AbstractHoverbox = Class.create({
     /**
      * Sets the hovered property to isHovered.
      * @method setHovered
-     * @param isHovered {Boolean} set to true if the box is hovered
+     * @param {Boolean} isHovered Set to true if the box is hovered
      */
     setHovered: function(isHovered) {
         this._isHovered = isHovered;
@@ -311,9 +311,9 @@ var AbstractHoverbox = Class.create({
      * Creates a handle with a blue orb from the center of the node and places it behind the node icon
      *
      * @method generateHandle
-     * @param type {String} should be 'parent', 'child' or 'partner'
-     * @param orbX {Number} the x coordinate of the orb
-     * @param orbY {Number} the y coordinate of the orb
+     * @param {String} type Should be 'parent', 'child' or 'partner'
+     * @param {Number} orbX The x coordinate of the orb
+     * @param {Number} orbY The y coordinate of the orb
      * @return {Raphael.st} Raphael set of elements that make up the handle
      */
     generateHandle: function(type, orbX, orbY) {
