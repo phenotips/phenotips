@@ -303,7 +303,7 @@ $!value
       <multiSelect>0</multiSelect>
       <name>patientClass</name>
       <number>1</number>
-      <picker>1</picker>
+      <picker>0</picker>
       <prettyName>Patient class</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
@@ -327,7 +327,7 @@ $!value
       <multiSelect>0</multiSelect>
       <name>patientTemplate</name>
       <number>2</number>
-      <picker>1</picker>
+      <picker>0</picker>
       <prettyName>Patient template</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
@@ -351,7 +351,7 @@ $!value
       <multiSelect>0</multiSelect>
       <name>phenotypeMapping</name>
       <number>13</number>
-      <picker>1</picker>
+      <picker>0</picker>
       <prettyName>Phenotype mapping document</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
