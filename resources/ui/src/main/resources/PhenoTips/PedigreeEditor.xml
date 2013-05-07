@@ -52,7 +52,7 @@ $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('XWiki.DateTimePicker')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.Widgets')##
-$xwiki.jsfx.use('uicomponents/pedigree/nodeMenu.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/nodeMenu.js', true)##
 $xwiki.jsfx.use('uicomponents/pedigree/nodetypeSelectionBubble.js')##
 $xwiki.ssfx.use('uicomponents/pedigree/editor.css', true)##
 $xwiki.jsfx.use('uicomponents/pedigree/raphaelzpd.js')##
