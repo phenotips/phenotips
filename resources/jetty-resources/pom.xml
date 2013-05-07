@@ -32,12 +32,22 @@
   <packaging>pom</packaging>
   <description>Packages a Jetty installation</description>
   <properties>
-    <jetty.version>8.1.9.v20130131</jetty.version>
+    <jetty.version>8.1.10.v20130312</jetty.version>
   </properties>
   <dependencies>
     <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-tool-jetty-listener</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
       <version>${jetty.version}</version>
     </dependency>
     <dependency>

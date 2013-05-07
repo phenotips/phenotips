@@ -34,6 +34,7 @@
       </includes>
       <outputDirectory>webapps/phenotips</outputDirectory>
       <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <!-- Unpack the HSQLDB database files to package it in the distribution -->
     <dependencySet>
@@ -42,6 +43,7 @@
       </includes>
       <outputDirectory>/data</outputDirectory>
       <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <!-- "solr" webapp. -->
     <dependencySet>
@@ -55,6 +57,7 @@
           <exclude>WEB-INF/lib/slf4j-jdk14-*.jar</exclude>
         </excludes>
       </unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <!-- Solr configuration. -->
     <dependencySet>
@@ -63,6 +66,7 @@
       </includes>
       <outputDirectory>solrconfig/</outputDirectory>
       <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <!-- Use Logback instead of Java SE logging -->
     <dependencySet>
@@ -71,6 +75,7 @@
       </includes>
       <outputDirectory>webapps/solr/WEB-INF/lib</outputDirectory>
       <unpack>false</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <!-- Unpack Jetty files -->
     <dependencySet>
@@ -84,6 +89,7 @@
           <exclude>jetty/contexts/search.xml</exclude>
         </excludes>
       </unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>
   <files>

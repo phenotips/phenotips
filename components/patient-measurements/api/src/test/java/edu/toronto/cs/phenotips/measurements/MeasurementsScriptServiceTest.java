@@ -83,9 +83,9 @@ public class MeasurementsScriptServiceTest
         Provider<ComponentManager> provider = this.mocker.getInstance(this.cmType, "context");
         ComponentManager cm = Mockito.mock(ComponentManager.class);
         when(provider.get()).thenReturn(cm);
-        List< ? super MeasurementHandler> toReturn = new ArrayList<MeasurementHandler>();
+        List<MeasurementHandler> toReturn = new ArrayList<MeasurementHandler>();
         toReturn.add(Mockito.mock(MeasurementHandler.class));
-        when(cm.getInstanceList(MeasurementHandler.class)).thenReturn((List<Object>) toReturn);
+        when(cm.<MeasurementHandler> getInstanceList(MeasurementHandler.class)).thenReturn(toReturn);
         List<MeasurementHandler> response = this.mocker.getComponentUnderTest().getAvailableMeasurementHandlers();
         Assert.assertEquals(toReturn, response);
     }
@@ -120,9 +120,9 @@ public class MeasurementsScriptServiceTest
         Provider<ComponentManager> provider = this.mocker.getInstance(this.cmType, "context");
         ComponentManager cm = Mockito.mock(ComponentManager.class);
         when(provider.get()).thenReturn(cm);
-        Map<String, ? super MeasurementHandler> toReturn = new HashMap<String, MeasurementHandler>();
+        Map<String, MeasurementHandler> toReturn = new HashMap<String, MeasurementHandler>();
         toReturn.put("hand", Mockito.mock(MeasurementHandler.class));
-        when(cm.getInstanceMap(MeasurementHandler.class)).thenReturn((Map<String, Object>) toReturn);
+        when(cm.<MeasurementHandler> getInstanceMap(MeasurementHandler.class)).thenReturn(toReturn);
         Set<String> response = this.mocker.getComponentUnderTest().getAvailableMeasurementNames();
         Assert.assertEquals(toReturn.keySet(), response);
     }

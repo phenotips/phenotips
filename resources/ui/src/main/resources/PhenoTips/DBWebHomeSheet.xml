@@ -1054,8 +1054,7 @@ h1 {
     </property>
   </object>
   <content>{{velocity}}
-{{html wiki=false clean=false}}<div class="general-tools"><a href="#patients">Browse patients</a>
-#if($hasEdit). <label for="create-patient-record">New patient record</label>#end</div>{{/html}}{{/velocity}}
+{{html wiki=false clean=false}}&lt;div class="general-tools"&gt;&lt;a href="#patients"&gt;Browse patients&lt;/a&gt;#if($hasCreatePage) &#183; &lt;label for="create-patient-record"&gt;New patient record&lt;/label&gt;#end&lt;/div&gt;{{/html}}{{/velocity}}
 
 = Phenotype  database =
 
@@ -1097,13 +1096,11 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
     #set($discard = $columnsProperties.put($filterableColumn, { "type" : "hidden" }))
   #end
 #end
-#set($tagProperty = "$!{config.getProperty('tagProperty').value}")
-#if ($tagProperty != '')
-      #set($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
+
+#set($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
 == Filters ==
 
 {{velocity}}#__filters_display('xform'){{/velocity}})))", "xwiki/2.1"))
-#end
 #set($discard = $columns.add("_actions"))
 ##
 #set($options = {
@@ -1111,13 +1108,17 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 "translationPrefix" : "patient.livetable.",
 "rowCount"          : 25,
 "maxPages"          : 10,
+"selectedColumn"    : $config.getProperty('livetableSortColumn').value,
 "defaultOrder"      : "asc",
 "topFilters"        : $topFilters,
 "resultPage"        : 'PhenoTips.LiveTableResults'
 })
+#if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
+  #set ($options.rowCount = $config.getProperty('livetableRows').value)
+#end
 #livetable("patients" $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
-#if($hasEdit)
+#if($hasCreatePage)
   {{html clean="false" wiki="false"}}&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
     &lt;input type="hidden" name="doCreate" value="1" /&gt;

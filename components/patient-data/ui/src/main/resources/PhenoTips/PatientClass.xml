@@ -124,7 +124,7 @@
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </consanguinity>
     <date_of_birth>
-      <customDisplay>{{velocity filter="indent"}}{{html wiki=false clean=false}}
+      <customDisplay>{{velocity}}{{html clean=false}}
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
 #if ($config)
@@ -134,25 +134,30 @@
   #set ($format = $definedFormat)
 #end
 #if ($xcontext.action == 'edit')
-  #if (!$value)#set($value = $util.date)#end
+  #set ($date = $xwiki.jodatime.mutableDateTime)
+  #if ("$!xwiki.getUserPreference('timezone')" != '')
+    #set ($discard = $date.setZone($xwiki.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
+  #end
+  #if (!$value)
+    #set ($value = $date)
+  #else
+    #set ($value = $xwiki.jodatime.getMutableDateTime($value.time))
+    #if ("$!xwiki.getUserPreference('timezone')" != '')
+      #set ($discard = $value.setZoneRetainFields($xwiki.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
+    #end
+  #end
   #if ($format.indexOf('d') &lt; 0)
     &lt;span class="month-year-date $name" id="$prefix${name}_container"&gt;
-      &lt;input type="hidden" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date-hidden" alt="#formatdateISO($value)"/&gt;
-      #set ($date = $util.date)
-      #if ($value)
-        #set ($selMonth = $value.month)
-        #set ($selYear= $value.year)
-      #else
-        #set ($selMonth = $date.month)
-        #set ($selYear= $date.year)
-      #end
+      &lt;input type="hidden" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value.toDate(), $definedFormat)" class="xwiki-date-hidden" alt="#formatdateISO($value.toDate())"/&gt;
+      #set ($selMonth = $value.monthOfYear)
+      #set ($selYear= $value.year)
       #set ($mFormat = $format.replaceAll("[^M]", ''))
       #set ($yFormat = $format.replaceAll("[^y]", ''))
 
       &lt;select name="$prefix${name}_month" class="month"&gt;
-      #foreach ($val in [0..11])
-        #set ($date.month = $val)
-        &lt;option value="$val"#if ($selMonth == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $mFormat)&lt;/option&gt;
+      #foreach ($val in [1..12])
+        #set ($date.monthOfYear = $val)
+        &lt;option value="$mathtool.sub($val, 1)"#if ($selMonth == $val) selected="selected"#end&gt;$xwiki.formatDate($date.toDate(), $mFormat)&lt;/option&gt;
       #end
       &lt;/select&gt;
 
@@ -162,15 +167,21 @@
       &lt;select name="$prefix${name}_year" class="year"&gt;
       #foreach ($val in [$startYear..$endYear])
         #set ($date.year = $val)
-        &lt;option value="$xwiki.formatDate($date, $yFormat)"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $yFormat)&lt;/option&gt;
+        &lt;option value="$val"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date.toDate(), $yFormat)&lt;/option&gt;
       #end
       &lt;/select&gt;
     &lt;/span&gt;
   #else
-    &lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date" alt="#formatdateISO($value)"/&gt;
+    &lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value.toDate(), $definedFormat)" class="xwiki-date" alt="#formatdateISO($value.toDate())"/&gt;
   #end
 #else
-&lt;span class="date"&gt;$!xwiki.formatDate($value, $format)&lt;/span&gt;
+#if ($value)
+  #set ($value = $xwiki.jodatime.getMutableDateTime($value.time))
+  #if ("$!xwiki.getUserPreference('timezone')" != '')
+    #set ($discard = $value.setZoneRetainFields($xwiki.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
+  #end
+#end
+&lt;span class="date"&gt;$!xwiki.formatDate($value.toDate(), $format)&lt;/span&gt;
 #end
 {{/html}}{{/velocity}}</customDisplay>
       <dateFormat>MM/dd/yyyy</dateFormat>
@@ -187,7 +198,7 @@
       <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
     </date_of_birth>
     <exam_date>
-      <customDisplay>{{velocity filter="indent"}}{{html wiki=false clean=false}}
+      <customDisplay>{{velocity}}{{html clean=false}}
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
 #if ($config)
@@ -197,25 +208,30 @@
   #set ($format = $definedFormat)
 #end
 #if ($xcontext.action == 'edit')
-  #if (!$value)#set($value = $util.date)#end
+  #set ($date = $xwiki.jodatime.mutableDateTime)
+  #if ("$!xwiki.getUserPreference('timezone')" != '')
+    #set ($discard = $date.setZone($xwiki.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
+  #end
+  #if (!$value)
+    #set ($value = $date)
+  #else
+    #set ($value = $xwiki.jodatime.getMutableDateTime($value.time))
+    #if ("$!xwiki.getUserPreference('timezone')" != '')
+      #set ($discard = $value.setZoneRetainFields($xwiki.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
+    #end
+  #end
   #if ($format.indexOf('d') &lt; 0)
     &lt;span class="month-year-date $name" id="$prefix${name}_container"&gt;
-      &lt;input type="hidden" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date-hidden" alt="#formatdateISO($value)"/&gt;
-      #set ($date = $util.date)
-      #if ($value)
-        #set ($selMonth = $value.month)
-        #set ($selYear= $value.year)
-      #else
-        #set ($selMonth = $date.month)
-        #set ($selYear= $date.year)
-      #end
+      &lt;input type="hidden" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value.toDate(), $definedFormat)" class="xwiki-date-hidden" alt="#formatdateISO($value.toDate())"/&gt;
+      #set ($selMonth = $value.monthOfYear)
+      #set ($selYear= $value.year)
       #set ($mFormat = $format.replaceAll("[^M]", ''))
       #set ($yFormat = $format.replaceAll("[^y]", ''))
 
       &lt;select name="$prefix${name}_month" class="month"&gt;
-      #foreach ($val in [0..11])
-        #set ($date.month = $val)
-        &lt;option value="$val"#if ($selMonth == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $mFormat)&lt;/option&gt;
+      #foreach ($val in [1..12])
+        #set ($date.monthOfYear = $val)
+        &lt;option value="$mathtool.sub($val, 1)"#if ($selMonth == $val) selected="selected"#end&gt;$xwiki.formatDate($date.toDate(), $mFormat)&lt;/option&gt;
       #end
       &lt;/select&gt;
 
@@ -225,15 +241,21 @@
       &lt;select name="$prefix${name}_year" class="year"&gt;
       #foreach ($val in [$startYear..$endYear])
         #set ($date.year = $val)
-        &lt;option value="$xwiki.formatDate($date, $yFormat)"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date, $yFormat)&lt;/option&gt;
+        &lt;option value="$val"#if ($selYear == $val) selected="selected"#end&gt;$xwiki.formatDate($date.toDate(), $yFormat)&lt;/option&gt;
       #end
       &lt;/select&gt;
     &lt;/span&gt;
   #else
-    &lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date" alt="#formatdateISO($value)"/&gt;
+    &lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value.toDate(), $definedFormat)" class="xwiki-date" alt="#formatdateISO($value.toDate())"/&gt;
   #end
 #else
-&lt;span class="date"&gt;$!xwiki.formatDate($value, $format)&lt;/span&gt;
+#if ($value)
+  #set ($value = $xwiki.jodatime.getMutableDateTime($value.time))
+  #if ("$!xwiki.getUserPreference('timezone')" != '')
+    #set ($discard = $value.setZoneRetainFields($xwiki.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
+  #end
+#end
+&lt;span class="date"&gt;$!xwiki.formatDate($value.toDate(), $format)&lt;/span&gt;
 #end
 {{/html}}{{/velocity}}</customDisplay>
       <dateFormat>MM/dd/yyyy</dateFormat>
@@ -592,8 +614,8 @@
       <picker>0</picker>
       <prettyName>Symptoms NOT observed in this patient</prettyName>
       <relationalStorage>1</relationalStorage>
-      <separator>, </separator>
-      <separators>|, </separators>
+      <separator> </separator>
+      <separators/>
       <size>1</size>
       <sort>none</sort>
       <sql/>

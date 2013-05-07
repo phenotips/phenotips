@@ -49,7 +49,7 @@
 #if ($xcontext.action == 'get' &amp;&amp; "$!request.q" != '')
   #set ($_service = $services.pubmed)
   #set ($limit = $mathtool.toInteger("$!{request.limit}"))
-  #if (!($limit &gt; 0))
+  #if (!$limit || $limit &lt; 0)
     #set ($limit = 20)
   #end
   #set ($start = $mathtool.toInteger("$!{request.start}"))
@@ -95,7 +95,7 @@ $response.setHeader("X-ReqNo", "$!request.reqNo")##
     $_service.getSuggestionsXML("$!request.q", $limit, $start)
   {{/html}}
   #else
-    #json__respondJSON($_service.getSuggestions("$!request.q", $limit, $start))
+    #json__respondJSON($_service.getSuggestions("$!request.q", $limit, $start), {})
   #end
 #end
 {{/velocity}}</content>

@@ -60,7 +60,7 @@
         <displayType>input</displayType>
         <multiSelect>1</multiSelect>
         <name>activeFields</name>
-        <number>8</number>
+        <number>9</number>
         <picker>0</picker>
         <prettyName>Active fields (displayed to report editors and viewers)</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -125,7 +125,7 @@ document.observe("xwiki:dom:loaded", function() {
         <displayType>input</displayType>
         <multiSelect>1</multiSelect>
         <name>activeSections</name>
-        <number>7</number>
+        <number>8</number>
         <picker>0</picker>
         <prettyName>Active sections and their order of appearence</prettyName>
         <relationalStorage>0</relationalStorage>
@@ -155,7 +155,7 @@ $!value
 {{/velocity}}</customDisplay>
         <disabled>0</disabled>
         <name>dateOfBirthFormat</name>
-        <number>10</number>
+        <number>11</number>
         <picker>0</picker>
         <prettyName>Date of birth format</prettyName>
         <size>30</size>
@@ -235,6 +235,44 @@ $!value
         <values/>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </livetableColumns>
+      <livetableRows>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>livetableRows</name>
+        <number>7</number>
+        <numberType>integer</numberType>
+        <prettyName>Number of rows to display by default</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </livetableRows>
+      <livetableSortColumn>
+        <customDisplay>{{velocity}}
+#if ($type == 'edit')
+{{html clean="false"}}
+&lt;select name="${prefix}${name}"&gt;
+#foreach($column in $object.getProperty('livetableColumns').value)
+  &lt;option value="$escapetool.xml($column)"#if ($column == $value) selected="selected"#{end}&gt;$msg.get("patient.livetable.${column}")&lt;/option&gt;
+#end
+&lt;/select&gt;
+{{/html}}
+#else
+  $msg.get("patient.livetable.${value}")
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>livetableSortColumn</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>Column to sort by default</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </livetableSortColumn>
       <mandatoryFields>
         <cache>0</cache>
         <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
@@ -242,7 +280,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>mandatoryFields</name>
-        <number>9</number>
+        <number>10</number>
         <picker>0</picker>
         <prettyName>Mandatory fields</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -313,7 +351,7 @@ $!value
         <idField/>
         <multiSelect>0</multiSelect>
         <name>phenotypeMapping</name>
-        <number>12</number>
+        <number>13</number>
         <picker>1</picker>
         <prettyName>Phenotype mapping document</prettyName>
         <relationalStorage>0</relationalStorage>
@@ -332,7 +370,7 @@ $!value
         <customDisplay/>
         <disabled>0</disabled>
         <name>relativeReportHint</name>
-        <number>11</number>
+        <number>12</number>
         <picker>0</picker>
         <prettyName>Hint for relative field</prettyName>
         <size>30</size>
@@ -348,7 +386,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>section__diagnosis-info</name>
-        <number>19</number>
+        <number>20</number>
         <picker>0</picker>
         <prettyName>Diagnosis</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -369,7 +407,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>section__family-history</name>
-        <number>17</number>
+        <number>18</number>
         <picker>0</picker>
         <prettyName>Family history</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -401,7 +439,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>section__measurements</name>
-        <number>14</number>
+        <number>15</number>
         <picker>0</picker>
         <prettyName>Measurements</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -422,7 +460,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>section__medical_history</name>
-        <number>18</number>
+        <number>19</number>
         <picker>0</picker>
         <prettyName>Medical history</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -443,7 +481,7 @@ $!value
         <displayType>select</displayType>
         <multiSelect>0</multiSelect>
         <name>section__other</name>
-        <number>21</number>
+        <number>22</number>
         <picker>0</picker>
         <prettyName>More information</prettyName>
         <relationalStorage>0</relationalStorage>
@@ -464,7 +502,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>section__patient-info</name>
-        <number>13</number>
+        <number>14</number>
         <picker>0</picker>
         <prettyName>Patient information</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -485,7 +523,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>section__phenotype-info</name>
-        <number>15</number>
+        <number>16</number>
         <picker>0</picker>
         <prettyName>Phenotypic description (clinical symptions)</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -506,7 +544,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>section__prenatal_phenotype-info</name>
-        <number>16</number>
+        <number>17</number>
         <picker>0</picker>
         <prettyName>Prenatal and perinatal history</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -538,7 +576,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>section__variant-info</name>
-        <number>20</number>
+        <number>21</number>
         <picker>0</picker>
         <prettyName>Variants</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -552,19 +590,6 @@ $!value
         <values/>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </section__variant-info>
-      <tagProperty>
-        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
-        <disabled>0</disabled>
-        <name>tagProperty</name>
-        <number>6</number>
-        <picker>0</picker>
-        <prettyName>Tag property</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </tagProperty>
     </class>
     <name>data.WebHome</name>
     <number>0</number>
@@ -632,6 +657,12 @@ $!value
       </livetableColumns>
     </property>
     <property>
+      <livetableRows/>
+    </property>
+    <property>
+      <livetableSortColumn>external_id</livetableSortColumn>
+    </property>
+    <property>
       <mandatoryFields/>
     </property>
     <property>
@@ -693,9 +724,6 @@ $!value
       <section__variant-info>
         <value>PhenoTips.VariantClass</value>
       </section__variant-info>
-    </property>
-    <property>
-      <tagProperty>phenotype</tagProperty>
     </property>
   </object>
   <object>
@@ -1660,6 +1688,8 @@ $!value
         <value>idField</value>
         <value>idPrefix</value>
         <value>livetableColumns</value>
+        <value>livetableSortColumn</value>
+        <value>livetableRows</value>
         <value>tagProperty</value>
         <value>activeSections</value>
         <value>activeFields</value>
@@ -1819,5 +1849,5 @@ $!value
       <propertiesToShow/>
     </property>
   </object>
-  <content>{{include document="PhenoTips.DBWebHomeSheet" /}}</content>
+  <content/>
 </xwikidoc>
