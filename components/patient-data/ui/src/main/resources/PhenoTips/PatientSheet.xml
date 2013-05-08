@@ -53,7 +53,7 @@
 #__reportSection_display($section)
 #end
 
-#if ($xcontext.action == 'export' &amp;&amp; $config.getProperty('section__measurements').value.contains('growth-charts'))
+#if ($xcontext.action == 'export' &amp;&amp; $config.getProperty('section__measurements').value.contains('growth-charts') &amp;&amp; $doc.getObject('PhenoTips.MeasurementsClass'))
 {{html clean=false}}#pagebreak(){{/html}}
 #set($chartOptions = {'targetClassName' : 'PhenoTips.MeasurementsClass', 'obj': $obj, 'link': false})
 #_measurementCharts($chartOptions)
