@@ -82,7 +82,8 @@ public class FormField extends AbstractFormElement
     protected String generateSelection(final String[] fieldNames)
     {
         String selectionMarker = isSelected(YES) ? "yes-selected" : isSelected(NO) ? "no-selected" : null;
-        return (selectionMarker != null) ? ("<div class='value-checked " + selectionMarker + "'>"
+        String selectionPrefix = isSelected(NO) ? "NO " : "";
+        return (selectionMarker != null) ? ("<div class='value-checked " + selectionMarker + "'>" + selectionPrefix
             + XMLUtils.escapeElementContent(this.title) + this.metaData + "</div>") : "";
     }
 

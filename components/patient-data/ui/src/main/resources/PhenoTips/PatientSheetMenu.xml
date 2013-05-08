@@ -61,7 +61,12 @@
     #documentAction($doc.getURL('view', 'viewer=history') 'tmHistory' 'Browse modification history')
   #end
   #if ($menuconfig.getProperty('enablePdfTool').value.contains($xcontext.action))
-    #documentAction($doc.getURL('export', "format=pdf&amp;pdfcover=0&amp;pdftoc=0&amp;pdftemplate=$xwiki.getSpacePreference('colorTheme')") 'tmExportPdf' 'Export PDF')
+    #if ($xwiki.getDocument($xwiki.getSpacePreference('colorTheme')).getObject('XWiki.PDFClass'))
+      #set ($pdfTemplate = $xwiki.getSpacePreference('colorTheme'))
+    #else
+      #set ($pdfTemplate = 'PhenoTips.PatientSheetCode')
+    #end
+    #documentAction($doc.getURL('export', "format=pdf&amp;pdfcover=0&amp;pdftoc=0&amp;pdftemplate=${pdfTemplate}") 'tmExportPdf' 'Export PDF')
   #end
   #if ($menuconfig.getProperty('enableTocTool').value.contains($xcontext.action))
     #documentAction('#table-of-contents' 'tmToC' 'Table of contents')
