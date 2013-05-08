@@ -679,37 +679,6 @@ document.observe('dom:loaded', function() {
     if (!$('inline')) {return;}
 
     // ------------------------------------------------------------------------
-    // Enable value-controlled visibility
-
-    var visibilityControllers = $$('.controlled-group .controller input[type=checkbox]');
-
-    var controlVisibility = function(controller) {
-      if (typeof (controller.element) == 'function') {
-         return controlVisibility(controller.element());
-      }
-      if (!controller.__controlled) {
-        controller.__controlled = controller.up('.controlled-group').select('.controlled');
-      }
-      if (controller.checked) {
-         controller.__controlled.invoke('setStyle', controller.__hideStyle);
-      } else {
-         controller.__controlled.invoke('setStyle', controller.__showStyle);
-      }
-    }
-
-    visibilityControllers.each(function (item) {
-       if (item.up('.controlled-group.complete-hide')) {
-          item.__hideStyle = {'display' : 'none'};
-          item.__showStyle = {'display' : ''};
-       } else {
-          item.__hideStyle = {'visibility' : 'hidden'};
-          item.__showStyle = {'visibility' : 'visible'};
-       }
-       controlVisibility(item);
-       item.observe('change', controlVisibility);
-    });
-
-    // ------------------------------------------------------------------------
     // Live validation of the date of birth
 
     var hasErrors = false;

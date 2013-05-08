@@ -3326,6 +3326,146 @@ document.observe("xwiki:dom:loaded", function() {
   </object>
   <object>
     <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.Widgets</name>
+    <number>8</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>a81251a5-7e93-4dda-b851-c37f4841d346</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var XWiki = (function(XWiki) {
+  // Start XWiki augmentation
+  var widgets = XWiki.widgets = XWiki.widgets || {};
+
+  widgets.VisibilityController =  Class.create({
+    initialize : function(element) {
+      this.element = element;
+      this.controller = this.element.down(".controller input[type=checkbox]");
+      if (!this.controller) {
+        // No controller, nothing else to do...
+        return;
+      }
+      this.controlled = this.element.select(".controlled");
+      if (this.element.hasClassName("complete-hide")) {
+        this.hiddenStyle = {"display" : "none"};
+        this.visibleStyle = {"display" : ""};
+      } else {
+        this.hiddenStyle = {"visibility" : "hidden"};
+        this.visibleStyle = {"visibility" : "visible"};
+      }
+      this.controlVisibility();
+      this.controller.observe("change", this.controlVisibility.bindAsEventListener(this));
+    },
+    controlVisibility : function() {
+      if (this.controller.checked) {
+         this.controlled.invoke("setStyle", this.hiddenStyle);
+      } else {
+         this.controlled.invoke("setStyle", this.visibleStyle);
+      }
+    }
+  });
+
+  var init = function(event) {
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      element.select(".controlled-group").each(function(group) {
+        if (!group.__visibilityController) {
+          group.__visibilityController = new XWiki.widgets.VisibilityController(group);
+        }
+      });
+    });
+    return true;
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  document.observe("xwiki:dom:updated", init);
+
+  // End XWiki augmentation.
+  return XWiki;
+}(XWiki || {}));</code>
+    </property>
+    <property>
+      <name>Controlled visibility groups</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
       <customMapping/>
