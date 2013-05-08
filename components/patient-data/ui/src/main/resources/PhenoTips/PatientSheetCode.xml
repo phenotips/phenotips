@@ -720,7 +720,7 @@ document.observe('dom:loaded', function() {
       }
       var label = null;
       if (input.id) {
-        label = input.up('.mandatory').down("label[for=" + input.id + "]");
+        label = input.up('.mandatory').down("label[for='" + input.id + "']");
         if (!label) {
           label = input.up('.mandatory').down("label");
         }
