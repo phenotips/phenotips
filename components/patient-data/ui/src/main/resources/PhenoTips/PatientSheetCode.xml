@@ -5178,7 +5178,7 @@ table.extradata-list td.bmi_percentile {
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <content>{{include document="PhenoTips.ChartServiceMacros" /}}
