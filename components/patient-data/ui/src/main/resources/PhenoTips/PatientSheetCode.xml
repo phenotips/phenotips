@@ -479,7 +479,9 @@ var findPropertyField = function(name) {
 }
 
 var findFormElementForPhenotype = function(id, negative) {
-  return $($('prefix').value + (negative ? 'negative_' : '') + 'phenotype_' + id);
+  if ($('prefix'))
+    return $($('prefix').value + (negative ? 'negative_' : '') + 'phenotype_' + id);
+  return null;
 };
 
 var isPhenotypeSelected = function (id, negative) {
