@@ -5663,6 +5663,10 @@ input.LV_invalid_field {
 (% class="clear measurement-info chapter" %)(((
 == Measurements ==
 #if ($xcontext.action != 'export')
+#if ($xcontext.action == 'edit')
+{{warning}}It is recommended to record **weight**, **height** and **head circumference** for all patients.{{/warning}}
+
+#end
 #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
 #if ($config.getProperty('section__measurements').value.contains('growth-charts'))
 (% class="growth-charts-section" %)(((
