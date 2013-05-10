@@ -4513,6 +4513,12 @@ label.selected input[type="checkbox"] {
   -moz-column-break-inside:avoid;
   column-break-inside:avoid;
   display: table;
+}
+
+.ethnicity label {
+  font-size: 100% !important;
+  color: #000 !important;
+  font-weight: bold !important;
 }</code>
     </property>
     <property>
@@ -5763,16 +5769,61 @@ $doc.display('prenatal_phenotype')
 ## Family history
 ##
 #macro(__reportSection__family_history)
-#if (("$!activeFields.contains('consanguinity')" != 'false' || "$!activeFields.contains('miscarriages')" != 'false'|| "$!activeFields.contains('mode_of_inheritance')" != 'false' || "$!activeFields.contains('pedigree')" != 'false') &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('consanguinity')$doc.display('miscarriages')$doc.display('mode_of_inheritance')$doc.display('family_comments')$doc.display('pedigree')" != ''))
+#if (("$!activeFields.contains('consanguinity')" != 'false' || "$!activeFields.contains('miscarriages')" != 'false'|| "$!activeFields.contains('mode_of_inheritance')" != 'false' || "$!activeFields.contains('pedigree')" != 'false' || "$!activeFields.contains('in_vitro')" != 'false' || "$!activeFields.contains('proband')" != 'false' || "$!activeFields.contains('family_of')" != 'false' || "$!activeFields.contains('maternal_ethnicity')" != 'false' || "$!activeFields.contains('paternal_ethnicity')" != 'false') &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('family_of')$doc.display('consanguinity')$doc.display('miscarriages')$doc.display('mode_of_inheritance')$doc.display('family_comments')$doc.display('pedigree')" != '' || $doc.display('proband') == 'Yes'))
 (% class="clear clinical-info family_history-info chapter #__markIfMandatory('family_history')" %)(((
 == $!{class.get('family_history').prettyName} ==
 
 (((
-$doc.display('consanguinity')
-$doc.display('miscarriages')
 
-#__displayIfNotEmpty('mode_of_inheritance')
-#__displayIfNotEmpty('family_comments')
+#if ($xcontext.action == 'edit')
+  (% class="controlled-group complete-hide" %)(((
+    (% class="controller" %)(((
+      $doc.display('proband') #__label('proband' 'section' "$class.get('proband').prettyName")
+    )))
+    (% class="controlled" %)(((
+      #__displayFormatted('2-col' 'family_of' '' '' '')
+    )))
+  )))
+#else
+  #if ($doc.display('proband') == 'Yes')
+    $class.get('proband').prettyName
+  #else
+    #__displayFormatted('2-col' 'family_of' '' '' '')
+  #end
+#end
+(% class="fieldset ethnicity" %)(((
+    #__displayFormatted('half-width' 'maternal_ethnicity')
+    #__displayFormatted('half-width' 'paternal_ethnicity')
+)))##fieldset
+(% class="clearfloats" %)((()))
+#if ("$!activeFields.contains('in_vitro')" != 'false')
+  #if ($xcontext.action == 'edit')
+
+    ----
+    $doc.display('in_vitro') #__label('in_vitro' 'section' "$class.get('in_vitro').prettyName")
+  #else
+    #set ($isInVitro = $doc.getObject('PhenoTips.PatientClass').getProperty('in_vitro').value)
+    #if ($isInVitro == 1)
+
+      ----
+      $class.get('in_vitro').prettyName
+    #end
+  #end
+#end
+#if (("$!activeFields.contains('consanguinity')" != 'false' || "$!activeFields.contains('miscarriages')" != 'false') &amp;&amp; ($xcontext.action == 'edit' || "$!doc.display('consanguinity')$!doc.display('miscarriages')" != ''))
+
+  ----
+  $doc.display('consanguinity')
+  $doc.display('miscarriages')
+#end
+#if ("$!activeFields.contains('mode_of_inheritance')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$!doc.display('mode_of_inheritance')" != ''))
+
+  #__displayIfNotEmpty('mode_of_inheritance')
+#end
+#if ("$!activeFields.contains('family_comments')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$!doc.display('family_comments')" != ''))
+
+  #__displayIfNotEmpty('family_comments')
+#end
 #*
 #set ($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))
 #if ($pedigreeObj)
