@@ -675,122 +675,26 @@ document.observe('dom:loaded', function() {
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe('dom:loaded', function() {
-
-    // Only do this in edit mode:
-    if (!$('inline')) {return;}
-
-    // ------------------------------------------------------------------------
-    // Live validation of the date of birth
-
-    var hasErrors = false;
-
-    var markIfHasErrors = function(inputHasErrors, input) {
-      if (!input) {
-        return false;
-      }
-      var label = null;
-      if (input.id) {
-        label = input.up('.mandatory').down("label[for='" + input.id + "']");
-        if (!label) {
-          label = input.up('.mandatory').down("label");
+      <code>var XWiki = (function(XWiki) {
+  var init = function(event) {
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      element.select(".mandatory input[type='text']").each(function(element) {
+        if (!element.__validation) {
+          element.__validation = new LiveValidation(element, {validMessage: '', wait : 500});
         }
-      }
-      if (inputHasErrors) {
-        input.addClassName('wrongValue');
-        if (label) {
-          label.addClassName('wrongValue');
-        }
-        return true;
-      } else {
-        input.removeClassName('wrongValue');
-        if (label) {
-          label.removeClassName('wrongValue');
-        }
-        return false;
-      }
-    }
-
-    $$('.mandatory input[type=text]:not(.suggested, .mapping)').invoke('observe', 'blur', function (event) {
-      var input = event.element();
-      markIfHasErrors((!input.value || input.value.strip() == ""), input);
-    });
-
-    // ------------------------------------------------------------------------
-    // Prevent form submission if there's missing data
-
-    try {
-    $('inline').observe('submit', function(event) {
-      var form = event.element();
-      var hasErrors = false;
-
-      $$('.mandatory *:not(.exclude) input[type=text]:not(.suggested, .mapping)').each(function (input) {
-        hasErrors = markIfHasErrors((!input.value || input.value.strip() == ""), input) || hasErrors;
+        element.__validation.add(Validate.Presence, {failureMessage: 'Please enter a value'});
       });
-
-      var hasVal = new Object();
-      var titles = new Object();
-
-      $$('.mandatory *:not(.exclude) input[type=checkbox], .mandatory *:not(.exclude) input[type=radio]').each(function (input) {
-        hasVal[input.name] = hasVal[input.name] || (input.value != '' &amp;&amp; input.checked);
-        titles[input.name] = input.up('.mandatory').down('.group-title');
-      });
-      for (var inputName in hasVal) {
-         if (!hasVal[inputName]) {
-           hasErrors = true;
-           if (titles[inputName]) {
-             titles[inputName].addClassName('wrongValue');
-           }
-         } else {
-           if (titles[inputName]) {
-             titles[inputName].removeClassName('wrongValue');
-           }
-         }
-      }
-
-      if (hasErrors) {
-
-        // ------------------------------------------------------------------------
-        // The data has errors. Prevent submission and show fields with errors
-        if (!form.down('div.errormessage')) {
-           form.insert({'top' : new Element('div', {'class' : 'errormessage'}).update("Some mandatory fields are missing or have incorrect values.")});
-        }
-        form.scrollTo();
-        event.stop();
-      } else {
-
-        // ------------------------------------------------------------------------
-        // Everything looks fine.
-        // Update the data to be submitted
-
-        var __updateNewValues = function(section) {
-           var target = section.down('input.mapping');
-           if (target) {
-             var value = '';
-             var newValueInputs = section.select('.accepted-suggestions input[type=checkbox]');
-             for (var i = 0; i &lt; newValueInputs.length; ++i) {
-                if (newValueInputs[i].checked) {
-                  value += newValueInputs[i].value + '|';
-                }
-             }
-             var otherValuesInput = section.down('input[type=text].suggested.accept-value');
-             if (otherValuesInput) {
-               var otherValues = otherValuesInput.value;
-               if (otherValuesInput.hasClassName('multi')) {
-                 otherValues = otherValues.replace(/\s*,\s*/g, "|");
-               }
-               value += otherValues;
-             }
-             target.value = value;
-           }
-        }
-        form.select('.phenotype-group').each(__updateNewValues);
-        form.select('.prenatal_phenotype-group').each(__updateNewValues);
-        form.select('.negative_phenotype-group').each(__updateNewValues);
-      }
     });
-    } catch (error) { /* No form? No problem */ }
-});</code>
+    return true;
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  document.observe("xwiki:dom:updated", init);
+
+  // End XWiki augmentation.
+  return XWiki;
+}(XWiki || {}));
+</code>
     </property>
     <property>
       <name>Form validation</name>
@@ -3550,6 +3454,170 @@ document.observe('xwiki:dom:loaded', function() {
   </object>
   <object>
     <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>14</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>b4ad6f0b-ebac-4bca-a223-ea8f394c837c</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var XWiki = (function(XWiki) {
+  // Start XWiki augmentation
+  var widgets = XWiki.widgets = XWiki.widgets || {};
+
+  widgets.UniquenessValidator = Class.create({
+    initialize : function(input) {
+      this.input = input;
+      this.valid = true;
+      this.state = 'NEW';
+      this.request = 0;
+      this.value = input.value;
+      this.serviceUrl = new XWiki.Document('CheckID', 'PhenoTips').getURL('get');
+      if (!this.input.__validation) {
+        this.input.__validation = new LiveValidation(this.input, {validMessage: '', wait : 500});
+      }
+      this.input.__validation.add(this.validate.bind(this));
+    },
+    check : function() {
+      if (this.input.value != this.value) {
+        this.value = this.input.value;
+        this.state = 'CHECKING';
+        new Ajax.Request(this.serviceUrl, {
+          parameters : { outputSyntax: 'plain', eid: this.value, id: XWiki.Model.serialize(new XWiki.DocumentReference(XWiki.currentDocument.wiki, XWiki.currentDocument.space, XWiki.currentDocument.page))},
+          on200 : this.self.bindAsEventListener(this),
+          on403 : this.empty.bindAsEventListener(this),
+          on404 : this.available.bindAsEventListener(this),
+          on409 : this.exists.bindAsEventListener(this),
+          onComplete: this.responded.bindAsEventListener(this)
+        });
+      }
+    },
+    validate : function(value) {
+      if (this.state == 'DONE') {
+        this.value == value &amp;&amp; (this.valid || Validate.fail("This identifier already exists"));
+      }
+      this.check();
+      return true;
+    },
+    self : function() {
+      this.valid = true;
+    },
+    available : function() {
+      this.valid = true;
+    },
+    empty : function() {
+      this.valid = false;
+    },
+    exists : function() {
+      this.valid = false;
+    },
+    responded : function() {
+      this.state = 'DONE';
+      this.input.__validation.validate();
+    }
+  });
+
+  var init = function(event) {
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      element.select('input.check-unique, .external_id input').each(function(input) {
+        if (!input.__uniqueness_validator) {
+          input.__uniqueness_validator = new XWiki.widgets.UniquenessValidator(input);
+        }
+      });
+    });
+    return true;
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  document.observe('xwiki:dom:updated', init);
+
+  // End XWiki augmentation.
+  return XWiki;
+}(XWiki || {}));</code>
+    </property>
+    <property>
+      <name>ID uniqueness validation</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
       <name>XWiki.PDFClass</name>
       <customClass/>
       <customMapping/>
@@ -4109,16 +4177,6 @@ label.subterm-selected input[type="checkbox"] {
 }
 label.selected input[type="checkbox"] {
   opacity: 1;
-}
-.wrongValue {
-  color: $theme.notificationErrorColor !important;
-  font-weight: bold;
-}
-input.wrongValue {
-  border: 1px solid $theme.notificationErrorColor;
-  background-color: $theme.highlightColor;
-  color: $theme.textColor !important;
-  font-weight: normal;
 }
 /** ----------------------------------------------------------- */
 /** Patient info zone **/
@@ -5181,6 +5239,107 @@ table.extradata-list td.bmi_percentile {
       <use>onDemand</use>
     </property>
   </object>
+  <object>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>4</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>7a348f6f-7b94-4630-b559-60c2fe83e6f8</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+.LV_validation_message {
+  position: static !important;
+}
+input.LV_invalid_field {
+  background-color: $theme.highlightColor;
+  border: 1px solid $theme.notificationErrorColor;
+  color: $theme.textColor !important;
+}
+</code>
+    </property>
+    <property>
+      <name>Form Validation</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
   <content>{{include document="PhenoTips.ChartServiceMacros" /}}
 
 {{velocity output=false}}
@@ -5753,6 +5912,8 @@ $xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePre
 $xwiki.jsx.use('PhenoTips.PatientSheetCode', {'minify' : false})##
 $xwiki.jsfx.use('js/xwiki/actionbuttons/actionButtons.js', true)##
 $xwiki.jsfx.use('js/xwiki/editors/autosave.js')##
+$xwiki.ssfx.use('uicomponents/widgets/validation/livevalidation.css', true)##
+$xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 ##
 ##
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
