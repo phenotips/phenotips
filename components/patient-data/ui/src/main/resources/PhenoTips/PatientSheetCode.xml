@@ -5610,7 +5610,7 @@ input.LV_invalid_field {
   #__displayFormatted('2-col' 'external_id' '' '' '')
   #__displayFormatted('2-col' 'exam_date' '' '' '')
   #end## display exam id / date
-  #if ("$!activeFields.contains('last_name')" != false &amp;&amp; "$!activeFields.contains('first_name')" != false)
+  #if ("$!activeFields.contains('last_name')" != false &amp;&amp; "$!activeFields.contains('first_name')" != false &amp;&amp; ($xcontext.action == 'edit' || "$!{doc.display('last_name')}$!{doc.display('first_name')}" != ''))
   (% class="fieldset" %)(((
     #__label('last_name' 'section clear' 'Patient name:')
     #if ($xcontext.action == 'edit')
