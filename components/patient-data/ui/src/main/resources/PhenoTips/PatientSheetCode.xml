@@ -36,7 +36,6 @@
   <contentUpdateDate>1346374948000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -5779,20 +5778,22 @@ $doc.display('prenatal_phenotype')
 
 (((
 
-#if ($xcontext.action == 'edit')
-  (% class="controlled-group complete-hide" %)(((
-    (% class="controller" %)(((
-      $doc.display('proband') #__label('proband' 'section' "$class.get('proband').prettyName")
+#if ("$!activeFields.contains('family_of')" != 'false')
+  #if ($xcontext.action == 'edit')
+    (% class="controlled-group complete-hide" %)(((
+      (% class="controller" %)(((
+        $doc.display('proband') #__label('proband' 'section' "$class.get('proband').prettyName")
+      )))
+      (% class="controlled" %)(((
+        #__displayFormatted('2-col' 'family_of' '' '' '')
+      )))
     )))
-    (% class="controlled" %)(((
-      #__displayFormatted('2-col' 'family_of' '' '' '')
-    )))
-  )))
-#else
-  #if ($doc.display('proband') == 'Yes')
-    $class.get('proband').prettyName
   #else
-    #__displayFormatted('2-col' 'family_of' '' '' '')
+    #if ($doc.display('proband') == 'Yes')
+      $class.get('proband').prettyName
+    #else
+      #__displayFormatted('2-col' 'family_of' '' '' '')
+    #end
   #end
 #end
 (% class="fieldset ethnicity" %)(((

@@ -635,7 +635,6 @@ $!value
         <value>medical_developmental_history</value>
         <value>reports_history</value>
         <value>extended_negative_phenotype</value>
-        <value>family_of</value>
         <value>paternal_ethnicity</value>
         <value>maternal_ethnicity</value>
         <value>in_vitro</value>
@@ -681,6 +680,9 @@ $!value
     </property>
     <property>
       <mandatoryFields/>
+    </property>
+    <property>
+      <no_pii_warning>0</no_pii_warning>
     </property>
     <property>
       <patientClass>PhenoTips.PatientClass</patientClass>
