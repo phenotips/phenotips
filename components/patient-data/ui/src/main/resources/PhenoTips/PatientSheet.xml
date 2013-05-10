@@ -47,6 +47,10 @@
 
 {{velocity filter="indent"}}
 #if ("$!{class}" != '')
+#if ($config.getProperty('no_pii_warning').value == 1)
+{{warning}}This form should **not** be used for recording **personally identifiable information**.{{/warning}}
+
+#end
 = $doc.name =
 
 #foreach ($section in $config.getProperty('activeSections').value)
