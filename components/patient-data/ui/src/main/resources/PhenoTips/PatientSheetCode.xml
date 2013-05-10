@@ -5329,6 +5329,9 @@ table.extradata-list td.bmi_percentile {
 .LV_validation_message {
   position: static !important;
 }
+.LV_valid {
+  display: none;
+}
 input.LV_invalid_field {
   background-color: $theme.highlightColor;
   border: 1px solid $theme.notificationErrorColor;
