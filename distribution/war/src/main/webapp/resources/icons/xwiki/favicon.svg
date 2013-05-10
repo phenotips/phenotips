@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" viewBox="141 -42 56 56" version="1.1">
+  <style type="text/css">
+   .logo .background {
+     fill: #FFF;
+   }
+   .logo .overlay * {
+     fill: #000;
+     stroke: none;
+   }
+  </style>
+  <g class="logo">
+    <rect x="140" y="-43" width="58" height="58" class="background"/>
+    <g class="overlay" transform="scale(.02 -.02)">
+      <path transform="translate(0 0)" d="
+        M8031 985q0 -92 -25 -171.5t-74.5 -138t-124 -92.5t-173.5 -34h-340v-549h-156v1409h486q102 0 178.5 -30.5t127.5 -86t76 -134t25 -173.5zM7874 983q0 134 -67 203.5t-202 69.5h-311v-556h318q135 0 198.5 73t63.5 210z
+      M8100 705l500 -500 v-905 h1270 v 2820 h-1270 v-905z
+        M9350 1253v-1253h-155v1253h-397v156h949v-156h-397z"/>
+    </g>
+  </g>
+</svg>
