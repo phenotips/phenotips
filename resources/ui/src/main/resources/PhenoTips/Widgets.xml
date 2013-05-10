@@ -2692,7 +2692,7 @@ console.log(categories);
         var prevPosition = this.container.getPositionInViewport();
       }
       var value = entry.down('.value').firstChild.nodeValue;
-      this.suggest.acceptEntry({'id':entry.__termId, 'value':value, 'category' : entry.__termCategory, 'negative' : entry.down('.selected').hasClassName('no')}, value, '', true);
+      this.suggest.acceptEntry({'id':entry.__termId, 'value':value, 'category' : entry.__termCategory, 'negative' : entry.down('.selected.no')}, value, '', true);
       entry.addClassName('accepted');
       if (prevPosition &amp;&amp; (typeof (this.container.positionDialogInViewport) == 'function')) {
         this.container.positionDialogInViewport(prevPosition.left, prevPosition.top);
