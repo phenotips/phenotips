@@ -3726,7 +3726,34 @@ div.suggestItems {
   text-align:left;
   -moz-box-shadow: 0 4px 8px #777;
   box-shadow: 0 4px 8px #777;
+  margin-left: 1px;
+  margin-top: 5px;
 }
+div.suggestItems:before {
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 0 none;
+  border-bottom: 11px solid $theme.borderColor;
+  content: "";
+  display: block;
+  left: 50%;
+  margin-left: -11px;
+  position: absolute;
+  top: -11px;
+}
+div.suggestItems:after {
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 0 none;
+  border-bottom: 10px solid $theme.pageContentBackgroundColor;
+  content: "";
+  display: block;
+  left: 50%;
+  margin-left: -10px;
+  position: absolute;
+  top: -10px;
+}
+
 div.suggestItems .hide-button-wrapper {
     text-align: right;
     line-height: 1em;
