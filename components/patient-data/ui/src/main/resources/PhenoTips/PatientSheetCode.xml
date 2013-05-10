@@ -5399,14 +5399,14 @@ input.LV_invalid_field {
 
 #macro (__displayFormatted $mode $propName $label $groupCssClass $labelCssClass)
 #if ("$!activeFields.contains($propName)" != 'false' &amp;&amp; ($xcontext.action == 'edit' || $doc.display(${propName}) != ''))
+  #set($_groupCssClass = "$!{groupCssClass} #__markIfMandatory($propName)")
   #if ($xcontext.action != 'edit')
     #if ($mode == 'half-width')
-      (% class="displayed-value"%)#if ($propName == 'first_name'),#end ${doc.display($propName)}(%%)##
+      #__displayHalfWidth($propName $label $_groupCssClass $labelCssClass)
     #else
       #__label($propName $labelCssClass $label) (% class="displayed-value"%)#if ("$!{doc.display($propName)}" == '')-#else${doc.display($propName)}#end(%%)
     #end
   #else
-    #set($_groupCssClass = "$!{groupCssClass} #__markIfMandatory($propName)")
     #if ($mode == 'half-width')
       #__displayHalfWidth($propName $label $_groupCssClass $labelCssClass)
     #elseif ($mode == '2-col')
@@ -5608,8 +5608,12 @@ input.LV_invalid_field {
   #if ("$!activeFields.contains('last_name')" != false &amp;&amp; "$!activeFields.contains('first_name')" != false)
   (% class="fieldset" %)(((
     #__label('last_name' 'section clear' 'Patient name:')
-    #__displayFormatted('half-width' 'last_name')
-    #__displayFormatted('half-width' 'first_name')
+    #if ($xcontext.action == 'edit')
+      #__displayFormatted('half-width' 'last_name')
+      #__displayFormatted('half-width' 'first_name')
+    #else
+      (% class="displayed-value"%)${doc.display('last_name')}, ${doc.display('first_name')}(%%)##
+    #end
   )))##fieldset
   #end## display first name / last name
   #__displayFormatted('2-col' 'date_of_birth' '' 'date' '')
