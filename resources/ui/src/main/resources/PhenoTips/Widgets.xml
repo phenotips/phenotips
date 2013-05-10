@@ -3430,8 +3430,10 @@ document.observe("xwiki:dom:loaded", function() {
     controlVisibility : function() {
       if (this.controller.checked) {
          this.controlled.invoke("setStyle", this.hiddenStyle);
+         this.element.select(".controlled input").invoke("disable");
       } else {
          this.controlled.invoke("setStyle", this.visibleStyle);
+         this.element.select(".controlled input").invoke("enable");
       }
     }
   });
