@@ -5118,7 +5118,8 @@ table.extradata-list td.bmi_percentile {
       <cache>long</cache>
     </property>
     <property>
-      <code>.phenotype-details {
+      <code>#template('colorThemeInit.vm')
+.phenotype-details {
   background-color: #F9F9F9;
   background-position: left center;
   background-repeat: no-repeat;
@@ -5391,7 +5392,7 @@ input.LV_invalid_field {
 
 #macro (__displayHalfWidth $propName $label $groupCssClass $labelCssClass)
   (% class="half-width $groupCssClass ${propName}" %)(((
-    #__label(${propName} "hint ${labelCssClass}" $label)
+    #__label(${propName} "hint $!{labelCssClass}" $label)
     #__display(${propName}, $obj)
   )))
 #end
