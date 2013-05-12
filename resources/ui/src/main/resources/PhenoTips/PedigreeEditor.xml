@@ -36,7 +36,6 @@
   <contentUpdateDate>1344125229000</contentUpdateDate>
   <version>1.1</version>
   <title>Pedigree editor#if ($request.id): $request.id#end</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>

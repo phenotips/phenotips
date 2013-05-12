@@ -36,7 +36,6 @@
   <contentUpdateDate>1332165117000</contentUpdateDate>
   <version>1.1</version>
   <title>$services.localization.render('xe.admin.configurable.macros.title')</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
