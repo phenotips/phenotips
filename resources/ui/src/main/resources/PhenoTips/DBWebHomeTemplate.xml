@@ -200,7 +200,7 @@ $!value
   &lt;li&gt;
     &lt;label for="${prefix}${name}_${sectionId}"&gt;
     &lt;input type="checkbox" name="${prefix}${name}" id="${prefix}${name}_${option}" value="$option"#if ($value.contains($option)) checked="checked"#end/&gt;
-    $msg.get("patient.livetable.${option}")
+    $services.localization.render("patient.livetable.${option}")
     &lt;/label&gt;
   &lt;/li&gt;
 #end
@@ -254,12 +254,12 @@ $!value
 {{html clean="false"}}
 &lt;select name="${prefix}${name}"&gt;
 #foreach($column in $object.getProperty('livetableColumns').value)
-  &lt;option value="$escapetool.xml($column)"#if ($column == $value) selected="selected"#{end}&gt;$msg.get("patient.livetable.${column}")&lt;/option&gt;
+  &lt;option value="$escapetool.xml($column)"#if ($column == $value) selected="selected"#{end}&gt;$services.localization.render("patient.livetable.${column}")&lt;/option&gt;
 #end
 &lt;/select&gt;
 {{/html}}
 #else
-  $msg.get("patient.livetable.${value}")
+  $services.localization.render("patient.livetable.${value}")
 #end
 {{/velocity}}</customDisplay>
         <disabled>0</disabled>

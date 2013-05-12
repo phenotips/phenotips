@@ -35,7 +35,7 @@
   <date>1332165117000</date>
   <contentUpdateDate>1332165117000</contentUpdateDate>
   <version>1.1</version>
-  <title>$msg.get("xe.admin.configurable.macros.title")</title>
+  <title>$services.localization.render('xe.admin.configurable.macros.title')</title>
   <template/>
   <defaultTemplate/>
   <validationScript/>
@@ -198,14 +198,14 @@
         ##
         ## If there is no section for this configurable, then we will have to add one.
         #set($key = "admin.${displayInSection.toLowerCase()}")
-        #if($msg.get($key) != $key) #set($name = $msg.get($key)) #else #set($name = $displayInSection) #end
+        #if($services.localization.get($key)) #set($name = $services.localization.render($key)) #else #set($name = $displayInSection) #end
         #set ($appSection = {'id' : $displayInSection, 'name' : $name, 'url': $xwiki.getURL($currentDoc, $adminAction, "${query}&amp;amp;section=$escapetool.url(${displayInSection})"), 'configurable' : true})
         #if ($app.getValue('configureGlobally', $configurableObject) != 1)
           #set ($appSection.perSpace = true)
         #end
         #set ($key = "admin.${displayInSection.toLowerCase()}.description")
-        #if ($msg.get($key) != $key)
-          #set ($appSection.description = $msg.get($key))
+        #if ($services.localization.get($key))
+          #set ($appSection.description = $services.localization.render($key))
         #end
         #set ($discard = $sectionsByName.put($displayInSection, $appSection))
         #set ($discard = $categoriesByName.get('applications').children.add($appSection))
@@ -243,7 +243,7 @@
   #if(!$headingAlreadyShowing)
     #set($headingAlreadyShowing = true)
 
-    = $msg.get("admin.customize") __[[$appName&gt;&gt;$appName]]__: =
+    = {{translation key="admin.customize"/}} __[[$appName&gt;&gt;$appName]]__: =
   #end
 #end
 
@@ -276,7 +276,7 @@
         &lt;/label&gt;
         #if($linkPrefix != '')
           #set($linkScript = "$linkPrefix$propName")
-          &lt;a href="$escapetool.xml("#evaluate($linkScript)")" class="xHelp" title="$msg.get('admin.documentation')"&gt;$msg.get('admin.documentation')&lt;/a&gt;
+          &lt;a href="$escapetool.xml("#evaluate($linkScript)")" class="xHelp" title="$services.localization.render('admin.documentation')"&gt;$services.localization.render('admin.documentation')&lt;/a&gt;
         #end
         &lt;/dt&gt;
         #if ($out != '')

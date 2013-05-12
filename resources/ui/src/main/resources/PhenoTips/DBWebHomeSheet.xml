@@ -157,7 +157,7 @@
         },
         /* Interaction parameters */
         {
-          confirmationText: "$msg.get('core.delete.confirm')"
+          confirmationText: "$services.localization.render('core.delete.confirm')"
         }
       );
     }

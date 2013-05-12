@@ -214,10 +214,10 @@ Date.CultureInfo={
   };
 
 _translations = {
-  "OK": 'OK', //"$msg.get('xe.dateTimePicker.confirm')",
-  "Now": 'Now', //"$msg.get('xe.dateTimePicker.now')",
-  "Today": 'Today', //"$msg.get('xe.dateTimePicker.today')",
-  "Clear": 'Clear' //"$msg.get('xe.dateTimePicker.clear')"
+  "OK": 'OK', //"$services.localization.render('xe.dateTimePicker.confirm')",
+  "Now": 'Now', //"$services.localization.render('xe.dateTimePicker.now')",
+  "Today": 'Today', //"$services.localization.render('xe.dateTimePicker.today')",
+  "Clear": 'Clear' //"$services.localization.render('xe.dateTimePicker.clear')"
 };
 </code>
     </property>

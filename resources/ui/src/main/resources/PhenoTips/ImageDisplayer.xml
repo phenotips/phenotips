@@ -213,10 +213,10 @@
           var hasErrors = false;
           uploadForm.select('input[type=file]').each(function(fileInput) {
             if (fileInput.value == '') {
-              new XWiki.widgets.Notification("$msg.get('xe.attachmentSelector.upload.error.noFile')", 'error');
+              new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.error.noFile')", 'error');
               hasErrors = true;
             } else if (fileInput.__allowedExtensions &amp;&amp; fileInput.__allowedExtensions.indexOf(this.getFileExtension(fileInput.value)) == -1) {
-              new XWiki.widgets.Notification("$msg.get('xe.attachmentSelector.upload.error.badExtension')", 'error');
+              new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.error.badExtension')", 'error');
               hasErrors = true;
             }
           }.bind(this));
@@ -233,7 +233,7 @@
                                + (this.reloadTargetId ? '#' + this.reloadTargetId : '');
             }
             document.observe('xwiki:document:saved', function() {
-              new XWiki.widgets.Notification("$msg.get('xe.attachmentSelector.upload.inProgress')", 'inprogress');
+              new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.inProgress')", 'inprogress');
               uploadForm.submit();
             })
             document.fire('xwiki:actions:save', {'continue': true, form: $('edit') || $('inline')});
@@ -284,10 +284,10 @@
             }
           },
           {
-            confirmationText: "$msg.get('core.viewers.attachments.delete.confirm')",
-            progressMessageText : "$msg.get('core.viewers.attachments.delete.inProgress')",
-            successMessageText : "$msg.get('core.viewers.attachments.delete.done')",
-            failureMessageText : "$msg.get('core.viewers.attachments.delete.failed')"
+            confirmationText: "$services.localization.render('core.viewers.attachments.delete.confirm')",
+            progressMessageText : "$services.localization.render('core.viewers.attachments.delete.inProgress')",
+            successMessageText : "$services.localization.render('core.viewers.attachments.delete.done')",
+            failureMessageText : "$services.localization.render('core.viewers.attachments.delete.failed')"
           }
         );
       }

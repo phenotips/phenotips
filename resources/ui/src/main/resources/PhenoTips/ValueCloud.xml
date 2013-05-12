@@ -547,7 +547,7 @@ $xwiki.ssx.use('XWiki.TagCloud', {'colorTheme' : "$xwiki.getSpacePreference('col
       #end
     #end
     &lt;li class="$liClass"&gt;
-      &lt;label class="tag ${property}" title="$msg.get("xe.tag.tooltip", ["$tagEntry.Value"])&gt;&lt;input type="checkbox" name="${property}" value="$nameMap.get($tagEntry.Key)"/&gt;$tagEntry.Key&lt;/label&gt;
+      &lt;label class="tag ${property}" title="$services.localization.render('xe.tag.tooltip', [$tagEntry.Value])&gt;&lt;input type="checkbox" name="${property}" value="$nameMap.get($tagEntry.Key)"/&gt;$tagEntry.Key&lt;/label&gt;
     &lt;/li&gt;
   #end
   &lt;/ol&gt;

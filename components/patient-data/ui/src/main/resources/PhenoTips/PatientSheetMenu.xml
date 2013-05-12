@@ -75,7 +75,7 @@
     #if ($xcontext.action == 'view')
       #if($hasEdit &amp;&amp; !$isReadOnly)
         #set($editaction = $doc.getDefaultEditMode())
-        #documentAction($doc.getURL($editaction, $!languageparams) 'tmActionEdit' $msg.get('core.menu.edit'))
+        #documentAction($doc.getURL($editaction, $!languageparams) 'tmActionEdit' $services.localization.render('core.menu.edit'))
       #end
     #elseif ($xcontext.action == 'edit')
       #documentEditorAction('save', 'Save')
@@ -85,7 +85,7 @@
   #if ($menuconfig.getProperty('enableDeleteTool').value.contains($xcontext.action))
     #set ($canDelete = !$doc.isNew() &amp;&amp; $xwiki.checkAccess($doc.fullName, 'delete'))
     #if ($canDelete)
-      #documentAction($doc.getURL('delete', $!languageparams) 'tmActionDelete' $msg.get('core.menu.delete'))
+      #documentAction($doc.getURL('delete', $!languageparams) 'tmActionDelete' $services.localization.render('core.menu.delete'))
     #end
   #end
 &lt;/div&gt;

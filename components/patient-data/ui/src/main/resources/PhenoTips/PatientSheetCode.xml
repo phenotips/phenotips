@@ -156,7 +156,7 @@
         },
         /* Interaction parameters */
         {
-          confirmationText: "$msg.get('core.recyclebin.confirm')"
+          confirmationText: "$services.localization.render('core.recyclebin.confirm')"
         }
       );
     }
