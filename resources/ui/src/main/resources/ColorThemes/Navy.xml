@@ -1,0 +1,1053 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc>
+  <web>ColorThemes</web>
+  <name>Navy</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>ColorThemes.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1368567085000</creationDate>
+  <date>1368567847000</date>
+  <contentUpdateDate>1368567847000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Navy</title>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <attachment>
+    <filename>header.png</filename>
+    <filesize>9235</filesize>
+    <author>XWiki.Admin</author>
+    <date>1368567847000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>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
+gg==
+</content>
+  </attachment>
+  <object>
+    <class>
+      <name>ColorThemes.ColorThemeClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <backgroundSecondaryColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>backgroundSecondaryColor</name>
+        <number>32</number>
+        <picker>0</picker>
+        <prettyName>Secondary background color (table headers, message boxes, administration boxes)</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </backgroundSecondaryColor>
+      <borderColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>borderColor</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>Border color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </borderColor>
+      <buttonPrimaryBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>buttonPrimaryBackgroundColor</name>
+        <number>29</number>
+        <picker>0</picker>
+        <prettyName>Primary action button background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </buttonPrimaryBackgroundColor>
+      <buttonPrimaryGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>buttonPrimaryGradientColor</name>
+        <number>37</number>
+        <picker>0</picker>
+        <prettyName>Primary action button gradient color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </buttonPrimaryGradientColor>
+      <buttonPrimaryTextColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>buttonPrimaryTextColor</name>
+        <number>28</number>
+        <picker>0</picker>
+        <prettyName>Primary action button text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </buttonPrimaryTextColor>
+      <buttonSecondaryBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>buttonSecondaryBackgroundColor</name>
+        <number>31</number>
+        <picker>0</picker>
+        <prettyName>Secondary action button background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </buttonSecondaryBackgroundColor>
+      <buttonSecondaryGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>buttonSecondaryGradientColor</name>
+        <number>38</number>
+        <picker>0</picker>
+        <prettyName>Secondary action button gradient color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </buttonSecondaryGradientColor>
+      <buttonSecondaryTextColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>buttonSecondaryTextColor</name>
+        <number>30</number>
+        <picker>0</picker>
+        <prettyName>Secondary action button text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </buttonSecondaryTextColor>
+      <fieldGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>fieldGradientColor</name>
+        <number>45</number>
+        <picker>0</picker>
+        <prettyName>Field gradient color (for form elements: input, select, textarea, etc.)</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </fieldGradientColor>
+      <headerBackgroundImage>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>headerBackgroundImage</name>
+        <number>13</number>
+        <picker>0</picker>
+        <prettyName>Banner (header image - the name of an image attached to the theme document)</prettyName>
+        <size>15</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </headerBackgroundImage>
+      <headerBackgroundPosition>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>headerBackgroundPosition</name>
+        <number>14</number>
+        <picker>0</picker>
+        <prettyName>Banner position and repeat (CSS syntax, for example: "left center no-repeat")</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </headerBackgroundPosition>
+      <highlightColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>highlightColor</name>
+        <number>15</number>
+        <picker>0</picker>
+        <prettyName>Background color for highlighted elements</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </highlightColor>
+      <linkColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>linkColor</name>
+        <number>5</number>
+        <picker>0</picker>
+        <prettyName>Link color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </linkColor>
+      <logoImage>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>logoImage</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>Logo (image displayed at the top left corner of the header - the name of an image attached to the theme document; if set, it has priority over the logo configured in the skin and the default logo)</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </logoImage>
+      <menuAddEntryBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuAddEntryBackgroundColor</name>
+        <number>21</number>
+        <picker>0</picker>
+        <prettyName>Add menu entry background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuAddEntryBackgroundColor>
+      <menuAddEntryLinkColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuAddEntryLinkColor</name>
+        <number>20</number>
+        <picker>0</picker>
+        <prettyName>Add menu entry link color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuAddEntryLinkColor>
+      <menuBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuBackgroundColor</name>
+        <number>16</number>
+        <picker>0</picker>
+        <prettyName>Menu background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuBackgroundColor>
+      <menuContentBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuContentBackgroundColor</name>
+        <number>42</number>
+        <picker>0</picker>
+        <prettyName>Content menu background color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuContentBackgroundColor>
+      <menuContentGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuContentGradientColor</name>
+        <number>44</number>
+        <picker>0</picker>
+        <prettyName>Content menu gradient color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuContentGradientColor>
+      <menuContentLinkColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuContentLinkColor</name>
+        <number>43</number>
+        <picker>0</picker>
+        <prettyName>Content menu text color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuContentLinkColor>
+      <menuGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuGradientColor</name>
+        <number>39</number>
+        <picker>0</picker>
+        <prettyName>Menu gradient color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuGradientColor>
+      <menuLinkColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuLinkColor</name>
+        <number>17</number>
+        <picker>0</picker>
+        <prettyName>Menu text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuLinkColor>
+      <menuSelectedEntryBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuSelectedEntryBackgroundColor</name>
+        <number>18</number>
+        <picker>0</picker>
+        <prettyName>Selected menu entry background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuSelectedEntryBackgroundColor>
+      <menuSelectedEntryLinkColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>menuSelectedEntryLinkColor</name>
+        <number>19</number>
+        <picker>0</picker>
+        <prettyName>Selected menu entry text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </menuSelectedEntryLinkColor>
+      <notificationErrorColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>notificationErrorColor</name>
+        <number>36</number>
+        <picker>0</picker>
+        <prettyName>Error notifications color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </notificationErrorColor>
+      <notificationInfoColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>notificationInfoColor</name>
+        <number>33</number>
+        <picker>0</picker>
+        <prettyName>Informational notifications color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </notificationInfoColor>
+      <notificationSuccessColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>notificationSuccessColor</name>
+        <number>34</number>
+        <picker>0</picker>
+        <prettyName>Success notifications color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </notificationSuccessColor>
+      <notificationWarningColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>notificationWarningColor</name>
+        <number>35</number>
+        <picker>0</picker>
+        <prettyName>Warning notifications color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </notificationWarningColor>
+      <pageBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>pageBackgroundColor</name>
+        <number>8</number>
+        <picker>0</picker>
+        <prettyName>Page background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </pageBackgroundColor>
+      <pageBackgroundImage>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>pageBackgroundImage</name>
+        <number>9</number>
+        <picker>0</picker>
+        <prettyName>Page background image (the name of an image attached to the theme document)</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </pageBackgroundImage>
+      <pageBackgroundPosition>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>pageBackgroundPosition</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>Page background image position and repeat (CSS syntax, for example: "left top repeat-x")</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </pageBackgroundPosition>
+      <pageContentBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>pageContentBackgroundColor</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Page content background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </pageContentBackgroundColor>
+      <pageHeaderBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>pageHeaderBackgroundColor</name>
+        <number>12</number>
+        <picker>0</picker>
+        <prettyName>Page header background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </pageHeaderBackgroundColor>
+      <panelBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelBackgroundColor</name>
+        <number>22</number>
+        <picker>0</picker>
+        <prettyName>Panel background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelBackgroundColor>
+      <panelCollapsedBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelCollapsedBackgroundColor</name>
+        <number>26</number>
+        <picker>0</picker>
+        <prettyName>Collapsed panel background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelCollapsedBackgroundColor>
+      <panelCollapsedGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelCollapsedGradientColor</name>
+        <number>41</number>
+        <picker>0</picker>
+        <prettyName>Collapsed panel gradient color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelCollapsedGradientColor>
+      <panelCollapsedTextColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelCollapsedTextColor</name>
+        <number>27</number>
+        <picker>0</picker>
+        <prettyName>Collapsed panel text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelCollapsedTextColor>
+      <panelHeaderBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelHeaderBackgroundColor</name>
+        <number>24</number>
+        <picker>0</picker>
+        <prettyName>Panel header background color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelHeaderBackgroundColor>
+      <panelHeaderGradientColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelHeaderGradientColor</name>
+        <number>40</number>
+        <picker>0</picker>
+        <prettyName>Panel header gradient color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelHeaderGradientColor>
+      <panelHeaderTextColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelHeaderTextColor</name>
+        <number>25</number>
+        <picker>0</picker>
+        <prettyName>Panel header text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelHeaderTextColor>
+      <panelTextColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>panelTextColor</name>
+        <number>23</number>
+        <picker>0</picker>
+        <prettyName>Panel text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </panelTextColor>
+      <submenuContentBackgroundColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>submenuContentBackgroundColor</name>
+        <number>46</number>
+        <picker>0</picker>
+        <prettyName>Content submenu background color</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </submenuContentBackgroundColor>
+      <textColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>textColor</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Text color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </textColor>
+      <textPrimaryColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>textPrimaryColor</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>Informative text color (Modified by, Created by, etc)</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </textPrimaryColor>
+      <textSecondaryColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>textSecondaryColor</name>
+        <number>4</number>
+        <picker>0</picker>
+        <prettyName>Details text color (Comments date, attachments date, etc)</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </textSecondaryColor>
+      <titleColor>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>titleColor</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>Title color</prettyName>
+        <size>7</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </titleColor>
+    </class>
+    <name>ColorThemes.Navy</name>
+    <number>0</number>
+    <className>ColorThemes.ColorThemeClass</className>
+    <guid>5aea0ebe-2b73-4d40-905b-2b67a45d7afa</guid>
+    <property>
+      <backgroundSecondaryColor>#F8EFE0</backgroundSecondaryColor>
+    </property>
+    <property>
+      <borderColor>#E8E8E8</borderColor>
+    </property>
+    <property>
+      <buttonPrimaryBackgroundColor>#222222</buttonPrimaryBackgroundColor>
+    </property>
+    <property>
+      <buttonPrimaryGradientColor/>
+    </property>
+    <property>
+      <buttonPrimaryTextColor>#F3F3F3</buttonPrimaryTextColor>
+    </property>
+    <property>
+      <buttonSecondaryBackgroundColor>#E1E1E1</buttonSecondaryBackgroundColor>
+    </property>
+    <property>
+      <buttonSecondaryGradientColor/>
+    </property>
+    <property>
+      <buttonSecondaryTextColor>#4D5860</buttonSecondaryTextColor>
+    </property>
+    <property>
+      <fieldGradientColor/>
+    </property>
+    <property>
+      <headerBackgroundImage>header.png</headerBackgroundImage>
+    </property>
+    <property>
+      <headerBackgroundPosition/>
+    </property>
+    <property>
+      <highlightColor>#FFEEBB</highlightColor>
+    </property>
+    <property>
+      <linkColor>#D89558</linkColor>
+    </property>
+    <property>
+      <logoImage/>
+    </property>
+    <property>
+      <menuAddEntryBackgroundColor>#4D9244</menuAddEntryBackgroundColor>
+    </property>
+    <property>
+      <menuAddEntryLinkColor>#F3F3F3</menuAddEntryLinkColor>
+    </property>
+    <property>
+      <menuBackgroundColor>#222222</menuBackgroundColor>
+    </property>
+    <property>
+      <menuContentBackgroundColor>#222222</menuContentBackgroundColor>
+    </property>
+    <property>
+      <menuContentGradientColor/>
+    </property>
+    <property>
+      <menuContentLinkColor>#F3F3F3</menuContentLinkColor>
+    </property>
+    <property>
+      <menuGradientColor/>
+    </property>
+    <property>
+      <menuLinkColor>#F3F3F3</menuLinkColor>
+    </property>
+    <property>
+      <menuSelectedEntryBackgroundColor>#EFEFEF</menuSelectedEntryBackgroundColor>
+    </property>
+    <property>
+      <menuSelectedEntryLinkColor>#537088</menuSelectedEntryLinkColor>
+    </property>
+    <property>
+      <notificationErrorColor>#CC0000</notificationErrorColor>
+    </property>
+    <property>
+      <notificationInfoColor/>
+    </property>
+    <property>
+      <notificationSuccessColor/>
+    </property>
+    <property>
+      <notificationWarningColor/>
+    </property>
+    <property>
+      <pageBackgroundColor>#F5F5F5</pageBackgroundColor>
+    </property>
+    <property>
+      <pageBackgroundImage/>
+    </property>
+    <property>
+      <pageBackgroundPosition/>
+    </property>
+    <property>
+      <pageContentBackgroundColor>#FFFFFF</pageContentBackgroundColor>
+    </property>
+    <property>
+      <pageHeaderBackgroundColor>#537088</pageHeaderBackgroundColor>
+    </property>
+    <property>
+      <panelBackgroundColor>#FFFFFF</panelBackgroundColor>
+    </property>
+    <property>
+      <panelCollapsedBackgroundColor>#E1E1E1</panelCollapsedBackgroundColor>
+    </property>
+    <property>
+      <panelCollapsedGradientColor/>
+    </property>
+    <property>
+      <panelCollapsedTextColor>#537088</panelCollapsedTextColor>
+    </property>
+    <property>
+      <panelHeaderBackgroundColor>#537088</panelHeaderBackgroundColor>
+    </property>
+    <property>
+      <panelHeaderGradientColor/>
+    </property>
+    <property>
+      <panelHeaderTextColor>#FFFFFF</panelHeaderTextColor>
+    </property>
+    <property>
+      <panelTextColor>#636B75</panelTextColor>
+    </property>
+    <property>
+      <submenuContentBackgroundColor>#222222</submenuContentBackgroundColor>
+    </property>
+    <property>
+      <textColor>#000000</textColor>
+    </property>
+    <property>
+      <textPrimaryColor>#888888</textPrimaryColor>
+    </property>
+    <property>
+      <textSecondaryColor>#656565</textSecondaryColor>
+    </property>
+    <property>
+      <titleColor>#537088</titleColor>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.XWikiRights</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <allow>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>allow</displayType>
+        <name>allow</name>
+        <number>4</number>
+        <prettyName>Allow/Deny</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </allow>
+      <groups>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>groups</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>Groups</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
+      </groups>
+      <levels>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>1</multiSelect>
+        <name>levels</name>
+        <number>2</number>
+        <prettyName>Levels</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>3</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.LevelsClass</classType>
+      </levels>
+      <users>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>users</name>
+        <number>3</number>
+        <picker>1</picker>
+        <prettyName>Users</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
+      </users>
+    </class>
+    <name>ColorThemes.Navy</name>
+    <number>0</number>
+    <className>XWiki.XWikiRights</className>
+    <guid>227392cb-cf0a-4558-ba92-cdbca3b15f2e</guid>
+    <property>
+      <allow>1</allow>
+    </property>
+    <property>
+      <groups>xwiki:XWiki.XWikiAllGroup,</groups>
+    </property>
+    <property>
+      <levels>view</levels>
+    </property>
+    <property>
+      <users>XWiki.XWikiGuest</users>
+    </property>
+  </object>
+  <content>{{include document="ColorThemes.ColorThemeSheet"/}}</content>
+</xwikidoc>
