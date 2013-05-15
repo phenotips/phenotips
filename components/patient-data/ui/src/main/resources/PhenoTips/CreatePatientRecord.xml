@@ -44,7 +44,7 @@
   <hidden>false</hidden>
   <content>{{groovy}}
 synchronized (System.class) { //really?
-  def crtContext = com.xpn.xwiki.web.Utils.getComponent(org.xwiki.context.Execution.class).getContext().getProperty('xwikicontext')
+  def crtContext = services.component.getInstance(org.xwiki.context.Execution).getContext().getProperty('xwikicontext')
   def request = crtContext.getRequest()
   def token = request.getParameter('form_token');
   def csrf = services.component.getInstance(org.xwiki.csrf.CSRFToken);
@@ -75,7 +75,7 @@ synchronized (System.class) { //really?
    if (targetSpace == null) {
      targetSpace = 'data';
    }
-   def crtMaxIDList = crtContext.getWiki().search("select prop.value from BaseObject obj, LongProperty prop where obj.className = '${className}' and prop.id.id = obj.id and prop.id.name = '${idPropertyName}' order by 1 desc", 1, 0, crtContext)
+   def crtMaxIDList = crtContext.getWiki().store.search('select prop.value from BaseObject obj, LongProperty prop where obj.className = ? and prop.id.id = obj.id and prop.id.name = ? order by 1 desc', 1, 0, [className, idPropertyName], crtContext)
    if (crtMaxIDList.size() &gt; 0 &amp;&amp; crtMaxIDList.get(0) != null) {
      crtMaxID = crtMaxIDList.get(0)
    } else {
@@ -86,7 +86,7 @@ synchronized (System.class) { //really?
    while(!newDoc || !newDoc.isNew()) {
      crtMaxID++
      name = prefix + String.format("%07d", crtMaxID)
-     newDoc = crtContext.getWiki().getDocument(targetSpace + "." + name, crtContext)
+     newDoc = crtContext.getWiki().getDocument(services.model.createDocumentReference('', targetSpace, name), crtContext)
    }
    def createURL = newDoc.getURL('save', "form_token=${services.csrf.token}&amp;template=${templateName}&amp;${className}_0_${idPropertyName}=${crtMaxID}&amp;title=${name}&amp;xredirect=" + crtContext.vcontext.escapetool.url(newDoc.getURL('edit', crtContext)), crtContext)
    crtContext.getResponse().sendRedirect(createURL)
