@@ -89,6 +89,11 @@ synchronized (System.class) { //really?
      newDoc = crtContext.getWiki().getDocument(services.model.createDocumentReference('', targetSpace, name), crtContext)
    }
    def createURL = newDoc.getURL('save', "form_token=${services.csrf.token}&amp;template=${templateName}&amp;${className}_0_${idPropertyName}=${crtMaxID}&amp;title=${name}&amp;xredirect=" + crtContext.vcontext.escapetool.url(newDoc.getURL('edit', crtContext)), crtContext)
+   for (String param : request.getParameterNames()) {
+     if (param != 'doCreate') {
+       createURL += "&amp;${className}_0_${param}=" + request.getParameter(param);
+     }
+   }
    crtContext.getResponse().sendRedirect(createURL)
   }
 }
