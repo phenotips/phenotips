@@ -41,5 +41,6 @@
     <module>patient-tools</module>
     <module>ncbieutils-access-service</module>
     <module>phenotype-mapping-service</module>
+      <module>vcf2solr</module>
   </modules>
 </project>
