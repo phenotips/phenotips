@@ -165,10 +165,14 @@ $response.setContentType('text/csv')##
 #foreach ($field in $displayedFields)
   #if ($codeProperties.contains($field) &amp;&amp; $enabledFields.contains("${field}_code"))
     ${targetClass.get($field).prettyName} (code)##
-    #if ($enabledFields.contains($field)),#end
+    #if ($enabledFields.contains($field) || $enabledFields.contains("${field}_combined")),#end
   #end
   #if ($enabledFields.contains($field))
     ${targetClass.get($field).prettyName}##
+    #if ($enabledFields.contains("${field}_combined")),#end
+  #end
+  #if ($codeProperties.contains($field) &amp;&amp; $enabledFields.contains("${field}_combined"))
+    ${targetClass.get($field).prettyName} (code and name)##
   #end
   #if ($foreach.hasNext)##
     ,##
@@ -192,7 +196,7 @@ ${newline}##
           #end
         #end
         "##
-        #if ($enabledFields.contains($field)),#end
+        #if ($enabledFields.contains($field) || $enabledFields.contains("${field}_combined")),#end
       #end
       #if ($enabledFields.contains($field))
         "##
@@ -206,6 +210,27 @@ ${newline}##
             #end
           #else
             ${services.omim.get($code).name.replace('"', '""')}##
+          #end
+          #if ($foreach.hasNext)
+            ${newline}##
+          #end
+        #end
+        "##
+        #if ($enabledFields.contains("${field}_combined")),#end
+      #end
+      #if ($enabledFields.contains("${field}_combined"))
+        "##
+        #foreach ($code in $!patientObj.getProperty($field).value)
+          #if ($field.endsWith('phenotype'))
+            #if ($code.startsWith('HP:'))[${code}] #end
+            #set ($name = $!{services.hpo.get($code).name})
+            #if ($name)
+              ${name.replace('"', '""')}##
+            #else
+              ${code.replace('"', '""')}##
+            #end
+          #else
+            [${code}] ${services.omim.get($code).name.replace('"', '""')}##
           #end
           #if ($foreach.hasNext)
             ${newline}##

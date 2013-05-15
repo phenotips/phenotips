@@ -70,6 +70,11 @@
           &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code" value="${field.name}_code" #if($valueList.contains("${field.name}_code") || true) checked="checked" #end /&gt;
           ${field.prettyName} (ontology term id)
         &lt;/li&gt;
+        &lt;li&gt;
+          &lt;label for="${targetFieldName}_${field.name}_combined"&gt;
+          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_combined" value="${field.name}_combined" #if($valueList.contains("${field.name}_combined") || true) checked="checked" #end /&gt;
+          ${field.prettyName} (ontology term id and term name)
+        &lt;/li&gt;
         #end
         #end
       #end
