@@ -194,7 +194,7 @@ ${newline}##
         "##
         #if ($enabledFields.contains($field)),#end
       #end
-      #if ($codeProperties.contains($field) &amp;&amp; $enabledFields.contains($field))
+      #if ($enabledFields.contains($field))
         "##
         #foreach ($code in $!patientObj.getProperty($field).value)
           #if ($field.endsWith('phenotype'))
