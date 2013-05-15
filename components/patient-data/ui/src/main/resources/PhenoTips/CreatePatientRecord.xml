@@ -46,6 +46,13 @@
 synchronized (System.class) { //really?
   def crtContext = com.xpn.xwiki.web.Utils.getComponent(org.xwiki.context.Execution.class).getContext().getProperty('xwikicontext')
   def request = crtContext.getRequest()
+  def token = request.getParameter('form_token');
+  def csrf = services.component.getInstance(org.xwiki.csrf.CSRFToken);
+  if (!csrf.isTokenValid(token)) {
+    crtContext.getResponse().sendRedirect(csrf.getResubmissionURL());
+    return false;
+  }
+
   if (request.get('doCreate') == '1') {
    def crtMaxID
    def className = request.get('className')
@@ -81,7 +88,7 @@ synchronized (System.class) { //really?
      name = prefix + String.format("%07d", crtMaxID)
      newDoc = crtContext.getWiki().getDocument(targetSpace + "." + name, crtContext)
    }
-   def createURL = newDoc.getURL('save', "form_token=${request.get('form_token')}&amp;template=${templateName}&amp;${className}_0_${idPropertyName}=${crtMaxID}&amp;title=${name}&amp;xredirect=" + crtContext.vcontext.escapetool.url(newDoc.getURL('edit', crtContext)), crtContext)
+   def createURL = newDoc.getURL('save', "form_token=${services.csrf.token}&amp;template=${templateName}&amp;${className}_0_${idPropertyName}=${crtMaxID}&amp;title=${name}&amp;xredirect=" + crtContext.vcontext.escapetool.url(newDoc.getURL('edit', crtContext)), crtContext)
    crtContext.getResponse().sendRedirect(createURL)
   }
 }
