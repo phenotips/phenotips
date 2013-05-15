@@ -49,10 +49,25 @@ synchronized (System.class) { //really?
   if (request.get('doCreate') == '1') {
    def crtMaxID
    def className = request.get('className')
+   if (className == null) {
+     className = 'PhenoTips.PatientClass';
+   }
    def templateName = request.get('classTemplate')
-   def idPropertyName = request.get('idField')//'identifier'
+   if (templateName == null) {
+     templateName = 'PhenoTips.PatientTemplate';
+   }
+   def idPropertyName = request.get('idField')
+   if (idPropertyName == null) {
+     idPropertyName = 'identifier';
+   }
    def prefix = request.get('idPrefix')
+   if (prefix == null) {
+     prefix = 'P';
+   }
    def targetSpace = request.get('space')
+   if (targetSpace == null) {
+     targetSpace = 'data';
+   }
    def crtMaxIDList = crtContext.getWiki().search("select prop.value from BaseObject obj, LongProperty prop where obj.className = '${className}' and prop.id.id = obj.id and prop.id.name = '${idPropertyName}' order by 1 desc", 1, 0, crtContext)
    if (crtMaxIDList.size() &gt; 0 &amp;&amp; crtMaxIDList.get(0) != null) {
      crtMaxID = crtMaxIDList.get(0)
