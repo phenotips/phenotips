@@ -155,7 +155,7 @@ $response.setContentType('text/csv')##
 #foreach ($field in $activeFields)
   #if ($enabledFields.contains($field))
     #set ($discard = $displayedFields.add($field))
-  #elseif ($codeProperties.contains($field) &amp;&amp; $enabledFields.contains("${field}_code"))
+  #elseif ($codeProperties.contains($field) &amp;&amp; ($enabledFields.contains("${field}_code") || $enabledFields.contains("${field}_combined")))
     #set ($discard = $displayedFields.add($field))
   #end
 #end
