@@ -861,10 +861,10 @@ gg==
       <headerBackgroundPosition/>
     </property>
     <property>
-      <highlightColor>#FFEEBB</highlightColor>
+      <highlightColor>#DEEEFA</highlightColor>
     </property>
     <property>
-      <linkColor>#D89558</linkColor>
+      <linkColor>#1A4C91</linkColor>
     </property>
     <property>
       <logoImage/>
@@ -963,7 +963,7 @@ gg==
       <textSecondaryColor>#656565</textSecondaryColor>
     </property>
     <property>
-      <titleColor>#537088</titleColor>
+      <titleColor>#043574</titleColor>
     </property>
   </object>
   <object>
