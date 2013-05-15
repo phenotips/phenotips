@@ -42,7 +42,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{velocity wiki="false"}}
+  <content>{{velocity wiki="true"}}{{{
 #set ($targetSpace = "$!{request.space}")
 #if (!$targetSpace || $targetSpace == 'PhenoTips')
   #break
@@ -147,6 +147,8 @@
 #end
 $response.addHeader("Content-disposition", "attachment; filename=phenotips_${xwiki.formatDate($util.date, 'yyyy-MM-dd_HH-mm')}.csv")##
 $response.setContentType('text/csv')##
+#set ($newline = ' ')
+#set ($newline = "${newline.charAt(0).toChars(13)[0]}${newline.charAt(0).toChars(10)[0]}")
 #set ($codeProperties = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
 #set ($enabledFields = $request.getParameterValues('columns'))
 #set ($displayedFields = [])
@@ -172,7 +174,7 @@ $response.setContentType('text/csv')##
     ,##
   #end
 #end
-
+${newline}##
 #foreach ($patient in $patients)
   #set ($patientDoc = $xwiki.getDocument($patient))
   #set ($patientObj = $patientDoc.getObject($targetClassName))
@@ -186,7 +188,7 @@ $response.setContentType('text/csv')##
         #foreach ($code in $!patientObj.getProperty($field).value)
           $code##
           #if ($foreach.hasNext)
-
+            ${newline}##
           #end
         #end
         "##
@@ -206,7 +208,7 @@ $response.setContentType('text/csv')##
             ${services.omim.get($code).name.replace('"', '""')}##
           #end
           #if ($foreach.hasNext)
-
+            ${newline}##
           #end
         #end
         "##
@@ -225,7 +227,7 @@ $response.setContentType('text/csv')##
         #foreach ($line in $value)
           $!{line.replace('"', '""')}##
           #if ($foreach.hasNext)
-
+            ${newline}##
           #end
         #end
         "##
@@ -242,7 +244,8 @@ $response.setContentType('text/csv')##
       ,##
     #end
   #end
-
+  ${newline}##
 #end
+}}}
 {{/velocity}}</content>
 </xwikidoc>
