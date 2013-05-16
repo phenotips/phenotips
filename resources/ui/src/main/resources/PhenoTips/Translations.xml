@@ -55,7 +55,6 @@ patient.livetable.health_card=Provincial health card #
 patient.livetable.relative_of=Relative of
 patient.livetable._actions=
 patient.livetable.emptyvalue=-
-
 patient.livetable.p_id=Identifier
 patient.livetable.congenital=Congenital
 patient.livetable.sex=Sex
@@ -65,6 +64,14 @@ patient.livetable.onset=Onset
 patient.livetable.phenotype=Phenotype
 patient.livetable.omim_id=Disorder
 patient.livetable.external_id=Identifier
+patient.livetable.mode_of_inheritance=Mode of inheritance
+patient.livetable.unaffected=This patient is clinically normal
+patient.livetable.exam_date=Exam Date
+patient.livetable.relative=Relative
+patient.livetable.consanguinity=Consanguinity
+patient.livetable.omim_id=OMIM disorder
+patient.livetable.gestation=Gestation at delivery (weeks)
+
 
 admin.phenotipscode=PhenoTips application code
 admin.dbconfig=Database and form configuration
