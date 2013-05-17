@@ -57,10 +57,10 @@ public class VCFService extends AbstractSolrScriptService
      * @param fields a map of variant documents
      * @return {@code 0} if the indexing succeeded, {@code 1} if writing to the Solr server failed,
      */
-    public int index(Map<String, TermData> fields) {
+    public int index(Map<String, VariantData> fields) {
 
         Collection<SolrInputDocument> allTerms = new HashSet<SolrInputDocument>();
-        for (Map.Entry<String, TermData> item : fields.entrySet()) {
+        for (Map.Entry<String, VariantData> item : fields.entrySet()) {
 
             SolrInputDocument doc = new SolrInputDocument();
             for (Map.Entry<String, Collection<String>> property : item.getValue().entrySet()) {

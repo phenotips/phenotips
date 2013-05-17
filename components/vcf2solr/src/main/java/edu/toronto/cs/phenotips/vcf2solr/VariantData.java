@@ -28,7 +28,7 @@ import java.util.Collection;
  * Used to store term values for a document.
  * @version $Id$
  */
-public class TermData  extends SetMap<String, String>
+public class VariantData extends SetMap<String, String>
 {
 
     /** Solr ID fields. */
@@ -58,6 +58,9 @@ public class TermData  extends SetMap<String, String>
     /** INFO fields. */
     public static final String INFO = "info";
 
+    /** Reserved info fields. */
+    public static final String[] INFO_RESERVED  = {"AA", "AC", "AF", "AN", "BQ", "CIGAR",
+        "DB", "DP", "END", "H2", "H3", "MQ", "MQ0", "NS", "SB", "SOMATIC", "VALIDATED", "100G"};
     /** Id of opinion. */
     private String id;
 

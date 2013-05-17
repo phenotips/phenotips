@@ -19,6 +19,7 @@
  */
 package edu.toronto.cs.phenotips.vcf2solr;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.xwiki.component.phase.InitializationException;
 
 import java.io.BufferedReader;
@@ -34,10 +35,10 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class SolrCVFUploader
+public class SolrVCFUploader
 {
 
-    /** Main field separator */
+    /** Main field separator. */
     private static final String FIELD_SEPARATOR = "\t";
 
     /** In case document don't respect strict 4.1 formant and use spaces. Not used currently. */
@@ -92,18 +93,17 @@ public class SolrCVFUploader
 
         BufferedReader in = null;
 
-        Map<String, TermData> terms = new HashMap<String, TermData>();
+        Map<String, VariantData> terms = new HashMap<String, VariantData>();
 
         try {
 
             in = new BufferedReader(new FileReader(input));
             String line;
 
-
             while ((line = in.readLine()) != null) {
-                TermData termData = processLine(line);
-                if (termData != null) {
-                    terms.put(termData.getId(), termData);
+                VariantData variantData = processLine(line);
+                if (variantData != null && variantData.size() > 0) {
+                    terms.put(variantData.getId(), variantData);
                 }
             }
 
@@ -121,39 +121,41 @@ public class SolrCVFUploader
     /**
      * Parse a line and save field values.
      * @param line input line
-     * @return a TermData structure containing all values
+     * @return a VariantData structure containing all values
      */
-    private TermData processLine(String line) {
-        TermData termData = new TermData();
+    private VariantData processLine(String line) {
+        VariantData variantData = new VariantData();
         if (!ignoreLine(line)) {
 
             String[] unprocessedFields = line.split(FIELD_SEPARATOR);
 
-            parseSingleValueField(unprocessedFields[0], TermData.CHROM, termData);
-            parseSingleValueField(unprocessedFields[1], TermData.POS, termData);
-            parseMultiValueField(unprocessedFields[2], TermData.ID, MULTI_VALUE_SEPARATOR, termData);
-            parseSingleValueField(unprocessedFields[3], TermData.REF, termData);
-            parseMultiValueField(unprocessedFields[4], TermData.ALT, ALT_VALUE_SEPARATOR, termData);
-            parseSingleValueField(unprocessedFields[5], TermData.QUAL, termData);
-            parseSingleValueField(unprocessedFields[6], TermData.FILTER, termData);
-            parseInfoValueFields(unprocessedFields[7], TermData.INFO, MULTI_VALUE_SEPARATOR, termData);
-
             //generate some random id
-            termData.addTo(TermData.ID_FIELD_NAME, unprocessedFields[0] + unprocessedFields[1]);
+            variantData.addTo(VariantData.ID_FIELD_NAME, unprocessedFields[0] + unprocessedFields[1]);
+
+            parseSingleValueField(unprocessedFields[0], VariantData.CHROM, variantData);
+            parseSingleValueField(unprocessedFields[1], VariantData.POS, variantData);
+            parseMultiValueField(unprocessedFields[2], VariantData.ID, MULTI_VALUE_SEPARATOR, variantData);
+            parseSingleValueField(unprocessedFields[3], VariantData.REF, variantData);
+            parseMultiValueField(unprocessedFields[4], VariantData.ALT, ALT_VALUE_SEPARATOR, variantData);
+            parseSingleValueField(unprocessedFields[5], VariantData.QUAL, variantData);
+            parseSingleValueField(unprocessedFields[6], VariantData.FILTER, variantData);
+            parseInfoValueFields(unprocessedFields[7], VariantData.INFO, MULTI_VALUE_SEPARATOR, variantData);
+
+
         }
 
-        return termData;
+        return variantData;
     }
 
     /**
      * Save value for a single valued field.
      * @param value     value
      * @param key       key
-     * @param termData  Term data structure
+     * @param variantData  Term data structure
      */
-    private void parseSingleValueField(String value, String key, TermData termData) {
+    private void parseSingleValueField(String value, String key, VariantData variantData) {
 
-        termData.addTo(key, value);
+        variantData.addTo(key, value);
     }
 
     /**
@@ -161,14 +163,14 @@ public class SolrCVFUploader
      * @param value     the value
      * @param key       key
      * @param separator separator for multiple values
-     * @param termData  term data structure for storing data
+     * @param variantData  term data structure for storing data
      */
-    private void parseMultiValueField(String value, String key, String separator, TermData termData) {
+    private void parseMultiValueField(String value, String key, String separator, VariantData variantData) {
         String[] terms = value.split(separator);
 
         List<String> multipleValues = Arrays.asList(terms);
 
-        termData.addTo(key, multipleValues);
+        variantData.addTo(key, multipleValues);
     }
 
     /**
@@ -176,9 +178,9 @@ public class SolrCVFUploader
      * @param value     the value
      * @param key       key
      * @param separator separator for multiple values
-     * @param termData  term data structure for storing data
+     * @param variantData  term data structure for storing data
      */
-    private void parseInfoValueFields(String value, String key, String separator, TermData termData) {
+    private void parseInfoValueFields(String value, String key, String separator, VariantData variantData) {
         String[] terms = value.split(separator);
 
         for (String term: terms) {
@@ -186,11 +188,13 @@ public class SolrCVFUploader
 
             String specificKey = key + INFO_FIELD_INNER_SEPARATOR + innerTerms[0];
 
-            if (innerTerms.length > 1) {
-                //parseSingleValueField(innerTerms[1], specificKey, termData);
-                parseMultiValueField(innerTerms[1], specificKey, ALT_VALUE_SEPARATOR, termData);
-            } else {
-                parseSingleValueField(INFO_FIELD_DEFAULT_VALUE, specificKey, termData);
+            //compare to the list of reserved value and only index those fields that are in the reserved words
+            if (ArrayUtils.contains(VariantData.INFO_RESERVED, innerTerms[0])) {
+                if (innerTerms.length > 1) {
+                    parseMultiValueField(innerTerms[1], specificKey, ALT_VALUE_SEPARATOR, variantData);
+                } else {
+                    parseSingleValueField(INFO_FIELD_DEFAULT_VALUE, specificKey, variantData);
+                }
             }
         }
     }

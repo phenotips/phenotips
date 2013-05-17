@@ -49,6 +49,10 @@
       </analyzer>
     </fieldType>
 
+    <!-- Trie fields improve performance of ranged querries. Smaller precisionStep should increase performance even more.-->
+    <fieldType name="tint" class="solr.TrieIntField" precisionStep="4" positionIncrementGap="0"/>
+    <fieldType name="tfloat" class="solr.TrieFloatField" precisionStep="4" positionIncrementGap="0"/>
+
     <!-- A general text field: it tokenizes with StandardTokenizer,
          removes stop words from case-insensitive "stopwords.txt,
          protects keywords defined in "protwords.txt", down cases,
@@ -167,15 +171,14 @@
     <field name="variant_id" type="string" indexed="true" stored="true" required="true"/>
     <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="true"/>
     <field name="chrom" type="string" indexed="true" stored="true" required="true"/>
-    <field name="pos" type="string" indexed="true" stored="true" required="true"/>
-
+    <field name="pos" type="tint" indexed="true" stored="true" required="true"/>
     <field name="ref" type="string" indexed="true" stored="true" required="true"/>
     <field name="alt" type="string" indexed="true" stored="true" required="true" multiValued="true"/>
-    <field name="qual" type="string" indexed="true" stored="true" required="true"/>
+    <!-- According the 4.1 specification, a floating point value for qual is legal -->
+    <field name="qual" type="tfloat" indexed="true" stored="true" required="true"/>
     <field name="filter" type="string" indexed="true" stored="true" required="true" multiValued="true"/>
 
     <dynamicField name="info_*" type="string" indexed="true" stored="true" multiValued="true" />
-
     <dynamicField name="*" type="ignored" multiValued="true" />
   </fields>
 
@@ -184,13 +187,6 @@
     -->
   <uniqueKey>variant_id</uniqueKey>
 
-  <copyField source="name" dest="nameSort"/>
-  <copyField source="name" dest="nameSpell"/>
-  <copyField source="name" dest="nameExact"/>
-  <copyField source="name" dest="namePrefix"/>
-  <copyField source="synonym" dest="synonymSpell"/>
-  <copyField source="synonym" dest="synonymExact"/>
-  <copyField source="synonym" dest="synonymPrefix"/>
   <copyField source="*" dest="text"/>
   <copyField source="*" dest="phonetic"/>
   <copyField source="*" dest="textSpell"/>

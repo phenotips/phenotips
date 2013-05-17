@@ -73,7 +73,7 @@ public final class Main
 
             File input = new File(inputLocation);
 
-            SolrCVFUploader solrVCFUploader = new SolrCVFUploader();
+            SolrVCFUploader solrVCFUploader = new SolrVCFUploader();
 
             solrVCFUploader.processAndIndex(input);
 
