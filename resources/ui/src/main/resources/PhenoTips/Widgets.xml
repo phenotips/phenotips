@@ -586,29 +586,33 @@
       if (!this.options.resultCategory || !category.hasChildNodes()) {
         category = '';
       }
-      // The New Code
+      
       var suggestValue = _getResultFieldValue(results[i], source.resultValue || this.options.resultValue);
       var currFieldValue = this.sInput;
       var curDist = this.findDistance(suggestValue,currFieldValue);
       if (curDist &gt;= 5){
-	var synonym = _getResultFieldValueAsArray(results[i], source.resultSynonym || this.options.resultSynonym);
-	var minDist = this.findDistance(synonym[0],currFieldValue);
-	var matchSynonym = synonym[0];
-	for (var k=1; k&lt;synonym.length; k++){
-	    var dist = this.findDistance(synonym[k],currFieldValue);
-	    if (dist &lt; minDist){
-		minDist = dist;
-		matchSynonym = synonym[k]; 
-	    }
-	 }
+        var synonym = _getResultFieldValueAsArray(results[i], source.resultSynonym || this.options.resultSynonym);
+        var minDist = this.findDistance(synonym[0],currFieldValue);
+        var matchSynonym = synonym[0];
+        for (var k=1; k&lt;synonym.length; k++){
+              var dist = this.findDistance(synonym[k],currFieldValue);
+              if (dist &lt; minDist){
+                minDist = dist;
+                matchSynonym = synonym[k]; 
+              }
+         }
       }
-      else{matchSynonym=""}
-      if(curDist&lt;=minDist){matchSynonym="";}		
+      else{
+         matchSynonym="";
+      }
+      if(curDist&lt;=minDist){
+         matchSynonym="";
+      }        
       
       aSuggestions.push({
         'id': _getResultFieldValue(results[i], source.resultId || this.options.resultId),
         'value': _getResultFieldValue(results[i], source.resultValue || this.options.resultValue),
-	'synonym': matchSynonym,
+        'synonym': matchSynonym,
         'info'    : info,
         'category': category
       });
@@ -622,46 +626,45 @@
    * Compute the Levenshtein distance between two strings
    */
     findDistance: function(str1, str2) {
-	var cost;
-	
-	// get values
-	var a = str1;
-	var m = a.length;
+      var cost;
+      // get values
+      var a = str1;
+      var m = a.length;
 
-	//n is the length of currFieldValue
-	var b = str2;
-	var n = b.length;
-	
-	//if equal 
-	if (a==b){return 0;}
+      //n is the length of currFieldValue
+      var b = str2;
+      var n = b.length;
+    
+      //if equal 
+      if (a==b){return 0;}
 
-	// make sure a.length >= b.length 
-	if (m &lt; n) {
-	   var c=a;a=b;b=c;
-	   var o=m;m=n;n=o;
-	}
-	
-	var r = new Array();
-	r[0] = new Array();
-	for (var c = 0; c &lt; n+1; c++) {
-	    r[0][c] = c;
-	}
-	
-	for (var i = 1; i &lt; n+1; i++) {
-	    r[i] = new Array();
-	    r[i][0] = i;
-	    for (var j = 1; j &lt; n+1; j++) {
-	         cost = (a.charAt(i-1) == b.charAt(j-1))? 0: 1;
-                 r[i][j] = this.minimator(r[i-1][j]+1,r[i][j-1]+1,r[i-1][j-1]+cost);
-	    }
-	}
-	return r[n][n];
-},
+      // make sure a.length >= b.length 
+      if (m &lt; n) {
+        var c=a;a=b;b=c;
+        var o=m;m=n;n=o;
+      }
+    
+      var r = new Array();
+      r[0] = new Array();
+      for (var c = 0; c &lt; n+1; c++) {
+         r[0][c] = c;
+      }
+    
+      for (var i = 1; i &lt; n+1; i++) {
+         r[i] = new Array();
+         r[i][0] = i;
+         for (var j = 1; j &lt; n+1; j++) {
+            cost = (a.charAt(i-1) == b.charAt(j-1))? 0: 1;
+            r[i][j] = this.minimator(r[i-1][j]+1,r[i][j-1]+1,r[i-1][j-1]+cost);
+         }
+      }
+    return r[n][n];
+  },
 
   minimator: function(x,y,z) {
       if (x &lt;= y &amp; x &lt;= z) {return x};
       if (y &lt;= x &amp; y &lt;= z) {return y};
-	return z;
+    return z;
    },
 
   /**
@@ -931,7 +934,7 @@
     }
     displayNode.insert(new Element('span', {'class':'suggestValue'}).update(data.value));
     if(data.synonym != ""){
-          displayNode.insert(new Element('span', {'class':'suggestSynonym'}).update(" Matches Synonym:"+data.synonym));
+        displayNode.insert(new Element('span', {'class':'suggestSynonym'}).update(" Matches Synonym:"+data.synonym));
     }
     displayNode.insert(new Element('div', {'class':'suggestInfo'}).update(data.info));
 
