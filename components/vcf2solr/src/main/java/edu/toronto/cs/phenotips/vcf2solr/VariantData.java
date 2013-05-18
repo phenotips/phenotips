@@ -22,6 +22,7 @@ package edu.toronto.cs.phenotips.vcf2solr;
 import edu.toronto.cs.phenotips.obo2solr.maps.SetMap;
 
 import java.util.Collection;
+import java.util.UUID;
 
 
 /**
@@ -32,7 +33,7 @@ public class VariantData extends SetMap<String, String>
 {
 
     /** Solr ID fields. */
-    public static final String ID_FIELD_NAME = "variant_id";
+    public static final String UUID_FIELD = "uuid";
 
     /** CHROM fields. */
     public static final String CHROM = "chrom";
@@ -65,6 +66,17 @@ public class VariantData extends SetMap<String, String>
     private String id;
 
     /**
+     * Add UUID to the variant data, sine the variant id cannot be used as a primary key.
+     * @return   A randomly generated UUID
+     */
+    public UUID addUUID() {
+        UUID uuid = UUID.randomUUID();
+        addTo(UUID_FIELD, uuid.toString());
+
+        return uuid;
+    }
+
+    /**
      * Add field to Term Data.
      * @param key           key
      * @param value         value
@@ -73,9 +85,6 @@ public class VariantData extends SetMap<String, String>
     @Override
     public boolean addTo(String key, String value)
     {
-        if (ID_FIELD_NAME.equals(key)) {
-            this.id = value;
-        }
         return super.addTo(key, value);
     }
 

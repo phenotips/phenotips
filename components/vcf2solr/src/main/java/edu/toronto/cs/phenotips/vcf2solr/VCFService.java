@@ -29,6 +29,7 @@ import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,27 +55,28 @@ public class VCFService extends AbstractSolrScriptService
 
     /**
      * Index a map of variant documents to Solr.
-     * @param fields a map of variant documents
+     * @param variantDataList a list of variant data objects
      * @return {@code 0} if the indexing succeeded, {@code 1} if writing to the Solr server failed,
      */
-    public int index(Map<String, VariantData> fields) {
+    public int index(List<VariantData> variantDataList) {
 
-        Collection<SolrInputDocument> allTerms = new HashSet<SolrInputDocument>();
-        for (Map.Entry<String, VariantData> item : fields.entrySet()) {
+        Collection<SolrInputDocument> allVariants = new HashSet<SolrInputDocument>();
+
+        for (VariantData item : variantDataList) {
 
             SolrInputDocument doc = new SolrInputDocument();
-            for (Map.Entry<String, Collection<String>> property : item.getValue().entrySet()) {
+
+            for (Map.Entry<String, Collection<String>> property : item.entrySet()) {
                 String name = property.getKey();
                 for (String value : property.getValue()) {
                     doc.addField(name, value);
                 }
             }
-            allTerms.add(doc);
+            allVariants.add(doc);
         }
         try {
-            this.server.add(allTerms);
+            this.server.add(allVariants);
             this.server.commit();
-            this.cache.removeAll();
             return 0;
         } catch (SolrServerException ex) {
             this.logger.warn("Failed to index document: {}", ex.getMessage());

@@ -19,7 +19,6 @@
  */
 package edu.toronto.cs.phenotips.vcf2solr;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.xwiki.component.phase.InitializationException;
 
 import java.io.BufferedReader;
@@ -27,10 +26,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Scanner;
 
 /**
  * @version $Id$
@@ -38,39 +36,19 @@ import java.util.Map;
 public class SolrVCFUploader
 {
 
-    /** Main field separator. */
-    private static final String FIELD_SEPARATOR = "\t";
-
-    /** In case document don't respect strict 4.1 formant and use spaces. Not used currently. */
-    private static final String FIELD_SPACE_SEPARATOR = "[ ] *";
-
     /** Prefix for medatada rows. */
     private static final String METADATA_PREFIX = "##";
 
     /** Prefix for header rows. */
     private static final String HEADER_PREFIX = "#";
 
-    /** Default field value. */
-    private static final String DEFAULT_FIELD_VALUE = ".";
-
-    /** Separator for multi valued fields. */
-    private static final String MULTI_VALUE_SEPARATOR = ";";
-
-    /** Separator for ALT valued fields. */
-    private static final String ALT_VALUE_SEPARATOR = ",";
-
-    /** Separator for INFO multi valued fields. */
-    private static final String INFO_FIELD_VALUE_SEPARATOR = "=";
-
-    /** Separator for INFO Solr field names. */
-    private static final String INFO_FIELD_INNER_SEPARATOR = "_";
-
-    /** Default value for INFO Solr document fields. */
-    private static final String INFO_FIELD_DEFAULT_VALUE = "1";
-
     /** Interface to Solr. */
     private VCFService vcfSolrService;
 
+    /**
+     * The list with the parsed columns.
+     */
+    private List<VCFColumn> columns = new ArrayList<VCFColumn>();
     /*
         Initialize service
      */
@@ -93,7 +71,7 @@ public class SolrVCFUploader
 
         BufferedReader in = null;
 
-        Map<String, VariantData> terms = new HashMap<String, VariantData>();
+        List<VariantData> variants = new ArrayList<VariantData>();
 
         try {
 
@@ -103,11 +81,12 @@ public class SolrVCFUploader
             while ((line = in.readLine()) != null) {
                 VariantData variantData = processLine(line);
                 if (variantData != null && variantData.size() > 0) {
-                    terms.put(variantData.getId(), variantData);
+                    variantData.addUUID();
+                    variants.add(variantData);
                 }
             }
 
-            vcfSolrService.index(terms);
+            vcfSolrService.index(variants);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -124,92 +103,108 @@ public class SolrVCFUploader
      * @return a VariantData structure containing all values
      */
     private VariantData processLine(String line) {
-        VariantData variantData = new VariantData();
+
+        VariantData variantData = null;
+
         if (!ignoreLine(line)) {
 
-            String[] unprocessedFields = line.split(FIELD_SEPARATOR);
-
-            //generate some random id
-            variantData.addTo(VariantData.ID_FIELD_NAME, unprocessedFields[0] + unprocessedFields[1]);
-
-            parseSingleValueField(unprocessedFields[0], VariantData.CHROM, variantData);
-            parseSingleValueField(unprocessedFields[1], VariantData.POS, variantData);
-            parseMultiValueField(unprocessedFields[2], VariantData.ID, MULTI_VALUE_SEPARATOR, variantData);
-            parseSingleValueField(unprocessedFields[3], VariantData.REF, variantData);
-            parseMultiValueField(unprocessedFields[4], VariantData.ALT, ALT_VALUE_SEPARATOR, variantData);
-            parseSingleValueField(unprocessedFields[5], VariantData.QUAL, variantData);
-            parseSingleValueField(unprocessedFields[6], VariantData.FILTER, variantData);
-            parseInfoValueFields(unprocessedFields[7], VariantData.INFO, MULTI_VALUE_SEPARATOR, variantData);
-
-
+            if (headerLine(line)) {
+                columns = extractColumns(line);
+            } else {
+                variantData = extractValues(line);
+            }
         }
 
         return variantData;
     }
 
     /**
-     * Save value for a single valued field.
-     * @param value     value
-     * @param key       key
-     * @param variantData  Term data structure
+     * Extract the columns and stored them into a list.
+     *
+     * @param line  The current row in the document.
+     * @return      The list of columns that match the know column names.
      */
-    private void parseSingleValueField(String value, String key, VariantData variantData) {
+    private List<VCFColumn> extractColumns(String line) {
 
-        variantData.addTo(key, value);
-    }
+        /* Disregard the leading # */
+        Scanner scanner = new Scanner(line.substring(1));
 
-    /**
-     * Parse and save values for multiple valued fields.
-     * @param value     the value
-     * @param key       key
-     * @param separator separator for multiple values
-     * @param variantData  term data structure for storing data
-     */
-    private void parseMultiValueField(String value, String key, String separator, VariantData variantData) {
-        String[] terms = value.split(separator);
+        /* Parse columns and store them to an array */
+        while (scanner.hasNext()) {
+            String columnToken = scanner.next();
+            VCFColumn column = getColumn(columnToken);
 
-        List<String> multipleValues = Arrays.asList(terms);
-
-        variantData.addTo(key, multipleValues);
-    }
-
-    /**
-     * Parse and save values for info   fields.
-     * @param value     the value
-     * @param key       key
-     * @param separator separator for multiple values
-     * @param variantData  term data structure for storing data
-     */
-    private void parseInfoValueFields(String value, String key, String separator, VariantData variantData) {
-        String[] terms = value.split(separator);
-
-        for (String term: terms) {
-            String[] innerTerms = term.split(INFO_FIELD_VALUE_SEPARATOR);
-
-            String specificKey = key + INFO_FIELD_INNER_SEPARATOR + innerTerms[0];
-
-            //compare to the list of reserved value and only index those fields that are in the reserved words
-            if (ArrayUtils.contains(VariantData.INFO_RESERVED, innerTerms[0])) {
-                if (innerTerms.length > 1) {
-                    parseMultiValueField(innerTerms[1], specificKey, ALT_VALUE_SEPARATOR, variantData);
-                } else {
-                    parseSingleValueField(INFO_FIELD_DEFAULT_VALUE, specificKey, variantData);
-                }
+            if (column != null) {
+                columns.add(column);
             }
         }
+
+        return columns;
     }
 
     /**
-     * Determine if the line should be ignore.
+     * Match the current column token to the know column names and return the suitable enum. If a match is not
+     * found return null.
+     * @param token     The current column token.
+     * @return          The corresponding column enum, or null if a match is not possible.
+     */
+    private VCFColumn getColumn(String token) {
+        String lkToken = token.toLowerCase();
+
+        VCFColumn matchedColumn = null;
+
+        for (VCFColumn column : VCFColumn.values()) {
+            if (column.getName().equals(lkToken)) {
+                matchedColumn = column;
+            }
+        }
+
+        return matchedColumn;
+    }
+
+    /**
+     * Extract the values for the current vcf row. The columns parsed beforehand are used to determine the order.
+     * @param line  The current line in the document.
+     * @return      A VariantData object containing the column value information extracted.
+     */
+    private VariantData extractValues(String line) {
+
+        VariantData variantData = new VariantData();
+
+        Scanner scanner = new Scanner(line);
+
+        int index = 0;
+
+        while (scanner.hasNext() && index < columns.size()) {
+            String token = scanner.next();
+            VCFColumn column = columns.get(index);
+            variantData = column.process(token, variantData);
+            index++;
+        }
+        return variantData;
+    }
+
+    /**
+     * Determine if the line should be ignored.
      *
-     * Ingore metadata and header, since the columns we want are mandatory.
+     * Ingore metadata since the columns we want are mandatory.
      * @param line      The line
      * @return          true if line should be ignored, false otherwise.
      */
     private boolean ignoreLine(String line) {
-        return (line.startsWith(METADATA_PREFIX) || line.startsWith(HEADER_PREFIX));
+        return line.startsWith(METADATA_PREFIX);
     }
 
 
+    /**
+     * Determine if the line should be ignored.
+     *
+     * Ingore metadata since the columns we want are mandatory.
+     * @param line      The line
+     * @return          true if line should be ignored, false otherwise.
+     */
+    private boolean headerLine(String line) {
+        return line.startsWith(HEADER_PREFIX);
+    }
 
 }
