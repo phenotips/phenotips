@@ -23,6 +23,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Encapsulte the processing logic for VCF column values.
@@ -32,65 +33,39 @@ import java.util.List;
 public enum VCFColumn {
 
     /** CHROM column.  */
-    CHROM("chrom") {
-        @Override
-        public VariantData process(String fieldValue, VariantData variantData) {
-            return processSingleValueField(fieldValue, getName(), variantData);
-        }
-    },
+    CHROM,
     /** POS column.  */
-    POS("pos") {
-        @Override
-        public VariantData process(String fieldValue, VariantData variantData) {
-            return processSingleValueField(fieldValue, getName(), variantData);
-        }
-    },
-    /** ID column.  */
-    ID("id") {
-        @Override
-        public VariantData process(String fieldValue, VariantData variantData) {
-            return processMultiValueField(fieldValue, getName(), MULTI_VALUE_SEPARATOR, variantData);
-        }
-    },
+    POS,
     /** REF column.  */
-    REF("ref") {
+    REF,
+    /** QUAL column.  */
+    QUAL,
+    /** FILTER column.  */
+    FILTER,
+    /** ID column.  */
+    ID {
         @Override
         public VariantData process(String fieldValue, VariantData variantData) {
-            return processSingleValueField(fieldValue, getName(), variantData);
+            String name = name().toLowerCase(Locale.ROOT);
+            return processMultiValueField(fieldValue, name, MULTI_VALUE_SEPARATOR, variantData);
         }
     },
     /** ALT column.  */
-    ALT("alt") {
+    ALT {
         @Override
         public VariantData process(String fieldValue, VariantData variantData) {
-            return processMultiValueField(fieldValue, getName(), ALT_VALUE_SEPARATOR, variantData);
-        }
-    },
-    /** QUAL column.  */
-    QUAL("qual") {
-        @Override
-        public VariantData process(String fieldValue, VariantData variantData) {
-            return processSingleValueField(fieldValue, getName(), variantData);
-        }
-    },
-    /** FILTER column.  */
-    FILTER("filter") {
-        @Override
-        public VariantData process(String fieldValue, VariantData variantData) {
-            return processSingleValueField(fieldValue, getName(), variantData);
+            String name = name().toLowerCase(Locale.ROOT);
+            return processMultiValueField(fieldValue, name, ALT_VALUE_SEPARATOR, variantData);
         }
     },
     /** INFO column.  */
-    INFO("info") {
+    INFO {
         @Override
         public VariantData process(String fieldValue, VariantData variantData) {
-            return processInfoValueFields(fieldValue, getName(), MULTI_VALUE_SEPARATOR, variantData);
+            String name = name().toLowerCase(Locale.ROOT);
+            return processInfoValueFields(fieldValue, name, MULTI_VALUE_SEPARATOR, variantData);
         }
     };
-
-
-    /** Separator for multi valued fields. */
-    /*private static final String ID_VALUE_SEPARATOR = ";";*/
 
     /** Separator for ALT valued fields. */
     private static final String ALT_VALUE_SEPARATOR = ",";
@@ -107,34 +82,21 @@ public enum VCFColumn {
     /** Default value for INFO Solr document fields. */
     private static final String INFO_FIELD_DEFAULT_VALUE = "1";
 
-    /**
-     * Name of the column.
-     */
-    private String name;
 
     /**
-     * Constructor.
-     * @param name  The name of the column.
-     */
-    private VCFColumn(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Getter for the name.
-     * @return  The column name.
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Process a column field value and add the valus to the Variant Data object.
-     * @param fieldValue        The column filed value.
+     * Process a column field value and add the value to the Variant Data object.
+     *
+     * This method considers the fieldValue contains a single value. This method is overridden for
+     * fields that need to be parsed in a different manner.
+     *
+     * @param fieldValue        The column field value.
      * @param variantData       The Variant Data object with the column value added.
      * @return The Variant Data updated with the column value.
      */
-    public abstract VariantData process(String fieldValue, VariantData variantData);
+    public VariantData process(String fieldValue, VariantData variantData) {
+        String name = name().toLowerCase(Locale.ROOT);
+        return processSingleValueField(fieldValue, name, variantData);
+    }
 
     /**
      * Save value for a single valued field.
@@ -190,10 +152,11 @@ public enum VCFColumn {
         for (String term: terms) {
             String[] innerTerms = term.split(INFO_FIELD_VALUE_SEPARATOR);
 
-            String specificKey = key + INFO_FIELD_INNER_SEPARATOR + innerTerms[0];
-
             //compare to the list of reserved value and only index those fields that are in the reserved words
             if (ArrayUtils.contains(VariantData.INFO_RESERVED, innerTerms[0])) {
+
+                String specificKey = key + INFO_FIELD_INNER_SEPARATOR + innerTerms[0];
+
                 if (innerTerms.length > 1) {
                     processMultiValueField(innerTerms[1], specificKey, ALT_VALUE_SEPARATOR, variantData);
                 } else {

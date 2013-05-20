@@ -61,7 +61,7 @@ public class VariantData extends SetMap<String, String>
 
     /** Reserved info fields. */
     public static final String[] INFO_RESERVED  = {"AA", "AC", "AF", "AN", "BQ", "CIGAR",
-        "DB", "DP", "END", "H2", "H3", "MQ", "MQ0", "NS", "SB", "SOMATIC", "VALIDATED", "100G"};
+        "DB", "DP", "END", "H2", "H3", "MQ", "MQ0", "NS", "SB", "SOMATIC", "VALIDATED", "1000G"};
     /** Id of opinion. */
     private String id;
 

@@ -106,9 +106,9 @@ public class SolrVCFUploader
 
         VariantData variantData = null;
 
-        if (!ignoreLine(line)) {
+        if (!shouldIgnoreLine(line)) {
 
-            if (headerLine(line)) {
+            if (isHeaderLine(line)) {
                 columns = extractColumns(line);
             } else {
                 variantData = extractValues(line);
@@ -149,12 +149,11 @@ public class SolrVCFUploader
      * @return          The corresponding column enum, or null if a match is not possible.
      */
     private VCFColumn getColumn(String token) {
-        String lkToken = token.toLowerCase();
 
         VCFColumn matchedColumn = null;
 
         for (VCFColumn column : VCFColumn.values()) {
-            if (column.getName().equals(lkToken)) {
+            if (column.name().equalsIgnoreCase(token)) {
                 matchedColumn = column;
             }
         }
@@ -187,23 +186,23 @@ public class SolrVCFUploader
     /**
      * Determine if the line should be ignored.
      *
-     * Ingore metadata since the columns we want are mandatory.
-     * @param line      The line
+     * Currently all the meta-information is ignored, but not the header line and the actual data.
+     * @param line      The current line
      * @return          true if line should be ignored, false otherwise.
      */
-    private boolean ignoreLine(String line) {
+    private boolean shouldIgnoreLine(String line) {
         return line.startsWith(METADATA_PREFIX);
     }
 
 
     /**
-     * Determine if the line should be ignored.
+     * Determine if the line is the header line.
      *
-     * Ingore metadata since the columns we want are mandatory.
-     * @param line      The line
-     * @return          true if line should be ignored, false otherwise.
+     * The header line is used to extract the list of columns for which the values will be stored.
+     * @param line      The current line
+     * @return          true if line is the header line, false otherwise.
      */
-    private boolean headerLine(String line) {
+    private boolean isHeaderLine(String line) {
         return line.startsWith(HEADER_PREFIX);
     }
 

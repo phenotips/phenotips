@@ -425,9 +425,6 @@
          <str>nameOfCustomComponent2</str>
        </arr>
       -->
-     <arr name="last-components">
-       <str>spellcheck</str>
-     </arr>
     </requestHandler>
 
 
@@ -462,34 +459,6 @@
       <str name="echoParams">all</str>
     </lst>
   </requestHandler>
-
-  <!-- Spell Check
-
-       The spell check component can return a list of alternative spelling
-       suggestions.
-
-       http://wiki.apache.org/solr/SpellCheckComponent
-    -->
-  <searchComponent name="spellcheck" class="solr.SpellCheckComponent">
-    <str name="queryAnalyzerFieldType">text_spell</str>
-
-    <!-- Multiple "Spell Checkers" can be declared and used by this
-         component
-      -->
-
-    <!-- a spellchecker built from a field of the main index -->
-    <lst name="spellchecker">
-      <str name="name">default</str>
-      <str name="classname">solr.IndexBasedSpellChecker</str>
-      <str name="field">textSpell</str>
-      <str name="spellcheckIndexDir">spellchecker</str>
-      <str name="buildOnCommit">true</str>
-      <!-- Could be tried out:
-      <str name="distanceMeasure">org.apache.lucene.search.spell.NGramDistance</str>
-      <str name="distanceMeasure">org.apache.lucene.search.spell.JaroWinklerDistance</str>
-      -->
-    </lst>
-  </searchComponent>
 
   <!-- Legacy config for the admin interface -->
   <admin>
