@@ -929,7 +929,7 @@
     }
     displayNode.insert(new Element('span', {'class':'suggestValue'}).update(data.value));
     if(data.synonym){
-        displayNode.insert(new Element('span', {'class':'suggestSynonym'}).update("data.synonym"));
+        displayNode.insert(new Element('span', {'class':'suggestSynonym'}).update(data.synonym));
     }
     displayNode.insert(new Element('div', {'class':'suggestInfo'}).update(data.info));
 
