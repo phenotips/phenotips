@@ -590,21 +590,16 @@
       var suggestValue = _getResultFieldValue(results[i], source.resultValue || this.options.resultValue);
       var currFieldValue = this.sInput;
       var curDist = this.findDistance(suggestValue,currFieldValue);
-      if (curDist &gt;= 5){
-        var synonym = _getResultFieldValueAsArray(results[i], source.resultSynonym || this.options.resultSynonym);
-        var minDist = this.findDistance(synonym[0],currFieldValue);
-        var matchSynonym = synonym[0];
-        for (var k=1; k&lt;synonym.length; k++){
-              var dist = this.findDistance(synonym[k],currFieldValue);
-              if (dist &lt; minDist){
-                minDist = dist;
-                matchSynonym = synonym[k]; 
-              }
-         }
-      }
-      else{
-         matchSynonym="";
-      }
+      var synonym = _getResultFieldValueAsArray(results[i], source.resultSynonym || this.options.resultSynonym);
+      var minDist = this.findDistance(synonym[0],currFieldValue);
+      var matchSynonym = synonym[0];
+      for (var k=1; k&lt;synonym.length; k++){
+           var dist = this.findDistance(synonym[k],currFieldValue);
+           if (dist &lt; minDist){
+              minDist = dist;
+              matchSynonym = synonym[k]; 
+           }
+       }
       if(curDist&lt;=minDist){
          matchSynonym="";
       }        
@@ -933,8 +928,8 @@
         displayNode.insert(new Element('span', {'class':'suggestId'}).update(data.id));
     }
     displayNode.insert(new Element('span', {'class':'suggestValue'}).update(data.value));
-    if(data.synonym != ""){
-        displayNode.insert(new Element('span', {'class':'suggestSynonym'}).update(" Matches Synonym:"+data.synonym));
+    if(data.synonym){
+        displayNode.insert(new Element('span', {'class':'suggestSynonym'}).update("data.synonym"));
     }
     displayNode.insert(new Element('div', {'class':'suggestInfo'}).update(data.info));
 
@@ -3870,10 +3865,28 @@ div.suggestItems span.info span.hint {
   margin-left:5px;
 }
 
-div.suggestItems span.suggestSynonym{
-   font-style: italic;
-   display:block;
+div.suggestItems span.suggestValue{
+   width: 80%;
+   display: inline-block;
 }
+
+div.suggestItems span.suggestSynonym{
+   display: inline-block;
+   width: 70%;
+}
+
+div.suggestItems span.suggestSynonym:before {
+  content: "(alternative name: ";
+  font-size: 0.8em;
+  opacity: .4;
+}
+
+div.suggestItems span.suggestSynonym:after {
+  content: ")";
+  font-size: 0.8em;
+  opacity: .4;
+}
+
 div.suggestItems div.info {
   color: #777;
   font-size: 0.8em;
@@ -3975,10 +3988,9 @@ div.resultContainer div.sourceContent.loading {
 .suggestInfo {
   font-size: 100%;
   word-wrap: normal !important;
-  display: block;
-  width: 99%;
-  float: none;
-  clear: both;
+  display: inline-block;
+  width: 30%;
+  float: right;
   line-height:1.2em !important;
 }
 .suggestInfo dt {
