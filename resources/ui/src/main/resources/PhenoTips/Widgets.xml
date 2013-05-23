@@ -928,10 +928,11 @@
         displayNode.insert(new Element('span', {'class':'suggestId'}).update(data.id));
     }
     displayNode.insert(new Element('span', {'class':'suggestValue'}).update(data.value));
+    var displayInfo = new Element('div', {'class':'suggestInfo'}).update(data.info);
+    displayNode.insert(displayInfo);
     if(data.synonym){
-        displayNode.insert(new Element('span', {'class':'suggestSynonym'}).update(data.synonym));
+        displayInfo.insert({'top' : new Element('span', {'class':'suggestSynonym'}).update(data.synonym)});
     }
-    displayNode.insert(new Element('div', {'class':'suggestInfo'}).update(data.info));
 
     var valueNode = new Element('div')
             .insert(new Element('span', {'class':'suggestId'}).update(data.id))
@@ -3865,14 +3866,9 @@ div.suggestItems span.info span.hint {
   margin-left:5px;
 }
 
-div.suggestItems span.suggestValue{
-   width: 80%;
-   display: inline-block;
-}
-
 div.suggestItems span.suggestSynonym{
-   display: inline-block;
-   width: 70%;
+  display: inline-block;
+  padding-left: 55px;
 }
 
 div.suggestItems span.suggestSynonym:before {
@@ -3989,9 +3985,12 @@ div.resultContainer div.sourceContent.loading {
   font-size: 100%;
   word-wrap: normal !important;
   display: inline-block;
-  width: 30%;
+  width: 100%;
   float: right;
   line-height:1.2em !important;
+}
+.suggestInfo dl {
+  display: inline;
 }
 .suggestInfo dt {
   font-style: italic;
