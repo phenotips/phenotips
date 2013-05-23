@@ -826,6 +826,7 @@ document.observe('dom:loaded', function() {
             resultsParameter : "rows",
             resultId : "id",
             resultValue : "name",
+            resultSynonym: "synonym",
             resultCategory : "term_category",
             resultInfo : {
                  "Browse related terms..." : {"extern" : true,
