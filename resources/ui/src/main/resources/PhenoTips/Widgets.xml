@@ -586,7 +586,7 @@
       if (!this.options.resultCategory || !category.hasChildNodes()) {
         category = '';
       }
-      
+
       var suggestValue = _getResultFieldValue(results[i], source.resultValue || this.options.resultValue);
       var currFieldValue = this.sInput;
       var curDist = this.findDistance(suggestValue,currFieldValue);
@@ -597,13 +597,13 @@
            var dist = this.findDistance(synonym[k],currFieldValue);
            if (dist &lt; minDist){
               minDist = dist;
-              matchSynonym = synonym[k]; 
+              matchSynonym = synonym[k];
            }
        }
       if(curDist&lt;=minDist){
          matchSynonym="";
-      }        
-      
+      }
+
       aSuggestions.push({
         'id': _getResultFieldValue(results[i], source.resultId || this.options.resultId),
         'value': _getResultFieldValue(results[i], source.resultValue || this.options.resultValue),
@@ -629,22 +629,22 @@
       //n is the length of currFieldValue
       var b = str2;
       var n = b.length;
-    
-      //if equal 
+
+      //if equal
       if (a==b){return 0;}
 
-      // make sure a.length >= b.length 
+      // make sure a.length &gt;= b.length
       if (m &lt; n) {
         var c=a;a=b;b=c;
         var o=m;m=n;n=o;
       }
-    
+
       var r = new Array();
       r[0] = new Array();
       for (var c = 0; c &lt; n+1; c++) {
          r[0][c] = c;
       }
-    
+
       for (var i = 1; i &lt; n+1; i++) {
          r[i] = new Array();
          r[i][0] = i;
