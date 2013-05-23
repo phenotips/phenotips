@@ -170,8 +170,10 @@
     // The name of the JSON parameter or XML attribute holding the result auxiliary information.
     // "info" for the old suggest, "pageFullName" for the REST search.
     resultInfo : "info",
-    // The name of the JSON parameter or XML attribute holding the result icon.
+    // The name of the JSON parameter or XML attribute holding the result category.
     resultCategory : "category",
+    // The name of the JSON parameter or XML attribute holding the result synonym.
+    resultSynonym : "synonym",
     // The name of the JSON parameter or XML attribute holding the result icon.
     resultIcon: "icon",
     // The name of the JSON parameter or XML attribute holding a potential result hint (displayed next to the value).
@@ -584,15 +586,81 @@
       if (!this.options.resultCategory || !category.hasChildNodes()) {
         category = '';
       }
+      
+      var suggestValue = _getResultFieldValue(results[i], source.resultValue || this.options.resultValue);
+      var currFieldValue = this.sInput;
+      var curDist = this.findDistance(suggestValue,currFieldValue);
+      var synonym = _getResultFieldValueAsArray(results[i], source.resultSynonym || this.options.resultSynonym);
+      var minDist = this.findDistance(synonym[0],currFieldValue);
+      var matchSynonym = synonym[0];
+      for (var k=1; k&lt;synonym.length; k++){
+           var dist = this.findDistance(synonym[k],currFieldValue);
+           if (dist &lt; minDist){
+              minDist = dist;
+              matchSynonym = synonym[k]; 
+           }
+       }
+      if(curDist&lt;=minDist){
+         matchSynonym="";
+      }        
+      
       aSuggestions.push({
         'id': _getResultFieldValue(results[i], source.resultId || this.options.resultId),
         'value': _getResultFieldValue(results[i], source.resultValue || this.options.resultValue),
+        'synonym': matchSynonym,
         'info'    : info,
         'category': category
       });
     }
     return aSuggestions;
   },
+
+
+
+   /**
+   * Compute the Levenshtein distance between two strings
+   */
+    findDistance: function(str1, str2) {
+      var cost;
+      // get values
+      var a = str1;
+      var m = a.length;
+
+      //n is the length of currFieldValue
+      var b = str2;
+      var n = b.length;
+    
+      //if equal 
+      if (a==b){return 0;}
+
+      // make sure a.length >= b.length 
+      if (m &lt; n) {
+        var c=a;a=b;b=c;
+        var o=m;m=n;n=o;
+      }
+    
+      var r = new Array();
+      r[0] = new Array();
+      for (var c = 0; c &lt; n+1; c++) {
+         r[0][c] = c;
+      }
+    
+      for (var i = 1; i &lt; n+1; i++) {
+         r[i] = new Array();
+         r[i][0] = i;
+         for (var j = 1; j &lt; n+1; j++) {
+            cost = (a.charAt(i-1) == b.charAt(j-1))? 0: 1;
+            r[i][j] = this.minimator(r[i-1][j]+1,r[i][j-1]+1,r[i-1][j-1]+cost);
+         }
+      }
+    return r[n][n];
+  },
+
+  minimator: function(x,y,z) {
+      if (x &lt;= y &amp; x &lt;= z) {return x};
+      if (y &lt;= x &amp; y &lt;= z) {return y};
+    return z;
+   },
 
   /**
    * Creates the container that will hold one or multiple source results.
@@ -860,6 +928,9 @@
         displayNode.insert(new Element('span', {'class':'suggestId'}).update(data.id));
     }
     displayNode.insert(new Element('span', {'class':'suggestValue'}).update(data.value));
+    if(data.synonym){
+        displayNode.insert(new Element('span', {'class':'suggestSynonym'}).update(data.synonym));
+    }
     displayNode.insert(new Element('div', {'class':'suggestInfo'}).update(data.info));
 
     var valueNode = new Element('div')
@@ -3794,6 +3865,28 @@ div.suggestItems span.info span.hint {
   margin-left:5px;
 }
 
+div.suggestItems span.suggestValue{
+   width: 80%;
+   display: inline-block;
+}
+
+div.suggestItems span.suggestSynonym{
+   display: inline-block;
+   width: 70%;
+}
+
+div.suggestItems span.suggestSynonym:before {
+  content: "(alternative name: ";
+  font-size: 0.8em;
+  opacity: .4;
+}
+
+div.suggestItems span.suggestSynonym:after {
+  content: ")";
+  font-size: 0.8em;
+  opacity: .4;
+}
+
 div.suggestItems div.info {
   color: #777;
   font-size: 0.8em;
@@ -3895,10 +3988,9 @@ div.resultContainer div.sourceContent.loading {
 .suggestInfo {
   font-size: 100%;
   word-wrap: normal !important;
-  display: block;
-  width: 99%;
-  float: none;
-  clear: both;
+  display: inline-block;
+  width: 30%;
+  float: right;
   line-height:1.2em !important;
 }
 .suggestInfo dt {
