@@ -589,18 +589,18 @@
 
       var suggestValue = _getResultFieldValue(results[i], source.resultValue || this.options.resultValue);
       var currFieldValue = this.sInput;
-      var curDist = this.findDistance(suggestValue,currFieldValue);
+      var curSimilarity = this.computeSimilarity(suggestValue,currFieldValue);
       var synonym = _getResultFieldValueAsArray(results[i], source.resultSynonym || this.options.resultSynonym);
-      var minDist = this.findDistance(synonym[0], currFieldValue);
+      var synSimilarity = this.computeSimilarity(synonym[0], currFieldValue);
       var matchSynonym = synonym[0];
       for (var k = 1; k &lt; synonym.length; ++k) {
-        var dist = this.findDistance(synonym[k], currFieldValue);
-        if (dist &lt; minDist) {
-          minDist = dist;
+        var tempSimilaity = this.computeSimilarity(synonym[k], currFieldValue);
+        if (tempSimilaity &gt; synSimilarity) {
+          synSimilarity = tempSimilarity;
           matchSynonym = synonym[k];
         }
       }
-      if (curDist &lt;= minDist) {
+      if (curSimilarity &gt;= synSimilarity) {
         matchSynonym = "";
       }
 
@@ -616,10 +616,13 @@
   },
 
   /**
-   * Compute the Levenshtein distance between two strings
+   * Compute the Smith Waterman similarity between two strings
    */
-  findDistance: function(str1, str2) {
-    var cost;
+  computeSimilarity: function(str1, str2) {
+    var score;
+    var maxSoFar=0;
+    var gapCost = 2;
+
     // get values
     var a = str1;
     var m = a.length;
@@ -628,47 +631,61 @@
     var b = str2;
     var n = b.length;
 
-    //if equal
-    if (a == b) {
-      return 0;
-    }
+    //declare the matrix
+    var d = new Array();
 
-    // make sure a.length &gt;= b.length
-    if (m &lt; n) {
-      var tmp = a;
-      a = b;
-      b = tmp;
-      tmp = m;
-      m = n;
-      n = tmp;
-    }
+    for (i = 0; i &lt; n; i++) {
+      d[i] = new Array();
+            
+      // get the substution score
+      score = (a.charAt(i) == b.charAt(0))? 1: -1;
 
-    var r = new Array();
-    r[0] = new Array();
-    for (var c = 0; c &lt; n+1; c++) {
-      r[0][c] = c;
-    }
-
-    for (var i = 1; i &lt; n+1; ++i) {
-      r[i] = new Array();
-      r[i][0] = i;
-      for (var j = 1; j &lt; n+1; ++j) {
-        cost = (a.charAt(i-1) == b.charAt(j-1)) ? 0 : 1;
-        r[i][j] = this.minimator(r[i-1][j] + 1, r[i][j-1] + 1, r[i-1][j-1] + cost);
+      if (i == 0) {
+        d[0][0] = Math.max(0,-gapCost,score);
+      }else {
+        d[i][0] = Math.max(0,d[i - 1][0] - gapCost,score);
+      }
+            
+      //update max possible if available
+      if (d[i][0] &gt; maxSoFar) {
+        maxSoFar = d[i][0];
       }
     }
-    return r[n][n];
+
+    for (j = 0; j &lt; m; j++) {
+      // get the substution score
+      score = (a.charAt(0) == b.charAt(j))? 1: -1;
+
+      if (j == 0) {
+        d[0][0] = Math.max(0,-gapCost,score);
+      }else {
+        d[0][j] = Math.max(0,d[0][j - 1] - gapCost,score);
+      }
+      
+      //update max possible if available
+      if (d[0][j] &gt; maxSoFar) {
+        maxSoFar = d[0][j];
+      }
+    }
+
+    // cycle through rest of table filling values from the lowest cost value of the three part cost function
+    for (i = 1; i &lt; n; i++) {
+      for (j = 1; j &lt; m; j++) {
+        // get the substution score
+        score = (a.charAt(i) == b.charAt(j))? 1: -1;
+
+        // find lowest cost at point from three possible
+        d[i][j] = Math.max(0,d[i - 1][j] - gapCost,d[i][j - 1] - gapCost,d[i - 1][j - 1] + score);
+        //update max possible if available
+        if (d[i][j] &gt; maxSoFar) {
+          maxSoFar = d[i][j];
+        }
+      }
+    }
+    // return max value within matrix as holds the maximum edit score
+    return maxSoFar;
   },
 
-  minimator: function(x,y,z) {
-    if (x &lt;= y &amp; x &lt;= z) {
-      return x
-    };
-    if (y &lt;= x &amp; y &lt;= z) {
-      return y
-    };
-    return z;
-  },
 
   /**
    * Creates the container that will hold one or multiple source results.
