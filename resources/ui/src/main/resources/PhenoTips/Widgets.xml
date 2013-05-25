@@ -637,7 +637,7 @@
     for (i = 0; i &lt; n; i++) {
       d[i] = new Array();
             
-      // get the substution score
+      // get the substitution score
       score = (a.charAt(i) == b.charAt(0))? 1: -1;
 
       if (i == 0) {
@@ -653,7 +653,7 @@
     }
 
     for (j = 0; j &lt; m; j++) {
-      // get the substution score
+      // get the substitution score
       score = (a.charAt(0) == b.charAt(j))? 1: -1;
 
       if (j == 0) {
@@ -671,7 +671,7 @@
     // cycle through rest of table filling values from the lowest cost value of the three part cost function
     for (i = 1; i &lt; n; i++) {
       for (j = 1; j &lt; m; j++) {
-        // get the substution score
+        // get the substitution score
         score = (a.charAt(i) == b.charAt(j))? 1: -1;
 
         // find lowest cost at point from three possible
