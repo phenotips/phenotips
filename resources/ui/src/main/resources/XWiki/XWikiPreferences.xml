@@ -2747,7 +2747,7 @@ In order to activate your account, please follow this link:
 ${host}${xwiki.getURL('XWiki.AccountValidation', 'view', "validkey=${validkey}&amp;xwikiname=${xwikiname}")}</validation_email_content>
     </property>
     <property>
-      <version>&amp;nbsp;</version>
+      <version>&lt;a href="http://phenotips.org"&gt;PhenoTips&lt;/a&gt; version $!{services.distribution.distributionExtension.id.version}</version>
     </property>
     <property>
       <webcopyright>Reproducing or distributing this clinical information without permission from the institution that owns it is strictly forbidden.</webcopyright>
