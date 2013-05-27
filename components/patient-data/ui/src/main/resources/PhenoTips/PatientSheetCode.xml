@@ -4786,6 +4786,25 @@ table.withLabel tr:first-child th {
 .extradata-list .below-normal, .extradata-list .above-normal {
   color: $theme.notificationWarningColor;
 }
+.extradata-list .extreme-below-normal:before, .extradata-list .extreme-above-normal:before,
+.extradata-list .below-normal:before, .extradata-list .above-normal:before {
+  border-radius: 50%;
+  color: $theme.pageContentBackgroundColor;
+  display: inline-block;
+  height: 1.2em;
+  margin-right: 0.5em;
+  text-align: center;
+  text-shadow: none;
+  width: 1.2em;
+}
+.extradata-list .extreme-below-normal:before, .extradata-list .extreme-above-normal:before {
+  background-color: $theme.notificationErrorColor;
+  content: "!!";
+}
+.extradata-list .below-normal:before, .extradata-list .above-normal:before {
+  background-color: $theme.notificationWarningColor;
+  content: "!";
+}
 form .extradata-list tr:hover td {
   background-color: $theme.highlightColor;
 }
