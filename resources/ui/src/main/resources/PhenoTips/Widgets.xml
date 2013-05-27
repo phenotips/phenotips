@@ -594,8 +594,8 @@
       var synSimilarity = this.computeSimilarity(synonym[0], currFieldValue);
       var matchSynonym = synonym[0];
       for (var k = 1; k &lt; synonym.length; ++k) {
-        var tempSimilaity = this.computeSimilarity(synonym[k], currFieldValue);
-        if (tempSimilaity &gt; synSimilarity) {
+        var tempSimilarity = this.computeSimilarity(synonym[k], currFieldValue);
+        if (tempSimilarity &gt; synSimilarity) {
           synSimilarity = tempSimilarity;
           matchSynonym = synonym[k];
         }
