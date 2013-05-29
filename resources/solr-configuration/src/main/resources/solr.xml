@@ -26,5 +26,6 @@
   <cores defaultCoreName="hpo">
     <core name="hpo" instanceDir="hpo" />
     <core name="omim" instanceDir="omim" />
+    <core name="variant" instanceDir="variant"/>
   </cores>
 </solr>
