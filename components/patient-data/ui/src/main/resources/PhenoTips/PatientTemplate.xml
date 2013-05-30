@@ -760,10 +760,9 @@
       </omim_id>
       <onset>
         <customDisplay>{{velocity}}{{html wiki=false clean=false}}
-#if ($value &lt; 0)
+#if (!$value || $value &lt; 0)
   #set($congenital = true)
-#end
-#if ($value &gt;= 0)
+#else
   #set ($y = $mathtool.div($value, 12))
   #set ($m = $mathtool.mod($value, 12))
 #end
