@@ -3696,7 +3696,7 @@ document.observe('xwiki:dom:loaded', function() {
       <cache>long</cache>
     </property>
     <property>
-      <code>window.observe('load', function() {
+      <code>Event.observe(window, 'load', function() {
   for (binding in shortcut.all_shortcuts) {
     shortcut.remove(binding);
   }
