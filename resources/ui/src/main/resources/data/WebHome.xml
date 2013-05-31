@@ -510,7 +510,18 @@ $!value
       </section__other>
       <section__patient-info>
         <cache>0</cache>
-        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <customDisplay>{{velocity output=false}}
+#set($customValues = {"PhenoTips.RelativeClass" : "connections to relatives present in the database"})
+#set($hideClassFields = true)
+{{/velocity}}
+
+{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}
+
+{{velocity output=false}}
+#set($customClassName = '')
+#set($customClassTableName = '')
+#set($hideClassFields = '')
+{{/velocity}}</customDisplay>
         <disabled>0</disabled>
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
@@ -720,11 +731,7 @@ $!value
     </property>
     <property>
       <section__patient-info>
-        <value>date_of_birth</value>
-        <value>gender</value>
-        <value>onset</value>
-        <value>relative</value>
-        <value>relative_of</value>
+        <value>PhenoTips.RelativeClass</value>
       </section__patient-info>
     </property>
     <property>
@@ -1716,6 +1723,7 @@ $!value
         <value>dateOfBirthFormat</value>
         <value>relativeReportHint</value>
         <value>phenotypeMapping</value>
+        <value>section__patient-info</value>
         <value>section__measurements</value>
         <value>section__variant-info</value>
       </propertiesToShow>

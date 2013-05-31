@@ -4939,12 +4939,14 @@ table.extradata-list td.bmi_percentile {
   padding: 5px;
 }
 
-.extradata-list .relative_type {
+.extradata-list .relative_type, .extradata-list .relative_of {
   width: 50%;
+  text-align: left;
 }
-.extradata-list .relative_of {
-  width: 45%;
-}</code>
+.extradata-list .relative_type label, .extradata-list .relative_of label {
+  width: auto;
+}
+</code>
     </property>
     <property>
       <name>Extra data table ui</name>
@@ -5743,17 +5745,15 @@ input.LV_invalid_field {
   #__displayFormatted('2-col' 'date_of_birth' '' 'date' '')
   #__displayFormatted('2-col' 'gender' 'Sex:' 'gender' 'group-title')
   #__displayFormatted('2-col' 'health_card' '' '' '')
-#if ("$!activeFields.contains('relative')" != 'false' &amp;&amp; ($context.action == 'edit' || ($doc.display('relative') != '' &amp;&amp; $doc.display('relative_of') != '')))
-
-  ----
   #set ($targetClassName = 'PhenoTips.RelativeClass')
-  #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
+  #if ($config &amp;&amp; $config.getProperty('section__patient-info').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
+
+    ----
     (% class="clear relatives-info" %)(((
     === Family study ===
     #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
     )))
   #end
-#end
 #if ("$!activeFields.contains('age_of_onset')" != 'false')
   #if($doc.display('age_of_onset') != '')
 
