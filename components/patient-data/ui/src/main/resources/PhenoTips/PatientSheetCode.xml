@@ -4791,11 +4791,11 @@ table.withLabel tr:first-child th {
   border-radius: 50%;
   color: $theme.pageContentBackgroundColor;
   display: inline-block;
-  height: 1.2em;
+  height: 1.4em;
   margin-right: 0.5em;
   text-align: center;
   text-shadow: none;
-  width: 1.2em;
+  width: 1.4em;
 }
 .extradata-list .extreme-below-normal:before, .extradata-list .extreme-above-normal:before {
   background-color: $theme.notificationErrorColor;
@@ -4808,23 +4808,15 @@ table.withLabel tr:first-child th {
 form .extradata-list tr:hover td {
   background-color: $theme.highlightColor;
 }
-
-table.extradata-list td.weight,
-table.extradata-list td.height,
-table.extradata-list td.bmi,
-table.extradata-list td.hc {
-  padding-left: .5em;
-}
-table.extradata-list td.date,
-table.extradata-list td.bmi_percentile {
-  padding-right: .5em;
-}
 #extradata-list-PhenoTips\.MeasurementsClass {
   border-collapse: separate;
   border-spacing: 0 0;
 }
 #extradata-list-PhenoTips\.MeasurementsClass td {
   text-align: left;
+}
+#extradata-list-PhenoTips\.MeasurementsClass .displayed-value {
+  white-space: nowrap;
 }
 #extradata-list-PhenoTips\.MeasurementsClass table {
   width: 100% !important;
