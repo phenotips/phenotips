@@ -1713,7 +1713,9 @@ document.observe('dom:loaded', function() {
       if (!dataTable) {
         new XWiki.widgets.Notification("Cannot find the list to update " + classname, 'error');
       }
-      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?&amp;xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;withLabel=' + dataTable.hasClassName('withLabel')));
+      var propertyName = addTrigger.href.replace(/.*&amp;xredirect=.*propertyName=([^&amp;]+).*/, '$1');
+      var propertyValue = addTrigger.href.replace(/.*&amp;xredirect=.*propertyValue=([^&amp;]+).*/, '$1');
+      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?&amp;xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;withLabel=' + dataTable.hasClassName('withLabel') + '&amp;propertyName=' + propertyName + '&amp;propertyValue=' + propertyValue));
       new Ajax.Request(url, {
         onCreate : function() {
           addTrigger.disabled = true
@@ -5592,7 +5594,7 @@ input.LV_invalid_field {
 #end
 
 #macro (__extradata_addTool $classname $anchor $options)
-  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
+  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
 
 #macro (__extradata_displayTable $dataClassName $options)
   #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
@@ -5627,12 +5629,12 @@ input.LV_invalid_field {
   #end## if dataclass
 #end
 
-#macro (__extradata_displayLastEntry $dataClassName $withLabel)
+#macro (__extradata_displayLastEntry $dataClassName $options)
   #set ($objects = $doc.getObjects($dataClassName))
   #if ($objects.size() &gt; 0)
     #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
     #set($dataClass = $targetObj.xWikiClass)
-    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}"&gt;#if ("$!{withLabel}" == 'true'){{html clean="false" wiki="false"}}&lt;label &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
+    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}#if ($prop.name == $options.propertyName) hidden#end"&gt;#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
   #end
 #end
 
@@ -6057,8 +6059,12 @@ $doc.display('reports_history')
 {{/velocity}}
 
 {{velocity}}
-#if ("$!{request.xaction}" == 'lastentry')
-  #__extradata_displayLastEntry($request.dataClassName $request.withLabel)
+#if ("$!{request.xaction}" == 'lastentry')  #set ($entryClassName = $request.dataClassName)
+  #set ($options = {})
+  #set ($discard = $options.put('propertyName', "$!{request.propertyName}"))
+  #set ($discard = $options.put('propertyValue', "$!{request.propertyValue}"))
+  #set ($discard = $options.put('labels', "$!{request.withLabel}"))
+  #__extradata_displayLastEntry($request.dataClassName $options)
 #elseif ("$!{request.xaction}" == 'lastmeta')
   #__phenotypeMeta_displayLastEntry()
 #else
