@@ -123,6 +123,7 @@ public class R45391PhenoTips434DataMigration extends AbstractHibernateDataMigrat
             Query q =
                 session.createQuery("select distinct o.name from BaseObject o where o.className = '"
                     + R45391PhenoTips434DataMigration.this.serializer.serialize(oldClassReference) + "'");
+            @SuppressWarnings("unchecked")
             List<String> documents = q.list();
             for (String docName : documents) {
                 XWikiDocument doc =
