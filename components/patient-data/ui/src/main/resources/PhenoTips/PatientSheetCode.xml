@@ -4108,7 +4108,7 @@ input[type=text]:focus, textarea:focus {
   margin: 0;
   font-style: normal;
 }
-.chapter, .chapter-inner {
+.chapter {
   border: 1px solid $theme.pageContentBackgroundColor;
   border-radius: 0 0 10px 10px;
   box-shadow: 0 0 6px $theme.borderColor inset;
@@ -4129,12 +4129,6 @@ h2 a.action-edit {
 }
 .chapter:hover a.action-edit {
   visibility: visible;
-}
-.phenotype-info {
-  border: 0 none;
-  box-shadow: none;
-  margin: 0;
-  padding: 0;
 }
 h1, h2, h3, h4 {
   text-shadow: 1px 1px 0 $theme.pageContentBackgroundColor;
@@ -4412,14 +4406,7 @@ label.selected input[type="checkbox"] {
   margin-top: -3.5em;
   margin-right: 0;
 }
-.chapter .expand-tools, .chapter .chapter-inner .expand-tools {
-  ####display: block;
-  ##float: right;
-  ####margin-top: -1.5em;
-  ##margin-top: -3.5em;
-  ####margin-left: -14px;
-  ##font-size: .8em;
-  ##color: $theme.textPrimaryColor;
+.chapter .expand-tools {
   color: $theme.textPrimaryColor;;
   float: right;
   font-size: 0.8em;
@@ -4443,9 +4430,6 @@ label.selected input[type="checkbox"] {
 }
 .chapter.collapsed .expand-tools .show {
   display: inline
-}
-.chapter.collapsed div.chapter-inner {
-  display: block;
 }
 .chapter.collapsed #quick-search-box {
   display: block;
@@ -5811,7 +5795,6 @@ input.LV_invalid_field {
 #if ("$!activeFields.contains('phenotype')" != 'false')
   (% class="clear clinical-info phenotype-info chapter" %)(((
   #if ("$!activeFields.contains('unaffected')" != 'false')#set ($__qsBoxCssClass = 'controlled')#end
-    (% class="chapter-inner" %)(((
     (% class="group-title" %)
     == $!{class.get('phenotype').prettyName} ==
       #if ("$!activeFields.contains('unaffected')" != 'false')
@@ -5856,7 +5839,6 @@ input.LV_invalid_field {
       #if ("$!activeFields.contains('unaffected')" != 'false')
         )))## controlled (phenotype)
       #end
-        )))## chapter-inner
   )))## chapter
 #end
 #if ("$!activeFields.contains('unaffected')" != 'false')
