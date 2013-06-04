@@ -628,8 +628,6 @@ $!value
         <value>date_of_birth</value>
         <value>gender</value>
         <value>age_of_onset</value>
-        <value>relative</value>
-        <value>relative_of</value>
         <value>consanguinity</value>
         <value>omim_id</value>
         <value>indication_for_referral</value>
