@@ -4423,13 +4423,16 @@ label.selected input[type="checkbox"] {
 }
 .chapter.collapsed .expand-tools .inner-expand-tools,
 .chapter.collapsed .expand-tools .hide,
-.chapter.collapsed div,
+.chapter.collapsed &gt; *,
 .chapter.collapsed table,
 .chapter .expand-tools .show {
   display: none;
 }
-.chapter.collapsed .expand-tools .show {
+.chapter.collapsed .expand-tools, .chapter.collapsed .expand-tools .show {
   display: inline
+}
+.chapter.collapsed &gt; h2 {
+  display: block;
 }
 .chapter.collapsed #quick-search-box {
   display: block;
