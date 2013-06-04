@@ -956,6 +956,7 @@ input[name=action_saveandcontinue] {
   padding-left: 20px;
   background-position: 4px 40%;
   background-repeat: no-repeat;
+  background-size: auto;
 }
 input[name=action_save] {
   background-image: url("#__img('check-s')") !important;
