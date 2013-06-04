@@ -5720,6 +5720,7 @@ input.LV_invalid_field {
     #__displayFormatted('half-width' 'external_id')
     #__displayFormatted('half-width' 'exam_date')
   )))##fieldset
+  (% class="clear" %)((()))
   #else
   #__displayFormatted('2-col' 'external_id' '' '' '')
   #__displayFormatted('2-col' 'exam_date' '' '' '')
@@ -5753,8 +5754,8 @@ input.LV_invalid_field {
     ----
   #end
   #__displayIfNotEmpty('age_of_onset')
+  (% class="clear" %)((()))
 #end
-(% class="clear" %)((()))
 #if ("$!activeFields.contains('indication_for_referral')" != 'false')
   #if($xcontext.action == 'edit' || ($doc.display('indication_for_referral') != ''))
 
