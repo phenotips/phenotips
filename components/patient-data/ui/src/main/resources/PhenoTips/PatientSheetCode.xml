@@ -5478,6 +5478,18 @@ input.LV_invalid_field {
 #end
 #end
 
+#macro (__hasDataToDisplay $propertyName $shouldDisplay)
+  #if ($activeFields.contains($propertyName) &amp;&amp; ($xcontext.action == 'edit' || "$doc.display($propertyName)" != ''))
+    #setVariable("$shouldDisplay", true)
+  #end
+#end
+
+#macro (__hasBooleanDataToDisplay $propertyName $shouldDisplay)
+  #if ($activeFields.contains($propertyName) &amp;&amp; ($xcontext.action == 'edit' || $obj.getProperty($propertyName).value == 1))
+    #setVariable("$shouldDisplay", true)
+  #end
+#end
+
 #macro (__display2Col $propName $label $groupCssClass $labelCssClass)
   (% class="fieldset ${propName} $!{groupCssClass}" %)(((
   (% class="half-width ${propName}" %)(((
@@ -5791,8 +5803,11 @@ input.LV_invalid_field {
 ## Phenotype information
 ##
 #macro(__reportSection__phenotype_info)
-#if ($xcontext.action == 'edit' || "$doc.display('phenotype')$doc.display('negative_phenotype')" != '' || $doc.display('unaffected') != 'No')
-#if ("$!activeFields.contains('unaffected')" != 'false')
+  #__hasBooleanDataToDisplay('unaffected', $showUnaffected)
+  #__hasDataToDisplay('phenotype' $showPhenotype)
+  #__hasDataToDisplay('negative_phenotype' $showNegativePhenotype)
+#if ($showUnaffected || $showPhenotype || $showNegativePhenotype)
+#if ($showUnaffected)
   (% class="controlled-group complete-hide" %)(((
 #end
 #if ("$!activeFields.contains('phenotype')" != 'false')
@@ -5844,7 +5859,7 @@ input.LV_invalid_field {
       #end
   )))## chapter
 #end
-#if ("$!activeFields.contains('unaffected')" != 'false')
+#if ($showUnaffected)
   )))## controlled-group
 #end
 #end## section has content
@@ -5854,15 +5869,29 @@ input.LV_invalid_field {
 ## Prenatal information
 ##
 #macro(__reportSection__prenatal_phenotype_info)
-#if ("$!activeFields.contains('prenatal_phenotype')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('prenatal_phenotype')$doc.display('gestation')$doc.display('prenatal_comments')" != ''))
+  #__hasDataToDisplay('prenatal_phenotype' $showPrenatalPhenotype)
+  #__hasDataToDisplay('gestation' $showGestation)
+  #__hasDataToDisplay('prenatal_comments' $showPrenatalComments)
+#if ($showPrenatalPhenotype || $showGestation || $showPrenatalComments)
 (% class="clear clinical-info prenatal_phenotype-info chapter #__markIfMandatory('prenatal_phenotype')" %)(((
 == $!{class.get('prenatal_phenotype').prettyName} ==
-#__displayFormatted('2-col' 'gestation' '' '' '')
-(% class="clear" %)(((----)))
-$doc.display('prenatal_phenotype')
-(% class="clear" %)(((----)))
-(((#__displayIfNotEmpty('prenatal_comments'))))
-)))##chapter
+#if ($showGestation)
+  #__displayFormatted('2-col' 'gestation' '' '' '')
+  (% class="clear" %)((()))
+#end
+#if ($showPrenatalPhenotype)
+  #if ($showGestation)----
+  #end
+  $doc.display('prenatal_phenotype')
+  (% class="clear" %)((()))
+#end
+#if ($showPrenatalComments)
+  #if ($showGestation || $showPrenatalPhenotype)----
+  #end
+  (((#__displayIfNotEmpty('prenatal_comments'))))
+#end
+)))
+##chapter
 #end
 #end
 ##
@@ -5870,13 +5899,22 @@ $doc.display('prenatal_phenotype')
 ## Family history
 ##
 #macro(__reportSection__family_history)
-#if (("$!activeFields.contains('consanguinity')" != 'false' || "$!activeFields.contains('miscarriages')" != 'false'|| "$!activeFields.contains('mode_of_inheritance')" != 'false' || "$!activeFields.contains('pedigree')" != 'false' || "$!activeFields.contains('in_vitro')" != 'false' || "$!activeFields.contains('proband')" != 'false' || "$!activeFields.contains('family_of')" != 'false' || "$!activeFields.contains('maternal_ethnicity')" != 'false' || "$!activeFields.contains('paternal_ethnicity')" != 'false') &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('family_of')$doc.display('consanguinity')$doc.display('miscarriages')$doc.display('mode_of_inheritance')$doc.display('family_comments')$doc.display('pedigree')$doc.display('paternal_ethnicity')$doc.display('maternal_ethnicity')" != '' || $doc.display('proband') == 'Yes'))
+  #__hasDataToDisplay('consanguinity' $showConsanguinity)
+  #__hasDataToDisplay('miscarriages' $showMiscarriages)
+  #__hasDataToDisplay('mode_of_inheritance' $showModeOfInheritance)
+  #__hasDataToDisplay('pedigree' $showPedigree)
+  #__hasBooleanDataToDisplay('proband', $showProband)
+  #__hasDataToDisplay('family_of' $showFamilyOf)
+  #__hasDataToDisplay('maternal_ethnicity' $showMaternalEthnicity)
+  #__hasDataToDisplay('paternal_ethnicity' $showPaternalEthnicity)
+  #__hasBooleanDataToDisplay('in_vitro', $showInVitro)
+  #__hasDataToDisplay('family_comments' $showFamilyComments)
+#if ($showConsanguinity || $showMiscarriages || $showModeOfInheritance || $showPedigree || $showProband || $showFamilyOf || $showMaternalEthnicity || $showPaternalEthnicity || $showInVitro || $showFamilyComments)
 (% class="clear clinical-info family_history-info chapter #__markIfMandatory('family_history')" %)(((
 == $!{class.get('family_history').prettyName} ==
 
 (((
-
-#if ("$!activeFields.contains('family_of')" != 'false')
+#if ($showProband || $showFamilyOf)
   #if ($xcontext.action == 'edit')
     (% class="controlled-group complete-hide" %)(((
       (% class="controller" %)(((
@@ -5887,43 +5925,46 @@ $doc.display('prenatal_phenotype')
       )))
     )))
   #else
-    #if ($doc.display('proband') == 'Yes')
+    #if ($showProband)
       $class.get('proband').prettyName
     #else
       #__displayFormatted('2-col' 'family_of' '' '' '')
     #end
   #end
 #end
-(% class="fieldset ethnicity" %)(((
+#if ($showMaternalEthnicity || $showPaternalEthnicity)
+  (% class="fieldset ethnicity" %)(((
     #__displayFormatted('half-width' 'maternal_ethnicity')
     #__displayFormatted('half-width' 'paternal_ethnicity')
-)))##fieldset
-(% class="clearfloats" %)((()))
-#if ("$!activeFields.contains('in_vitro')" != 'false')
+  )))##fieldset
+  (% class="clearfloats" %)((()))
+#end
+#if ($showInVitro)
   #if ($xcontext.action == 'edit')
 
     ----
     $doc.display('in_vitro') #__label('in_vitro' 'section' "$class.get('in_vitro').prettyName")
   #else
-    #set ($isInVitro = $doc.getObject('PhenoTips.PatientClass').getProperty('in_vitro').value)
-    #if ($isInVitro == 1)
 
-      ----
-      $class.get('in_vitro').prettyName
-    #end
+    ----
+    $class.get('in_vitro').prettyName
   #end
 #end
-#if (("$!activeFields.contains('consanguinity')" != 'false' || "$!activeFields.contains('miscarriages')" != 'false') &amp;&amp; ($xcontext.action == 'edit' || "$!doc.display('consanguinity')$!doc.display('miscarriages')" != ''))
+#if ($showConsanguinity || $showMiscarriages)
 
   ----
-  $doc.display('consanguinity')
-  $doc.display('miscarriages')
+  #if ($showConsanguinity)
+    ((($doc.display('consanguinity'))))
+  #end
+  #if ($showMiscarriages)
+    ((($doc.display('miscarriages'))))
+  #end
 #end
-#if ("$!activeFields.contains('mode_of_inheritance')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$!doc.display('mode_of_inheritance')" != ''))
+#if ($showModeOfInheritance)
 
   #__displayIfNotEmpty('mode_of_inheritance')
 #end
-#if ("$!activeFields.contains('family_comments')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$!doc.display('family_comments')" != ''))
+#if ($showFamilyComments)
 
   #__displayIfNotEmpty('family_comments')
 #end
