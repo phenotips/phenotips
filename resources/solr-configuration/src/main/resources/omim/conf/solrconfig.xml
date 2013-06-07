@@ -84,6 +84,11 @@
 
   <!-- The default high-performance update handler -->
   <updateHandler class="solr.DirectUpdateHandler2">
+    <autoCommit>
+      <maxDocs>10000</maxDocs>
+      <maxTime>60000</maxTime>
+      <openSearcher>false</openSearcher>
+    </autoCommit>
     <autoSoftCommit>
       <maxTime>1000</maxTime>
     </autoSoftCommit>
