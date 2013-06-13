@@ -25,12 +25,14 @@ import net.sf.json.JSONObject;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.stability.Unstable;
 
 /**
  * Information about a {@link Patient patient} {@link Phenotype feature} property (meta-feature).
  * 
  * @version $Id$
  */
+@Unstable
 public interface PhenotypeMetadatum
 {
     /** The XClass used for storing phenotype metadata. */

@@ -26,12 +26,14 @@ import net.sf.json.JSONObject;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.stability.Unstable;
 
 /**
  * Information about a patient.
  * 
  * @version $Id$
  */
+@Unstable
 public interface Patient
 {
     /** The XClass used for storing patient data. */

@@ -23,11 +23,14 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Information about a specific feature recorded for a {@link Patient patient}.
  * 
  * @version $Id$
  */
+@Unstable
 public interface Phenotype
 {
     /**

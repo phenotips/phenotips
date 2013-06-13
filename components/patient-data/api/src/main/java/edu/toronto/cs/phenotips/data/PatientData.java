@@ -20,12 +20,14 @@
 package edu.toronto.cs.phenotips.data;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * API that provides access to patient data. No access rights are checked here.
  * 
  * @version $Id$
  */
+@Unstable
 @Role
 public interface PatientData
 {

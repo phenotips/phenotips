@@ -20,6 +20,7 @@
 package edu.toronto.cs.phenotips.data.indexing;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 import edu.toronto.cs.phenotips.data.Patient;
 
@@ -28,6 +29,7 @@ import edu.toronto.cs.phenotips.data.Patient;
  * 
  * @version $Id$
  */
+@Unstable
 @Role
 public interface PatientIndexer
 {
