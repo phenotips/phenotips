@@ -19,6 +19,8 @@
  */
 package edu.toronto.cs.phenotips.data;
 
+import java.util.Locale;
+
 import net.sf.json.JSONObject;
 
 /**
@@ -28,12 +30,42 @@ import net.sf.json.JSONObject;
  */
 public interface PhenotypeMetadatum
 {
-    static final String AGE_OF_ONSET = "age_of_onset";
+    /**
+     * The supported metadata types.
+     */
+    enum Type
+    {
+        /** The age group in which disease manifestations appear. */
+        AGE_OF_ONSET("HP:0011007"),
+        /** The speed at which disease manifestations first develop. */
+        SPEED_OF_ONSET("HP:0011008"),
+        /** The speed at which disease manifestations develop in time. */
+        PACE_OF_PROGRESSION("HP:0003679");
 
-    static final String SPEED_OF_ONSET = "speed_of_onset";
+        private final String id;
 
-    static final String PACE_OF_PROGRESSION = "pace_of_progression";
+        Type(String id)
+        {
+            this.id = id;
+        }
 
+        @Override
+        public String toString()
+        {
+            return this.name().toLowerCase(Locale.ROOT);
+        }
+
+        public String getId()
+        {
+            return this.id;
+        }
+    }
+
+    /**
+     * The ontology term identifier associated to the category of this meta-feature.
+     * 
+     * @return an identifier, in the format {@code ONTOLOGY:termId}
+     */
     String getType();
 
     /**

@@ -79,17 +79,11 @@ public class XWikiPhenotype implements Phenotype
         try {
             BaseObject metadata = findMetadataObject();
             if (metadata != null) {
-                if (metadata.get(PhenotypeMetadatum.AGE_OF_ONSET) != null) {
-                    this.metadata.put(PhenotypeMetadatum.AGE_OF_ONSET, new XWikiPhenotypeMetadatum(
-                        (StringProperty) metadata.get(PhenotypeMetadatum.AGE_OF_ONSET)));
-                }
-                if (metadata.get(PhenotypeMetadatum.SPEED_OF_ONSET) != null) {
-                    this.metadata.put(PhenotypeMetadatum.SPEED_OF_ONSET, new XWikiPhenotypeMetadatum(
-                        (StringProperty) metadata.get(PhenotypeMetadatum.SPEED_OF_ONSET)));
-                }
-                if (metadata.get(PhenotypeMetadatum.PACE_OF_PROGRESSION) != null) {
-                    this.metadata.put(PhenotypeMetadatum.PACE_OF_PROGRESSION, new XWikiPhenotypeMetadatum(
-                        (StringProperty) metadata.get(PhenotypeMetadatum.PACE_OF_PROGRESSION)));
+                for (PhenotypeMetadatum.Type type : PhenotypeMetadatum.Type.values()) {
+                    if (metadata.get(type.toString()) != null) {
+                        this.metadata.put(type.toString(),
+                            new XWikiPhenotypeMetadatum((StringProperty) metadata.get(type.toString())));
+                    }
                 }
             }
         } catch (XWikiException ex) {

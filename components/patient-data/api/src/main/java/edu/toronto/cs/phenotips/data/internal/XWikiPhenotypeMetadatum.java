@@ -19,6 +19,8 @@
  */
 package edu.toronto.cs.phenotips.data.internal;
 
+import java.util.Locale;
+
 import net.sf.json.JSONObject;
 
 import com.xpn.xwiki.objects.StringProperty;
@@ -33,23 +35,28 @@ import edu.toronto.cs.phenotips.data.PhenotypeMetadatum;
  */
 public class XWikiPhenotypeMetadatum implements PhenotypeMetadatum
 {
-    private StringProperty data;
+    /** @see #getType() */
+    private Type type;
+
+    /** @see #getId() */
+    private String id;
 
     XWikiPhenotypeMetadatum(StringProperty data)
     {
-        this.data = data;
+        this.id = data.getValue();
+        this.type = Type.valueOf(data.getName().toUpperCase(Locale.ROOT));
     }
 
     @Override
     public String getType()
     {
-        return this.data.getName();
+        return this.type.toString();
     }
 
     @Override
     public String getId()
     {
-        return this.data.getValue();
+        return this.id;
     }
 
     @Override
