@@ -141,6 +141,7 @@ public class XWikiPhenotype implements Phenotype
         JSONObject result = new JSONObject();
         result.element("type", getType());
         result.element("id", getId());
+        result.element("isPresent", this.present);
         if (!this.metadata.isEmpty()) {
             JSONArray metadata = new JSONArray();
             for (PhenotypeMetadatum meta : this.metadata.values()) {
