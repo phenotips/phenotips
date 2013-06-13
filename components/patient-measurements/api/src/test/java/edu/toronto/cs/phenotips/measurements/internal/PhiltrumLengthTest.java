@@ -19,8 +19,7 @@
  */
 package edu.toronto.cs.phenotips.measurements.internal;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
