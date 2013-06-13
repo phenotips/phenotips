@@ -22,14 +22,34 @@ package edu.toronto.cs.phenotips.data;
 import org.xwiki.component.annotation.Role;
 
 /**
+ * API that provides access to patient data. No access rights are checked here.
+ * 
  * @version $Id$
  */
 @Role
 public interface PatientData
 {
+    /**
+     * Retrieve a {@link Patient patient} by it's PhenoTips identifier.
+     * 
+     * @param id the patient identifier, i.e. the serialized document reference
+     * @return the patient data, or {@code null} if the requested patient does not exist or is not a valid patient
+     */
     Patient getPatientById(String id);
 
+    /**
+     * Retrieve a {@link Patient patient} by it's clinical identifier. Only works if external identifiers are enabled
+     * and used.
+     * 
+     * @param externalId the patient's clinical identifier, as set by the patient's reporter
+     * @return the patient data, or {@code null} if the requested patient does not exist or is not a valid patient
+     */
     Patient getPatientByExternalId(String externalId);
 
+    /**
+     * Create and return a new empty patient record.
+     * 
+     * @return the created patient record
+     */
     Patient createNewPatient();
 }

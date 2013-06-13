@@ -28,6 +28,8 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 /**
+ * Information about a patient.
+ * 
  * @version $Id$
  */
 public interface Patient
@@ -36,11 +38,41 @@ public interface Patient
     EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT, new EntityReference(
         "PhenoTips", EntityType.SPACE));
 
+    /**
+     * Returns a reference to the document where the patient data is stored.
+     * 
+     * @return a valid document reference
+     */
     DocumentReference getDocument();
 
+    /**
+     * Returns a reference to the profile of the user that created the patient record.
+     * 
+     * @return a valid document reference
+     */
     DocumentReference getReporter();
 
+    /**
+     * Returns the list of recorded features, both positive and negative observations.
+     * 
+     * @return an unmodifiable set of {@link Phenotype features}, or an empty set if no features are recorded yet
+     */
     Set<Phenotype> getPhenotypes();
 
+    /**
+     * Retrieve all the patient data in a JSON format. For example:
+     * 
+     * <pre>
+     * {
+     *   "id": "xwiki:data.P0000001",
+     *   "reporter": "xwiki.XWiki.PatchAdams",
+     *   "features": [
+     *     // See the documentation for {@link Phenotype#toJSON()}
+     *   ]
+     * }
+     * </pre>
+     * 
+     * @return the patient data, using the json-lib classes
+     */
     JSONObject toJSON();
 }
