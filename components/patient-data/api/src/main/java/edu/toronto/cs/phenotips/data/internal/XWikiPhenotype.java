@@ -44,45 +44,64 @@ import edu.toronto.cs.phenotips.data.Phenotype;
 import edu.toronto.cs.phenotips.data.PhenotypeMetadatum;
 
 /**
+ * Implementation of patient data based on the XWiki data model, where phenotype data is represented by properties in
+ * objects of type {@code PhenoTips.PatientClass}.
+ * 
  * @version $Id$
  */
 public class XWikiPhenotype implements Phenotype
 {
-    private final Logger logger = LoggerFactory.getLogger(XWikiPhenotype.class);
-
+    /**
+     * Prefix marking negative phenotypes.
+     * 
+     * @see #isPresent()
+     */
     private static final Pattern NEGATIVE_PREFIX = Pattern.compile("^negative_");
 
+    /** The XClass used for storing phenotype metadata. */
     private static final EntityReference METADATA_CLASS = new EntityReference("PhenotypeMetaClass",
         EntityType.DOCUMENT, new EntityReference("PhenoTips", EntityType.SPACE));
 
-    private final XWikiDocument doc;
+    /** Logging helper object. */
+    private final Logger logger = LoggerFactory.getLogger(XWikiPhenotype.class);
 
-    private final String name;
+    /** The property name, the type eventually prefixed by "negative_". */
+    private final String propertyName;
 
-    private final String value;
+    /** @see #getId() */
+    private final String id;
 
+    /** @see #getType() */
     private final String type;
 
+    /** @see #isPresent() */
     private final boolean present;
 
+    /** @see #getMetadata() */
     private Map<String, PhenotypeMetadatum> metadata;
 
+    /**
+     * Constructor that copies the data from an XProperty value.
+     * 
+     * @param doc the XDocument representing the described patient in XWiki
+     * @param property the phenotype category XProperty
+     * @param value the specific value from the property represented by this object
+     */
     XWikiPhenotype(XWikiDocument doc, DBStringListProperty property, String value)
     {
-        this.doc = doc;
-        this.value = value;
-        this.name = property.getName();
-        Matcher nameMatch = NEGATIVE_PREFIX.matcher(this.name);
+        this.id = value;
+        this.propertyName = property.getName();
+        Matcher nameMatch = NEGATIVE_PREFIX.matcher(this.propertyName);
         this.present = !nameMatch.lookingAt();
         this.type = nameMatch.replaceFirst("");
         this.metadata = new HashMap<String, PhenotypeMetadatum>();
         try {
-            BaseObject metadata = findMetadataObject();
-            if (metadata != null) {
-                for (PhenotypeMetadatum.Type type : PhenotypeMetadatum.Type.values()) {
-                    if (metadata.get(type.toString()) != null) {
-                        this.metadata.put(type.toString(),
-                            new XWikiPhenotypeMetadatum((StringProperty) metadata.get(type.toString())));
+            BaseObject metadataObject = findMetadataObject(doc);
+            if (metadataObject != null) {
+                for (PhenotypeMetadatum.Type metadataType : PhenotypeMetadatum.Type.values()) {
+                    if (metadataObject.get(metadataType.toString()) != null) {
+                        this.metadata.put(metadataType.toString(),
+                            new XWikiPhenotypeMetadatum((StringProperty) metadataObject.get(metadataType.toString())));
                     }
                 }
             }
@@ -101,7 +120,7 @@ public class XWikiPhenotype implements Phenotype
     @Override
     public String getId()
     {
-        return this.value;
+        return this.id;
     }
 
     @Override
@@ -137,24 +156,31 @@ public class XWikiPhenotype implements Phenotype
         result.element("id", getId());
         result.element("isPresent", this.present);
         if (!this.metadata.isEmpty()) {
-            JSONArray metadata = new JSONArray();
-            for (PhenotypeMetadatum meta : this.metadata.values()) {
-                metadata.add(meta.toJSON());
+            JSONArray metadataList = new JSONArray();
+            for (PhenotypeMetadatum metadatum : this.metadata.values()) {
+                metadataList.add(metadatum.toJSON());
             }
-            result.element("metadata", metadata);
+            result.element("metadata", metadataList);
         }
         return result;
     }
 
-    private BaseObject findMetadataObject() throws XWikiException
+    /**
+     * Find the XObject that contains metadata for this phenotype, if any.
+     * 
+     * @param doc the patient's XDocument, where metadata obects are stored
+     * @return the found object, or {@code null} if one wasn't found
+     * @throws XWikiException if accessing the data fails
+     */
+    private BaseObject findMetadataObject(XWikiDocument doc) throws XWikiException
     {
-        List<BaseObject> objects = this.doc.getXObjects(METADATA_CLASS);
+        List<BaseObject> objects = doc.getXObjects(METADATA_CLASS);
         if (objects != null) {
             for (BaseObject o : objects) {
                 StringProperty nameProperty = (StringProperty) o.get("target_property_name");
                 StringProperty valueProperty = (StringProperty) o.get("target_property_value");
-                if (nameProperty != null && StringUtils.equals(nameProperty.getValue(), this.name)
-                    && valueProperty != null && StringUtils.equals(valueProperty.getValue(), this.value)) {
+                if (nameProperty != null && StringUtils.equals(nameProperty.getValue(), this.propertyName)
+                    && valueProperty != null && StringUtils.equals(valueProperty.getValue(), this.id)) {
                     return o;
                 }
             }

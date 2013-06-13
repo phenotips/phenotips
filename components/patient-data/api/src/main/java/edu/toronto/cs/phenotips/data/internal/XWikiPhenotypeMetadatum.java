@@ -28,8 +28,8 @@ import com.xpn.xwiki.objects.StringProperty;
 import edu.toronto.cs.phenotips.data.PhenotypeMetadatum;
 
 /**
- * Implementation of patient data based on the XWiki data model, where phenotype metadata is represented by objects of
- * type {@code PhenoTips.PhenotypeMetaClass}.
+ * Implementation of patient data based on the XWiki data model, where phenotype metadata is represented by properties
+ * in objects of type {@code PhenoTips.PhenotypeMetaClass}.
  * 
  * @version $Id$
  */
@@ -41,6 +41,11 @@ public class XWikiPhenotypeMetadatum implements PhenotypeMetadatum
     /** @see #getId() */
     private String id;
 
+    /**
+     * Constructor that copies the data from an XProperty.
+     * 
+     * @param data the XProperty representing this meta-feature in XWiki
+     */
     XWikiPhenotypeMetadatum(StringProperty data)
     {
         this.id = data.getValue();

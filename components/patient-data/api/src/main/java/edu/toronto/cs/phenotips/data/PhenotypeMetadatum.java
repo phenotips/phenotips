@@ -42,8 +42,15 @@ public interface PhenotypeMetadatum
         /** The speed at which disease manifestations develop in time. */
         PACE_OF_PROGRESSION("HP:0003679");
 
+        /** @see #getId() */
         private final String id;
 
+        /**
+         * Constructor that initializes the {@link #getId() ontology term identifier}.
+         * 
+         * @param id an identifier, in the format {@code ONTOLOGY:termId}
+         * @see #getId()
+         */
         Type(String id)
         {
             this.id = id;
@@ -55,6 +62,11 @@ public interface PhenotypeMetadatum
             return this.name().toLowerCase(Locale.ROOT);
         }
 
+        /**
+         * Get the ontology term identifier associated to this type of meta-feature.
+         * 
+         * @return an identifier, in the format {@code ONTOLOGY:termId}
+         */
         public String getId()
         {
             return this.id;

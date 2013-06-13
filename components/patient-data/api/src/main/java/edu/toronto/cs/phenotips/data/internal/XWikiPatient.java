@@ -37,30 +37,50 @@ import edu.toronto.cs.phenotips.data.Patient;
 import edu.toronto.cs.phenotips.data.Phenotype;
 
 /**
+ * Implementation of patient data based on the XWiki data model, where patient data is represented by properties in
+ * objects of type {@code PhenoTips.PatientClass}.
+ * 
  * @version $Id$
  */
 public class XWikiPatient implements Patient
 {
+    /** Known phenotype properties. */
     private static final String[] PHENOTYPE_PROPERTIES = new String[] {"phenotype", "negative_phenotype"};
 
-    private XWikiDocument doc;
+    /** @see #getDocument() */
+    private DocumentReference document;
 
+    /** @see #getReporter() */
+    private DocumentReference reporter;
+
+    /** @see #getPhenotypes() */
     private Set<Phenotype> phenotypes = new HashSet<Phenotype>();
 
-    public XWikiPatient(XWikiDocument doc) throws XWikiException
+    /**
+     * Constructor that copies the data from an XDocument.
+     * 
+     * @param doc the XDocument representing this patient in XWiki
+     */
+    public XWikiPatient(XWikiDocument doc)
     {
-        this.doc = doc;
+        this.document = doc.getDocumentReference();
+        this.reporter = doc.getCreatorReference();
         BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
         if (data == null) {
             return;
         }
         for (String property : PHENOTYPE_PROPERTIES) {
-            DBStringListProperty values = (DBStringListProperty) data.get(property);
-            if (values == null) {
-                continue;
-            }
-            for (String value : values.getList()) {
-                this.phenotypes.add(new XWikiPhenotype(doc, values, value));
+            try {
+                DBStringListProperty values = (DBStringListProperty) data.get(property);
+                if (values == null) {
+                    continue;
+                }
+                for (String value : values.getList()) {
+                    this.phenotypes.add(new XWikiPhenotype(doc, values, value));
+                }
+            } catch (XWikiException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
         // Readonly from now on
@@ -70,13 +90,13 @@ public class XWikiPatient implements Patient
     @Override
     public DocumentReference getDocument()
     {
-        return this.doc.getDocumentReference();
+        return this.document;
     }
 
     @Override
     public DocumentReference getReporter()
     {
-        return this.doc.getCreatorReference();
+        return this.reporter;
     }
 
     @Override

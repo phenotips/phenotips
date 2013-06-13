@@ -47,12 +47,15 @@ import edu.toronto.cs.phenotips.data.PatientData;
 @Singleton
 public class XWikiPatientData implements PatientData
 {
+    /** Runs queries for finding a patient given its external identifier. */
     @Inject
     private QueryManager qm;
 
+    /** Provides access to the XWiki data. */
     @Inject
     private DocumentAccessBridge bridge;
 
+    /** Parses string representations of document references into proper references. */
     @Inject
     @Named("current")
     private DocumentReferenceResolver<String> resolver;
@@ -98,15 +101,10 @@ public class XWikiPatientData implements PatientData
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see edu.toronto.cs.phenotips.data.PatientData#createNewPatient()
-     */
     @Override
     public Patient createNewPatient()
     {
-        // TODO Auto-generated method stub
-        return null;
+        // FIXME implementation missing
+        throw new UnsupportedOperationException();
     }
 }
