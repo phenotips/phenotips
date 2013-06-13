@@ -39,6 +39,8 @@ import edu.toronto.cs.phenotips.data.PatientData;
 import edu.toronto.cs.phenotips.data.indexing.PatientIndexer;
 
 /**
+ * Monitors document changes and submits modified patients to the {@link PatientIndexer indexer}.
+ * 
  * @version $Id$
  */
 @Component
@@ -46,9 +48,11 @@ import edu.toronto.cs.phenotips.data.indexing.PatientIndexer;
 @Singleton
 public class PatientEventListener implements EventListener
 {
+    /** Does the actual indexing. */
     @Inject
     private PatientIndexer indexer;
 
+    /** Transforms raw documents into patient data. */
     @Inject
     private PatientData patients;
 

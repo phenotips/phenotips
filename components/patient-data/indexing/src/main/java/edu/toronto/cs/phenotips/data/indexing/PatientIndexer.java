@@ -24,12 +24,24 @@ import org.xwiki.component.annotation.Role;
 import edu.toronto.cs.phenotips.data.Patient;
 
 /**
+ * API for indexing patient data in a search engine.
+ * 
  * @version $Id$
  */
 @Role
 public interface PatientIndexer
 {
+    /**
+     * Add (or update) a patient to the index.
+     * 
+     * @param patient the patient to index
+     */
     void index(Patient patient);
 
+    /**
+     * Delete from the index a patient.
+     * 
+     * @param patient the patient to delete
+     */
     void delete(Patient patient);
 }

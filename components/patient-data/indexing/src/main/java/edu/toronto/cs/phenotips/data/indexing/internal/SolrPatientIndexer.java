@@ -36,13 +36,14 @@ import edu.toronto.cs.phenotips.data.Phenotype;
 import edu.toronto.cs.phenotips.data.indexing.PatientIndexer;
 
 /**
+ * Indexes patients in a local Solr core.
+ * 
  * @version $Id$
  */
 @Component
 @Singleton
 public class SolrPatientIndexer implements PatientIndexer, Initializable
 {
-
     /** The Solr server instance used. */
     protected SolrServer server;
 
