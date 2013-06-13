@@ -26,9 +26,7 @@ import java.util.Set;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.EntityReference;
 
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -43,9 +41,6 @@ import edu.toronto.cs.phenotips.data.Phenotype;
  */
 public class XWikiPatient implements Patient
 {
-    private static final EntityReference PATIENT_CLASS = new EntityReference("PatientClass", EntityType.DOCUMENT,
-        new EntityReference("PhenoTips", EntityType.SPACE));
-
     private static final String[] PHENOTYPE_PROPERTIES = new String[] {"phenotype", "negative_phenotype"};
 
     private XWikiDocument doc;
@@ -55,7 +50,7 @@ public class XWikiPatient implements Patient
     public XWikiPatient(XWikiDocument doc) throws XWikiException
     {
         this.doc = doc;
-        BaseObject data = doc.getXObject(PATIENT_CLASS);
+        BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
         if (data == null) {
             return;
         }

@@ -23,13 +23,19 @@ import java.util.Set;
 
 import net.sf.json.JSONObject;
 
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 
 /**
  * @version $Id$
  */
 public interface Patient
 {
+    /** The XClass used for storing patient data. */
+    EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT, new EntityReference(
+        "PhenoTips", EntityType.SPACE));
+
     DocumentReference getDocument();
 
     DocumentReference getReporter();
