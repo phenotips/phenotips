@@ -75,4 +75,19 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void delete(Patient patient)
+    {
+        try {
+            this.server.deleteByQuery("document:" + patient.getDocument());
+            this.server.commit();
+        } catch (SolrServerException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

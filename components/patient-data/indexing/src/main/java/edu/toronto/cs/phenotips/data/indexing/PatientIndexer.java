@@ -30,4 +30,6 @@ import edu.toronto.cs.phenotips.data.Patient;
 public interface PatientIndexer
 {
     void index(Patient patient);
+
+    void delete(Patient patient);
 }

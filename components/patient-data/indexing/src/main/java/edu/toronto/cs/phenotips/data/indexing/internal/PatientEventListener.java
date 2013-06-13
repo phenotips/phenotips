@@ -70,7 +70,11 @@ public class PatientEventListener implements EventListener
     {
         Patient patient = this.patients.getPatientById(((FilterableEvent) event).getEventFilter().getFilter());
         if (patient != null) {
-            this.indexer.index(patient);
+            if (event instanceof DocumentDeletedEvent) {
+                this.indexer.delete(patient);
+            } else {
+                this.indexer.index(patient);
+            }
         }
     }
 }
