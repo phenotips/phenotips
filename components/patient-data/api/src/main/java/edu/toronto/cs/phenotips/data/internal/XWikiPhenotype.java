@@ -31,8 +31,6 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.EntityReference;
 
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -57,10 +55,6 @@ public class XWikiPhenotype implements Phenotype
      * @see #isPresent()
      */
     private static final Pattern NEGATIVE_PREFIX = Pattern.compile("^negative_");
-
-    /** The XClass used for storing phenotype metadata. */
-    private static final EntityReference METADATA_CLASS = new EntityReference("PhenotypeMetaClass",
-        EntityType.DOCUMENT, new EntityReference("PhenoTips", EntityType.SPACE));
 
     /** Logging helper object. */
     private final Logger logger = LoggerFactory.getLogger(XWikiPhenotype.class);
@@ -174,7 +168,7 @@ public class XWikiPhenotype implements Phenotype
      */
     private BaseObject findMetadataObject(XWikiDocument doc) throws XWikiException
     {
-        List<BaseObject> objects = doc.getXObjects(METADATA_CLASS);
+        List<BaseObject> objects = doc.getXObjects(PhenotypeMetadatum.CLASS_REFERENCE);
         if (objects != null) {
             for (BaseObject o : objects) {
                 StringProperty nameProperty = (StringProperty) o.get("target_property_name");

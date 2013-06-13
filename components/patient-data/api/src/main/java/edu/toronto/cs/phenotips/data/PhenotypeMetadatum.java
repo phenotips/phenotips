@@ -23,6 +23,9 @@ import java.util.Locale;
 
 import net.sf.json.JSONObject;
 
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.EntityReference;
+
 /**
  * Information about a {@link Patient patient} {@link Phenotype feature} property (meta-feature).
  * 
@@ -30,6 +33,10 @@ import net.sf.json.JSONObject;
  */
 public interface PhenotypeMetadatum
 {
+    /** The XClass used for storing phenotype metadata. */
+    EntityReference CLASS_REFERENCE = new EntityReference("PhenotypeMetaClass", EntityType.DOCUMENT,
+        new EntityReference("PhenoTips", EntityType.SPACE));
+
     /**
      * The supported metadata types.
      */
