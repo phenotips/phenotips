@@ -27,10 +27,8 @@ import javax.inject.Singleton;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -60,17 +58,14 @@ public class XWikiPatientData implements PatientData
     @Named("current")
     private DocumentReferenceResolver<String> resolver;
 
-    private EntityReference patientClass = new EntityReference("PatientClass", EntityType.DOCUMENT,
-        new EntityReference("PhenoTips", EntityType.SPACE));
-
     @Override
     public Patient getPatientById(String id)
     {
-        DocumentReference reference = this.resolver.resolve(id, new EntityReference("data", EntityType.SPACE));
+        DocumentReference reference = this.resolver.resolve(id, Patient.DEFAULT_DATA_SPACE);
         try {
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(reference);
-            if (doc != null && doc.getXObject(this.patientClass) != null) {
-                return new XWikiPatient((XWikiDocument) this.bridge.getDocument(reference));
+            if (doc != null && doc.getXObject(Patient.CLASS_REFERENCE) != null) {
+                return new XWikiPatient(doc);
             }
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -87,8 +82,7 @@ public class XWikiPatientData implements PatientData
             q.bindValue("eid", externalId);
             List<String> results = q.<String> execute();
             if (results.size() == 1) {
-                DocumentReference reference =
-                    this.resolver.resolve(results.get(0), new EntityReference("data", EntityType.SPACE));
+                DocumentReference reference = this.resolver.resolve(results.get(0), Patient.DEFAULT_DATA_SPACE);
                 return new XWikiPatient((XWikiDocument) this.bridge.getDocument(reference));
             }
         } catch (QueryException e) {
