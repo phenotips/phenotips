@@ -1,1 +1,1 @@
-edu.toronto.cs.phenotips.data.internal.XWikiPatientData
+edu.toronto.cs.phenotips.data.internal.PhenoTipsPatientData

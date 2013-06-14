@@ -47,7 +47,7 @@ import edu.toronto.cs.phenotips.data.PhenotypeMetadatum;
  * 
  * @version $Id$
  */
-public class XWikiPhenotype implements Phenotype
+public class PhenoTipsPhenotype implements Phenotype
 {
     /**
      * Prefix marking negative phenotypes.
@@ -57,7 +57,7 @@ public class XWikiPhenotype implements Phenotype
     private static final Pattern NEGATIVE_PREFIX = Pattern.compile("^negative_");
 
     /** Logging helper object. */
-    private final Logger logger = LoggerFactory.getLogger(XWikiPhenotype.class);
+    private final Logger logger = LoggerFactory.getLogger(PhenoTipsPhenotype.class);
 
     /** The property name, the type eventually prefixed by "negative_". */
     private final String propertyName;
@@ -81,7 +81,7 @@ public class XWikiPhenotype implements Phenotype
      * @param property the phenotype category XProperty
      * @param value the specific value from the property represented by this object
      */
-    XWikiPhenotype(XWikiDocument doc, DBStringListProperty property, String value)
+    PhenoTipsPhenotype(XWikiDocument doc, DBStringListProperty property, String value)
     {
         this.id = value;
         this.propertyName = property.getName();
@@ -95,7 +95,7 @@ public class XWikiPhenotype implements Phenotype
                 for (PhenotypeMetadatum.Type metadataType : PhenotypeMetadatum.Type.values()) {
                     if (metadataObject.get(metadataType.toString()) != null) {
                         this.metadata.put(metadataType.toString(),
-                            new XWikiPhenotypeMetadatum((StringProperty) metadataObject.get(metadataType.toString())));
+                            new PhenoTipsPhenotypeMetadatum((StringProperty) metadataObject.get(metadataType.toString())));
                     }
                 }
             }

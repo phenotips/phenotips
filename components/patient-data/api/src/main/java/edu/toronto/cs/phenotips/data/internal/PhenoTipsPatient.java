@@ -42,7 +42,7 @@ import edu.toronto.cs.phenotips.data.Phenotype;
  * 
  * @version $Id$
  */
-public class XWikiPatient implements Patient
+public class PhenoTipsPatient implements Patient
 {
     /** Known phenotype properties. */
     private static final String[] PHENOTYPE_PROPERTIES = new String[] {"phenotype", "negative_phenotype"};
@@ -61,7 +61,7 @@ public class XWikiPatient implements Patient
      * 
      * @param doc the XDocument representing this patient in XWiki
      */
-    public XWikiPatient(XWikiDocument doc)
+    public PhenoTipsPatient(XWikiDocument doc)
     {
         this.document = doc.getDocumentReference();
         this.reporter = doc.getCreatorReference();
@@ -76,7 +76,7 @@ public class XWikiPatient implements Patient
                     continue;
                 }
                 for (String value : values.getList()) {
-                    this.phenotypes.add(new XWikiPhenotype(doc, values, value));
+                    this.phenotypes.add(new PhenoTipsPhenotype(doc, values, value));
                 }
             } catch (XWikiException e) {
                 // TODO Auto-generated catch block

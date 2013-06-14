@@ -33,7 +33,7 @@ import edu.toronto.cs.phenotips.data.PhenotypeMetadatum;
  * 
  * @version $Id$
  */
-public class XWikiPhenotypeMetadatum implements PhenotypeMetadatum
+public class PhenoTipsPhenotypeMetadatum implements PhenotypeMetadatum
 {
     /** @see #getType() */
     private Type type;
@@ -46,7 +46,7 @@ public class XWikiPhenotypeMetadatum implements PhenotypeMetadatum
      * 
      * @param data the XProperty representing this meta-feature in XWiki
      */
-    XWikiPhenotypeMetadatum(StringProperty data)
+    PhenoTipsPhenotypeMetadatum(StringProperty data)
     {
         this.id = data.getValue();
         this.type = Type.valueOf(data.getName().toUpperCase(Locale.ROOT));

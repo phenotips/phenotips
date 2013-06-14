@@ -43,7 +43,7 @@ import edu.toronto.cs.phenotips.data.PatientData;
  */
 @Component
 @Singleton
-public class XWikiPatientData implements PatientData
+public class PhenoTipsPatientData implements PatientData
 {
     /** Runs queries for finding a patient given its external identifier. */
     @Inject
@@ -65,7 +65,7 @@ public class XWikiPatientData implements PatientData
         try {
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(reference);
             if (doc != null && doc.getXObject(Patient.CLASS_REFERENCE) != null) {
-                return new XWikiPatient(doc);
+                return new PhenoTipsPatient(doc);
             }
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -83,7 +83,7 @@ public class XWikiPatientData implements PatientData
             List<String> results = q.<String> execute();
             if (results.size() == 1) {
                 DocumentReference reference = this.resolver.resolve(results.get(0), Patient.DEFAULT_DATA_SPACE);
-                return new XWikiPatient((XWikiDocument) this.bridge.getDocument(reference));
+                return new PhenoTipsPatient((XWikiDocument) this.bridge.getDocument(reference));
             }
         } catch (QueryException e) {
             // TODO Auto-generated catch block
