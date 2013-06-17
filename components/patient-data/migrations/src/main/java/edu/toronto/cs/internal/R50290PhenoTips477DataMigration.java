@@ -155,7 +155,7 @@ public class R50290PhenoTips477DataMigration extends AbstractHibernateDataMigrat
             Query q =
                 session.createQuery("select distinct o.name from BaseObject o, IntegerProperty p where o.className = '"
                     + R50290PhenoTips477DataMigration.this.serializer.serialize(classReference)
-                    + "' and p.id.id = o.id and p.id.name = '" + OLD_ONSET_NAME + "'");
+                    + "' and p.id.id = o.id and p.id.name = '" + OLD_ONSET_NAME + "' and p.value IS NOT NULL");
             @SuppressWarnings("unchecked")
             List<String> documents = q.list();
             for (String docName : documents) {
@@ -164,8 +164,7 @@ public class R50290PhenoTips477DataMigration extends AbstractHibernateDataMigrat
                 BaseObject object = doc.getXObject(classReference);
                 IntegerProperty oldOnset = (IntegerProperty) object.get(OLD_ONSET_NAME);
                 StringProperty newOnset = (StringProperty) object.get(NEW_ONSET_NAME);
-                if (oldOnset == null || oldOnset.getValue() == null
-                    || (newOnset != null && StringUtils.isNotBlank(newOnset.getValue()))) {
+                if (oldOnset == null || (newOnset != null && StringUtils.isNotBlank(newOnset.getValue()))) {
                     continue;
                 }
                 object.removeField(OLD_ONSET_NAME);
