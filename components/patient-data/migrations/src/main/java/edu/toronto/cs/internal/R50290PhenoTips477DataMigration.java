@@ -164,7 +164,8 @@ public class R50290PhenoTips477DataMigration extends AbstractHibernateDataMigrat
                 BaseObject object = doc.getXObject(classReference);
                 IntegerProperty oldOnset = (IntegerProperty) object.get(OLD_ONSET_NAME);
                 StringProperty newOnset = (StringProperty) object.get(NEW_ONSET_NAME);
-                if (oldOnset == null || (newOnset != null && StringUtils.isNotBlank(newOnset.getValue()))) {
+                if (oldOnset == null || oldOnset.getValue() == null
+                    || (newOnset != null && StringUtils.isNotBlank(newOnset.getValue()))) {
                     continue;
                 }
                 object.removeField(OLD_ONSET_NAME);
