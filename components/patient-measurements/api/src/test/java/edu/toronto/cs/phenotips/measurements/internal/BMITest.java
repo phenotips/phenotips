@@ -19,8 +19,7 @@
  */
 package edu.toronto.cs.phenotips.measurements.internal;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -109,14 +108,14 @@ public class BMITest
     @Test
     public void testGetBMI() throws ComponentLookupException
     {
-        Assert.assertEquals(100.0, getComponent().computeBMI(100, 100));
-        Assert.assertEquals(31.25, getComponent().computeBMI(80, 160));
-        Assert.assertEquals(0.0, getComponent().computeBMI(0, 0));
-        Assert.assertEquals(0.0, getComponent().computeBMI(80, 0));
-        Assert.assertEquals(0.0, getComponent().computeBMI(0, 120));
-        Assert.assertEquals(0.0, getComponent().computeBMI(-80, -160));
-        Assert.assertEquals(Double.POSITIVE_INFINITY, getComponent().computeBMI(Double.MAX_VALUE, 1));
-        Assert.assertEquals(0.0, getComponent().computeBMI(1, Double.MAX_VALUE));
+        Assert.assertEquals(100.0, getComponent().computeBMI(100, 100), 1.0E-2);
+        Assert.assertEquals(31.25, getComponent().computeBMI(80, 160), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().computeBMI(0, 0), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().computeBMI(80, 0), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().computeBMI(0, 120), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().computeBMI(-80, -160), 1.0E-2);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, getComponent().computeBMI(Double.MAX_VALUE, 1), 1.0E-2);
+        Assert.assertEquals(0.0, getComponent().computeBMI(1, Double.MAX_VALUE), 1.0E-2);
     }
 
     @Test

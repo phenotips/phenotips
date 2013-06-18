@@ -21,8 +21,7 @@ package edu.toronto.cs.phenotips.measurements.internal;
 
 import java.util.List;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -65,10 +64,10 @@ public class DefaultMeasurementsChartConfigurationsFactoryTest
         Assert.assertEquals(36, settings.get(0).getUpperAgeLimit());
         Assert.assertEquals(3, settings.get(0).getAgeTickStep());
         Assert.assertEquals(6, settings.get(0).getAgeLabelStep());
-        Assert.assertEquals(12.2, settings.get(0).getLowerValueLimit());
-        Assert.assertEquals(22.2, settings.get(0).getUpperValueLimit());
-        Assert.assertEquals(0.5, settings.get(0).getValueTickStep());
-        Assert.assertEquals(2.0, settings.get(0).getValueLabelStep());
+        Assert.assertEquals(12.2, settings.get(0).getLowerValueLimit(), 1.0E-2);
+        Assert.assertEquals(22.2, settings.get(0).getUpperValueLimit(), 1.0E-2);
+        Assert.assertEquals(0.5, settings.get(0).getValueTickStep(), 1.0E-2);
+        Assert.assertEquals(2.0, settings.get(0).getValueLabelStep(), 1.0E-2);
         Assert.assertEquals("Weight for age, 1 to 3 years", settings.get(0).getChartTitle());
         Assert.assertEquals("Age (months)", settings.get(0).getTopLabel());
         Assert.assertEquals("Age (monthly)", settings.get(0).getBottomLabel());
@@ -87,10 +86,10 @@ public class DefaultMeasurementsChartConfigurationsFactoryTest
         Assert.assertEquals(240, settings.get(1).getUpperAgeLimit());
         Assert.assertEquals(6, settings.get(1).getAgeTickStep());
         Assert.assertEquals(12, settings.get(1).getAgeLabelStep());
-        Assert.assertEquals(0.0, settings.get(1).getLowerValueLimit());
-        Assert.assertEquals(20.0, settings.get(1).getUpperValueLimit());
-        Assert.assertEquals(0.2, settings.get(1).getValueTickStep());
-        Assert.assertEquals(1.0, settings.get(1).getValueLabelStep());
+        Assert.assertEquals(0.0, settings.get(1).getLowerValueLimit(), 1.0E-2);
+        Assert.assertEquals(20.0, settings.get(1).getUpperValueLimit(), 1.0E-2);
+        Assert.assertEquals(0.2, settings.get(1).getValueTickStep(), 1.0E-2);
+        Assert.assertEquals(1.0, settings.get(1).getValueLabelStep(), 1.0E-2);
         Assert.assertEquals("Weight for age, birth to 20 years", settings.get(1).getChartTitle());
         Assert.assertEquals("Age (years)", settings.get(1).getTopLabel());
         Assert.assertEquals("Age (years)", settings.get(1).getBottomLabel());
@@ -138,13 +137,13 @@ public class DefaultMeasurementsChartConfigurationsFactoryTest
         Mockito.verify(this.mocker.getMockedLogger()).warn(
             "Invalid chart settings for [{}]: value should be finite, was [{}]",
             "charts.tested.configurations.broken.lowerValueLimit", "NaN");
-        Assert.assertEquals(0.0, settings.get(4).getLowerValueLimit());
-        Assert.assertEquals(24.0, settings.get(4).getUpperValueLimit());
-        Assert.assertEquals(0.2, settings.get(4).getValueTickStep());
+        Assert.assertEquals(0.0, settings.get(4).getLowerValueLimit(), 1.0E-2);
+        Assert.assertEquals(24.0, settings.get(4).getUpperValueLimit(), 1.0E-2);
+        Assert.assertEquals(0.2, settings.get(4).getValueTickStep(), 1.0E-2);
         Mockito.verify(this.mocker.getMockedLogger()).warn(
             "Invalid chart settings for [{}]: value should be finite, was [{}]",
             "charts.tested.configurations.broken.valueLabelStep", "Infinity");
-        Assert.assertEquals(1.0, settings.get(4).getValueLabelStep());
+        Assert.assertEquals(1.0, settings.get(4).getValueLabelStep(), 1.0E-2);
         Assert.assertEquals("\uFFFEWeight for age,b\u0123 to 2\u00000 years", settings.get(4).getChartTitle());
         Assert.assertEquals("Age (years)", settings.get(4).getTopLabel());
         Assert.assertEquals("Age (years)", settings.get(4).getBottomLabel());

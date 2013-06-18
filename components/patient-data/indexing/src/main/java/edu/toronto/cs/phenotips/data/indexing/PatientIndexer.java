@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,23 +16,34 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package edu.toronto.cs.phenotips.data.indexing;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>edu.toronto.cs.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>patient-data</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Patient data</name>
+import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
-  <modules>
-    <module>api</module>
-    <module>migrations</module>
-    <module>indexing</module>
-    <module>ui</module>
-  </modules>
-</project>
+import edu.toronto.cs.phenotips.data.Patient;
+
+/**
+ * API for indexing patient data in a search engine.
+ * 
+ * @version $Id$
+ */
+@Unstable
+@Role
+public interface PatientIndexer
+{
+    /**
+     * Add (or update) a patient to the index.
+     * 
+     * @param patient the patient to index
+     */
+    void index(Patient patient);
+
+    /**
+     * Delete from the index a patient.
+     * 
+     * @param patient the patient to delete
+     */
+    void delete(Patient patient);
+}
