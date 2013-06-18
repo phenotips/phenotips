@@ -94,8 +94,8 @@ public class PhenoTipsPhenotype implements Phenotype
             if (metadataObject != null) {
                 for (PhenotypeMetadatum.Type metadataType : PhenotypeMetadatum.Type.values()) {
                     if (metadataObject.get(metadataType.toString()) != null) {
-                        this.metadata.put(metadataType.toString(),
-                            new PhenoTipsPhenotypeMetadatum((StringProperty) metadataObject.get(metadataType.toString())));
+                        this.metadata.put(metadataType.toString(), new PhenoTipsPhenotypeMetadatum(
+                            (StringProperty) metadataObject.get(metadataType.toString())));
                     }
                 }
             }
