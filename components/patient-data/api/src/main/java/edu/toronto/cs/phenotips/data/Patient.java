@@ -40,6 +40,10 @@ public interface Patient
     EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT, new EntityReference(
         "PhenoTips", EntityType.SPACE));
 
+    /** The default template for creating a new patient. */
+    EntityReference TEMPLATE_REFERENCE = new EntityReference("PatientTemplate", EntityType.DOCUMENT,
+        CLASS_REFERENCE.getParent());
+
     /** The default space where patient data is stored. */
     EntityReference DEFAULT_DATA_SPACE = new EntityReference("data", EntityType.SPACE);
 
