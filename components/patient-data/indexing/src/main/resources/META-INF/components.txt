@@ -1,0 +1,2 @@
+edu.toronto.cs.phenotips.data.indexing.internal.PatientEventListener
+edu.toronto.cs.phenotips.data.indexing.internal.SolrPatientIndexer
