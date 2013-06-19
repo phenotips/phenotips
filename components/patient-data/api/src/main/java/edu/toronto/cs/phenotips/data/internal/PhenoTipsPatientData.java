@@ -125,8 +125,8 @@ public class PhenoTipsPatientData implements PatientData
             long crtMaxID;
             Query q =
                 this.qm.createQuery(
-                    "select patient.identifier from Document doc, "
-                        + "doc.object(PhenoTips.PatientClass) as patient order by patient.identifier desc", Query.XWQL)
+                    "select patient.identifier from Document doc, doc.object(PhenoTips.PatientClass) as patient"
+                        + " where patient.identifier is not null order by patient.identifier desc", Query.XWQL)
                     .setLimit(1);
             List<Long> crtMaxIDList = q.execute();
             if (crtMaxIDList.size() > 0 && crtMaxIDList.get(0) != null) {
