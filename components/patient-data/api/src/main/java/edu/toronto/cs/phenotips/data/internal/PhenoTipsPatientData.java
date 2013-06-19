@@ -32,6 +32,7 @@ import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -124,8 +125,8 @@ public class PhenoTipsPatientData implements PatientData
             long crtMaxID;
             Query q =
                 this.qm.createQuery(
-                    "select patient.identifier from Document doc, "
-                        + "doc.object(PhenoTips.PatientClass) as patient order by patient.identifier desc", Query.XWQL)
+                    "select patient.identifier from Document doc, doc.object(PhenoTips.PatientClass) as patient"
+                        + " where patient.identifier is not null order by patient.identifier desc", Query.XWQL)
                     .setLimit(1);
             List<Long> crtMaxIDList = q.execute();
             if (crtMaxIDList.size() > 0 && crtMaxIDList.get(0) != null) {
@@ -134,14 +135,16 @@ public class PhenoTipsPatientData implements PatientData
                 crtMaxID = 0;
             }
             DocumentReference newDoc;
+            SpaceReference space =
+                new SpaceReference(targetSpace, this.bridge.getCurrentDocumentReference().getWikiReference());
             do {
-                crtMaxID++;
-                newDoc = new DocumentReference("", targetSpace, prefix + String.format("%07d", crtMaxID));
+                newDoc = new DocumentReference(prefix + String.format("%07d", ++crtMaxID), space);
             } while (this.bridge.exists(newDoc));
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(newDoc);
             doc.readFromTemplate(this.referenceResolver.resolve(Patient.TEMPLATE_REFERENCE), context);
             doc.setTitle(newDoc.getName());
             doc.getXObject(Patient.CLASS_REFERENCE).setLongValue("identifier", crtMaxID);
+            doc.setCreatorReference(this.bridge.getCurrentUserReference());
             context.getWiki().saveDocument(doc, context);
             return new PhenoTipsPatient(doc);
         } catch (Exception ex) {
