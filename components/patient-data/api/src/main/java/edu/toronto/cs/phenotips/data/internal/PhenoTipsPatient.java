@@ -116,7 +116,9 @@ public class PhenoTipsPatient implements Patient
     {
         JSONObject result = new JSONObject();
         result.element("id", getDocument().getName());
-        result.element("reporter", getReporter().getName());
+        if (getReporter() != null) {
+            result.element("reporter", getReporter().getName());
+        }
         if (!this.phenotypes.isEmpty()) {
             JSONArray features = new JSONArray();
             for (Phenotype phenotype : this.phenotypes) {
