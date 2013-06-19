@@ -32,6 +32,7 @@ import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -134,9 +135,10 @@ public class PhenoTipsPatientData implements PatientData
                 crtMaxID = 0;
             }
             DocumentReference newDoc;
+            SpaceReference space =
+                new SpaceReference(targetSpace, this.bridge.getCurrentDocumentReference().getWikiReference());
             do {
-                crtMaxID++;
-                newDoc = new DocumentReference("", targetSpace, prefix + String.format("%07d", crtMaxID));
+                newDoc = new DocumentReference(prefix + String.format("%07d", ++crtMaxID), space);
             } while (this.bridge.exists(newDoc));
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(newDoc);
             doc.readFromTemplate(this.referenceResolver.resolve(Patient.TEMPLATE_REFERENCE), context);
