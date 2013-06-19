@@ -42,60 +42,14 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{groovy}}
-synchronized (System.class) { //really?
-  def crtContext = services.component.getInstance(org.xwiki.context.Execution).getContext().getProperty('xwikicontext')
-  def request = crtContext.getRequest()
-  def token = request.getParameter('form_token');
-  def csrf = services.component.getInstance(org.xwiki.csrf.CSRFToken);
-  if (!csrf.isTokenValid(token)) {
-    crtContext.getResponse().sendRedirect(csrf.getResubmissionURL());
-    return false;
-  }
-
-  if (request.get('doCreate') == '1') {
-   def crtMaxID
-   def className = request.get('className')
-   if (className == null) {
-     className = 'PhenoTips.PatientClass';
-   }
-   def templateName = request.get('classTemplate')
-   if (templateName == null) {
-     templateName = 'PhenoTips.PatientTemplate';
-   }
-   def idPropertyName = request.get('idField')
-   if (idPropertyName == null) {
-     idPropertyName = 'identifier';
-   }
-   def prefix = request.get('idPrefix')
-   if (prefix == null) {
-     prefix = 'P';
-   }
-   def targetSpace = request.get('space')
-   if (targetSpace == null) {
-     targetSpace = 'data';
-   }
-   def crtMaxIDList = crtContext.getWiki().store.search('select prop.value from BaseObject obj, LongProperty prop where obj.className = ? and prop.id.id = obj.id and prop.id.name = ? order by 1 desc', 1, 0, [className, idPropertyName], crtContext)
-   if (crtMaxIDList.size() &gt; 0 &amp;&amp; crtMaxIDList.get(0) != null) {
-     crtMaxID = crtMaxIDList.get(0)
-   } else {
-     crtMaxID = 0
-   }
-   def name
-   def newDoc
-   while(!newDoc || !newDoc.isNew()) {
-     crtMaxID++
-     name = prefix + String.format("%07d", crtMaxID)
-     newDoc = crtContext.getWiki().getDocument(services.model.createDocumentReference('', targetSpace, name), crtContext)
-   }
-   def createURL = newDoc.getURL('save', "form_token=${services.csrf.token}&amp;template=${templateName}&amp;${className}_0_${idPropertyName}=${crtMaxID}&amp;title=${name}&amp;xredirect=" + crtContext.vcontext.escapetool.url(newDoc.getURL('edit', crtContext)), crtContext)
-   for (String param : request.getParameterNames()) {
-     if (param != 'doCreate') {
-       createURL += "&amp;${className}_0_${param}=" + request.getParameter(param);
-     }
-   }
-   crtContext.getResponse().sendRedirect(createURL)
-  }
-}
-{{/groovy}}</content>
+  <content>{{velocity}}
+#if ($request.get('doCreate') == '1')
+  #set ($patient = $services.patients.createNewPatient())
+  #if ($patient)
+    $response.sendRedirect($xwiki.getURL($patient.document, 'edit', ''))
+  #else
+    Cannot create patient
+  #end
+#end
+{{/velocity}}</content>
 </xwikidoc>
