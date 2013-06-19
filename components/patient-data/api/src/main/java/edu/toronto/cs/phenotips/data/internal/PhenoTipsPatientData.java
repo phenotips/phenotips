@@ -144,6 +144,7 @@ public class PhenoTipsPatientData implements PatientData
             doc.readFromTemplate(this.referenceResolver.resolve(Patient.TEMPLATE_REFERENCE), context);
             doc.setTitle(newDoc.getName());
             doc.getXObject(Patient.CLASS_REFERENCE).setLongValue("identifier", crtMaxID);
+            doc.setCreatorReference(this.bridge.getCurrentUserReference());
             context.getWiki().saveDocument(doc, context);
             return new PhenoTipsPatient(doc);
         } catch (Exception ex) {
