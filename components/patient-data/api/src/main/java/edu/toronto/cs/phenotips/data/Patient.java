@@ -69,6 +69,13 @@ public interface Patient
     Set<Phenotype> getPhenotypes();
 
     /**
+     * Returns the list of recorded diseases.
+     * 
+     * @return an unmodifiable set of {@link Disease diseases}, or an empty set if no diseases have been identified yet
+     */
+    Set<Disease> getDiseases();
+
+    /**
      * Retrieve all the patient data in a JSON format. For example:
      * 
      * <pre>
@@ -77,6 +84,9 @@ public interface Patient
      *   "reporter": "xwiki.XWiki.PatchAdams",
      *   "features": [
      *     // See the documentation for {@link Phenotype#toJSON()}
+     *   ],
+     *   "diseases": [
+     *     // See the documentation for {@link Disease#toJSON()}
      *   ]
      * }
      * </pre>

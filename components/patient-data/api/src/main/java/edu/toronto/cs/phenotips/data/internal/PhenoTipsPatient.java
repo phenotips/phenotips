@@ -33,6 +33,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.DBStringListProperty;
 
+import edu.toronto.cs.phenotips.data.Disease;
 import edu.toronto.cs.phenotips.data.Patient;
 import edu.toronto.cs.phenotips.data.Phenotype;
 
@@ -55,6 +56,9 @@ public class PhenoTipsPatient implements Patient
 
     /** @see #getPhenotypes() */
     private Set<Phenotype> phenotypes = new HashSet<Phenotype>();
+
+    /** @see #getDiseases() */
+    private Set<Disease> diseases = new HashSet<Disease>();
 
     /**
      * Constructor that copies the data from an XDocument.
@@ -83,8 +87,20 @@ public class PhenoTipsPatient implements Patient
                 e.printStackTrace();
             }
         }
+        try {
+            DBStringListProperty values = (DBStringListProperty) data.get("omim_id");
+            if (values != null) {
+                for (String value : values.getList()) {
+                    this.diseases.add(new PhenoTipsDisease(doc, values, value));
+                }
+            }
+        } catch (XWikiException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         // Readonly from now on
         this.phenotypes = Collections.unmodifiableSet(this.phenotypes);
+        this.diseases = Collections.unmodifiableSet(this.diseases);
     }
 
     @Override
@@ -106,6 +122,12 @@ public class PhenoTipsPatient implements Patient
     }
 
     @Override
+    public Set<Disease> getDiseases()
+    {
+        return this.diseases;
+    }
+
+    @Override
     public String toString()
     {
         return toJSON().toString(2);
@@ -120,11 +142,18 @@ public class PhenoTipsPatient implements Patient
             result.element("reporter", getReporter().getName());
         }
         if (!this.phenotypes.isEmpty()) {
-            JSONArray features = new JSONArray();
+            JSONArray featuresJSON = new JSONArray();
             for (Phenotype phenotype : this.phenotypes) {
-                features.add(phenotype.toJSON());
+                featuresJSON.add(phenotype.toJSON());
             }
-            result.element("features", features);
+            result.element("features", featuresJSON);
+        }
+        if (!this.diseases.isEmpty()) {
+            JSONArray diseasesJSON = new JSONArray();
+            for (Disease disease : this.diseases) {
+                diseasesJSON.add(disease.toJSON());
+            }
+            result.element("diseases", diseasesJSON);
         }
         return result;
     }
