@@ -5969,7 +5969,6 @@ input.LV_invalid_field {
 
   #__displayIfNotEmpty('family_comments')
 #end
-#*
 #set ($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))
 #if ($pedigreeObj)
   #set ($data = $!pedigreeObj.getProperty('data').value)
@@ -5977,7 +5976,8 @@ input.LV_invalid_field {
 #end## pedigree obj exists
 #if ($xcontext.action == 'edit' || "$!{doc.display('pedigree')}" != '' || "$!data" != '')
   === Pedigree ===
-  $!doc.display('pedigree')
+
+##  $!doc.display('pedigree')
   #if ($xcontext.action == 'edit')
     #if ("$!data" != '')
       #set ($pAction = 'Edit pedigree')
@@ -5992,7 +5992,6 @@ input.LV_invalid_field {
     {{/html}}
   #end
 #end## action == edit || data
-*#
 )))
 )))##chapter
 #end## if &lt;should show this section&gt;
