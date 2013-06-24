@@ -5976,8 +5976,9 @@ input.LV_invalid_field {
   #set ($image = $pedigreeObj.getProperty('image').value)
 #end## pedigree obj exists
 #if ($xcontext.action == 'edit' || "$!{doc.display('pedigree')}" != '' || "$!data" != '')
+
   === Pedigree ===
-  $!doc.display('pedigree')
+
   #if ($xcontext.action == 'edit')
     #if ("$!data" != '')
       #set ($pAction = 'Edit pedigree')
