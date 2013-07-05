@@ -52,16 +52,23 @@
 #end
 = $doc.name =
 
+#foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.before'))
+  {{html clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
+
+#end
 #foreach ($section in $config.getProperty('activeSections').value)
 #__reportSection_display($section)
 #end
+#foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.after'))
 
+  {{html clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
+#end
 #if ($xcontext.action == 'export' &amp;&amp; $config.getProperty('section__measurements').value.contains('growth-charts') &amp;&amp; $doc.getObject('PhenoTips.MeasurementsClass'))
+
 {{html clean=false}}#pagebreak(){{/html}}
 #set($chartOptions = {'targetClassName' : 'PhenoTips.MeasurementsClass', 'obj': $obj, 'link': false})
 #_measurementCharts($chartOptions)
 #end
-
 #if ($xcontext.action == 'export' &amp;&amp; $doc.getObject('PhenoTips.ExternalImageClass'))
 #foreach ($o in $doc.getObjects('PhenoTips.ExternalImageClass'))
 #if ("$!{o.getProperty('file').value}" != '' &amp;&amp; ${o.getProperty('print').value} == '1')
