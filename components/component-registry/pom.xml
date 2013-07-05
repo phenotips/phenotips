@@ -24,23 +24,28 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>edu.toronto.cs.phenotips</groupId>
-    <artifactId>phenotips-parent</artifactId>
+    <artifactId>phenotips-components</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-components</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Various Java components</name>
-
-  <modules>
-    <module>component-registry</module>
-    <module>obo2solr</module>
-    <module>solr-access-service</module>
-    <module>patient-update-listeners</module>
-    <module>patient-data</module>
-    <module>patient-measurements</module>
-    <module>application-configuration</module>
-    <module>patient-tools</module>
-    <module>ncbieutils-access-service</module>
-    <module>phenotype-mapping-service</module>
-  </modules>
+  <artifactId>component-registry</artifactId>
+  <name>PhenoTips - Component Manager Registry</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-observation-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-test-component</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>
