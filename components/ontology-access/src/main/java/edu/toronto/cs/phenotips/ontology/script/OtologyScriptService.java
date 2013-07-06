@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package edu.toronto.cs.phenotips.ontology;
+package edu.toronto.cs.phenotips.ontology.script;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -25,6 +25,10 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
+
+import edu.toronto.cs.phenotips.ontology.OntologyManager;
+import edu.toronto.cs.phenotips.ontology.OntologyService;
+import edu.toronto.cs.phenotips.ontology.OntologyTerm;
 
 /**
  * Provides access to the available ontologies and their terms to public scripts.
