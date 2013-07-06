@@ -35,6 +35,7 @@
     <module>component-registry</module>
     <module>obo2solr</module>
     <module>solr-access-service</module>
+    <module>ontology-access</module>
     <module>patient-update-listeners</module>
     <module>patient-data</module>
     <module>patient-measurements</module>

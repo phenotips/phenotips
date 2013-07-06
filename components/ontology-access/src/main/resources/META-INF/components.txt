@@ -1,0 +1,4 @@
+edu.toronto.cs.phenotips.ontology.internal.DefaultOntologyManager
+edu.toronto.cs.phenotips.ontology.internal.solr.HumanPhenotypeOntology
+edu.toronto.cs.phenotips.ontology.internal.solr.MendelianInheritanceInMan
+edu.toronto.cs.phenotips.ontology.OtologyScriptService

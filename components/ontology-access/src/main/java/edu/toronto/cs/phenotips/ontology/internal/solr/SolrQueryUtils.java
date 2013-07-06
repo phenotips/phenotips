@@ -1,0 +1,149 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+package edu.toronto.cs.phenotips.ontology.internal.solr;
+
+import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.params.CommonParams;
+import org.apache.solr.common.params.DisMaxParams;
+import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.common.params.SolrParams;
+import org.apache.solr.common.params.SpellingParams;
+
+/**
+ * Utility class for preparing the queries used by the {@link AbstractSolrOntologyService ontology service}.
+ * 
+ * @version $Id$
+ */
+public final class SolrQueryUtils
+{
+    /** Regular expression that checks if the last term in a query is a word stub. */
+    private static final Pattern WORD_STUB = Pattern.compile("(\\w++):(\\w++)\\*$", Pattern.CASE_INSENSITIVE);
+
+    /** Private default constructor, so that this utility class can't be instantiated. */
+    private SolrQueryUtils()
+    {
+        // Nothing to do
+    }
+
+    /**
+     * Convert a Lucene query string into Solr parameters. More specifically, places the input query under the "q"
+     * parameter.
+     * 
+     * @param query the lucene query string to use
+     * @return the obtained parameters
+     */
+    public static SolrParams transformQueryToSolrParams(String query)
+    {
+        ModifiableSolrParams result = new ModifiableSolrParams();
+        result.add(CommonParams.Q, query);
+        return result;
+    }
+
+    /**
+     * Adds extra parameters to a Solr query for better term searches. More specifically, adds parameters for requesting
+     * the score to be included in the results, for requesting a spellcheck result, and sets the {@code start} and
+     * {@code rows} parameters when missing.
+     * 
+     * @param originalParams the original Solr parameters to enhance
+     * @return the enhanced parameters
+     */
+    public static SolrParams enhanceParams(SolrParams originalParams)
+    {
+        if (originalParams == null) {
+            return null;
+        }
+        ModifiableSolrParams newParams = new ModifiableSolrParams(originalParams);
+        if (newParams.get(CommonParams.START) == null) {
+            newParams.set(CommonParams.START, 0);
+        }
+        if (newParams.get(CommonParams.ROWS) == null) {
+            newParams.set(CommonParams.ROWS, 1000);
+        }
+        newParams.set("spellcheck", Boolean.toString(true));
+        newParams.set(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
+        if (newParams.get(CommonParams.FL) == null) {
+            newParams.set(CommonParams.FL, "* score");
+        }
+        return newParams;
+    }
+
+    /**
+     * Replaces the original query in the Solr parameters with the suggested spellchecked query. It also fixes the boost
+     * query, if any.
+     * 
+     * @param originalParams the original Solr parameters to fix
+     * @param suggestedQuery the suggested query
+     * @return new Solr parameters with the query and boost query fixed
+     */
+    public static SolrParams applySpellcheckSuggestion(SolrParams originalParams, String suggestedQuery)
+    {
+        if (originalParams == null) {
+            return null;
+        }
+        if (StringUtils.isBlank(suggestedQuery)) {
+            return originalParams;
+        }
+        ModifiableSolrParams newParams = new ModifiableSolrParams(originalParams);
+        String newQuery = suggestedQuery;
+
+        // Check if the last term in the query is a word stub search which, in case the request comes from a
+        // user-triggered search for terms from the UI, is a prefix search for the last typed word
+        Matcher originalStub = WORD_STUB.matcher(newParams.get(CommonParams.Q));
+        Matcher newStub = WORD_STUB.matcher(suggestedQuery);
+        if (originalStub.find() && newStub.find() && !StringUtils.equals(originalStub.group(2), newStub.group(2))) {
+            // Since word stubs aren't complete words, they may wrongly be "corrected" to a full word that doesn't match
+            // what the user started typing; include both the original stub and the "corrected" stub in the query
+            newQuery += ' ' + originalStub.group() + "^1.5";
+            // Also fix the boost query
+            String boostQuery = newParams.get(DisMaxParams.BQ);
+            if (StringUtils.isNotEmpty(boostQuery)) {
+                newParams.add(DisMaxParams.BQ, boostQuery.replace(originalStub.group(2), newStub.group(2)));
+            }
+        }
+        // Replace the query
+        newParams.set(CommonParams.Q, newQuery);
+
+        return newParams;
+    }
+
+    /**
+     * Serialize Solr parameters into a String.
+     * 
+     * @param params the parameters to serialize
+     * @return a String serialization of the parameters
+     */
+    public static String getCacheKey(SolrParams params)
+    {
+        StringBuilder out = new StringBuilder();
+        out.append('{');
+        Iterator<String> parameterNames = params.getParameterNamesIterator();
+        while (parameterNames.hasNext()) {
+            String parameter = parameterNames.next();
+            out.append(parameter).append(":[").append(StringUtils.join(params.getParams(parameter), ", "))
+                .append("]\n");
+        }
+        out.append('}');
+        return out.toString();
+    }
+}
