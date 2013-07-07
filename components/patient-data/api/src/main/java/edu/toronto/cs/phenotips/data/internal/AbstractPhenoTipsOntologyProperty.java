@@ -20,7 +20,14 @@
 package edu.toronto.cs.phenotips.data.internal;
 
 import net.sf.json.JSONObject;
+
+import org.apache.commons.lang3.StringUtils;
+import org.xwiki.component.manager.ComponentLookupException;
+
+import edu.toronto.cs.phenotips.components.ComponentManagerRegistry;
 import edu.toronto.cs.phenotips.data.OntologyProperty;
+import edu.toronto.cs.phenotips.ontology.OntologyManager;
+import edu.toronto.cs.phenotips.ontology.OntologyTerm;
 
 /**
  * Implementation of patient data based on the XWiki data model, where disease data is represented by properties in
@@ -52,8 +59,17 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
     @Override
     public String getName()
     {
-        // FIXME implementation missing
-        throw new UnsupportedOperationException();
+        try {
+            OntologyManager om =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(OntologyManager.class);
+            OntologyTerm term = om.resolveTerm(this.id);
+            if (term != null && StringUtils.isNotEmpty(term.getName())) {
+                return term.getName();
+            }
+        } catch (ComponentLookupException ex) {
+            // Shouldn't happen
+        }
+        return this.id;
     }
 
     @Override
