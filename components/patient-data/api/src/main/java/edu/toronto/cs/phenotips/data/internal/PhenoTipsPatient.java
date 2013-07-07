@@ -91,7 +91,7 @@ public class PhenoTipsPatient implements Patient
             DBStringListProperty values = (DBStringListProperty) data.get("omim_id");
             if (values != null) {
                 for (String value : values.getList()) {
-                    this.diseases.add(new PhenoTipsDisease(doc, values, value));
+                    this.diseases.add(new PhenoTipsDisease(values, value));
                 }
             }
         } catch (XWikiException e) {

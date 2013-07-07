@@ -19,40 +19,12 @@
  */
 package edu.toronto.cs.phenotips.data;
 
-import net.sf.json.JSONObject;
 
 /**
  * Information about a specific disease recorded for a {@link Patient patient}.
  * 
  * @version $Id$
  */
-public interface Disease
+public interface Disease extends OntologyProperty
 {
-    /**
-     * The ontology term identifier associated to this disease.
-     * 
-     * @return an identifier, in the format {@code ONTOLOGY:termId}, or the empty string if this is not an ontology term
-     */
-    String getId();
-
-    /**
-     * The name associated to this disease in the ontology.
-     * 
-     * @return a user-friendly name for this disease, or the disease itself if this is not an ontology term
-     */
-    String getName();
-
-    /**
-     * Retrieve all information about this symptom and its associated metadata in a JSON format. For example:
-     * 
-     * <pre>
-     * {
-     *   "id": "MIM:136140",
-     *   "name": "#136140 FLOATING-HARBOR SYNDROME; FLHS",
-     * }
-     * </pre>
-     * 
-     * @return the disease data, using the json-lib classes
-     */
-    JSONObject toJSON();
 }

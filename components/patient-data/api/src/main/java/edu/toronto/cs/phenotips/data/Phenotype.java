@@ -31,7 +31,7 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  */
 @Unstable
-public interface Phenotype
+public interface Phenotype extends OntologyProperty
 {
     /**
      * The category of this feature: {@code phenotype}, {@code prenatal_phenotype}, {@code past_phenotype}, etc. This
@@ -40,20 +40,6 @@ public interface Phenotype
      * @return the symptom type, a string ending in {@code phenotype}
      */
     String getType();
-
-    /**
-     * The ontology term identifier associated to this feature.
-     * 
-     * @return an identifier, in the format {@code ONTOLOGY:termId}, or the empty string if this is not an ontology term
-     */
-    String getId();
-
-    /**
-     * The name associated to this feature in the ontology.
-     * 
-     * @return a user-friendly name for this feature, or the feature itself if this is not an ontology term
-     */
-    String getName();
 
     /**
      * Is this a positive or a negative observation. Positive observations indicate a feature that was observed in the
@@ -76,9 +62,9 @@ public interface Phenotype
      * 
      * <pre>
      * {
-     *   "type": "phenotype",
      *   "id": "HP:0100247",
      *   "name": "Recurrent singultus",
+     *   "type": "phenotype",
      *   "isPresent": true,
      *   "metadata": [
      *     // See the documentation for {@link PhenotypeMetadatum#toJSON()}
@@ -88,5 +74,6 @@ public interface Phenotype
      * 
      * @return the feature data, using the json-lib classes
      */
+    @Override
     JSONObject toJSON();
 }

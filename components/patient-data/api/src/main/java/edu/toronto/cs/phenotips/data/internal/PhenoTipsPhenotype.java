@@ -47,7 +47,7 @@ import edu.toronto.cs.phenotips.data.PhenotypeMetadatum;
  * 
  * @version $Id$
  */
-public class PhenoTipsPhenotype implements Phenotype
+public class PhenoTipsPhenotype extends AbstractPhenoTipsOntologyProperty implements Phenotype
 {
     /**
      * Prefix marking negative phenotypes.
@@ -61,9 +61,6 @@ public class PhenoTipsPhenotype implements Phenotype
 
     /** The property name, the type eventually prefixed by "negative_". */
     private final String propertyName;
-
-    /** @see #getId() */
-    private final String id;
 
     /** @see #getType() */
     private final String type;
@@ -83,7 +80,7 @@ public class PhenoTipsPhenotype implements Phenotype
      */
     PhenoTipsPhenotype(XWikiDocument doc, DBStringListProperty property, String value)
     {
-        this.id = value;
+        super(value);
         this.propertyName = property.getName();
         Matcher nameMatch = NEGATIVE_PREFIX.matcher(this.propertyName);
         this.present = !nameMatch.lookingAt();
@@ -112,19 +109,6 @@ public class PhenoTipsPhenotype implements Phenotype
     }
 
     @Override
-    public String getId()
-    {
-        return this.id;
-    }
-
-    @Override
-    public String getName()
-    {
-        // FIXME implementation missing
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean isPresent()
     {
         return this.present;
@@ -137,17 +121,10 @@ public class PhenoTipsPhenotype implements Phenotype
     }
 
     @Override
-    public String toString()
-    {
-        return toJSON().toString(2);
-    }
-
-    @Override
     public JSONObject toJSON()
     {
-        JSONObject result = new JSONObject();
+        JSONObject result = super.toJSON();
         result.element("type", getType());
-        result.element("id", getId());
         result.element("isPresent", this.present);
         if (!this.metadata.isEmpty()) {
             JSONArray metadataList = new JSONArray();

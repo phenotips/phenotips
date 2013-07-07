@@ -33,7 +33,7 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  */
 @Unstable
-public interface PhenotypeMetadatum
+public interface PhenotypeMetadatum extends OntologyProperty
 {
     /** The XClass used for storing phenotype metadata. */
     EntityReference CLASS_REFERENCE = new EntityReference("PhenotypeMetaClass", EntityType.DOCUMENT,
@@ -90,31 +90,18 @@ public interface PhenotypeMetadatum
     String getType();
 
     /**
-     * The ontology term identifier associated to this meta-feature.
-     * 
-     * @return an identifier, in the format {@code ONTOLOGY:termId}
-     */
-    String getId();
-
-    /**
-     * The name associated to this meta-feature in the ontology.
-     * 
-     * @return a user-friendly name
-     */
-    String getName();
-
-    /**
      * Retrieve all information about this symptom and its associated metadata in a JSON format. For example:
      * 
      * <pre>
      * {
-     *   "type": "age_of_onset",
      *   "id": "HP:0003621",
      *   "name": "Juvenile onset",
+     *   "type": "age_of_onset",
      * }
      * </pre>
      * 
      * @return the meta-feature data, using the json-lib classes
      */
+    @Override
     JSONObject toJSON();
 }

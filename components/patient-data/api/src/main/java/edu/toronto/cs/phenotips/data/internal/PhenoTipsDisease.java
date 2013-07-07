@@ -19,11 +19,8 @@
  */
 package edu.toronto.cs.phenotips.data.internal;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang3.StringUtils;
 
-import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.DBStringListProperty;
 
 import edu.toronto.cs.phenotips.data.Disease;
@@ -34,51 +31,16 @@ import edu.toronto.cs.phenotips.data.Disease;
  * 
  * @version $Id$
  */
-public class PhenoTipsDisease implements Disease
+public class PhenoTipsDisease extends AbstractPhenoTipsOntologyProperty implements Disease
 {
-    /** @see #getId() */
-    private final String id;
-
     /**
      * Constructor that copies the data from an XProperty value.
      * 
-     * @param doc the XDocument representing the described patient in XWiki
      * @param property the disease XProperty
      * @param value the specific value from the property represented by this object
      */
-    PhenoTipsDisease(XWikiDocument doc, DBStringListProperty property, String value)
+    PhenoTipsDisease(DBStringListProperty property, String value)
     {
-        if (StringUtils.equals(property.getName(), "omim_id")) {
-            this.id = "MIM:" + value;
-        } else {
-            this.id = value;
-        }
-    }
-
-    @Override
-    public String getId()
-    {
-        return this.id;
-    }
-
-    @Override
-    public String getName()
-    {
-        // FIXME implementation missing
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String toString()
-    {
-        return toJSON().toString(2);
-    }
-
-    @Override
-    public JSONObject toJSON()
-    {
-        JSONObject result = new JSONObject();
-        result.element("id", getId());
-        return result;
+        super(StringUtils.equals(property.getName(), "omim_id") ? "MIM:" + value : value);
     }
 }

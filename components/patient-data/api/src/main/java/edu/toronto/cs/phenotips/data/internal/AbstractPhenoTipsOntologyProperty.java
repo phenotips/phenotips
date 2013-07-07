@@ -19,47 +19,55 @@
  */
 package edu.toronto.cs.phenotips.data.internal;
 
-import java.util.Locale;
-
 import net.sf.json.JSONObject;
-
-import com.xpn.xwiki.objects.StringProperty;
-
-import edu.toronto.cs.phenotips.data.PhenotypeMetadatum;
+import edu.toronto.cs.phenotips.data.OntologyProperty;
 
 /**
- * Implementation of patient data based on the XWiki data model, where phenotype metadata is represented by properties
- * in objects of type {@code PhenoTips.PhenotypeMetaClass}.
+ * Implementation of patient data based on the XWiki data model, where disease data is represented by properties in
+ * objects of type {@code PhenoTips.PatientClass}.
  * 
  * @version $Id$
  */
-public class PhenoTipsPhenotypeMetadatum extends AbstractPhenoTipsOntologyProperty implements PhenotypeMetadatum
+public abstract class AbstractPhenoTipsOntologyProperty implements OntologyProperty
 {
-    /** @see #getType() */
-    private Type type;
+    /** @see #getId() */
+    protected final String id;
 
     /**
-     * Constructor that copies the data from an XProperty.
+     * Simple constructor providing the {@link #id term identifier}.
      * 
-     * @param data the XProperty representing this meta-feature in XWiki
+     * @param id the ontology term identifier
      */
-    PhenoTipsPhenotypeMetadatum(StringProperty data)
+    protected AbstractPhenoTipsOntologyProperty(String id)
     {
-        super(data.getValue());
-        this.type = Type.valueOf(data.getName().toUpperCase(Locale.ROOT));
+        this.id = id;
     }
 
     @Override
-    public String getType()
+    public String getId()
     {
-        return this.type.toString();
+        return this.id;
+    }
+
+    @Override
+    public String getName()
+    {
+        // FIXME implementation missing
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString()
+    {
+        return toJSON().toString(2);
     }
 
     @Override
     public JSONObject toJSON()
     {
-        JSONObject result = super.toJSON();
-        result.element("type", getType());
+        JSONObject result = new JSONObject();
+        result.element("id", getId());
+        result.element("name", getName());
         return result;
     }
 }
