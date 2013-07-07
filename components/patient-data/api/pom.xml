@@ -90,11 +90,5 @@
       <version>${xwiki.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-default</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 </project>
