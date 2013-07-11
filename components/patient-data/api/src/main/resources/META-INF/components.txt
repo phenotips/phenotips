@@ -1,2 +1,2 @@
-edu.toronto.cs.phenotips.data.internal.PhenoTipsPatientData
-edu.toronto.cs.phenotips.data.script.PatientDataScriptService
+org.phenotips.data.internal.PhenoTipsPatientData
+org.phenotips.data.script.PatientDataScriptService

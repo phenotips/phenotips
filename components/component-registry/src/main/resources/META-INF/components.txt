@@ -1,1 +1,1 @@
-edu.toronto.cs.phenotips.components.ComponentManagerRegistry
+org.phenotips.components.ComponentManagerRegistry

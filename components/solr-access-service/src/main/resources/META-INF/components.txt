@@ -1,2 +1,2 @@
-edu.toronto.cs.phenotips.solr.HPOScriptService
-edu.toronto.cs.phenotips.solr.OmimScriptService
+org.phenotips.solr.HPOScriptService
+org.phenotips.solr.OmimScriptService
