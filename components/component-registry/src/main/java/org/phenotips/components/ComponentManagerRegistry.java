@@ -39,6 +39,7 @@ import org.xwiki.observation.event.Event;
  * etc.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 @Component
 @Named("cmregistry")
