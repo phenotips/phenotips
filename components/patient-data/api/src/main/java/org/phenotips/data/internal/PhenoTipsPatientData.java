@@ -27,7 +27,7 @@ import javax.inject.Singleton;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
-import org.slf4j.Logger;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
@@ -39,9 +39,10 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
+import org.slf4j.Logger;
+
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
-
 
 /**
  * @version $Id$

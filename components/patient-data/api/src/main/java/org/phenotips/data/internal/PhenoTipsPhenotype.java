@@ -25,12 +25,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
-import org.apache.commons.lang3.StringUtils;
 import org.phenotips.data.Phenotype;
 import org.phenotips.data.PhenotypeMetadatum;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +38,8 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.DBStringListProperty;
 import com.xpn.xwiki.objects.StringProperty;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Implementation of patient data based on the XWiki data model, where phenotype data is represented by properties in

@@ -23,10 +23,9 @@ import java.util.Locale;
 
 import org.phenotips.data.PhenotypeMetadatum;
 
-import net.sf.json.JSONObject;
-
 import com.xpn.xwiki.objects.StringProperty;
 
+import net.sf.json.JSONObject;
 
 /**
  * Implementation of patient data based on the XWiki data model, where phenotype metadata is represented by properties

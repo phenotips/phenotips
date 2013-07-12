@@ -19,11 +19,11 @@
  */
 package org.phenotips.data.internal;
 
-import org.apache.commons.lang3.StringUtils;
 import org.phenotips.data.Disease;
 
-import com.xpn.xwiki.objects.DBStringListProperty;
+import org.apache.commons.lang3.StringUtils;
 
+import com.xpn.xwiki.objects.DBStringListProperty;
 
 /**
  * Implementation of patient data based on the XWiki data model, where disease data is represented by properties in

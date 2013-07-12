@@ -19,13 +19,12 @@
  */
 package org.phenotips.data.script;
 
-import groovy.lang.Singleton;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
@@ -35,6 +34,8 @@ import org.xwiki.script.service.ScriptService;
 import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.stability.Unstable;
+
+import groovy.lang.Singleton;
 
 /**
  * @version $Id$

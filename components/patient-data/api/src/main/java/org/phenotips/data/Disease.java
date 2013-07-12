@@ -19,7 +19,6 @@
  */
 package org.phenotips.data;
 
-
 /**
  * Information about a specific disease recorded for a {@link Patient patient}.
  * 

@@ -21,9 +21,9 @@ package org.phenotips.data;
 
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
 import org.xwiki.stability.Unstable;
+
+import net.sf.json.JSONObject;
 
 /**
  * Information about a specific feature recorded for a {@link Patient patient}.

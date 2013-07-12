@@ -19,15 +19,16 @@
  */
 package org.phenotips.data.internal;
 
-import net.sf.json.JSONObject;
-
-import org.apache.commons.lang3.StringUtils;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.OntologyProperty;
 import org.phenotips.ontology.OntologyManager;
 import org.phenotips.ontology.OntologyTerm;
+
 import org.xwiki.component.manager.ComponentLookupException;
 
+import org.apache.commons.lang3.StringUtils;
+
+import net.sf.json.JSONObject;
 
 /**
  * Implementation of patient data based on the XWiki data model, where disease data is represented by properties in

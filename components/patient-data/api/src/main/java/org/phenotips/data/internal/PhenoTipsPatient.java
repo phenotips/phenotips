@@ -23,12 +23,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.phenotips.data.Disease;
 import org.phenotips.data.Patient;
 import org.phenotips.data.Phenotype;
+
 import org.xwiki.model.reference.DocumentReference;
 
 import com.xpn.xwiki.XWikiException;
@@ -36,6 +34,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.DBStringListProperty;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Implementation of patient data based on the XWiki data model, where patient data is represented by properties in

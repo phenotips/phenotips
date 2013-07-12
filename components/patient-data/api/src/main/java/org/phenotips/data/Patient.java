@@ -21,12 +21,12 @@ package org.phenotips.data;
 
 import java.util.Set;
 
-import net.sf.json.JSONObject;
-
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
+
+import net.sf.json.JSONObject;
 
 /**
  * Information about a patient.
