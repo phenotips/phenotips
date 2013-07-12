@@ -55,7 +55,7 @@ public interface Phenotype extends OntologyProperty
      * @return an unmodifiable map with the {@link PhenotypeMetadatum#getType() metadatum type} as the key and the
      *         actual {@link PhenotypeMetadatum metadatum} as the value, or an empty map if no metadata is recorded
      */
-    Map<String, PhenotypeMetadatum> getMetadata();
+    Map<String, ? extends PhenotypeMetadatum> getMetadata();
 
     /**
      * Retrieve all information about this symptom and its associated metadata in a JSON format. For example:

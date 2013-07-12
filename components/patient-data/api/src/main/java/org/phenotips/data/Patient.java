@@ -66,14 +66,14 @@ public interface Patient
      * 
      * @return an unmodifiable set of {@link Phenotype features}, or an empty set if no features are recorded yet
      */
-    Set<Phenotype> getPhenotypes();
+    Set<? extends Phenotype> getPhenotypes();
 
     /**
      * Returns the list of recorded diseases.
      * 
      * @return an unmodifiable set of {@link Disease diseases}, or an empty set if no diseases have been identified yet
      */
-    Set<Disease> getDiseases();
+    Set<? extends Disease> getDiseases();
 
     /**
      * Retrieve all the patient data in a JSON format. For example:
