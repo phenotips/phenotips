@@ -24,10 +24,16 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 
+/**
+ * Script service providing access to PubMed search through the NCBI Entrez Utilities server.
+ * 
+ * @version $Id$
+ * @since 1.0M1
+ */
 @Component
 @Named("pubmed")
 @Singleton
-public class PubmedAccessService extends SpecializedNCBIEUtilsAccessService
+public class PubmedAccessService extends AbstractSpecializedNCBIEUtilsAccessService
 {
     @Override
     public String getDatabaseName()

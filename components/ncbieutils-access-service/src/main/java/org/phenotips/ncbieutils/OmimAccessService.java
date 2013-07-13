@@ -24,10 +24,16 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 
+/**
+ * Script service providing access to the OMIM ontology through the NCBI Entrez Utilities server.
+ * 
+ * @version $Id$
+ * @since 1.0M1
+ */
 @Component
 @Named("omimRemote")
 @Singleton
-public class OmimAccessService extends SpecializedNCBIEUtilsAccessService
+public class OmimAccessService extends AbstractSpecializedNCBIEUtilsAccessService
 {
     @Override
     public String getDatabaseName()
