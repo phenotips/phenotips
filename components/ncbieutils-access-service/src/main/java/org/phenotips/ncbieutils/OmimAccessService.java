@@ -22,7 +22,10 @@ package org.phenotips.ncbieutils;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.phenotips.ncbieutils.internal.AbstractSpecializedNCBIEUtilsAccessService;
+
 import org.xwiki.component.annotation.Component;
+import org.xwiki.script.service.ScriptService;
 
 /**
  * Script service providing access to the OMIM ontology through the NCBI Entrez Utilities server.
@@ -33,7 +36,7 @@ import org.xwiki.component.annotation.Component;
 @Component
 @Named("omimRemote")
 @Singleton
-public class OmimAccessService extends AbstractSpecializedNCBIEUtilsAccessService
+public class OmimAccessService extends AbstractSpecializedNCBIEUtilsAccessService implements ScriptService
 {
     @Override
     public String getDatabaseName()

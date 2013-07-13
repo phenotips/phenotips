@@ -22,6 +22,8 @@ package org.phenotips.ncbieutils;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.phenotips.ncbieutils.internal.AbstractSpecializedNCBIEUtilsAccessService;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 
@@ -36,7 +38,7 @@ import org.xwiki.script.service.ScriptService;
 @Singleton
 public class NCBIEUtilsAccessService implements ScriptService
 {
-    public AbstractSpecializedNCBIEUtilsAccessService get(final String name)
+    public NCBIEUtilsService get(final String name)
     {
         return new AbstractSpecializedNCBIEUtilsAccessService()
         {

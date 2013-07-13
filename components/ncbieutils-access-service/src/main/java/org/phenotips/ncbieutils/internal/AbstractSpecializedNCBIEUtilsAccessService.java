@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.phenotips.ncbieutils;
+package org.phenotips.ncbieutils.internal;
 
 import java.io.BufferedInputStream;
 import java.io.StringWriter;
@@ -39,6 +39,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.phenotips.ncbieutils.NCBIEUtilsService;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
@@ -48,14 +50,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Script service exposing a few services provided by the online NCBI Entrez Utilities webserver. Generic service for
- * accessing the NCBI Entrez Utilities server. This is not exposed directly, but instances for specific databases can be
- * obtained through {@link NCBIEUtilsAccessService#get(String)}, available to scripts using
- * {@code $services.ncbi.get('dbname')}.
+ * Base implementation for {@link NCBIEUtilsService}.
  * 
  * @version $Id$
  */
-public abstract class AbstractSpecializedNCBIEUtilsAccessService
+public abstract class AbstractSpecializedNCBIEUtilsAccessService implements NCBIEUtilsService
 {
     @Inject
     private Logger logger;
@@ -78,11 +77,13 @@ public abstract class AbstractSpecializedNCBIEUtilsAccessService
 
     protected abstract String getDatabaseName();
 
+    @Override
     public List<Map<String, Object>> getSuggestions(final String query)
     {
         return getSuggestions(query, 10, 0);
     }
 
+    @Override
     public List<Map<String, Object>> getSuggestions(final String query, final int rows, final int start)
     {
         // Step 1: get spelling suggestions for query
@@ -94,11 +95,13 @@ public abstract class AbstractSpecializedNCBIEUtilsAccessService
         return result;
     }
 
+    @Override
     public String getSuggestionsXML(final String query)
     {
         return getSuggestionsXML(query, 10, 0);
     }
 
+    @Override
     public String getSuggestionsXML(final String query, final int rows, final int start)
     {
         // Step 1: get spelling suggestions for query
@@ -110,6 +113,7 @@ public abstract class AbstractSpecializedNCBIEUtilsAccessService
         return result;
     }
 
+    @Override
     public String getName(String id)
     {
         String url = composeURL(TERM_SUMMARY_QUERY_SCRIPT, TERM_SUMMARY_PARAM_NAME, id);
@@ -133,6 +137,7 @@ public abstract class AbstractSpecializedNCBIEUtilsAccessService
         return id;
     }
 
+    @Override
     public Map<String, String> getNames(List<String> idList)
     {
         Map<String, String> result = new HashMap<String, String>();
@@ -158,6 +163,7 @@ public abstract class AbstractSpecializedNCBIEUtilsAccessService
         return result;
     }
 
+    @Override
     public String getCorrectedQuery(String query)
     {
         // response example at http://eutils.ncbi.nlm.nih.gov/entrez/eutils/espell.fcgi?db=omim&term=atention+sindrom
@@ -185,6 +191,7 @@ public abstract class AbstractSpecializedNCBIEUtilsAccessService
         return query;
     }
 
+    @Override
     public List<String> getMatches(final String query, final int rows, final int start)
     {
         // response example at http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=omim&term=down
@@ -212,6 +219,7 @@ public abstract class AbstractSpecializedNCBIEUtilsAccessService
         return result;
     }
 
+    @Override
     public List<Map<String, Object>> getSummaries(List<String> idList)
     {
         // response example at
