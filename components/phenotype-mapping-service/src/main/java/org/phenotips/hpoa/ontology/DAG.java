@@ -46,7 +46,7 @@ public class DAG
             return -1;
         }
         // Load data
-        nodes.clear();
+        this.nodes.clear();
         TermData data = new TermData();
         try {
             BufferedReader in = new BufferedReader(new FileReader(source));
@@ -81,9 +81,9 @@ public class DAG
         }
 
         // Redo all links
-        for (Node n : nodes.values()) {
+        for (Node n : this.nodes.values()) {
             for (String parentId : n.getParents()) {
-                Node p = nodes.get(parentId);
+                Node p = this.nodes.get(parentId);
                 if (p != null) {
                     p.addChild(n);
                 } else {
@@ -93,7 +93,7 @@ public class DAG
             }
         }
         // How much did we load:
-        return nodes.size();
+        return this.nodes.size();
     }
 
     public Map<String, Node> getNodesMap()

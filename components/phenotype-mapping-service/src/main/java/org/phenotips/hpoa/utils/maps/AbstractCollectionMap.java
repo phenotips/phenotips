@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
-public abstract class AbstractCollectionMap<K extends Comparable< ? super K>, V> extends TreeMap<K, Collection<V>>
+public abstract class AbstractCollectionMap<K extends Comparable<? super K>, V> extends TreeMap<K, Collection<V>>
 {
     private static final long serialVersionUID = 201202091730L;
 
@@ -87,9 +87,10 @@ public abstract class AbstractCollectionMap<K extends Comparable< ? super K>, V>
     {
         K[] sortedKeys = (K[]) this.keySet().toArray();
         Arrays.sort(sortedKeys, new Comparator<K>()
-                    {
+        {
+            @Override
             public int compare(K a, K b)
-                        {
+            {
                 if (safeGet(a).size() == safeGet(b).size()) {
                     return 0;
                 }

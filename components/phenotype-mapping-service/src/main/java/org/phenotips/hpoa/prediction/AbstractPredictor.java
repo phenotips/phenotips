@@ -29,7 +29,6 @@ import org.phenotips.hpoa.annotation.SearchResult;
 import org.phenotips.hpoa.utils.maps.CounterMap;
 import org.phenotips.hpoa.utils.maps.SumMap;
 
-
 public abstract class AbstractPredictor implements Predictor
 {
     protected HPOAnnotation annotations;
@@ -59,9 +58,8 @@ public abstract class AbstractPredictor implements Predictor
         }
         if (matchCounter.getMinValue() <= matches.size() / 2) {
             for (String hpoId : cummulativeScore.keySet()) {
-                result.add(new SearchResult(hpoId, annotations.getOntology().getTerm(hpoId).getName(), cummulativeScore
-                    .get(hpoId)
-                    / (matchCounter.get(hpoId) * matchCounter.get(hpoId))));
+                result.add(new SearchResult(hpoId, this.annotations.getOntology().getTerm(hpoId).getName(),
+                    cummulativeScore.get(hpoId) / (matchCounter.get(hpoId) * matchCounter.get(hpoId))));
             }
             Collections.sort(result);
         }

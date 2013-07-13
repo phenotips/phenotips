@@ -29,7 +29,6 @@ import org.phenotips.hpoa.annotation.SearchResult;
 
 import org.xwiki.component.annotation.Component;
 
-
 @Component
 @Named("bn")
 @Singleton

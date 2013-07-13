@@ -27,7 +27,6 @@ import org.phenotips.hpoa.annotation.SearchResult;
 
 import org.xwiki.component.annotation.Role;
 
-
 @Role
 public interface Predictor
 {

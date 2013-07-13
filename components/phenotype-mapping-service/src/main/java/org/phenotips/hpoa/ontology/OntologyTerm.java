@@ -21,19 +21,23 @@ package org.phenotips.hpoa.ontology;
 
 import org.phenotips.hpoa.utils.graph.DAGNode;
 
-public class OntologyTerm extends DAGNode {
+public class OntologyTerm extends DAGNode
+{
+    public OntologyTerm(String id)
+    {
+        super(id);
+    }
 
-	public OntologyTerm(String id) {
-		super(id);
-	}
-	public OntologyTerm(String id, String name) {
-		super(id, name);
-	}
-	public OntologyTerm(TermData data) {
-		this(data.getId() + "", data.getName() + "");
-		for (String parentId : data.get(TermData.PARENT_FIELD_NAME)) {
-			this.addParent(parentId);
-		}
-	}
+    public OntologyTerm(String id, String name)
+    {
+        super(id, name);
+    }
 
+    public OntologyTerm(TermData data)
+    {
+        this(data.getId() + "", data.getName() + "");
+        for (String parentId : data.get(TermData.PARENT_FIELD_NAME)) {
+            this.addParent(parentId);
+        }
+    }
 }

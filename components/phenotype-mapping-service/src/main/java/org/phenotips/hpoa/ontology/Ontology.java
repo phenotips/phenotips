@@ -27,7 +27,6 @@ import org.phenotips.solr.AbstractSolrScriptService;
 
 import org.xwiki.component.annotation.Role;
 
-
 @Role
 public interface Ontology
 {
@@ -46,5 +45,4 @@ public interface Ontology
     public abstract IDAGNode getRoot();
 
     public abstract Set<String> getAncestors(String termId);
-
 }

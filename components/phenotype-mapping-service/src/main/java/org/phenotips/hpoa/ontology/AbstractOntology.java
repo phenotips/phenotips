@@ -40,7 +40,6 @@ import org.phenotips.solr.AbstractSolrScriptService;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
-
 public abstract class AbstractOntology extends DAG<OntologyTerm> implements Ontology
 {
     public final static String PARENT_ID_REGEX = "^([A-Z]{2}\\:[0-9]{7})\\s*!\\s*.*";
@@ -60,6 +59,7 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
      * (non-Javadoc)
      * @see org.phenotips.hpoa.ontology.Ontology#load(org.phenotips.solr.SolrScriptService)
      */
+    @Override
     public int load(AbstractSolrScriptService source)
     {
         // Make sure we can read the data
@@ -73,7 +73,7 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
         for (SolrDocument result : results) {
             for (String name : result.getFieldNames()) {
                 Object val = result.get(name);
-                if (val instanceof Collection< ? >) {
+                if (val instanceof Collection<?>) {
                     data.put(name, (Collection<String>) val);
                 } else {
                     data.addTo(name, (String) val);
@@ -92,6 +92,7 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
      * (non-Javadoc)
      * @see org.phenotips.hpoa.ontology.Ontology#load(java.io.File)
      */
+    @Override
     public int load(File source)
     {
         // Make sure we can read the data
@@ -186,6 +187,7 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
      * (non-Javadoc)
      * @see org.phenotips.hpoa.ontology.Ontology#getRealId(java.lang.String)
      */
+    @Override
     public String getRealId(String id)
     {
         return this.alternateIdMapping.get(id);
@@ -195,6 +197,7 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
      * (non-Javadoc)
      * @see org.phenotips.hpoa.ontology.Ontology#getTerm(java.lang.String)
      */
+    @Override
     public OntologyTerm getTerm(String id)
     {
         String realId = this.getRealId(id);
@@ -208,6 +211,7 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
      * (non-Javadoc)
      * @see org.phenotips.hpoa.ontology.Ontology#getName(java.lang.String)
      */
+    @Override
     public String getName(String id)
     {
         DAGNode node = this.getTerm(id);
@@ -236,6 +240,7 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
      * (non-Javadoc)
      * @see org.phenotips.hpoa.ontology.Ontology#getRootId()
      */
+    @Override
     public String getRootId()
     {
         return this.root.getId();
@@ -245,6 +250,7 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
      * (non-Javadoc)
      * @see org.phenotips.hpoa.ontology.Ontology#getRoot()
      */
+    @Override
     public IDAGNode getRoot()
     {
         return this.root;
@@ -281,6 +287,7 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
      * (non-Javadoc)
      * @see org.phenotips.hpoa.ontology.Ontology#getAncestors(java.lang.String)
      */
+    @Override
     public synchronized Set<String> getAncestors(String termId)
     {
         if (this.ancestorCache.get(termId) == null) {

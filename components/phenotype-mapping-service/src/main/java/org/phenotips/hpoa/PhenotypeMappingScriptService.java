@@ -37,14 +37,14 @@ import org.phenotips.hpoa.annotation.SearchResult;
 import org.phenotips.hpoa.ontology.Ontology;
 import org.phenotips.hpoa.prediction.Predictor;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.environment.Environment;
 import org.xwiki.script.service.ScriptService;
 
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
 
 @Component
 @Named("hpoa")
@@ -134,8 +134,8 @@ public class PhenotypeMappingScriptService implements ScriptService, Initializab
     public void initialize() throws InitializationException
     {
         OmimHPOAnnotations ann = new OmimHPOAnnotations(this.hpo);
-        if (ann.load(getInputFileHandler("http://compbio.charite.de/hudson/job/hpo.annotations/" +
-            "lastStableBuild/artifact/misc/phenotype_annotation.tab", false)) < 0) {
+        if (ann.load(getInputFileHandler("http://compbio.charite.de/hudson/job/hpo.annotations/"
+            + "lastStableBuild/artifact/misc/phenotype_annotation.tab", false)) < 0) {
             throw new InitializationException("Cannot load ontology mapping file, aborting.");
         }
 

@@ -50,9 +50,8 @@ public class GeneHPOAnnotations extends AbstractHPOAnnotation
 
     private static final Pattern GENE_REG_EXP = Pattern.compile("([A-Z0-9]+)\\(([0-9]+)\\)");
 
-    private static final Pattern ANNOTATION_REG_EXP =
-        Pattern.compile("^(.*)\\s\\((HP:[0-9]{7})\\)\t\\[(" + GENE_REG_EXP.pattern() + "(,\\s" + GENE_REG_EXP.pattern()
-            + ")*)\\]$");
+    private static final Pattern ANNOTATION_REG_EXP = Pattern.compile("^(.*)\\s\\((HP:[0-9]{7})\\)\t\\[("
+        + GENE_REG_EXP.pattern() + "(,\\s" + GENE_REG_EXP.pattern() + ")*)\\]$");
 
     private static final int NAME_IDX = 1;
 

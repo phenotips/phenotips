@@ -21,7 +21,6 @@ package org.phenotips.hpoa.utils.maps;
 
 public class DivideMapOperator<K> extends AbstractMapOperator<K, Number>
 {
-
     @Override
     protected Double applyToValues(Number a, Number b)
     {

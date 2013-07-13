@@ -22,112 +22,151 @@ package org.phenotips.hpoa.utils.graph;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DAGNode extends AbstractNode implements IDAGNode {
-	private List<String> parents;
-	private List<String> children;
+public class DAGNode extends AbstractNode implements IDAGNode
+{
+    private List<String> parents;
 
-	public DAGNode(String id) {
-		super(id, "");
-	}
+    private List<String> children;
 
-	public DAGNode(String id, String name) {
-		super(id, name);
-		this.parents = new LinkedList<String>();
-		this.children = new LinkedList<String>();
-	}
+    public DAGNode(String id)
+    {
+        super(id, "");
+    }
 
-	public boolean addParent(String parentId) {
-		return this.parents.add(parentId);
-	}
+    public DAGNode(String id, String name)
+    {
+        super(id, name);
+        this.parents = new LinkedList<String>();
+        this.children = new LinkedList<String>();
+    }
 
-	public boolean addParent(IDAGNode parent) {
-		return this.parents.add(parent.getId());
-	}
+    @Override
+    public boolean addParent(String parentId)
+    {
+        return this.parents.add(parentId);
+    }
 
-	public boolean removeParent(String parentId) {
-		return this.parents.remove(parentId);
-	}
+    @Override
+    public boolean addParent(IDAGNode parent)
+    {
+        return this.parents.add(parent.getId());
+    }
 
-	public boolean removeParent(IDAGNode parent) {
-		return this.parents.remove(parent.getId());
-	}
+    @Override
+    public boolean removeParent(String parentId)
+    {
+        return this.parents.remove(parentId);
+    }
 
-	public boolean hasParent(String parentId) {
-		return this.parents.contains(parentId);
-	}
+    @Override
+    public boolean removeParent(IDAGNode parent)
+    {
+        return this.parents.remove(parent.getId());
+    }
 
-	public boolean hasParent(IDAGNode parent) {
-		return this.parents.contains(parent.getId());
-	}
+    @Override
+    public boolean hasParent(String parentId)
+    {
+        return this.parents.contains(parentId);
+    }
 
-	public boolean addChild(String childId) {
-		return this.children.add(childId);
-	}
+    @Override
+    public boolean hasParent(IDAGNode parent)
+    {
+        return this.parents.contains(parent.getId());
+    }
 
-	public boolean addChild(IDAGNode child) {
-		return this.children.add(child.getId());
-	}
+    @Override
+    public boolean addChild(String childId)
+    {
+        return this.children.add(childId);
+    }
 
-	public boolean removeChild(String childId) {
-		return this.children.remove(childId);
-	}
+    @Override
+    public boolean addChild(IDAGNode child)
+    {
+        return this.children.add(child.getId());
+    }
 
-	public boolean removeChild(IDAGNode child) {
-		return this.children.remove(child.getId());
-	}
+    @Override
+    public boolean removeChild(String childId)
+    {
+        return this.children.remove(childId);
+    }
 
-	public boolean hasChild(String childId) {
-		return this.children.contains(childId);
-	}
+    @Override
+    public boolean removeChild(IDAGNode child)
+    {
+        return this.children.remove(child.getId());
+    }
 
-	public boolean hasChild(IDAGNode child) {
-		return this.children.contains(child.getId());
-	}
+    @Override
+    public boolean hasChild(String childId)
+    {
+        return this.children.contains(childId);
+    }
 
-	public boolean addNeighbor(IDAGNode neighbor) {
-		return this.addChild(neighbor);
-	}
+    @Override
+    public boolean hasChild(IDAGNode child)
+    {
+        return this.children.contains(child.getId());
+    }
 
-	public boolean removeNeighbor(String neighborId) {
-		return this.removeChild(neighborId) || removeParent(neighborId);
-	}
+    public boolean addNeighbor(IDAGNode neighbor)
+    {
+        return this.addChild(neighbor);
+    }
 
-	public boolean removeNeighbor(IDAGNode neighbor) {
-		return this.removeChild(neighbor) || removeParent(neighbor);
-	}
+    public boolean removeNeighbor(String neighborId)
+    {
+        return this.removeChild(neighborId) || removeParent(neighborId);
+    }
 
-	public boolean hasNeighbor(String neighborId) {
-		return hasChild(neighborId) || hasParent(neighborId);
-	}
+    public boolean removeNeighbor(IDAGNode neighbor)
+    {
+        return this.removeChild(neighbor) || removeParent(neighbor);
+    }
 
-	public boolean hasNeighbor(IDAGNode neighbor) {
-		return hasChild(neighbor.getId()) || hasParent(neighbor.getId());
-	}
+    public boolean hasNeighbor(String neighborId)
+    {
+        return hasChild(neighborId) || hasParent(neighborId);
+    }
 
-	public List<String> getParents() {
-		return this.parents;
-	}
+    public boolean hasNeighbor(IDAGNode neighbor)
+    {
+        return hasChild(neighbor.getId()) || hasParent(neighbor.getId());
+    }
 
-	public List<String> getChildren() {
-		return this.children;
-	}
+    @Override
+    public List<String> getParents()
+    {
+        return this.parents;
+    }
 
-	@Override
-	public String toString() {
-		return this.id + " " + this.name + " | " + this.parents + " | "
-				+ this.children;
-	}
+    @Override
+    public List<String> getChildren()
+    {
+        return this.children;
+    }
 
-	@Override
-	public List<String> getNeighbors() {
-		List<String> result = new LinkedList<String>();
-		result.addAll(this.parents);
-		result.addAll(this.children);
-		return result;
-	}
+    @Override
+    public String toString()
+    {
+        return this.id + " " + this.name + " | " + this.parents + " | " + this.children;
+    }
 
-	@Override
-	public int getNeighborsCount() {
-		return this.parents.size() + this.children.size();
-	}
+    @Override
+    public List<String> getNeighbors()
+    {
+        List<String> result = new LinkedList<String>();
+        result.addAll(this.parents);
+        result.addAll(this.children);
+        return result;
+    }
+
+    @Override
+    public int getNeighborsCount()
+    {
+        return this.parents.size() + this.children.size();
+    }
 }

@@ -19,10 +19,15 @@
  */
 package org.phenotips.hpoa.utils.graph;
 
-public interface INode extends CoreNode {
-	public abstract boolean addNeighbor(INode neighbor);
-	public abstract boolean removeNeighbor(String neighborId);
-	public abstract boolean removeNeighbor(INode neighbor);
-	public abstract boolean hasNeighbor(String neighborId);
-	public abstract boolean hasNeighbor(INode neighbor);
+public interface INode extends CoreNode
+{
+    public abstract boolean addNeighbor(INode neighbor);
+
+    public abstract boolean removeNeighbor(String neighborId);
+
+    public abstract boolean removeNeighbor(INode neighbor);
+
+    public abstract boolean hasNeighbor(String neighborId);
+
+    public abstract boolean hasNeighbor(INode neighbor);
 }

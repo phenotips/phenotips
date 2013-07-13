@@ -22,55 +22,65 @@ package org.phenotips.hpoa.utils.graph;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Node extends AbstractNode implements INode {
+public class Node extends AbstractNode implements INode
+{
+    private List<String> neighbors = new LinkedList<String>();
 
-	private List<String> neighbors = new LinkedList<String>();
+    public Node(String id)
+    {
+        super(id);
+    }
 
-	public Node(String id) {
-		super(id);
-	}
+    public Node(String id, String name)
+    {
+        super(id, name);
+    }
 
-	public Node(String id, String name) {
-		super(id, name);
-	}
+    @Override
+    public boolean addNeighbor(INode neighbor)
+    {
+        return this.neighbors.add(neighbor.getId());
+    }
 
-	@Override
-	public boolean addNeighbor(INode neighbor) {
-		return this.neighbors.add(neighbor.getId());
-	}
+    @Override
+    public boolean hasNeighbor(String neighborId)
+    {
+        return this.neighbors.add(neighborId);
+    }
 
-	@Override
-	public boolean hasNeighbor(String neighborId) {
-		return this.neighbors.add(neighborId);
-	}
+    @Override
+    public boolean hasNeighbor(INode neighbor)
+    {
+        return this.neighbors.contains(neighbor.getId());
+    }
 
-	@Override
-	public boolean hasNeighbor(INode neighbor) {
-		return this.neighbors.contains(neighbor.getId());
-	}
+    @Override
+    public boolean removeNeighbor(String neighborId)
+    {
+        return this.neighbors.contains(neighborId);
+    }
 
-	@Override
-	public boolean removeNeighbor(String neighborId) {
-		return this.neighbors.contains(neighborId);
-	}
+    @Override
+    public boolean removeNeighbor(INode neighbor)
+    {
+        return this.neighbors.remove(neighbor.getId());
+    }
 
-	@Override
-	public boolean removeNeighbor(INode neighbor) {
-		return this.neighbors.remove(neighbor.getId());
-	}
+    @Override
+    public List<String> getNeighbors()
+    {
+        return this.neighbors;
+    }
 
-	@Override
-	public List<String> getNeighbors() {
-		return this.neighbors;
-	}
+    @Override
+    public int getNeighborsCount()
+    {
+        return this.neighbors.size();
+    }
 
-	@Override
-	public int getNeighborsCount() {
-		return this.neighbors.size();
-	}
-
-	@Override
-	public String toString() {
-		return this.id + " " + this.name + " | " + this.neighbors;
-	}
+    @Override
+    public String toString()
+    {
+        return this.id + " " + this.name + " | " + this.neighbors;
+    }
 }

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 public abstract class AbstractNumericValueMap<K, N extends Number> extends TreeMap<K, N> implements
-        NumericValueMap<K, N>
+    NumericValueMap<K, N>
 {
     private static final long serialVersionUID = 201202091730L;
 
@@ -41,6 +41,7 @@ public abstract class AbstractNumericValueMap<K, N extends Number> extends TreeM
         super();// initialCapacity);
     }
 
+    @Override
     public N addTo(K key, N value)
     {
         N crtValue = this.get(key);
@@ -53,27 +54,33 @@ public abstract class AbstractNumericValueMap<K, N extends Number> extends TreeM
 
     protected abstract N getZero();
 
+    @Override
     public N reset(K key)
     {
         return this.put(key, getZero());
     }
 
+    @Override
     public N safeGet(K key)
     {
         N value = this.get(key);
         return value == null ? getZero() : value;
     }
 
+    @Override
     public List<K> sort()
     {
         return this.sort(false);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<K> sort(final boolean descending)
     {
         K[] sortedKeys = (K[]) this.keySet().toArray();
-        Arrays.sort(sortedKeys, new Comparator<K>() {
+        Arrays.sort(sortedKeys, new Comparator<K>()
+        {
+            @Override
             public int compare(K a, K b)
             {
                 if (safeGet(a).equals(safeGet(b))) {
@@ -93,6 +100,7 @@ public abstract class AbstractNumericValueMap<K, N extends Number> extends TreeM
         return result;
     }
 
+    @Override
     public K getMax()
     {
         if (this.size() == 0) {
@@ -101,6 +109,7 @@ public abstract class AbstractNumericValueMap<K, N extends Number> extends TreeM
         return this.sort(true).get(0);
     }
 
+    @Override
     public K getMin()
     {
         if (this.size() == 0) {
@@ -109,11 +118,13 @@ public abstract class AbstractNumericValueMap<K, N extends Number> extends TreeM
         return this.sort().get(0);
     }
 
+    @Override
     public N getMaxValue()
     {
         return this.safeGet(getMax());
     }
 
+    @Override
     public N getMinValue()
     {
         return this.safeGet(getMin());

@@ -23,40 +23,41 @@ import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Map;
 
-public class PrettyPrint {
-	public static void printList(Collection<? extends Object> data,
-			PrintStream out) {
-		for (Object o : data) {
-			out.println(o);
-		}
-	}
+public class PrettyPrint
+{
+    public static void printList(Collection<? extends Object> data, PrintStream out)
+    {
+        for (Object o : data) {
+            out.println(o);
+        }
+    }
 
-	public static void printList(Collection<? extends Object> data, int limit,
-			PrintStream out) {
-		int i = 0;
-		for (Object o : data) {
-			if (i++ > limit) {
-				break;
-			}
-			out.println(o);
-		}
-	}
+    public static void printList(Collection<? extends Object> data, int limit, PrintStream out)
+    {
+        int i = 0;
+        for (Object o : data) {
+            if (i++ > limit) {
+                break;
+            }
+            out.println(o);
+        }
+    }
 
-	public static void printMap(Map<? extends Object, ? extends Object> data,
-			PrintStream out) {
-		for (Object key : data.keySet()) {
-			out.println(key + "\t" + data.get(key));
-		}
-	}
+    public static void printMap(Map<? extends Object, ? extends Object> data, PrintStream out)
+    {
+        for (Object key : data.keySet()) {
+            out.println(key + "\t" + data.get(key));
+        }
+    }
 
-	public static void printMap(Map<? extends Object, ? extends Object> data,
-			int limit, PrintStream out) {
-		int i = 0;
-		for (Object key : data.keySet()) {
-			if (i++ > limit) {
-				break;
-			}
-			out.println(key + "\t" + data.get(key));
-		}
-	}
+    public static void printMap(Map<? extends Object, ? extends Object> data, int limit, PrintStream out)
+    {
+        int i = 0;
+        for (Object key : data.keySet()) {
+            if (i++ > limit) {
+                break;
+            }
+            out.println(key + "\t" + data.get(key));
+        }
+    }
 }
