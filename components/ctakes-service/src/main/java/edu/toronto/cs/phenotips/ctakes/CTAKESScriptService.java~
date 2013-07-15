@@ -73,11 +73,13 @@ public class CTAKESScriptService extends AbstractScriptService
                     break;
                 }
                 if(event.getBegin()==entry.getValue().getEndIndex()+1){
+    				//System.out.print(true);
     				flag=0;
     				ExtractedTerm temp = new ExtractedTerm();
     				temp.setEndIndex(event.getEnd());
     				temp.setBeginIndex(entry.getValue().getBeginIndex());
-    				temp.setExtractedText(entry.getKey()+" "+event.getCoveredText());    				
+    				temp.setExtractedText(entry.getKey()+" "+event.getCoveredText());
+    				//temp.setHPOTerm(Search(entry.getKey()+" "+event.getCoveredText()));
     				finalTerms.remove(entry.getKey());
     				finalTerms.put(entry.getKey()+" "+event.getCoveredText(), temp);
     				break;
@@ -87,11 +89,40 @@ public class CTAKESScriptService extends AbstractScriptService
                 ExtractedTerm temp  =  new ExtractedTerm();
                 temp.setEndIndex(event.getEnd());
                 temp.setBeginIndex(event.getBegin());
-                temp.setExtractedText(event.getCoveredText());               
+                temp.setExtractedText(event.getCoveredText());
+               // temp.setHPOTerm(search(event.getCoveredText()));
                 finalTerms.put(event.getCoveredText(), temp);
             }
         }
         return finalTerms;
     }
 
+    /*private static String search(String extractedText)
+            throws CorruptIndexException, IOException, ParseException {
+
+        String hpoTerm = ""; // HPOTerm
+        Directory directory = FSDirectory.open(new File("ctakes/index-directory"));
+        
+        IndexReader indexReader = IndexReader.open(directory, true);
+        Searcher searcher = new IndexSearcher(indexReader);
+        
+        QueryParser parser = new QueryParser(Version.LUCENE_CURRENT, "text",
+                new StandardAnalyzer(Version.LUCENE_CURRENT));
+
+        String search = extractedText;
+        Query query = parser.parse(search);
+        TopDocs topdocs = searcher.search(query, indexReader.maxDoc());
+        ScoreDoc[] hits = topdocs.scoreDocs;
+        for (ScoreDoc hit : hits) {
+            Document documentFromSearcher = searcher.doc(hit.doc);
+            hpoTerm = documentFromSearcher.get("code") + " "
+                    + documentFromSearcher.get("text");
+            break;
+        }
+
+        searcher.close();
+        directory.close();
+        return hpoTerm;
+    }
+*/
 }

@@ -31,7 +31,8 @@ public class ExtractedTerm
     /** Extracted Text of annotation. */
     private String extractedText;
 
-    
+    /** HPO TERM of annotation. */
+    //private String hpoTerm;
     
     /**Blank Constructor. */
     public ExtractedTerm() {
@@ -43,6 +44,7 @@ public class ExtractedTerm
         this.beginIndex = beginIndex;
         this.endIndex = endIndex;
         this.extractedText = extractedText;
+       // this.hpoTerm = hpoTerm;
     }
     
     public void setBeginIndex(int beginIndex) {
@@ -54,6 +56,9 @@ public class ExtractedTerm
     public void setExtractedText(String extractedText) {
         this.extractedText = extractedText;
     }
+   /* public void setHPOTerm(String hpoTerm) {
+        this.hpoTerm = hpoTerm;
+    }*/
     public int getBeginIndex() {
         return this.beginIndex;
     }
@@ -63,5 +68,8 @@ public class ExtractedTerm
     public String getExtractedText() {
         return this.extractedText;
     }
+    /*public String getHPOTerm() {
+        return this.hpoTerm;
+    }*/
 }
 
