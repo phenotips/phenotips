@@ -951,43 +951,6 @@ document.observe('dom:loaded', function() {
                   'onItemAdded' : jumpToPubmed
                 }
     }
-
-
-    //cTAKES code
-    var submit = $('ctakes-input-button');
-    if (submit){
-      submit.observe('click', function(){
-        var inputText = $('textarea-ctakes').value;
-        if(inputText){
-          var url = "$xwiki.getURL('PhenoTips.CtakesService', 'get')";
-          var method = "get";          
-          var headers = {};
-          headers.Accept = "application/json";
-          var parameters = {};
-          parameters.InputText=inputText;
-
-          var ajx = new Ajax.Request(url, {
-          method: method,
-          parameters: parameters,
-          requestHeaders: headers,
-          onSuccess: setTerms(this),
-          onFailure: function (response) {
-          //new MS.widgets.Notification("Failed to retrieve suggestions : ')" + response.statusText, "error", {timeout: 5});
-          alert("Failed to retrieve suggestions : " + response.statusText);
-            }
-          });
-          
-        }
-      });
-      //generate setlection summary from extracted terms
-      var setTerms = function(req){
-
-
-      }    
-    }
-
-   //End cTAKES Code
-
     // ------------------------------------------------------------------------
     // Generate selection summary
     // ------------------------------------------------------------------------
@@ -1750,7 +1713,9 @@ document.observe('dom:loaded', function() {
       if (!dataTable) {
         new XWiki.widgets.Notification("Cannot find the list to update " + classname, 'error');
       }
-      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?&amp;xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;withLabel=' + dataTable.hasClassName('withLabel')));
+      var propertyName = addTrigger.href.replace(/.*&amp;xredirect=.*propertyName=([^&amp;]+).*/, '$1');
+      var propertyValue = addTrigger.href.replace(/.*&amp;xredirect=.*propertyValue=([^&amp;]+).*/, '$1');
+      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?&amp;xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;withLabel=' + dataTable.hasClassName('withLabel') + '&amp;propertyName=' + propertyName + '&amp;propertyValue=' + propertyValue));
       new Ajax.Request(url, {
         onCreate : function() {
           addTrigger.disabled = true
@@ -2588,17 +2553,6 @@ document.observe('xwiki:dom:loaded', function() {
   });
 
 
- $$('.chapter .browser .textual-title').each(function(item){
-    var phTextualHide = new Element('span', {'class' : 'tool textual-hide'}).update('Hide');
-    var phTextualExpandTools = new Element('span', {'class' : 'textual-expand-tools'}).insert(phTextualHide);
-    item.insert({after: phTextualExpandTools});
-    [phTextualHide, item].invoke('observe', 'click', function (event) {
-      event.element().up('.textual-area').toggleClassName('collapsed');
-      event.element().up('.chapter').select('.current-phenotype-selection').invoke('toggleClassName', 'third-width');
-    });
-  });
-
-
   $$('.chapter .browser .browser-title').each(function(item){
     var phBrowserHide = new Element('span', {'class' : 'tool hide'}).update('Hide');
     var phBrowserExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(phBrowserHide);
@@ -2608,7 +2562,6 @@ document.observe('xwiki:dom:loaded', function() {
       event.element().up('.chapter').select('.current-phenotype-selection').invoke('toggleClassName', 'third-width');
     });
   });
-
   var phBrowserExpandAll = new Element('span', {'class' : 'tool expand-all'}).update('Expand all');
   var phBrowserCollapseAll = new Element('span', {'class' : 'tool collapse-all'}).update('Collapse all');
   var phBrowserJumpTo = new Element('span', {'class' : 'tool jump-to'}).update('Jump to');
@@ -3745,7 +3698,7 @@ document.observe('xwiki:dom:loaded', function() {
       <cache>long</cache>
     </property>
     <property>
-      <code>window.observe('load', function() {
+      <code>Event.observe(window, 'load', function() {
   for (binding in shortcut.all_shortcuts) {
     shortcut.remove(binding);
   }
@@ -4155,7 +4108,7 @@ input[type=text]:focus, textarea:focus {
   margin: 0;
   font-style: normal;
 }
-.chapter, .chapter-inner {
+.chapter {
   border: 1px solid $theme.pageContentBackgroundColor;
   border-radius: 0 0 10px 10px;
   box-shadow: 0 0 6px $theme.borderColor inset;
@@ -4176,12 +4129,6 @@ h2 a.action-edit {
 }
 .chapter:hover a.action-edit {
   visibility: visible;
-}
-.phenotype-info {
-  border: 0 none;
-  box-shadow: none;
-  margin: 0;
-  padding: 0;
 }
 h1, h2, h3, h4 {
   text-shadow: 1px 1px 0 $theme.pageContentBackgroundColor;
@@ -4455,43 +4402,36 @@ label.selected input[type="checkbox"] {
   text-shadow: 0 0 5px $theme.textSecondaryColor;
   opacity: .3;
 }
-.chapter div .expand-tools, .textual-expand-tools {
+.chapter div .expand-tools {
   margin-top: -3.5em;
   margin-right: 0;
 }
-.chapter .expand-tools, .chapter .chapter-inner .expand-tools, .textual-expand-tools {
-  ####display: block;
-  ##float: right;
-  ####margin-top: -1.5em;
-  ##margin-top: -3.5em;
-  ####margin-left: -14px;
-  ##font-size: .8em;
-  ##color: $theme.textPrimaryColor;
+.chapter .expand-tools {
   color: $theme.textPrimaryColor;;
   float: right;
   font-size: 0.8em;
   margin-right: -10px;
   margin-top: -2em;
 }
-.chapter .browser .expand-tools, .chapter .textual-area .textual-expand-tools {
+.chapter .browser .expand-tools {
   margin-right: 0;
   margin-top: -3em;
 }
-.expand-tools .tool:hover, .textual-expand-tools .tool:hover {
+.expand-tools .tool:hover {
   color: $theme.linkColor;
   cursor: pointer;
 }
 .chapter.collapsed .expand-tools .inner-expand-tools,
 .chapter.collapsed .expand-tools .hide,
-.chapter.collapsed div,
+.chapter.collapsed &gt; *,
 .chapter.collapsed table,
 .chapter .expand-tools .show {
   display: none;
 }
-.chapter.collapsed .expand-tools .show {
+.chapter.collapsed .expand-tools, .chapter.collapsed .expand-tools .show {
   display: inline
 }
-.chapter.collapsed div.chapter-inner {
+.chapter.collapsed &gt; h2 {
   display: block;
 }
 .chapter.collapsed #quick-search-box {
@@ -4502,7 +4442,7 @@ label.selected input[type="checkbox"] {
 }
 .browser.collapsed .expand-tools .inner-expand-tools,
 .browser.collapsed .expand-tools .hide,
-.browser.collapsed .phenotype {
+.browser.collapsed div {
   display: none;
 }
 .browser.collapsed {
@@ -4527,28 +4467,6 @@ label.selected input[type="checkbox"] {
 .browser.collapsed .browser-title:hover{
   cursor: pointer;
   color: $theme.linkColor;
-}
-
-.textual-area.collapsed .textual-title{
-  text-transform: none;
-  font-size: 80%;
-  color: $theme.textPrimaryColor;
-  border: 0 none;
-  margin: 0;
-  padding: 0;
-}
-.textual-area.collapsed .textual-title:after {
-  content: " »";
-}
-.textual-area.collapsed .textual-title:hover{
-  cursor: pointer;
-  color: $theme.linkColor;
-}
-
-.textual-area.collapsed .textual-expand-tools .inner-expand-tools,
-.textual-area.collapsed .textual-expand-tools .textual-hide,
-.textual-area.collapsed .textual-box {
-  display: none;
 }
 
 .phenotype-info .chapter-toc {
@@ -4857,19 +4775,27 @@ table.withLabel tr:first-child th {
 .extradata-list .below-normal, .extradata-list .above-normal {
   color: $theme.notificationWarningColor;
 }
+.extradata-list .extreme-below-normal:before, .extradata-list .extreme-above-normal:before,
+.extradata-list .below-normal:before, .extradata-list .above-normal:before {
+  border-radius: 50%;
+  color: $theme.pageContentBackgroundColor;
+  display: inline-block;
+  height: 1.4em;
+  margin-right: 0.5em;
+  text-align: center;
+  text-shadow: none;
+  width: 1.4em;
+}
+.extradata-list .extreme-below-normal:before, .extradata-list .extreme-above-normal:before {
+  background-color: $theme.notificationErrorColor;
+  content: "!!";
+}
+.extradata-list .below-normal:before, .extradata-list .above-normal:before {
+  background-color: $theme.notificationWarningColor;
+  content: "!";
+}
 form .extradata-list tr:hover td {
   background-color: $theme.highlightColor;
-}
-
-table.extradata-list td.weight,
-table.extradata-list td.height,
-table.extradata-list td.bmi,
-table.extradata-list td.hc {
-  padding-left: .5em;
-}
-table.extradata-list td.date,
-table.extradata-list td.bmi_percentile {
-  padding-right: .5em;
 }
 #extradata-list-PhenoTips\.MeasurementsClass {
   border-collapse: separate;
@@ -4877,6 +4803,9 @@ table.extradata-list td.bmi_percentile {
 }
 #extradata-list-PhenoTips\.MeasurementsClass td {
   text-align: left;
+}
+#extradata-list-PhenoTips\.MeasurementsClass .displayed-value {
+  white-space: nowrap;
 }
 #extradata-list-PhenoTips\.MeasurementsClass table {
   width: 100% !important;
@@ -4991,12 +4920,14 @@ table.extradata-list td.bmi_percentile {
   padding: 5px;
 }
 
-.extradata-list .relative_type {
+.extradata-list .relative_type, .extradata-list .relative_of {
   width: 50%;
+  text-align: left;
 }
-.extradata-list .relative_of {
-  width: 45%;
-}</code>
+.extradata-list .relative_type label, .extradata-list .relative_of label {
+  width: auto;
+}
+</code>
     </property>
     <property>
       <name>Extra data table ui</name>
@@ -5537,7 +5468,7 @@ input.LV_invalid_field {
 #end
 
 #macro (__display $propName)
-(% class="displayed-value"%)(((#if($xcontext.action == 'edit' || ($doc.display($propName) != ''))${doc.display($propName)}#{else}-#{end})))##
+(% class="displayed-value"%)(((#if($xcontext.action == 'edit' || ($doc.display($propName) != ''))${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#{else}-#{end})))##
 #end
 
 #macro (__displayIfNotEmpty $propName)
@@ -5545,6 +5476,18 @@ input.LV_invalid_field {
 #__label($propName '')
 #__display($propName)
 #end
+#end
+
+#macro (__hasDataToDisplay $propertyName $shouldDisplay)
+  #if ($activeFields.contains($propertyName) &amp;&amp; ($xcontext.action == 'edit' || "$doc.display($propertyName)" != ''))
+    #setVariable("$shouldDisplay", true)
+  #end
+#end
+
+#macro (__hasBooleanDataToDisplay $propertyName $shouldDisplay)
+  #if ($activeFields.contains($propertyName) &amp;&amp; ($xcontext.action == 'edit' || $obj.getProperty($propertyName).value == 1))
+    #setVariable("$shouldDisplay", true)
+  #end
 #end
 
 #macro (__display2Col $propName $label $groupCssClass $labelCssClass)
@@ -5580,7 +5523,7 @@ input.LV_invalid_field {
     #if ($mode == 'half-width')
       #__displayHalfWidth($propName $label $_groupCssClass $labelCssClass)
     #else
-      #__label($propName $labelCssClass $label) (% class="displayed-value"%)#if ("$!{doc.display($propName)}" == '')-#else${doc.display($propName)}#end(%%)
+      #__label($propName $labelCssClass $label) (% class="displayed-value"%)#if ("$!{doc.display($propName)}" == '')-#else${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#end(%%)
     #end
   #else
     #if ($mode == 'half-width')
@@ -5650,7 +5593,7 @@ input.LV_invalid_field {
 #end
 
 #macro (__extradata_addTool $classname $anchor $options)
-  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
+  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
 
 #macro (__extradata_displayTable $dataClassName $options)
   #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
@@ -5675,7 +5618,7 @@ input.LV_invalid_field {
       #end
       #if ($xcontext.action == 'export')#set ($disableLabels = true)#end
       #foreach ($o in $dataObjects)
-        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.prettyName}&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $o)#end#if ($xcontext.action == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
+        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.prettyName}&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')#end#if ($xcontext.action == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
 
       #end## foreach object
 
@@ -5685,12 +5628,12 @@ input.LV_invalid_field {
   #end## if dataclass
 #end
 
-#macro (__extradata_displayLastEntry $dataClassName $withLabel)
+#macro (__extradata_displayLastEntry $dataClassName $options)
   #set ($objects = $doc.getObjects($dataClassName))
   #if ($objects.size() &gt; 0)
     #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
     #set($dataClass = $targetObj.xWikiClass)
-    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}"&gt;#if ("$!{withLabel}" == 'true'){{html clean="false" wiki="false"}}&lt;label &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
+    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}#if ($prop.name == $options.propertyName) hidden#end"&gt;#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
   #end
 #end
 
@@ -5777,6 +5720,7 @@ input.LV_invalid_field {
     #__displayFormatted('half-width' 'external_id')
     #__displayFormatted('half-width' 'exam_date')
   )))##fieldset
+  (% class="clear" %)((()))
   #else
   #__displayFormatted('2-col' 'external_id' '' '' '')
   #__displayFormatted('2-col' 'exam_date' '' '' '')
@@ -5795,25 +5739,23 @@ input.LV_invalid_field {
   #__displayFormatted('2-col' 'date_of_birth' '' 'date' '')
   #__displayFormatted('2-col' 'gender' 'Sex:' 'gender' 'group-title')
   #__displayFormatted('2-col' 'health_card' '' '' '')
-#if ("$!activeFields.contains('relative')" != 'false' &amp;&amp; ($context.action == 'edit' || ($doc.display('relative') != '' &amp;&amp; $doc.display('relative_of') != '')))
-
-  ----
   #set ($targetClassName = 'PhenoTips.RelativeClass')
-  #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
+  #if ($config &amp;&amp; $config.getProperty('section__patient-info').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
+
+    ----
     (% class="clear relatives-info" %)(((
     === Family study ===
     #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
     )))
   #end
-#end
 #if ("$!activeFields.contains('age_of_onset')" != 'false')
   #if($doc.display('age_of_onset') != '')
 
     ----
   #end
   #__displayIfNotEmpty('age_of_onset')
+  (% class="clear" %)((()))
 #end
-(% class="clear" %)((()))
 #if ("$!activeFields.contains('indication_for_referral')" != 'false')
   #if($xcontext.action == 'edit' || ($doc.display('indication_for_referral') != ''))
 
@@ -5862,14 +5804,16 @@ input.LV_invalid_field {
 ## Phenotype information
 ##
 #macro(__reportSection__phenotype_info)
-#if ($xcontext.action == 'edit' || "$doc.display('phenotype')$doc.display('negative_phenotype')" != '' || $doc.display('unaffected') != 'No')
-#if ("$!activeFields.contains('unaffected')" != 'false')
+  #__hasBooleanDataToDisplay('unaffected', $showUnaffected)
+  #__hasDataToDisplay('phenotype' $showPhenotype)
+  #__hasDataToDisplay('negative_phenotype' $showNegativePhenotype)
+#if ($showUnaffected || $showPhenotype || $showNegativePhenotype)
+#if ($showUnaffected)
   (% class="controlled-group complete-hide" %)(((
 #end
 #if ("$!activeFields.contains('phenotype')" != 'false')
   (% class="clear clinical-info phenotype-info chapter" %)(((
   #if ("$!activeFields.contains('unaffected')" != 'false')#set ($__qsBoxCssClass = 'controlled')#end
-    (% class="chapter-inner" %)(((
     (% class="group-title" %)
     == $!{class.get('phenotype').prettyName} ==
       #if ("$!activeFields.contains('unaffected')" != 'false')
@@ -5888,17 +5832,6 @@ input.LV_invalid_field {
         #if ($context.action == 'edit')
           (% class="selector-panels"%)(((
           (% class="half-width selector-panel browser browse-phenotype-categories force-collapse"%)(((
-
-          (% class="textual-area" %)(((
-            (% class="textual-title"%)
-              === **Textual Form** ===
-              (% class="textual-box" %)(((
-                {{html}}
-                  &lt;textarea name="freetext-symptoms" id="textarea-ctakes"&gt;&lt;/textarea&gt;
-                  &lt;span class="buttonctakes"&gt;&lt;input id="ctakes-input-button" type="button" value="Submit"/&gt;&lt;/span&gt;      
-                {{/html}}
-              )))
-          )))
           (% class="browser-title"%)
           === **Browse categories** ===
 (% class="background-search diffDiagnosis-search phenotype-group collapsible-group hidden" title="Phenotypes that are likely to help improve differential diagnosis"%)(((
@@ -5925,10 +5858,9 @@ input.LV_invalid_field {
       #if ("$!activeFields.contains('unaffected')" != 'false')
         )))## controlled (phenotype)
       #end
-        )))## chapter-inner
   )))## chapter
 #end
-#if ("$!activeFields.contains('unaffected')" != 'false')
+#if ($showUnaffected)
   )))## controlled-group
 #end
 #end## section has content
@@ -5938,15 +5870,29 @@ input.LV_invalid_field {
 ## Prenatal information
 ##
 #macro(__reportSection__prenatal_phenotype_info)
-#if ("$!activeFields.contains('prenatal_phenotype')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('prenatal_phenotype')$doc.display('gestation')$doc.display('prenatal_comments')" != ''))
+  #__hasDataToDisplay('prenatal_phenotype' $showPrenatalPhenotype)
+  #__hasDataToDisplay('gestation' $showGestation)
+  #__hasDataToDisplay('prenatal_comments' $showPrenatalComments)
+#if ($showPrenatalPhenotype || $showGestation || $showPrenatalComments)
 (% class="clear clinical-info prenatal_phenotype-info chapter #__markIfMandatory('prenatal_phenotype')" %)(((
 == $!{class.get('prenatal_phenotype').prettyName} ==
-#__displayFormatted('2-col' 'gestation' '' '' '')
-(% class="clear" %)(((----)))
-$doc.display('prenatal_phenotype')
-(% class="clear" %)(((----)))
-(((#__displayIfNotEmpty('prenatal_comments'))))
-)))##chapter
+#if ($showGestation)
+  #__displayFormatted('2-col' 'gestation' '' '' '')
+  (% class="clear" %)((()))
+#end
+#if ($showPrenatalPhenotype)
+  #if ($showGestation)----
+  #end
+  $doc.display('prenatal_phenotype')
+  (% class="clear" %)((()))
+#end
+#if ($showPrenatalComments)
+  #if ($showGestation || $showPrenatalPhenotype)----
+  #end
+  (((#__displayIfNotEmpty('prenatal_comments'))))
+#end
+)))
+##chapter
 #end
 #end
 ##
@@ -5954,13 +5900,22 @@ $doc.display('prenatal_phenotype')
 ## Family history
 ##
 #macro(__reportSection__family_history)
-#if (("$!activeFields.contains('consanguinity')" != 'false' || "$!activeFields.contains('miscarriages')" != 'false'|| "$!activeFields.contains('mode_of_inheritance')" != 'false' || "$!activeFields.contains('pedigree')" != 'false' || "$!activeFields.contains('in_vitro')" != 'false' || "$!activeFields.contains('proband')" != 'false' || "$!activeFields.contains('family_of')" != 'false' || "$!activeFields.contains('maternal_ethnicity')" != 'false' || "$!activeFields.contains('paternal_ethnicity')" != 'false') &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('family_of')$doc.display('consanguinity')$doc.display('miscarriages')$doc.display('mode_of_inheritance')$doc.display('family_comments')$doc.display('pedigree')$doc.display('paternal_ethnicity')$doc.display('maternal_ethnicity')" != '' || $doc.display('proband') == 'Yes'))
+  #__hasDataToDisplay('consanguinity' $showConsanguinity)
+  #__hasDataToDisplay('miscarriages' $showMiscarriages)
+  #__hasDataToDisplay('mode_of_inheritance' $showModeOfInheritance)
+  #__hasDataToDisplay('pedigree' $showPedigree)
+  #__hasBooleanDataToDisplay('proband', $showProband)
+  #__hasDataToDisplay('family_of' $showFamilyOf)
+  #__hasDataToDisplay('maternal_ethnicity' $showMaternalEthnicity)
+  #__hasDataToDisplay('paternal_ethnicity' $showPaternalEthnicity)
+  #__hasBooleanDataToDisplay('in_vitro', $showInVitro)
+  #__hasDataToDisplay('family_comments' $showFamilyComments)
+#if ($showConsanguinity || $showMiscarriages || $showModeOfInheritance || $showPedigree || $showProband || $showFamilyOf || $showMaternalEthnicity || $showPaternalEthnicity || $showInVitro || $showFamilyComments)
 (% class="clear clinical-info family_history-info chapter #__markIfMandatory('family_history')" %)(((
 == $!{class.get('family_history').prettyName} ==
 
 (((
-
-#if ("$!activeFields.contains('family_of')" != 'false')
+#if ($showProband || $showFamilyOf)
   #if ($xcontext.action == 'edit')
     (% class="controlled-group complete-hide" %)(((
       (% class="controller" %)(((
@@ -5971,43 +5926,46 @@ $doc.display('prenatal_phenotype')
       )))
     )))
   #else
-    #if ($doc.display('proband') == 'Yes')
+    #if ($showProband)
       $class.get('proband').prettyName
     #else
       #__displayFormatted('2-col' 'family_of' '' '' '')
     #end
   #end
 #end
-(% class="fieldset ethnicity" %)(((
+#if ($showMaternalEthnicity || $showPaternalEthnicity)
+  (% class="fieldset ethnicity" %)(((
     #__displayFormatted('half-width' 'maternal_ethnicity')
     #__displayFormatted('half-width' 'paternal_ethnicity')
-)))##fieldset
-(% class="clearfloats" %)((()))
-#if ("$!activeFields.contains('in_vitro')" != 'false')
+  )))##fieldset
+  (% class="clearfloats" %)((()))
+#end
+#if ($showInVitro)
   #if ($xcontext.action == 'edit')
 
     ----
     $doc.display('in_vitro') #__label('in_vitro' 'section' "$class.get('in_vitro').prettyName")
   #else
-    #set ($isInVitro = $doc.getObject('PhenoTips.PatientClass').getProperty('in_vitro').value)
-    #if ($isInVitro == 1)
 
-      ----
-      $class.get('in_vitro').prettyName
-    #end
+    ----
+    $class.get('in_vitro').prettyName
   #end
 #end
-#if (("$!activeFields.contains('consanguinity')" != 'false' || "$!activeFields.contains('miscarriages')" != 'false') &amp;&amp; ($xcontext.action == 'edit' || "$!doc.display('consanguinity')$!doc.display('miscarriages')" != ''))
+#if ($showConsanguinity || $showMiscarriages)
 
   ----
-  $doc.display('consanguinity')
-  $doc.display('miscarriages')
+  #if ($showConsanguinity)
+    ((($doc.display('consanguinity'))))
+  #end
+  #if ($showMiscarriages)
+    ((($doc.display('miscarriages'))))
+  #end
 #end
-#if ("$!activeFields.contains('mode_of_inheritance')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$!doc.display('mode_of_inheritance')" != ''))
+#if ($showModeOfInheritance)
 
   #__displayIfNotEmpty('mode_of_inheritance')
 #end
-#if ("$!activeFields.contains('family_comments')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$!doc.display('family_comments')" != ''))
+#if ($showFamilyComments)
 
   #__displayIfNotEmpty('family_comments')
 #end
@@ -6018,8 +5976,9 @@ $doc.display('prenatal_phenotype')
   #set ($image = $pedigreeObj.getProperty('image').value)
 #end## pedigree obj exists
 #if ($xcontext.action == 'edit' || "$!{doc.display('pedigree')}" != '' || "$!data" != '')
+
   === Pedigree ===
-  $!doc.display('pedigree')
+
   #if ($xcontext.action == 'edit')
     #if ("$!data" != '')
       #set ($pAction = 'Edit pedigree')
@@ -6128,8 +6087,12 @@ $doc.display('reports_history')
 {{/velocity}}
 
 {{velocity}}
-#if ("$!{request.xaction}" == 'lastentry')
-  #__extradata_displayLastEntry($request.dataClassName $request.withLabel)
+#if ("$!{request.xaction}" == 'lastentry')  #set ($entryClassName = $request.dataClassName)
+  #set ($options = {})
+  #set ($discard = $options.put('propertyName', "$!{request.propertyName}"))
+  #set ($discard = $options.put('propertyValue', "$!{request.propertyValue}"))
+  #set ($discard = $options.put('labels', "$!{request.withLabel}"))
+  #__extradata_displayLastEntry($request.dataClassName $options)
 #elseif ("$!{request.xaction}" == 'lastmeta')
   #__phenotypeMeta_displayLastEntry()
 #else
