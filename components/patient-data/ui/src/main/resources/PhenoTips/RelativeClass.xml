@@ -53,11 +53,23 @@
     <validationScript/>
     <relative_of>
       <cache>0</cache>
-      <classname>PhenoTips.PatientClass</classname>
-      <customDisplay/>
+      <classname/>
+      <customDisplay>{{velocity}}
+#if ($type == 'edit')
+{{html clean="false"}}&lt;input class="suggested" id="${doc.fullName}_${prefix}${name}" name="${prefix}${name}" onfocus="new ajaxSuggest(this, {script: '$xwiki.getURL('', 'get', "xpage=suggest&amp;classname=${field.className}&amp;fieldname=${name}&amp;firCol=eid.value&amp;secCol=-")&amp;', varname:'input'} )" type="text" value="$!escapetool.xml($value)" /&gt;
+{{/html}}
+#elseif ("$!value" != '')
+  #set ($matchingDocuments = $xwiki.wrapDocs($services.query.xwql("where doc.object(PhenoTips.PatientClass).external_id = :eid").bindValue('eid', $value).execute()))
+  #if ($matchingDocuments.size() == 1)
+    [[${value}&gt;&gt;$matchingDocuments.get(0).documentReference]]##
+  #else
+    $!value##
+  #end
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <displayType>input</displayType>
-      <idField>doc.fullName</idField>
+      <idField/>
       <multiSelect>0</multiSelect>
       <name>relative_of</name>
       <number>2</number>
@@ -68,11 +80,11 @@
       <separators/>
       <size>1</size>
       <sort>none</sort>
-      <sql/>
+      <sql>select eid.value from BaseObject as obj, StringProperty as eid where obj.className = 'PhenoTips.PatientClass' and eid.id.id = obj.id and eid.id.name = 'external_id'</sql>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <valueField>external_id</valueField>
+      <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </relative_of>
     <relative_type>

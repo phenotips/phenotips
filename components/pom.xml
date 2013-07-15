@@ -21,7 +21,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>edu.toronto.cs.phenotips</groupId>
+    <groupId>org.phenotips</groupId>
     <artifactId>phenotips-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
@@ -30,8 +30,10 @@
   <name>PhenoTips - Various Java components</name>
 
   <modules>
+    <module>component-registry</module>
     <module>obo2solr</module>
     <module>solr-access-service</module>
+    <module>ontology-access</module>
     <module>patient-update-listeners</module>
     <module>patient-data</module>
     <module>patient-measurements</module>

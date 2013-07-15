@@ -1,5 +1,4 @@
-edu.toronto.cs.phenotips.listeners.FreePhenotypeCategoryUpdater
-edu.toronto.cs.phenotips.listeners.PatientBirthdateUpdater
-edu.toronto.cs.phenotips.listeners.PatientExtendedPhenotypeUpdater
-edu.toronto.cs.phenotips.listeners.PatientOnsetUpdater
-edu.toronto.cs.phenotips.listeners.MeasurementAgeUpdater
+org.phenotips.listeners.FreePhenotypeCategoryUpdater
+org.phenotips.listeners.PatientBirthdateUpdater
+org.phenotips.listeners.PatientExtendedPhenotypeUpdater
+org.phenotips.listeners.MeasurementAgeUpdater

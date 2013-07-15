@@ -1,0 +1,2 @@
+org.phenotips.data.indexing.internal.PatientEventListener
+org.phenotips.data.indexing.internal.SolrPatientIndexer

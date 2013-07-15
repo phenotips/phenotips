@@ -23,7 +23,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>edu.toronto.cs.phenotips</groupId>
+    <groupId>org.phenotips</groupId>
     <artifactId>phenotips-distribution</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
@@ -38,7 +38,7 @@
     <xwiki.extension.features>org.xwiki.enterprise:xwiki-enterprise-web</xwiki.extension.features>
 
     <!-- The default UI associated to this WAR -->
-    <xwiki.extension.distribution.ui>edu.toronto.cs.phenotips:phenotips-ui</xwiki.extension.distribution.ui>
+    <xwiki.extension.distribution.ui>org.phenotips:phenotips-ui</xwiki.extension.distribution.ui>
   </properties>
   <dependencies>
     <dependency>
@@ -46,6 +46,11 @@
       <artifactId>xwiki-enterprise-web</artifactId>
       <version>${xwiki.version}</version>
       <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>component-registry</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -68,7 +73,36 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>ontology-access</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-data-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>patient-data-migrations</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-data-indexing</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

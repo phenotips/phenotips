@@ -1,1 +1,3 @@
-edu.toronto.cs.internal.R45391PhenoTips434DataMigration
+org.phenotips.data.internal.R45391PhenoTips434DataMigration
+org.phenotips.data.internal.R50290PhenoTips477DataMigration
+org.phenotips.data.internal.R50291PhenoTips481DataMigration
