@@ -41,5 +41,6 @@
     <module>jetty-resources</module>
     <module>solr-configuration</module>
     <module>ui</module>
+    <module>ctakes-resources</module>
   </modules>
 </project>
