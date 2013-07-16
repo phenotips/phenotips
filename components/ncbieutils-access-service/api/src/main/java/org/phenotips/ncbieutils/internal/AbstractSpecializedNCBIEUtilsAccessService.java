@@ -21,7 +21,9 @@ package org.phenotips.ncbieutils.internal;
 
 import java.io.BufferedInputStream;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -340,13 +342,24 @@ public abstract class AbstractSpecializedNCBIEUtilsAccessService implements NCBI
 
     private String composeURL(String scriptName, String paramName, String query)
     {
-        return SERVER_URL + scriptName + "?" + DB_PARAM_NAME + '=' + getDatabaseName() + "&" + paramName + "=" + query;
+        try {
+            return SERVER_URL + scriptName + "?" + DB_PARAM_NAME + '=' + getDatabaseName() + "&" + paramName + "="
+                + URLEncoder.encode(query, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            return SERVER_URL + scriptName + "?" + DB_PARAM_NAME + '=' + getDatabaseName() + "&" + paramName + "="
+                + query;
+        }
     }
 
     private String composeURL(String scriptName, String paramName, String query, final int rows, final int start)
     {
-        return SERVER_URL + scriptName + "?" + DB_PARAM_NAME + '=' + getDatabaseName() + "&" + paramName + "=" + query
-            + "&RetMax=" + rows + "&RetStart=" + start;
+        try {
+            return SERVER_URL + scriptName + "?" + DB_PARAM_NAME + '=' + getDatabaseName() + "&" + paramName + "="
+                + URLEncoder.encode(query, "UTF-8") + "&RetMax=" + rows + "&RetStart=" + start;
+        } catch (UnsupportedEncodingException ex) {
+            return SERVER_URL + scriptName + "?" + DB_PARAM_NAME + '=' + getDatabaseName() + "&" + paramName + "="
+                + query + "&RetMax=" + rows + "&RetStart=" + start;
+        }
     }
 
     private org.w3c.dom.Document readXML(String url)
