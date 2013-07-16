@@ -2714,7 +2714,6 @@ document.observe('xwiki:dom:loaded', function() {
   $$('.ncbi-search-box h3, .ncbi-search-box .expand-tools .tool').invoke('observe', 'click', function(event) {
      event.element().up('.ncbi-search-box').toggleClassName('collapsed');
   });
-  //$$('.ncbi-search-box').invoke('toggleClassName' ,'collapsed');
 
   var defaultSearchTerms = $('defaultSearchTerms');
   var defaultSearchTermsInput = $('defaultSearchTermsInput');
@@ -2730,11 +2729,6 @@ document.observe('xwiki:dom:loaded', function() {
        'target' : $('omim-search-results'),
        'suggestFor' : omimField
     },
-    'pubmed' : {
-       'script' : "$xwiki.getURL('PhenoTips.PubMedService', 'get', 'format=html&amp;q=')",
-       'source' : [customSearchTermsInput, defaultSearchTermsInput],
-       'target' : $('pubmed-search-results')
-    },
     'diffDiagnosis' : {
        'script' : "$xwiki.getURL('PhenoTips.DiffDiagnosisService', 'get', 'format=html&amp;q=')",
        'source' : [defaultSearchTermIDsInput],
@@ -2743,7 +2737,7 @@ document.observe('xwiki:dom:loaded', function() {
     }
   };
 
-  if (!defaultSearchTerms || !defaultSearchTermsInput || (!services.omim.target &amp;&amp; !services.pubmed.target &amp;&amp; !services.diffDiagnosis.target)) {return;}
+  if (!defaultSearchTerms || !defaultSearchTermsInput || (!services.omim.target &amp;&amp; !services.diffDiagnosis.target)) {return;}
 
   var cache = {'all' : {}, 'displayed' : {}};
 
@@ -2751,13 +2745,15 @@ document.observe('xwiki:dom:loaded', function() {
     var prevValue = defaultSearchTermsInput.value;
     defaultSearchTermsInput.value = '';
     defaultSearchTermIDsInput.value = '';
+    var termNames = [];
     defaultSearchTerms.select('.search-term:not(.disabled)').each(function(term) {
+      termNames.push(term.innerHTML);
       defaultSearchTermsInput.value += ' "' + term.innerHTML + '"';
       defaultSearchTermIDsInput.value += term.__key + ' ';
     });
     if (defaultSearchTermsInput.value != prevValue) {
+      document.fire('phenotips:phenotypeChanged', {phenotype: cache});
       doSearch('omim');
-      doSearch('pubmed');
       doSearch('diffDiagnosis');
     }
   }
@@ -2987,7 +2983,6 @@ document.observe('xwiki:dom:loaded', function() {
   if (customSearchTermsInput) {
     customSearchTermsInput.observe('keyup', function(event) {
        doSearch('omim');
-       doSearch('pubmed');
        doSearch('diffDiagnosis');
     });
   }
@@ -5574,10 +5569,6 @@ input.LV_invalid_field {
 ==== Matching disorders in OMIM ====
 (% id="omim-search-results" class="background-suggestions" %)((()))
 )))
-##(% class="half-width background-search pubmed-search" %)(((
-##==== Suggested reading on PubMed ====
-##(% id="pubmed-search-results" class="background-suggestions" %)((()))
-##)))
 )))
 )))
 #end

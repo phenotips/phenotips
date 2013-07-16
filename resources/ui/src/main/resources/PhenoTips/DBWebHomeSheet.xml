@@ -416,23 +416,6 @@
             enableHierarchy: false,
             fadeOnClear : false,
             timeout : 30000
-        },
-        "pubmed" : {
-            script: "$xwiki.getURL('PhenoTips.PubMedService', 'get')?",
-            varname: "q",
-            noresults: "No matching articles",
-            json: true,
-            resultsParameter : "rows",
-            resultId : "id",
-            resultValue : "Title",
-            resultInfo : {
-                           "Authors"   : {"selector"  : "AuthorList"},
-                           "Date"      : {"selector"  : "EPubDate"},
-                           "Journal"   : {"selector"  : "Source"}
-                         },
-            enableHierarchy: false,
-            fadeOnClear : false,
-            timeout : 30000
         }
   };
   // =================================================================================
