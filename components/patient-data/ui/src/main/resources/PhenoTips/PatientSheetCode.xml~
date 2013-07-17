@@ -4455,7 +4455,7 @@ label.selected input[type="checkbox"] {
   margin-top: -3.5em;
   margin-right: 0;
 }
-
+<<<<<<< .merge_file_UGBC17
 .chapter .expand-tools, .chapter .chapter-inner .expand-tools, .textual-expand-tools {
   ####display: block;
   ##float: right;
@@ -4464,9 +4464,9 @@ label.selected input[type="checkbox"] {
   ####margin-left: -14px;
   ##font-size: .8em;
   ##color: $theme.textPrimaryColor;
-}
-
+=======
 .chapter .expand-tools {
+>>>>>>> .merge_file_2PqR78
   color: $theme.textPrimaryColor;;
   float: right;
   font-size: 0.8em;

@@ -17,23 +17,22 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package edu.toronto.cs.phenotips.ctakes;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
+package org.phenotips.ctakes;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIndex;
 import org.apache.uima.jcas.JCas;
-import org.xwiki.component.annotation.Component;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-
-import edu.toronto.cs.phenotips.ctakes.ExtractedTerm;
+import org.xwiki.component.annotation.Component;
 
 @Component
 @Named("ctakes")
@@ -49,8 +48,8 @@ public class CTAKESScriptService extends AbstractScriptService
         this.analysisEngine.process(jCas);
 
 
-        FSIndex<?> eventIndex  =  jCas.getAnnotationIndex(org.apache.ctakes.typesystem.type.textsem.EventMention.type);
-        Iterator<?> eventIter  =  eventIndex.iterator();   
+        FSIndex<Annotation> eventIndex  =  jCas.getAnnotationIndex(org.apache.ctakes.typesystem.type.textsem.EventMention.type);
+        Iterator<Annotation> eventIter  =  eventIndex.iterator();   
 
         Map<String,ExtractedTerm> finalTerms  =  new HashMap<String, ExtractedTerm>();
         org.apache.ctakes.typesystem.type.textsem.EventMention firstevent  =  (org.apache.ctakes.typesystem.type.textsem.EventMention) eventIter.next();
@@ -59,7 +58,6 @@ public class CTAKESScriptService extends AbstractScriptService
         firstTerm.setExtractedText(firstevent.getCoveredText());
         firstTerm.setBeginIndex(firstevent.getBegin());
         firstTerm.setEndIndex(firstevent.getEnd());
-       // firstTerm.setHPOTerm(search(firstevent.getCoveredText()));
         finalTerms.put(firstevent.getCoveredText(), firstTerm);
 
         while (eventIter.hasNext())  {

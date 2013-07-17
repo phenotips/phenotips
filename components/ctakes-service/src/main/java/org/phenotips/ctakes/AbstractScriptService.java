@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package edu.toronto.cs.phenotips.ctakes;
+package org.phenotips.ctakes;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -173,8 +173,8 @@ public abstract class AbstractScriptService implements ScriptService, Initializa
         	
             ExternalResourceDescription dictionaryERD1 = ExternalResourceFactory.createExternalResourceDescription("LookupDescriptorFile", org.apache.ctakes.core.resource.FileResourceImpl.class, new File("webapps/phenotips/resources/cTAKES/DictionaryLookup/LookupDesc_csv_sample.xml").toURI().toURL().toString());
         	ExternalResourceDescription dictionaryERD2 = ExternalResourceFactory.createExternalResourceDescription("DictionaryFileResource", org.apache.ctakes.core.resource.FileResourceImpl.class, new File("webapps/phenotips/resources/cTAKES/DictionaryLookup/dictionary1.csv").toURI().toURL().toString());
-        	ExternalResourceDescription dictionaryERD3 = ExternalResourceFactory.createExternalResourceDescription("RxnormIndex", org.apache.ctakes.core.resource.LuceneIndexReaderResourceImpl.class,"", "UseMemoryIndex",true,"IndexDirectory","webapps/phenotips/resources/cTAKES/DictionaryLookup/drug_index");
-        	ExternalResourceDescription dictionaryERD4 = ExternalResourceFactory.createExternalResourceDescription("OrangeBookIndex", org.apache.ctakes.core.resource.LuceneIndexReaderResourceImpl.class,"" ,"UseMemoryIndex",true,"IndexDirectory","webapps/phenotips/resources/cTAKES/DictionaryLookup/OrangeBook");
+        	ExternalResourceDescription dictionaryERD3 = ExternalResourceFactory.createExternalResourceDescription("RxnormIndex", org.phenotips.ctakes.Lucene4IndexReaderResourceImpl.class,"", "UseMemoryIndex",true,"IndexDirectory","webapps/phenotips/resources/cTAKES/DictionaryLookup/drug_index");
+        	ExternalResourceDescription dictionaryERD4 = ExternalResourceFactory.createExternalResourceDescription("OrangeBookIndex", org.phenotips.ctakes.Lucene4IndexReaderResourceImpl.class,"" ,"UseMemoryIndex",true,"IndexDirectory","webapps/phenotips/resources/cTAKES/DictionaryLookup/OrangeBook");
         	Map<String,ExternalResourceDescription> dictionaryMap = new HashMap<String, ExternalResourceDescription>();
         	dictionaryMap.put("LookupDescriptor", dictionaryERD1);dictionaryMap.put("DictionaryFile", dictionaryERD2);
         	dictionaryMap.put("RxnormIndexReader", dictionaryERD3);dictionaryMap.put("OrangeBookIndexReader", dictionaryERD4);
@@ -187,9 +187,9 @@ public abstract class AbstractScriptService implements ScriptService, Initializa
         	ExternalResourceDependency dicterd2= new ExternalResourceDependency_impl();
         	dicterd2.setKey("DictionaryFile");dicterd2.setOptional(false);dicterd2.setInterfaceName("org.apache.ctakes.core.resource.FileResource");
         	ExternalResourceDependency dicterd3= new ExternalResourceDependency_impl();
-        	dicterd3.setKey("RxnormIndexReader");dicterd3.setOptional(false);dicterd3.setInterfaceName("org.apache.ctakes.core.resource.LuceneIndexReaderResource");
+        	dicterd3.setKey("RxnormIndexReader");dicterd3.setOptional(false);dicterd3.setInterfaceName("org.phenotips.ctakes.Lucene4IndexReaderResource");
         	ExternalResourceDependency dicterd4= new ExternalResourceDependency_impl();
-        	dicterd4.setKey("OrangeBookIndexReader");dicterd4.setOptional(false);dicterd4.setInterfaceName("org.apache.ctakes.core.resource.LuceneIndexReaderResource");
+        	dicterd4.setKey("OrangeBookIndexReader");dicterd4.setOptional(false);dicterd4.setInterfaceName("org.phenotips.ctakes.Lucene4IndexReaderResource");
         	dictDependencies[0]=dicterd1;dictDependencies[1]=dicterd2;dictDependencies[2]=dicterd3;dictDependencies[3]=dicterd4;
         	dictionarylookupDesc.setExternalResourceDependencies(dictDependencies);
         
