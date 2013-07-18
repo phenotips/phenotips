@@ -21,6 +21,9 @@ package org.phenotips.ontology.internal.solr;
 
 import org.xwiki.component.annotation.Component;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -30,7 +33,7 @@ import javax.inject.Singleton;
  * @version $Id$
  */
 @Component
-@Named("MIM")
+@Named("omim")
 @Singleton
 public class MendelianInheritanceInMan extends AbstractSolrOntologyService
 {
@@ -38,5 +41,15 @@ public class MendelianInheritanceInMan extends AbstractSolrOntologyService
     protected String getName()
     {
         return "omim";
+    }
+
+    @Override
+    public Set<String> getAliases()
+    {
+        Set<String> result = new HashSet<String>();
+        result.add(getName());
+        result.add("MIM");
+        result.add("OMIM");
+        return result;
     }
 }

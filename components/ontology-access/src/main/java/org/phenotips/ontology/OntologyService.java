@@ -59,4 +59,13 @@ public interface OntologyService
      * @return a set with the matching terms that were found in the ontology, an empty set if no terms were found
      */
     Set<OntologyTerm> search(Map<String, ?> fieldValues);
+
+    /**
+     * An ontology has an official name, but it can also have other aliases, for example the Human Phenotype Ontology is
+     * known both as {@code HP}, which is the official prefix for its terms, {@code HPO}, which is its acronym, or the
+     * lowercase {@code hpo}.
+     * 
+     * @return a set of identifiers which can be used to reference this ontology, including the official name
+     */
+    Set<String> getAliases();
 }

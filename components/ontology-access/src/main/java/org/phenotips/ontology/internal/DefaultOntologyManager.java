@@ -24,7 +24,10 @@ import org.phenotips.ontology.OntologyService;
 import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -40,11 +43,23 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Component
 @Singleton
-public class DefaultOntologyManager implements OntologyManager
+public class DefaultOntologyManager implements OntologyManager, Initializable
 {
     /** The currently available ontologies. */
     @Inject
     private Map<String, OntologyService> ontologies;
+
+    @Override
+    public void initialize() throws InitializationException
+    {
+        Map<String, OntologyService> newOntologiesMap = new HashMap<String, OntologyService>();
+        for (OntologyService ontology : this.ontologies.values()) {
+            for (String alias : ontology.getAliases()) {
+                newOntologiesMap.put(alias, ontology);
+            }
+        }
+        this.ontologies = newOntologiesMap;
+    }
 
     @Override
     public OntologyTerm resolveTerm(String termId)
