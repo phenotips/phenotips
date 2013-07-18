@@ -175,6 +175,8 @@ $response.setContentType('text/csv')##
 #if ($enabledFields.contains('doc.name'))Report ID,#end
 #if ($enabledFields.contains('referrer'))Referrer,#end
 #if ($enabledFields.contains('creationDate'))Date,#end
+#if ($enabledFields.contains('author'))Last modified by,#end
+#if ($enabledFields.contains('date'))Last modification date,#end
 #foreach ($field in $displayedFields)
   #if ($codeProperties.contains($field) &amp;&amp; $enabledFields.contains("${field}_code"))
     "${targetClass.get($field).prettyName} (code)"##
@@ -206,6 +208,8 @@ ${newline}##
   #if ($enabledFields.contains('doc.name'))${patientDoc.documentReference.name},#end
   #if ($enabledFields.contains('referrer'))${xwiki.getUserName($patientDoc.creator, false)},#end
   #if ($enabledFields.contains('creationDate'))$!{xwiki.formatDate($patientDoc.creationDate, 'MM/dd/yyyy')},#end
+  #if ($enabledFields.contains('author'))${xwiki.getUserName($patientDoc.contentAuthor, false)},#end
+  #if ($enabledFields.contains('date'))$!{xwiki.formatDate($patientDoc.contentUpdateDate, 'MM/dd/yyyy')},#end
   #foreach ($field in $displayedFields)
     #if ($codeProperties.contains($field))
       #if ($enabledFields.contains("${field}_code"))
