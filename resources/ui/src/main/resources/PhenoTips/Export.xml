@@ -43,6 +43,19 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity wiki="true"}}{{{
+#macro (findPhenotypeMetadata)
+  #set ($meta = $NULL)
+  #foreach ($metaObj in $patientDoc.getObjects('PhenoTips.PhenotypeMetaClass'))
+    #set ($nameProperty = $metaObj.get('target_property_name'))
+    #set ($valueProperty = $metaObj.get('target_property_value'))
+    #if ($nameProperty == $field &amp;&amp; $valueProperty == $code)
+      #set ($meta = $metaObj)
+      #break($foreach)
+    #end
+  #end
+#end
+##
+##
 #set ($targetSpace = "$!{request.space}")
 #if (!$targetSpace || $targetSpace == 'PhenoTips')
   #break
@@ -155,7 +168,7 @@ $response.setContentType('text/csv')##
 #foreach ($field in $activeFields)
   #if ($enabledFields.contains($field))
     #set ($discard = $displayedFields.add($field))
-  #elseif ($codeProperties.contains($field) &amp;&amp; ($enabledFields.contains("${field}_code") || $enabledFields.contains("${field}_combined")))
+  #elseif ($codeProperties.contains($field) &amp;&amp; ($enabledFields.contains("${field}_code") || $enabledFields.contains("${field}_combined") || $enabledFields.contains("${field}_code_meta") || $enabledFields.contains("${field}_meta")))
     #set ($discard = $displayedFields.add($field))
   #end
 #end
@@ -164,15 +177,23 @@ $response.setContentType('text/csv')##
 #if ($enabledFields.contains('creationDate'))Date,#end
 #foreach ($field in $displayedFields)
   #if ($codeProperties.contains($field) &amp;&amp; $enabledFields.contains("${field}_code"))
-    ${targetClass.get($field).prettyName} (code)##
-    #if ($enabledFields.contains($field) || $enabledFields.contains("${field}_combined")),#end
+    "${targetClass.get($field).prettyName} (code)"##
+    #if ($enabledFields.contains($field) || $enabledFields.contains("${field}_combined") || $enabledFields.contains("${field}_meta") || $enabledFields.contains("${field}_code_meta")),#end
   #end
   #if ($enabledFields.contains($field))
-    ${targetClass.get($field).prettyName}##
-    #if ($enabledFields.contains("${field}_combined")),#end
+    "${targetClass.get($field).prettyName}"##
+    #if ($enabledFields.contains("${field}_combined") || $enabledFields.contains("${field}_meta") || $enabledFields.contains("${field}_code_meta")),#end
   #end
   #if ($codeProperties.contains($field) &amp;&amp; $enabledFields.contains("${field}_combined"))
-    ${targetClass.get($field).prettyName} (code and name)##
+    "${targetClass.get($field).prettyName} (code and name)"##
+    #if ($enabledFields.contains("${field}_meta") || $enabledFields.contains("${field}_code_meta")),#end
+  #end
+  #if ($codeProperties.contains($field) &amp;&amp; $enabledFields.contains("${field}_code_meta"))
+    "${targetClass.get($field).prettyName} (code, with metadata)"##
+    #if ($enabledFields.contains("${field}_meta")),#end
+  #end
+  #if ($codeProperties.contains($field) &amp;&amp; $enabledFields.contains("${field}_meta"))
+    "${targetClass.get($field).prettyName} (with metadata)"##
   #end
   #if ($foreach.hasNext)##
     ,##
@@ -196,7 +217,7 @@ ${newline}##
           #end
         #end
         "##
-        #if ($enabledFields.contains($field) || $enabledFields.contains("${field}_combined")),#end
+        #if ($enabledFields.contains($field) || $enabledFields.contains("${field}_combined") || $enabledFields.contains("${field}_meta") || $enabledFields.contains("${field}_code_meta")),#end
       #end
       #if ($enabledFields.contains($field))
         "##
@@ -216,7 +237,7 @@ ${newline}##
           #end
         #end
         "##
-        #if ($enabledFields.contains("${field}_combined")),#end
+        #if ($enabledFields.contains("${field}_combined") || $enabledFields.contains("${field}_meta") || $enabledFields.contains("${field}_code_meta")),#end
       #end
       #if ($enabledFields.contains("${field}_combined"))
         "##
@@ -231,6 +252,61 @@ ${newline}##
             #end
           #else
             [${code}] ${services.omim.get($code).name.replace('"', '""')}##
+          #end
+          #if ($foreach.hasNext)
+            ${newline}##
+          #end
+        #end
+        "##
+        #if ($enabledFields.contains("${field}_meta") || $enabledFields.contains("${field}_code_meta")),#end
+      #end
+      #if ($enabledFields.contains("${field}_code_meta"))
+        "##
+        #foreach ($code in $!patientObj.getProperty($field).value)
+          ${code.replace('"', '""')}##
+          #if ($field.endsWith('phenotype'))
+            #findPhenotypeMetadata()
+            #if ($meta)
+              #set ($ageMeta = $meta.getProperty('age_of_onset').value)
+              #if ("$!{ageMeta}" != '')
+                ; ${ageMeta}##
+              #end
+              #set ($paceMeta = $meta.getProperty('pace_of_progression').value)
+              #if ("$!{paceMeta}" != '')
+                ; ${paceMeta}##
+              #end
+            #end
+          #end
+          #if ($foreach.hasNext)
+            ${newline}##
+          #end
+        #end
+        "##
+        #if ($enabledFields.contains("${field}_meta")),#end
+      #end
+      #if ($enabledFields.contains("${field}_meta"))
+        "##
+        #foreach ($code in $!patientObj.getProperty($field).value)
+          #if ($field.endsWith('phenotype'))
+            #set ($name = $!{services.hpo.get($code).name})
+            #if ($name)
+              ${name.replace('"', '""')}##
+            #else
+              ${code.replace('"', '""')}##
+            #end
+            #findPhenotypeMetadata()
+            #if ($meta)
+              #set ($ageMeta = $meta.getProperty('age_of_onset').value)
+              #if ("$!{ageMeta}" != '')
+                ; ${services.ontologies.resolveTerm($ageMeta).name}##
+              #end
+              #set ($paceMeta = $meta.getProperty('pace_of_progression').value)
+              #if ("$!{paceMeta}" != '')
+                ; ${services.ontologies.resolveTerm($paceMeta).name}##
+              #end
+            #end
+          #else
+            ${services.omim.get($code).name.replace('"', '""')}##
           #end
           #if ($foreach.hasNext)
             ${newline}##
