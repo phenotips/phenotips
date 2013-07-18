@@ -69,4 +69,17 @@ public class OtologyScriptService implements ScriptService
     {
         return this.manager.getOntology(ontologyId);
     }
+
+    /**
+     * Retrieve an ontology given its identifier. This is a shortcut for {@link #getOntology(String)} which allows
+     * scripts to use the shorter {@code $services.ontologies.hpo} notation for accessing an ontology.
+     * 
+     * @param ontologyId the ontology identifier, which is also used as a prefix in every term identifier from that
+     *            ontology, for example {@code HP} or {@code MIM}
+     * @return the requested ontology, or {@code null} if it doesn't exist or isn't available in the platform
+     */
+    public OntologyService get(String ontologyId)
+    {
+        return this.manager.getOntology(ontologyId);
+    }
 }
