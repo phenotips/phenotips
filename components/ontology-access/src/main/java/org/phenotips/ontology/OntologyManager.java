@@ -20,12 +20,15 @@
 package org.phenotips.ontology;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * Provides access to the available ontologies and their terms.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
+@Unstable
 @Role
 public interface OntologyManager
 {

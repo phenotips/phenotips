@@ -20,6 +20,7 @@
 package org.phenotips.ontology;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 import java.util.Collection;
 import java.util.Map;
@@ -29,7 +30,9 @@ import java.util.Set;
  * Provides access to an ontology, such as the Human Phenotype Ontology.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
+@Unstable
 @Role
 public interface OntologyService
 {

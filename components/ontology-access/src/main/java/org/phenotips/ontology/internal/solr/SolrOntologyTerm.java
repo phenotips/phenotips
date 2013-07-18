@@ -31,6 +31,7 @@ import org.apache.solr.common.SolrDocument;
  * Implementation for {@link OntologyTerm} based on an indexed Solr document.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 public class SolrOntologyTerm implements OntologyTerm
 {

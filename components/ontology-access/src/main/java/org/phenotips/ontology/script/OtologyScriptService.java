@@ -25,6 +25,7 @@ import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
+import org.xwiki.stability.Unstable;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -34,7 +35,9 @@ import javax.inject.Singleton;
  * Provides access to the available ontologies and their terms to public scripts.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
+@Unstable
 @Component
 @Named("ontologies")
 @Singleton

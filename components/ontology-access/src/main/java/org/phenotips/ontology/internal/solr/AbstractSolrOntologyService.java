@@ -54,6 +54,7 @@ import org.slf4j.Logger;
  * given query in the Lucene query language.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 public abstract class AbstractSolrOntologyService implements OntologyService, Initializable
 {

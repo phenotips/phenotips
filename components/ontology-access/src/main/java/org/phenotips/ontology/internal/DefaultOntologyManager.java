@@ -40,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
  * registered in the component manager.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 @Component
 @Singleton
