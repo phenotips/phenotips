@@ -98,7 +98,7 @@
 === (% class="step" %)2(%%) Select the fields to be exported ===
 
 #set($ignored = {
-  'fields' : ['reports_history', 'pedigree'],
+  'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype'],
   'types'  : []
 })
 #set($customValues = {
