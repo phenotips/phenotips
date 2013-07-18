@@ -19,16 +19,16 @@
  */
 package org.phenotips.ontology.internal.solr;
 
+import org.phenotips.ontology.OntologyTerm;
+
+import org.xwiki.component.annotation.Component;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.phenotips.ontology.OntologyTerm;
-import org.xwiki.component.annotation.Component;
-
 
 /**
  * Provides access to the Human Phenotype Ontology (HPO). The ontology prefix is {@code HP}.

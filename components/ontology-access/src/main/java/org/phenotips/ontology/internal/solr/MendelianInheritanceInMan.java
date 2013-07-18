@@ -19,10 +19,10 @@
  */
 package org.phenotips.ontology.internal.solr;
 
+import org.xwiki.component.annotation.Component;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
 
 /**
  * Provides access to the Online Mendelian Inheritance in Man (OMIM) ontology. The ontology prefix is {@code MIM}.

@@ -19,17 +19,18 @@
  */
 package org.phenotips.ontology.internal;
 
+import org.phenotips.ontology.OntologyManager;
+import org.phenotips.ontology.OntologyService;
+import org.phenotips.ontology.OntologyTerm;
+
+import org.xwiki.component.annotation.Component;
+
 import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-import org.phenotips.ontology.OntologyManager;
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
-import org.xwiki.component.annotation.Component;
-
 
 /**
  * Default implementation of the {@link OntologyManager} component, which uses the {@link OntologyService ontologies}

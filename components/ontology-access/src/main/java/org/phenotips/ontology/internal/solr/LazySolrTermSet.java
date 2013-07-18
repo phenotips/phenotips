@@ -19,6 +19,9 @@
  */
 package org.phenotips.ontology.internal.solr;
 
+import org.phenotips.ontology.OntologyService;
+import org.phenotips.ontology.OntologyTerm;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,9 +29,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
-
 
 /**
  * A lazy-loading set that transforms a set of term identifiers into real terms only when actually accessing the terms.
@@ -90,7 +90,7 @@ public class LazySolrTermSet implements Set<OntologyTerm>
     }
 
     @Override
-    public boolean containsAll(Collection< ? > c)
+    public boolean containsAll(Collection<?> c)
     {
         for (Object o : c) {
             if (!this.contains(o)) {
@@ -136,21 +136,21 @@ public class LazySolrTermSet implements Set<OntologyTerm>
     }
 
     @Override
-    public boolean addAll(Collection< ? extends OntologyTerm> c)
+    public boolean addAll(Collection<? extends OntologyTerm> c)
     {
         // This is readonly, nothing can be added
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean retainAll(Collection< ? > c)
+    public boolean retainAll(Collection<?> c)
     {
         // This is readonly, nothing can be removed
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean removeAll(Collection< ? > c)
+    public boolean removeAll(Collection<?> c)
     {
         // This is readonly, nothing can be removed
         throw new UnsupportedOperationException();

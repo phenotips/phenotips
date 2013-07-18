@@ -19,11 +19,11 @@
  */
 package org.phenotips.ontology;
 
+import org.xwiki.component.annotation.Role;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
-import org.xwiki.component.annotation.Role;
 
 /**
  * Provides access to an ontology, such as the Human Phenotype Ontology.
@@ -58,5 +58,5 @@ public interface OntologyService
      *            single value, or a collection of values that can (OR) be matched by the term;
      * @return a set with the matching terms that were found in the ontology, an empty set if no terms were found
      */
-    Set<OntologyTerm> search(Map<String, ? > fieldValues);
+    Set<OntologyTerm> search(Map<String, ?> fieldValues);
 }

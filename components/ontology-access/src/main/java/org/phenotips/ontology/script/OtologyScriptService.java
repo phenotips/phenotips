@@ -19,16 +19,16 @@
  */
 package org.phenotips.ontology.script;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.phenotips.ontology.OntologyManager;
 import org.phenotips.ontology.OntologyService;
 import org.phenotips.ontology.OntologyTerm;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * Provides access to the available ontologies and their terms to public scripts.
