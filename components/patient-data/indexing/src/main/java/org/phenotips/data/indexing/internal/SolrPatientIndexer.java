@@ -29,12 +29,14 @@ import org.xwiki.component.phase.InitializationException;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.common.SolrInputDocument;
+import org.slf4j.Logger;
 
 /**
  * Indexes patients in a local Solr core.
@@ -46,6 +48,10 @@ import org.apache.solr.common.SolrInputDocument;
 @Singleton
 public class SolrPatientIndexer implements PatientIndexer, Initializable
 {
+    /** Logging helper object. */
+    @Inject
+    private Logger logger;
+
     /** The Solr server instance used. */
     private SolrServer server;
 
@@ -70,12 +76,10 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
         }
         try {
             this.server.add(input);
-        } catch (SolrServerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (SolrServerException ex) {
+            this.logger.warn("Failed to perform Solr search: {}", ex.getMessage());
+        } catch (IOException ex) {
+            this.logger.warn("Error occurred while performing Solr search: {}", ex.getMessage());
         }
     }
 
@@ -85,12 +89,10 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
         try {
             this.server.deleteByQuery("document:" + patient.getDocument());
             this.server.commit();
-        } catch (SolrServerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (SolrServerException ex) {
+            this.logger.warn("Failed to delete from Solr: {}", ex.getMessage());
+        } catch (IOException ex) {
+            this.logger.warn("Error occurred while deleting Solr documents: {}", ex.getMessage());
         }
     }
 
