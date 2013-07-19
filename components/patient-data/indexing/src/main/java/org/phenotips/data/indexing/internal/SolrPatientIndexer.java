@@ -92,4 +92,11 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void reindex()
+    {
+        // FIXME Not implemented yet
+        throw new UnsupportedOperationException();
+    }
 }

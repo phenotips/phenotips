@@ -46,4 +46,9 @@ public interface PatientIndexer
      * @param patient the patient to delete
      */
     void delete(Patient patient);
+
+    /**
+     * Reindex all the patients.
+     */
+    void reindex();
 }
