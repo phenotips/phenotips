@@ -20,14 +20,15 @@
 package org.phenotips.data.indexing;
 
 import org.phenotips.data.Patient;
+
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
-
 
 /**
  * API for indexing patient data in a search engine.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 @Unstable
 @Role

@@ -19,13 +19,6 @@
  */
 package org.phenotips.data.indexing.internal;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.indexing.PatientIndexer;
@@ -38,14 +31,21 @@ import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 import org.xwiki.observation.event.FilterableEvent;
 
+import java.util.Arrays;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * Monitors document changes and submits modified patients to the {@link PatientIndexer indexer}.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 @Component
-@Named("patient-indexer")
+@Named("phenotips-patient-indexer")
 @Singleton
 public class PatientEventListener implements EventListener
 {
@@ -60,7 +60,7 @@ public class PatientEventListener implements EventListener
     @Override
     public String getName()
     {
-        return "patient-indexer";
+        return "phenotips-patient-indexer";
     }
 
     @Override
