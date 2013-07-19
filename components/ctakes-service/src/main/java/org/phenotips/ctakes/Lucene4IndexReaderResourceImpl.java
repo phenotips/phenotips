@@ -25,6 +25,7 @@ import java.io.File;
 import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.IOContext;
@@ -39,7 +40,7 @@ public class Lucene4IndexReaderResourceImpl
     // LOG4J logger based on class name
     private Logger iv_logger = Logger.getLogger(getClass().getName());
 
-    private DirectoryReader iv_directoryReader;
+    private IndexReader iv_indexReader;
 
     /**
      * Loads a Lucene index for reading.
@@ -63,21 +64,21 @@ public class Lucene4IndexReaderResourceImpl
             if (useMemoryIndex.booleanValue()) {
 
                 iv_logger.info("Loading Lucene Index into memory: " + indexDir);
-                FSDirectory fsd = FSDirectory.open(indexDir);
+                FSDirectory fsd = FSDirectory.open(indexDir);                
                 Directory d = new RAMDirectory(fsd, IOContext.READONCE);
-                iv_directoryReader = DirectoryReader.open(d);
+                iv_indexReader = DirectoryReader.open(d);
             } else {
                 iv_logger.info("Loading Lucene Index: " + indexDir);
                 FSDirectory fsd = FSDirectory.open(indexDir);
-                iv_directoryReader = DirectoryReader.open(fsd);
+                iv_indexReader = DirectoryReader.open(fsd);
             }
-        iv_logger.info("Loaded Lucene Index, # docs=" + iv_directoryReader.numDocs());
+        iv_logger.info("Loaded Lucene Index, # docs=" + iv_indexReader.numDocs());
         } catch (Exception e) {
             throw new ResourceInitializationException(e);
         }
     }
 
-    public final DirectoryReader getDirectoryReader() {
-        return iv_directoryReader;
+    public final IndexReader getIndexReader() {
+        return iv_indexReader;
     }
 }

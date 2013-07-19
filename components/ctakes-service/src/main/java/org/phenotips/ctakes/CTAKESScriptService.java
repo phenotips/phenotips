@@ -46,13 +46,13 @@ public class CTAKESScriptService extends AbstractScriptService
         JCas jCas  =  this.analysisEngine.newJCas();
         jCas.setDocumentText(input.toLowerCase());
         this.analysisEngine.process(jCas);
+        
 
-
-        FSIndex<Annotation> eventIndex  =  jCas.getAnnotationIndex(org.apache.ctakes.typesystem.type.textsem.EventMention.type);
+        FSIndex<Annotation> eventIndex  =  jCas.getAnnotationIndex(org.apache.ctakes.typesystem.type.textsem.MedicationEventMention.type);
         Iterator<Annotation> eventIter  =  eventIndex.iterator();   
 
         Map<String,ExtractedTerm> finalTerms  =  new HashMap<String, ExtractedTerm>();
-        org.apache.ctakes.typesystem.type.textsem.EventMention firstevent  =  (org.apache.ctakes.typesystem.type.textsem.EventMention) eventIter.next();
+        org.apache.ctakes.typesystem.type.textsem.MedicationEventMention firstevent  =  (org.apache.ctakes.typesystem.type.textsem.MedicationEventMention) eventIter.next();
 
         ExtractedTerm firstTerm  =  new ExtractedTerm();
         firstTerm.setExtractedText(firstevent.getCoveredText());

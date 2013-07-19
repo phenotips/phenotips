@@ -33,7 +33,6 @@ import org.apache.ctakes.core.ae.OverlapAnnotator;
 import org.apache.ctakes.core.ae.SentenceDetector;
 import org.apache.ctakes.core.ae.SimpleSegmentAnnotator;
 import org.apache.ctakes.core.ae.TokenizerAnnotatorPTB;
-import org.apache.ctakes.dictionary.lookup.ae.DictionaryLookupAnnotator;
 import org.apache.ctakes.postagger.POSTagger;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -179,7 +178,7 @@ public abstract class AbstractScriptService implements ScriptService, Initializa
         	dictionaryMap.put("LookupDescriptor", dictionaryERD1);dictionaryMap.put("DictionaryFile", dictionaryERD2);
         	dictionaryMap.put("RxnormIndexReader", dictionaryERD3);dictionaryMap.put("OrangeBookIndexReader", dictionaryERD4);
             
-        	AnalysisEngineDescription dictionarylookupDesc = AnalysisEngineFactory.createPrimitiveDescription(DictionaryLookupAnnotator.class,null,null,null,null,dictionaryconfigurationParameters,dictionaryconfigVals,dictionaryMap);
+        	AnalysisEngineDescription dictionarylookupDesc = AnalysisEngineFactory.createPrimitiveDescription(Dictionary4LookupAnnotator.class,null,null,null,null,dictionaryconfigurationParameters,dictionaryconfigVals,dictionaryMap);
            
             ExternalResourceDependency[] dictDependencies = new ExternalResourceDependency[4];
         	ExternalResourceDependency dicterd1= new ExternalResourceDependency_impl();

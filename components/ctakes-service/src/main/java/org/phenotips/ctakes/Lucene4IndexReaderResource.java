@@ -20,9 +20,9 @@
 
 package org.phenotips.ctakes;
 
-import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 
 public interface Lucene4IndexReaderResource
 {
-    public DirectoryReader getDirectoryReader();
+    public IndexReader getIndexReader();
 }
