@@ -248,110 +248,6 @@
     <name>PhenoTips.DBWebHomeSheet</name>
     <number>1</number>
     <className>XWiki.JavaScriptExtension</className>
-    <guid>51a47b60-13f0-4294-8b0a-314e3189163b</guid>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>/*document.observe("xwiki:dom:loaded", function(){
-  var createForm = $('patient-creation-form');
-  var livetable = $('patients');
-  if (!createForm || !livetable) {
-    return;
-  }
-  var parent = livetable.down('td.xwiki-livetable-pagination', 1);
-  if (parent) {
-    parent.insert({'top' : createForm});
-  }
-});*/
-
-</code>
-    </property>
-    <property>
-      <name>Move the creation button</name>
-    </property>
-    <property>
-      <parse>0</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <name>PhenoTips.DBWebHomeSheet</name>
-    <number>2</number>
-    <className>XWiki.JavaScriptExtension</className>
     <guid>384096ac-eb19-4fea-a2c6-337b350ca71b</guid>
     <property>
       <cache>long</cache>
@@ -679,7 +575,7 @@
       </use>
     </class>
     <name>PhenoTips.DBWebHomeSheet</name>
-    <number>3</number>
+    <number>2</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>d9b727a8-4e6b-498f-8584-80dcac64c352</guid>
     <property>
