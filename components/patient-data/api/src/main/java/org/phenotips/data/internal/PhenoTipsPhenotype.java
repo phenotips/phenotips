@@ -22,6 +22,7 @@ package org.phenotips.data.internal;
 import org.phenotips.data.Phenotype;
 import org.phenotips.data.PhenotypeMetadatum;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +102,8 @@ public class PhenoTipsPhenotype extends AbstractPhenoTipsOntologyProperty implem
             // Cannot access metadata, simply ignore
             this.logger.info("Failed to retrieve phenotype metadata: {}", ex.getMessage());
         }
+        // Readonly from now on
+        this.metadata = Collections.unmodifiableMap(this.metadata);
     }
 
     @Override
