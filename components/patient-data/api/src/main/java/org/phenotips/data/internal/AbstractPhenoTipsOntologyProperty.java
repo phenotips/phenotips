@@ -35,6 +35,7 @@ import net.sf.json.JSONObject;
  * objects of type {@code PhenoTips.PatientClass}.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 public abstract class AbstractPhenoTipsOntologyProperty implements OntologyProperty
 {

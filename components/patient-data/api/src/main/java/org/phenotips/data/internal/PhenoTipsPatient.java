@@ -19,15 +19,15 @@
  */
 package org.phenotips.data.internal;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.phenotips.data.Disease;
 import org.phenotips.data.Patient;
 import org.phenotips.data.Phenotype;
 
 import org.xwiki.model.reference.DocumentReference;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -42,6 +42,7 @@ import net.sf.json.JSONObject;
  * objects of type {@code PhenoTips.PatientClass}.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 public class PhenoTipsPatient implements Patient
 {

@@ -30,6 +30,7 @@ import com.xpn.xwiki.objects.DBStringListProperty;
  * objects of type {@code PhenoTips.PatientClass}.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 public class PhenoTipsDisease extends AbstractPhenoTipsOntologyProperty implements Disease
 {

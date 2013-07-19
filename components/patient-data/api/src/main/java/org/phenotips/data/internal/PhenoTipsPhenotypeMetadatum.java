@@ -19,9 +19,9 @@
  */
 package org.phenotips.data.internal;
 
-import java.util.Locale;
-
 import org.phenotips.data.PhenotypeMetadatum;
+
+import java.util.Locale;
 
 import com.xpn.xwiki.objects.StringProperty;
 
@@ -32,6 +32,7 @@ import net.sf.json.JSONObject;
  * in objects of type {@code PhenoTips.PhenotypeMetaClass}.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 public class PhenoTipsPhenotypeMetadatum extends AbstractPhenoTipsOntologyProperty implements PhenotypeMetadatum
 {

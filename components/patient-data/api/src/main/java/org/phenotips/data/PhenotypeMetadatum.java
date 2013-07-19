@@ -19,11 +19,11 @@
  */
 package org.phenotips.data;
 
-import java.util.Locale;
-
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
+
+import java.util.Locale;
 
 import net.sf.json.JSONObject;
 
@@ -31,6 +31,7 @@ import net.sf.json.JSONObject;
  * Information about a {@link Patient patient} {@link Phenotype feature} property (meta-feature).
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 @Unstable
 public interface PhenotypeMetadatum extends OntologyProperty

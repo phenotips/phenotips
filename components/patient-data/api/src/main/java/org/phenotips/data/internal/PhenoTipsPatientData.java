@@ -19,12 +19,6 @@
  */
 package org.phenotips.data.internal;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 
@@ -39,6 +33,12 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
@@ -46,6 +46,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * @version $Id$
+ * @since 1.0M8
  */
 @Component
 @Singleton

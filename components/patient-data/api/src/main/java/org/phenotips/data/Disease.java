@@ -19,11 +19,15 @@
  */
 package org.phenotips.data;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Information about a specific disease recorded for a {@link Patient patient}.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
+@Unstable
 public interface Disease extends OntologyProperty
 {
 }

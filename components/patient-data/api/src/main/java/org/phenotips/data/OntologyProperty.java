@@ -19,13 +19,17 @@
  */
 package org.phenotips.data;
 
+import org.xwiki.stability.Unstable;
+
 import net.sf.json.JSONObject;
 
 /**
  * Information about a specific {@link Patient patient} feature value, represented as a term from an ontology.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
+@Unstable
 public interface OntologyProperty
 {
     /**

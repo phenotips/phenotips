@@ -19,14 +19,14 @@
  */
 package org.phenotips.data.internal;
 
+import org.phenotips.data.Phenotype;
+import org.phenotips.data.PhenotypeMetadatum;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.phenotips.data.Phenotype;
-import org.phenotips.data.PhenotypeMetadatum;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -46,6 +46,7 @@ import net.sf.json.JSONObject;
  * objects of type {@code PhenoTips.PatientClass}.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 public class PhenoTipsPhenotype extends AbstractPhenoTipsOntologyProperty implements Phenotype
 {

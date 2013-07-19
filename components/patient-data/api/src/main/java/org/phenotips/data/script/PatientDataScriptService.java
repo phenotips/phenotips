@@ -19,9 +19,6 @@
  */
 package org.phenotips.data.script;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 
@@ -35,10 +32,16 @@ import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.stability.Unstable;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import groovy.lang.Singleton;
 
 /**
+ * API that provides access to patient data.
+ * 
  * @version $Id$
+ * @since 1.0M8
  */
 @Unstable
 @Component

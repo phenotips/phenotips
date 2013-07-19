@@ -19,9 +19,9 @@
  */
 package org.phenotips.data;
 
-import java.util.Map;
-
 import org.xwiki.stability.Unstable;
+
+import java.util.Map;
 
 import net.sf.json.JSONObject;
 
@@ -29,6 +29,7 @@ import net.sf.json.JSONObject;
  * Information about a specific feature recorded for a {@link Patient patient}.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 @Unstable
 public interface Phenotype extends OntologyProperty
