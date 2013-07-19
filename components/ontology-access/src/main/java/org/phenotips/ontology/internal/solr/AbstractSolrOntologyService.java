@@ -164,6 +164,13 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
         return result;
     }
 
+    @Override
+    public void reindex()
+    {
+        // FIXME Not implemented yet
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Perform a search, falling back on the suggested spellchecked query if the original query fails to return any
      * results.

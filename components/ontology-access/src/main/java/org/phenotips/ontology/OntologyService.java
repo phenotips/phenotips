@@ -71,4 +71,9 @@ public interface OntologyService
      * @return a set of identifiers which can be used to reference this ontology, including the official name
      */
     Set<String> getAliases();
+
+    /**
+     * Reindex the whole ontology, fetching the latest version from the source.
+     */
+    void reindex();
 }
