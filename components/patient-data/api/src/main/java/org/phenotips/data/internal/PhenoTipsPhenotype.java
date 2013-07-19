@@ -116,7 +116,7 @@ public class PhenoTipsPhenotype extends AbstractPhenoTipsOntologyProperty implem
     }
 
     @Override
-    public Map<String, PhenotypeMetadatum> getMetadata()
+    public Map<String, ? extends PhenotypeMetadatum> getMetadata()
     {
         return this.metadata;
     }
@@ -140,7 +140,7 @@ public class PhenoTipsPhenotype extends AbstractPhenoTipsOntologyProperty implem
     /**
      * Find the XObject that contains metadata for this phenotype, if any.
      * 
-     * @param doc the patient's XDocument, where metadata obects are stored
+     * @param doc the patient's XDocument, where metadata objects are stored
      * @return the found object, or {@code null} if one wasn't found
      * @throws XWikiException if accessing the data fails
      */

@@ -45,6 +45,9 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
+ * Implementation of patient data access service using XWiki as the storage backend, where patients in documents having
+ * an object of type {@code PhenoTips.PatientClass}.
+ * 
  * @version $Id$
  * @since 1.0M8
  */
@@ -64,7 +67,7 @@ public class PhenoTipsPatientData implements PatientData
     @Inject
     private DocumentAccessBridge bridge;
 
-    /** Runs queries for finding a patient given its external identifier. */
+    /** Runs queries for finding patients. */
     @Inject
     private QueryManager qm;
 
