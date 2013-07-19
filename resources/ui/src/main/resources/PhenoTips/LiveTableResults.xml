@@ -381,7 +381,7 @@
   ## Filter values
   #if("$!filterValue" != '' || "$!filterValueLowLimit" != '' || "$!filterValueHighLimit" != '')
     #set($discard = $tablelist.add($tableAlias))
-    #if($colname.startsWith('doc.') &amp;&amp; $colname.endsWith('Date'))
+    #if($colname.startsWith('doc.') &amp;&amp; ($colname.endsWith('Date') || $colname.endsWith('date')))
       #if ($filterValue != '')
         #set($whereSql = "${whereSql} and upper(str(${safe_tableAlias})) like upper(?)")
         #set($discard = $whereParams.add("%${filterValue}%"))
@@ -397,7 +397,7 @@
           #set($discard = $whereParams.add($filterValueHighLimit.toDate()))
         #end
       #end
-    #elseif($colname == 'doc.creator')
+    #elseif($colname == 'doc.creator' || $colname == 'doc.author')
       #foreach ($filterValue in $request.getParameterValues($colname))
         #if ($foreach.index == 0)
           #set ($whereSql = "${whereSql} and (")

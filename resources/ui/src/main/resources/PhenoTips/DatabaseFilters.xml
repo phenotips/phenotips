@@ -70,7 +70,9 @@
 #macro(__filters_display $cssClass)
 (% class="filters $!cssClass" %)
 * By **referrer**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all referrers are considered)&lt;/p&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
+* By **last author**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all authors are considered)&lt;/p&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="doc.author" value=""/&gt;{{/html}}
 * By **creation date**: #__filters_dateRange("doc.creationDate")
+* By **last modification date**: #__filters_dateRange("doc.date")
 #if ($activeFields.contains('date_of_birth'))
   * By **date of birth** of the patient: #__filters_dateRange("date_of_birth")
 #end

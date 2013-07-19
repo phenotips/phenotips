@@ -90,6 +90,26 @@
 #if (!$isFirstReferrer)
   #set ($query = $query.concat(')'))
 #end
+#set ($isFirstAuthor = true)
+#foreach ($author in $request.getParameterValues('doc.author'))
+  #if ($author != '')
+    #if ($isFirstAuthor)
+      #set ($query = $query.concat(' and ('))
+      #set ($isFirstAuthor = false)
+    #else
+      #set ($query = $query.concat(' or '))
+    #end
+    #if ($author.contains(':'))
+      #set ($query = $query.concat('doc.author = ? or '))
+      #set ($discard = $parameters.add($stringtool.substringAfter($author, ':')))
+    #end
+    #set ($query = $query.concat('doc.author = ?'))
+    #set ($discard = $parameters.add($author))
+  #end
+#end
+#if (!$isFirstAuthor)
+  #set ($query = $query.concat(')'))
+#end
 #set ($isFirstPhenotype = true)
 #set ($joinOperator = "$!{request.get('phenotype/join_mode').toUpperCase()}")
 #if ($joinOperator != 'AND' &amp;&amp; $joinOperator != 'OR')
@@ -140,6 +160,16 @@
 #if ("$!request.get('doc.creationDate/before')" != '')
   #set ($date = $dateFormat.parseDateTime($request.get('doc.creationDate/before')))
   #set ($query = $query.concat(' and doc.creationDate &lt; ?'))
+  #set ($discard = $parameters.add($date.toDate()))
+#end
+#if ("$!request.get('doc.date/after')" != '')
+  #set ($date = $dateFormat.parseDateTime($request.get('doc.date/after')))
+  #set ($query = $query.concat(' and doc.date &gt; ?'))
+  #set ($discard = $parameters.add($date.toDate()))
+#end
+#if ("$!request.get('doc.date/before')" != '')
+  #set ($date = $dateFormat.parseDateTime($request.get('doc.date/before')))
+  #set ($query = $query.concat(' and doc.date &lt; ?'))
   #set ($discard = $parameters.add($date.toDate()))
 #end
 #set ($hasBDate = false)
@@ -213,8 +243,8 @@ ${newline}##
   #if ($enabledFields.contains('doc.name'))${patientDoc.documentReference.name},#end
   #if ($enabledFields.contains('referrer'))${xwiki.getUserName($patientDoc.creator, false)},#end
   #if ($enabledFields.contains('creationDate'))$!{xwiki.formatDate($patientDoc.creationDate, 'MM/dd/yyyy')},#end
-  #if ($enabledFields.contains('author'))${xwiki.getUserName($patientDoc.contentAuthor, false)},#end
-  #if ($enabledFields.contains('date'))$!{xwiki.formatDate($patientDoc.contentUpdateDate, 'MM/dd/yyyy')},#end
+  #if ($enabledFields.contains('author'))${xwiki.getUserName($patientDoc.author, false)},#end
+  #if ($enabledFields.contains('date'))$!{xwiki.formatDate($patientDoc.date, 'MM/dd/yyyy')},#end
   #foreach ($field in $displayedFields)
     #if ($codeProperties.contains($field))
       #if ($enabledFields.contains("${field}_code"))
