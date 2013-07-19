@@ -87,9 +87,8 @@ public class PhenoTipsPatientData implements PatientData
             if (doc != null && doc.getXObject(PhenoTipsPatient.CLASS_REFERENCE) != null) {
                 return new PhenoTipsPatient(doc);
             }
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception ex) {
+            this.logger.warn("Failed to access patient with id [{}]: {}", id, ex.getMessage(), ex);
         }
         return null;
     }
@@ -106,12 +105,11 @@ public class PhenoTipsPatientData implements PatientData
                     this.stringResolver.resolve(results.get(0), PhenoTipsPatient.DEFAULT_DATA_SPACE);
                 return new PhenoTipsPatient((XWikiDocument) this.bridge.getDocument(reference));
             }
-        } catch (QueryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (QueryException ex) {
+            this.logger.warn("Failed to search for the patient with external id [{}]: {}", externalId, ex.getMessage(),
+                ex);
+        } catch (Exception ex) {
+            this.logger.warn("Failed to access patient with external id [{}]: {}", externalId, ex.getMessage(), ex);
         }
         return null;
     }

@@ -31,6 +31,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -62,6 +65,9 @@ public class PhenoTipsPatient implements Patient
     /** Known phenotype properties. */
     private static final String[] PHENOTYPE_PROPERTIES = new String[] {"phenotype", "negative_phenotype"};
 
+    /** Logging helper object. */
+    private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
+
     /** @see #getDocument() */
     private DocumentReference document;
 
@@ -87,8 +93,8 @@ public class PhenoTipsPatient implements Patient
         if (data == null) {
             return;
         }
-        for (String property : PHENOTYPE_PROPERTIES) {
-            try {
+        try {
+            for (String property : PHENOTYPE_PROPERTIES) {
                 DBStringListProperty values = (DBStringListProperty) data.get(property);
                 if (values == null) {
                     continue;
@@ -96,21 +102,16 @@ public class PhenoTipsPatient implements Patient
                 for (String value : values.getList()) {
                     this.phenotypes.add(new PhenoTipsPhenotype(doc, values, value));
                 }
-            } catch (XWikiException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
-        }
-        try {
             DBStringListProperty values = (DBStringListProperty) data.get("omim_id");
             if (values != null) {
                 for (String value : values.getList()) {
                     this.diseases.add(new PhenoTipsDisease(values, value));
                 }
             }
-        } catch (XWikiException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to access patient data for [{}]: {}", doc.getDocumentReference(), ex.getMessage(),
+                ex);
         }
         // Readonly from now on
         this.phenotypes = Collections.unmodifiableSet(this.phenotypes);
