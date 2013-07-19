@@ -74,11 +74,16 @@
 #foreach ($referrer in $request.getParameterValues('doc.creator'))
   #if ($referrer != '')
     #if ($isFirstReferrer)
-      #set ($query = $query.concat(" and (doc.creator = ?"))
+      #set ($query = $query.concat(' and ('))
       #set ($isFirstReferrer = false)
     #else
-      #set ($query = $query.concat(" or doc.creator = ?"))
+      #set ($query = $query.concat(' or '))
     #end
+    #if ($referrer.contains(':'))
+      #set ($query = $query.concat('doc.creator = ? or '))
+      #set ($discard = $parameters.add($stringtool.substringAfter($referrer, ':')))
+    #end
+    #set ($query = $query.concat('doc.creator = ?'))
     #set ($discard = $parameters.add($referrer))
   #end
 #end

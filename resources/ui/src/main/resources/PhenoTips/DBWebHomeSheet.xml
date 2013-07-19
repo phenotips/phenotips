@@ -445,16 +445,6 @@
 
   var enhanceDialog = function(content) {
     // =============================================================================
-    // Referrer suggest
-    var referrer = content.down('input[name="doc.creator"]');
-    if (referrer) {
-      referrer._suggestPicker = new MS.widgets.SuggestPicker(referrer, referrer.__x_suggest, {'showKey': false, 'inputType': 'checkbox'});
-      referrer.value.split(',').each(function(value) {
-        referrer._suggestPicker.addItem(value, value, '', '');
-      });
-      referrer.value = '';
-    }
-    // =============================================================================
     // Phenotype suggest
     if (typeof(MS.widgets.Suggest) != "undefined") {
       var keys = Object.keys(suggestionsMapping);
@@ -567,6 +557,7 @@
       updateMatchCounter();
       content.select('.xwiki-date').invoke('observe', 'xwiki:form:field-value-changed', updateMatchCounter);
       document.observe('custom:selection:changed', updateMatchCounter);
+      document.observe('xwiki:multisuggestpicker:selectionchanged', updateMatchCounter);
       content.select('input[type=radio]').invoke('observe', 'click', updateMatchCounter);
       //content.select('input[type=text]').invoke('observe', 'blur', updateMatchCounter);
     }
@@ -589,6 +580,10 @@
         document.fire('xwiki:dom:updated', {'elements': [content]});
       }
     });
+  });
+
+  document.observe('xwiki:multisuggestpicker:selectionchanged', function() {
+    document.fire('xwiki:livetable:patients:filtersChanged');
   });
   ['xwiki:dom:loaded', 'xwiki:dom:updated'].each(function(eventName) {
     document.observe(eventName, function(event) {

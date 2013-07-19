@@ -405,8 +405,11 @@
           #set ($whereSql = "${whereSql} or")
         #end
         #if ($filterValue.startsWith('XWiki.'))
-          #set($whereSql = "${whereSql} ${safe_colname.replace('_','.')} = ?")
+          #set($whereSql = "${whereSql} ${colname} = ?")
           #set($discard = $whereParams.add("${filterValue}"))
+        #elseif ($filterValue.contains(':'))
+          #set($whereSql = "${whereSql} ${colname} = ?")
+          #set($discard = $whereParams.add("${stringtool.substringAfter($filterValue, ':')}"))
         #else
           #set($whereSql = "${whereSql} upper(str(${safe_colname.replace('_','.')})) like upper(?)")
           #set($discard = $whereParams.add("%${filterValue}%"))
