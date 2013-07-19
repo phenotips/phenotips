@@ -19,9 +19,7 @@
  */
 package org.phenotips.data;
 
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
 import java.util.Set;
@@ -37,17 +35,6 @@ import net.sf.json.JSONObject;
 @Unstable
 public interface Patient
 {
-    /** The XClass used for storing patient data. */
-    EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT, new EntityReference(
-        "PhenoTips", EntityType.SPACE));
-
-    /** The default template for creating a new patient. */
-    EntityReference TEMPLATE_REFERENCE = new EntityReference("PatientTemplate", EntityType.DOCUMENT,
-        CLASS_REFERENCE.getParent());
-
-    /** The default space where patient data is stored. */
-    EntityReference DEFAULT_DATA_SPACE = new EntityReference("data", EntityType.SPACE);
-
     /**
      * Returns a reference to the document where the patient data is stored.
      * 

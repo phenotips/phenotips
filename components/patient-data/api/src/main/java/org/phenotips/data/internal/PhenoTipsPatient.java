@@ -23,7 +23,9 @@ import org.phenotips.data.Disease;
 import org.phenotips.data.Patient;
 import org.phenotips.data.Phenotype;
 
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,6 +48,17 @@ import net.sf.json.JSONObject;
  */
 public class PhenoTipsPatient implements Patient
 {
+    /** The XClass used for storing patient data. */
+    public static final EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT,
+        new EntityReference("PhenoTips", EntityType.SPACE));
+
+    /** The default template for creating a new patient. */
+    public static final EntityReference TEMPLATE_REFERENCE = new EntityReference("PatientTemplate",
+        EntityType.DOCUMENT, CLASS_REFERENCE.getParent());
+
+    /** The default space where patient data is stored. */
+    public static final EntityReference DEFAULT_DATA_SPACE = new EntityReference("data", EntityType.SPACE);
+
     /** Known phenotype properties. */
     private static final String[] PHENOTYPE_PROPERTIES = new String[] {"phenotype", "negative_phenotype"};
 
@@ -70,7 +83,7 @@ public class PhenoTipsPatient implements Patient
     {
         this.document = doc.getDocumentReference();
         this.reporter = doc.getCreatorReference();
-        BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
+        BaseObject data = doc.getXObject(CLASS_REFERENCE);
         if (data == null) {
             return;
         }
