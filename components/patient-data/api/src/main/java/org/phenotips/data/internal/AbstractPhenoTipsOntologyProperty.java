@@ -41,11 +41,13 @@ import net.sf.json.JSONObject;
  */
 public abstract class AbstractPhenoTipsOntologyProperty implements OntologyProperty
 {
+    /** Pattern used for identifying ontology terms from free text terms. */
     private static final Pattern ONTOLOGY_TERM_PATTERN = Pattern.compile("\\w++:\\w++");
 
     /** @see #getId() */
     protected final String id;
 
+    /** @see #getName() */
     protected String name;
 
     /**

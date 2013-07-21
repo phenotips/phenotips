@@ -20,7 +20,7 @@
 package org.phenotips.data.indexing.internal;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.Phenotype;
+import org.phenotips.data.Feature;
 import org.phenotips.data.indexing.PatientIndexer;
 
 import org.xwiki.component.annotation.Component;
@@ -71,7 +71,7 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
         SolrInputDocument input = new SolrInputDocument();
         input.setField("document", patient.getDocument().toString());
         input.setField("reporter", patient.getReporter().toString());
-        for (Phenotype phenotype : patient.getPhenotypes()) {
+        for (Feature phenotype : patient.getFeatures()) {
             input.addField((phenotype.isPresent() ? "" : "negative_") + phenotype.getType(), phenotype.getId());
         }
         try {
