@@ -47,6 +47,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
+@SuppressWarnings("rawtypes")
 public class Dictionary4LookupAnnotator extends JCasAnnotator_ImplBase
 {
 
@@ -54,8 +55,10 @@ public class Dictionary4LookupAnnotator extends JCasAnnotator_ImplBase
 
 	private UimaContext iv_context;
 
+	
 	private Set iv_lookupSpecSet = new HashSet();
 
+	
 	private Comparator<LookupToken> iv_lookupTokenComparator = new LookupTokenComparator();
 
 	// used to prevent duplicate hits
@@ -186,7 +189,7 @@ public class Dictionary4LookupAnnotator extends JCasAnnotator_ImplBase
 
 		// iterate over MetaDataHits that have already been seen
 		String offsetKey = getOffsetKey(lh);
-		Set<MetaDataHit> mdhDuplicateSet = (Set) iv_dupMap.get(offsetKey);
+		Set<MetaDataHit> mdhDuplicateSet = (Set<MetaDataHit>) iv_dupMap.get(offsetKey);
 		if (mdhDuplicateSet != null)
 		{
 			Iterator<MetaDataHit> itr = mdhDuplicateSet.iterator();

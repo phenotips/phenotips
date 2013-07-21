@@ -71,7 +71,7 @@
 					<property key="exclusionTags" value="VB,VBD,VBG,VBN,VBP,VBZ,CC,CD,DT,EX,LS,MD,PDT,POS,PP,PP$,RP,TO,WDT,WP,WPS,WRB"/>
 				</properties>
 			</lookupInitializer>
-			<lookupConsumer className="org.apache.ctakes.dictionary.lookup.ae.OrangeBook4FilterConsumerImpl">
+			<lookupConsumer className="org.phenotips.ctakes.OrangeBook4FilterConsumerImpl">
 				<properties>
 					<property key="codingScheme" value="RXNORM"/>
 					<property key="codeMetaField" value="code"/>
