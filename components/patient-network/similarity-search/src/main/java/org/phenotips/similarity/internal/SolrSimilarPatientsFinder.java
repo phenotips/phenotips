@@ -21,9 +21,9 @@ package org.phenotips.similarity.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
-import org.phenotips.data.Phenotype;
-import org.phenotips.data.similarity.SimilarPatient;
-import org.phenotips.data.similarity.SimilarPatientFactory;
+import org.phenotips.data.Feature;
+import org.phenotips.data.similarity.PatientSimilarityView;
+import org.phenotips.data.similarity.PatientSimilarityViewFactory;
 import org.phenotips.similarity.SimilarPatientsFinder;
 
 import org.xwiki.component.annotation.Component;
@@ -69,7 +69,7 @@ public class SolrSimilarPatientsFinder implements SimilarPatientsFinder, Initial
     /** Allows to make a secure pair of patients. */
     @Inject
     @Named("restricted")
-    private SimilarPatientFactory factory;
+    private PatientSimilarityViewFactory factory;
 
     /** The Solr server instance used. */
     private SolrServer server;
@@ -85,15 +85,15 @@ public class SolrSimilarPatientsFinder implements SimilarPatientsFinder, Initial
     }
 
     @Override
-    public List<SimilarPatient> findSimilarPatients(Patient referencePatient)
+    public List<PatientSimilarityView> findSimilarPatients(Patient referencePatient)
     {
         SolrQuery query = generateQuery(referencePatient);
         SolrDocumentList docs = search(query);
-        List<SimilarPatient> results = new ArrayList<SimilarPatient>(docs.size());
+        List<PatientSimilarityView> results = new ArrayList<PatientSimilarityView>(docs.size());
         for (SolrDocument doc : docs) {
             String name = (String) doc.getFieldValue("document");
             Patient matchPatient = this.patients.getPatientById(name);
-            SimilarPatient result = this.factory.makeSimilarPatient(matchPatient, referencePatient);
+            PatientSimilarityView result = this.factory.makeSimilarPatient(matchPatient, referencePatient);
             results.add(result);
         }
 
@@ -118,7 +118,7 @@ public class SolrSimilarPatientsFinder implements SimilarPatientsFinder, Initial
         SolrQuery query = new SolrQuery();
         StringBuilder q = new StringBuilder();
         // FIXME This is a very basic implementation, to be revisited
-        for (Phenotype phenotype : referencePatient.getPhenotypes()) {
+        for (Feature phenotype : referencePatient.getFeatures()) {
             q.append(phenotype.getType() + ":" + ClientUtils.escapeQueryChars(phenotype.getId()) + " ");
         }
         query.add(CommonParams.Q, q.toString());

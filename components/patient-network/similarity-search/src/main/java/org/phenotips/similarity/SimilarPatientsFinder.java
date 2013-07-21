@@ -20,7 +20,7 @@
 package org.phenotips.similarity;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.similarity.SimilarPatient;
+import org.phenotips.data.similarity.PatientSimilarityView;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -45,7 +45,7 @@ public interface SimilarPatientsFinder
      * @return the similar patients found in the database, an empty list if no patients are found or if the reference
      *         patient is invalid
      */
-    List<SimilarPatient> findSimilarPatients(Patient referencePatient);
+    List<PatientSimilarityView> findSimilarPatients(Patient referencePatient);
 
     /**
      * Checks how many patients similar to a reference patient exist, and returns their count. The reference patient

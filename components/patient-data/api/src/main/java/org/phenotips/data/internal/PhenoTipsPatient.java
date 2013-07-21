@@ -19,9 +19,9 @@
  */
 package org.phenotips.data.internal;
 
-import org.phenotips.data.Disease;
+import org.phenotips.data.Disorder;
+import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
-import org.phenotips.data.Phenotype;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
@@ -74,11 +74,11 @@ public class PhenoTipsPatient implements Patient
     /** @see #getReporter() */
     private DocumentReference reporter;
 
-    /** @see #getPhenotypes() */
-    private Set<Phenotype> phenotypes = new HashSet<Phenotype>();
+    /** @see #getFeatures() */
+    private Set<Feature> features = new HashSet<Feature>();
 
-    /** @see #getDiseases() */
-    private Set<Disease> diseases = new HashSet<Disease>();
+    /** @see #getDisorders() */
+    private Set<Disorder> disorders = new HashSet<Disorder>();
 
     /**
      * Constructor that copies the data from an XDocument.
@@ -100,13 +100,13 @@ public class PhenoTipsPatient implements Patient
                     continue;
                 }
                 for (String value : values.getList()) {
-                    this.phenotypes.add(new PhenoTipsPhenotype(doc, values, value));
+                    this.features.add(new PhenoTipsFeature(doc, values, value));
                 }
             }
             DBStringListProperty values = (DBStringListProperty) data.get("omim_id");
             if (values != null) {
                 for (String value : values.getList()) {
-                    this.diseases.add(new PhenoTipsDisease(values, value));
+                    this.disorders.add(new PhenoTipsDisorder(values, value));
                 }
             }
         } catch (XWikiException ex) {
@@ -114,8 +114,8 @@ public class PhenoTipsPatient implements Patient
                 ex);
         }
         // Readonly from now on
-        this.phenotypes = Collections.unmodifiableSet(this.phenotypes);
-        this.diseases = Collections.unmodifiableSet(this.diseases);
+        this.features = Collections.unmodifiableSet(this.features);
+        this.disorders = Collections.unmodifiableSet(this.disorders);
     }
 
     @Override
@@ -131,15 +131,15 @@ public class PhenoTipsPatient implements Patient
     }
 
     @Override
-    public Set<Phenotype> getPhenotypes()
+    public Set<Feature> getFeatures()
     {
-        return this.phenotypes;
+        return this.features;
     }
 
     @Override
-    public Set<Disease> getDiseases()
+    public Set<Disorder> getDisorders()
     {
-        return this.diseases;
+        return this.disorders;
     }
 
     @Override
@@ -156,19 +156,19 @@ public class PhenoTipsPatient implements Patient
         if (getReporter() != null) {
             result.element("reporter", getReporter().getName());
         }
-        if (!this.phenotypes.isEmpty()) {
+        if (!this.features.isEmpty()) {
             JSONArray featuresJSON = new JSONArray();
-            for (Phenotype phenotype : this.phenotypes) {
+            for (Feature phenotype : this.features) {
                 featuresJSON.add(phenotype.toJSON());
             }
             result.element("features", featuresJSON);
         }
-        if (!this.diseases.isEmpty()) {
+        if (!this.disorders.isEmpty()) {
             JSONArray diseasesJSON = new JSONArray();
-            for (Disease disease : this.diseases) {
+            for (Disorder disease : this.disorders) {
                 diseasesJSON.add(disease.toJSON());
             }
-            result.element("diseases", diseasesJSON);
+            result.element("disorders", diseasesJSON);
         }
         return result;
     }

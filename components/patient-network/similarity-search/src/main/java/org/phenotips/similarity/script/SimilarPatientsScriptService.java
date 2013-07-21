@@ -20,7 +20,7 @@
 package org.phenotips.similarity.script;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.similarity.SimilarPatient;
+import org.phenotips.data.similarity.PatientSimilarityView;
 import org.phenotips.similarity.SimilarPatientsFinder;
 
 import org.xwiki.component.annotation.Component;
@@ -57,7 +57,7 @@ public class SimilarPatientsScriptService implements ScriptService
      * @return the similar patients found in the database, an empty list if no patients are found or if the reference
      *         patient is invalid
      */
-    public List<SimilarPatient> findSimilarPatients(Patient referencePatient)
+    public List<PatientSimilarityView> findSimilarPatients(Patient referencePatient)
     {
         return this.finder.findSimilarPatients(referencePatient);
     }

@@ -46,22 +46,24 @@ public interface Patient
      * Returns a reference to the profile of the user that created the patient record.
      * 
      * @return a valid document reference
+     * @todo Replace with a UserReference once they're available
      */
     DocumentReference getReporter();
 
     /**
      * Returns the list of recorded features, both positive and negative observations.
      * 
-     * @return an unmodifiable set of {@link Phenotype features}, or an empty set if no features are recorded yet
+     * @return an unmodifiable set of {@link Feature features}, or an empty set if no features are recorded yet
      */
-    Set<? extends Phenotype> getPhenotypes();
+    Set<? extends Feature> getFeatures();
 
     /**
-     * Returns the list of recorded diseases.
+     * Returns the list of recorded disorders.
      * 
-     * @return an unmodifiable set of {@link Disease diseases}, or an empty set if no diseases have been identified yet
+     * @return an unmodifiable set of {@link Disorder disorders}, or an empty set if no disorders have been identified
+     *         yet
      */
-    Set<? extends Disease> getDiseases();
+    Set<? extends Disorder> getDisorders();
 
     /**
      * Retrieve all the patient data in a JSON format. For example:
@@ -71,10 +73,10 @@ public interface Patient
      *   "id": "xwiki:data.P0000001",
      *   "reporter": "xwiki.XWiki.PatchAdams",
      *   "features": [
-     *     // See the documentation for {@link Phenotype#toJSON()}
+     *     // See the documentation for {@link Feature#toJSON()}
      *   ],
-     *   "diseases": [
-     *     // See the documentation for {@link Disease#toJSON()}
+     *   "disorders": [
+     *     // See the documentation for {@link Disorder#toJSON()}
      *   ]
      * }
      * </pre>

@@ -26,6 +26,8 @@ import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
 
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 
 import net.sf.json.JSONObject;
@@ -39,8 +41,12 @@ import net.sf.json.JSONObject;
  */
 public abstract class AbstractPhenoTipsOntologyProperty implements OntologyProperty
 {
+    private static final Pattern ONTOLOGY_TERM_PATTERN = Pattern.compile("\\w++:\\w++");
+
     /** @see #getId() */
     protected final String id;
+
+    protected String name;
 
     /**
      * Simple constructor providing the {@link #id term identifier}.
@@ -49,7 +55,13 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
      */
     protected AbstractPhenoTipsOntologyProperty(String id)
     {
-        this.id = id;
+        if (ONTOLOGY_TERM_PATTERN.matcher(id).matches()) {
+            this.id = id;
+            this.name = null;
+        } else {
+            this.id = "";
+            this.name = id;
+        }
     }
 
     @Override
@@ -61,12 +73,16 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
     @Override
     public String getName()
     {
+        if (this.name != null) {
+            return this.name;
+        }
         try {
             OntologyManager om =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(OntologyManager.class);
             OntologyTerm term = om.resolveTerm(this.id);
             if (term != null && StringUtils.isNotEmpty(term.getName())) {
-                return term.getName();
+                this.name = term.getName();
+                return this.name;
             }
         } catch (ComponentLookupException ex) {
             // Shouldn't happen
