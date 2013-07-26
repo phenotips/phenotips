@@ -122,7 +122,12 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe('xwiki:livetable:newrow', function(tableEvent){
+      <code>document.observe('xwiki:livetable:displayComplete', function(tableEvent){
+  $(tableEvent.memo.tableId).select("tr.xwiki-livetable-display-filters td input").each(function(item) {
+    item.placeholder = "Type to filter...";
+  });
+});
+document.observe('xwiki:livetable:newrow', function(tableEvent){
   tableEvent.memo.row.select(".actionedit").invoke('setAttribute', 'title', 'Edit');
   tableEvent.memo.row.select(".actiondelete").invoke('setAttribute', 'title', 'Delete');
   tableEvent.memo.row.select(".actiondelete").invoke('observe', 'click', function(clickEvent){
