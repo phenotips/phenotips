@@ -71,25 +71,28 @@ public class PhenoTipsTokenAuthenticatorScriptService implements ScriptService
             (XWikiContext) this.execution.getContext().getProperty(XWikiContext.EXECUTIONCONTEXT_KEY);
 
         // First check if the token is valid on LIMS
-        LimsAuthentication limsAuth = (LimsAuthentication) context.get(Lims247AuthServiceImpl.SESSION_KEY);
-        if (limsAuth != null && StringUtils.equals(limsAuth.getToken(), token)) {
+        LimsAuthentication limsAuth =
+            (LimsAuthentication) context.getRequest().getSession().getAttribute(Lims247AuthServiceImpl.SESSION_KEY);
+        if (limsAuth != null && StringUtils.equals(limsAuth.getToken(), token)
+            && StringUtils.equals(StringUtils.substringAfter(limsAuth.getUser().getUser(), "."), username)) {
             return true;
         }
         DocumentReference previousUserReference = context.getUserReference();
 
         // Check if the token is valid in PhenoTips
+        boolean result = false;
         try {
             DocumentReference ref = new DocumentReference(context.getDatabase(), "XWiki", username);
             context.setUserReference(ref);
-            boolean result = this.token.isTokenValid(token);
+            result = this.token.isTokenValid(token);
             if (!result) {
                 ref = ref.replaceParent(ref.getWikiReference(), new WikiReference("xwiki"));
                 context.setUserReference(ref);
-                return this.token.isTokenValid(token);
+                result = this.token.isTokenValid(token);
             }
         } finally {
             context.setUserReference(previousUserReference);
         }
-        return false;
+        return result;
     }
 }

@@ -170,7 +170,8 @@ public class LimsSynchronizationEventListener implements EventListener
         } else if (event instanceof DocumentDeletedEvent) {
             result.put(EVENT_KEY, "delete");
         }
-        LimsAuthentication auth = (LimsAuthentication) context.get(Lims247AuthServiceImpl.SESSION_KEY);
+        LimsAuthentication auth =
+            (LimsAuthentication) context.getRequest().getSession().getAttribute(Lims247AuthServiceImpl.SESSION_KEY);
         if (auth != null) {
             // FIXME Reuse this authentication only if the authentication server is the same as the target server
             result.put(LimsServer.INSTANCE_IDENTIFIER_KEY, context.getDatabase());
