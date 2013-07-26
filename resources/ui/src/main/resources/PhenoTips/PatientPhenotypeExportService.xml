@@ -44,7 +44,7 @@
   <hidden>false</hidden>
   <content>{{include document="PhenoTips.JSONMacros" /}}
 
-{{velocity wiki=false}}
+{{velocity}}
 #if ($xcontext.action != 'get')
   #break
 #end
@@ -138,7 +138,11 @@
      #end
   #end
 #end## !source.isNew
-#json__respondJSON($results, $metadata)
+#if ("$!{request.outputSyntax}" == 'plain')
+{{content syntax="plain/1.0"}}#json__respondJSON($results, $metadata){{/content}}
+#else
+{{html wiki="false" clean="false"}}#json__respondJSON($results, $metadata){{/html}}
+#end
 {{/velocity}}
 </content>
 </xwikidoc>
