@@ -24,8 +24,8 @@ import org.xwiki.stability.Unstable;
 import com.xpn.xwiki.user.api.XWikiUser;
 
 /**
- * A remembered LIMS authentication, keeping the original installation ID (the PN), the authentication token, and the
- * resulting XWiki user.
+ * Cached LIMS credentials, storing the original installation ID (the PN), the authentication token, and the resulting
+ * PhenoTips user.
  * 
  * @version $Id$
  * @since 1.0M8
@@ -34,13 +34,13 @@ import com.xpn.xwiki.user.api.XWikiUser;
 public final class LimsAuthentication
 {
     /** @see #getToken() */
-    private String token;
+    private final String token;
 
     /** @see #getUser(). */
-    private XWikiUser user;
+    private final XWikiUser user;
 
     /** @see #getPn() */
-    private String pn;
+    private final String pn;
 
     /**
      * Constructor passing all the data.
