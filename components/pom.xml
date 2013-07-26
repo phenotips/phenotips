@@ -42,7 +42,7 @@
     <module>patient-measurements</module>
     <module>application-configuration</module>
     <module>patient-tools</module>
-    <module>ncbieutils-access-service</module>
+    <module>ncbieutils-services</module>
     <module>phenotype-mapping-service</module>
     <module>integration</module>
   </modules>

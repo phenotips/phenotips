@@ -127,7 +127,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ncbieutils-access-service</artifactId>
+      <artifactId>ncbieutils-services-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
