@@ -30,7 +30,7 @@
 
   <name>PhenoTips - Parent POM</name>
   <description>PhenoTips is a software tool providing an easy-to-use Web interface and standardized database back-end for collecting clinical symptoms and physical findings observed in patients with genetic disorders.</description>
-  <url>http://phenotips.cs.toronto.edu/</url>
+  <url>http://phenotips.org/</url>
   <inceptionYear>2011</inceptionYear>
 
   <licenses>
