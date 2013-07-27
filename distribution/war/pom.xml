@@ -147,7 +147,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ctakes-service</artifactId>
+      <artifactId>ctakes-service-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
