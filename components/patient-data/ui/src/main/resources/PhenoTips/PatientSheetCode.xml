@@ -4464,7 +4464,6 @@ label.selected input[type="checkbox"] {
   ####margin-left: -14px;
   ##font-size: .8em;
   ##color: $theme.textPrimaryColor;
-}
 
 .chapter .expand-tools {
   color: $theme.textPrimaryColor;;
