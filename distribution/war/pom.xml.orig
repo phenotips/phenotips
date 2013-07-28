@@ -147,20 +147,18 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+<<<<<<< HEAD
       <artifactId>ctakes-service-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-<dependency>
-      <groupId>${project.groupId}</groupId>
+=======
       <artifactId>patient-similarity-data</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>patient-similarity-search</artifactId>
+>>>>>>> upstreamNew/master
       <version>${project.version}</version>
     </dependency>
-    <dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pedigree-editor</artifactId>
@@ -336,6 +334,7 @@ extension.repositories=extensions.xwiki.org:xwiki:http://extensions.xwiki.org/xw
               <type>jar</type>
               <targetPath>resources/uicomponents/</targetPath>
             </overlay>
+           <!-- cTAKES resources -->
             <overlay>
               <groupId>${project.groupId}</groupId>
               <artifactId>ctakes-resources</artifactId>
