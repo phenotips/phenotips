@@ -150,7 +150,7 @@
       <artifactId>ctakes-service-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-<dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>patient-similarity-data</artifactId>
       <version>${project.version}</version>
@@ -160,7 +160,6 @@
       <artifactId>patient-similarity-search</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pedigree-editor</artifactId>
