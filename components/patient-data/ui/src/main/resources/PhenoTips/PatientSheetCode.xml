@@ -1688,203 +1688,6 @@ document.observe('dom:loaded', function() {
       </use>
     </class>
     <name>PhenoTips.PatientSheetCode</name>
-    <number>5</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>7cd26f5b-19a1-423c-a406-0cb0df23f9b4</guid>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>var ExtraData = (function (ExtraData) {
-  var tools = ExtraData.tools = ExtraData.tools || {};
-  tools.Editor = Class.create({
-    initialize : function () {
-      $$('.extradata-list a.delete').invoke('observe', 'click', this.ajaxDeleteData.bindAsEventListener(this));
-      $$('.list-actions a.add').invoke('observe', 'click', this.ajaxAddData.bindAsEventListener(this));
-    },
-    ajaxDeleteData : function (event) {
-      event.stop();
-      var deleteTrigger = event.element();
-      if (deleteTrigger.disabled) {
-         return;
-      }
-      new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href, {
-        onCreate : function() {
-          deleteTrigger.disabled = true
-        },
-        onSuccess : function() {
-          var dataRow = deleteTrigger.up('tr:not(.head-group)');
-          var dataTable = deleteTrigger.up('table.extradata-list');
-          if (dataRow) {
-            dataRow.remove();
-          }
-          if (dataTable) {
-            var i = 1;
-            dataTable.select('th.row-count').each(function(item) {
-              item.update((i++));
-            });
-          }
-        },
-        onComplete : function() {
-          deleteTrigger.disabled = false;
-        }
-      },
-      {
-         confirmationText : "Are you sure you wish to delete this row?"
-      });
-    },
-    ajaxAddData : function (event) {
-      event.stop();
-      var addTrigger = event.element();
-      if (addTrigger.disabled) {
-         return;
-      }
-      var classname = '';
-      try {
-        var classname = /classname=([^&amp;]+)/.exec(addTrigger.href)[1];
-      } catch (err) {
-         new XWiki.widgets.Notification('Cannot add data: type not found', 'error');
-         return;
-      }
-      var dataTable = addTrigger.up('.list-actions').previous('table[id^="extradata-list-' + classname + '"]');
-      if (!dataTable) {
-        new XWiki.widgets.Notification("Cannot find the list to update " + classname, 'error');
-      }
-      var propertyName = addTrigger.href.replace(/.*&amp;xredirect=.*propertyName=([^&amp;]+).*/, '$1');
-      var propertyValue = addTrigger.href.replace(/.*&amp;xredirect=.*propertyValue=([^&amp;]+).*/, '$1');
-      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?&amp;xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;withLabel=' + dataTable.hasClassName('withLabel') + '&amp;propertyName=' + propertyName + '&amp;propertyValue=' + propertyValue));
-      new Ajax.Request(url, {
-        onCreate : function() {
-          addTrigger.disabled = true
-          addTrigger._x_notif = new XWiki.widgets.Notification('Adding...', 'inprogress');
-        },
-        onSuccess : function (response) {
-          addTrigger._x_notif.hide();
-          var rowHead = '';
-          if (dataTable.hasClassName('withCounter')) {
-            var idx = dataTable.select('.row-count').size() + 1;
-            rowHead = '&lt;th scope="row" class="row-count"&gt;' + idx + '&lt;/th&gt;';
-          }
-          dataTable.down('tbody').insert({'bottom' : '&lt;tr class="new"&gt;' + rowHead + response.responseText + '&lt;/tr&gt;'});
-          var lastAdded = dataTable.down('.new');
-          lastAdded.down('a.delete').observe('click', this.ajaxDeleteData.bindAsEventListener(this));
-          lastAdded.removeClassName('new');
-          Event.fire(dataTable, 'extradata:added', {'element' : lastAdded});
-          Event.fire(document, 'xwiki:dom:updated', {'elements' : [lastAdded]});
-        }.bind(this),
-        onFailure : function(response) {
-          var failureReason = response.statusText;
-          if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-            failureReason = 'Server not responding';
-          }
-          if (addTrigger._x_notif) {
-            addTrigger._x_notif.replace(new XWiki.widgets.Notification("Failed: " + failureReason, "error"));
-          } else {
-            new XWiki.widgets.Notification(this.interactionParameters.failureMessageText + failureReason, "error");
-          }
-        },
-        on1223 : function(response) {
-          response.request.options.onSuccess(response);
-        },
-        on0 : function(response) {
-          response.request.options.onFailure(response);
-        },
-        onComplete : function() {
-          addTrigger.disabled = false
-        }
-      });
-    }
-  });
-  return ExtraData;
-}(ExtraData || {}));
-
-document.observe('xwiki:dom:loaded', function() {
-  new ExtraData.tools.Editor();
-})</code>
-    </property>
-    <property>
-      <name>Add/Remove data associated with the patient report</name>
-    </property>
-    <property>
-      <parse>1</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <name>PhenoTips.PatientSheetCode</name>
     <number>6</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>762f626c-9e6e-4a95-89bd-0217053bf947</guid>
@@ -2763,7 +2566,6 @@ document.observe('xwiki:dom:loaded', function() {
   $$('.ncbi-search-box h3, .ncbi-search-box .expand-tools .tool').invoke('observe', 'click', function(event) {
      event.element().up('.ncbi-search-box').toggleClassName('collapsed');
   });
-  //$$('.ncbi-search-box').invoke('toggleClassName' ,'collapsed');
 
   var defaultSearchTerms = $('defaultSearchTerms');
   var defaultSearchTermsInput = $('defaultSearchTermsInput');
@@ -2779,11 +2581,6 @@ document.observe('xwiki:dom:loaded', function() {
        'target' : $('omim-search-results'),
        'suggestFor' : omimField
     },
-    'pubmed' : {
-       'script' : "$xwiki.getURL('PhenoTips.PubMedService', 'get', 'format=html&amp;q=')",
-       'source' : [customSearchTermsInput, defaultSearchTermsInput],
-       'target' : $('pubmed-search-results')
-    },
     'diffDiagnosis' : {
        'script' : "$xwiki.getURL('PhenoTips.DiffDiagnosisService', 'get', 'format=html&amp;q=')",
        'source' : [defaultSearchTermIDsInput],
@@ -2792,7 +2589,7 @@ document.observe('xwiki:dom:loaded', function() {
     }
   };
 
-  if (!defaultSearchTerms || !defaultSearchTermsInput || (!services.omim.target &amp;&amp; !services.pubmed.target &amp;&amp; !services.diffDiagnosis.target)) {return;}
+  if (!defaultSearchTerms || !defaultSearchTermsInput || (!services.omim.target &amp;&amp; !services.diffDiagnosis.target)) {return;}
 
   var cache = {'all' : {}, 'displayed' : {}};
 
@@ -2800,13 +2597,15 @@ document.observe('xwiki:dom:loaded', function() {
     var prevValue = defaultSearchTermsInput.value;
     defaultSearchTermsInput.value = '';
     defaultSearchTermIDsInput.value = '';
+    var termNames = [];
     defaultSearchTerms.select('.search-term:not(.disabled)').each(function(term) {
+      termNames.push(term.innerHTML);
       defaultSearchTermsInput.value += ' "' + term.innerHTML + '"';
       defaultSearchTermIDsInput.value += term.__key + ' ';
     });
     if (defaultSearchTermsInput.value != prevValue) {
+      document.fire('phenotips:phenotypeChanged', {phenotype: cache});
       doSearch('omim');
-      doSearch('pubmed');
       doSearch('diffDiagnosis');
     }
   }
@@ -3036,7 +2835,6 @@ document.observe('xwiki:dom:loaded', function() {
   if (customSearchTermsInput) {
     customSearchTermsInput.observe('keyup', function(event) {
        doSearch('omim');
-       doSearch('pubmed');
        doSearch('diffDiagnosis');
     });
   }
@@ -4777,74 +4575,7 @@ label.selected input[type="checkbox"] {
       <cache>long</cache>
     </property>
     <property>
-      <code>#template('colorThemeInit.vm')
-table.extradata-list {
-    width: 100%;
-}
-.extradata-list td, .extradata-list th {
-    border: 1px solid $theme.backgroundSecondaryColor;
-    border-left: 1px solid $theme.pageContentBackgroundColor;
-    border-right: 1px solid $theme.pageContentBackgroundColor;
-}
-.extradata-list th.col-label {
-    font-weight: normal;
-    font-variant: small-caps;
-}
-.extradata th.col-label, .viewbody td {
-    text-align: center;
-}
-.viewbody td.comments, .editbody th.comments {
-    text-align: left;
-    border-right: 0 none;
-}
-.extradata-list th.row-count {
-    background: transparent;
-}
-.extradata-list th.row-count,
-.extradata-list td.start,
-.extradata-list td.end {
-    text-align: right;
-}
-.extradata-list td.start,
-.extradata-list td.end,
-.extradata-list td.band {
-    min-width: 6em;
-}
-.extradata-list th.comments {
-    min-width: 20em;
-}
-.extradata-list .xwiki-form-listclass {
-    display: block;
-    white-space: nowrap;
-}
-.extradata-list th.actions {
-  width: 24px;
-}
-.extradata-list th.actions .buttonwrapper {
-    display: block;
-    height: 2.3em;
-    position: relative;
-    margin: 0;
-}
-.extradata-list th.actions .add-data-button {
-    position: absolute;
-    right: 0;
-}
-.list-actions {
-  position: relative;
-  width: 99%;
-}
-.list-actions .buttonwrapper {
-  text-align: left;
-  margin: 0 !important;
-}
-table.withLabel td, table.withLabel th {
-  border: 0 none;
-}
-table.withLabel tr:first-child th {
-  display: none;
-}
-.extradata-list .bmi, .extradata-list .hc_percentile {
+      <code>.extradata-list .bmi, .extradata-list .hc_percentile {
   min-width: 4em;
 }
 .extradata-list .normal {
@@ -4963,42 +4694,6 @@ form .extradata-list tr:hover td {
 .extradata-list .right-side-group .icon {
   background-image: url("$xwiki.getSkinFile('body-icon-right-s.png')");
   opacity: .4;
-}
-
-.extradata-list .file {
-  width: 160px;
-}
-.extradata-list .file .attachment-list .attachment-item, .extradata-list .file .attachment-list .attachment-item input {
-  display: none;
-}
-.extradata-list .file .attachment-list .attachment-item.selected {
-  display: block;
-  width: 100%;
-}
-.extradata-list .file .attachment-list .attachment-item.image {
-  width: 150px !important;
-}
-.extradata-list .file .attachment-list .attachment-item.selected label {
-  padding: 3px 0 3px 20px;
-}
-.extradata-list .file .attachment-list .attachment-item.image label {
-  padding: 0 !important;
-}
-
-.extradata-list .file .attachment-list .attachment-item .attachment-preview {
-    width: 140px;
-}
-
-.extradata-list .file p img {
-  max-width: 480px !important;
-  max-height: 480px !important;
-}
-
-
-.extradata-list .file .attachment-list .attachment-item .view {
-  background-color: $theme.pageContentBackgroundColor;
-  bottom: 0;
-  padding: 5px;
 }
 
 .extradata-list .relative_type, .extradata-list .relative_of {
@@ -5167,6 +4862,7 @@ form .extradata-list tr:hover td {
   padding-left: 20px;
   background-position: left 2px;
   background-repeat: no-repeat;
+  page-break-inside: avoid;
 }
 #omim-search-results ul li label input {
   vertical-align: middle;
@@ -5531,6 +5227,8 @@ input.LV_invalid_field {
   </object>
   <content>{{include document="PhenoTips.ChartServiceMacros" /}}
 
+{{include document="PhenoTips.TabelarDataMacros" /}}
+
 {{velocity output=false}}
 #macro (__label $propName $cssClass $text)
    #set($displayedText = "$!{text}")
@@ -5655,10 +5353,6 @@ input.LV_invalid_field {
 ==== Matching disorders in OMIM ====
 (% id="omim-search-results" class="background-suggestions" %)((()))
 )))
-##(% class="half-width background-search pubmed-search" %)(((
-##==== Suggested reading on PubMed ====
-##(% id="pubmed-search-results" class="background-suggestions" %)((()))
-##)))
 )))
 )))
 #end
@@ -5669,55 +5363,6 @@ input.LV_invalid_field {
 ## "Tabelar" data associated with the patient report
 ##
 ##
-#macro (__extradata_deleteTool $object $anchor)
-  {{html clean="false"}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="Delete"&gt;✖&lt;/a&gt;{{/html}}##
-#end
-
-#macro (__extradata_addTool $classname $anchor $options)
-  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
-
-#macro (__extradata_displayTable $dataClassName $options)
-  #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
-  #if ($dataClass)
-    #set($dataObjects = $doc.getObjects($dataClassName, "$!{options.propertyName}", "$!{options.propertyValue}"))
-    #if ($xcontext.action != 'edit' &amp;&amp; $dataObjects.size() == 0)
-      (% class="hint" %)None specified
-    #elseif ($xcontext.action == 'export')
-      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
-      #set ($disableLabels = true)
-      #foreach ($o in $dataObjects)
-        #foreach($prop in $dataClass.properties)#if ($prop.name != $options.propertyName)|= ${prop.prettyName}: |#if ($velocityCount &lt;= 2)=#end $doc.display($prop.getName(), $o)#if ($velocityCount %2 == 0)
-
-        #end#end#end## foreach object
-
-      #end## foreach object
-    #else
-      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
-      #if ("$!{options.counter}" == 'true')|=(% class="col-label" %)# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name#if ($prop.name == $options.propertyName) hidden#end" %)$prop.prettyName#end#if ($xcontext.action == 'edit')|=(% class="actions" %)
-      #else
-
-      #end
-      #if ($xcontext.action == 'export')#set ($disableLabels = true)#end
-      #foreach ($o in $dataObjects)
-        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.prettyName}&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')#end#if ($xcontext.action == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
-
-      #end## foreach object
-
-      #if ($xcontext.action == 'edit')(% class="list-actions" %)(((#__extradata_addTool($dataClassName "extradata-${dataClassName}" $options))))
-      #end
-    #end## if xcontext.action
-  #end## if dataclass
-#end
-
-#macro (__extradata_displayLastEntry $dataClassName $options)
-  #set ($objects = $doc.getObjects($dataClassName))
-  #if ($objects.size() &gt; 0)
-    #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
-    #set($dataClass = $targetObj.xWikiClass)
-    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}#if ($prop.name == $options.propertyName) hidden#end"&gt;#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
-  #end
-#end
-
 #macro (__measurements_displayCompact)
   #set($dataClass = $xwiki.getDocument('PhenoTips.MeasurementsClass').xWikiClass)
   #if ($dataClass)
@@ -5826,7 +5471,7 @@ input.LV_invalid_field {
     ----
     (% class="clear relatives-info" %)(((
     === Family study ===
-    #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
+    #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true, 'mode' : $xcontext.action})
     )))
   #end
 #if ("$!activeFields.contains('age_of_onset')" != 'false')
@@ -5860,7 +5505,7 @@ input.LV_invalid_field {
 {{warning}}It is recommended to record **weight**, **height** and **head circumference** for all patients.{{/warning}}
 
 #end
-#__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
+#__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true, 'mode' : $xcontext.action})
 #if ($config.getProperty('section__measurements').value.contains('growth-charts'))
 (% class="growth-charts-section" %)(((
 === Growth charts ===
@@ -6135,7 +5780,7 @@ $doc.display('reports_history')
 #if ($config &amp;&amp; $config.getProperty('section__variant-info').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
 (% class="clear variant-info chapter" %)(((
 == Variants ==
-#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false})
+#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action})
 )))##chapter
 #end
 #set ($targetClassName = 'PhenoTips.InvestigationClass')
@@ -6144,9 +5789,9 @@ $doc.display('reports_history')
 == Investigations ==
 (((
 === Genetic investigation ===
-#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'genetic'})
+#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'genetic', 'mode' : $xcontext.action})
 === Molecular genetics ===
-#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular'})
+#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular', 'mode' : $xcontext.action})
 )))
 )))##chapter
 #end
@@ -6162,12 +5807,12 @@ $doc.display('reports_history')
 #set ($targetClassName = 'PhenoTips.ExternalFileClass')
 #if (($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
 === Documents ===
-#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false})
+#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action})
 #end
 #set ($targetClassName = 'PhenoTips.ExternalImageClass')
 #if (($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
 === Imaging ===
-#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false})
+#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action})
 #end
 )))
 )))##chapter
@@ -6184,6 +5829,7 @@ $doc.display('reports_history')
   #set ($discard = $options.put('propertyName', "$!{request.propertyName}"))
   #set ($discard = $options.put('propertyValue', "$!{request.propertyValue}"))
   #set ($discard = $options.put('labels', "$!{request.withLabel}"))
+  #set ($discard = $options.put('mode', 'edit'))
   #__extradata_displayLastEntry($request.dataClassName $options)
 #elseif ("$!{request.xaction}" == 'lastmeta')
   #__phenotypeMeta_displayLastEntry()

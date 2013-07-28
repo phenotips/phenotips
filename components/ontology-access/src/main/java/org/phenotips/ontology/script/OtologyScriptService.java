@@ -19,22 +19,25 @@
  */
 package org.phenotips.ontology.script;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.phenotips.ontology.OntologyManager;
 import org.phenotips.ontology.OntologyService;
 import org.phenotips.ontology.OntologyTerm;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
+import org.xwiki.stability.Unstable;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * Provides access to the available ontologies and their terms to public scripts.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
+@Unstable
 @Component
 @Named("ontologies")
 @Singleton
@@ -66,6 +69,19 @@ public class OtologyScriptService implements ScriptService
      * @return the requested ontology, or {@code null} if it doesn't exist or isn't available in the platform
      */
     public OntologyService getOntology(String ontologyId)
+    {
+        return this.manager.getOntology(ontologyId);
+    }
+
+    /**
+     * Retrieve an ontology given its identifier. This is a shortcut for {@link #getOntology(String)} which allows
+     * scripts to use the shorter {@code $services.ontologies.hpo} notation for accessing an ontology.
+     * 
+     * @param ontologyId the ontology identifier, which is also used as a prefix in every term identifier from that
+     *            ontology, for example {@code HP} or {@code MIM}
+     * @return the requested ontology, or {@code null} if it doesn't exist or isn't available in the platform
+     */
+    public OntologyService get(String ontologyId)
     {
         return this.manager.getOntology(ontologyId);
     }

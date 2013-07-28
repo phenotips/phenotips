@@ -34,6 +34,7 @@ import org.apache.solr.common.params.SpellingParams;
  * Utility class for preparing the queries used by the {@link AbstractSolrOntologyService ontology service}.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 public final class SolrQueryUtils
 {

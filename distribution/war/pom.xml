@@ -127,7 +127,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ncbieutils-access-service</artifactId>
+      <artifactId>ncbieutils-services-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -150,6 +150,17 @@
       <artifactId>ctakes-service-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+<dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-similarity-data</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-similarity-search</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pedigree-editor</artifactId>
@@ -324,13 +335,6 @@ extension.repositories=extensions.xwiki.org:xwiki:http://extensions.xwiki.org/xw
               <artifactId>pedigree-editor</artifactId>
               <type>jar</type>
               <targetPath>resources/uicomponents/</targetPath>
-            </overlay>
-           <!-- cTAKES resources -->
-            <overlay>
-              <groupId>${project.groupId}</groupId>
-              <artifactId>ctakes-resources</artifactId>
-              <type>jar</type>
-              <targetPath>resources/</targetPath>
             </overlay>
           </overlays>
         </configuration>

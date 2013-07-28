@@ -67,13 +67,25 @@
         #if ($codeFields.contains(${field.name}))
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${field.name}_code"&gt;
-          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code" value="${field.name}_code" #if($valueList.contains("${field.name}_code") || true) checked="checked" #end /&gt;
-          ${field.prettyName} (ontology term id)
+          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code" value="${field.name}_code" #if($valueList.contains("${field.name}_code")) checked="checked" #end /&gt;
+          ${field.prettyName} (ontology term ID)
         &lt;/li&gt;
         &lt;li&gt;
           &lt;label for="${targetFieldName}_${field.name}_combined"&gt;
-          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_combined" value="${field.name}_combined" #if($valueList.contains("${field.name}_combined") || true) checked="checked" #end /&gt;
-          ${field.prettyName} (ontology term id and term name)
+          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_combined" value="${field.name}_combined" #if($valueList.contains("${field.name}_combined")) checked="checked" #end /&gt;
+          ${field.prettyName} (ontology term ID and term name)
+        &lt;/li&gt;
+        #end
+        #if ($metaFields.contains(${field.name}))
+        &lt;li&gt;
+          &lt;label for="${targetFieldName}_${field.name}_code_meta"&gt;
+          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code_meta" value="${field.name}_code_meta" #if($valueList.contains("${field.name}_code_meta")) checked="checked" #end /&gt;
+          ${field.prettyName} (ontology term and metadata IDs)
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;label for="${targetFieldName}_${field.name}_meta"&gt;
+          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_meta" value="${field.name}_meta" #if($valueList.contains("${field.name}_meta") || true) checked="checked" #end /&gt;
+          ${field.prettyName} (ontology term and metadata names)
         &lt;/li&gt;
         #end
         #end
@@ -98,15 +110,18 @@
 === (% class="step" %)2(%%) Select the fields to be exported ===
 
 #set($ignored = {
-  'fields' : ['reports_history', 'pedigree'],
+  'fields' : ['reports_history', 'pedigree', 'extended_negative_phenotype'],
   'types'  : []
 })
 #set($customValues = {
        'doc.name' : "Report identifier",
        'referrer' : "Referrer (report creator)",
-       'creationDate' : "Report creation date"
+       'creationDate' : "Report creation date",
+       'author' : "Last modified by",
+       'date' : "Last modification date"
 })
 #set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
+#set($metaFields = ['phenotype'])
 #set($selectedValues = ['phenotype'])
 #__export__displayFieldList( "$!{preferencesObject.getProperty('patientClass').value}" 'columns' $customValues $ignored $codeFields $selectedValues)
 )))##section columns

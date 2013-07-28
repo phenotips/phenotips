@@ -26,6 +26,7 @@ import org.xwiki.stability.Unstable;
  * API that provides access to patient data. No access rights are checked here.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 @Unstable
 @Role

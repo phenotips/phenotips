@@ -30,11 +30,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.environment.Environment;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
 
 @Component
 @Named("hpo")

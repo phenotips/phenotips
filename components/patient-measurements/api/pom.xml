@@ -29,6 +29,11 @@
   </parent>
   <artifactId>patient-measurements-api</artifactId>
   <name>PhenoTips - Patient measurements - Java APIs</name>
+
+  <properties>
+    <coverage.instructionRatio>0.91</coverage.instructionRatio>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

@@ -19,34 +19,22 @@
  */
 package org.phenotips.data;
 
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.stability.Unstable;
+
 import java.util.Set;
 
 import net.sf.json.JSONObject;
-
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.EntityReference;
-import org.xwiki.stability.Unstable;
 
 /**
  * Information about a patient.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 @Unstable
 public interface Patient
 {
-    /** The XClass used for storing patient data. */
-    EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT, new EntityReference(
-        "PhenoTips", EntityType.SPACE));
-
-    /** The default template for creating a new patient. */
-    EntityReference TEMPLATE_REFERENCE = new EntityReference("PatientTemplate", EntityType.DOCUMENT,
-        CLASS_REFERENCE.getParent());
-
-    /** The default space where patient data is stored. */
-    EntityReference DEFAULT_DATA_SPACE = new EntityReference("data", EntityType.SPACE);
-
     /**
      * Returns a reference to the document where the patient data is stored.
      * 
@@ -58,22 +46,24 @@ public interface Patient
      * Returns a reference to the profile of the user that created the patient record.
      * 
      * @return a valid document reference
+     * @todo Replace with a UserReference once they're available
      */
     DocumentReference getReporter();
 
     /**
      * Returns the list of recorded features, both positive and negative observations.
      * 
-     * @return an unmodifiable set of {@link Phenotype features}, or an empty set if no features are recorded yet
+     * @return an unmodifiable set of {@link Feature features}, or an empty set if no features are recorded yet
      */
-    Set<Phenotype> getPhenotypes();
+    Set<? extends Feature> getFeatures();
 
     /**
-     * Returns the list of recorded diseases.
+     * Returns the list of recorded disorders.
      * 
-     * @return an unmodifiable set of {@link Disease diseases}, or an empty set if no diseases have been identified yet
+     * @return an unmodifiable set of {@link Disorder disorders}, or an empty set if no disorders have been identified
+     *         yet
      */
-    Set<Disease> getDiseases();
+    Set<? extends Disorder> getDisorders();
 
     /**
      * Retrieve all the patient data in a JSON format. For example:
@@ -83,10 +73,10 @@ public interface Patient
      *   "id": "xwiki:data.P0000001",
      *   "reporter": "xwiki.XWiki.PatchAdams",
      *   "features": [
-     *     // See the documentation for {@link Phenotype#toJSON()}
+     *     // See the documentation for {@link Feature#toJSON()}
      *   ],
-     *   "diseases": [
-     *     // See the documentation for {@link Disease#toJSON()}
+     *   "disorders": [
+     *     // See the documentation for {@link Disorder#toJSON()}
      *   ]
      * }
      * </pre>

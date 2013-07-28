@@ -19,13 +19,10 @@
  */
 package org.phenotips.data.script;
 
-import groovy.lang.Singleton;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
+import org.phenotips.data.internal.PhenoTipsPatient;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
@@ -36,8 +33,16 @@ import org.xwiki.security.authorization.AuthorizationManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.stability.Unstable;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import groovy.lang.Singleton;
+
 /**
+ * API that provides access to patient data.
+ * 
  * @version $Id$
+ * @since 1.0M8
  */
 @Unstable
 @Component
@@ -106,7 +111,7 @@ public class PatientDataScriptService implements ScriptService
     public Patient createNewPatient()
     {
         if (this.access.hasAccess(Right.EDIT, this.bridge.getCurrentUserReference(),
-            this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
+            this.currentResolver.resolve(PhenoTipsPatient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
             return this.internalService.createNewPatient();
         }
         return null;

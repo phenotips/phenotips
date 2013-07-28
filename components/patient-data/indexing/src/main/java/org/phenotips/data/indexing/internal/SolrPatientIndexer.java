@@ -19,34 +19,41 @@
  */
 package org.phenotips.data.indexing.internal;
 
-import java.io.IOException;
-
-import javax.inject.Singleton;
-
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.common.SolrInputDocument;
 import org.phenotips.data.Patient;
-import org.phenotips.data.Phenotype;
+import org.phenotips.data.Feature;
 import org.phenotips.data.indexing.PatientIndexer;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 
+import java.io.IOException;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.common.SolrInputDocument;
+import org.slf4j.Logger;
 
 /**
  * Indexes patients in a local Solr core.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 @Component
 @Singleton
 public class SolrPatientIndexer implements PatientIndexer, Initializable
 {
+    /** Logging helper object. */
+    @Inject
+    private Logger logger;
+
     /** The Solr server instance used. */
-    protected SolrServer server;
+    private SolrServer server;
 
     @Override
     public void initialize() throws InitializationException
@@ -64,17 +71,15 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
         SolrInputDocument input = new SolrInputDocument();
         input.setField("document", patient.getDocument().toString());
         input.setField("reporter", patient.getReporter().toString());
-        for (Phenotype phenotype : patient.getPhenotypes()) {
+        for (Feature phenotype : patient.getFeatures()) {
             input.addField((phenotype.isPresent() ? "" : "negative_") + phenotype.getType(), phenotype.getId());
         }
         try {
             this.server.add(input);
-        } catch (SolrServerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (SolrServerException ex) {
+            this.logger.warn("Failed to perform Solr search: {}", ex.getMessage());
+        } catch (IOException ex) {
+            this.logger.warn("Error occurred while performing Solr search: {}", ex.getMessage());
         }
     }
 
@@ -84,12 +89,17 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
         try {
             this.server.deleteByQuery("document:" + patient.getDocument());
             this.server.commit();
-        } catch (SolrServerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (SolrServerException ex) {
+            this.logger.warn("Failed to delete from Solr: {}", ex.getMessage());
+        } catch (IOException ex) {
+            this.logger.warn("Error occurred while deleting Solr documents: {}", ex.getMessage());
         }
+    }
+
+    @Override
+    public void reindex()
+    {
+        // FIXME Not implemented yet
+        throw new UnsupportedOperationException();
     }
 }

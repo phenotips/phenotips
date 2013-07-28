@@ -24,33 +24,42 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+public class DAG<T extends DAGNode>
+{
+    private TreeMap<String, T> nodes = new TreeMap<String, T>();
 
-public class DAG<T extends DAGNode> {
-    
-	private TreeMap<String, T> nodes = new TreeMap<String, T>();
-	
-	public void clear() {
-		nodes.clear();
-	}
-	
-	public void addNode(T n) {
-		this.nodes.put(n.getId(), n);
-	}
-	
-	public Map<String, T> getNodesMap() {
-		return this.nodes;
-	}
-	public Set<String> getNodesIds() {
-		return this.nodes.keySet();
-	}
-	public Collection<T> getNodes() {
-		return this.nodes.values();
-	}
-	public DAGNode getNode(String id) {
-		return this.nodes.get(id);
-	}
-	
-	public int size() {
-		return nodes.size();
-	}
+    public void clear()
+    {
+        this.nodes.clear();
+    }
+
+    public void addNode(T n)
+    {
+        this.nodes.put(n.getId(), n);
+    }
+
+    public Map<String, T> getNodesMap()
+    {
+        return this.nodes;
+    }
+
+    public Set<String> getNodesIds()
+    {
+        return this.nodes.keySet();
+    }
+
+    public Collection<T> getNodes()
+    {
+        return this.nodes.values();
+    }
+
+    public DAGNode getNode(String id)
+    {
+        return this.nodes.get(id);
+    }
+
+    public int size()
+    {
+        return this.nodes.size();
+    }
 }

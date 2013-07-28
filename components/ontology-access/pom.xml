@@ -29,6 +29,12 @@
   </parent>
   <artifactId>ontology-access</artifactId>
   <name>PhenoTips - Ontology Access</name>
+
+  <properties>
+    <!-- More tests should be added when the Solr core becomes a component -->
+    <coverage.instructionRatio>0.21</coverage.instructionRatio>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

@@ -31,5 +31,4 @@ public class SetMap<K extends Comparable<? super K>, V> extends AbstractCollecti
     {
         return new LinkedHashSet<V>();
     }
-
 }

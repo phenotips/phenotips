@@ -19,18 +19,19 @@
  */
 package org.phenotips.ontology.internal.solr;
 
+import org.phenotips.ontology.OntologyService;
+import org.phenotips.ontology.OntologyTerm;
+
 import java.util.Collections;
 import java.util.Set;
 
 import org.apache.solr.common.SolrDocument;
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
-
 
 /**
  * Implementation for {@link OntologyTerm} based on an indexed Solr document.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 public class SolrOntologyTerm implements OntologyTerm
 {

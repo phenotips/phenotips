@@ -24,35 +24,39 @@ import org.phenotips.hpoa.ontology.Ontology;
 import org.phenotips.hpoa.ontology.OntologyTerm;
 import org.phenotips.hpoa.utils.graph.Node;
 
-public class AnnotationTerm extends Node {
+public class AnnotationTerm extends Node
+{
+    private OntologyTerm ontologyTerm;
 
-	private OntologyTerm ontologyTerm;
+    public AnnotationTerm(String id)
+    {
+        super(id);
+    }
 
-	public AnnotationTerm(String id) {
-		super(id);
-	}
+    public AnnotationTerm(String id, String name)
+    {
+        super(id, name);
+    }
 
-	public AnnotationTerm(String id, String name) {
-		super(id, name);
-	}
+    public void setOntologyTerm(OntologyTerm ontologyTerm)
+    {
+        this.ontologyTerm = ontologyTerm;
+    }
 
-	public void setOntologyTerm(OntologyTerm ontologyTerm) {
-		this.ontologyTerm = ontologyTerm;
-	}
+    public OntologyTerm getOntologyTerm()
+    {
+        return this.ontologyTerm;
+    }
 
-	public OntologyTerm getOntologyTerm() {
-		return this.ontologyTerm;
-	}
-
-	@Override
-	public String toString() {
-		Ontology hpo = HPO.getInstance();
-		StringBuilder str = new StringBuilder();
-		str.append(this.id).append(" ").append(this.name).append("\n");
-		for (String nodeId : this.getNeighbors()) {
-			str.append("            ").append(nodeId).append("\t").append(
-					hpo.getName(nodeId)).append("\n");
-		}
-		return str.toString();
-	}
+    @Override
+    public String toString()
+    {
+        Ontology hpo = HPO.getInstance();
+        StringBuilder str = new StringBuilder();
+        str.append(this.id).append(" ").append(this.name).append("\n");
+        for (String nodeId : this.getNeighbors()) {
+            str.append("            ").append(nodeId).append("\t").append(hpo.getName(nodeId)).append("\n");
+        }
+        return str.toString();
+    }
 }

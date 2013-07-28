@@ -30,94 +30,111 @@ import org.phenotips.hpoa.ontology.Ontology;
 import org.phenotips.hpoa.utils.graph.BGraph;
 import org.phenotips.hpoa.utils.graph.IDAGNode;
 
+public abstract class AbstractHPOAnnotation extends BGraph<AnnotationTerm> implements HPOAnnotation
+{
+    public static final Side HPO = BGraph.Side.R;
 
+    public static final Side ANNOTATION = BGraph.Side.L;
 
-public abstract class AbstractHPOAnnotation extends BGraph<AnnotationTerm>
-		implements HPOAnnotation {
-	public static final Side HPO = BGraph.Side.R;
-	public static final Side ANNOTATION = BGraph.Side.L;
+    protected Ontology hpo;
 
-	protected Ontology hpo;
+    @Override
+    public Ontology getOntology()
+    {
+        return this.hpo;
+    }
 
-	public Ontology getOntology() {
-		return this.hpo;
-	}
+    public AbstractHPOAnnotation(Ontology hpo)
+    {
+        this.hpo = hpo;
+    }
 
-	public AbstractHPOAnnotation(Ontology hpo) {
-		this.hpo = hpo;
-	}
+    @Override
+    public abstract int load(File source);
 
-	public abstract int load(File source);
+    public void propagateHPOAnnotations()
+    {
+        for (AnnotationTerm t : this.getAnnotations()) {
+            propagateHPOAnnotations(t);
+        }
+    }
 
-	public void propagateHPOAnnotations() {
-		for (AnnotationTerm t : this.getAnnotations()) {
-			propagateHPOAnnotations(t);
-		}
-	}
+    public void propagateHPOAnnotations(AnnotationTerm annTerm)
+    {
+        Set<String> newAnnotations = new HashSet<String>();
+        Set<String> front = new HashSet<String>();
 
-	public void propagateHPOAnnotations(AnnotationTerm annTerm) {
-		Set<String> newAnnotations = new HashSet<String>();
-		Set<String> front = new HashSet<String>();
+        front.addAll(annTerm.getNeighbors());
+        Set<String> newFront = new HashSet<String>();
+        while (!front.isEmpty()) {
+            for (String nextTermId : front) {
+                IDAGNode nextNode = this.hpo.getTerm(nextTermId);
+                if (nextNode == null) {
+                    System.err.println("No matching term found in HPO for " + nextTermId + " (" + annTerm + ")");
+                    continue;
+                }
+                for (String parentTermId : nextNode.getParents()) {
+                    if (!newAnnotations.contains(parentTermId)) {
+                        newFront.add(parentTermId);
+                        newAnnotations.add(parentTermId);
+                    }
+                }
+            }
+            front.clear();
+            front.addAll(newFront);
+            newFront.clear();
+        }
+        newAnnotations.removeAll(annTerm.getNeighbors());
+        for (String hpoId : newAnnotations) {
+            this.addConnection(annTerm, new AnnotationTerm(this.hpo.getRealId(hpoId)));
+        }
+    }
 
-		front.addAll(annTerm.getNeighbors());
-		Set<String> newFront = new HashSet<String>();
-		while (!front.isEmpty()) {
-			for (String nextTermId : front) {
-				IDAGNode nextNode = this.hpo.getTerm(nextTermId);
-				if (nextNode == null) {
-					System.err.println("No matching term found in HPO for "
-							+ nextTermId + " (" + annTerm + ")");
-					continue;
-				}
-				for (String parentTermId : nextNode.getParents()) {
-					if (!newAnnotations.contains(parentTermId)) {
-						newFront.add(parentTermId);
-						newAnnotations.add(parentTermId);
-					}
-				}
-			}
-			front.clear();
-			front.addAll(newFront);
-			newFront.clear();
-		}
-		newAnnotations.removeAll(annTerm.getNeighbors());
-		for (String hpoId : newAnnotations) {
-			this.addConnection(annTerm, new AnnotationTerm(this.hpo
-					.getRealId(hpoId)));
-		}
-	}
+    @Override
+    public Set<String> getAnnotationIds()
+    {
+        return this.getNodesIds(ANNOTATION);
+    }
 
-	public Set<String> getAnnotationIds() {
-		return this.getNodesIds(ANNOTATION);
-	}
+    @Override
+    public Set<String> getHPONodesIds()
+    {
+        return this.getNodesIds(HPO);
+    }
 
-	public Set<String> getHPONodesIds() {
-		return this.getNodesIds(HPO);
-	}
+    @Override
+    public Collection<AnnotationTerm> getAnnotations()
+    {
+        return this.getNodes(ANNOTATION);
+    }
 
-	public Collection<AnnotationTerm> getAnnotations() {
-		return this.getNodes(ANNOTATION);
-	}
+    @Override
+    public Collection<AnnotationTerm> getHPONodes()
+    {
+        return this.getNodes(HPO);
+    }
 
-	public Collection<AnnotationTerm> getHPONodes() {
-		return this.getNodes(HPO);
-	}
+    @Override
+    public AnnotationTerm getAnnotationNode(String annId)
+    {
+        return this.getNode(annId, ANNOTATION);
+    }
 
-	public AnnotationTerm getAnnotationNode(String annId) {
-		return this.getNode(annId, ANNOTATION);
-	}
+    @Override
+    public AnnotationTerm getHPONode(String id)
+    {
+        return this.getNode(id, HPO);
+    }
 
-	public AnnotationTerm getHPONode(String id) {
-		return this.getNode(id, HPO);
-	}
-
-	public Map<String, String> getPhenotypesWithAnnotation(String annId) {
-		Map<String, String> results = new TreeMap<String, String>();
-		AnnotationTerm omimNode = this.getAnnotationNode(annId);
-		for (String hpId : omimNode.getNeighbors()) {
-			String hpName = this.hpo != null ? this.hpo.getName(hpId) : hpId;
-			results.put(hpId, hpName);
-		}
-		return results;
-	}
+    @Override
+    public Map<String, String> getPhenotypesWithAnnotation(String annId)
+    {
+        Map<String, String> results = new TreeMap<String, String>();
+        AnnotationTerm omimNode = this.getAnnotationNode(annId);
+        for (String hpId : omimNode.getNeighbors()) {
+            String hpName = this.hpo != null ? this.hpo.getName(hpId) : hpId;
+            results.put(hpId, hpName);
+        }
+        return results;
+    }
 }

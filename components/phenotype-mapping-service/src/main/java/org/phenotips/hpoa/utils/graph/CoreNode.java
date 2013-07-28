@@ -21,12 +21,13 @@ package org.phenotips.hpoa.utils.graph;
 
 import java.util.List;
 
-public interface CoreNode {
-	public String getId();
+public interface CoreNode
+{
+    public String getId();
 
-	public String getName();
+    public String getName();
 
-	public List<String> getNeighbors();
+    public List<String> getNeighbors();
 
-	public int getNeighborsCount();
+    public int getNeighborsCount();
 }

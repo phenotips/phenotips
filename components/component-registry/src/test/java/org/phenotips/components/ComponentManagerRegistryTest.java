@@ -19,17 +19,11 @@
  */
 package org.phenotips.components;
 
-import static org.mockito.Mockito.when;
-
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 import javax.inject.Provider;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.Mockito;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
@@ -37,16 +31,20 @@ import org.xwiki.observation.event.ApplicationStartedEvent;
 import org.xwiki.observation.event.Event;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import static org.mockito.Mockito.when;
+
 /**
- * Tests for the {@link MeasurementsScriptService} component.
+ * Tests for the {@link ComponentManagerRegistry} component.
  * 
  * @version $Id$
- * @since 1.0M1
  */
 public class ComponentManagerRegistryTest
 {
-    ParameterizedType cmType = new DefaultParameterizedType(null, Provider.class, ComponentManager.class);
-
     @Rule
     public final MockitoComponentMockingRule<ComponentManagerRegistry> mocker =
         new MockitoComponentMockingRule<ComponentManagerRegistry>(ComponentManagerRegistry.class);
@@ -55,7 +53,8 @@ public class ComponentManagerRegistryTest
     @Test
     public void testGetContextComponentManager() throws ComponentLookupException
     {
-        Provider<ComponentManager> provider = this.mocker.getInstance(this.cmType, "context");
+        ParameterizedType cmType = new DefaultParameterizedType(null, Provider.class, ComponentManager.class);
+        Provider<ComponentManager> provider = this.mocker.getInstance(cmType, "context");
         ComponentManager cm = Mockito.mock(ComponentManager.class);
         when(provider.get()).thenReturn(cm);
         Assert.assertSame(cm, this.mocker.getComponentUnderTest().getContextComponentManager());

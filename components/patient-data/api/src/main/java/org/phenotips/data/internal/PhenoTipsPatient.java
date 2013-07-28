@@ -19,34 +19,54 @@
  */
 package org.phenotips.data.internal;
 
+import org.phenotips.data.Disorder;
+import org.phenotips.data.Feature;
+import org.phenotips.data.Patient;
+
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
-import org.phenotips.data.Disease;
-import org.phenotips.data.Patient;
-import org.phenotips.data.Phenotype;
-import org.xwiki.model.reference.DocumentReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.DBStringListProperty;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Implementation of patient data based on the XWiki data model, where patient data is represented by properties in
  * objects of type {@code PhenoTips.PatientClass}.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 public class PhenoTipsPatient implements Patient
 {
+    /** The XClass used for storing patient data. */
+    public static final EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT,
+        new EntityReference("PhenoTips", EntityType.SPACE));
+
+    /** The default template for creating a new patient. */
+    public static final EntityReference TEMPLATE_REFERENCE = new EntityReference("PatientTemplate",
+        EntityType.DOCUMENT, CLASS_REFERENCE.getParent());
+
+    /** The default space where patient data is stored. */
+    public static final EntityReference DEFAULT_DATA_SPACE = new EntityReference("data", EntityType.SPACE);
+
     /** Known phenotype properties. */
     private static final String[] PHENOTYPE_PROPERTIES = new String[] {"phenotype", "negative_phenotype"};
+
+    /** Logging helper object. */
+    private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
 
     /** @see #getDocument() */
     private DocumentReference document;
@@ -54,11 +74,11 @@ public class PhenoTipsPatient implements Patient
     /** @see #getReporter() */
     private DocumentReference reporter;
 
-    /** @see #getPhenotypes() */
-    private Set<Phenotype> phenotypes = new HashSet<Phenotype>();
+    /** @see #getFeatures() */
+    private Set<Feature> features = new HashSet<Feature>();
 
-    /** @see #getDiseases() */
-    private Set<Disease> diseases = new HashSet<Disease>();
+    /** @see #getDisorders() */
+    private Set<Disorder> disorders = new HashSet<Disorder>();
 
     /**
      * Constructor that copies the data from an XDocument.
@@ -69,38 +89,33 @@ public class PhenoTipsPatient implements Patient
     {
         this.document = doc.getDocumentReference();
         this.reporter = doc.getCreatorReference();
-        BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
+        BaseObject data = doc.getXObject(CLASS_REFERENCE);
         if (data == null) {
             return;
         }
-        for (String property : PHENOTYPE_PROPERTIES) {
-            try {
+        try {
+            for (String property : PHENOTYPE_PROPERTIES) {
                 DBStringListProperty values = (DBStringListProperty) data.get(property);
                 if (values == null) {
                     continue;
                 }
                 for (String value : values.getList()) {
-                    this.phenotypes.add(new PhenoTipsPhenotype(doc, values, value));
+                    this.features.add(new PhenoTipsFeature(doc, values, value));
                 }
-            } catch (XWikiException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
-        }
-        try {
             DBStringListProperty values = (DBStringListProperty) data.get("omim_id");
             if (values != null) {
                 for (String value : values.getList()) {
-                    this.diseases.add(new PhenoTipsDisease(values, value));
+                    this.disorders.add(new PhenoTipsDisorder(values, value));
                 }
             }
-        } catch (XWikiException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to access patient data for [{}]: {}", doc.getDocumentReference(), ex.getMessage(),
+                ex);
         }
         // Readonly from now on
-        this.phenotypes = Collections.unmodifiableSet(this.phenotypes);
-        this.diseases = Collections.unmodifiableSet(this.diseases);
+        this.features = Collections.unmodifiableSet(this.features);
+        this.disorders = Collections.unmodifiableSet(this.disorders);
     }
 
     @Override
@@ -116,15 +131,15 @@ public class PhenoTipsPatient implements Patient
     }
 
     @Override
-    public Set<Phenotype> getPhenotypes()
+    public Set<Feature> getFeatures()
     {
-        return this.phenotypes;
+        return this.features;
     }
 
     @Override
-    public Set<Disease> getDiseases()
+    public Set<Disorder> getDisorders()
     {
-        return this.diseases;
+        return this.disorders;
     }
 
     @Override
@@ -141,19 +156,19 @@ public class PhenoTipsPatient implements Patient
         if (getReporter() != null) {
             result.element("reporter", getReporter().getName());
         }
-        if (!this.phenotypes.isEmpty()) {
+        if (!this.features.isEmpty()) {
             JSONArray featuresJSON = new JSONArray();
-            for (Phenotype phenotype : this.phenotypes) {
+            for (Feature phenotype : this.features) {
                 featuresJSON.add(phenotype.toJSON());
             }
             result.element("features", featuresJSON);
         }
-        if (!this.diseases.isEmpty()) {
+        if (!this.disorders.isEmpty()) {
             JSONArray diseasesJSON = new JSONArray();
-            for (Disease disease : this.diseases) {
+            for (Disorder disease : this.disorders) {
                 diseasesJSON.add(disease.toJSON());
             }
-            result.element("diseases", diseasesJSON);
+            result.element("disorders", diseasesJSON);
         }
         return result;
     }

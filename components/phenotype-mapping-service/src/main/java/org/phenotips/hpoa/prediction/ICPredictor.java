@@ -37,7 +37,6 @@ import org.phenotips.hpoa.ontology.OntologyTerm;
 
 import org.xwiki.component.annotation.Component;
 
-
 @Component
 @Named("ic")
 @Singleton

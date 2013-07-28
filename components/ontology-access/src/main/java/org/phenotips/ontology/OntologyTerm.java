@@ -19,6 +19,8 @@
  */
 package org.phenotips.ontology;
 
+import org.xwiki.stability.Unstable;
+
 import java.util.Set;
 
 /**
@@ -28,7 +30,9 @@ import java.util.Set;
  * {@link OntologyService}, or the generic {@link OntologyManager}.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
+@Unstable
 public interface OntologyTerm
 {
     /**

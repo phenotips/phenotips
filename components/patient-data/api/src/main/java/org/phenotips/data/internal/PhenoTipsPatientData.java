@@ -19,15 +19,9 @@
  */
 package org.phenotips.data.internal;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
-import org.slf4j.Logger;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
@@ -39,12 +33,23 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.slf4j.Logger;
+
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 
-
 /**
+ * Implementation of patient data access service using XWiki as the storage backend, where patients in documents having
+ * an object of type {@code PhenoTips.PatientClass}.
+ * 
  * @version $Id$
+ * @since 1.0M8
  */
 @Component
 @Singleton
@@ -62,7 +67,7 @@ public class PhenoTipsPatientData implements PatientData
     @Inject
     private DocumentAccessBridge bridge;
 
-    /** Runs queries for finding a patient given its external identifier. */
+    /** Runs queries for finding patients. */
     @Inject
     private QueryManager qm;
 
@@ -79,15 +84,14 @@ public class PhenoTipsPatientData implements PatientData
     @Override
     public Patient getPatientById(String id)
     {
-        DocumentReference reference = this.stringResolver.resolve(id, Patient.DEFAULT_DATA_SPACE);
+        DocumentReference reference = this.stringResolver.resolve(id, PhenoTipsPatient.DEFAULT_DATA_SPACE);
         try {
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(reference);
-            if (doc != null && doc.getXObject(Patient.CLASS_REFERENCE) != null) {
+            if (doc != null && doc.getXObject(PhenoTipsPatient.CLASS_REFERENCE) != null) {
                 return new PhenoTipsPatient(doc);
             }
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception ex) {
+            this.logger.warn("Failed to access patient with id [{}]: {}", id, ex.getMessage(), ex);
         }
         return null;
     }
@@ -100,15 +104,15 @@ public class PhenoTipsPatientData implements PatientData
             q.bindValue("eid", externalId);
             List<String> results = q.<String> execute();
             if (results.size() == 1) {
-                DocumentReference reference = this.stringResolver.resolve(results.get(0), Patient.DEFAULT_DATA_SPACE);
+                DocumentReference reference =
+                    this.stringResolver.resolve(results.get(0), PhenoTipsPatient.DEFAULT_DATA_SPACE);
                 return new PhenoTipsPatient((XWikiDocument) this.bridge.getDocument(reference));
             }
-        } catch (QueryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (QueryException ex) {
+            this.logger.warn("Failed to search for the patient with external id [{}]: {}", externalId, ex.getMessage(),
+                ex);
+        } catch (Exception ex) {
+            this.logger.warn("Failed to access patient with external id [{}]: {}", externalId, ex.getMessage(), ex);
         }
         return null;
     }
@@ -141,9 +145,9 @@ public class PhenoTipsPatientData implements PatientData
                 newDoc = new DocumentReference(prefix + String.format("%07d", ++crtMaxID), space);
             } while (this.bridge.exists(newDoc));
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(newDoc);
-            doc.readFromTemplate(this.referenceResolver.resolve(Patient.TEMPLATE_REFERENCE), context);
+            doc.readFromTemplate(this.referenceResolver.resolve(PhenoTipsPatient.TEMPLATE_REFERENCE), context);
             doc.setTitle(newDoc.getName());
-            doc.getXObject(Patient.CLASS_REFERENCE).setLongValue("identifier", crtMaxID);
+            doc.getXObject(PhenoTipsPatient.CLASS_REFERENCE).setLongValue("identifier", crtMaxID);
             doc.setCreatorReference(this.bridge.getCurrentUserReference());
             context.getWiki().saveDocument(doc, context);
             return new PhenoTipsPatient(doc);

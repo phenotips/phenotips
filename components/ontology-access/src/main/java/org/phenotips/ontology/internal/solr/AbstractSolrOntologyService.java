@@ -19,6 +19,16 @@
  */
 package org.phenotips.ontology.internal.solr;
 
+import org.phenotips.ontology.OntologyService;
+import org.phenotips.ontology.OntologyTerm;
+
+import org.xwiki.cache.Cache;
+import org.xwiki.cache.CacheException;
+import org.xwiki.cache.CacheManager;
+import org.xwiki.cache.config.CacheConfiguration;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,16 +46,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.SolrParams;
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
 import org.slf4j.Logger;
-import org.xwiki.cache.Cache;
-import org.xwiki.cache.CacheException;
-import org.xwiki.cache.CacheManager;
-import org.xwiki.cache.config.CacheConfiguration;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
-
 
 /**
  * Provides access to the Solr server, with the main purpose of providing access to an indexed ontology. There are two
@@ -53,6 +54,7 @@ import org.xwiki.component.phase.InitializationException;
  * given query in the Lucene query language.
  * 
  * @version $Id$
+ * @since 1.0M8
  */
 public abstract class AbstractSolrOntologyService implements OntologyService, Initializable
 {
@@ -138,15 +140,15 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     }
 
     @Override
-    public Set<OntologyTerm> search(Map<String, ? > fieldValues)
+    public Set<OntologyTerm> search(Map<String, ?> fieldValues)
     {
         StringBuilder query = new StringBuilder();
-        for (Map.Entry<String, ? > field : fieldValues.entrySet()) {
+        for (Map.Entry<String, ?> field : fieldValues.entrySet()) {
             query.append("+");
             query.append(ClientUtils.escapeQueryChars(field.getKey()));
             query.append(":(");
             if (Collection.class.isInstance(field.getValue())) {
-                for (Object value : (Collection< ? >) field.getValue()) {
+                for (Object value : (Collection<?>) field.getValue()) {
                     query.append(ClientUtils.escapeQueryChars(String.valueOf(value)));
                     query.append(' ');
                 }
@@ -160,6 +162,13 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
             result.add(new SolrOntologyTerm(doc, this));
         }
         return result;
+    }
+
+    @Override
+    public void reindex()
+    {
+        // FIXME Not implemented yet
+        throw new UnsupportedOperationException();
     }
 
     /**
