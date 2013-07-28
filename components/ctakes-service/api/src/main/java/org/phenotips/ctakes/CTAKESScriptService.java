@@ -20,6 +20,7 @@
 
 package org.phenotips.ctakes;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,10 +51,8 @@ import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIndex;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ExternalResourceDependency;
 import org.apache.uima.resource.ExternalResourceDescription;
-import org.apache.uima.resource.Resource;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.impl.ExternalResourceDependency_impl;
 import org.apache.uima.resource.metadata.ConfigurationParameter;
@@ -63,6 +62,7 @@ import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.factory.ExternalResourceFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
+import org.uimafit.util.JCasUtil;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -97,7 +97,7 @@ public class CTAKESScriptService implements ScriptService, Initializable
                     AnalysisEngineFactory.createPrimitiveDescription(taC, tsd);
 
             //Sentence Detection 
-            String senturl = "file:webapps/phenotips/resources/cTAKES/"
+            String senturl = "webapps/phenotips/resources/cTAKES/"
                     + "SentenceDetection/sd-med-model.zip";
             AnalysisEngineDescription sentDetectDesc =
                     AnalysisEngineFactory.createPrimitiveDescription(
@@ -123,7 +123,7 @@ public class CTAKESScriptService implements ScriptService, Initializable
             //Chunker
             String chunkfileres = "webapps/phenotips/resources/cTAKES/"
                     + "Chunker/chunk-model-claims-1-5.zip";
-            String chunkurl = "file:" + chunkfileres;
+            String chunkurl = new File(chunkfileres).toURI().toURL().toString();
             String chunkp = "org.apache.ctakes.chunker.ae.DefaultChunkCreator";
             ExternalResourceDescription chunkererd =
                     ExternalResourceFactory.createExternalResourceDescription(
@@ -221,10 +221,12 @@ public class CTAKESScriptService implements ScriptService, Initializable
         Object[] dictconfVals = new Object[1];
         dictconfVals[0] = 27;
 
-        String fileurl = "file:webapps/phenotips/resources/cTAKES/"
-                + "DictionaryLookup/LookupDesc_csv_sample.xml";
-        String dicturl = "file:webapps/phenotips/resources/cTAKES/"
-                + "DictionaryLookup/dictionary1.csv";
+        String fileurl = new File("webapps/phenotips/resources/cTAKES/"
+                + "DictionaryLookup/LookupDesc_csv_sample.xml")
+                   .toURI().toURL().toString();
+        String dicturl = new File("webapps/phenotips/resources/cTAKES/"
+                + "DictionaryLookup/dictionary1.csv")
+                   .toURI().toURL().toString();
         String drugurl = "webapps/phenotips/resources/cTAKES/"
                 + "DictionaryLookup/drug_index";
         String orangeurl = "webapps/phenotips/resources/cTAKES/"
@@ -389,7 +391,7 @@ public class CTAKESScriptService implements ScriptService, Initializable
         analysisEng.process(jCas);
 
         FSIndex<Annotation> eventIndex  =
-                jCas.getAnnotationIndex(org.apache.ctakes.typesystem.type.textsem.MedicationEventMention.type);
+                jCas.getAnnotationIndex(org.apache.ctakes.typesystem.type.textsem.EventMention.type);
         Iterator<Annotation> eventIter  =  eventIndex.iterator();
 
         EventMention firstevent  =  (EventMention) eventIter.next();
