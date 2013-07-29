@@ -108,7 +108,8 @@ public class DefaultLimsServer implements LimsServer
             String notificationURL = getNotificationURL(pn, getXContext());
             if (StringUtils.isNotBlank(notificationURL)) {
                 PostMethod method = new PostMethod(notificationURL);
-                method.setRequestEntity(new StringRequestEntity(payload.toString(), "application/json", "UTF-8"));
+                method.setRequestEntity(new StringRequestEntity(payload.toString(), "application/json",
+                    XWiki.DEFAULT_ENCODING));
                 this.client.executeMethod(method);
             }
         } catch (Exception ex) {
