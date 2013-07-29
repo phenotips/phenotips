@@ -25,12 +25,13 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 
+import java.net.URLEncoder;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.lang3.StringUtils;
@@ -73,8 +74,12 @@ public class DefaultLimsServer implements LimsServer
         try {
             String checkURL = getTokenCheckURL(pn, getXContext());
             if (StringUtils.isNotBlank(checkURL)) {
-                GetMethod method =
-                    new GetMethod(String.format("%s?%s=%s&%s=%s", checkURL, USERNAME_KEY, username, TOKEN_KEY, token));
+                PostMethod method = new PostMethod(checkURL);
+                String body = String.format("%s=%s&%s=%s",
+                    USERNAME_KEY, URLEncoder.encode(username, XWiki.DEFAULT_ENCODING),
+                    TOKEN_KEY, URLEncoder.encode(token, XWiki.DEFAULT_ENCODING));
+                method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
+                    XWiki.DEFAULT_ENCODING));
                 this.client.executeMethod(method);
                 String response = method.getResponseBodyAsString(128);
                 JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
