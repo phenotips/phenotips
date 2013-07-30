@@ -71,10 +71,11 @@ public class DefaultLimsServer implements LimsServer
     @Override
     public boolean checkToken(String token, String username, String pn)
     {
+        PostMethod method = null;
         try {
             String checkURL = getTokenCheckURL(pn, getXContext());
             if (StringUtils.isNotBlank(checkURL)) {
-                PostMethod method = new PostMethod(checkURL);
+                method = new PostMethod(checkURL);
                 String body = String.format("%s=%s&%s=%s",
                     USERNAME_KEY, URLEncoder.encode(username, XWiki.DEFAULT_ENCODING),
                     TOKEN_KEY, URLEncoder.encode(token, XWiki.DEFAULT_ENCODING));
@@ -96,6 +97,10 @@ public class DefaultLimsServer implements LimsServer
         } catch (Exception ex) {
             this.logger.warn("Failed to check LIMS authentication token [{}] on server [{}]: {}", token, pn,
                 ex.getMessage(), ex);
+        } finally {
+            if (method != null) {
+                method.releaseConnection();
+            }
         }
         return false;
     }
@@ -104,16 +109,21 @@ public class DefaultLimsServer implements LimsServer
     public void notify(JSONObject payload, String pn)
     {
         // FIXME This should be asynchronous; reimplement once commons-httpclient 4 is released
+        PostMethod method = null;
         try {
             String notificationURL = getNotificationURL(pn, getXContext());
             if (StringUtils.isNotBlank(notificationURL)) {
-                PostMethod method = new PostMethod(notificationURL);
+                method = new PostMethod(notificationURL);
                 method.setRequestEntity(new StringRequestEntity(payload.toString(), "application/json",
                     XWiki.DEFAULT_ENCODING));
                 this.client.executeMethod(method);
             }
         } catch (Exception ex) {
             this.logger.warn("Failed to notify LIMS server [{}] of patient update: {}", pn, ex.getMessage(), ex);
+        } finally {
+            if (method != null) {
+                method.releaseConnection();
+            }
         }
     }
 
