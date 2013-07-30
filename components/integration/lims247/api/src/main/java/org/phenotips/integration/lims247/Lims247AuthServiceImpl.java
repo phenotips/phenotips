@@ -19,12 +19,15 @@
  */
 package org.phenotips.integration.lims247;
 
+import org.xwiki.csrf.CSRFToken;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.WikiReference;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.user.api.XWikiAuthService;
@@ -76,8 +79,11 @@ public class Lims247AuthServiceImpl extends XWikiAuthServiceImpl implements XWik
         String pn = request.get(LimsServer.INSTANCE_IDENTIFIER_KEY);
         String username = request.get(LimsServer.USERNAME_KEY);
         String token = request.get(LimsServer.TOKEN_KEY);
-        if (StringUtils.isNotEmpty(pn) && StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(token)) {
-            user = checkToken(token, username, pn, context);
+        if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(token)) {
+            user = checkLocalToken(token, username, context);
+            if (user == null && StringUtils.isNotEmpty(pn)) {
+                user = checkRemoteToken(token, username, pn, context);
+            }
             if (user != null) {
                 storeUserInSession(new LimsAuthentication(token, user, pn), context);
                 setupContextForLims(context);
@@ -117,6 +123,38 @@ public class Lims247AuthServiceImpl extends XWikiAuthServiceImpl implements XWik
     }
 
     /**
+     * Check if the authentication parameters sent in the URL are validated by the local XWiki server.
+     * 
+     * @param token the authentication token
+     * @param username the target username
+     * @param context the current request context
+     * @return a valid user if the authentication is validated, or {@code null} if the token is not valid
+     */
+    private XWikiUser checkLocalToken(String token, String username, XWikiContext context)
+    {
+        DocumentReference previousUserReference = context.getUserReference();
+        boolean isValid = false;
+        try {
+            @SuppressWarnings("deprecation")
+            CSRFToken tokenChecker = Utils.getComponent(CSRFToken.class);
+            DocumentReference ref = new DocumentReference(context.getDatabase(), XWiki.SYSTEM_SPACE, username);
+            context.setUserReference(ref);
+            isValid = tokenChecker.isTokenValid(token);
+            if (!isValid) {
+                ref = ref.replaceParent(ref.getWikiReference(), new WikiReference("xwiki"));
+                context.setUserReference(ref);
+                isValid = tokenChecker.isTokenValid(token);
+            }
+        } finally {
+            context.setUserReference(previousUserReference);
+        }
+        if (isValid) {
+            return new XWikiUser(XWiki.SYSTEM_SPACE + '.' + username);
+        }
+        return null;
+    }
+
+    /**
      * Check if the authentication parameters sent in the URL are validated by the remote LIMS server.
      * 
      * @param token the authentication token
@@ -127,10 +165,10 @@ public class Lims247AuthServiceImpl extends XWikiAuthServiceImpl implements XWik
      *         identifier, invalid token
      */
     @SuppressWarnings("deprecation")
-    private XWikiUser checkToken(String token, String username, String pn, XWikiContext context)
+    private XWikiUser checkRemoteToken(String token, String username, String pn, XWikiContext context)
     {
         if (Utils.getComponent(LimsServer.class).checkToken(token, username, pn)) {
-            return new XWikiUser("XWiki." + username);
+            return new XWikiUser(XWiki.SYSTEM_SPACE + '.' + username);
         }
         return null;
     }
