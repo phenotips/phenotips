@@ -24,7 +24,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.phenotips</groupId>
-		<artifactId>phenotips-components</artifactId>
+		<artifactId>ctakes-service</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>ctakes-service-api</artifactId>
@@ -64,7 +64,7 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>net.sourceforge.openai</groupId>
 			<artifactId>openaifsm</artifactId>
 			<version>0.0.1</version>
@@ -110,13 +110,13 @@
 			<groupId>net.sf.carafe.jcarafe</groupId>
 			<artifactId>jcarafe-core_2.9.1</artifactId>
 			<version>0.9.8.3.RC4</version>
-		</dependency>
+		</dependency> -->
 		<!-- <dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ctakes-resources</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
-		</dependency>
+		</dependency> -->
 		<dependency>
 		 <groupId>org.apache.lucene</groupId>
     <artifactId>lucene-core</artifactId>
@@ -131,6 +131,6 @@
     <groupId>org.apache.lucene</groupId>
     <artifactId>lucene-analyzers-common</artifactId>
     <version>4.0.0</version>
-</dependency> -->
+</dependency> 
 	</dependencies>
 </project>

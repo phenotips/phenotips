@@ -21,6 +21,7 @@
 package org.phenotips.ctakes;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,12 +46,26 @@ import org.apache.ctakes.core.resource.FileResourceImpl;
 import org.apache.ctakes.core.resource.LuceneIndexReaderResourceImpl;
 import org.apache.ctakes.dictionary.lookup.ae.DictionaryLookupAnnotator;
 import org.apache.ctakes.postagger.POSTagger;
-import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.textsem.EntityMention;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIndex;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ExternalResourceDependency;
 import org.apache.uima.resource.ExternalResourceDescription;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -61,12 +76,14 @@ import org.apache.uima.resource.metadata.impl.TypeSystemDescription_impl;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.factory.ExternalResourceFactory;
+import org.uimafit.factory.ResourceCreationSpecifierFactory;
 import org.uimafit.factory.TypeSystemDescriptionFactory;
-import org.uimafit.util.JCasUtil;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.script.service.ScriptService;
+
+
 @Component
 @Named("ctakes")
 @Singleton
@@ -164,13 +181,13 @@ public class CTAKESScriptService implements ScriptService, Initializable
             //Lookup Annotators
             //Overlap Annotators
             AnalysisEngineDescription overlapdesc = getOverlapAnnotatorDesc();
-
+            
             //Copy Annotator - Lookup
             AnalysisEngineDescription copyADesc = getCopyAnnotatorDesc();
-
+            
             //Dictionary Lookup
             AnalysisEngineDescription dictlookupDesc = getDictlookupDesc();
-
+            
             //Final Analysis Engine Description
             List<AnalysisEngineDescription> aedList =
                     new ArrayList<AnalysisEngineDescription>();
@@ -200,8 +217,25 @@ public class CTAKESScriptService implements ScriptService, Initializable
             components.add("Dictionary Lookup");
 
             // Create the Analysis Engine
+            AnalysisEngineDescription analysisEngdesc = 
+                    AnalysisEngineFactory.createAggregateDescription(
+                            aedList,components,null,null,null,null);
+            ConfigurationParameter[] finalDescConfParam = 
+                    new ConfigurationParameter[1];
+            ConfigurationParameter chunkCreatorClass = 
+                    ConfigurationParameterFactory.createPrimitiveParameter(
+                            "ChunkCreatorClass", String.class, "desc", true);
+            finalDescConfParam[0]=chunkCreatorClass;
+            Object[] finalDescConfVals = new Object[1];
+            finalDescConfVals[0]="org.apache.ctakes.chunker.ae.PhraseTypeChunkCreator";
+
+
+            ResourceCreationSpecifierFactory.setConfigurationParameters(
+                    analysisEngdesc, finalDescConfParam, finalDescConfVals);
+            
+            
             analysisEng = AnalysisEngineFactory.createAggregate(
-                    aedList, components, null, null, null);
+                    analysisEngdesc);
             System.out.println("Analysis Engine Initialised");
         } catch (Exception e) {
             e.printStackTrace();
@@ -219,7 +253,7 @@ public class CTAKESScriptService implements ScriptService, Initializable
         dictconfParam[0] = maxListSize;
 
         Object[] dictconfVals = new Object[1];
-        dictconfVals[0] = 27;
+        dictconfVals[0] = 2147483647;
 
         String fileurl = new File("webapps/phenotips/resources/cTAKES/"
                 + "DictionaryLookup/LookupDesc_csv_sample.xml")
@@ -381,57 +415,111 @@ public class CTAKESScriptService implements ScriptService, Initializable
         return overlapdesc;
     }
 
-    public final Map<String, ExtractedTerm> extract(String input)
-        throws ResourceInitializationException, AnalysisEngineProcessException {
+    public final List<Map<String,Object>> extract(String input)
+        throws ResourceInitializationException, AnalysisEngineProcessException, IOException, ParseException {
 
         Map<String, ExtractedTerm> finalTerms =
                 new HashMap<String, ExtractedTerm>();
+        
+        List<Map<String,Object>> tobeReturned = 
+                new ArrayList<Map<String,Object>>();
+        
+        Map<String,String> hpoTerm = new HashMap<String, String>();
+        
+        
         JCas jCas  =  analysisEng.newJCas();
         jCas.setDocumentText(input.toLowerCase());
         analysisEng.process(jCas);
 
-        FSIndex<Annotation> eventIndex  =
-                jCas.getAnnotationIndex(org.apache.ctakes.typesystem.type.textsem.EventMention.type);
-        Iterator<Annotation> eventIter  =  eventIndex.iterator();
-
-        EventMention firstevent  =  (EventMention) eventIter.next();
+        FSIndex<Annotation> entityIndex  =
+                jCas.getAnnotationIndex(EntityMention.type);
+        Iterator<Annotation> entityIter  =  entityIndex.iterator();
+        
+        EntityMention firstentity = (EntityMention) entityIter.next();
         ExtractedTerm firstTerm  =  new ExtractedTerm();
-        firstTerm.setExtractedText(firstevent.getCoveredText());
-        firstTerm.setBeginIndex(firstevent.getBegin());
-        firstTerm.setEndIndex(firstevent.getEnd());
-        finalTerms.put(firstevent.getCoveredText(), firstTerm);
+        firstTerm.setExtractedText(firstentity.getCoveredText());
+        firstTerm.setBeginIndex(firstentity.getBegin());
+        firstTerm.setEndIndex(firstentity.getEnd());
+        hpoTerm = getHPOTerm(firstentity.getCoveredText());
+        firstTerm.setId(hpoTerm.get("id"));
+        firstTerm.setTerm(hpoTerm.get("term"));
+        finalTerms.put(firstentity.getCoveredText(), firstTerm);
 
-        while (eventIter.hasNext())  {
+        while (entityIter.hasNext())  {
             int flag = 1;
-            EventMention event = (EventMention) eventIter.next();
-            int tempBegin  =  event.getBegin();
+            EntityMention entity = (EntityMention) entityIter.next();
+            int tempBegin  =  entity.getBegin();
             for (Entry<String, ExtractedTerm> entry : finalTerms.entrySet()) {
                 if (tempBegin >=  entry.getValue().getBeginIndex()
                         && tempBegin <= entry.getValue().getEndIndex()) {
                     flag = 0;
                     break;
                 }
-                if (event.getBegin() == entry.getValue().getEndIndex() + 1) {
+                if (entity.getBegin() == entry.getValue().getEndIndex() + 1) {
                     flag = 0;
                     ExtractedTerm temp = new ExtractedTerm();
-                    temp.setEndIndex(event.getEnd());
+                    temp.setEndIndex(entity.getEnd());
                     temp.setBeginIndex(entry.getValue().getBeginIndex());
                     temp.setExtractedText(entry.getKey()
-                            + " " + event.getCoveredText());
+                            + " " + entity.getCoveredText());
+                    hpoTerm = getHPOTerm(entry.getKey() 
+                            + " " + entity.getCoveredText());
+                    temp.setId(hpoTerm.get("id"));
+                    temp.setTerm(hpoTerm.get("term"));
                     finalTerms.remove(entry.getKey());
                     finalTerms.put(entry.getKey()
-                            + " " + event.getCoveredText(), temp);
+                            + " " + entity.getCoveredText(), temp);
                     break;
                 }
             }
             if (flag == 1) {
                 ExtractedTerm temp  =  new ExtractedTerm();
-                temp.setEndIndex(event.getEnd());
-                temp.setBeginIndex(event.getBegin());
-                temp.setExtractedText(event.getCoveredText());
-                finalTerms.put(event.getCoveredText(), temp);
+                temp.setEndIndex(entity.getEnd());
+                temp.setBeginIndex(entity.getBegin());
+                temp.setExtractedText(entity.getCoveredText());
+                hpoTerm = getHPOTerm(entity.getCoveredText());
+                temp.setId(hpoTerm.get("id"));
+                temp.setTerm(hpoTerm.get("term"));
+                finalTerms.put(entity.getCoveredText(), temp);
             }
         }
-        return finalTerms;
+        
+        for(Entry<String, ExtractedTerm> entry : finalTerms.entrySet()){
+            Map<String,Object> temp = new HashMap<String, Object>();
+            temp.put("id", entry.getValue().getId());
+            temp.put("term", entry.getValue().getTerm());
+            temp.put("text", entry.getValue().getExtractedText());
+            temp.put("begin", entry.getValue().getBeginIndex());
+            temp.put("end", entry.getValue().getEndIndex());
+            
+            tobeReturned.add(temp);
+        }
+        return tobeReturned;
+    }
+
+    private Map<String, String> getHPOTerm(String coveredText) throws IOException, ParseException {
+        Map<String, String> hpoTerm= new HashMap<String, String>();
+        Directory directory = FSDirectory.open(new File("webapps/phenotips/resources/cTAKES/"
+                + "index-directory"));
+        IndexReader indexReader = DirectoryReader.open(directory);
+        IndexSearcher searcher = new IndexSearcher(indexReader);
+       
+        QueryParser parser = new QueryParser(
+                Version.LUCENE_40, "text",
+                new StandardAnalyzer(Version.LUCENE_40));
+        
+        String search = coveredText;
+        Query query = parser.parse(search);
+        TopDocs topdocs = searcher.search(query,2);
+        ScoreDoc[] hits = topdocs.scoreDocs; 
+        for(ScoreDoc hit: hits){
+            Document documentFromSearcher = searcher.doc(hit.doc);
+            hpoTerm.put("id",documentFromSearcher.get("code"));
+            hpoTerm.put("term",documentFromSearcher.get("text"));
+            break;
+        }
+
+        directory.close();
+        return hpoTerm;
     }
 }

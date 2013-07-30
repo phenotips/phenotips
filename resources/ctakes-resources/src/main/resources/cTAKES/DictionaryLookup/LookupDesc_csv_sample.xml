@@ -52,7 +52,7 @@
 			<lookupInitializer className="org.apache.ctakes.dictionary.lookup.ae.FirstTokenPermLookupInitializerImpl">
 			<properties>
 				<property key="textMetaFields" value="0|1"/>
-				<property key="maxPermutationLevel" value="10"/>
+				<property key="maxPermutationLevel" value="7"/>
 				<property key="windowAnnotations" value="org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation"/>
 			</properties>
 			</lookupInitializer>

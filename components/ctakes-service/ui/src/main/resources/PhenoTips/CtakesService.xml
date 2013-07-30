@@ -74,23 +74,11 @@
    "rows" : [
 #foreach ($result in $results)
      {
-    #foreach ($field in $result.fieldNames)
-      #set ($values = $result.getFieldValues($field))
-      #if ($values.size() &gt; 0)
-      #if ($values.size() == 1)
-        "$field" : "$escapetool.javascript($values.get(0)).replace('\''', '''')"##
-      #else
-        "$field" : [
-        #foreach ($value in $values)
-          "$escapetool.javascript($value).replace('\''', '''')"#if($foreach.hasNext()),#end
-
-        #end
-        ]##
-      #end
+    #foreach ($key in $result.keySet())
+      #set ($values = $result.get("$key"))
+        "$key" : "$values"
       #if($foreach.hasNext()),#end
-
-      #end
-    #end
+     #end
      }#if($foreach.hasNext()),#end
 
 #end

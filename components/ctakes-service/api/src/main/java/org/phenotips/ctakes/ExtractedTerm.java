@@ -31,6 +31,9 @@ public class ExtractedTerm
     /** Extracted Text of annotation. */
     private String extractedText;
 
+    private String id;
+    
+    private String term;
 
 
     /**Blank Constructor. */
@@ -40,10 +43,12 @@ public class ExtractedTerm
 
     /**Constructor to create Object. */
     public ExtractedTerm(int beginIndex, int endIndex,
-            String extractedText, String hpoTerm) {
+            String extractedText, String id, String name) {
         this.beginIndex = beginIndex;
         this.endIndex = endIndex;
         this.extractedText = extractedText;
+        this.id = id;
+        this.term = name;
     }
 
     public void setBeginIndex(int beginIndex) {
@@ -55,6 +60,12 @@ public class ExtractedTerm
     public void setExtractedText(String extractedText) {
         this.extractedText = extractedText;
     }
+    public void setId(String id) {
+        this.id = id;
+    }
+    public void setTerm(String name) {
+        this.term = name;
+    }
     public int getBeginIndex() {
         return this.beginIndex;
     }
@@ -64,5 +75,10 @@ public class ExtractedTerm
     public String getExtractedText() {
         return this.extractedText;
     }
+    public String getId() {
+        return this.id;
+    }
+    public String getTerm() {
+        return this.term;
+    }
 }
-
