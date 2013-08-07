@@ -371,6 +371,8 @@ ${newline}##
           #end
         #end
         "##
+      #elseif ("$!{targetClass.get($field).classType}" == 'TextArea')
+        "$!{services.rendering.render($services.rendering.parse($value, $patientDoc.getSyntax().toIdString()), "plain/1.0").replace('"', '""')}"##
       #else
         #set($displayedValue = "$!{patientObj.display($field, 'view')}")
         #if ($displayedValue.startsWith('{{html'))
