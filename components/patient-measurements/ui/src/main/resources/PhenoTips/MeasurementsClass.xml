@@ -85,12 +85,17 @@
       <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
     </age>
     <armspan>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>armspan</name>
       <number>39</number>
       <numberType>float</numberType>
-      <prettyName>Arm span (cm)</prettyName>
+      <prettyName>Arm span</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -115,7 +120,7 @@
   #set ($pValue = $services.measurements.armspan.valueToPercentile($male, $age, $dValue))
   #set ($sdValue = $mathtool.roundTo(2, $services.measurements.armspan.valueToStandardDeviation($male, $age, $dValue)))
 ##  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
-  #set ($dValue = "~= Height#if ($dValue != 0)#if($dValue &gt;= 0) + #else - #end$mathtool.abs($dValue)cm#end")
+  #set ($dValue = "~= Height#if ($dValue != 0)#if($dValue &gt;= 0) + #else - #end$mathtool.abs($mathtool.roundTo(2, $dValue)) cm#end")
 #end
 (% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
 {{/velocity}}</script>
@@ -198,12 +203,17 @@
       <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
     </date>
     <ear>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>ear</name>
       <number>19</number>
       <numberType>float</numberType>
-      <prettyName>Left ear length (cm)</prettyName>
+      <prettyName>Left ear length</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -235,12 +245,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </ear_evaluation>
     <ear_right>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>ear_right</name>
       <number>27</number>
       <numberType>float</numberType>
-      <prettyName>Right ear length (cm)</prettyName>
+      <prettyName>Right ear length</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -272,12 +287,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </ear_right_evaluation>
     <foot>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>foot</name>
       <number>25</number>
       <numberType>float</numberType>
-      <prettyName>Left foot length (cm)</prettyName>
+      <prettyName>Left foot length</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -309,12 +329,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </foot_evaluation>
     <foot_right>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>foot_right</name>
       <number>33</number>
       <numberType>float</numberType>
-      <prettyName>Right foot length (cm)</prettyName>
+      <prettyName>Right foot length</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -346,12 +371,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </foot_right_evaluation>
     <hand>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>hand</name>
       <number>21</number>
       <numberType>float</numberType>
-      <prettyName>Left hand length (cm)</prettyName>
+      <prettyName>Left hand length</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -383,12 +413,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </hand_evaluation>
     <hand_right>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>hand_right</name>
       <number>29</number>
       <numberType>float</numberType>
-      <prettyName>Right hand length (cm)</prettyName>
+      <prettyName>Right hand length</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -420,12 +455,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </hand_right_evaluation>
     <hc>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>hc</name>
       <number>9</number>
       <numberType>float</numberType>
-      <prettyName>Head circ. (cm)</prettyName>
+      <prettyName>Head circumference</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -457,12 +497,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </hc_evaluation>
     <height>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>height</name>
       <number>5</number>
       <numberType>float</numberType>
-      <prettyName>Height (cm)</prettyName>
+      <prettyName>Height</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -494,12 +539,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </height_evaluation>
     <icd>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>icd</name>
       <number>13</number>
       <numberType>float</numberType>
-      <prettyName>Inner canthal distance (cm)</prettyName>
+      <prettyName>Inner canthal distance</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -531,12 +581,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </icd_evaluation>
     <ipd>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>ipd</name>
       <number>17</number>
       <numberType>float</numberType>
-      <prettyName>Interpupilary distance (cm)</prettyName>
+      <prettyName>Interpupilary distance</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -568,12 +623,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </ipd_evaluation>
     <ocd>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>ocd</name>
       <number>11</number>
       <numberType>float</numberType>
-      <prettyName>Outer canthal distance (cm)</prettyName>
+      <prettyName>Outer canthal distance</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -605,12 +665,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </ocd_evaluation>
     <palm>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>palm</name>
       <number>23</number>
       <numberType>float</numberType>
-      <prettyName>Left palm length (cm)</prettyName>
+      <prettyName>Left palm length</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -642,12 +707,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </palm_evaluation>
     <palm_right>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>palm_right</name>
       <number>31</number>
       <numberType>float</numberType>
-      <prettyName>Right palm length (cm)</prettyName>
+      <prettyName>Right palm length</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -679,12 +749,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </palm_right_evaluation>
     <pfl>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>pfl</name>
       <number>15</number>
       <numberType>float</numberType>
-      <prettyName>Palpebral fissure length (cm)</prettyName>
+      <prettyName>Palpebral fissure length</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -716,12 +791,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </pfl_evaluation>
     <philtrum>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>philtrum</name>
       <number>35</number>
       <numberType>float</numberType>
-      <prettyName>Philtrum length (cm)</prettyName>
+      <prettyName>Philtrum length</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -753,12 +833,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </philtrum_evaluation>
     <sitting>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>sitting</name>
       <number>37</number>
       <numberType>float</numberType>
-      <prettyName>Sitting height (cm)</prettyName>
+      <prettyName>Sitting height</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -790,12 +875,17 @@
       <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
     </sitting_evaluation>
     <weight>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') kg#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;kg&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>weight</name>
       <number>3</number>
       <numberType>float</numberType>
-      <prettyName>Weight (kg)</prettyName>
+      <prettyName>Weight</prettyName>
       <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
