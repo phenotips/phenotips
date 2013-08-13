@@ -4501,7 +4501,13 @@ label.selected input[type="checkbox"] {
       <cache>long</cache>
     </property>
     <property>
-      <code>.extradata-list .bmi, .extradata-list .hc_percentile {
+      <code>.measurement-info .extradata-list td {
+  text-align: left;
+}
+.measurement-info .extradata-list th {
+  width: 16em;
+}
+.extradata-list .bmi, .extradata-list .hc_percentile {
   min-width: 4em;
 }
 .extradata-list .normal {
@@ -5302,7 +5308,9 @@ input.LV_invalid_field {
       (% class="extradata-list" %)
       #foreach ($o in $dataObjects)
         #foreach($prop in $dataClass.properties)
-           #if (!$prop.name.endsWith('_evaluation') &amp;&amp; "$!o.getProperty($prop.getName()).value" != '')
+           #if ($prop.name == 'date' || $prop.name == 'age')
+             |= ${prop.prettyName}: |=(% colspan="2" %) $doc.display($prop.getName(), $o)
+           #elseif (!$prop.name.endsWith('_evaluation') &amp;&amp; "$!o.getProperty($prop.getName()).value" != '')
              |= ${prop.prettyName}: | $doc.display($prop.getName(), $o) | $!doc.display("${prop.getName()}_evaluation", $o)
           #end
         #end
@@ -5437,8 +5445,11 @@ input.LV_invalid_field {
 
 {{warning}}It is recommended to record **weight**, **height** and **head circumference** for all patients.{{/warning}}
 
-#end
 #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true, 'mode' : $xcontext.action})
+#else
+#__measurements_displayCompact()
+
+#end
 #if ($config.getProperty('section__measurements').value.contains('growth-charts'))
 (% class="growth-charts-section" %)(((
 === Growth charts ===
