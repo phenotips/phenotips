@@ -163,6 +163,20 @@ $!value
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </dateOfBirthFormat>
+      <enableImperialUnitSystem>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>enableImperialUnitSystem</name>
+        <number>24</number>
+        <prettyName>Enable imperial unit system for entering measurements</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </enableImperialUnitSystem>
       <idField>
         <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
@@ -293,6 +307,31 @@ $!value
         <values/>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </mandatoryFields>
+      <measurementUnitSystem>
+        <cache>0</cache>
+        <customDisplay>{{velocity}}
+#if ($value != 'imperial')#set ($value = 'metric')#end
+{{html clean=false}}&lt;p&gt;&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_metric" value="metric" #if ($value == 'metric') checked="checked"#end /&gt;metric&lt;/label&gt;  &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_imperial" value="imperial" #if ($value == 'imperial') checked="checked"#end /&gt;imperial&lt;/label&gt;&lt;/p&gt;
+&lt;br/&gt;
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>radio</displayType>
+        <multiSelect>0</multiSelect>
+        <name>measurementUnitSystem</name>
+        <number>25</number>
+        <picker>0</picker>
+        <prettyName>Default unit system for entering measurements, when "Imperial unit system" is enabled</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>metric|imperial</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </measurementUnitSystem>
       <no_pii_warning>
         <customDisplay/>
         <defaultValue/>
@@ -665,6 +704,9 @@ $!value
       <dateOfBirthFormat>MM/dd/yyyy</dateOfBirthFormat>
     </property>
     <property>
+      <enableImperialUnitSystem>0</enableImperialUnitSystem>
+    </property>
+    <property>
       <idField>identifier</idField>
     </property>
     <property>
@@ -689,6 +731,9 @@ $!value
     </property>
     <property>
       <mandatoryFields/>
+    </property>
+    <property>
+      <measurementUnitSystem>metric</measurementUnitSystem>
     </property>
     <property>
       <no_pii_warning>0</no_pii_warning>
@@ -1723,6 +1768,8 @@ $!value
         <value>phenotypeMapping</value>
         <value>section__patient-info</value>
         <value>section__measurements</value>
+        <value>enableImperialUnitSystem</value>
+        <value>measurementUnitSystem</value>
         <value>section__variant-info</value>
       </propertiesToShow>
     </property>

@@ -2208,11 +2208,11 @@ document.observe('dom:loaded', function() {
 
   // TODO: make sure events work on all browsers
   var handleValueChanged = function (elementsList) {
-    ['blur', 'keypress', 'keyup', 'xwiki:date:changed'].each(function (eventName) {
+    ['blur', 'keypress', 'keyup', 'phenotips:measurement-updated', 'xwiki:date:changed'].each(function (eventName) {
       elementsList.invoke('observe', eventName, valueChanged);
     })
     if (chartContainer) {
-      ['blur', 'xwiki:date:changed'].each(function (eventName) {
+      ['blur', 'phenotips:measurement-updated', 'xwiki:date:changed'].each(function (eventName) {
         elementsList.invoke('observe', eventName, updateCharts);
       })
     }
@@ -2234,6 +2234,13 @@ document.observe('dom:loaded', function() {
        }
      }
   });
+
+  // Also attach the measurement switcher
+  var configuredUnitSystem = $('measurementUnitSystem');
+  // this element will exist iff the imerial system is enabled
+  if (configuredUnitSystem) {
+    new PhenoTips.widgets.UnitConverter($('extradata-list-PhenoTips.MeasurementsClass'), 'input[type="text"]:not([name$="date"])', $('extradata-list-PhenoTips.MeasurementsClass'), 'before', configuredUnitSystem.value || '');
+  }
 });</code>
     </property>
     <property>
@@ -4547,6 +4554,9 @@ form .extradata-list tr:hover td {
   color: $theme.textColor;
   font-weight: bold;
 }
+#extradata-list-PhenoTips\.MeasurementsClass td input {
+  width: auto;
+}
 #extradata-list-PhenoTips\.MeasurementsClass td.date input {
   width: 10em;
   margin: 0 0 0 .7em;
@@ -5421,6 +5431,10 @@ input.LV_invalid_field {
 == Measurements ==
 #if ($xcontext.action != 'export')
 #if ($xcontext.action == 'edit')
+#if ($config &amp;&amp; "$!{config.getProperty('enableImperialUnitSystem').value}" == '1')
+{{html wiki=false clean=false}}&lt;input type="hidden" id="measurementUnitSystem" value="$!{config.getProperty('measurementUnitSystem').value}" /&gt;{{/html}}
+#end
+
 {{warning}}It is recommended to record **weight**, **height** and **head circumference** for all patients.{{/warning}}
 
 #end
