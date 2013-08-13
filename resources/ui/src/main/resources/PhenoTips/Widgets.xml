@@ -636,7 +636,7 @@
 
     for (i = 0; i &lt; n; i++) {
       d[i] = new Array();
-            
+
       // get the substitution score
       score = (a.charAt(i) == b.charAt(0))? 1: -1;
 
@@ -645,7 +645,7 @@
       }else {
         d[i][0] = Math.max(0,d[i - 1][0] - gapCost,score);
       }
-            
+
       //update max possible if available
       if (d[i][0] &gt; maxSoFar) {
         maxSoFar = d[i][0];
@@ -661,7 +661,7 @@
       }else {
         d[0][j] = Math.max(0,d[0][j - 1] - gapCost,score);
       }
-      
+
       //update max possible if available
       if (d[0][j] &gt; maxSoFar) {
         maxSoFar = d[0][j];
