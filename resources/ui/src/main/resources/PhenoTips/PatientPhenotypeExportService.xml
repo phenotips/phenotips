@@ -48,8 +48,6 @@
 #if ($xcontext.action != 'get')
   #break
 #end
-## what is the source of the data?
-## TODO find the document by UDP number, not by PhenoTips ID
 #set ($identifier = "$!{request.id}")
 #set ($externalIdentifier = "$!{request.eid}")
 #set ($results = [])
