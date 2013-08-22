@@ -983,7 +983,7 @@ document.observe('dom:loaded', function() {
             };
 
             var getInputId = function(key, negative) {
-              inputName = "PhenoTips.PatientClass_0_prenatal_phenotype";
+              inputName = "PhenoTips.PatientClass_0_phenotype";
               var value = (negative ? inputName.replace(/(_\d+)_/, "$1_negative_") : inputName) + "_" + key;
               return value;
             };
@@ -994,25 +994,22 @@ document.observe('dom:loaded', function() {
             }
             var results = jsondata['rows'];
             var i = 0;
-            var formSubmit = function(){
-              alert("This is working");
-            }
             var content = "";
-            content = content.concat("<h3>Input Text </h3> <div id='inputtext'>"+inputText+"</div>");
-            content = content.concat("<h3>Extracted Terms</h3> <div id='extractedTermDiv' style='height:200px; overflow:auto;'> <form id='termSelect'>");
+            content = content.concat("&lt;h3&gt;Input Text &lt;/h3&gt; &lt;div id='inputtext'&gt;"+inputText+"&lt;/div&gt;");
+            content = content.concat("&lt;h3&gt;Extracted Terms&lt;/h3&gt; &lt;div id='extractedTermDiv' style='height:200px; overflow:auto;'&gt; &lt;form id='termSelect'&gt;");
             for(i=0;i &lt; results.length;i++){
               var id = _getResultFieldValue(results[i], "id");
               var term = _getResultFieldValue(results[i], "term");
-              content = content.concat("<div class='extractedTerm'>");
-              content = content.concat("<input type='checkbox' checked='true' value='"+i+"'>" + id +" "+term+"</input> <br></br>");
-              content = content.concat("</div>");
+              content = content.concat("&lt;div class='extractedTerm'&gt;");
+              content = content.concat("&lt;input type='checkbox' checked='true' value='"+i+"'&gt;" + id +" "+term+"&lt;/input&gt; &lt;br&gt;&lt;/br&gt;");
+              content = content.concat("&lt;/div&gt;");
             }
-            content = content.concat("<input id='formsubmit' type='button' value='OK'> </input> </form> </div>");
+            content = content.concat("&lt;input id='formsubmit' type='button' value='OK'&gt; &lt;/input&gt; &lt;/form&gt; &lt;/div&gt;");
             var modalPopup = new MS.widgets.ModalPopup(content, "",{removeOnClose : true});
             modalPopup.showDialog();
             
             var form = $('termSelect');
-            //update Selection Summary 
+            //update Selection Summarry
             $('formsubmit').observe('click', function(){
               var inputIds = [];
               var i = 0;          
@@ -1020,13 +1017,13 @@ document.observe('dom:loaded', function() {
               for(i=0;i &lt; terms.length;i++){
                 if(terms[i].checked){
                   inputIds.push(i)
-                  var inputId = getInputId(terms[i].value);
+                  var inputId = getInputId(_getResultFieldValue(results[terms[i].value],"id"));
                  $$('label.yes[for="'+inputId+'"]').each(function(labelOfTerm){
                     labelOfTerm.click();
                   });
                 }
               }
-              alert(inputIds);
+              modalPopup.closeDialog()
             });
 
             //Highlight Code
@@ -1035,7 +1032,8 @@ document.observe('dom:loaded', function() {
               extractedTermDiv.observe('mouseover', function(){
                 var val = extractedTermDiv.down().value;
                 var text = _getResultFieldValue(results[val], "text");
-                var innerText = inputText.replace(text, '<span style="background-color:green;">' + text + '</span>'); 
+                var innerText = inputText.replace(text,'&lt;span style=&quot;background&#45;color&#58;green;&quot;&gt;' 
+                                                     + text + '&lt;/span&gt;'); 
                 $('inputtext').update(innerText);
               });
               extractedTermDiv.observe('mouseout', function(){
