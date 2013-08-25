@@ -121,7 +121,7 @@ var SaveLoadEngine = Class.create( {
                 me._saveInProgress = false;
             },
             onSuccess: function() {savingNotification.replace(new XWiki.widgets.Notification("Successfuly saved"));},
-            parameters: {"property#data": jsonData, "property#image": image.innerHTML.replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + " \"width=\"500\" height=\"500\"")}
+            parameters: {"property#data": jsonData, "property#image": image.innerHTML.replace(/width=".*?"/, '').replace(/height=".*?"/, '').replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"500\" height=\"500\"")}
         });
         backgroundParent.insertBefore(background, backgroundPosition);        
     },    
