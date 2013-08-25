@@ -152,6 +152,9 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
         List<BaseObject> objects = doc.getXObjects(PhenoTipsFeatureMetadatum.CLASS_REFERENCE);
         if (objects != null) {
             for (BaseObject o : objects) {
+                if (o == null) {
+                    continue;
+                }
                 StringProperty nameProperty = (StringProperty) o.get("target_property_name");
                 StringProperty valueProperty = (StringProperty) o.get("target_property_value");
                 if (nameProperty != null && StringUtils.equals(nameProperty.getValue(), this.propertyName)
