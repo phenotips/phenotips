@@ -906,7 +906,13 @@
     <reports_history>
       <cache>0</cache>
       <classname/>
-      <customDisplay>{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
+      <customDisplay>{{velocity output="false"}}
+#if (!$value)
+  #set ($value = [])
+#end
+{{/velocity}}
+
+{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
       <disabled>0</disabled>
       <displayType>checkbox</displayType>
       <idField/>

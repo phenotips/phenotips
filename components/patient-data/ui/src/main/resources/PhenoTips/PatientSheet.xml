@@ -31,9 +31,9 @@
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1331576276000</creationDate>
-  <date>1331858597000</date>
-  <contentUpdateDate>1331858597000</contentUpdateDate>
+  <creationDate>1376919307000</creationDate>
+  <date>1377393766000</date>
+  <contentUpdateDate>1377393766000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <defaultTemplate/>
@@ -42,44 +42,108 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{include document="PhenoTips.PatientSheetCode" /}}
+  <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
-{{velocity filter="indent"}}
-#if ("$!{class}" != '')
+{{include document="PhenoTips.TabelarDataMacros" /}}
+
+{{velocity output=false}}
+$xwiki.jsx.use('PhenoTips.TouchscreenEvents', {'minify' : false})##
+$xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.ssx.use('PhenoTips.Widgets', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('PhenoTips.Widgets', {'minify' : false})##
+$xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('PhenoTips.PatientSheetCode', {'minify' : false})##
+$xwiki.jsfx.use('js/xwiki/actionbuttons/actionButtons.js', true)##
+$xwiki.jsfx.use('js/xwiki/editors/autosave.js')##
+$xwiki.ssfx.use('uicomponents/widgets/validation/livevalidation.css', true)##
+$xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
+##
+##
+#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
+#if ($config)
+#set($obj = $doc.getObject("$!{config.getProperty('patientClass').value}"))
+#set($class = $obj.xWikiClass)
+#set($discard = $doc.use($obj))
+#set($activeFields = $!{config.getProperty('activeFields').value})
+#set($mandatoryFields = $!{config.getProperty('mandatoryFields').value})
+#end
+{{/velocity}}
+
+{{velocity}}
+#if ("$!{request.xaction}" == 'lastentry')
+  #set ($entryClassName = $request.dataClassName)
+  #set ($options = {})
+  #set ($discard = $options.put('propertyName', "$!{request.propertyName}"))
+  #set ($discard = $options.put('propertyValue', "$!{request.propertyValue}"))
+  #set ($discard = $options.put('labels', "$!{request.withLabel}"))
+  #set ($discard = $options.put('mode', 'edit'))
+  #__extradata_displayLastEntry($request.dataClassName $options)
+#elseif ("$!{request.xaction}" == 'lastmeta')
+  #__phenotypeMeta_displayLastEntry()
+#else
+#if ($xcontext.action != 'export')
+(% id="table-of-contents" %)(((
+{{toc /}}
+
+(% class="hide-toc" id="hide-toc" %)((([[×&gt;&gt;||title="Hide table of contents" anchor="tmToC"]])))
+
+(% class="hide-toc hide-toc-ghost" %)((([[Hide table of contents&gt;&gt;#tmToC||id="tmHideToC" class="document-action" title="Hide table of contents"]])))
+)))
+#end
+#if ($context.action == 'edit')
+  ## Disable the Preview button
+  #set($previewenabled = false)
+  {{html clean="false" wiki="false"}}&lt;input type='hidden' id='prefix' value='$!{class.name}_$!{obj.number}_'/&gt;{{/html}}
+
+#end
+##
+## Extensions displayed before the content
+#foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.before'))
+  {{html wiki=false clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
+
+#end
+##
 #if ($config.getProperty('no_pii_warning').value == 1)
 {{warning}}This form should **not** be used for recording **personally identifiable information**.{{/warning}}
 
 #end
-= $doc.name =
+##
+## Extensions making up the main content, the actual information about the patient
+#foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.content', {'sortByParameter' : 'order'}))
+  #if ($e.getParameters().get('enabled') == 'true')
+    #set ($sectionContent = '')
+    #set ($previousItem = -1)
+    #set ($gapNeeded = false)
+    #foreach ($f in $services.uix.getExtensions($e.id, {'sortByParameter' : 'order'}))
+      #if ($previousItem != -1 &amp;&amp; $mathtool.sub($f.getParameters().get('order'), $previousItem) &gt; 1)
+        #set ($gapNeeded = true)
+      #end
+      #set ($previousItem = $f.getParameters().get('order'))
+      #if ($f.getParameters().get('enabled') == 'true')
+        #set ($extension_required = ($f.getParameters().get('required') == 'true'))
+        #set ($itemContent = $services.rendering.render($f.execute(), 'xhtml/1.0').trim())
+        #if ($gapNeeded &amp;&amp; $itemContent != '' &amp;&amp; $sectionContent != '')
+          #set ($itemContent = "&lt;hr/&gt;$itemContent")
+          #set ($gapNeeded = false)
+        #end
+        #set ($sectionContent = $sectionContent.concat($itemContent))
+      #end
+    #end
+    #if ($sectionContent.trim() != '')
+      (% class="clear clinical-info $stringtool.substringAfterLast($e.id, '.') chapter" %)(((
+      == $e.getParameters().get('title') ==
 
-#foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.before'))
-  {{html clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
-
+        {{html clean="false" wiki="false"}}$sectionContent.trim(){{/html}}
+      )))
+    #end
+  #end
 #end
-#foreach ($section in $config.getProperty('activeSections').value)
-#__reportSection_display($section)
-#end
+##
+## Extensions displayed after the content
 #foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.after'))
 
   {{html clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
 #end
-#if ($xcontext.action == 'export' &amp;&amp; $config.getProperty('section__measurements').value.contains('growth-charts') &amp;&amp; $doc.getObject('PhenoTips.MeasurementsClass'))
-
-{{html clean=false}}#pagebreak(){{/html}}
-#set($chartOptions = {'targetClassName' : 'PhenoTips.MeasurementsClass', 'obj': $obj, 'link': false})
-#_measurementCharts($chartOptions)
 #end
-#if ($xcontext.action == 'export' &amp;&amp; $doc.getObject('PhenoTips.ExternalImageClass'))
-#foreach ($o in $doc.getObjects('PhenoTips.ExternalImageClass'))
-#if ("$!{o.getProperty('file').value}" != '' &amp;&amp; ${o.getProperty('print').value} == '1')
-{{html clean=false}}#pagebreak(){{/html}}
-[[image:@$!{o.getProperty('file').value}]]
-
-$!{o.getProperty('comments').value}
-#end
-#end
-#end
-##
-#end## class exists
 {{/velocity}}</content>
 </xwikidoc>

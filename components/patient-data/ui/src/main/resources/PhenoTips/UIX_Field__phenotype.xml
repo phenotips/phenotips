@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc>
+  <web>PhenoTips</web>
+  <name>UIX_Field__phenotype</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>PhenoTips.PatientSheet</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1377394290000</creationDate>
+  <date>1377278554000</date>
+  <contentUpdateDate>1377101443000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Clinical symptoms &amp; physical findings</title>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <object>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <name>PhenoTips.UIX_Field__phenotype</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>776d4800-eade-41ea-974e-bc098b0fb426</guid>
+    <property>
+      <content>{{include document="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity}}
+#macro (__qsBox $fieldName $cssClass)
+  #if ($context.action == 'edit')
+   (% id="quick-search-box"  class="group-other quick-search-box emphasized-box $!{cssClass}" %)(((
+    {{html clean="false" wiki="false"}}
+    &lt;fieldset&gt;
+      ##&lt;h3 class="section"&gt;Quick phenotype search&lt;/h3&gt;
+      &lt;table&gt;&lt;tbody&gt;&lt;tr&gt;
+      &lt;td&gt;&lt;label for="quick-phenotype-search"&gt;Quick phenotype search:&lt;/label&gt;&lt;/td&gt;&lt;td class="input"&gt;
+      &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip generateYesNo' placeholder='Enter keywords and choose among suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
+      &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+    &lt;/fieldset&gt;
+    {{/html}}
+   )))
+  #end
+#end
+##
+##
+#__hasBooleanDataToDisplay('unaffected', $showUnaffected)
+#__hasDataToDisplay('phenotype' $showPhenotype)
+#__hasDataToDisplay('negative_phenotype' $showNegativePhenotype)
+##
+##
+#if ($showUnaffected || $showPhenotype || $showNegativePhenotype)
+  (% class="controlled-group complete-hide" %)(((
+  (% class="fieldset unaffected controller exclude" %)(((
+  #if ($xcontext.action == 'edit')
+    $doc.display('unaffected') #__label('unaffected' '' "$class.get('unaffected').prettyName")
+
+    (% class="hint controlled" %)Or select observed phenotypes:(%%)
+  #else
+    #if ($showUnaffected)$class.get('unaffected').prettyName#end
+  #end
+  )))
+  (% class="controlled" %) (((
+  #__qsBox("$!{class.name}_$!{obj.number}_phenotype" "controlled")
+  #if ($context.action == 'edit')
+    $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+    $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
+    (% class="selector-panels"%)(((
+    (% class="half-width selector-panel browser browse-phenotype-categories force-collapse"%)(((
+    (% class="browser-title"%)
+    === **Browse categories** ===
+    (% class="background-search diffDiagnosis-search phenotype-group collapsible-group hidden" title="Phenotypes that are likely to help improve differential diagnosis"%)(((
+    === You might want to check for... ===
+    (% class="hint" %)Phenotypes that are likely to help improve differential diagnosis
+    (% id="diffDiagnosis-search-results" class="background-suggestions" %)((()))
+    )))
+  #end
+  (% class="phenotype  #__markIfMandatory('phenotype')" %)(((
+    #if ($xcontext.action == 'edit' || !$showUnaffected)$doc.display('phenotype')#end##
+  )))
+  #if ($xcontext.action == 'edit')
+    #__phenotypeMeta_displayAll('edit')##
+    )))## browse-phenotype-categories
+    (% class="half-width selector-panel current-phenotype-selection"%)(((
+    === **Current selection** ===
+    (% id="current-phenotype-selection"%)(((
+    {{html clean="false"}}&lt;input type="hidden" id="phenotype-meta-add-action" value="$doc.getURL('objectadd', "classname=PhenoTips.PhenotypeMetaClass&amp;amp;xredirect=$escapetool.url($doc.getURL('edit', 'xaction=lastmeta&amp;xpage=plain'))&amp;amp;form_token=$!{services.csrf.getToken()}")"/&gt;{{/html}}
+    )))
+    )))
+    (% class="clear"%)((()))
+    )))## selector-panels
+  #end
+  )))## controlled (phenotype)
+  )))## controlled-group
+#end## section has content
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.patientSheet.section.phenotype-info</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.patientSheet.field.phenotype</name>
+    </property>
+    <property>
+      <parameters>title=Clinical symptoms &amp; physical findings
+enabled=true
+required=true
+order=1</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <content/>
+</xwikidoc>

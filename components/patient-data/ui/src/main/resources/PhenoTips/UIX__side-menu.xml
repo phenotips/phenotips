@@ -22,27 +22,97 @@
 
 <xwikidoc>
   <web>PhenoTips</web>
-  <name>PatientSheetMenu</name>
+  <name>UIX__side-menu</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.PatientSheetCode</parent>
+  <parent>PhenoTips.PatientSheet</parent>
   <creator>xwiki:XWiki.Admin</creator>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1326686171000</creationDate>
-  <date>1326692936000</date>
-  <contentUpdateDate>1326692936000</contentUpdateDate>
+  <creationDate>1377393964000</creationDate>
+  <date>1377282155000</date>
+  <contentUpdateDate>1377282094000</contentUpdateDate>
   <version>1.1</version>
-  <title/>
+  <title>Patient sheet side menu</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{velocity output=false}}
+  <object>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <name>PhenoTips.UIX__side-menu</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>255450c4-338d-4512-a088-f8efe4743245</guid>
+    <property>
+      <content>{{velocity output=false}}
 #macro (documentAction $url $id $text)
   &lt;a href="${url}" id="${id}" class="document-action" title="${text}"&gt;${text}&lt;/a&gt;
 #end
@@ -91,4 +161,20 @@
 {{/html}}
 #end
 {{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.patientSheet.before</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.patientSheet.menu</name>
+    </property>
+    <property>
+      <parameters>title=Patient sheet side menu
+order=1</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <content/>
 </xwikidoc>
