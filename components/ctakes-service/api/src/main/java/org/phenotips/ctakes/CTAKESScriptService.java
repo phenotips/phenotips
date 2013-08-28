@@ -83,16 +83,44 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.script.service.ScriptService;
 
-
+/** 
+ * Provides access for handling Apache cTAKES API.
+ * @version $Id$
+ * */
 @Component
 @Named("ctakes")
 @Singleton
 public class CTAKESScriptService implements ScriptService, Initializable
 {
+    
+    /** String lookup window for future multiple uses. */
+    private static final String LOOKUP_WINDOW_PATH = 
+            "org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation";
 
+    /** String id for future multiple uses. */
+    private static final String ID = "id";
+
+    /** String term for future multiple uses. */
+    private static final String TERM = "term";
+    
+    /** String text for future multiple uses. */
+    private static final String TEXT = "text";
+    
+    /** String desc for future multiple uses. */
+    private static final String DESC = "desc";
+    
+    /** String initial path for future multiple uses. */
+    private static final String INIT_PATH = 
+            "webapps/phenotips/resources/cTAKES/";
+    
+    /** Analysis Engine for extraction of terms from Doctor's text. */
     private AnalysisEngine analysisEng;
+    
+    /** File Resource Class. */
     private Class<FileResource> fileResClass = 
             org.apache.ctakes.core.resource.FileResource.class;
+   
+    /** Implementation of File Resource Class. */
     private Class<FileResourceImpl> fileResClassImpl = 
             org.apache.ctakes.core.resource.FileResourceImpl.class;
 
@@ -114,7 +142,7 @@ public class CTAKESScriptService implements ScriptService, Initializable
                     AnalysisEngineFactory.createPrimitiveDescription(taC, tsd);
 
             //Sentence Detection 
-            String senturl = "webapps/phenotips/resources/cTAKES/"
+            String senturl = INIT_PATH 
                     + "SentenceDetection/sd-med-model.zip";
             AnalysisEngineDescription sentDetectDesc =
                     AnalysisEngineFactory.createPrimitiveDescription(
@@ -129,7 +157,7 @@ public class CTAKESScriptService implements ScriptService, Initializable
                     AnalysisEngineFactory.createPrimitiveDescription(cdta);
 
             //POS Tagger
-            String posresfile = "webapps/phenotips/resources/cTAKES/"
+            String posresfile = INIT_PATH 
                     + "POSTagger/mayo-pos.zip";
             AnalysisEngineDescription posTagdesc =
                     AnalysisEngineFactory.createPrimitiveDescription(
@@ -138,23 +166,23 @@ public class CTAKESScriptService implements ScriptService, Initializable
 
 
             //Chunker
-            String chunkfileres = "webapps/phenotips/resources/cTAKES/"
+            String chunkfileres = INIT_PATH
                     + "Chunker/chunk-model-claims-1-5.zip";
             String chunkurl = new File(chunkfileres).toURI().toURL().toString();
             String chunkp = "org.apache.ctakes.chunker.ae.DefaultChunkCreator";
             ExternalResourceDescription chunkererd =
                     ExternalResourceFactory.createExternalResourceDescription(
                             "ChunkerModelFile", fileResClassImpl, chunkurl);
-
+            String chunkerModel = "ChunkerModel";
             AnalysisEngineDescription chunkerDesc =
                     AnalysisEngineFactory.createPrimitiveDescription(
                             Chunker.class, tsd,
                             Chunker.CHUNKER_MODEL_FILE_PARAM, chunkfileres,
                             Chunker.CHUNKER_CREATOR_CLASS_PARAM, chunkp,
-                            "ChunkerModel", chunkererd);
+                            chunkerModel, chunkererd);
 
             ExternalResourceFactory.createDependency(
-                    chunkerDesc, "ChunkerModel", fileResClass);
+                    chunkerDesc, chunkerModel, fileResClass);
 
             //Chunk Adjuster NN
             String nn = "NN";
@@ -219,51 +247,54 @@ public class CTAKESScriptService implements ScriptService, Initializable
             // Create the Analysis Engine
             AnalysisEngineDescription analysisEngdesc = 
                     AnalysisEngineFactory.createAggregateDescription(
-                            aedList,components,null,null,null,null);
+                            aedList, components, 
+                            null, null, null, null);
             ConfigurationParameter[] finalDescConfParam = 
                     new ConfigurationParameter[1];
             ConfigurationParameter chunkCreatorClass = 
                     ConfigurationParameterFactory.createPrimitiveParameter(
-                            "ChunkCreatorClass", String.class, "desc", true);
-            finalDescConfParam[0]=chunkCreatorClass;
+                            "ChunkCreatorClass", String.class, DESC, true);
+            finalDescConfParam[0] = chunkCreatorClass;
             Object[] finalDescConfVals = new Object[1];
-            finalDescConfVals[0]="org.apache.ctakes.chunker.ae.PhraseTypeChunkCreator";
-
+            finalDescConfVals[0] = "org.apache.ctakes.chunker.ae.PhraseTypeChunkCreator";
 
             ResourceCreationSpecifierFactory.setConfigurationParameters(
                     analysisEngdesc, finalDescConfParam, finalDescConfVals);
-            
-            
+                        
             analysisEng = AnalysisEngineFactory.createAggregate(
                     analysisEngdesc);
-            System.out.println("Analysis Engine Initialised");
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println(e.getMessage());
         }
     }
-
+    /** 
+     * Method to get Dictionary Lookup Annotator.
+     * @return DictionaryLookupDescription
+     * @throws ResourceInitializationException on unavailability of resource
+     * @throws MalformedURLException on unavailability of file resource
+     * */
     private AnalysisEngineDescription getDictlookupDesc()
         throws ResourceInitializationException, MalformedURLException {
-        //Dictionary Lookup
+        final String useMemoryIndex = "UseMemoryIndex";
+        final String indexDirectory = "IndexDirectory";
         ConfigurationParameter[] dictconfParam = new ConfigurationParameter[1];
         ConfigurationParameter maxListSize =
                 ConfigurationParameterFactory.createPrimitiveParameter(
-                        "maxListSize", Integer.class, "desc", false);
+                        "maxListSize", Integer.class, DESC, false);
         dictconfParam[0] = maxListSize;
 
         Object[] dictconfVals = new Object[1];
         dictconfVals[0] = 2147483647;
 
-        String fileurl = new File("webapps/phenotips/resources/cTAKES/"
+        String fileurl = new File(INIT_PATH
                 + "DictionaryLookup/LookupDesc_csv_sample.xml")
                    .toURI().toURL().toString();
-        String dicturl = new File("webapps/phenotips/resources/cTAKES/"
+        String dicturl = new File(INIT_PATH
                 + "DictionaryLookup/dictionary1.csv")
                    .toURI().toURL().toString();
-        String drugurl = "webapps/phenotips/resources/cTAKES/"
+        String drugurl = INIT_PATH
                 + "DictionaryLookup/drug_index";
-        String orangeurl = "webapps/phenotips/resources/cTAKES/"
+        String orangeurl = INIT_PATH
                 + "DictionaryLookup/OrangeBook";
         
         Class<LuceneIndexReaderResourceImpl> luceneResClassImpl =
@@ -282,18 +313,21 @@ public class CTAKESScriptService implements ScriptService, Initializable
         ExternalResourceDescription dictERD3 =
                 ExternalResourceFactory.createExternalResourceDescription(
                         "RxnormIndex", luceneResClassImpl, "",
-                        "UseMemoryIndex", true, "IndexDirectory", drugurl);
+                        useMemoryIndex, true, indexDirectory, drugurl);
         ExternalResourceDescription dictERD4 =
                 ExternalResourceFactory.createExternalResourceDescription(
                         "OrangeBookIndex", luceneResClassImpl, "" ,
-                        "UseMemoryIndex", true, "IndexDirectory", orangeurl);
-
+                        useMemoryIndex, true, indexDirectory, orangeurl);
+        String lookupDesc = "LookupDescriptor";
+        String dictFile = "DictionaryFile";
+        String rxIndexReader = "RxnormIndexReader";
+        String orangeIndexReader = "OrangeBookIndexReader";
         Map<String, ExternalResourceDescription> dictMap =
                 new HashMap<String, ExternalResourceDescription>();
-        dictMap.put("LookupDescriptor", dictERD1);
-        dictMap.put("DictionaryFile", dictionaryERD2);
-        dictMap.put("RxnormIndexReader", dictERD3);
-        dictMap.put("OrangeBookIndexReader", dictERD4);
+        dictMap.put(lookupDesc, dictERD1);
+        dictMap.put(dictFile, dictionaryERD2);
+        dictMap.put(rxIndexReader, dictERD3);
+        dictMap.put(orangeIndexReader, dictERD4);
 
         AnalysisEngineDescription dictAED =
                 AnalysisEngineFactory.createPrimitiveDescription(
@@ -303,19 +337,19 @@ public class CTAKESScriptService implements ScriptService, Initializable
         ExternalResourceDependency[] dictD = new ExternalResourceDependency[4];
         ExternalResourceDependency dicterd1 =
                 new ExternalResourceDependency_impl();
-        dicterd1.setKey("LookupDescriptor"); dicterd1.setOptional(false);
+        dicterd1.setKey(lookupDesc); dicterd1.setOptional(false);
         dicterd1.setInterfaceName(fileResClassStr);
         ExternalResourceDependency dicterd2 =
                 new ExternalResourceDependency_impl();
-        dicterd2.setKey("DictionaryFile"); dicterd2.setOptional(false);
+        dicterd2.setKey(dictFile); dicterd2.setOptional(false);
         dicterd2.setInterfaceName(fileResClassStr);
         ExternalResourceDependency dicterd3 =
                 new ExternalResourceDependency_impl();
-        dicterd3.setKey("RxnormIndexReader"); dicterd3.setOptional(false);
+        dicterd3.setKey(rxIndexReader); dicterd3.setOptional(false);
         dicterd3.setInterfaceName(luceneResClassStr);
         ExternalResourceDependency dicterd4 =
                 new ExternalResourceDependency_impl();
-        dicterd4.setKey("OrangeBookIndexReader"); dicterd4.setOptional(false);
+        dicterd4.setKey(orangeIndexReader); dicterd4.setOptional(false);
         dicterd4.setInterfaceName(luceneResClassStr);
         dictD[0] = dicterd1; dictD[1] = dicterd2;
         dictD[2] = dicterd3; dictD[3] = dicterd4;
@@ -325,25 +359,30 @@ public class CTAKESScriptService implements ScriptService, Initializable
 
     }
 
+    /** 
+     * Method to get Copy Annotator.
+     * @return CopyAnnotatorDescription
+     * @throws ResourceInitializationException on unavailability of resource
+     * */
     private AnalysisEngineDescription getCopyAnnotatorDesc()
         throws ResourceInitializationException {
 
-        //Copy Annotator - Lookup
+        String uimaAnnotation = "uima.tcas.Annotation";
         TypeSystemDescription copyATsd = new TypeSystemDescription_impl();
         copyATsd.addType("org.apache.ctakes.typesystem.type.CopySrcAnnotation",
-                null, "uima.tcas.Annotation");
+                null, uimaAnnotation);
         copyATsd.addType("org.apache.ctakes.typesystem.type.CopyDestAnnotation",
-                null, "uima.tcas.Annotation");
+                null, uimaAnnotation);
         ConfigurationParameter[] copyAconfParam = new ConfigurationParameter[3];
         ConfigurationParameter srcObjClass =
                 ConfigurationParameterFactory.createPrimitiveParameter(
-                        "srcObjClass", String.class, "desc", true);
+                        "srcObjClass", String.class, DESC, true);
         ConfigurationParameter destObjClass =
                 ConfigurationParameterFactory.createPrimitiveParameter(
-                        "destObjClass", String.class, "desc", true);
+                        "destObjClass", String.class, DESC, true);
         ConfigurationParameter dataBindMap =
                 ConfigurationParameterFactory.createPrimitiveParameter(
-                        "dataBindMap", String.class, "desc", true);
+                        "dataBindMap", String.class, DESC, true);
         dataBindMap.setMultiValued(true);
         copyAconfParam[0] = srcObjClass;
         copyAconfParam[1] = destObjClass;
@@ -351,8 +390,7 @@ public class CTAKESScriptService implements ScriptService, Initializable
 
         Object[] copyAconfVals = new Object[3];
         copyAconfVals[0] = "org.apache.ctakes.typesystem.type.syntax.NP";
-        copyAconfVals[1] =
-                "org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation";
+        copyAconfVals[1] = LOOKUP_WINDOW_PATH;
         String[] dataBindArray = new String[2];
         dataBindArray[0] = "getBegin|setBegin";
         dataBindArray[1] = "getEnd|setEnd";
@@ -366,6 +404,11 @@ public class CTAKESScriptService implements ScriptService, Initializable
         return copyAnnotatorDesc;
     }
 
+    /** 
+     * Method to get Overlap Annotator.
+     * @return OverlapAnnotatorDescription
+     * @throws ResourceInitializationException on unavailability of resource
+     * */
     private AnalysisEngineDescription getOverlapAnnotatorDesc()
         throws ResourceInitializationException {
 
@@ -373,19 +416,19 @@ public class CTAKESScriptService implements ScriptService, Initializable
                 new ConfigurationParameter[5];
         ConfigurationParameter actionType =
                 ConfigurationParameterFactory.createPrimitiveParameter(
-                        "ActionType", String.class, "desc", true);
+                        "ActionType", String.class, DESC, true);
         ConfigurationParameter aObjectClass =
                 ConfigurationParameterFactory.createPrimitiveParameter(
-                        "A_ObjectClass", String.class, "desc", true);
+                        "A_ObjectClass", String.class, DESC, true);
         ConfigurationParameter bObjectClass =
                 ConfigurationParameterFactory.createPrimitiveParameter(
-                        "B_ObjectClass", String.class, "desc", true);
+                        "B_ObjectClass", String.class, DESC, true);
         ConfigurationParameter overlaptype =
                 ConfigurationParameterFactory.createPrimitiveParameter(
-                        "OverlapType", String.class, "desc", true);
+                        "OverlapType", String.class, DESC, true);
         ConfigurationParameter deleteaction =
                 ConfigurationParameterFactory.createPrimitiveParameter(
-                        "DeleteAction", String.class, "desc", true);
+                        "DeleteAction", String.class, DESC, true);
 
         deleteaction.setMultiValued(true);
         configurationParameters[0] = aObjectClass;
@@ -397,9 +440,9 @@ public class CTAKESScriptService implements ScriptService, Initializable
         Object[] configVals = new Object[5];
 
         configVals[0] =
-                "org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation";
+                LOOKUP_WINDOW_PATH;
         configVals[1] =
-                "org.apache.ctakes.typesystem.type.textspan.LookupWindowAnnotation";
+                LOOKUP_WINDOW_PATH;
         configVals[2] = "A_ENV_B";
         configVals[3] = "DELETE";
         String[] deleteActionArray = new String[1];
@@ -415,16 +458,25 @@ public class CTAKESScriptService implements ScriptService, Initializable
         return overlapdesc;
     }
 
-    public final List<Map<String,Object>> extract(String input)
+    /** 
+     * Method to get list of extracted terms from the textual notes.
+     * @param input the text entered 
+     * @return list of Extracted Terms
+     * @throws ResourceInitializationException if any of the resource for Annotators is missing
+     * @throws AnalysisEngineProcessException if unable to process the textual input
+     * @throws IOException if unable to open the index-directory
+     * @throws ParseException if unable to parse the lucene index
+     * */
+    public final List<Map<String, Object>> extract(String input)
         throws ResourceInitializationException, AnalysisEngineProcessException, IOException, ParseException {
 
         Map<String, ExtractedTerm> finalTerms =
                 new HashMap<String, ExtractedTerm>();
         
-        List<Map<String,Object>> tobeReturned = 
-                new ArrayList<Map<String,Object>>();
+        List<Map<String, Object>> tobeReturned = 
+                new ArrayList<Map<String, Object>>();
         
-        Map<String,String> hpoTerm = new HashMap<String, String>();
+        Map<String, String> hpoTerm = new HashMap<String, String>();
         
         
         JCas jCas  =  analysisEng.newJCas();
@@ -441,8 +493,8 @@ public class CTAKESScriptService implements ScriptService, Initializable
         firstTerm.setBeginIndex(firstentity.getBegin());
         firstTerm.setEndIndex(firstentity.getEnd());
         hpoTerm = getHPOTerm(firstentity.getCoveredText());
-        firstTerm.setId(hpoTerm.get("id"));
-        firstTerm.setTerm(hpoTerm.get("term"));
+        firstTerm.setId(hpoTerm.get(ID));
+        firstTerm.setTerm(hpoTerm.get(TERM));
         finalTerms.put(firstentity.getCoveredText(), firstTerm);
 
         while (entityIter.hasNext())  {
@@ -464,8 +516,8 @@ public class CTAKESScriptService implements ScriptService, Initializable
                             + " " + entity.getCoveredText());
                     hpoTerm = getHPOTerm(entry.getKey() 
                             + " " + entity.getCoveredText());
-                    temp.setId(hpoTerm.get("id"));
-                    temp.setTerm(hpoTerm.get("term"));
+                    temp.setId(hpoTerm.get(ID));
+                    temp.setTerm(hpoTerm.get(TERM));
                     finalTerms.remove(entry.getKey());
                     finalTerms.put(entry.getKey()
                             + " " + entity.getCoveredText(), temp);
@@ -478,17 +530,17 @@ public class CTAKESScriptService implements ScriptService, Initializable
                 temp.setBeginIndex(entity.getBegin());
                 temp.setExtractedText(entity.getCoveredText());
                 hpoTerm = getHPOTerm(entity.getCoveredText());
-                temp.setId(hpoTerm.get("id"));
-                temp.setTerm(hpoTerm.get("term"));
+                temp.setId(hpoTerm.get(ID));
+                temp.setTerm(hpoTerm.get(TERM));
                 finalTerms.put(entity.getCoveredText(), temp);
             }
         }
         
-        for(Entry<String, ExtractedTerm> entry : finalTerms.entrySet()){
-            Map<String,Object> temp = new HashMap<String, Object>();
-            temp.put("id", entry.getValue().getId());
-            temp.put("term", entry.getValue().getTerm());
-            temp.put("text", entry.getValue().getExtractedText());
+        for (Entry<String, ExtractedTerm> entry : finalTerms.entrySet()) {
+            Map<String, Object> temp = new HashMap<String, Object>();
+            temp.put(ID, entry.getValue().getId());
+            temp.put(TERM, entry.getValue().getTerm());
+            temp.put(TEXT, entry.getValue().getExtractedText());
             temp.put("begin", entry.getValue().getBeginIndex());
             temp.put("end", entry.getValue().getEndIndex());
             
@@ -497,25 +549,32 @@ public class CTAKESScriptService implements ScriptService, Initializable
         return tobeReturned;
     }
 
+    /** 
+     * Method to get the HPO term ID and actual term for the extracted text.
+     * @param coveredText the extracted text
+     * @return Map of HPO ID and HPO TERM
+     * @throws IOException if directory not present
+     * @throws ParseException if unable to parse the file
+     * */
     private Map<String, String> getHPOTerm(String coveredText) throws IOException, ParseException {
-        Map<String, String> hpoTerm= new HashMap<String, String>();
-        Directory directory = FSDirectory.open(new File("webapps/phenotips/resources/cTAKES/"
+        Map<String, String> hpoTerm = new HashMap<String, String>();
+        Directory directory = FSDirectory.open(new File(INIT_PATH
                 + "index-directory"));
         IndexReader indexReader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(indexReader);
        
         QueryParser parser = new QueryParser(
-                Version.LUCENE_40, "text",
+                Version.LUCENE_40, TEXT,
                 new StandardAnalyzer(Version.LUCENE_40));
         
         String search = coveredText;
         Query query = parser.parse(search);
-        TopDocs topdocs = searcher.search(query,2);
+        TopDocs topdocs = searcher.search(query, 2);
         ScoreDoc[] hits = topdocs.scoreDocs; 
-        for(ScoreDoc hit: hits){
+        for (ScoreDoc hit: hits) {
             Document documentFromSearcher = searcher.doc(hit.doc);
-            hpoTerm.put("id",documentFromSearcher.get("code"));
-            hpoTerm.put("term",documentFromSearcher.get("text"));
+            hpoTerm.put(ID, documentFromSearcher.get("code"));
+            hpoTerm.put(TERM, documentFromSearcher.get(TEXT));
             break;
         }
 
