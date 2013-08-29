@@ -19,16 +19,6 @@
  */
 package org.phenotips.listeners;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.phenotips.solr.HPOScriptService;
 
 import org.xwiki.bridge.event.DocumentCreatingEvent;
@@ -43,9 +33,18 @@ import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 import org.xwiki.script.service.ScriptService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
 
 /**
  * Update the extended_*_phenotype aggregated properties whenever the phenotypes change.

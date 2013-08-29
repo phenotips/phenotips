@@ -19,22 +19,7 @@
  */
 package org.phenotips.tools;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
-
-import org.apache.commons.io.output.NullWriter;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.velocity.VelocityContext;
-import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.event.AbstractDocumentEvent;
 import org.xwiki.bridge.event.DocumentDeletedEvent;
@@ -54,6 +39,23 @@ import org.xwiki.script.service.ScriptService;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.VelocityManager;
 import org.xwiki.velocity.XWikiVelocityException;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
+
+import org.apache.commons.io.output.NullWriter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.velocity.VelocityContext;
+import org.slf4j.Logger;
 
 /**
  * Provides access to the phenotype mappings configured for the current space. The field mappings are defined by a

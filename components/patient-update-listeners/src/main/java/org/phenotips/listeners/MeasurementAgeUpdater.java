@@ -19,6 +19,13 @@
  */
 package org.phenotips.listeners;
 
+import org.xwiki.bridge.event.DocumentCreatingEvent;
+import org.xwiki.bridge.event.DocumentUpdatingEvent;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.observation.EventListener;
+import org.xwiki.observation.event.Event;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -28,12 +35,6 @@ import javax.inject.Singleton;
 
 import org.joda.time.DateTime;
 import org.joda.time.Months;
-import org.xwiki.bridge.event.DocumentCreatingEvent;
-import org.xwiki.bridge.event.DocumentUpdatingEvent;
-import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.observation.EventListener;
-import org.xwiki.observation.event.Event;
 
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
