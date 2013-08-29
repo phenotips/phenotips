@@ -19,6 +19,7 @@
  */
 package org.phenotips.data.internal;
 
+import org.phenotips.Constants;
 import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
@@ -53,11 +54,11 @@ public class PhenoTipsPatient implements Patient
 {
     /** The XClass used for storing patient data. */
     public static final EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT,
-        new EntityReference("PhenoTips", EntityType.SPACE));
+        Constants.CODE_SPACE_REFERENCE);
 
     /** The default template for creating a new patient. */
     public static final EntityReference TEMPLATE_REFERENCE = new EntityReference("PatientTemplate",
-        EntityType.DOCUMENT, CLASS_REFERENCE.getParent());
+        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /** The default space where patient data is stored. */
     public static final EntityReference DEFAULT_DATA_SPACE = new EntityReference("data", EntityType.SPACE);

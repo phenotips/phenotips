@@ -32,6 +32,7 @@
   <name>PhenoTips - Various Java components</name>
 
   <modules>
+    <module>constants</module>
     <module>component-registry</module>
     <module>obo2solr</module>
     <module>solr-access-service</module>

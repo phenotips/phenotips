@@ -20,6 +20,8 @@
 
 package org.phenotips.data.internal;
 
+import org.phenotips.Constants;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -107,7 +109,7 @@ public class R50291PhenoTips481DataMigration extends AbstractHibernateDataMigrat
         XWikiContext context = getXWikiContext();
         XWiki xwiki = context.getWiki();
         DocumentReference patientClassReference =
-            new DocumentReference(context.getDatabase(), "PhenoTips", "PatientClass");
+            new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "PatientClass");
         DocumentReference relativeClassReference =
             new DocumentReference("RelativeClass", patientClassReference.getLastSpaceReference());
         Query q =

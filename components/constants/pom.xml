@@ -24,26 +24,18 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>patient-measurements</artifactId>
+    <artifactId>phenotips-components</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-measurements-migrations</artifactId>
-  <name>PhenoTips - Patient measurements - Data migrations</name>
+  <artifactId>phenotips-constants</artifactId>
+  <name>PhenoTips - Data model constants</name>
+  <description>Frequently used values in the rest of the code, gathered in one place.</description>
+
   <dependencies>
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-api</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-oldcore</artifactId>
+      <artifactId>xwiki-platform-model</artifactId>
       <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-constants</artifactId>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>

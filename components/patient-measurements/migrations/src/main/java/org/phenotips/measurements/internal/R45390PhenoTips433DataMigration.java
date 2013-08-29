@@ -20,6 +20,8 @@
 
 package org.phenotips.measurements.internal;
 
+import org.phenotips.Constants;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
@@ -68,7 +70,7 @@ public class R45390PhenoTips433DataMigration extends AbstractHibernateDataMigrat
 
     /** The new class, without a wiki specified. */
     private static final EntityReference NEW_CLASS = new EntityReference(OLD_CLASS.getName(), EntityType.DOCUMENT,
-        new EntityReference("PhenoTips", EntityType.SPACE));
+        Constants.CODE_SPACE_REFERENCE);
 
     /** Resolves unprefixed document names to the current wiki. */
     @Inject
