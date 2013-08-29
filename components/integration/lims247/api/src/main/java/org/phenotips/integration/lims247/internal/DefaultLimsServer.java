@@ -19,6 +19,7 @@
  */
 package org.phenotips.integration.lims247.internal;
 
+import org.phenotips.Constants;
 import org.phenotips.integration.lims247.LimsServer;
 
 import org.xwiki.component.annotation.Component;
@@ -178,7 +179,7 @@ public class DefaultLimsServer implements LimsServer
         XWikiDocument prefsDoc =
             xwiki.getDocument(new DocumentReference(xwiki.getDatabase(), "XWiki", "XWikiPreferences"), context);
         BaseObject serverConfiguration =
-            prefsDoc.getXObject(new DocumentReference(xwiki.getDatabase(), "PhenoTips", "LimsAuthServer"),
+            prefsDoc.getXObject(new DocumentReference(xwiki.getDatabase(), Constants.CODE_SPACE, "LimsAuthServer"),
                 INSTANCE_IDENTIFIER_KEY, pn);
         if (serverConfiguration != null) {
             String result = serverConfiguration.getStringValue("url");

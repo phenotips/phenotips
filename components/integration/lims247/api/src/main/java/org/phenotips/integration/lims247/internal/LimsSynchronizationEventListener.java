@@ -19,6 +19,7 @@
  */
 package org.phenotips.integration.lims247.internal;
 
+import org.phenotips.Constants;
 import org.phenotips.integration.lims247.Lims247AuthServiceImpl;
 import org.phenotips.integration.lims247.LimsAuthentication;
 import org.phenotips.integration.lims247.LimsServer;
@@ -66,7 +67,7 @@ public class LimsSynchronizationEventListener implements EventListener
 {
     /** The XClass used for storing patient data. */
     private static final EntityReference PATIENT_CLASS = new EntityReference("PatientClass", EntityType.DOCUMENT,
-        new EntityReference("PhenoTips", EntityType.SPACE));
+        Constants.CODE_SPACE_REFERENCE);
 
     /** The JSON key for the event type. */
     private static final String EVENT_KEY = "event";
@@ -201,7 +202,7 @@ public class LimsSynchronizationEventListener implements EventListener
             XWiki xwiki = context.getWiki();
             XWikiDocument prefsDoc =
                 xwiki.getDocument(new DocumentReference(xwiki.getDatabase(), "XWiki", "XWikiPreferences"), context);
-            return prefsDoc.getXObjects(new DocumentReference(xwiki.getDatabase(), PATIENT_CLASS.getParent().getName(),
+            return prefsDoc.getXObjects(new DocumentReference(xwiki.getDatabase(), Constants.CODE_SPACE,
                 "LimsAuthServer"));
         } catch (XWikiException ex) {
             return Collections.emptyList();

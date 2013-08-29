@@ -19,6 +19,7 @@
  */
 package org.phenotips.listeners;
 
+import org.phenotips.Constants;
 
 import org.xwiki.bridge.event.DocumentCreatingEvent;
 import org.xwiki.bridge.event.DocumentUpdatingEvent;
@@ -55,12 +56,9 @@ import com.xpn.xwiki.objects.classes.BaseClass;
 @Singleton
 public class FreePhenotypeCategoryUpdater implements EventListener
 {
-    /** The name of the space where the PhenoTips classes are. */
-    private static final String PHENOTIPS_CODE_SPACE = "PhenoTips";
-
     /** The name of the class where the mapping between phenotypes and categories is stored. */
     private static final EntityReference CATEGORY_CLASS_REFERENCE = new EntityReference("PhenotypeCategoryClass",
-        EntityType.DOCUMENT, new EntityReference(PHENOTIPS_CODE_SPACE, EntityType.SPACE));
+        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /** The name of the mapping class property where the phenotype property name is stored. */
     private static final String NAME_PROPETY_NAME = "target_property_name";
@@ -95,8 +93,8 @@ public class FreePhenotypeCategoryUpdater implements EventListener
         XWikiDocument doc = (XWikiDocument) source;
 
         BaseObject patientRecordObj =
-            doc.getXObject(new DocumentReference(doc.getDocumentReference().getRoot().getName(), PHENOTIPS_CODE_SPACE,
-                "PatientClass"));
+            doc.getXObject(new DocumentReference(doc.getDocumentReference().getWikiReference().getName(),
+                Constants.CODE_SPACE, "PatientClass"));
         if (patientRecordObj == null) {
             return;
         }
@@ -182,7 +180,8 @@ public class FreePhenotypeCategoryUpdater implements EventListener
      */
     private List<String> getParameter(String propertyName, int objectNumber)
     {
-        String parameterName = MessageFormat.format("PhenoTips.PatientClass_{0}_{1}", objectNumber, propertyName);
+        String parameterName =
+            MessageFormat.format("{0}.PatientClass_{1}_{2}", Constants.CODE_SPACE, objectNumber, propertyName);
         String[] parameters =
             ((ServletRequest) this.container.getRequest()).getHttpServletRequest().getParameterValues(parameterName);
         if (parameters == null) {

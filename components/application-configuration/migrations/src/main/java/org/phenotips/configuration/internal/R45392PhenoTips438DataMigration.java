@@ -20,6 +20,7 @@
 
 package org.phenotips.configuration.internal;
 
+import org.phenotips.Constants;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -117,7 +118,7 @@ public class R45392PhenoTips438DataMigration extends AbstractHibernateDataMigrat
             DocumentReference oldClassReference =
                 new DocumentReference(context.getDatabase(), "ClinicalInformationCode", this.className);
             DocumentReference newClassReference =
-                new DocumentReference(context.getDatabase(), "PhenoTips", this.className);
+                new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, this.className);
             String localOldClassName = R45392PhenoTips438DataMigration.this.serializer.serialize(oldClassReference);
             Query q =
                 session.createQuery("select distinct o.name from BaseObject o where o.className = '"

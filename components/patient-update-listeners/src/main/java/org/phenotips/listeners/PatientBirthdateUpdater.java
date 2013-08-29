@@ -19,6 +19,8 @@
  */
 package org.phenotips.listeners;
 
+import org.phenotips.Constants;
+
 import org.xwiki.bridge.event.DocumentCreatingEvent;
 import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
@@ -75,7 +77,7 @@ public class PatientBirthdateUpdater implements EventListener
         XWikiDocument doc = (XWikiDocument) source;
 
         BaseObject patientRecordObj = doc.getXObject(new DocumentReference(
-            doc.getDocumentReference().getRoot().getName(), "PhenoTips", "PatientClass"));
+            doc.getDocumentReference().getRoot().getName(), Constants.CODE_SPACE, "PatientClass"));
         if (patientRecordObj == null) {
             return;
         }
@@ -107,7 +109,7 @@ public class PatientBirthdateUpdater implements EventListener
      */
     private int getParameter(String propertyName, int objectNumber)
     {
-        String parameterName = "PhenoTips.PatientClass_" + objectNumber + "_" + propertyName;
+        String parameterName = Constants.CODE_SPACE + ".PatientClass_" + objectNumber + "_" + propertyName;
         String value = (String) this.container.getRequest().getProperty(parameterName);
         if (StringUtils.isEmpty(value)) {
             return -1;

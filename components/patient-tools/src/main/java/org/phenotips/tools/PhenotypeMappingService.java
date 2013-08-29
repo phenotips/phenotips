@@ -19,6 +19,7 @@
  */
 package org.phenotips.tools;
 
+import org.phenotips.Constants;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.event.AbstractDocumentEvent;
@@ -340,8 +341,8 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
     {
         DocumentReference currentDocRef = this.bridge.getCurrentDocumentReference();
         DocumentReference homeDocRef = new DocumentReference("WebHome", currentDocRef.getLastSpaceReference());
-        DocumentReference classDocRef =
-            new DocumentReference(currentDocRef.getWikiReference().getName(), "PhenoTips", "DBConfigurationClass");
+        DocumentReference classDocRef = new DocumentReference(currentDocRef.getWikiReference().getName(),
+            Constants.CODE_SPACE, "DBConfigurationClass");
         String targetMappingName = (String) this.bridge.getProperty(homeDocRef, classDocRef, "phenotypeMapping");
         return new DocumentReference(this.resolver.resolve(targetMappingName, EntityType.DOCUMENT));
     }

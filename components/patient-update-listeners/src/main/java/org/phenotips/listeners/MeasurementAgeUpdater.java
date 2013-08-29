@@ -19,6 +19,8 @@
  */
 package org.phenotips.listeners;
 
+import org.phenotips.Constants;
+
 import org.xwiki.bridge.event.DocumentCreatingEvent;
 import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
@@ -51,9 +53,6 @@ import com.xpn.xwiki.objects.PropertyInterface;
 @Singleton
 public class MeasurementAgeUpdater implements EventListener
 {
-    /** The space where the classes are. */
-    private static final String CODE_SPACE = "PhenoTips";
-
     @Override
     public String getName()
     {
@@ -73,7 +72,7 @@ public class MeasurementAgeUpdater implements EventListener
         XWikiDocument doc = (XWikiDocument) source;
 
         BaseObject patientRecordObj = doc.getXObject(new DocumentReference(
-            doc.getDocumentReference().getRoot().getName(), CODE_SPACE, "PatientClass"));
+            doc.getDocumentReference().getRoot().getName(), Constants.CODE_SPACE, "PatientClass"));
         if (patientRecordObj == null) {
             return;
         }
@@ -83,7 +82,7 @@ public class MeasurementAgeUpdater implements EventListener
         }
         String targetPropertyName = "age";
         List<BaseObject> objects = doc.getXObjects(new DocumentReference(
-            doc.getDocumentReference().getRoot().getName(), CODE_SPACE, "MeasurementsClass"));
+            doc.getDocumentReference().getRoot().getName(), Constants.CODE_SPACE, "MeasurementsClass"));
         if (objects == null || objects.isEmpty()) {
             return;
         }

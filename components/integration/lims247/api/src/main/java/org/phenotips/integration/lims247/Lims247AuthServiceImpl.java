@@ -19,6 +19,8 @@
  */
 package org.phenotips.integration.lims247;
 
+import org.phenotips.Constants;
+
 import org.xwiki.csrf.CSRFToken;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.WikiReference;
@@ -180,9 +182,9 @@ public class Lims247AuthServiceImpl extends XWikiAuthServiceImpl implements XWik
      */
     private void setupContextForLims(XWikiContext context)
     {
-        if (context.getWiki().exists(new DocumentReference(context.getDatabase(), "PhenoTips", "EmbeddableSkin"),
-            context)) {
-            context.put("skin", "PhenoTips.EmbeddableSkin");
+        if (context.getWiki().exists(
+            new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "EmbeddableSkin"), context)) {
+            context.put("skin", Constants.CODE_SPACE + ".EmbeddableSkin");
         }
     }
 }

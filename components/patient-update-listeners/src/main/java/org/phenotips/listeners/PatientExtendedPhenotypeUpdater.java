@@ -19,6 +19,7 @@
  */
 package org.phenotips.listeners;
 
+import org.phenotips.Constants;
 import org.phenotips.solr.HPOScriptService;
 
 import org.xwiki.bridge.event.DocumentCreatingEvent;
@@ -97,7 +98,7 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
 
         BaseObject patientRecordObj =
             doc.getXObject(new DocumentReference(doc.getDocumentReference().getRoot().getName(),
-                "PhenoTips", "PatientClass"));
+                Constants.CODE_SPACE, "PatientClass"));
         if (patientRecordObj == null) {
             return;
         }
