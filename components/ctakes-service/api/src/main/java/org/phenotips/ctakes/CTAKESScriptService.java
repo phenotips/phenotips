@@ -63,16 +63,14 @@ import org.apache.lucene.util.Version;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.FSIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.apache.uima.resource.ExternalResourceDependency;
 import org.apache.uima.resource.ExternalResourceDescription;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.uima.resource.impl.ExternalResourceDependency_impl;
 import org.apache.uima.resource.metadata.ConfigurationParameter;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.apache.uima.resource.metadata.impl.TypeSystemDescription_impl;
+import org.apache.uima.util.InvalidXMLException;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.factory.ConfigurationParameterFactory;
 import org.uimafit.factory.ExternalResourceFactory;
@@ -113,6 +111,9 @@ public class CTAKESScriptService implements ScriptService, Initializable
     private static final String INIT_PATH = 
             "webapps/phenotips/resources/cTAKES/";
     
+    /** String for Noun. */
+    private String nn = "NN";
+    
     /** Analysis Engine for extraction of terms from Doctor's text. */
     private AnalysisEngine analysisEng;
     
@@ -124,87 +125,56 @@ public class CTAKESScriptService implements ScriptService, Initializable
     private Class<FileResourceImpl> fileResClassImpl = 
             org.apache.ctakes.core.resource.FileResourceImpl.class;
 
+    /** String for holding type system. */
+    private String tsdst = "org.apache.ctakes.typesystem.types.TypeSystem";
+    
+    /** Type System Description. */
+    private TypeSystemDescription tsd =
+            TypeSystemDescriptionFactory.createTypeSystemDescription(tsdst);
     @Override
     public final void initialize() throws InitializationException {
-        String tsdst = "org.apache.ctakes.typesystem.types.TypeSystem";
-        TypeSystemDescription tsd =
-                TypeSystemDescriptionFactory.createTypeSystemDescription(tsdst);
-
+       
         try {
             //Segmentation
-            Class<SimpleSegmentAnnotator> ssA = SimpleSegmentAnnotator.class;
             AnalysisEngineDescription simpleSegmentDesc =
-                    AnalysisEngineFactory.createPrimitiveDescription(ssA);
+                    AnalysisEngineFactory.createPrimitiveDescription(
+                            SimpleSegmentAnnotator.class);
 
             //Tokenizer
-            Class<TokenizerAnnotatorPTB> taC = TokenizerAnnotatorPTB.class;
             AnalysisEngineDescription tokenizerDesc =
-                    AnalysisEngineFactory.createPrimitiveDescription(taC, tsd);
+                    AnalysisEngineFactory.createPrimitiveDescription(
+                            TokenizerAnnotatorPTB.class, tsd);
 
-            //Sentence Detection 
-            String senturl = INIT_PATH 
-                    + "SentenceDetection/sd-med-model.zip";
+            //Sentence Detection           
             AnalysisEngineDescription sentDetectDesc =
                     AnalysisEngineFactory.createPrimitiveDescription(
                             SentenceDetector.class, 
-                            SentenceDetector.SD_MODEL_FILE_PARAM, senturl);
-
+                            SentenceDetector.SD_MODEL_FILE_PARAM, INIT_PATH 
+                            + "SentenceDetection/sd-med-model.zip");
 
             //context dependent tokenizer
-            Class<ContextDependentTokenizerAnnotator> cdta =
-                    ContextDependentTokenizerAnnotator.class;
             AnalysisEngineDescription contextDependentTokenizerDesc =
-                    AnalysisEngineFactory.createPrimitiveDescription(cdta);
+                    AnalysisEngineFactory.createPrimitiveDescription(
+                            ContextDependentTokenizerAnnotator.class);
 
             //POS Tagger
-            String posresfile = INIT_PATH 
-                    + "POSTagger/mayo-pos.zip";
             AnalysisEngineDescription posTagdesc =
                     AnalysisEngineFactory.createPrimitiveDescription(
                             POSTagger.class, tsd,
-                            POSTagger.POS_MODEL_FILE_PARAM, posresfile);
-
+                            POSTagger.POS_MODEL_FILE_PARAM, INIT_PATH 
+                            + "POSTagger/mayo-pos.zip");
 
             //Chunker
-            String chunkfileres = INIT_PATH
-                    + "Chunker/chunk-model-claims-1-5.zip";
-            String chunkurl = new File(chunkfileres).toURI().toURL().toString();
-            String chunkp = "org.apache.ctakes.chunker.ae.DefaultChunkCreator";
-            ExternalResourceDescription chunkererd =
-                    ExternalResourceFactory.createExternalResourceDescription(
-                            "ChunkerModelFile", fileResClassImpl, chunkurl);
-            String chunkerModel = "ChunkerModel";
-            AnalysisEngineDescription chunkerDesc =
-                    AnalysisEngineFactory.createPrimitiveDescription(
-                            Chunker.class, tsd,
-                            Chunker.CHUNKER_MODEL_FILE_PARAM, chunkfileres,
-                            Chunker.CHUNKER_CREATOR_CLASS_PARAM, chunkp,
-                            chunkerModel, chunkererd);
-
-            ExternalResourceFactory.createDependency(
-                    chunkerDesc, chunkerModel, fileResClass);
-
+            AnalysisEngineDescription chunkerDesc = 
+                    getChunkerDesc();
+                    
             //Chunk Adjuster NN
-            String nn = "NN";
-            String[] chunkPattern = new String[2];
-            chunkPattern[0] = nn;
-            chunkPattern[1] = nn;
-            AnalysisEngineDescription chunkAdjusterDesc =
-                    AnalysisEngineFactory.createPrimitiveDescription(
-                            ChunkAdjuster.class, null,
-                            ChunkAdjuster.PARAM_CHUNK_PATTERN, chunkPattern,
-                            ChunkAdjuster.PARAM_EXTEND_TO_INCLUDE_TOKEN, 1);
+            AnalysisEngineDescription chunkAdjusterDesc = 
+                    getChunkerAdjustNoun();
 
             //chunk adjuster PN
-            String[] chunkPatternPN = new String[3];
-            chunkPatternPN[0] = nn;
-            chunkPatternPN[1] = "PN";
-            chunkPatternPN[2] = nn;
             AnalysisEngineDescription chunkAdjusterPNDesc =
-                    AnalysisEngineFactory.createPrimitiveDescription(
-                            ChunkAdjuster.class, null,
-                            ChunkAdjuster.PARAM_EXTEND_TO_INCLUDE_TOKEN, 2,
-                            ChunkAdjuster.PARAM_CHUNK_PATTERN, chunkPatternPN);
+                    getChunkAdjustPN();
 
             //Lookup Annotators
             //Overlap Annotators
@@ -219,54 +189,149 @@ public class CTAKESScriptService implements ScriptService, Initializable
             //Final Analysis Engine Description
             List<AnalysisEngineDescription> aedList =
                     new ArrayList<AnalysisEngineDescription>();
-            List<String> components = new ArrayList<String>();
-
-            aedList.add(simpleSegmentDesc);
-            components.add("SimpleSegmentAnnotator");
-            aedList.add(sentDetectDesc);
-            components.add("SentenceDetector");
-            aedList.add(tokenizerDesc);
-            components.add("TokenizerAnnotator");
+            
+            aedList.add(simpleSegmentDesc);            
+            aedList.add(sentDetectDesc);            
+            aedList.add(tokenizerDesc);            
             aedList.add(contextDependentTokenizerDesc);
-            components.add("ContextDependentTokenizer");
-            aedList.add(posTagdesc);
-            components.add("POSTagger");
-            aedList.add(chunkerDesc);
-            components.add("Chunker");
-            aedList.add(chunkAdjusterDesc);
-            components.add("AdjustNounPhraseToIncludeFollowingNP");
-            aedList.add(chunkAdjusterPNDesc);
-            components.add("AdjustNounPhraseToIncludeFollowingPPNP");
-            aedList.add(overlapdesc);
-            components.add("OverlapAnnotator-Lookup");
-            aedList.add(copyADesc);
-            components.add("CopyAnnotator-Lookup");
-            aedList.add(dictlookupDesc);
-            components.add("Dictionary Lookup");
+            aedList.add(posTagdesc);           
+            aedList.add(chunkerDesc);            
+            aedList.add(chunkAdjusterDesc);            
+            aedList.add(chunkAdjusterPNDesc);           
+            aedList.add(overlapdesc);           
+            aedList.add(copyADesc);            
+            aedList.add(dictlookupDesc);           
 
             // Create the Analysis Engine
-            AnalysisEngineDescription analysisEngdesc = 
-                    AnalysisEngineFactory.createAggregateDescription(
-                            aedList, components, 
-                            null, null, null, null);
-            ConfigurationParameter[] finalDescConfParam = 
-                    new ConfigurationParameter[1];
-            ConfigurationParameter chunkCreatorClass = 
-                    ConfigurationParameterFactory.createPrimitiveParameter(
-                            "ChunkCreatorClass", String.class, DESC, true);
-            finalDescConfParam[0] = chunkCreatorClass;
-            Object[] finalDescConfVals = new Object[1];
-            finalDescConfVals[0] = "org.apache.ctakes.chunker.ae.PhraseTypeChunkCreator";
-
-            ResourceCreationSpecifierFactory.setConfigurationParameters(
-                    analysisEngdesc, finalDescConfParam, finalDescConfVals);
+            
                         
             analysisEng = AnalysisEngineFactory.createAggregate(
-                    analysisEngdesc);
+                    getAnalysisEngineDesc(aedList));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    
+    
+    /** 
+     * Method to get Final AnalysisEngineDescription.
+     * @return analysisEngdesc the description of analysis engine
+     * @param aedList the list of annotators descriptions
+     * @throws ResourceInitializationException on unavailability of resource
+     * */
+    private AnalysisEngineDescription getAnalysisEngineDesc(
+        List<AnalysisEngineDescription> aedList) 
+        throws ResourceInitializationException {
+        
+        AnalysisEngineDescription analysisEngdesc = 
+                AnalysisEngineFactory.createAggregateDescription(
+                        aedList, getComponents(), 
+                        null, null, null, null);
+        ConfigurationParameter[] finalDescConfParam = 
+                new ConfigurationParameter[1];
+        ConfigurationParameter chunkCreatorClass = 
+                ConfigurationParameterFactory.createPrimitiveParameter(
+                        "ChunkCreatorClass", String.class, DESC, true);
+        finalDescConfParam[0] = chunkCreatorClass;
+        Object[] finalDescConfVals = new Object[1];
+        finalDescConfVals[0] = "org.apache.ctakes.chunker.ae.PhraseTypeChunkCreator";
+
+        ResourceCreationSpecifierFactory.setConfigurationParameters(
+                analysisEngdesc, finalDescConfParam, finalDescConfVals);
+        
+        return analysisEngdesc;
+    }
+    
+    /** 
+     * Method to get list of the names of all the annotators used.
+     * @return components the list annotators names
+     * */
+    private List<String> getComponents() {
+        List<String> components = new ArrayList<String>();
+        components.add("SimpleSegmentAnnotator");
+        components.add("SentenceDetector");
+        components.add("TokenizerAnnotator");
+        components.add("ContextDependentTokenizer");
+        components.add("POSTagger");
+        components.add("Chunker");
+        components.add("AdjustNounPhraseToIncludeFollowingNP");
+        components.add("AdjustNounPhraseToIncludeFollowingPPNP");
+        components.add("OverlapAnnotator-Lookup");
+        components.add("CopyAnnotator-Lookup");
+        components.add("Dictionary Lookup");
+        return components;
+    }
+    /** 
+     * Method to get Description of Chunk Adjuster Pronoun Annotator.
+     * @return ChunkAdjustPronounDescription the desc of annotator
+     * @throws ResourceInitializationException on unavailability of resource
+     * */
+    private AnalysisEngineDescription getChunkAdjustPN() 
+        throws ResourceInitializationException {
+       
+        String[] chunkPatternPN = new String[3];
+        chunkPatternPN[0] = nn;
+        chunkPatternPN[1] = "PN";
+        chunkPatternPN[2] = nn;
+        AnalysisEngineDescription chunkAdjusterPNDesc =
+                AnalysisEngineFactory.createPrimitiveDescription(
+                        ChunkAdjuster.class, null,
+                        ChunkAdjuster.PARAM_EXTEND_TO_INCLUDE_TOKEN, 2,
+                        ChunkAdjuster.PARAM_CHUNK_PATTERN, chunkPatternPN);
+        
+        return chunkAdjusterPNDesc;
+        
+    }
+    
+    /** 
+     * Method to get Description of Chunker Annotator.
+     * @return ChunkAnnotatorNounDescription the desc of annotator
+     * @throws ResourceInitializationException on unavailability of resource
+     * */
+    private AnalysisEngineDescription getChunkerAdjustNoun() 
+        throws ResourceInitializationException {
+        
+        String[] chunkPattern = new String[2];
+        chunkPattern[0] = nn;
+        chunkPattern[1] = nn;
+        AnalysisEngineDescription chunkAdjusterDesc =
+                AnalysisEngineFactory.createPrimitiveDescription(
+                        ChunkAdjuster.class, null,
+                        ChunkAdjuster.PARAM_CHUNK_PATTERN, chunkPattern,
+                        ChunkAdjuster.PARAM_EXTEND_TO_INCLUDE_TOKEN, 1);
+        return chunkAdjusterDesc;
+    }
+    /** 
+     * Method to get Description of Chunker Annotator.
+     * @return ChunkerDescription the desc 
+     * @throws ResourceInitializationException on unavailability of resource
+     * @throws MalformedURLException on unavailability of file resource
+     * @throws InvalidXMLException if invalid desc xml generated
+     * */
+    private AnalysisEngineDescription getChunkerDesc()
+        throws MalformedURLException, ResourceInitializationException, 
+            InvalidXMLException {
+        String chunkfileres = INIT_PATH
+                + "Chunker/chunk-model-claims-1-5.zip";
+        String chunkurl = new File(chunkfileres).toURI().toURL().toString();
+        String chunkp = "org.apache.ctakes.chunker.ae.DefaultChunkCreator";
+        ExternalResourceDescription chunkererd =
+                ExternalResourceFactory.createExternalResourceDescription(
+                        "ChunkerModelFile", fileResClassImpl, chunkurl);
+        String chunkerModel = "ChunkerModel";
+        AnalysisEngineDescription chunkerDesc =
+                AnalysisEngineFactory.createPrimitiveDescription(
+                        Chunker.class, tsd,
+                        Chunker.CHUNKER_MODEL_FILE_PARAM, chunkfileres,
+                        Chunker.CHUNKER_CREATOR_CLASS_PARAM, chunkp,
+                        chunkerModel, chunkererd);
+
+        ExternalResourceFactory.createDependency(
+                chunkerDesc, chunkerModel, fileResClass);
+        
+        return chunkerDesc;
+    }
+    
     /** 
      * Method to get Dictionary Lookup Annotator.
      * @return DictionaryLookupDescription
@@ -299,11 +364,11 @@ public class CTAKESScriptService implements ScriptService, Initializable
         
         Class<LuceneIndexReaderResourceImpl> luceneResClassImpl =
                 org.apache.ctakes.core.resource.LuceneIndexReaderResourceImpl.class;
-        String luceneResClassStr =
+      /*  String luceneResClassStr =
                 "org.apache.ctakes.core.resource.LuceneIndexReaderResource";
         String fileResClassStr =
                 "org.apache.ctakes.core.resource.FileResource";
-
+*/
         ExternalResourceDescription dictERD1 =
                 ExternalResourceFactory.createExternalResourceDescription(
                         "LookupDescriptorFile", fileResClassImpl, fileurl);
@@ -333,7 +398,7 @@ public class CTAKESScriptService implements ScriptService, Initializable
                 AnalysisEngineFactory.createPrimitiveDescription(
                         DictionaryLookupAnnotator.class, null, null, null, null,
                         dictconfParam, dictconfVals, dictMap);
-
+/*
         ExternalResourceDependency[] dictD = new ExternalResourceDependency[4];
         ExternalResourceDependency dicterd1 =
                 new ExternalResourceDependency_impl();
@@ -353,7 +418,7 @@ public class CTAKESScriptService implements ScriptService, Initializable
         dicterd4.setInterfaceName(luceneResClassStr);
         dictD[0] = dicterd1; dictD[1] = dicterd2;
         dictD[2] = dicterd3; dictD[3] = dicterd4;
-        dictAED.setExternalResourceDependencies(dictD);
+        dictAED.setExternalResourceDependencies(dictD);*/
 
         return dictAED;
 
@@ -472,34 +537,23 @@ public class CTAKESScriptService implements ScriptService, Initializable
 
         Map<String, ExtractedTerm> finalTerms =
                 new HashMap<String, ExtractedTerm>();
-        
-        List<Map<String, Object>> tobeReturned = 
-                new ArrayList<Map<String, Object>>();
-        
+     
         Map<String, String> hpoTerm = new HashMap<String, String>();
-        
         
         JCas jCas  =  analysisEng.newJCas();
         jCas.setDocumentText(input.toLowerCase());
         analysisEng.process(jCas);
 
-        FSIndex<Annotation> entityIndex  =
-                jCas.getAnnotationIndex(EntityMention.type);
-        Iterator<Annotation> entityIter  =  entityIndex.iterator();
         
-        EntityMention firstentity = (EntityMention) entityIter.next();
-        ExtractedTerm firstTerm  =  new ExtractedTerm();
-        firstTerm.setExtractedText(firstentity.getCoveredText());
-        firstTerm.setBeginIndex(firstentity.getBegin());
-        firstTerm.setEndIndex(firstentity.getEnd());
-        hpoTerm = getHPOTerm(firstentity.getCoveredText());
-        firstTerm.setId(hpoTerm.get(ID));
-        firstTerm.setTerm(hpoTerm.get(TERM));
-        finalTerms.put(firstentity.getCoveredText(), firstTerm);
-
+        Iterator<Annotation> entityIter  =  jCas.getAnnotationIndex(EntityMention.type).iterator();
+        
+        EntityMention entity = (EntityMention) entityIter.next();
+        ExtractedTerm firstTerm = getExtractedTerm(entity);
+        finalTerms.put(entity.getCoveredText(), firstTerm);
+        
         while (entityIter.hasNext())  {
             int flag = 1;
-            EntityMention entity = (EntityMention) entityIter.next();
+            entity = (EntityMention) entityIter.next();
             int tempBegin  =  entity.getBegin();
             for (Entry<String, ExtractedTerm> entry : finalTerms.entrySet()) {
                 if (tempBegin >=  entry.getValue().getBeginIndex()
@@ -525,30 +579,54 @@ public class CTAKESScriptService implements ScriptService, Initializable
                 }
             }
             if (flag == 1) {
-                ExtractedTerm temp  =  new ExtractedTerm();
-                temp.setEndIndex(entity.getEnd());
-                temp.setBeginIndex(entity.getBegin());
-                temp.setExtractedText(entity.getCoveredText());
-                hpoTerm = getHPOTerm(entity.getCoveredText());
-                temp.setId(hpoTerm.get(ID));
-                temp.setTerm(hpoTerm.get(TERM));
+                ExtractedTerm temp  =  getExtractedTerm(entity);
                 finalTerms.put(entity.getCoveredText(), temp);
             }
         }
         
+        return getFinalList(finalTerms);
+    }
+
+    /** 
+     * Method to get the final list of Extracted Terms.
+     * @param finalTerms the map with extracted text as key and Extracted Term object as value 
+     * @return finalListTerms the final list of extracted terms 
+     * */
+    
+    private List<Map<String, Object>> getFinalList(Map<String, ExtractedTerm> finalTerms) {
+        List<Map<String, Object>> finalListTerms = 
+                new ArrayList<Map<String,Object>>();
         for (Entry<String, ExtractedTerm> entry : finalTerms.entrySet()) {
             Map<String, Object> temp = new HashMap<String, Object>();
             temp.put(ID, entry.getValue().getId());
             temp.put(TERM, entry.getValue().getTerm());
             temp.put(TEXT, entry.getValue().getExtractedText());
             temp.put("begin", entry.getValue().getBeginIndex());
-            temp.put("end", entry.getValue().getEndIndex());
-            
-            tobeReturned.add(temp);
+            temp.put("end", entry.getValue().getEndIndex());         
+            finalListTerms.add(temp);
         }
-        return tobeReturned;
+        return finalListTerms;
     }
-
+    /** 
+     * Method to get the whole extracted term object.
+     * @param entity the entity mentioned (annotation) in the text 
+     * @return extractedTerm the whole extracted term 
+     * object of text, begin index, end index, hpo id and hpo term
+     * @throws IOException if directory not present
+     * @throws ParseException if unable to parse the file
+     * */
+    
+    public ExtractedTerm getExtractedTerm(EntityMention entity) throws IOException, ParseException {
+        ExtractedTerm extractedTerm  =  new ExtractedTerm();
+        extractedTerm.setExtractedText(entity.getCoveredText());
+        extractedTerm.setBeginIndex(entity.getBegin());
+        extractedTerm.setEndIndex(entity.getEnd());
+        Map<String, String> hpoTerm = getHPOTerm(entity.getCoveredText());
+        extractedTerm.setId(hpoTerm.get(ID));
+        extractedTerm.setTerm(hpoTerm.get(TERM));
+        
+        return extractedTerm; 
+    }
     /** 
      * Method to get the HPO term ID and actual term for the extracted text.
      * @param coveredText the extracted text
