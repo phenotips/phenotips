@@ -33,7 +33,7 @@ import javax.inject.Singleton;
 
 /**
  * Provides access to the Human Phenotype Ontology (HPO). The ontology prefix is {@code HP}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */

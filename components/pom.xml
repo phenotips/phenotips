@@ -45,6 +45,7 @@
     <module>patient-tools</module>
     <module>ncbieutils-services</module>
     <module>phenotype-mapping-service</module>
+    <module>ctakes-service</module>
     <module>integration</module>
   </modules>
 </project>

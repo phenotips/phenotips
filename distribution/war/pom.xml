@@ -147,6 +147,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>ctakes-service-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>patient-similarity-data</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -158,6 +163,12 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pedigree-editor</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ctakes-resources</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -323,6 +334,12 @@ extension.repositories=extensions.xwiki.org:xwiki:http://extensions.xwiki.org/xw
               <artifactId>pedigree-editor</artifactId>
               <type>jar</type>
               <targetPath>resources/uicomponents/</targetPath>
+            </overlay>
+            <overlay>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>ctakes-resources</artifactId>
+              <type>jar</type>
+              <targetPath>resources/</targetPath>
             </overlay>
           </overlays>
         </configuration>

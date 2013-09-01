@@ -63,12 +63,12 @@
         <Set name="port">
           <Property name="jetty.port" default="8080"/>
         </Set>
-        <Set name="maxIdleTime">300000</Set>
+        <Set name="maxIdleTime">3000000</Set>
         <Set name="Acceptors">2</Set>
         <Set name="statsOn">false</Set>
         <Set name="confidentialPort">8443</Set>
         <Set name="lowResourcesConnections">20000</Set>
-        <Set name="lowResourcesMaxIdleTime">5000</Set>
+        <Set name="lowResourcesMaxIdleTime">500000</Set>
       </New>
     </Arg>
   </Call>

@@ -951,6 +951,110 @@ document.observe('dom:loaded', function() {
                   'onItemAdded' : jumpToPubmed
                 }
     }
+
+
+    //cTAKES code
+    var submit = $('ctakes-input-button');
+    if (submit){
+      submit.observe('click', function(){
+        var inputText = $('textarea-ctakes').value;
+        if(inputText){
+          var url = "$xwiki.getURL('PhenoTips.CtakesService', 'get')";
+          var method = "get";          
+          var headers = {};
+          headers.Accept = "application/json";
+          var parameters = {};
+          parameters.InputText=inputText;
+
+          var ajx = new Ajax.Request(url, {
+          method: method,
+          parameters: parameters,
+          requestHeaders: headers,
+          onSuccess: function (response) {
+            //generate setlection summary from extracted terms
+            var jsondata = response.responseJSON;
+
+            var _getResultFieldValue = function(data, fieldName) {
+              return data &amp;&amp; data[fieldName] || '';
+            };
+
+            var _getResultFieldValueAsArray = function(data, fieldName) {
+              return new Array(data &amp;&amp; data[fieldName] || '').flatten();
+            };
+
+            var getInputId = function(key, negative) {
+              inputName = "PhenoTips.PatientClass_0_phenotype";
+              var value = (negative ? inputName.replace(/(_\d+)_/, "$1_negative_") : inputName) + "_" + key;
+              return value;
+            };
+            
+            
+            if (!jsondata) {
+              return false;
+            }
+            var results = jsondata['rows'];
+            var i = 0;
+            var content = "";
+            content = content.concat("&lt;h3&gt;Input Text &lt;/h3&gt; &lt;div id='inputtext'&gt;"+inputText+"&lt;/div&gt;");
+            content = content.concat("&lt;h3&gt;Extracted Terms&lt;/h3&gt; &lt;div id='extractedTermDiv' style='height:200px; overflow:auto;'&gt; &lt;form id='termSelect'&gt;");
+            for(i=0;i &lt; results.length;i++){
+              var id = _getResultFieldValue(results[i], "id");
+              var term = _getResultFieldValue(results[i], "term");
+              content = content.concat("&lt;div class='extractedTerm'&gt;");
+              content = content.concat("&lt;input type='checkbox' checked='true' value='"+i+"'&gt;" + id +" "+term+"&lt;/input&gt; &lt;br&gt;&lt;/br&gt;");
+              content = content.concat("&lt;/div&gt;");
+            }
+            content = content.concat("&lt;input id='formsubmit' type='button' value='OK'&gt; &lt;/input&gt; &lt;/form&gt; &lt;/div&gt;");
+            var modalPopup = new MS.widgets.ModalPopup(content, "",{removeOnClose : true});
+            modalPopup.showDialog();
+            
+            var form = $('termSelect');
+            //update Selection Summarry
+            $('formsubmit').observe('click', function(){
+              var inputIds = [];
+              var i = 0;          
+              var terms = form.getInputs('checkbox');
+              for(i=0;i &lt; terms.length;i++){
+                if(terms[i].checked){
+                  inputIds.push(i)
+                  var inputId = getInputId(_getResultFieldValue(results[terms[i].value],"id"));
+                 $$('label.yes[for="'+inputId+'"]').each(function(labelOfTerm){
+                    labelOfTerm.click();
+                  });
+                }
+              }
+              modalPopup.closeDialog()
+            });
+
+            //Highlight Code
+            
+            $$('div.extractedTerm').each(function(extractedTermDiv){
+              extractedTermDiv.observe('mouseover', function(){
+                var val = extractedTermDiv.down().value;
+                var text = _getResultFieldValue(results[val], "text");
+                var innerText = inputText.replace(text,'&lt;span style=&quot;background&#45;color&#58;green;&quot;&gt;' 
+                                                     + text + '&lt;/span&gt;'); 
+                $('inputtext').update(innerText);
+              });
+              extractedTermDiv.observe('mouseout', function(){
+                $('inputtext').update(inputText);
+              });
+            });
+          },
+
+          onFailure: function (response) {
+          //new MS.widgets.Notification("Failed to retrieve suggestions : ')" + response.statusText, "error", {timeout: 5});
+          alert("Failed to retrieve suggestions : " + response.statusText);
+            }
+          });
+         
+        }
+      });
+    }
+    
+      
+   //End cTAKES Code
+
     // ------------------------------------------------------------------------
     // Generate selection summary
     // ------------------------------------------------------------------------
@@ -2363,6 +2467,17 @@ document.observe('dom:loaded', function() {
   });
 
 
+ $$('.chapter .browser .textual-title').each(function(item){
+    var phTextualHide = new Element('span', {'class' : 'tool textual-hide'}).update('Hide');
+    var phTextualExpandTools = new Element('span', {'class' : 'textual-expand-tools'}).insert(phTextualHide);
+    item.insert({after: phTextualExpandTools});
+    [phTextualHide, item].invoke('observe', 'click', function (event) {
+      event.element().up('.textual-area').toggleClassName('collapsed');
+      event.element().up('.chapter').select('.current-phenotype-selection').invoke('toggleClassName', 'third-width');
+    });
+  });
+
+
   $$('.chapter .browser .browser-title').each(function(item){
     var phBrowserHide = new Element('span', {'class' : 'tool hide'}).update('Hide');
     var phBrowserExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(phBrowserHide);
@@ -2372,6 +2487,7 @@ document.observe('dom:loaded', function() {
       event.element().up('.chapter').select('.current-phenotype-selection').invoke('toggleClassName', 'third-width');
     });
   });
+
   var phBrowserExpandAll = new Element('span', {'class' : 'tool expand-all'}).update('Expand all');
   var phBrowserCollapseAll = new Element('span', {'class' : 'tool collapse-all'}).update('Collapse all');
   var phBrowserJumpTo = new Element('span', {'class' : 'tool jump-to'}).update('Jump to');
@@ -4207,10 +4323,20 @@ label.selected input[type="checkbox"] {
   text-shadow: 0 0 5px $theme.textSecondaryColor;
   opacity: .3;
 }
-.chapter div .expand-tools {
+.chapter div .expand-tools, .textual-expand-tools {
   margin-top: -3.5em;
   margin-right: 0;
 }
+
+.chapter .expand-tools, .chapter .chapter-inner .expand-tools, .textual-expand-tools {
+  ####display: block;
+  ##float: right;
+  ####margin-top: -1.5em;
+  ##margin-top: -3.5em;
+  ####margin-left: -14px;
+  ##font-size: .8em;
+  ##color: $theme.textPrimaryColor;
+
 .chapter .expand-tools {
   color: $theme.textPrimaryColor;;
   float: right;
@@ -4218,11 +4344,11 @@ label.selected input[type="checkbox"] {
   margin-right: -10px;
   margin-top: -2em;
 }
-.chapter .browser .expand-tools {
+.chapter .browser .expand-tools, .chapter .textual-area .textual-expand-tools {
   margin-right: 0;
   margin-top: -3em;
 }
-.expand-tools .tool:hover {
+.expand-tools .tool:hover, .textual-expand-tools .tool:hover {
   color: $theme.linkColor;
   cursor: pointer;
 }
@@ -4247,7 +4373,7 @@ label.selected input[type="checkbox"] {
 }
 .browser.collapsed .expand-tools .inner-expand-tools,
 .browser.collapsed .expand-tools .hide,
-.browser.collapsed div {
+.browser.collapsed .phenotype {
   display: none;
 }
 .browser.collapsed {
@@ -4272,6 +4398,28 @@ label.selected input[type="checkbox"] {
 .browser.collapsed .browser-title:hover{
   cursor: pointer;
   color: $theme.linkColor;
+}
+
+.textual-area.collapsed .textual-title{
+  text-transform: none;
+  font-size: 80%;
+  color: $theme.textPrimaryColor;
+  border: 0 none;
+  margin: 0;
+  padding: 0;
+}
+.textual-area.collapsed .textual-title:after {
+  content: " »";
+}
+.textual-area.collapsed .textual-title:hover{
+  cursor: pointer;
+  color: $theme.linkColor;
+}
+
+.textual-area.collapsed .textual-expand-tools .inner-expand-tools,
+.textual-area.collapsed .textual-expand-tools .textual-hide,
+.textual-area.collapsed .textual-box {
+  display: none;
 }
 
 .phenotype-info .chapter-toc {
@@ -5502,6 +5650,17 @@ input.LV_invalid_field {
         #if ($context.action == 'edit')
           (% class="selector-panels"%)(((
           (% class="half-width selector-panel browser browse-phenotype-categories force-collapse"%)(((
+
+          (% class="textual-area" %)(((
+            (% class="textual-title"%)
+              === **Textual Form** ===
+              (% class="textual-box" %)(((
+                {{html}}
+                  &lt;textarea name="freetext-symptoms" id="textarea-ctakes"&gt;&lt;/textarea&gt;
+                  &lt;span class="buttonctakes"&gt;&lt;input id="ctakes-input-button" type="button" value="Submit"/&gt;&lt;/span&gt;      
+                {{/html}}
+              )))
+          )))
           (% class="browser-title"%)
           === **Browse categories** ===
 (% class="background-search diffDiagnosis-search phenotype-group collapsible-group hidden" title="Phenotypes that are likely to help improve differential diagnosis"%)(((

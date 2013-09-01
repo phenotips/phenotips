@@ -29,7 +29,7 @@ import javax.inject.Singleton;
 
 /**
  * Provides access to the Online Mendelian Inheritance in Man (OMIM) ontology. The ontology prefix is {@code MIM}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
