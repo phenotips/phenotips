@@ -144,12 +144,14 @@
           var dataTable = deleteTrigger.up('table.extradata-list');
           if (dataRow) {
             dataRow.remove();
+            Event.fire(dataTable, 'extradata:deleted', {'element' : dataRow});
           }
           if (dataTable) {
             var i = 1;
             dataTable.select('th.row-count').each(function(item) {
               item.update((i++));
             });
+            Event.fire(document, 'xwiki:dom:updated', {'elements' : [dataTable]});
           }
         },
         onComplete : function() {

@@ -2234,6 +2234,12 @@ document.observe('dom:loaded', function() {
        }
      }
   });
+  dataTable.observe('extradata:deleted', function (event) {
+     dataTable.select('tr.data-row').each(function (row) {
+       updateDataRow(row);
+     });
+     updateCharts(event);
+  });
 
   // Also attach the measurement switcher
   var configuredUnitSystem = $('measurementUnitSystem');
