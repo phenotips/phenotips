@@ -504,7 +504,7 @@
       <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
     </identifier>
     <in_vitro>
-      <customDisplay/>
+      <customDisplay>{{include document="PhenoTips.YesNoNAPicker" /}}</customDisplay>
       <defaultValue/>
       <disabled>0</disabled>
       <displayFormType>checkbox</displayFormType>
