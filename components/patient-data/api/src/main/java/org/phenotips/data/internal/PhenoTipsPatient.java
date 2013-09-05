@@ -52,10 +52,6 @@ import net.sf.json.JSONObject;
  */
 public class PhenoTipsPatient implements Patient
 {
-    /** The XClass used for storing patient data. */
-    public static final EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT,
-        Constants.CODE_SPACE_REFERENCE);
-
     /** The default template for creating a new patient. */
     public static final EntityReference TEMPLATE_REFERENCE = new EntityReference("PatientTemplate",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);

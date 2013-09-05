@@ -19,7 +19,11 @@
  */
 package org.phenotips.data;
 
+import org.phenotips.Constants;
+
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
 import java.util.Set;
@@ -35,6 +39,10 @@ import net.sf.json.JSONObject;
 @Unstable
 public interface Patient
 {
+    /** The XClass used for storing patient data. */
+    EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
+
     /**
      * Returns a reference to the document where the patient data is stored.
      * 
