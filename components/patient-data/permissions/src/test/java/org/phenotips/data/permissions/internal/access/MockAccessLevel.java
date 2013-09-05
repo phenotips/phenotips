@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,24 +16,27 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.phenotips.data.permissions.internal.access;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>patient-data</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Patient data</name>
+import org.phenotips.data.permissions.internal.AbstractAccessLevel;
 
-  <modules>
-    <module>api</module>
-    <module>migrations</module>
-    <module>indexing</module>
-    <module>permissions</module>
-    <module>ui</module>
-  </modules>
-</project>
+/**
+ * @version $Id$
+ */
+public class MockAccessLevel extends AbstractAccessLevel
+{
+    private String name;
+
+    public MockAccessLevel(String name, int permissiveness, boolean assignable)
+    {
+        super(permissiveness, assignable);
+        this.name = name;
+    }
+
+    @Override
+    public String getName()
+    {
+        return this.name;
+    }
+}
