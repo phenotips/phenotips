@@ -24,11 +24,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>patient-data</artifactId>
+    <artifactId>patient-access-rules</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-data-permissions</artifactId>
-  <name>PhenoTips - Patient data - Java APIs for data access policies</name>
+  <artifactId>patient-access-rules-api</artifactId>
+  <name>PhenoTips - Patient access rules - Java APIs</name>
 
   <properties>
     <checkstyle.skip>true</checkstyle.skip>

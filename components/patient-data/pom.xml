@@ -35,7 +35,6 @@
     <module>api</module>
     <module>migrations</module>
     <module>indexing</module>
-    <module>permissions</module>
     <module>ui</module>
   </modules>
 </project>
