@@ -70,7 +70,12 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     {
         SolrInputDocument input = new SolrInputDocument();
         input.setField("document", patient.getDocument().toString());
-        input.setField("reporter", patient.getReporter().toString());
+        String reporter = "";
+        if (patient.getReporter() != null) {
+            reporter = patient.getReporter().toString();
+        }
+        input.setField("reporter", reporter);
+
         for (Feature phenotype : patient.getFeatures()) {
             input.addField((phenotype.isPresent() ? "" : "negative_") + phenotype.getType(), phenotype.getId());
         }
