@@ -135,7 +135,7 @@
     #else
       #set ($pdfTemplate = 'PhenoTips.PatientSheetCode')
     #end
-    #documentAction($doc.getURL('export', "format=pdf&amp;pdfcover=0&amp;pdftoc=0&amp;pdftemplate=${pdfTemplate}") 'tmExportPdf' 'Export PDF')
+    #documentAction($doc.getURL('export', "format=pdf&amp;amp;pdfcover=0&amp;amp;pdftoc=0&amp;amp;pdftemplate=${pdfTemplate}") 'tmExportPdf' 'Export PDF')
   #end
   #if ($menuconfig.getProperty('enableTocTool').value.contains($xcontext.action))
     #documentAction('#table-of-contents' 'tmToC' 'Table of contents')
