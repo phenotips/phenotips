@@ -39,12 +39,12 @@ import org.xwiki.security.authorization.Right;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -217,8 +217,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
             XWikiDocument patientDoc = (XWikiDocument) this.bridge.getDocument(patient.getDocument());
             DocumentReference classReference =
                 this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE, patient.getDocument());
-            Collection<Collaborator> collaborators = new HashSet<Collaborator>();
-            Map<EntityReference, Collaborator> foundCollaborators = new HashMap<EntityReference, Collaborator>();
+            Map<EntityReference, Collaborator> collaborators = new TreeMap<EntityReference, Collaborator>();
             for (BaseObject o : patientDoc.getXObjects(classReference)) {
                 if (o == null) {
                     continue;
@@ -231,20 +230,17 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
                 EntityReference userOrGroup =
                     this.stringEntityResolver.resolve(collaboratorName, patient.getDocument());
                 AccessLevel access = this.manager.resolveAccessLevel(accessName);
-                if (foundCollaborators.containsKey(userOrGroup)) {
-                    Collaborator oldCollaborator = foundCollaborators.get(userOrGroup);
+                if (collaborators.containsKey(userOrGroup)) {
+                    Collaborator oldCollaborator = collaborators.get(userOrGroup);
                     AccessLevel oldAccess = oldCollaborator.getAccessLevel();
-                    if (access.compareTo(oldAccess) > 0) {
-                        collaborators.remove(oldCollaborator);
-                    } else {
+                    if (access.compareTo(oldAccess) <= 0) {
                         continue;
                     }
                 }
                 Collaborator collaborator = new DefaultCollaborator(userOrGroup, access, this);
-                collaborators.add(collaborator);
-                foundCollaborators.put(userOrGroup, collaborator);
+                collaborators.put(userOrGroup, collaborator);
             }
-            return collaborators;
+            return collaborators.values();
         } catch (Exception e) {
             // This should not happen;
         }
