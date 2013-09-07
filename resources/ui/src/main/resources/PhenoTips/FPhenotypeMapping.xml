@@ -42,7 +42,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-<content>{{velocity}}
+  <content>{{velocity}}
 #set($phenotype = [
   {
     "type"       : "section",
@@ -347,4 +347,5 @@
   'phenotype': $phenotype,
   'prenatal_phenotype': $prenatal_history
 })
-{{/velocity}}</content></xwikidoc>
+{{/velocity}}</content>
+</xwikidoc>
