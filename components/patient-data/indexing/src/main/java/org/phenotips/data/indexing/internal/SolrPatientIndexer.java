@@ -19,8 +19,8 @@
  */
 package org.phenotips.data.indexing.internal;
 
-import org.phenotips.data.Patient;
 import org.phenotips.data.Feature;
+import org.phenotips.data.Patient;
 import org.phenotips.data.indexing.PatientIndexer;
 
 import org.xwiki.component.annotation.Component;
