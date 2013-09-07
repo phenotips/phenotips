@@ -152,8 +152,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     {
         DocumentReference classReference =
             this.partialEntityResolver.resolve(Visibility.CLASS_REFERENCE, patient.getDocument());
-        String visibility =
-            String.valueOf(this.bridge.getProperty(patient.getDocument(), classReference, "visibility"));
+        String visibility = (String) this.bridge.getProperty(patient.getDocument(), classReference, "visibility");
         if (StringUtils.isNotBlank(visibility)) {
             return this.manager.resolveVisibility(visibility);
         }
