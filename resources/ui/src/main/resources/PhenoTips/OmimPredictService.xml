@@ -58,11 +58,11 @@
     #set ($negativeAncestors = $collectionstool.set)
     #foreach ($piece in $!request.getParameterValues('symptom'))
       #set ($discard = $data.add("symptom:${piece.replaceAll(':', '\\:')}"))
-      #set ($discard = $ancestors.addAll($services.hpo.getAllAncestorsAndSelfIDs($piece)))
+      #set ($discard = $ancestors.addAll($services.ontologies.resolveTerm($piece).get('term_category')))
     #end
     #foreach ($piece in $!request.getParameterValues('not_symptom'))
       #set ($discard = $data.add("not_symptom:${piece.replaceAll(':', '\\:')}"))
-      #set ($discard = $negativeAncestors.addAll($services.hpo.getAllAncestorsAndSelfIDs($piece)))
+      #set ($discard = $negativeAncestors.addAll($services.ontologies.resolveTerm($piece).get('term_category')))
     #end
     #set ($discard = $negativeAncestors.removeAll($ancestors))
     #if ($!request.getParameterValues('not_symptom'))

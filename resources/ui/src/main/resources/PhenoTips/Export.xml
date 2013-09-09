@@ -262,7 +262,7 @@ ${newline}##
         "##
         #foreach ($code in $!patientObj.getProperty($field).value)
           #if ($field.endsWith('phenotype'))
-            #set ($name = $!{services.hpo.get($code).name})
+            #set ($name = $!{services.ontologies.resolveTerm($code).name})
             #if ($name)
               ${name.replace('"', '""')}##
             #else
@@ -283,7 +283,7 @@ ${newline}##
         #foreach ($code in $!patientObj.getProperty($field).value)
           #if ($field.endsWith('phenotype'))
             #if ($code.startsWith('HP:'))[${code}] #end
-            #set ($name = $!{services.hpo.get($code).name})
+            #set ($name = $!{services.ontologies.resolveTerm($code).name})
             #if ($name)
               ${name.replace('"', '""')}##
             #else
@@ -327,7 +327,7 @@ ${newline}##
         "##
         #foreach ($code in $!patientObj.getProperty($field).value)
           #if ($field.endsWith('phenotype'))
-            #set ($name = $!{services.hpo.get($code).name})
+            #set ($name = $!{services.ontologies.resolveTerm($code).name})
             #if ($name)
               ${name.replace('"', '""')}##
             #else
