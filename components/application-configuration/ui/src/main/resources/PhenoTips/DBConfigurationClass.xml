@@ -67,7 +67,7 @@ $!value
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>dateOfBirthFormat</name>
-      <number>12</number>
+      <number>5</number>
       <picker>0</picker>
       <prettyName>Date of birth format</prettyName>
       <size>30</size>
@@ -83,31 +83,18 @@ $!value
       <displayFormType>checkbox</displayFormType>
       <displayType/>
       <name>enableImperialUnitSystem</name>
-      <number>24</number>
+      <number>6</number>
       <prettyName>Enable imperial unit system for entering measurements</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </enableImperialUnitSystem>
-    <idField>
-      <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
-      <disabled>0</disabled>
-      <name>idField</name>
-      <number>3</number>
-      <picker>0</picker>
-      <prettyName>Identifier field</prettyName>
-      <size>30</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </idField>
     <idPrefix>
       <customDisplay/>
       <disabled>0</disabled>
       <name>idPrefix</name>
-      <number>4</number>
+      <number>3</number>
       <picker>0</picker>
       <prettyName>Database identifier prefix</prettyName>
       <size>30</size>
@@ -147,7 +134,7 @@ $!value
       <displayType>input</displayType>
       <multiSelect>1</multiSelect>
       <name>livetableColumns</name>
-      <number>6</number>
+      <number>8</number>
       <picker>0</picker>
       <prettyName>Livetable columns</prettyName>
       <relationalStorage>1</relationalStorage>
@@ -165,7 +152,7 @@ $!value
       <customDisplay/>
       <disabled>0</disabled>
       <name>livetableRows</name>
-      <number>8</number>
+      <number>10</number>
       <numberType>integer</numberType>
       <prettyName>Number of rows to display by default</prettyName>
       <size>30</size>
@@ -190,7 +177,7 @@ $!value
 {{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>livetableSortColumn</name>
-      <number>7</number>
+      <number>9</number>
       <picker>0</picker>
       <prettyName>Column to sort by default</prettyName>
       <size>30</size>
@@ -210,7 +197,7 @@ $!value
       <displayType>radio</displayType>
       <multiSelect>0</multiSelect>
       <name>measurementUnitSystem</name>
-      <number>25</number>
+      <number>7</number>
       <picker>0</picker>
       <prettyName>Default unit system for entering measurements, when "Imperial unit system" is enabled</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -281,7 +268,7 @@ $!value
       <idField/>
       <multiSelect>0</multiSelect>
       <name>phenotypeMapping</name>
-      <number>14</number>
+      <number>4</number>
       <picker>0</picker>
       <prettyName>Phenotype mapping document</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -296,19 +283,6 @@ $!value
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </phenotypeMapping>
-    <relativeReportHint>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <name>relativeReportHint</name>
-      <number>13</number>
-      <picker>0</picker>
-      <prettyName>Hint for relative field</prettyName>
-      <size>30</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </relativeReportHint>
   </class>
   <object>
     <class>
