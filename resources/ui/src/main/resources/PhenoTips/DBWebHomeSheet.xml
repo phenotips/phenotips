@@ -1015,7 +1015,6 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
     &lt;input type="hidden" name="doCreate" value="1" /&gt;
     &lt;input type="hidden" name="className" value="$patientClassName" /&gt;
     &lt;input type="hidden" name="classTemplate" value="$!{config.getProperty('patientTemplate').value}" /&gt;
-    &lt;input type="hidden" name="idField" value="$!{config.getProperty('idField').value}" /&gt;
     &lt;input type="hidden" name="idPrefix" value="$!{config.getProperty('idPrefix').value}" /&gt;
     &lt;input type="hidden" name="space" value="$!{doc.space}" /&gt;
     &lt;label class="create-button-label" for="create-patient-record"&gt;+&lt;/label&gt;&lt;input type="submit" class="button create-button" id="create-patient-record" title="Add new patient record" value="New patient record..."/&gt;
