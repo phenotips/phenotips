@@ -52,92 +52,6 @@
       <defaultWeb/>
       <nameField/>
       <validationScript/>
-      <activeFields>
-        <cache>0</cache>
-        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
-        <disabled>0</disabled>
-        <displayType>input</displayType>
-        <multiSelect>1</multiSelect>
-        <name>activeFields</name>
-        <number>10</number>
-        <picker>0</picker>
-        <prettyName>Active fields (displayed to report editors and viewers)</prettyName>
-        <relationalStorage>1</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <sort>none</sort>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </activeFields>
-      <activeSections>
-        <cache>0</cache>
-        <customDisplay>{{velocity output=false}}
-#set ($orderedSectionIds = [])
-#set ($sections = {})
-#foreach ($property in $object.xWikiClass.properties)
-  #if ($property.name.indexOf('section__') == 0)
-    #set ($sectionId = $property.name.substring(9))
-    #set ($discard = $orderedSectionIds.add($sectionId))
-    #set ($discard = $sections.put($sectionId, $property.prettyName))
-  #end
-#end
-#macro(__sections__displayItem $sectionId $checked)
-&lt;li&gt;
-    &lt;label for="${prefix}${name}_${sectionId}"&gt;
-    &lt;input type="checkbox" name="${prefix}${name}" id="${prefix}${name}_${sectionId}" value="$sectionId"#if ($checked) checked="checked"#end/&gt;
-    $sections.get($sectionId)
-    &lt;/label&gt;
-    &lt;span class="tool move" title="Drag and drop to change the order"&gt;move&lt;/span&gt;
-  &lt;/li&gt;
-#end
-{{/velocity}}
-
-{{velocity}}{{html wiki=false clean=false}}
-$value
-&lt;div class="$name"&gt;
-&lt;ul class="custom-display-list" id="$prefix$name"&gt;
-#foreach ($sectionId in $value)
-  #if ($orderedSectionIds.contains($sectionId))
-    #__sections__displayItem($sectionId true)
-    #set($discard = $orderedSectionIds.remove($sectionId))
-  #end
-#end
-#foreach ($sectionId in $orderedSectionIds)
-  #__sections__displayItem($sectionId false)
-#end
-&lt;/ul&gt;
-&lt;input type="hidden" name="$prefix$name" value=""/&gt;
-&lt;/div&gt;
-$xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
-$xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
-&lt;script type="text/javascript" defer="defer"&gt;
-document.observe("xwiki:dom:loaded", function() {
-  Sortable.create("$prefix$name", {tag : 'li', handle : 'move'});
-});
-&lt;/script&gt;
-{{/html}}{{/velocity}}</customDisplay>
-        <disabled>0</disabled>
-        <displayType>input</displayType>
-        <multiSelect>1</multiSelect>
-        <name>activeSections</name>
-        <number>9</number>
-        <picker>0</picker>
-        <prettyName>Active sections and their order of appearence</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <sort>none</sort>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </activeSections>
       <dateOfBirthFormat>
         <customDisplay>{{velocity}}
 #if ($xcontext.action == 'edit' || $xcontext.action == 'admin')
@@ -286,27 +200,6 @@ $!value
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </livetableSortColumn>
-      <mandatoryFields>
-        <cache>0</cache>
-        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
-        <disabled>0</disabled>
-        <displayType>checkbox</displayType>
-        <multiSelect>1</multiSelect>
-        <name>mandatoryFields</name>
-        <number>11</number>
-        <picker>0</picker>
-        <prettyName>Mandatory fields</prettyName>
-        <relationalStorage>1</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <sort>none</sort>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </mandatoryFields>
       <measurementUnitSystem>
         <cache>0</cache>
         <customDisplay>{{velocity}}
@@ -332,20 +225,6 @@ $!value
         <values>metric|imperial</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </measurementUnitSystem>
-      <no_pii_warning>
-        <customDisplay/>
-        <defaultValue/>
-        <disabled>0</disabled>
-        <displayFormType>checkbox</displayFormType>
-        <displayType/>
-        <name>no_pii_warning</name>
-        <number>5</number>
-        <prettyName>Warn that no personally identifiable information should be recored</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </no_pii_warning>
       <patientClass>
         <cache>0</cache>
         <classname/>
@@ -431,275 +310,11 @@ $!value
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </relativeReportHint>
-      <section__diagnosis-info>
-        <cache>0</cache>
-        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
-        <disabled>0</disabled>
-        <displayType>checkbox</displayType>
-        <multiSelect>1</multiSelect>
-        <name>section__diagnosis-info</name>
-        <number>21</number>
-        <picker>0</picker>
-        <prettyName>Diagnosis</prettyName>
-        <relationalStorage>1</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <sort>none</sort>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </section__diagnosis-info>
-      <section__family-history>
-        <cache>0</cache>
-        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
-        <disabled>0</disabled>
-        <displayType>checkbox</displayType>
-        <multiSelect>1</multiSelect>
-        <name>section__family-history</name>
-        <number>19</number>
-        <picker>0</picker>
-        <prettyName>Family history</prettyName>
-        <relationalStorage>1</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <sort>none</sort>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </section__family-history>
-      <section__measurements>
-        <cache>0</cache>
-        <customDisplay>{{velocity output=false}}
-#set($customValues = {"PhenoTips.MeasurementsClass" : "measurements table", "growth-charts" : "charts"})
-#set($hideClassFields = true)
-{{/velocity}}
-
-{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}
-
-{{velocity output=false}}
-#set($customClassName = '')
-#set($customClassTableName = '')
-#set($hideClassFields = '')
-{{/velocity}}</customDisplay>
-        <disabled>0</disabled>
-        <displayType>checkbox</displayType>
-        <multiSelect>1</multiSelect>
-        <name>section__measurements</name>
-        <number>16</number>
-        <picker>0</picker>
-        <prettyName>Measurements</prettyName>
-        <relationalStorage>1</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <sort>none</sort>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </section__measurements>
-      <section__medical_history>
-        <cache>0</cache>
-        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
-        <disabled>0</disabled>
-        <displayType>checkbox</displayType>
-        <multiSelect>1</multiSelect>
-        <name>section__medical_history</name>
-        <number>20</number>
-        <picker>0</picker>
-        <prettyName>Medical history</prettyName>
-        <relationalStorage>1</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <sort>none</sort>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </section__medical_history>
-      <section__other>
-        <cache>0</cache>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>section__other</name>
-        <number>23</number>
-        <picker>0</picker>
-        <prettyName>More information</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <sort>none</sort>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </section__other>
-      <section__patient-info>
-        <cache>0</cache>
-        <customDisplay>{{velocity output=false}}
-#set($customValues = {"PhenoTips.RelativeClass" : "connections to relatives present in the database"})
-#set($hideClassFields = true)
-{{/velocity}}
-
-{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}
-
-{{velocity output=false}}
-#set($customClassName = '')
-#set($customClassTableName = '')
-#set($hideClassFields = '')
-{{/velocity}}</customDisplay>
-        <disabled>0</disabled>
-        <displayType>checkbox</displayType>
-        <multiSelect>1</multiSelect>
-        <name>section__patient-info</name>
-        <number>15</number>
-        <picker>0</picker>
-        <prettyName>Patient information</prettyName>
-        <relationalStorage>1</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <sort>none</sort>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </section__patient-info>
-      <section__phenotype-info>
-        <cache>0</cache>
-        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
-        <disabled>0</disabled>
-        <displayType>checkbox</displayType>
-        <multiSelect>1</multiSelect>
-        <name>section__phenotype-info</name>
-        <number>17</number>
-        <picker>0</picker>
-        <prettyName>Phenotypic description (clinical symptions)</prettyName>
-        <relationalStorage>1</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <sort>none</sort>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </section__phenotype-info>
-      <section__prenatal_phenotype-info>
-        <cache>0</cache>
-        <customDisplay>{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
-        <disabled>0</disabled>
-        <displayType>checkbox</displayType>
-        <multiSelect>1</multiSelect>
-        <name>section__prenatal_phenotype-info</name>
-        <number>18</number>
-        <picker>0</picker>
-        <prettyName>Prenatal and perinatal history</prettyName>
-        <relationalStorage>1</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <sort>none</sort>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </section__prenatal_phenotype-info>
-      <section__variant-info>
-        <cache>0</cache>
-        <customDisplay>{{velocity output=false}}
-#set($customValues = {"PhenoTips.VariantClass" : "variants table", "PhenoTips.InvestigationClass" : "investigations table"})
-#set($hideClassFields = true)
-{{/velocity}}
-
-{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}
-
-{{velocity output=false}}
-#set($customClassName = '')
-#set($customClassTableName = '')
-#set($hideClassFields = '')
-{{/velocity}}</customDisplay>
-        <disabled>0</disabled>
-        <displayType>checkbox</displayType>
-        <multiSelect>1</multiSelect>
-        <name>section__variant-info</name>
-        <number>22</number>
-        <picker>0</picker>
-        <prettyName>Variants</prettyName>
-        <relationalStorage>1</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <sort>none</sort>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </section__variant-info>
     </class>
     <name>data.WebHome</name>
     <number>0</number>
     <className>PhenoTips.DBConfigurationClass</className>
     <guid>380d3252-75ab-4be3-8b4b-d212e9939b6f</guid>
-    <property>
-      <activeFields>
-        <value>identifier</value>
-        <value>external_id</value>
-        <value>first_name</value>
-        <value>last_name</value>
-        <value>date_of_birth</value>
-        <value>gender</value>
-        <value>age_of_onset</value>
-        <value>consanguinity</value>
-        <value>omim_id</value>
-        <value>indication_for_referral</value>
-        <value>unaffected</value>
-        <value>phenotype</value>
-        <value>negative_phenotype</value>
-        <value>prenatal_phenotype</value>
-        <value>prenatal_comments</value>
-        <value>gestation</value>
-        <value>family_history</value>
-        <value>family_comments</value>
-        <value>pedigree</value>
-        <value>comments</value>
-        <value>medical_developmental_history</value>
-        <value>reports_history</value>
-        <value>extended_negative_phenotype</value>
-        <value>paternal_ethnicity</value>
-        <value>maternal_ethnicity</value>
-        <value>in_vitro</value>
-      </activeFields>
-    </property>
-    <property>
-      <activeSections>
-        <value>patient-info</value>
-        <value>prenatal_phenotype-info</value>
-        <value>medical_history</value>
-        <value>family-history</value>
-        <value>measurements</value>
-        <value>phenotype-info</value>
-        <value>diagnosis-info</value>
-        <value>other</value>
-      </activeSections>
-    </property>
     <property>
       <dateOfBirthFormat>MM/dd/yyyy</dateOfBirthFormat>
     </property>
@@ -730,13 +345,7 @@ $!value
       <livetableSortColumn>external_id</livetableSortColumn>
     </property>
     <property>
-      <mandatoryFields/>
-    </property>
-    <property>
       <measurementUnitSystem>metric</measurementUnitSystem>
-    </property>
-    <property>
-      <no_pii_warning>0</no_pii_warning>
     </property>
     <property>
       <patientClass>PhenoTips.PatientClass</patientClass>
@@ -749,50 +358,6 @@ $!value
     </property>
     <property>
       <relativeReportHint>Patient (MRN)</relativeReportHint>
-    </property>
-    <property>
-      <section__diagnosis-info>
-        <value>omim_id</value>
-      </section__diagnosis-info>
-    </property>
-    <property>
-      <section__family-history>
-        <value>family_history</value>
-      </section__family-history>
-    </property>
-    <property>
-      <section__measurements>
-        <value>PhenoTips.MeasurementsClass</value>
-        <value>growth-charts</value>
-      </section__measurements>
-    </property>
-    <property>
-      <section__medical_history/>
-    </property>
-    <property>
-      <section__other/>
-    </property>
-    <property>
-      <section__patient-info>
-        <value>PhenoTips.RelativeClass</value>
-      </section__patient-info>
-    </property>
-    <property>
-      <section__phenotype-info>
-        <value>unaffected</value>
-        <value>phenotype</value>
-        <value>negative_phenotype</value>
-      </section__phenotype-info>
-    </property>
-    <property>
-      <section__prenatal_phenotype-info>
-        <value>prenatal_phenotype</value>
-      </section__prenatal_phenotype-info>
-    </property>
-    <property>
-      <section__variant-info>
-        <value>PhenoTips.VariantClass</value>
-      </section__variant-info>
     </property>
   </object>
   <object>
@@ -1756,21 +1321,14 @@ $!value
         <value>patientTemplate</value>
         <value>idField</value>
         <value>idPrefix</value>
-        <value>no_pii_warning</value>
         <value>livetableColumns</value>
         <value>livetableSortColumn</value>
         <value>livetableRows</value>
-        <value>activeSections</value>
-        <value>activeFields</value>
-        <value>mandatoryFields</value>
         <value>dateOfBirthFormat</value>
         <value>relativeReportHint</value>
         <value>phenotypeMapping</value>
-        <value>section__patient-info</value>
-        <value>section__measurements</value>
         <value>enableImperialUnitSystem</value>
         <value>measurementUnitSystem</value>
-        <value>section__variant-info</value>
       </propertiesToShow>
     </property>
   </object>
