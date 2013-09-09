@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpContentTooLargeException;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -83,7 +84,13 @@ public class DefaultLimsServer implements LimsServer
                 method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
                     XWiki.DEFAULT_ENCODING));
                 this.client.executeMethod(method);
-                String response = method.getResponseBodyAsString(128);
+                String response;
+                try {
+                    response = method.getResponseBodyAsString(128);
+                } catch (HttpContentTooLargeException ex) {
+                    response = method.getResponseBodyAsString();
+                    this.logger.warn("LIMS token check returned wrong response: {} - [{}]", ex.getMessage(), response);
+                }
                 JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
                 boolean success = responseJSON.getBoolean("success");
                 if (success) {
