@@ -64,8 +64,6 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 #set($obj = $doc.getObject("$!{config.getProperty('patientClass').value}"))
 #set($class = $obj.xWikiClass)
 #set($discard = $doc.use($obj))
-#set($activeFields = $!{config.getProperty('activeFields').value})
-#set($mandatoryFields = $!{config.getProperty('mandatoryFields').value})
 #end
 {{/velocity}}
 

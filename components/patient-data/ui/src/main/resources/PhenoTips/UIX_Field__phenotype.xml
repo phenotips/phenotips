@@ -163,7 +163,7 @@
     (% id="diffDiagnosis-search-results" class="background-suggestions" %)((()))
     )))
   #end
-  (% class="phenotype  #__markIfMandatory('phenotype')" %)(((
+  (% class="phenotype" %)(((
     #if ($xcontext.action == 'edit' || !$showUnaffected)$doc.display('phenotype')#end##
   )))
   #if ($xcontext.action == 'edit')

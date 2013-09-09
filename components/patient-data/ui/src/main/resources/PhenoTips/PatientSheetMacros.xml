@@ -122,8 +122,6 @@
   #end
 #end
 
-#macro(__markIfMandatory $propName)#if ("$!mandatoryFields.contains($propName)" != 'false')mandatory#{end}#end
-
 #macro (__displayHalfWidth $propName $label $groupCssClass $labelCssClass)
   (% class="half-width $groupCssClass ${propName}" %)(((
     #__label(${propName} "hint $!{labelCssClass}" $label)
@@ -133,7 +131,7 @@
 
 #macro (__displayFormatted $mode $propName $label $groupCssClass $labelCssClass)
 #if ($xcontext.action == 'edit' || $doc.display(${propName}) != '')
-  #set($_groupCssClass = "$!{groupCssClass} #__markIfMandatory($propName)")
+  #set($_groupCssClass = "$!{groupCssClass}#if ($extension_required) mandatory#{end}")
   #if ($xcontext.action != 'edit')
     #if ($mode == 'half-width')
       #__displayHalfWidth($propName $label $_groupCssClass $labelCssClass)
