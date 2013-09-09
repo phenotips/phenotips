@@ -192,7 +192,7 @@
     <property>
       <parameters>title=Clinical symptoms &amp; physical findings
 enabled=true
-required=true
+required=
 order=1</parameters>
     </property>
     <property>
