@@ -875,13 +875,8 @@ TXVppcEAAAAASUVORK5CYII=
     <property>
       <code>#template('colorThemeInit.vm')
 #macro (__img $name)$xwiki.getDocument('PhenoTips.Skin').getAttachmentURL("${name}.png")#end
-#macro (__css3_rule $rule)
-  -moz-${rule};
-  -webkit-${rule};
-  ${rule};
-#end
 #body {
-    font-family: Arial,Verdana,sans-serif;
+  font-family: Arial,Verdana,sans-serif;
 }
 #hierarchy,
 #globallinks,
@@ -900,17 +895,13 @@ TXVppcEAAAAASUVORK5CYII=
 }
 #company h1 {
   border: 0 none;
-  xbottom: 20px;
   color: $theme.pageBackgroundColor;
+  font-size: 1.2em;
   margin: 0 20px 0;
   position: absolute;
   right: 5%;
   text-shadow: 0 0 6px #777;
   text-transform: uppercase;
-  font-size: 1.2em;
-}
-#company .sep {
-  fdisplay: none;
 }
 #headerglobal {
   border-bottom: 2px solid;
@@ -920,23 +911,22 @@ TXVppcEAAAAASUVORK5CYII=
   width: 48%;
 }
 #document-title h1 {
-    margin: 0 0 0.5em;
-    padding: 5px 0 0;
+  margin: 0 0 0.5em;
+  padding: 5px 0 0;
 }
 #mainContentArea, #mainEditArea {
-    ##padding: 10px 10%;
-    margin: 4px 10%;
-    padding: 10px;
+  margin: 4px 10%;
   overflow: visible;
+  padding: 10px;
 }
 .actionmenu .tmHome {
-    background-image: url("#__img('home-s')");
+  background-image: url("#__img('home-s')");
 }
 .actionmenu .tmAdminSpace {
-    background-image: url("#__img('laptop-s')");
+  background-image: url("#__img('laptop-s')");
 }
 .actionmenu .tmUser {
-    background-image: url("#__img('user-s')");
+  background-image: url("#__img('user-s')");
 }
 #body thead.xwiki-livetable-display-header td.xwiki-livetable-display-header-filter input,
 #body thead.xwiki-livetable-display-header td.xwiki-livetable-display-header-filter select {
@@ -945,19 +935,19 @@ TXVppcEAAAAASUVORK5CYII=
 #body input[type=text], #body textarea {
   border-color: $theme.pageContentBackgroundColor;
   border-radius: 4px;
-  box-shadow: 0 1px 2px #rgba(0, 0, 0, .4) inset;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .4);
 }
 #body input[type=text]:focus, #body textarea:focus {
   border-color: $theme.linkColor;
 }
 input.button, .buttonwrapper a {
-  #__css3_rule("border-radius: 4px")
-  #__css3_rule("box-shadow: 0 0 6px $theme.textColor");
+  border-radius: 4px;
+  box-shadow: 0 0 6px $theme.textColor;
 }
 input.button:hover, .buttonwrapper a:hover {
   background-color: $theme.buttonPrimaryBackgroundColor;
+  box-shadow: 0 0 6px $theme.linkColor;
   color: $theme.buttonPrimaryTextColor;
-  #__css3_rule("box-shadow: 0 0 6px $theme.linkColor")
 }
 
 input[name=action_saveandcontinue] {
@@ -980,9 +970,9 @@ input[name=action_cancel] {
 .buttonwrapper a.add-data-button:link,
 .buttonwrapper a.add-data-button:visited,
 .buttonwrapper a.add-data-button:active {
-  #__css3_rule("border-radius: 4px")
-  #__css3_rule("box-shadow: 0 0 6px $theme.borderColor")
   background-color: $theme.buttonPrimaryBackgroundColor;
+  border-radius: 4px;
+  box-shadow: 0 0 6px $theme.borderColor;
   color: $theme.buttonPrimaryTextColor;
   display: inline-block;
   font: normal normal 700 .8em/140% "Helvetica",sans-serif;
@@ -993,17 +983,17 @@ input[name=action_cancel] {
 }
 .add-data-button:hover,
 .buttonwrapper a.add-data-button:hover {
-  #__css3_rule("box-shadow: 0 0 6px $theme.linkColor")
+  box-shadow: 0 0 6px $theme.linkColor;
 }
 .general-tools {
+  float: right;
   margin: 25px 3px;
   padding: 3px 0;
-  float: right;
   position: relative;
 }
 .general-tools label{
-  cursor: pointer;
   color: $theme.linkColor;
+  cursor: pointer;
 }
 .general-tools label:hover {
   text-decoration: underline;
@@ -1018,25 +1008,25 @@ input[name=action_cancel] {
   float: left;
 }
 label.create-button-label, .add-data-button:before {
-  display: inline-block;
-  position: absolute;
-  top: .24em;
-  left: .4em;
-  width: .8em !important;
-  height: .8em;
   color: $theme.buttonPrimaryTextColor;
-  text-align: center;
-  font-weight: bold;
   cursor: pointer;
+  display: inline-block;
   font-size: 1.25em;
+  font-weight: bold;
+  height: .8em;
+  left: .4em;
   line-height: .9em;
-  vertical-align: middle;
-  z-index: 2;
+  position: absolute;
+  text-align: center;
   text-shadow: none;
+  top: .24em;
+  vertical-align: middle;
+  width: .8em !important;
+  z-index: 2;
 }
 body .xwiki-livetable-topfilters-container, body .xwiki-livetable-tagcloud-container {
-  border-color: $theme.buttonPrimaryBackgroundColor;
   background-color: $theme.backgroundSecondaryColor;
+  border-color: $theme.buttonPrimaryBackgroundColor;
 }
 body .xwiki-livetable-topfilters-tip .tippointer, body .xwiki-livetable-tagcloud-tip .tippointer {
   border-top-color: $theme.buttonPrimaryBackgroundColor;
@@ -1053,27 +1043,26 @@ body .xwiki-livetable-topfilters-container .value-cloud-tools a {
   text-align: right;
 }
 .document-action, #table-of-contents, #patients.xwiki-livetable .action, .action {
-  #__css3_rule("border-radius: 6px")
-  #__css3_rule("box-shadow: 0 0 6px $theme.borderColor")
+  border-radius: 6px;
+  box-shadow: 0 0 6px $theme.borderColor;
   text-align: left;
 }
 #document-actions {
   color: $theme.textColor;
-  position: fixed;
-  right: 4px;
-  top: 8.5em;
   margin-right: -8px;
+  position: fixed;
   right: 5%;
+  top: 8.5em;
 }
 #document-actions.absolute {
-  position: absolute;
-  top: 0;
-  right: 0;
   float: right;
+  height: 0;
   margin-top: -5px;
   margin-right: -32px;
-  height: 0;
   overflow: visible;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 * html #document-actions {
   position: absolute;
@@ -1082,14 +1071,14 @@ body .xwiki-livetable-topfilters-container .value-cloud-tools a {
   position: absolute;
 }
 .document-action, #patients.xwiki-livetable .action, .action {
+  background: none $theme.buttonPrimaryBackgroundColor 3px 5px no-repeat;
+  border: 1px solid $theme.buttonPrimaryBackgroundColor !important;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.25), inset 0 0 10px rgba(0, 0, 0, 0.1);
   display: block;
+  height: 26px;
+  margin: 4px 0;
   text-indent: -9999px;
   width: 22px;
-  height: 26px;
-  background: none $theme.buttonPrimaryBackgroundColor 3px 5px no-repeat;
-  margin: 4px 0;
-  #__css3_rule("box-shadow: 0 0 5px rgba(0, 0, 0, 0.25), 0 0 10px rgba(0, 0, 0, 0.1) inset")
-  border: 1px solid $theme.buttonPrimaryBackgroundColor !important;
 }
 #patients.xwiki-livetable .action {
   display: inline-block;
@@ -1103,7 +1092,7 @@ body .xwiki-livetable-topfilters-container .value-cloud-tools a {
   cursor: pointer;
 }
 #tmActionEdit, #patients.xwiki-livetable .actionedit {
-    background-image: url("#__img('editb-s')");
+  background-image: url("#__img('editb-s')");
 }
 #tmExportPdf {
   background-image: url("$xwiki.getSkinFile('icons/silk/page_white_acrobat.png')");
@@ -1113,46 +1102,44 @@ body .xwiki-livetable-topfilters-container .value-cloud-tools a {
   margin-top: -30px;
 }
 #tmActionDelete, #patients.xwiki-livetable .actiondelete, .action.delete {
-    background-image: url("#__img('no-s')");
+  background-image: url("#__img('no-s')");
 }
 #tmActionsave {
-    background-image: url("#__img('check-s')");
+  background-image: url("#__img('check-s')");
 }
 #tmActioncancel {
-    background-image: url("#__img('delete-s')");
+  background-image: url("#__img('delete-s')");
 }
 #tmToC, #tmHideToC, #patients.xwiki-livetable .actionview {
-    background-image: url("#__img('toc-s')");
+  background-image: url("#__img('toc-s')");
 }
 #table-of-contents {
   background-color: $theme.highlightColor;
   border: 1px solid $theme.borderColor;
-  position: fixed;
-  top: 9em;
-  right: 5%;
-  padding: 1em 1em 1em 0;
-  ##display:none;
-  visibility: hidden;
-  z-index: 20000;
-  width: 22%;
   margin-top: -2px;
   margin-right: 20px;
+  padding: 1em 1em 1em 0;
+  position: fixed;
+  right: 5%;
+  top: 9em;
+  visibility: hidden;
+  width: 22%;
+  z-index: 20000;
 }
 #table-of-contents.absolute {
   position: absolute;
-  margin-right: -4px;
   margin-left: -16px;
+  margin-right: -4px;
   margin-top: 0;
-  top: 0;
   right: 0;
+  top: 0;
 }
 #table-of-contents ul {
-  padding: 0;
-  margin: 0 0 0 1em;
   list-style-type: square;
+  margin: 0 0 0 1em;
+  padding: 0;
 }
 #table-of-contents:target {
-  ##display: block;
   visibility: visible;
 }
 #hide-toc {
@@ -1161,14 +1148,14 @@ body .xwiki-livetable-topfilters-container .value-cloud-tools a {
   top: -0.5em;
 }
 .hide-toc p {
-  padding 0;
-  margin 0;
   line-height: 1em;
+  margin 0;
+  padding 0;
 }
 #hide-toc a {
+  color: $theme.textColor !important;
   padding: 0 0.25em;
   text-decoration: none !important;
-  color: $theme.textColor !important;
 }
 #table-of-contents .hide-toc-ghost {
   margin-top: -2px;
@@ -1179,7 +1166,9 @@ body .xwiki-livetable-topfilters-container .value-cloud-tools a {
 h1:target, h2:target, h3:target {
   background-color: $theme.highlightColor;
 }
-#globallinks {display: none;}
+#globallinks {
+  display: none;
+}
 
 ## Disable gradients
 #mainmenu {
