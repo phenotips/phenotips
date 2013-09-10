@@ -987,7 +987,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
     #set($discard = $columnsProperties.put($filterableColumn, { "type" : "hidden" }))
   #end
 #end
-
+##
 #set($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
 == Filters ==
 
