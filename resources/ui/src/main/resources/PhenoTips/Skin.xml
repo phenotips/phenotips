@@ -1057,8 +1057,8 @@ body .xwiki-livetable-topfilters-container .value-cloud-tools a {
 #document-actions.absolute {
   float: right;
   height: 0;
-  margin-top: -5px;
   margin-right: -32px;
+  margin-top: -5px;
   overflow: visible;
   position: absolute;
   right: 0;
@@ -1116,8 +1116,8 @@ body .xwiki-livetable-topfilters-container .value-cloud-tools a {
 #table-of-contents {
   background-color: $theme.highlightColor;
   border: 1px solid $theme.borderColor;
-  margin-top: -2px;
   margin-right: 20px;
+  margin-top: -2px;
   padding: 1em 1em 1em 0;
   position: fixed;
   right: 5%;
@@ -1127,10 +1127,10 @@ body .xwiki-livetable-topfilters-container .value-cloud-tools a {
   z-index: 20000;
 }
 #table-of-contents.absolute {
-  position: absolute;
   margin-left: -16px;
   margin-right: -4px;
   margin-top: 0;
+  position: absolute;
   right: 0;
   top: 0;
 }
