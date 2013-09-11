@@ -204,16 +204,6 @@ seH+q3vmOjeJhKZLMdWq6TuRTMy9dmPl8ICV6G5ERg6wmeVy/NUXbLhPbM1lc/khn1RtMjO/Sr7r
 </content>
   </attachment>
   <attachment>
-    <filename>contentmenu.vm</filename>
-    <filesize>2</filesize>
-    <author>xwiki:XWiki.Admin</author>
-    <date>1326686555000</date>
-    <version>1.1</version>
-    <comment/>
-    <content>IyM=
-</content>
-  </attachment>
-  <attachment>
     <filename>contentview.vm</filename>
     <filesize>2751</filesize>
     <author>xwiki:XWiki.Admin</author>
@@ -379,9 +369,9 @@ U8wbudQAAAAASUVORK5CYII=
   </attachment>
   <attachment>
     <filename>editinline.vm</filename>
-    <filesize>4232</filesize>
+    <filesize>4384</filesize>
     <author>XWiki.Admin</author>
-    <date>1368546657000</date>
+    <date>1378847911000</date>
     <version>1.1</version>
     <comment/>
     <content>IyMgSW5zZXJ0IEpTIGFuZCBDU1MgbmVlZGVkIGZvciB0aGUgZnVsbHNjcmVlbiBlZGl0IGZlYXR1
@@ -392,83 +382,75 @@ cycsIHRydWUpIyMKI3NldCgkZm9ybW5hbWUgPSAiaW5saW5lIikKI3NldCgkc2F2ZWFjdGlvbiA9
 ICJzYXZlIikKI3NldCgkcHJldmlld2VuYWJsZWQgPSB0cnVlKQojIyBEZXRlcm1pbmUgaWYgZWRp
 dGluZyBzaG91bGQgYmUgYWxsb3dlZAojc2V0KCRmb3JjZSA9ICQhcmVxdWVzdC5nZXQoImZvcmNl
 IikpCiNzZXQoJGFsbG93RG9jRWRpdCA9ICEoKCRkb2MuZ2V0TG9ja2VkKCk9PXRydWUpJiYoISRm
-b3JjZSkpICkKIyMKPGRpdiBjbGFzcz0ibWFpbiBsYXlvdXRzdWJzZWN0aW9uIj4KICA8ZGl2IGlk
-PSJjb250ZW50bWVudSIgY2xhc3M9ImFjdGlvbm1lbnUiPgogICAgI3RlbXBsYXRlKCJlZGl0bWVu
-dS52bSIpCiAgPC9kaXY+CjxkaXYgaWQ9Im1haW5Db250ZW50QXJlYSI+CiMjIC0tLS0tLS0tLS0t
+b3JjZSkpICkKIyMKPGRpdiBjbGFzcz0ibWFpbiBsYXlvdXRzdWJzZWN0aW9uIj4KI2ZvcmVhY2gg
+KCR1aXggaW4gJHNlcnZpY2VzLnVpeC5nZXRFeHRlbnNpb25zKCdvcmcueHdpa2kucGxhdGZvcm0u
+bWFpbi50b3AnKSkKICAkc2VydmljZXMucmVuZGVyaW5nLnJlbmRlcigkdWl4LmV4ZWN1dGUoKSwg
+J3hodG1sLzEuMCcpCiNlbmQKPGRpdiBpZD0ibWFpbkNvbnRlbnRBcmVhIj4KIyMgLS0tLS0tLS0t
 LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0KIyMgU3RhcnQgRk9STSBhdCBzdGFydCBvZiBjb250ZW50IGFyZWEgSUYgZWRpdGlu
-ZyBpcyBhbGxvd2VkLgojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiNpZiAoJGFsbG93RG9jRWRpdCkK
-IDxmb3JtIGlkPSJpbmxpbmUiIG1ldGhvZD0icG9zdCIgYWN0aW9uPSIkZG9jLmdldFVSTCgicHJl
-dmlldyIpIiBjbGFzcz0id2l0aExvY2siPgojZW5kCiN0ZW1wbGF0ZSgiaGllcmFyY2h5LnZtIikK
-I3RlbXBsYXRlKCdlZGl0bWV0YS52bScpCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgQ29tcHV0
-ZSB0aXRsZSB0byBkaXNwbGF5IGFuZCBtb2RpZnkgcmVuZGVyZWQgY29udGVudCBhY2NvcmRpbmds
-eS4KIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojc2V0ICgkcmVuZGVyZWRDb250ZW50ID0gJGNkb2Mu
-Z2V0UmVuZGVyZWRDb250ZW50KCkpCiN0ZW1wbGF0ZSgidGl0bGV2YXJzLnZtIikKIyMgLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyBUaXRsZSB6b25lCiMjIC0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0KPGRpdiBpZD0iZG9jdW1lbnQtaGVhZCI+CiMjIC0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0KIyMgRGlzcGxheSB0aGUgdGl0bGUKIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLQo8ZGl2IGlkPSJkb2N1bWVudC10aXRsZSI+PGgxPiR0aXRsZVRvRGlzcGxheTwvaDE+
-PC9kaXY+CiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMjIERvY3VtZW50IGF1dGhvcihzKQojIy0tLS0t
+LS0tLS0tLS0tLQojIyBTdGFydCBGT1JNIGF0IHN0YXJ0IG9mIGNvbnRlbnQgYXJlYSBJRiBlZGl0
+aW5nIGlzIGFsbG93ZWQuCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KI2lmICgkYWxsb3dEb2NFZGl0
+KQogPGZvcm0gaWQ9ImlubGluZSIgbWV0aG9kPSJwb3N0IiBhY3Rpb249IiRkb2MuZ2V0VVJMKCJw
+cmV2aWV3IikiIGNsYXNzPSJ3aXRoTG9jayI+CiNlbmQKI2ZvcmVhY2ggKCR1aXggaW4gJHNlcnZp
+Y2VzLnVpeC5nZXRFeHRlbnNpb25zKCdvcmcueHdpa2kucGxhdGZvcm0uY29udGVudC50b3AnKSkK
+ICAkc2VydmljZXMucmVuZGVyaW5nLnJlbmRlcigkdWl4LmV4ZWN1dGUoKSwgJ3hodG1sLzEuMCcp
+CiNlbmQKIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyBDb21wdXRlIHRpdGxlIHRvIGRpc3BsYXkg
+YW5kIG1vZGlmeSByZW5kZXJlZCBjb250ZW50IGFjY29yZGluZ2x5LgojIyAtLS0tLS0tLS0tLS0t
 LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLQokIXh3aWtpLmdldERvY3VtZW50KCdQaGVub1RpcHMuRG9jdW1lbnRNZXRh
-JykuZ2V0UmVuZGVyZWRDb250ZW50KCkKPC9kaXY+IyNkb2N1bWVudC1oZWFkCiMjCiMjCiMjIElm
-IHRoZSBkb2N1bWVudCBjYW5ub3QgYmUgZWRpdGVkLCBkaXNwbGF5IGFuIGluZm9ybWF0aW9uIGFu
-ZCBhIGZvcmNpbmcgbGluazoKIyMKI2lmICghJGFsbG93RG9jRWRpdCkKICA8ZGl2IGNsYXNzPSJs
-YXlvdXRzZWN0aW9uIj4KICAkcmVzcG9uc2Uuc2V0U3RhdHVzKDQyMykKICAjc2V0KCRuZXdxdWVy
-eXN0cmluZyA9ICIkIXtyZXF1ZXN0LmdldFF1ZXJ5U3RyaW5nKCkucmVwbGFjZUFsbCgnJicsICcm
-YW1wOycpLnJlcGxhY2VBbGwoJyZhbXA7YW1wOycsICcmYW1wOycpfSZhbXA7Zm9yY2U9MSIpCiAg
-I3NldCgkZm9yY2VFZGl0VVJMID0gJGRvYy5nZXRVUkwoJHhjb250ZXh0LmFjdGlvbiwgJHtuZXdx
-dWVyeXN0cmluZ30pKQogICN4d2lraW1lc3NhZ2Vib3hzdGFydCgkc2VydmljZXMubG9jYWxpemF0
-aW9uLnJlbmRlcignbm90aWNlJykgIiRzZXJ2aWNlcy5sb2NhbGl6YXRpb24ucmVuZGVyKCdkb2Ns
-b2NrZWRieScpICR4d2lraS5nZXRVc2VyTmFtZSgkZG9jLmdldExvY2tpbmdVc2VyKCkpIikKICAg
-IDxhIGhyZWY9IiRmb3JjZUVkaXRVUkwiPiRzZXJ2aWNlcy5sb2NhbGl6YXRpb24ucmVuZGVyKCdm
-b3JjZWxvY2snKTwvYT4KICAjeHdpa2ltZXNzYWdlYm94ZW5kKCkKICA8L2Rpdj4KI2Vsc2UKIyMK
-IyMgT3RoZXJ3aXNlLCBjYW4gZWRpdCAtIGNvbnRpbnVlIHRoZSBmb3JtLgojIwo8ZGl2Pgo8aW5w
-dXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJ4Y29udGludWUiIHZhbHVlPSIkZG9jLmdldFVSTCgkZG9j
-LmdldERlZmF1bHRFZGl0TW9kZSgpLCAnZWRpdG9yPWlubGluZScpIi8+CiMjIENTUkYgcHJldmVu
-dGlvbgo8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJmb3JtX3Rva2VuIiB2YWx1ZT0iJCF7c2Vy
-dmljZXMuY3NyZi5nZXRUb2tlbigpfSIgLz4KIyMgVGhpcyBpbnB1dCBpcyB1c2VkIGJ5IHRoZSBm
-dWxsIHNjcmVlbiB3aWRnZXQ6IGl0IHN0b3JlcyB0aGUgc2VsZWN0b3Igb2YgdGhlIG1heGltaXpl
-ZCBlbGVtZW50LCBzbyB0aGF0IHRoZSBmdWxsIHNjcmVlbiBjYW4gYmUgcmVzdG9yZWQgd2hlbiBj
-b21pbmcgYmFjayBmcm9tIHByZXZpZXcuCjxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9IngtbWF4
-aW1pemVkIiB2YWx1ZT0iJCF7ZXNjYXBldG9vbC54bWwoJHtyZXF1ZXN0LmdldCgneC1tYXhpbWl6
-ZWQnKX0pfSIgLz4KPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0ieHJlZGlyZWN0IiB2YWx1ZT0i
-JCF7ZXNjYXBldG9vbC54bWwoJHJlcXVlc3QuZ2V0KCd4cmVkaXJlY3QnKSl9IiAvPgo8aW5wdXQg
-dHlwZT0iaGlkZGVuIiBuYW1lPSJ4bm90aWZpY2F0aW9uIiB2YWx1ZT0iJCF7ZXNjYXBldG9vbC54
-bWwoJHJlcXVlc3QuZ2V0KCd4bm90aWZpY2F0aW9uJykpfSIgLz4KPGlucHV0IHR5cGU9ImhpZGRl
-biIgbmFtZT0idGVtcGxhdGUiIHZhbHVlPSIkIXtlc2NhcGV0b29sLnhtbCgkcmVxdWVzdC50ZW1w
-bGF0ZSl9IiAvPgojIyBXZSBuZWVkIHRvIHN1Ym1pdCB0aGUgbGFuZ3VhZ2Ugb2YgdGhlIHRyYW5z
-bGF0ZWQgZG9jdW1lbnQgYmVjYXVzZSB0aGUgaW5saW5lIGVkaXQgbW9kZSBpcyBub3QgbGltaXRl
-ZCB0byBlZGl0aW5nIG9ubHkKIyMgdGhlIG9iamVjdHMsIHdoaWNoIGFyZSBzaGFyZWQgYnkgYWxs
-IHRyYW5zbGF0aW9ucy4gV2UgY2FuIGFsc28gZWRpdCB0aGUgY29udGVudCBvciB0aGUgdGl0bGUg
-b2YgdGhlIGRvY3VtZW50IHdoaWNoIGFyZQojIyBzcGVjaWZpYyB0byBlYWNoIHRyYW5zbGF0aW9u
-IGFuZCBzbyB3ZSBuZWVkIHRvIHNwZWNpZnkgd2hpY2ggdHJhbnNsYXRpb24gaXMgYmVpbmcgZWRp
-dGVkLgo8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJsYW5ndWFnZSIgdmFsdWU9IiQhe2VzY2Fw
-ZXRvb2wueG1sKCR0ZG9jLnJlYWxMYW5ndWFnZSl9IiAvPgojaWYoIiQhcmVxdWVzdC5wYXJlbnQi
-ICE9ICcnKQogIDxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9InBhcmVudCIgdmFsdWU9IiRlc2Nh
-cGV0b29sLnhtbCgkIXJlcXVlc3QucGFyZW50KSIgLz4KI2VuZAojaWYoIiQhcmVxdWVzdC50aXRs
-ZSIgIT0gJycpCiAgPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0idGl0bGUiIHZhbHVlPSIkZXNj
-YXBldG9vbC54bWwoJCFyZXF1ZXN0LnRpdGxlKSIgLz4KI2VuZAojIyAtLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tCiMjIERpc3BsYXkgdGhlIHJlbmRlcmVkIGNvbnRlbnQKIyMgLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLQokcmVuZGVyZWRDb250ZW50CiNzZXQoJGVkaXRhY3Rpb25zID0g
-ImJvdHRvbSIpCjxkaXYgY2xhc3M9ImJvdHRvbWJ1dHRvbnMiPiN0ZW1wbGF0ZSgiZWRpdGFjdGlv
-bnMudm0iKTwvZGl2Pgo8L2Rpdj4gIyMgZm9ybQo8L2Zvcm0+CiN0ZW1wbGF0ZSgidGV4dGFyZWFf
-d3lzaXd5Zy52bSIpCiNlbmQgIyMgY2FuIGVkaXQKPC9kaXY+ICMjIG1haW5Db250ZW50QXJlYQo8
-L2Rpdj4gIyMgbWFpbgo=
-</content>
-  </attachment>
-  <attachment>
-    <filename>editmenu.vm</filename>
-    <filesize>2</filesize>
-    <author>xwiki:XWiki.Admin</author>
-    <date>1323714573000</date>
-    <version>1.1</version>
-    <comment/>
-    <content>IyM=
+LS0tLS0tCiNzZXQgKCRyZW5kZXJlZENvbnRlbnQgPSAkY2RvYy5nZXRSZW5kZXJlZENvbnRlbnQo
+KSkKI3RlbXBsYXRlKCJ0aXRsZXZhcnMudm0iKQojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tCiMjIFRpdGxlIHpvbmUKIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo8ZGl2IGlk
+PSJkb2N1bWVudC1oZWFkIj4KIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyBEaXNw
+bGF5IHRoZSB0aXRsZQojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCjxkaXYgaWQ9ImRv
+Y3VtZW50LXRpdGxlIj48aDE+JHRpdGxlVG9EaXNwbGF5PC9oMT48L2Rpdj4KIyMgLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0KIyMgRG9jdW1lbnQgYXV0aG9yKHMpCiMjLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiQheHdp
+a2kuZ2V0RG9jdW1lbnQoJ1BoZW5vVGlwcy5Eb2N1bWVudE1ldGEnKS5nZXRSZW5kZXJlZENvbnRl
+bnQoKQo8L2Rpdj4jI2RvY3VtZW50LWhlYWQKIyMKIyMKIyMgSWYgdGhlIGRvY3VtZW50IGNhbm5v
+dCBiZSBlZGl0ZWQsIGRpc3BsYXkgYW4gaW5mb3JtYXRpb24gYW5kIGEgZm9yY2luZyBsaW5rOgoj
+IwojaWYgKCEkYWxsb3dEb2NFZGl0KQogIDxkaXYgY2xhc3M9ImxheW91dHNlY3Rpb24iPgogICRy
+ZXNwb25zZS5zZXRTdGF0dXMoNDIzKQogICNzZXQoJG5ld3F1ZXJ5c3RyaW5nID0gIiQhe3JlcXVl
+c3QuZ2V0UXVlcnlTdHJpbmcoKS5yZXBsYWNlQWxsKCcmJywgJyZhbXA7JykucmVwbGFjZUFsbCgn
+JmFtcDthbXA7JywgJyZhbXA7Jyl9JmFtcDtmb3JjZT0xIikKICAjc2V0KCRmb3JjZUVkaXRVUkwg
+PSAkZG9jLmdldFVSTCgkeGNvbnRleHQuYWN0aW9uLCAke25ld3F1ZXJ5c3RyaW5nfSkpCiAgI3h3
+aWtpbWVzc2FnZWJveHN0YXJ0KCRzZXJ2aWNlcy5sb2NhbGl6YXRpb24ucmVuZGVyKCdub3RpY2Un
+KSAiJHNlcnZpY2VzLmxvY2FsaXphdGlvbi5yZW5kZXIoJ2RvY2xvY2tlZGJ5JykgJHh3aWtpLmdl
+dFVzZXJOYW1lKCRkb2MuZ2V0TG9ja2luZ1VzZXIoKSkiKQogICAgPGEgaHJlZj0iJGZvcmNlRWRp
+dFVSTCI+JHNlcnZpY2VzLmxvY2FsaXphdGlvbi5yZW5kZXIoJ2ZvcmNlbG9jaycpPC9hPgogICN4
+d2lraW1lc3NhZ2Vib3hlbmQoKQogIDwvZGl2PgojZWxzZQojIwojIyBPdGhlcndpc2UsIGNhbiBl
+ZGl0IC0gY29udGludWUgdGhlIGZvcm0uCiMjCjxkaXY+CjxpbnB1dCB0eXBlPSJoaWRkZW4iIG5h
+bWU9Inhjb250aW51ZSIgdmFsdWU9IiRkb2MuZ2V0VVJMKCRkb2MuZ2V0RGVmYXVsdEVkaXRNb2Rl
+KCksICdlZGl0b3I9aW5saW5lJykiLz4KIyMgQ1NSRiBwcmV2ZW50aW9uCjxpbnB1dCB0eXBlPSJo
+aWRkZW4iIG5hbWU9ImZvcm1fdG9rZW4iIHZhbHVlPSIkIXtzZXJ2aWNlcy5jc3JmLmdldFRva2Vu
+KCl9IiAvPgojIyBUaGlzIGlucHV0IGlzIHVzZWQgYnkgdGhlIGZ1bGwgc2NyZWVuIHdpZGdldDog
+aXQgc3RvcmVzIHRoZSBzZWxlY3RvciBvZiB0aGUgbWF4aW1pemVkIGVsZW1lbnQsIHNvIHRoYXQg
+dGhlIGZ1bGwgc2NyZWVuIGNhbiBiZSByZXN0b3JlZCB3aGVuIGNvbWluZyBiYWNrIGZyb20gcHJl
+dmlldy4KPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0ieC1tYXhpbWl6ZWQiIHZhbHVlPSIkIXtl
+c2NhcGV0b29sLnhtbCgke3JlcXVlc3QuZ2V0KCd4LW1heGltaXplZCcpfSl9IiAvPgo8aW5wdXQg
+dHlwZT0iaGlkZGVuIiBuYW1lPSJ4cmVkaXJlY3QiIHZhbHVlPSIkIXtlc2NhcGV0b29sLnhtbCgk
+cmVxdWVzdC5nZXQoJ3hyZWRpcmVjdCcpKX0iIC8+CjxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9
+Inhub3RpZmljYXRpb24iIHZhbHVlPSIkIXtlc2NhcGV0b29sLnhtbCgkcmVxdWVzdC5nZXQoJ3hu
+b3RpZmljYXRpb24nKSl9IiAvPgo8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJ0ZW1wbGF0ZSIg
+dmFsdWU9IiQhe2VzY2FwZXRvb2wueG1sKCRyZXF1ZXN0LnRlbXBsYXRlKX0iIC8+CiMjIFdlIG5l
+ZWQgdG8gc3VibWl0IHRoZSBsYW5ndWFnZSBvZiB0aGUgdHJhbnNsYXRlZCBkb2N1bWVudCBiZWNh
+dXNlIHRoZSBpbmxpbmUgZWRpdCBtb2RlIGlzIG5vdCBsaW1pdGVkIHRvIGVkaXRpbmcgb25seQoj
+IyB0aGUgb2JqZWN0cywgd2hpY2ggYXJlIHNoYXJlZCBieSBhbGwgdHJhbnNsYXRpb25zLiBXZSBj
+YW4gYWxzbyBlZGl0IHRoZSBjb250ZW50IG9yIHRoZSB0aXRsZSBvZiB0aGUgZG9jdW1lbnQgd2hp
+Y2ggYXJlCiMjIHNwZWNpZmljIHRvIGVhY2ggdHJhbnNsYXRpb24gYW5kIHNvIHdlIG5lZWQgdG8g
+c3BlY2lmeSB3aGljaCB0cmFuc2xhdGlvbiBpcyBiZWluZyBlZGl0ZWQuCjxpbnB1dCB0eXBlPSJo
+aWRkZW4iIG5hbWU9Imxhbmd1YWdlIiB2YWx1ZT0iJCF7ZXNjYXBldG9vbC54bWwoJHRkb2MucmVh
+bExhbmd1YWdlKX0iIC8+CiNpZigiJCFyZXF1ZXN0LnBhcmVudCIgIT0gJycpCiAgPGlucHV0IHR5
+cGU9ImhpZGRlbiIgbmFtZT0icGFyZW50IiB2YWx1ZT0iJGVzY2FwZXRvb2wueG1sKCQhcmVxdWVz
+dC5wYXJlbnQpIiAvPgojZW5kCiNpZigiJCFyZXF1ZXN0LnRpdGxlIiAhPSAnJykKICA8aW5wdXQg
+dHlwZT0iaGlkZGVuIiBuYW1lPSJ0aXRsZSIgdmFsdWU9IiRlc2NhcGV0b29sLnhtbCgkIXJlcXVl
+c3QudGl0bGUpIiAvPgojZW5kCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgRGlz
+cGxheSB0aGUgcmVuZGVyZWQgY29udGVudAojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+CiRyZW5kZXJlZENvbnRlbnQKI3NldCgkZWRpdGFjdGlvbnMgPSAiYm90dG9tIikKPGRpdiBjbGFz
+cz0iYm90dG9tYnV0dG9ucyI+I3RlbXBsYXRlKCJlZGl0YWN0aW9ucy52bSIpPC9kaXY+CjwvZGl2
+PiAjIyBmb3JtCjwvZm9ybT4KI3RlbXBsYXRlKCJ0ZXh0YXJlYV93eXNpd3lnLnZtIikKI2VuZCAj
+IyBjYW4gZWRpdAo8L2Rpdj4gIyMgbWFpbkNvbnRlbnRBcmVhCjwvZGl2PiAjIyBtYWluCg==
 </content>
   </attachment>
   <attachment>
@@ -537,9 +519,9 @@ TkSuQmCC
   </attachment>
   <attachment>
     <filename>layoutExtraVars.vm</filename>
-    <filesize>378</filesize>
+    <filesize>444</filesize>
     <author>XWiki.Admin</author>
-    <date>1368546682000</date>
+    <date>1378848245000</date>
     <version>1.1</version>
     <comment/>
     <content>IyogCiAqIFZvbHVudGFyeSBsZWZ0IGVtcHR5LgogKiBUaGlzIHRlbXBsYXRlIGlzIGludGVuZGVk
@@ -548,7 +530,8 @@ cm9tIGxheW91dHZhcnMudm0gc2FmZWx5LgogKiAgCiAqIFNvbWUgZXhhbXBsZSBvZiB2YXJpYWJs
 ZXMgdGhhdCBjYW4gYmUgb3ZlcnJpZGRlbiBoZXJlIDoKICogI3NldCgkZGlzcGxheUNvbnRlbnRN
 ZW51ID0gZmFsc2UpCiAqICNzZXQoJGRpc3BsYXlNYWluTWVudSA9IGZhbHNlKQogKiAjc2V0KCRk
 aXNwbGF5RG9jRXh0cmEgPSBmYWxzZSkKICogI3NldCgkZGlzcGxheVNob3J0Y3V0cyA9IGZhbHNl
-KQogKiMKI3NldCgkZGlzcGxheURvY0V4dHJhID0gZmFsc2Up
+KQogKiMKI3NldCAoJGRpc3BsYXlEb2NFeHRyYSA9IGZhbHNlKQojc2V0ICgkZGlzcGxheU1haW5N
+ZW51ID0gZmFsc2UpCiNzZXQgKCRkaXNwbGF5U2hvcnRjdXRzID0gZmFsc2Up
 </content>
   </attachment>
   <attachment>
@@ -590,53 +573,6 @@ j6hHq/Tg4KxNC4UG0hLBMZZQqbEevINNSRexTu+DIC0R/gfUxypW8oaOgsi1RNiSoin/5UoCOP6E
 zQYf2dCbaj4yshNBPQL2yuOpcgzYrqrDZ3IXLYOB+gQsBVJ/CbD8Ty3A9VaDTWd5dQqbt5nkmEYx
 tKDEqvp4daraeRO9/Ef8Gl/YZFsyZ37YbBov7H7+b/DyX/H6aqFChQoVKlSoUKFChQr9DhVxzOet
 kqG7AAAAAElFTkSuQmCC
-</content>
-  </attachment>
-  <attachment>
-    <filename>menuview.vm</filename>
-    <filesize>2126</filesize>
-    <author>XWiki.Admin</author>
-    <date>1368546658000</date>
-    <version>1.1</version>
-    <comment/>
-    <content>I2lmICgkaXNJblNlcnZsZXRNb2RlKSMjIFZpc2libGUgb25seSBpbiBhIHBhZ2UKPGRpdiBpZD0i
-bWFpbm1lbnUiIGNsYXNzPSJsYXlvdXRzdWJzZWN0aW9uIGFjdGlvbm1lbnUiPgo8c3Ryb25nIGlk
-PSJ4d2lraW1lbnV0aXRsZSIgY2xhc3M9ImhpZGRlbiI+JHNlcnZpY2VzLmxvY2FsaXphdGlvbi5y
-ZW5kZXIoJ2NvcmUubWVudS5tYWluLnRpdGxlJyk8L3N0cm9uZz4KPGRpdiBjbGFzcz0icmlnaHRt
-ZW51Ij4KI3NldCAoJHdvcmtzcGFjZU1hbmFnZXJNYWluRG9jdW1lbnRSZWZlcmVuY2UgPSAkc2Vy
-dmljZXMubW9kZWwuY3JlYXRlRG9jdW1lbnRSZWZlcmVuY2UoJHhjb250ZXh0Lm1haW5XaWtpTmFt
-ZSwgJ1dvcmtzcGFjZU1hbmFnZXInLCAnV2ViSG9tZScpKQojc2V0ICgkaXNXb3Jrc3BhY2VNYW5h
-Z2VyQXBwSW5zdGFsbGVkID0gJHh3aWtpLmV4aXN0cygkd29ya3NwYWNlTWFuYWdlck1haW5Eb2N1
-bWVudFJlZmVyZW5jZSkpCiNzZXQgKCRpc1dvcmtzcGFjZSA9ICRzZXJ2aWNlcy53b3Jrc3BhY2Uu
-aXNXb3Jrc3BhY2UoJHhjb250ZXh0LmRhdGFiYXNlKSkKI3NldCAoJGlzTWFpbldpa2lVc2VyID0g
-KCR4Y29udGV4dC5tYWluV2lraU5hbWUgPT0gIiQhe3hjb250ZXh0LnVzZXJSZWZlcmVuY2Uud2lr
-aVJlZmVyZW5jZS5uYW1lfSIpKQojIwojIyBVc2VyCiMjCiNpZiAoISR4Y29udGV4dC5hY3Rpb24u
-c3RhcnRzV2l0aCgnbG9naW4nKSkKICAjaWYgKCRpc0d1ZXN0KQogICAgI3NldCAoJGxvZ2ludXJs
-ID0gJHh3aWtpLmdldFVSTCgnWFdpa2kuWFdpa2lMb2dpbicsICdsb2dpbicsICJ4cmVkaXJlY3Q9
-JGVzY2FwZXRvb2wudXJsKCR4d2lraS5yZWxhdGl2ZVJlcXVlc3RVUkwpIikpCiAgICAjeHdpa2l0
-b3BtZW51ZW50cnkoJCFsb2dpbnVybCAkIXNlcnZpY2VzLmxvY2FsaXphdGlvbi5yZW5kZXIoJ2xv
-Z2luJykgJ3RtTG9naW4nKQogICNlbHNlCiAgICAjc2V0ICgkbG9nb3V0dXJsID0gJHh3aWtpLmdl
-dFVSTCgnWFdpa2kuWFdpa2lMb2dvdXQnLCAnbG9nb3V0JywgInhyZWRpcmVjdD0kZXNjYXBldG9v
-bC51cmwoJHh3aWtpLnJlbGF0aXZlUmVxdWVzdFVSTCkiKSkKICAgICN4d2lraXRvcG1lbnVlbnRy
-eSgkIWxvZ291dHVybCAkIXNlcnZpY2VzLmxvY2FsaXphdGlvbi5yZW5kZXIoJ2xvZ291dCcpICd0
-bUxvZ291dCcpCiAgI2VuZAojZW5kCiNpZiAoJGlzR3Vlc3QgJiYgJHh3aWtpLmhhc0FjY2Vzc0xl
-dmVsKCdyZWdpc3RlcicsICdYV2lraS5YV2lraVByZWZlcmVuY2VzJykpCiAgI3NldCAoJHJlZ3Vy
-bCA9ICR4d2lraS5nZXRVUkwoJ1hXaWtpLlJlZ2lzdGVyJywgJ3JlZ2lzdGVyJykpCiAgI3h3aWtp
-dG9wbWVudWVudHJ5KCQhcmVndXJsICQhc2VydmljZXMubG9jYWxpemF0aW9uLnJlbmRlcignY29y
-ZS5yZWdpc3RlcicpICd0bVJlZ2lzdGVyJykKI2VuZAojIwojIwojaWYgKCEkaXNHdWVzdCkKI2lm
-ICgkaXNTdXBlckFkbWluKQogICN4d2lraXRvcG1lbnVlbnRyeSgnIycgJCFzZXJ2aWNlcy5sb2Nh
-bGl6YXRpb24ucmVuZGVyKCdzdXBlcmFkbWluJykgJ3RtVXNlcicgJ2hhc0ljb24nKQojZWxzZQog
-ICN4d2lraXRvcG1lbnVlbnRyeSgiJCF4d2lraS5nZXRVUkwoJHhjb250ZXh0LnVzZXIpIiAiJCF4
-d2lraS5nZXRVc2VyTmFtZSgkeGNvbnRleHQudXNlciwgZmFsc2UpIiAndG1Vc2VyJyAnaGFzSWNv
-bicpCiNlbmQKI2VuZAo8L2Rpdj4KPGRpdiBjbGFzcz0ibGVmdG1lbnUiPgojIwojIyBIb21lCiMj
-CiN4d2lraXRvcG1lbnVlbnRyeSgkeHdpa2kuZ2V0VVJMKCIke2RvYy5zcGFjZX0uV2ViSG9tZSIs
-ICd2aWV3JykgJ0hvbWUnICd0bUhvbWUnICdoYXNJY29uJykKCiMjCiMjIEFkbWluaXN0cmF0aW9u
-CiMjCiNzZXQgKCRpc0FkbWluQXBwSW5zdGFsbGVkID0gJHh3aWtpLmV4aXN0cygnWFdpa2kuQWRt
-aW5TaGVldCcpKQojaWYgKCRpc0FkbWluQXBwSW5zdGFsbGVkICYmICRoYXNTcGFjZUFkbWluKQog
-ICNzZXQgKCRhZG1pbnNwYWNlYWN0aW9uID0gJCF4d2lraS5nZXRVUkwoIiR7ZG9jLnNwYWNlfS5X
-ZWJQcmVmZXJlbmNlcyIsICdhZG1pbicpKQogICN4d2lraXRvcG1lbnVlbnRyeSgkYWRtaW5zcGFj
-ZWFjdGlvbiAnQWRtaW5pc3RyYXRpb24nICd0bUFkbWluU3BhY2UnICdoYXNJY29uJykKI2VuZAo8
-L2Rpdj4KPC9kaXY+CiNlbmQ=
 </content>
   </attachment>
   <attachment>
@@ -878,11 +814,6 @@ TXVppcEAAAAASUVORK5CYII=
 #body {
   font-family: Arial,Verdana,sans-serif;
 }
-#hierarchy,
-#globallinks,
-.edit-meta-tools,
-#contentmenu,
-#document-info,
 .edit_section {
   display: none !important;
 }
@@ -903,9 +834,6 @@ TXVppcEAAAAASUVORK5CYII=
   text-shadow: 0 0 6px #777;
   text-transform: uppercase;
 }
-#headerglobal {
-  border-bottom: 2px solid;
-}
 .xdocCreation {
   float: right;
   width: 48%;
@@ -915,55 +843,50 @@ TXVppcEAAAAASUVORK5CYII=
   padding: 5px 0 0;
 }
 #mainContentArea, #mainEditArea {
-  margin: 4px 10%;
   overflow: visible;
   padding: 10px;
 }
-.actionmenu .tmHome {
-  background-image: url("#__img('home-s')");
+#phenotips-mainmenu, #phenotips-globalTools {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+  color: $theme.menuLinkColor;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5)
 }
-.actionmenu .tmAdminSpace {
-  background-image: url("#__img('laptop-s')");
+#phenotips-mainmenu .topmenuentry {
+  background-image: none;
+  white-space: nowrap;
 }
-.actionmenu .tmUser {
-  background-image: url("#__img('user-s')");
+#phenotips-mainmenu a, #phenotips-globalTools a {
+  display: inline-block;
+  float: none;
 }
-#body thead.xwiki-livetable-display-header td.xwiki-livetable-display-header-filter input,
-#body thead.xwiki-livetable-display-header td.xwiki-livetable-display-header-filter select {
-  padding: .3em !important;
+#phenotips-globalTools .search input {
+  margin-left: -1.2em;
+  margin-right: 5px;
+  margin-top: 2px;
+  max-height: 20px;
+  padding: 0 3px 0 1.2em;
+  width: 20em;
 }
-#body input[type=text], #body textarea {
-  border-color: $theme.pageContentBackgroundColor;
-  border-radius: 4px;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .4);
+#phenotips-globalTools label {
+  color: $theme.menuLinkColor;
+  cursor: pointer;
+  display: inline-block;
+  font: 700 0.8em/1.8em sans-serif;
+  margin-left: 2em;
+  padding: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  width: auto;
 }
-#body input[type=text]:focus, #body textarea:focus {
-  border-color: $theme.linkColor;
-}
-input.button, .buttonwrapper a {
-  border-radius: 4px;
-  box-shadow: 0 0 6px $theme.textColor;
-}
-input.button:hover, .buttonwrapper a:hover {
-  background-color: $theme.buttonPrimaryBackgroundColor;
-  box-shadow: 0 0 6px $theme.linkColor;
-  color: $theme.buttonPrimaryTextColor;
+#phenotips-globalTools .search .icon-search {
+  color: $theme.textColor;
+  display: inline-block;
+  opacity: .2;
 }
 
 input[name=action_saveandcontinue] {
   display: none;
-}
-.bottombuttons input[type=submit] {
-  padding-left: 20px;
-  background-position: 4px 40%;
-  background-repeat: no-repeat;
-  background-size: auto;
-}
-input[name=action_save] {
-  background-image: url("#__img('check-s')") !important;
-}
-input[name=action_cancel] {
-  background-image: url("#__img('delete-s')") !important;
 }
 
 .add-data-button,
@@ -1024,6 +947,24 @@ label.create-button-label, .add-data-button:before {
   width: .8em !important;
   z-index: 2;
 }
+
+thead.xwiki-livetable-display-header td.xwiki-livetable-display-header-filter input, thead.xwiki-livetable-display-header td.xwiki-livetable-display-header-filter select {
+  padding: .3em !important;
+}
+
+input[type=text], textarea {
+  border-color: $theme.pageContentBackgroundColor;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.4) inset !important;
+  width: 100%;
+}
+textarea {
+  width: 98%;
+}
+input[type=text]:focus, textarea:focus {
+  border-color: $theme.linkColor;
+}
+
 body .xwiki-livetable-topfilters-container, body .xwiki-livetable-tagcloud-container {
   background-color: $theme.backgroundSecondaryColor;
   border-color: $theme.buttonPrimaryBackgroundColor;
@@ -1423,7 +1364,155 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
       <baseskin>colibri</baseskin>
     </property>
     <property>
-      <edit.vm/>
+      <edit.vm>###
+### Main "edit" template
+###
+### General wrapper for edit actions
+###
+##
+## Is the document being edited by another user?
+## If yes, warn about it and show a forcing link:
+##
+#if($tdoc.getLocked() &amp;&amp; "$!request.get('force')" == '')
+  #template("startpage.vm")
+  &lt;div class="main layoutsubsection"&gt;
+  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.main.top'))
+    $services.rendering.render($uix.execute(), 'xhtml/1.0')
+  #end
+  &lt;div id="mainContentArea"&gt;
+  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.content.top'))
+    $services.rendering.render($uix.execute(), 'xhtml/1.0')
+  #end
+    ##
+    $response.setStatus(423)
+    #set($newquerystring = "$!{request.getQueryString().replaceAll('&amp;', '&amp;amp;').replaceAll('&amp;amp;amp;', '&amp;amp;')}"
+                         + '&amp;amp;force=1')
+    #set($forceEditURL = $doc.getURL($xcontext.getAction(), ${newquerystring}))
+    #xwikimessageboxstart($services.localization.render('notice') "$services.localization.render('doclockedby') $xwiki.getUserName($doc.getLockingUser())")
+    &lt;a href="$forceEditURL"&gt;$services.localization.render('forcelock')&lt;/a&gt;
+    #xwikimessageboxend()
+    ##
+   &lt;/div&gt;## mainContentArea
+  &lt;/div&gt;## main layoutsubsection
+  #template("endpage.vm")
+#else
+  ##
+  ## Determine what editor to show
+  ##
+  #if("$!editor" == '')
+    ## Normally no special characters should exist in the editor parameter, so this is just a protection measure.
+    #set($editor = "$!{escapetool.xml($request.getParameter('editor'))}")
+    #if($editor == '')
+      ## Determine the sheets using the default document translation because objects are accessible only from the default translation.
+      #if(!$services.sheet.getSheets($doc, $context.action).isEmpty())
+        #set($editor = 'inline')
+      #elseif (($xwiki.getUserPreference('editor') == 'Wysiwyg') &amp;&amp; ($tdoc.syntax.toIdString() == 'xwiki/1.0' &amp;&amp; !$tdoc.isAdvancedContent() || $services.wysiwyg.isSyntaxSupported($tdoc.syntax.toIdString())))
+        #set($editor = 'wysiwyg')
+      #else
+        #set($editor = 'wiki')
+      #end
+    #end
+  #end
+  #if($editor == 'inline')
+    ## The inline editor uses the view layout, unlike the rest of the editors.
+    #template('startpage.vm')
+    #template('editinline.vm')
+    #template('endpage.vm')
+  #else
+  ##
+  ## "Compute" the title
+  ##
+  #set ($title = $services.localization.render("platform.web.editors.${editor}.pageTitle", [$tdoc.plainTitle]))
+  #if ($title == "platform.web.editors.${editor}.pageTitle")
+    #set ($title = $services.localization.render('platform.web.editors.unknown.pageTitle', [$tdoc.plainTitle]))
+  #end
+  ##
+  ## Header
+  ##
+  #template("xwikivars.vm")
+  #template("layoutvars.vm")
+  #template("htmlheader.vm")
+  #if($displayMainMenu)
+    &lt;div id="menuview"&gt;
+      #template("menuview.vm")
+    &lt;/div&gt;
+  #end
+  #template("header.vm")
+  #if($editor == 'wiki' || $editor == 'wysiwyg')
+    &lt;form id="edit" method="post" action="$doc.getURL('preview')" class="withLock"&gt;
+    &lt;div class="hidden"&gt;
+    ## CSRF prevention
+    &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+    ## Pass the section number when the form is submitted in order to affect only the specified section.
+    ## We need to test if the section number is present to prevent a NumberFormatException for the empty string.
+    #if("$!{request.section}" != '')
+      &lt;input type="hidden" name="section" value="$!{escapetool.xml($request.section)}" /&gt;
+    #end
+    ## This input is used by the full screen widget: it stores the selector of the maximized element, so that the full screen can be restored when coming back from preview.
+    &lt;input type="hidden" name="x-maximized" value="$!{escapetool.xml($request.get('x-maximized'))}"/&gt;
+    &lt;/div&gt;
+  #end
+  ##################
+  ##   Edit zone  ##
+  ##################
+  &lt;div id="xwikieditor" class="layoutsection"&gt;
+  &lt;div id="xwikieditorinner"&gt;
+  &lt;div class="leftsidecolumns"&gt;
+  &lt;div id="editcolumn" class="editor editor-${editor}"&gt;
+  &lt;div class="alleditcontent"&gt;
+  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.main.top'))
+    $services.rendering.render($uix.execute(), 'xhtml/1.0')
+  #end
+  &lt;div id="mainEditArea"&gt;
+  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.content.top'))
+    $services.rendering.render($uix.execute(), 'xhtml/1.0')
+  #end
+  #template("edit${editor}.vm")
+  ## This javascript must be placed here since it uses velocity variables set in the template above.
+  &lt;script type="text/javascript"&gt;
+    //&lt;![CDATA[
+    if ($('tmEditWysiwyg')) {
+      // Manage switch from wiki to wysiwyg, content must be preserved between those editors.
+      Event.observe($('tmEditWysiwyg'), "click", function(event) {
+        #if($doc.syntax.toIdString() == "xwiki/1.0")
+        if (checkAdvancedContent("$services.localization.render('checkadvancedcontent')") == false) {
+          Event.stop(event);
+          return;
+        }
+        #end
+        document.forms.${formname}.action='$doc.getURL("edit", "editor=wysiwyg&amp;$languageparams")';
+        document.forms.${formname}.submit();
+        Event.stop(event);
+      });
+
+      // Manage switch from wysiwyg to wiki, content must be preserved between those editors.
+      Event.observe($('tmEditWiki'), "click", function(event) {
+        document.forms.${formname}.action='$doc.getURL("edit", "editor=wiki&amp;$languageparams")';
+        document.forms.${formname}.submit();
+        Event.stop(event);
+      });
+    }
+    //]]&gt;
+  &lt;/script&gt;
+  &lt;/div&gt; ## mainEditArea
+  &lt;/div&gt; ## alleditcontent
+  &lt;/div&gt; ## editcolumn
+  &lt;div class="clearfloats"&gt;&lt;/div&gt;
+  &lt;/div&gt; ## leftsidecolumns
+  #template("editpanels.vm")
+  &lt;div class="clearfloats"&gt;&lt;/div&gt;
+  &lt;/div&gt; ## xwikieditorinner
+  &lt;/div&gt; ## xwikieditor
+  ##
+  ## Footer
+  ##
+  #if($editor == 'wiki' || $editor == 'wysiwyg')
+    &lt;/form&gt;
+  #end
+  #template("footer.vm")
+  #template("htmlfooter.vm")
+  #end ## $editor != 'inline'
+#end</edit.vm>
     </property>
     <property>
       <footer.vm/>
@@ -1437,6 +1526,9 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
 ###
 #if($isInServletMode) ## Visible only in a page
 &lt;div id="headerglobal" class="layoutsection"&gt;
+#foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.header.top'))
+  $services.rendering.render($uix.execute(), 'xhtml/1.0')
+#end
 #if($xcontext.action == "view")
 &lt;div class="minwidthb"&gt;&lt;/div&gt;
 #else
@@ -1470,8 +1562,12 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
   &lt;/div&gt; ## companylogo
   &lt;/div&gt; ## company
   &lt;div class="clearfloats"&gt;&lt;/div&gt;
+#foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.header.bottom'))
+  $services.rendering.render($uix.execute(), 'xhtml/1.0')
+#end
 &lt;/div&gt; ## headerglobal
 #end
+##
 ### TODO: Format the header for pdf output</header.vm>
     </property>
     <property>
@@ -1484,7 +1580,44 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
       <style.css/>
     </property>
     <property>
-      <view.vm/>
+      <view.vm>###
+### Main "view" template
+###
+### General wrapper for view actions
+###
+#if ($services.distribution.jobStatus &amp;&amp; $services.distribution.jobStatus.state.name() != 'FINISHED' &amp;&amp; $services.distribution.canDisplayDistributionWizard())
+  $response.sendRedirect($xwiki.getURL('XWiki.Distribution', 'distribution', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
+#elseif ($request.getParameter("raw").equals("1"))
+  #template("code.vm")
+#else
+  #template("startpage.vm")
+  #if("$!viewer" == '')
+    #set($viewer = $request.getParameter('viewer'))
+  #end
+  #if("$!viewer" == '')
+    #set($viewer = 'content')
+  #end
+  &lt;div class="main layoutsubsection"&gt;
+  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.main.top'))
+    $services.rendering.render($uix.execute(), 'xhtml/1.0')
+  #end
+  &lt;div id="mainContentArea"&gt;
+  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.content.top'))
+    $services.rendering.render($uix.execute(), 'xhtml/1.0')
+  #end
+  #if($viewer == 'content')
+    #template("contentview.vm")
+  #else
+    #template("${viewer}.vm")
+  #end
+  &lt;div class="clearfloats"&gt;&lt;/div&gt;
+  &lt;/div&gt;## mainContentArea
+  #if($viewer == 'content' &amp;&amp; $displayDocExtra)
+    #template("docextra.vm")
+  #end
+  &lt;/div&gt;## main
+  #template("endpage.vm")
+#end</view.vm>
     </property>
     <property>
       <viewheader.vm/>
