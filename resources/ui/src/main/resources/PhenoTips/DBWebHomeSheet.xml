@@ -1021,11 +1021,8 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
 &lt;span class="buttonwrapper"&gt;&lt;a class="button" id="phenotips_export" title="Export the database in CSV format (MS Excel compatible)" href="$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;outputSyntax=plain")"&gt;Export database&lt;/a&gt;&lt;/span&gt;
   &lt;/div&gt;&lt;/form&gt;{{/html}}##
 #end
-
 #else
-
 {{warning}}**Configuration missing.**{{/warning}}
-
 #end
 {{/velocity}}</content>
 </xwikidoc>
