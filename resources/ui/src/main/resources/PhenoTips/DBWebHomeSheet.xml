@@ -965,51 +965,51 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('XWiki.DateTimePicker')##
-#set($config = $doc.getObject('PhenoTips.DBConfigurationClass'))
-#set($patientClassName = "$!{config.getProperty('patientClass').value}")
+#set ($config = $doc.getObject('PhenoTips.DBConfigurationClass'))
+#set ($patientClassName = "$!{config.getProperty('patientClass').value}")
 #if ($config &amp;&amp; $patientClassName != '')
-#set($configuredColumns = $config.getProperty('livetableColumns').value)
+#set ($configuredColumns = $config.getProperty('livetableColumns').value)
 #if (!$configuredColumns &amp;&amp; !($configuredColumns.length &gt; 0))
-  #set($configuredColumns = 'doc.name')
+  #set ($configuredColumns = 'doc.name')
 #end
-#set($columns = [])
-#set($discard = $columns.addAll($configuredColumns))
-#set($columnsProperties = {
-      "_actions" : {"actions": ["edit", "delete"]}
+#set ($columns = [])
+#set ($discard = $columns.addAll($configuredColumns))
+#set ($columnsProperties = {
+  '_actions' : {'actions': ['edit', 'delete']}
 })
-#foreach($column in $columns)
-      #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0))
-      #set($discard = $columnsProperties.put($column, { "type" : "text", "link" : "view", "size" : 7, "filterable" : $isFilterable, "sortable": true  }))
+#foreach ($column in $columns)
+  #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0))
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true  }))
 #end
 #foreach ($filterableColumn in ['date_of_birth', 'omim_id', 'phenotype'])
   #if (!$configuredColumns.contains($filterableColumn))
-    #set($discard = $columns.add($filterableColumn))
-    #set($discard = $columnsProperties.put($filterableColumn, { "type" : "hidden" }))
+    #set ($discard = $columns.add($filterableColumn))
+    #set ($discard = $columnsProperties.put($filterableColumn, { 'type' : 'hidden' }))
   #end
 #end
 ##
-#set($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
+#set ($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
 == Filters ==
 
 {{velocity}}#__filters_display('xform'){{/velocity}})))", "xwiki/2.1"))
-#set($discard = $columns.add("_actions"))
+#set ($discard = $columns.add('_actions'))
 ##
-#set($options = {
-"className"         : $patientClassName,
-"translationPrefix" : "patient.livetable.",
-"rowCount"          : 25,
-"maxPages"          : 10,
-"selectedColumn"    : $config.getProperty('livetableSortColumn').value,
-"defaultOrder"      : "asc",
-"topFilters"        : $topFilters,
-"resultPage"        : 'PhenoTips.LiveTableResults'
+#set ($options = {
+  'className'         : $patientClassName,
+  'translationPrefix' : 'patient.livetable.',
+  'rowCount'          : 25,
+  'maxPages'          : 10,
+  'selectedColumn'    : $config.getProperty('livetableSortColumn').value,
+  'defaultOrder'      : 'asc',
+  'topFilters'        : $topFilters,
+  'resultPage'        : 'PhenoTips.LiveTableResults'
 })
 #if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
   #set ($options.rowCount = $config.getProperty('livetableRows').value)
 #end
-#livetable("patients" $columns $columnsProperties $options)
+#livetable('patients' $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
-#if($hasCreatePage)
+#if ($hasCreatePage)
   {{html clean="false" wiki="false"}}&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
     &lt;input type="hidden" name="doCreate" value="1" /&gt;
