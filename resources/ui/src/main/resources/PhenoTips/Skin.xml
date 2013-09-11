@@ -987,7 +987,7 @@ input[name=action_cancel] {
 }
 .general-tools {
   float: right;
-  margin: 25px 3px;
+  margin: -1.6em 3px 0;
   padding: 3px 0;
   position: relative;
 }
