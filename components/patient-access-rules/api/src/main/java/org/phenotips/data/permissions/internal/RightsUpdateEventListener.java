@@ -130,7 +130,7 @@ public class RightsUpdateEventListener implements EventListener
                 return;
             }
             BaseObject right = doc.newXObject(RIGHTS_CLASS, context);
-            right.setLargeStringValue("users", "XWiki.XWikiAllGroup");
+            right.setLargeStringValue("groups", "XWiki.XWikiAllGroup");
             right.setIntValue("allow", 1);
             if ("view".equals(visibility.getDefaultAccessLevel().getName())) {
                 right.setStringValue("levels", "view");
