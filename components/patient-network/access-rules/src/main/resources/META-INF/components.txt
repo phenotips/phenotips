@@ -1,0 +1,2 @@
+org.phenotips.data.similarity.permissions.internal.MatchableVisibility
+org.phenotips.data.similarity.permissions.internal.MatchAccessLevel
