@@ -21,7 +21,6 @@ package org.phenotips.data.permissions.internal.visibility;
 
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Visibility;
-import org.phenotips.data.permissions.internal.access.EditAccessLevel;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.localization.LocalizationContext;
@@ -47,7 +46,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the {@link EditAccessLevel edit access level}.
+ * Tests for the {@link PrivateVisibility private visibility level}.
  * 
  * @version $Id$
  */
@@ -57,14 +56,14 @@ public class PrivateVisibilityTest
     public final MockitoComponentMockingRule<Visibility> mocker =
         new MockitoComponentMockingRule<Visibility>(PrivateVisibility.class);
 
-    /** Basic test for {@link AccessLevel#getName()}. */
+    /** Basic test for {@link Visibility#getName()}. */
     @Test
     public void getName() throws ComponentLookupException
     {
         Assert.assertEquals("private", this.mocker.getComponentUnderTest().getName());
     }
 
-    /** Basic test for {@link AccessLevel#getLabel()}. */
+    /** Basic test for {@link Visibility#getLabel()}. */
     @Test
     public void getLabel() throws ComponentLookupException
     {
@@ -90,14 +89,14 @@ public class PrivateVisibilityTest
             .getLabel());
     }
 
-    /** {@link AccessLevel#getLabel()} returns the capitalized name when a translation isn't found. */
+    /** {@link Visibility#getLabel()} returns the capitalized name when a translation isn't found. */
     @Test
     public void getLabelWithoutTranslation() throws ComponentLookupException
     {
         Assert.assertEquals("Private", this.mocker.getComponentUnderTest().getLabel());
     }
 
-    /** Basic test for {@link AccessLevel#getDescription()}. */
+    /** Basic test for {@link Visibility#getDescription()}. */
     @Test
     public void getDescription() throws ComponentLookupException
     {
@@ -123,21 +122,21 @@ public class PrivateVisibilityTest
             .getDescription());
     }
 
-    /** {@link AccessLevel#getDescription()} returns the empty string when a translation isn't found. */
+    /** {@link Visibility#getDescription()} returns the empty string when a translation isn't found. */
     @Test
     public void getDescriptionWithoutTranslation() throws ComponentLookupException
     {
         Assert.assertEquals("", this.mocker.getComponentUnderTest().getDescription());
     }
 
-    /** Basic test for {@link AccessLevel#toString()}. */
+    /** Basic test for {@link Visibility#toString()}. */
     @Test
     public void toStringTest() throws ComponentLookupException
     {
         Assert.assertEquals("private", this.mocker.getComponentUnderTest().toString());
     }
 
-    /** Basic test for {@link AccessLevel#equals(Object)}. */
+    /** Basic test for {@link Visibility#equals(Object)}. */
     @Test
     public void equalsTest() throws ComponentLookupException
     {
@@ -150,19 +149,19 @@ public class PrivateVisibilityTest
         AccessLevel edit = mock(AccessLevel.class);
         AccessLevel none = this.mocker.getInstance(AccessLevel.class, "none");
         when(other.getDefaultAccessLevel()).thenReturn(none, edit, none, edit);
-        // Equals another level with the same name and access level
+        // Equals another visibility with the same name and access level
         Assert.assertTrue(this.mocker.getComponentUnderTest().equals(other));
-        // Doesn't equal a level with a different access level but the same name
+        // Doesn't equal a visibility with a different access level but the same name
         Assert.assertFalse(this.mocker.getComponentUnderTest().equals(other));
-        // Doesn't equal a level with the same access level but a different name
+        // Doesn't equal a visibility with the same access level but a different name
         Assert.assertFalse(this.mocker.getComponentUnderTest().equals(other));
-        // Doesn't equal a level with a different access level and a different name
+        // Doesn't equal a visibility with a different access level and a different name
         Assert.assertFalse(this.mocker.getComponentUnderTest().equals(other));
         // Doesn't equal other types of objects
         Assert.assertFalse(this.mocker.getComponentUnderTest().equals("private"));
     }
 
-    /** Basic test for {@link AccessLevel#compareTo(AccessLevel)}. */
+    /** Basic test for {@link Visibility#compareTo(Visibility)}. */
     @Test
     public void compareToTest() throws ComponentLookupException
     {
