@@ -24,14 +24,17 @@ import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
 import org.phenotips.data.Patient;
+import org.phenotips.data.permissions.internal.access.NoAccessLevel;
+import org.phenotips.data.permissions.internal.access.OwnerAccessLevel;
 import org.phenotips.data.similarity.AccessType;
-import org.phenotips.data.similarity.PatientSimilarityView;
 import org.phenotips.data.similarity.FeatureMetadatumSimilarityScorer;
 import org.phenotips.data.similarity.FeatureSimilarityScorer;
+import org.phenotips.data.similarity.PatientSimilarityView;
 import org.phenotips.data.similarity.internal.mocks.MockDisorder;
-import org.phenotips.data.similarity.internal.mocks.MockOntologyTerm;
 import org.phenotips.data.similarity.internal.mocks.MockFeature;
 import org.phenotips.data.similarity.internal.mocks.MockFeatureMetadatum;
+import org.phenotips.data.similarity.internal.mocks.MockOntologyTerm;
+import org.phenotips.data.similarity.permissions.internal.MatchAccessLevel;
 import org.phenotips.ontology.OntologyManager;
 import org.phenotips.ontology.OntologyTerm;
 
@@ -50,6 +53,7 @@ import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -76,15 +80,46 @@ public class RestrictedPatientSimilarityViewTest
     /** The alternative user used as the referrer of the reference patient for matchable or private access. */
     private static final DocumentReference USER_2 = new DocumentReference("xwiki", "XWiki", "hmccoy");
 
+    private static AccessType open;
+
+    private static AccessType limited;
+
+    private static AccessType priv;
+
     /** Mocked component manager. */
     private ComponentManager cm;
+
+    @BeforeClass
+    public static void setupAccessTypes()
+    {
+        open = mock(AccessType.class);
+        when(open.isOpenAccess()).thenReturn(true);
+        when(open.isLimitedAccess()).thenReturn(false);
+        when(open.isPrivateAccess()).thenReturn(false);
+        when(open.toString()).thenReturn("owner");
+        when(open.getAccessLevel()).thenReturn(new OwnerAccessLevel());
+
+        limited = mock(AccessType.class);
+        when(limited.isOpenAccess()).thenReturn(false);
+        when(limited.isLimitedAccess()).thenReturn(true);
+        when(limited.isPrivateAccess()).thenReturn(false);
+        when(limited.toString()).thenReturn("match");
+        when(limited.getAccessLevel()).thenReturn(new MatchAccessLevel());
+
+        priv = mock(AccessType.class);
+        when(priv.isOpenAccess()).thenReturn(false);
+        when(priv.isLimitedAccess()).thenReturn(false);
+        when(priv.isPrivateAccess()).thenReturn(true);
+        when(priv.toString()).thenReturn("none");
+        when(priv.getAccessLevel()).thenReturn(new NoAccessLevel());
+    }
 
     /** Missing match throws exception. */
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithMissingMatch()
     {
         Patient mockReference = mock(Patient.class);
-        new RestrictedPatientSimilarityView(null, mockReference);
+        new RestrictedPatientSimilarityView(null, mockReference, null);
     }
 
     /** Missing reference throws exception. */
@@ -92,50 +127,18 @@ public class RestrictedPatientSimilarityViewTest
     public void testConstructorWithMissingReference()
     {
         Patient mockMatch = mock(Patient.class);
-        new RestrictedPatientSimilarityView(mockMatch, null);
+        new RestrictedPatientSimilarityView(mockMatch, null, null);
     }
 
-    /** Same author results in owner access. */
+    /** The document is disclosed for public patients. */
     @Test
-    public void testSameReferrerAccess()
+    public void testGetAccess()
     {
         Patient mockMatch = mock(Patient.class);
         Patient mockReference = mock(Patient.class);
-        when(mockMatch.getDocument()).thenReturn(PATIENT_1);
-        when(mockMatch.getReporter()).thenReturn(USER_1);
-        when(mockReference.getReporter()).thenReturn(USER_1);
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
-        Assert.assertSame(AccessType.OWNED, o.getAccess());
-    }
-
-    /** Different authors results in matchable access. */
-    @Test
-    public void testDifferentReferrerAccess()
-    {
-        Patient mockMatch = mock(Patient.class);
-        Patient mockReference = mock(Patient.class);
-        when(mockMatch.getDocument()).thenReturn(PATIENT_1);
-        when(mockMatch.getReporter()).thenReturn(USER_1);
-        when(mockReference.getReporter()).thenReturn(USER_2);
-        // FIXME This isn't correct, revisit after proper access types are implemented
-
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
-        Assert.assertSame(AccessType.MATCH, o.getAccess());
-    }
-
-    /** Missing reference referrer results in private access. */
-    @Test
-    public void testMissingReferenceReferrerAccess()
-    {
-        Patient mockMatch = mock(Patient.class);
-        Patient mockReference = mock(Patient.class);
-        when(mockMatch.getDocument()).thenReturn(PATIENT_1);
-        when(mockMatch.getReporter()).thenReturn(USER_1);
-        when(mockReference.getReporter()).thenReturn(null);
-
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
-        Assert.assertSame(AccessType.PRIVATE, o.getAccess());
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, limited);
+        Assert.assertEquals("match", o.getAccess().getName());
     }
 
     /** The document is disclosed for public patients. */
@@ -145,10 +148,8 @@ public class RestrictedPatientSimilarityViewTest
         Patient mockMatch = mock(Patient.class);
         Patient mockReference = mock(Patient.class);
         when(mockMatch.getDocument()).thenReturn(PATIENT_1);
-        when(mockMatch.getReporter()).thenReturn(USER_1);
-        when(mockReference.getReporter()).thenReturn(USER_1);
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
         Assert.assertSame(PATIENT_1, o.getDocument());
     }
 
@@ -159,10 +160,20 @@ public class RestrictedPatientSimilarityViewTest
         Patient mockMatch = mock(Patient.class);
         Patient mockReference = mock(Patient.class);
         when(mockMatch.getDocument()).thenReturn(PATIENT_1);
-        when(mockMatch.getReporter()).thenReturn(USER_1);
-        when(mockReference.getReporter()).thenReturn(USER_2);
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, limited);
+        Assert.assertNull(o.getDocument());
+    }
+
+    /** The document is not disclosed for private patients. */
+    @Test
+    public void testGetDocumentWithNoAccess()
+    {
+        Patient mockMatch = mock(Patient.class);
+        Patient mockReference = mock(Patient.class);
+        when(mockMatch.getDocument()).thenReturn(PATIENT_1);
+
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, priv);
         Assert.assertNull(o.getDocument());
     }
 
@@ -174,9 +185,8 @@ public class RestrictedPatientSimilarityViewTest
         Patient mockReference = mock(Patient.class);
         when(mockMatch.getDocument()).thenReturn(PATIENT_1);
         when(mockMatch.getReporter()).thenReturn(USER_1);
-        when(mockReference.getReporter()).thenReturn(USER_1);
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
         Assert.assertSame(USER_1, o.getReporter());
     }
 
@@ -188,9 +198,21 @@ public class RestrictedPatientSimilarityViewTest
         Patient mockReference = mock(Patient.class);
         when(mockMatch.getDocument()).thenReturn(PATIENT_1);
         when(mockMatch.getReporter()).thenReturn(USER_1);
-        when(mockReference.getReporter()).thenReturn(USER_2);
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, limited);
+        Assert.assertNull(o.getReporter());
+    }
+
+    /** The reporter is not disclosed for private patients. */
+    @Test
+    public void testGetReporterWithNoAccess()
+    {
+        Patient mockMatch = mock(Patient.class);
+        Patient mockReference = mock(Patient.class);
+        when(mockMatch.getDocument()).thenReturn(PATIENT_1);
+        when(mockMatch.getReporter()).thenReturn(USER_1);
+
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, priv);
         Assert.assertNull(o.getReporter());
     }
 
@@ -200,7 +222,7 @@ public class RestrictedPatientSimilarityViewTest
     {
         Patient mockMatch = mock(Patient.class);
         Patient mockReference = mock(Patient.class);
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, priv);
         Assert.assertSame(mockReference, o.getReference());
     }
 
@@ -214,8 +236,6 @@ public class RestrictedPatientSimilarityViewTest
         Patient mockReference = mock(Patient.class);
 
         when(mockMatch.getDocument()).thenReturn(PATIENT_1);
-        when(mockMatch.getReporter()).thenReturn(USER_1);
-        when(mockReference.getReporter()).thenReturn(USER_1);
 
         Feature jhm = new MockFeature("HP:0001382", "Joint hypermobility", "phenotype", true);
         Feature od = new MockFeature("HP:0012165", "Oligodactyly", "phenotype", true);
@@ -234,7 +254,7 @@ public class RestrictedPatientSimilarityViewTest
         referencePhenotypes.add(mid);
         referencePhenotypes.add(cat);
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
         Set<? extends Feature> phenotypes = o.getFeatures();
         Assert.assertEquals(3, phenotypes.size());
         for (Feature p : phenotypes) {
@@ -252,8 +272,6 @@ public class RestrictedPatientSimilarityViewTest
         Patient mockReference = mock(Patient.class);
 
         when(mockMatch.getDocument()).thenReturn(PATIENT_1);
-        when(mockMatch.getReporter()).thenReturn(USER_1);
-        when(mockReference.getReporter()).thenReturn(USER_2);
 
         Feature jhm = new MockFeature("HP:0001382", "Joint hypermobility", "phenotype", true);
         Feature od = new MockFeature("HP:0012165", "Oligodactyly", "phenotype", true);
@@ -272,7 +290,7 @@ public class RestrictedPatientSimilarityViewTest
         referencePhenotypes.add(mid);
         referencePhenotypes.add(cat);
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, limited);
         Set<? extends Feature> phenotypes = o.getFeatures();
         Assert.assertEquals(2, phenotypes.size());
         for (Feature p : phenotypes) {
@@ -290,8 +308,6 @@ public class RestrictedPatientSimilarityViewTest
         Patient mockReference = mock(Patient.class);
 
         when(mockMatch.getDocument()).thenReturn(PATIENT_1);
-        when(mockMatch.getReporter()).thenReturn(USER_1);
-        when(mockReference.getReporter()).thenReturn(null);
 
         // Define phenotypes for later use
         Feature jhm = new MockFeature("HP:0001382", "Joint hypermobility", "phenotype", true);
@@ -311,7 +327,7 @@ public class RestrictedPatientSimilarityViewTest
         referencePhenotypes.add(mid);
         referencePhenotypes.add(cat);
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, priv);
         Set<? extends Feature> phenotypes = o.getFeatures();
         Assert.assertTrue(phenotypes.isEmpty());
     }
@@ -324,8 +340,6 @@ public class RestrictedPatientSimilarityViewTest
         Patient mockReference = mock(Patient.class);
 
         when(mockMatch.getDocument()).thenReturn(PATIENT_1);
-        when(mockMatch.getReporter()).thenReturn(USER_1);
-        when(mockReference.getReporter()).thenReturn(USER_1);
 
         Set<Disorder> matchDiseases = new HashSet<Disorder>();
         matchDiseases.add(new MockDisorder("MIM:123", "Some disease"));
@@ -336,7 +350,7 @@ public class RestrictedPatientSimilarityViewTest
         referenceDiseases.add(new MockDisorder("MIM:345", "Some new disease"));
         Mockito.<Set<? extends Disorder>> when(mockReference.getDisorders()).thenReturn(referenceDiseases);
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
         Set<? extends Disorder> matchedDiseases = o.getDisorders();
         Assert.assertEquals(2, matchedDiseases.size());
     }
@@ -349,8 +363,6 @@ public class RestrictedPatientSimilarityViewTest
         Patient mockReference = mock(Patient.class);
 
         when(mockMatch.getDocument()).thenReturn(PATIENT_1);
-        when(mockMatch.getReporter()).thenReturn(USER_1);
-        when(mockReference.getReporter()).thenReturn(USER_2);
 
         Set<Disorder> matchDiseases = new HashSet<Disorder>();
         matchDiseases.add(new MockDisorder("MIM:123", "Some disease"));
@@ -361,7 +373,7 @@ public class RestrictedPatientSimilarityViewTest
         referenceDiseases.add(new MockDisorder("MIM:345", "Some new disease"));
         Mockito.<Set<? extends Disorder>> when(mockReference.getDisorders()).thenReturn(referenceDiseases);
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, limited);
         Set<? extends Disorder> matchedDiseases = o.getDisorders();
         Assert.assertTrue(matchedDiseases.isEmpty());
     }
@@ -376,8 +388,6 @@ public class RestrictedPatientSimilarityViewTest
         Patient mockReference = mock(Patient.class);
 
         when(mockMatch.getDocument()).thenReturn(PATIENT_1);
-        when(mockMatch.getReporter()).thenReturn(USER_1);
-        when(mockReference.getReporter()).thenReturn(USER_1);
 
         Map<String, FeatureMetadatum> matchMeta = new HashMap<String, FeatureMetadatum>();
         Map<String, FeatureMetadatum> referenceMeta = new HashMap<String, FeatureMetadatum>();
@@ -402,30 +412,30 @@ public class RestrictedPatientSimilarityViewTest
         Mockito.<Set<? extends Disorder>> when(mockReference.getDisorders()).thenReturn(referenceDiseases);
 
         // No phenotypes => 0 score
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
         Assert.assertEquals(0.0, o.getScore(), 1.0E-5);
 
         // Only unpaired phenotypes => 0 score
         matchPhenotypes.add(id);
         referencePhenotypes.add(cat);
-        o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
         Assert.assertEquals(0.0, o.getScore(), 1.0E-5);
 
         // Opposite phenotypes => negative score
         referencePhenotypes.add(mid);
-        o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        o = new RestrictedPatientSimilarityView(mockMatch, mockReference, limited);
         Assert.assertEquals(-0.5, o.getScore(), 0.2);
 
         // Matching phenotypes => positive score
         matchPhenotypes.add(jhm);
         referencePhenotypes.add(jhm);
-        o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        o = new RestrictedPatientSimilarityView(mockMatch, mockReference, priv);
         double score = o.getScore();
         Assert.assertEquals(0.4, score, 0.2);
 
         // More unpaired phenotypes lower the score
         matchPhenotypes.add(od);
-        o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        o = new RestrictedPatientSimilarityView(mockMatch, mockReference, priv);
         double prevScore = score;
         score = o.getScore();
         Assert.assertTrue(score < prevScore);
@@ -434,7 +444,7 @@ public class RestrictedPatientSimilarityViewTest
         // Opposite metadata lowers the score (but since phenotype is mismatched, this actually lowers a penalty)
         matchMeta.put("speed_of_onset", new MockFeatureMetadatum("HP:0011010", "Chronic", "speed_of_onset"));
         referenceMeta.put("speed_of_onset", new MockFeatureMetadatum("HP:0011009", "Acute", "speed_of_onset"));
-        o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        o = new RestrictedPatientSimilarityView(mockMatch, mockReference, limited);
         prevScore = score;
         score = o.getScore();
         Assert.assertTrue(score > prevScore);
@@ -444,7 +454,7 @@ public class RestrictedPatientSimilarityViewTest
         // Positive metadata matches increase the score (again, increases the penalty)
         matchMeta.put("age_of_onset", new MockFeatureMetadatum("HP:0003577", "Congenital onset", "age_of_onset"));
         referenceMeta.put("age_of_onset", new MockFeatureMetadatum("HP:0003577", "Congenital onset", "age_of_onset"));
-        o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
         prevScore = score;
         score = o.getScore();
         Assert.assertTrue(score < prevScore);
@@ -454,7 +464,7 @@ public class RestrictedPatientSimilarityViewTest
         // Unmatched metadata don't affect the score
         matchMeta.put("pace", new MockFeatureMetadatum("HP:0003677", "Slow", "pace"));
         referenceMeta.put("death", new MockFeatureMetadatum("HP:0003826", "Stillbirth", "death"));
-        o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
         prevScore = score;
         score = o.getScore();
         Assert.assertEquals(prevScore, score, 1.0E-5);
@@ -462,7 +472,7 @@ public class RestrictedPatientSimilarityViewTest
         // Matching diseases increase the score
         matchDiseases.add(d1);
         referenceDiseases.add(d1);
-        o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
         prevScore = score;
         score = o.getScore();
         Assert.assertTrue(score > prevScore);
@@ -471,7 +481,7 @@ public class RestrictedPatientSimilarityViewTest
         // Unmatched diseases don't affect the score
         matchDiseases.add(d2);
         referenceDiseases.add(d3);
-        o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
         prevScore = score;
         score = o.getScore();
         Assert.assertEquals(prevScore, score, 1.0E-5);
@@ -505,27 +515,27 @@ public class RestrictedPatientSimilarityViewTest
         Mockito.<Set<? extends Feature>> when(mockReference.getFeatures()).thenReturn(referencePhenotypes);
 
         // No phenotypes => 0 score
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
         Assert.assertEquals(0.0, o.getScore(), 1.0E-5);
 
         // Opposite phenotypes => negative score
         matchPhenotypes.add(jhm);
         referencePhenotypes.add(jhmN);
-        o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        o = new RestrictedPatientSimilarityView(mockMatch, mockReference, limited);
         double score = o.getScore();
         Assert.assertEquals(-1.0, score, 1.0E-5);
 
         // Unpaired phenotypes don't affect a negative score
         matchPhenotypes.add(id);
         referencePhenotypes.add(cat);
-        o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        o = new RestrictedPatientSimilarityView(mockMatch, mockReference, priv);
         double prevScore = score;
         score = o.getScore();
         Assert.assertEquals(prevScore, score, 1.0E-5);
 
         // Related phenotypes don't affect the score, since they can't be used in the absence of a real scorer
         referencePhenotypes.add(mid);
-        o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
         prevScore = score;
         score = o.getScore();
         Assert.assertEquals(prevScore, score, 1.0E-5);
@@ -581,11 +591,11 @@ public class RestrictedPatientSimilarityViewTest
         Mockito.<Set<? extends Disorder>> when(mockMatch.getDisorders()).thenReturn(matchDiseases);
         Mockito.<Set<? extends Disorder>> when(mockReference.getDisorders()).thenReturn(referenceDiseases);
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
 
         JSONObject result = o.toJSON();
         Assert.assertEquals("P0000001", result.getString("id"));
-        Assert.assertEquals("owned", result.getString("access"));
+        Assert.assertEquals("owner", result.getString("access"));
         Assert.assertEquals("padams", result.getString("owner"));
         Assert.assertTrue(result.getBoolean("myCase"));
         Assert.assertEquals(0.5, result.getDouble("score"), 0.1);
@@ -714,7 +724,7 @@ public class RestrictedPatientSimilarityViewTest
         Mockito.<Set<? extends Disorder>> when(mockMatch.getDisorders()).thenReturn(matchDiseases);
         Mockito.<Set<? extends Disorder>> when(mockReference.getDisorders()).thenReturn(referenceDiseases);
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, limited);
 
         JSONObject result = o.toJSON();
         Assert.assertFalse(result.has("id"));
@@ -804,7 +814,7 @@ public class RestrictedPatientSimilarityViewTest
         Mockito.<Set<? extends Disorder>> when(mockMatch.getDisorders()).thenReturn(matchDiseases);
         Mockito.<Set<? extends Disorder>> when(mockReference.getDisorders()).thenReturn(referenceDiseases);
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, priv);
 
         // Nothing at all
         Assert.assertTrue(o.toJSON().isNullObject());
@@ -826,7 +836,7 @@ public class RestrictedPatientSimilarityViewTest
         Mockito.<Set<? extends Feature>> when(mockReference.getFeatures()).thenReturn(Collections.singleton(jhm));
         Mockito.<Set<? extends Disorder>> when(mockReference.getDisorders()).thenReturn(Collections.singleton(d));
 
-        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference);
+        PatientSimilarityView o = new RestrictedPatientSimilarityView(mockMatch, mockReference, open);
 
         JSONObject result = o.toJSON();
         Assert.assertFalse(result.has("features"));

@@ -23,6 +23,7 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
+import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.similarity.AccessType;
 import org.phenotips.data.similarity.DisorderSimilarityView;
 import org.phenotips.data.similarity.FeatureSimilarityScorer;
@@ -52,13 +53,13 @@ import net.sf.json.JSONObject;
 public class RestrictedPatientSimilarityView implements PatientSimilarityView
 {
     /** The matched patient to represent. */
-    private Patient match;
+    private final Patient match;
 
     /** The reference patient against which to compare. */
-    private Patient reference;
+    private final Patient reference;
 
-    /** The access type the user has to this patient. */
-    private AccessType access;
+    /** The access level the user has to this patient. */
+    private final AccessType access;
 
     /** Links feature values from this patient to the reference. */
     private Set<FeatureSimilarityView> matchedFeatures;
@@ -71,24 +72,18 @@ public class RestrictedPatientSimilarityView implements PatientSimilarityView
      * 
      * @param match the matched patient to represent, must not be {@code null}
      * @param reference the reference patient against which to compare, must not be {@code null}
+     * @param access the access level the current user has on the matched patient
      * @throws IllegalArgumentException if one of the patients is {@code null}
      */
-    public RestrictedPatientSimilarityView(Patient match, Patient reference) throws IllegalArgumentException
+    public RestrictedPatientSimilarityView(Patient match, Patient reference, AccessType access)
+        throws IllegalArgumentException
     {
         if (match == null || reference == null) {
             throw new IllegalArgumentException("Similar patients require both a match and a reference");
         }
         this.match = match;
         this.reference = reference;
-        // FIXME Implement the other access types
-        if (this.match == null || this.reference == null || this.reference.getReporter() == null) {
-            // Not enough information to compute the proper access type, it's safer to refuse any access
-            this.access = AccessType.PRIVATE;
-        } else if (ObjectUtils.equals(this.match.getReporter(), this.reference.getReporter())) {
-            this.access = AccessType.OWNED;
-        } else {
-            this.access = AccessType.MATCH;
-        }
+        this.access = access;
         matchFeatures();
         matchDisorders();
     }
@@ -147,9 +142,9 @@ public class RestrictedPatientSimilarityView implements PatientSimilarityView
     }
 
     @Override
-    public AccessType getAccess()
+    public AccessLevel getAccess()
     {
-        return this.access;
+        return this.access.getAccessLevel();
     }
 
     @Override

@@ -26,6 +26,7 @@ import org.phenotips.data.similarity.DisorderSimilarityView;
 import org.xwiki.component.manager.ComponentLookupException;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -41,6 +42,34 @@ import static org.mockito.Mockito.when;
  */
 public class RestrictedDisorderSimilarityViewTest
 {
+    private static AccessType open;
+
+    private static AccessType limited;
+
+    private static AccessType priv;
+
+    @BeforeClass
+    public static void setupAccessTypes()
+    {
+        open = mock(AccessType.class);
+        when(open.isOpenAccess()).thenReturn(true);
+        when(open.isLimitedAccess()).thenReturn(false);
+        when(open.isPrivateAccess()).thenReturn(false);
+        when(open.toString()).thenReturn("owner");
+
+        limited = mock(AccessType.class);
+        when(limited.isOpenAccess()).thenReturn(false);
+        when(limited.isLimitedAccess()).thenReturn(true);
+        when(limited.isPrivateAccess()).thenReturn(false);
+        when(limited.toString()).thenReturn("match");
+
+        priv = mock(AccessType.class);
+        when(priv.isOpenAccess()).thenReturn(false);
+        when(priv.isLimitedAccess()).thenReturn(false);
+        when(priv.isPrivateAccess()).thenReturn(true);
+        when(priv.toString()).thenReturn("none");
+    }
+
     /** Basic test for ID retrieval. */
     @Test
     public void testGetId()
@@ -49,7 +78,7 @@ public class RestrictedDisorderSimilarityViewTest
         Disorder mockReference = mock(Disorder.class);
         when(mockMatch.getId()).thenReturn("MIM:136140");
 
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, open);
         Assert.assertEquals("MIM:136140", o.getId());
     }
 
@@ -59,7 +88,7 @@ public class RestrictedDisorderSimilarityViewTest
     {
         Disorder mockMatch = mock(Disorder.class);
 
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, AccessType.PRIVATE);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, priv);
         Assert.assertNull(o.getId());
         Mockito.verify(mockMatch, Mockito.never()).getId();
     }
@@ -70,7 +99,7 @@ public class RestrictedDisorderSimilarityViewTest
     {
         Disorder mockMatch = mock(Disorder.class);
 
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, AccessType.MATCH);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, limited);
         Assert.assertNull(o.getId());
         Mockito.verify(mockMatch, Mockito.never()).getId();
     }
@@ -81,7 +110,7 @@ public class RestrictedDisorderSimilarityViewTest
     {
         Disorder mockReference = mock(Disorder.class);
 
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, mockReference, AccessType.PUBLIC);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, mockReference, open);
         Assert.assertNull(o.getId());
         Mockito.verify(mockReference, Mockito.never()).getId();
     }
@@ -94,7 +123,7 @@ public class RestrictedDisorderSimilarityViewTest
         Disorder mockReference = mock(Disorder.class);
         when(mockMatch.getName()).thenReturn("Some disease");
 
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, open);
         Assert.assertEquals("Some disease", o.getName());
     }
 
@@ -103,7 +132,7 @@ public class RestrictedDisorderSimilarityViewTest
     public void testGetNameWithPrivateAccess()
     {
         Disorder mockMatch = mock(Disorder.class);
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, AccessType.PRIVATE);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, priv);
         Assert.assertNull(o.getName());
         Mockito.verify(mockMatch, Mockito.never()).getName();
     }
@@ -113,7 +142,7 @@ public class RestrictedDisorderSimilarityViewTest
     public void testGetNameWithMatchAccess()
     {
         Disorder mockMatch = mock(Disorder.class);
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, AccessType.MATCH);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, limited);
         Assert.assertNull(o.getName());
         Mockito.verify(mockMatch, Mockito.never()).getName();
     }
@@ -124,7 +153,7 @@ public class RestrictedDisorderSimilarityViewTest
     {
         Disorder mockReference = mock(Disorder.class);
 
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, mockReference, AccessType.PUBLIC);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, mockReference, open);
         Assert.assertNull(o.getName());
         Mockito.verify(mockReference, Mockito.never()).getName();
     }
@@ -134,7 +163,7 @@ public class RestrictedDisorderSimilarityViewTest
     public void testGetReference()
     {
         Disorder mockReference = mock(Disorder.class);
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, mockReference, AccessType.PUBLIC);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, mockReference, open);
         Assert.assertSame(mockReference, o.getReference());
     }
 
@@ -143,7 +172,7 @@ public class RestrictedDisorderSimilarityViewTest
     public void testGetReferenceWithNullReference()
     {
         Disorder mockMatch = mock(Disorder.class);
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, AccessType.PUBLIC);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, open);
         Assert.assertNull(o.getReference());
     }
 
@@ -152,7 +181,7 @@ public class RestrictedDisorderSimilarityViewTest
     public void testGetReferenceWithPrivateAccess()
     {
         Disorder mockReference = mock(Disorder.class);
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, mockReference, AccessType.PRIVATE);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, mockReference, priv);
         Assert.assertSame(mockReference, o.getReference());
     }
 
@@ -163,7 +192,7 @@ public class RestrictedDisorderSimilarityViewTest
         Disorder mockMatch = mock(Disorder.class);
         Disorder mockReference = mock(Disorder.class);
 
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, open);
 
         // Maximum score for the same disorder
         when(mockMatch.getId()).thenReturn("MIM:136140");
@@ -181,7 +210,7 @@ public class RestrictedDisorderSimilarityViewTest
     public void testGetScoreWithNullMatch()
     {
         Disorder mockReference = mock(Disorder.class);
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, mockReference, AccessType.PUBLIC);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, mockReference, open);
         Assert.assertTrue(Double.isNaN(o.getScore()));
     }
 
@@ -190,7 +219,7 @@ public class RestrictedDisorderSimilarityViewTest
     public void testGetScoreWithNullReference()
     {
         Disorder mockMatch = mock(Disorder.class);
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, AccessType.PUBLIC);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, open);
         Assert.assertTrue(Double.isNaN(o.getScore()));
     }
 
@@ -201,7 +230,7 @@ public class RestrictedDisorderSimilarityViewTest
         Disorder mockMatch = mock(Disorder.class);
         Disorder mockReference = mock(Disorder.class);
 
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, AccessType.PRIVATE);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, priv);
 
         when(mockMatch.getId()).thenReturn("MIM:136140");
         when(mockReference.getId()).thenReturn("MIM:136140");
@@ -220,7 +249,7 @@ public class RestrictedDisorderSimilarityViewTest
 
         when(mockReference.getId()).thenReturn("MIM:136140");
 
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, open);
 
         JSONObject result = o.toJSON();
         Assert.assertEquals("MIM:136140", result.getString("id"));
@@ -238,7 +267,7 @@ public class RestrictedDisorderSimilarityViewTest
         when(mockMatch.getId()).thenReturn("MIM:136140");
         when(mockMatch.getName()).thenReturn("#136140 FLOATING-HARBOR SYNDROME; FLHS");
 
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, AccessType.PUBLIC);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, null, open);
 
         JSONObject result = o.toJSON();
         Assert.assertEquals("MIM:136140", result.getString("id"));
@@ -255,7 +284,7 @@ public class RestrictedDisorderSimilarityViewTest
 
         when(mockReference.getId()).thenReturn("MIM:136140");
 
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, mockReference, AccessType.PUBLIC);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, mockReference, open);
 
         JSONObject result = o.toJSON();
         Assert.assertFalse(result.has("id"));
@@ -268,7 +297,7 @@ public class RestrictedDisorderSimilarityViewTest
     @Test
     public void testToJSONWithMissingMatchAndReference() throws ComponentLookupException
     {
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, null, AccessType.PUBLIC);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(null, null, open);
         JSONObject result = o.toJSON();
         Assert.assertTrue(result.isNullObject());
     }
@@ -279,7 +308,7 @@ public class RestrictedDisorderSimilarityViewTest
     {
         Disorder mockMatch = mock(Disorder.class);
         Disorder mockReference = mock(Disorder.class);
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, AccessType.PRIVATE);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, priv);
         Assert.assertTrue(o.toJSON().isNullObject());
     }
 
@@ -289,7 +318,7 @@ public class RestrictedDisorderSimilarityViewTest
     {
         Disorder mockMatch = mock(Disorder.class);
         Disorder mockReference = mock(Disorder.class);
-        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, AccessType.MATCH);
+        DisorderSimilarityView o = new RestrictedDisorderSimilarityView(mockMatch, mockReference, limited);
         Assert.assertTrue(o.toJSON().isNullObject());
     }
 
@@ -299,10 +328,8 @@ public class RestrictedDisorderSimilarityViewTest
     {
         Disorder mockMatch = mock(Disorder.class);
         Disorder mockReference = mock(Disorder.class);
-        Assert.assertTrue(new RestrictedDisorderSimilarityView(mockMatch, mockReference, AccessType.OWNED)
-            .isMatchingPair());
-        Assert.assertFalse(new RestrictedDisorderSimilarityView(mockMatch, null, AccessType.OWNED).isMatchingPair());
-        Assert
-            .assertFalse(new RestrictedDisorderSimilarityView(null, mockReference, AccessType.OWNED).isMatchingPair());
+        Assert.assertTrue(new RestrictedDisorderSimilarityView(mockMatch, mockReference, open).isMatchingPair());
+        Assert.assertFalse(new RestrictedDisorderSimilarityView(mockMatch, null, open).isMatchingPair());
+        Assert.assertFalse(new RestrictedDisorderSimilarityView(null, mockReference, open).isMatchingPair());
     }
 }

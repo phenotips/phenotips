@@ -20,6 +20,7 @@
 package org.phenotips.data.similarity;
 
 import org.phenotips.data.Patient;
+import org.phenotips.data.permissions.AccessLevel;
 
 import org.xwiki.stability.Unstable;
 
@@ -42,9 +43,9 @@ public interface PatientSimilarityView extends Patient
     /**
      * What type of access does the user have to this patient profile.
      * 
-     * @return an {@link AccessType} value
+     * @return an {@link AccessLevel} value
      */
-    AccessType getAccess();
+    AccessLevel getAccess();
 
     /**
      * For matchable patients, the owner isn't listed, instead an anonymous email contact can be initiated using this

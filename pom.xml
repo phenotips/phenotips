@@ -211,12 +211,19 @@
                See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
           <ignored>
-            <!-- Remove the following ignores after we release 1.0-milestone-8 -->
+            <!-- Remove the following ignores after we release 1.0-milestone-9 -->
+            <difference>
+              <className>**/similarity/PatientSimilarityView</className>
+              <differenceType>7006</differenceType>
+              <method>org.phenotips.data.similarity.AccessType getAccess()</method>
+              <to>org.phenotips.data.permissions.AccessLevel</to>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
             <exclude>**/test/**</exclude>
             <!-- Remove the following excludes after we release the current version as final -->
+            <className>**/AccessType</className>
           </excludes>
         </configuration>
       </plugin>

@@ -33,6 +33,7 @@ import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -49,7 +50,35 @@ import static org.mockito.Mockito.when;
  */
 public class RestrictedFeatureMetadatumSimilarityViewTest
 {
+    private static AccessType open;
+
+    private static AccessType limited;
+
+    private static AccessType priv;
+
     private ComponentManager cm = mock(ComponentManager.class);
+
+    @BeforeClass
+    public static void setupAccessTypes()
+    {
+        open = mock(AccessType.class);
+        when(open.isOpenAccess()).thenReturn(true);
+        when(open.isLimitedAccess()).thenReturn(false);
+        when(open.isPrivateAccess()).thenReturn(false);
+        when(open.toString()).thenReturn("owner");
+
+        limited = mock(AccessType.class);
+        when(limited.isOpenAccess()).thenReturn(false);
+        when(limited.isLimitedAccess()).thenReturn(true);
+        when(limited.isPrivateAccess()).thenReturn(false);
+        when(limited.toString()).thenReturn("match");
+
+        priv = mock(AccessType.class);
+        when(priv.isOpenAccess()).thenReturn(false);
+        when(priv.isLimitedAccess()).thenReturn(false);
+        when(priv.isPrivateAccess()).thenReturn(true);
+        when(priv.toString()).thenReturn("none");
+    }
 
     /** Basic test for type retrieval. */
     @Test
@@ -58,7 +87,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
         when(mockMatch.getType()).thenReturn("pace_of_progression");
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, open);
         Assert.assertEquals("pace_of_progression", o.getType());
     }
 
@@ -68,7 +97,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
     {
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, AccessType.PRIVATE);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, priv);
         Assert.assertNull(o.getType());
         Mockito.verifyZeroInteractions(mockMatch);
     }
@@ -79,17 +108,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
     {
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, AccessType.MATCH);
-        Assert.assertNull(o.getType());
-        Mockito.verifyZeroInteractions(mockMatch);
-    }
-
-    /** A missing access type is replaced with an implicit PRIVATE. */
-    @Test
-    public void testGetTypeWithMissingAccess()
-    {
-        FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
-        FeatureMetadatumSimilarityView o = new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, null);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, limited);
         Assert.assertNull(o.getType());
         Mockito.verifyZeroInteractions(mockMatch);
     }
@@ -101,7 +120,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         FeatureMetadatum mockReference = mock(FeatureMetadatum.class);
         when(mockReference.getType()).thenReturn("age_of_onset");
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, open);
         Assert.assertEquals("age_of_onset", o.getType());
     }
 
@@ -109,7 +128,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
     @Test
     public void testGetTypeWithNullMatchAndReference()
     {
-        FeatureMetadatumSimilarityView o = new RestrictedFeatureMetadatumSimilarityView(null, null, AccessType.PUBLIC);
+        FeatureMetadatumSimilarityView o = new RestrictedFeatureMetadatumSimilarityView(null, null, open);
         Assert.assertNull(o.getType());
     }
 
@@ -120,7 +139,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
         when(mockMatch.getId()).thenReturn("HP:0003677");
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, open);
         Assert.assertEquals("HP:0003677", o.getId());
     }
 
@@ -130,7 +149,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
     {
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, AccessType.PRIVATE);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, priv);
         Assert.assertNull(o.getId());
         Mockito.verifyZeroInteractions(mockMatch);
     }
@@ -141,7 +160,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
     {
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, AccessType.MATCH);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, limited);
         Assert.assertNull(o.getId());
         Mockito.verifyZeroInteractions(mockMatch);
     }
@@ -152,7 +171,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
     {
         FeatureMetadatum mockReference = mock(FeatureMetadatum.class);
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, open);
         Assert.assertNull(o.getId());
         Mockito.verifyZeroInteractions(mockReference);
     }
@@ -164,7 +183,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
         when(mockMatch.getName()).thenReturn("A name");
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, open);
         Assert.assertEquals("A name", o.getName());
     }
 
@@ -174,7 +193,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
     {
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, AccessType.PRIVATE);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, priv);
         Assert.assertNull(o.getName());
         Mockito.verifyZeroInteractions(mockMatch);
     }
@@ -185,7 +204,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
     {
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, AccessType.MATCH);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, limited);
         Assert.assertNull(o.getName());
         Mockito.verifyZeroInteractions(mockMatch);
     }
@@ -196,7 +215,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
     {
         FeatureMetadatum mockReference = mock(FeatureMetadatum.class);
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, open);
         Assert.assertNull(o.getName());
         Mockito.verifyZeroInteractions(mockReference);
     }
@@ -207,7 +226,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
     {
         FeatureMetadatum mockReference = mock(FeatureMetadatum.class);
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, open);
         Assert.assertSame(mockReference, o.getReference());
     }
 
@@ -217,7 +236,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
     {
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, open);
         Assert.assertNull(o.getReference());
     }
 
@@ -227,7 +246,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
     {
         FeatureMetadatum mockReference = mock(FeatureMetadatum.class);
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, AccessType.PRIVATE);
+            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, priv);
         Assert.assertSame(mockReference, o.getReference());
     }
 
@@ -240,7 +259,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         when(mockMatch.getType()).thenReturn("meta_type");
         when(mockReference.getType()).thenReturn("meta_type");
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, open);
 
         // Missing IDs should give NaN
         Assert.assertTrue(Double.isNaN(o.getScore()));
@@ -265,7 +284,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         when(mockMatch.getType()).thenReturn("pace_of_progression");
 
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, open);
 
         // Equal IDs should give +1.0
         when(mockMatch.getId()).thenReturn("HP:0003680");
@@ -293,7 +312,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
             new ComponentLookupException("No implementation for this role"));
 
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, open);
         Assert.assertTrue(Double.isNaN(o.getScore()));
 
     }
@@ -308,7 +327,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         when(mockReference.getType()).thenReturn("meta_type");
 
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, AccessType.PRIVATE);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, priv);
 
         when(mockMatch.getId()).thenReturn("ONTO:001");
         when(mockReference.getId()).thenReturn("ONTO:001");
@@ -322,7 +341,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         FeatureMetadatum mockReference = mock(FeatureMetadatum.class);
 
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, open);
         Assert.assertTrue(Double.isNaN(o.getScore()));
     }
 
@@ -333,7 +352,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
 
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, open);
         Assert.assertTrue(Double.isNaN(o.getScore()));
     }
 
@@ -345,7 +364,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         FeatureMetadatum mockReference = mock(FeatureMetadatum.class);
 
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, open);
         Assert.assertTrue(Double.isNaN(o.getScore()));
 
         when(mockMatch.getId()).thenReturn("M");
@@ -371,7 +390,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         when(mockMatch.getName()).thenReturn("Some term");
 
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, open);
 
         JSONObject result = o.toJSON();
         Assert.assertEquals("meta_type", result.getString("type"));
@@ -392,7 +411,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         when(mockMatch.getName()).thenReturn("Some term");
 
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, open);
 
         JSONObject result = o.toJSON();
         Assert.assertEquals("meta_type", result.getString("type"));
@@ -413,7 +432,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         when(mockReference.getType()).thenReturn("meta_type");
 
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, AccessType.PUBLIC);
+            new RestrictedFeatureMetadatumSimilarityView(null, mockReference, open);
 
         JSONObject result = o.toJSON();
         Assert.assertEquals("meta_type", result.getString("type"));
@@ -427,7 +446,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
     @Test
     public void testToJSONWithMissingMatchAndReference() throws ComponentLookupException
     {
-        FeatureMetadatumSimilarityView o = new RestrictedFeatureMetadatumSimilarityView(null, null, AccessType.PUBLIC);
+        FeatureMetadatumSimilarityView o = new RestrictedFeatureMetadatumSimilarityView(null, null, open);
         JSONObject result = o.toJSON();
 
         Assert.assertTrue(result.isNullObject());
@@ -440,7 +459,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
         FeatureMetadatum mockReference = mock(FeatureMetadatum.class);
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, AccessType.PRIVATE);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, priv);
 
         Assert.assertTrue(o.toJSON().isNullObject());
         Mockito.verifyZeroInteractions(mockMatch, mockReference);
@@ -453,7 +472,7 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
         FeatureMetadatum mockReference = mock(FeatureMetadatum.class);
         FeatureMetadatumSimilarityView o =
-            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, AccessType.MATCH);
+            new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, limited);
 
         Assert.assertTrue(o.toJSON().isNullObject());
         Mockito.verifyZeroInteractions(mockMatch, mockReference);
@@ -466,12 +485,10 @@ public class RestrictedFeatureMetadatumSimilarityViewTest
         FeatureMetadatum mockMatch = mock(FeatureMetadatum.class);
         FeatureMetadatum mockReference = mock(FeatureMetadatum.class);
 
-        Assert.assertTrue(new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, AccessType.OWNED)
+        Assert.assertTrue(new RestrictedFeatureMetadatumSimilarityView(mockMatch, mockReference, open)
             .isMatchingPair());
-        Assert.assertFalse(new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, AccessType.OWNED)
-            .isMatchingPair());
-        Assert.assertFalse(new RestrictedFeatureMetadatumSimilarityView(null, mockReference, AccessType.OWNED)
-            .isMatchingPair());
+        Assert.assertFalse(new RestrictedFeatureMetadatumSimilarityView(mockMatch, null, open).isMatchingPair());
+        Assert.assertFalse(new RestrictedFeatureMetadatumSimilarityView(null, mockReference, open).isMatchingPair());
     }
 
     /** Set up the component manager registry to return the {@link #cm prepared mock}. */

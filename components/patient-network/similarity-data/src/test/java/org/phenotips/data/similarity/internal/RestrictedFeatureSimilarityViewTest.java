@@ -45,6 +45,7 @@ import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -61,6 +62,34 @@ import static org.mockito.Mockito.when;
  */
 public class RestrictedFeatureSimilarityViewTest
 {
+    private static AccessType open;
+
+    private static AccessType limited;
+
+    private static AccessType priv;
+
+    @BeforeClass
+    public static void setupAccessTypes()
+    {
+        open = mock(AccessType.class);
+        when(open.isOpenAccess()).thenReturn(true);
+        when(open.isLimitedAccess()).thenReturn(false);
+        when(open.isPrivateAccess()).thenReturn(false);
+        when(open.toString()).thenReturn("owner");
+
+        limited = mock(AccessType.class);
+        when(limited.isOpenAccess()).thenReturn(false);
+        when(limited.isLimitedAccess()).thenReturn(true);
+        when(limited.isPrivateAccess()).thenReturn(false);
+        when(limited.toString()).thenReturn("match");
+
+        priv = mock(AccessType.class);
+        when(priv.isOpenAccess()).thenReturn(false);
+        when(priv.isLimitedAccess()).thenReturn(false);
+        when(priv.isPrivateAccess()).thenReturn(true);
+        when(priv.toString()).thenReturn("none");
+    }
+
     /** Basic test for type retrieval. */
     @Test
     public void testGetType()
@@ -69,7 +98,7 @@ public class RestrictedFeatureSimilarityViewTest
         Feature mockReference = mock(Feature.class);
         when(mockMatch.getType()).thenReturn("prenatal_phenotype");
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Assert.assertEquals("prenatal_phenotype", o.getType());
     }
 
@@ -80,7 +109,7 @@ public class RestrictedFeatureSimilarityViewTest
         Feature mockReference = mock(Feature.class);
         when(mockReference.getType()).thenReturn("prenatal_phenotype");
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, open);
         Assert.assertEquals("prenatal_phenotype", o.getType());
     }
 
@@ -88,7 +117,7 @@ public class RestrictedFeatureSimilarityViewTest
     @Test
     public void testGetTypeWithNullMatchAndReference()
     {
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, null, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, null, open);
         Assert.assertNull(o.getType());
     }
 
@@ -100,7 +129,7 @@ public class RestrictedFeatureSimilarityViewTest
         Feature mockReference = mock(Feature.class);
         when(mockMatch.getType()).thenReturn("prenatal_phenotype");
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PRIVATE);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, priv);
         Assert.assertEquals("prenatal_phenotype", o.getType());
     }
 
@@ -112,7 +141,7 @@ public class RestrictedFeatureSimilarityViewTest
         Feature mockReference = mock(Feature.class);
         when(mockMatch.getId()).thenReturn("ONTO:123");
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Assert.assertEquals("ONTO:123", o.getId());
     }
 
@@ -122,7 +151,7 @@ public class RestrictedFeatureSimilarityViewTest
     {
         Feature mockMatch = mock(Feature.class);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, AccessType.PRIVATE);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, priv);
         Assert.assertNull(o.getId());
         Mockito.verify(mockMatch, Mockito.never()).getId();
     }
@@ -133,7 +162,7 @@ public class RestrictedFeatureSimilarityViewTest
     {
         Feature mockMatch = mock(Feature.class);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, AccessType.MATCH);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, limited);
         Assert.assertNull(o.getId());
         Mockito.verify(mockMatch, Mockito.never()).getId();
     }
@@ -144,7 +173,7 @@ public class RestrictedFeatureSimilarityViewTest
     {
         Feature mockReference = mock(Feature.class);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, open);
         Assert.assertNull(o.getId());
         Mockito.verify(mockReference, Mockito.never()).getId();
     }
@@ -157,7 +186,7 @@ public class RestrictedFeatureSimilarityViewTest
         Feature mockReference = mock(Feature.class);
         when(mockMatch.getName()).thenReturn("Some phenotype");
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Assert.assertEquals("Some phenotype", o.getName());
     }
 
@@ -167,7 +196,7 @@ public class RestrictedFeatureSimilarityViewTest
     {
         Feature mockMatch = mock(Feature.class);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, AccessType.PRIVATE);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, priv);
         Assert.assertNull(o.getName());
         Mockito.verify(mockMatch, Mockito.never()).getName();
     }
@@ -178,7 +207,7 @@ public class RestrictedFeatureSimilarityViewTest
     {
         Feature mockMatch = mock(Feature.class);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, AccessType.MATCH);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, limited);
         Assert.assertNull(o.getName());
         Mockito.verify(mockMatch, Mockito.never()).getName();
     }
@@ -189,7 +218,7 @@ public class RestrictedFeatureSimilarityViewTest
     {
         Feature mockReference = mock(Feature.class);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, open);
         Assert.assertNull(o.getName());
         Mockito.verify(mockReference, Mockito.never()).getName();
     }
@@ -202,7 +231,7 @@ public class RestrictedFeatureSimilarityViewTest
         Feature mockReference = mock(Feature.class);
         when(mockMatch.isPresent()).thenReturn(false);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Assert.assertFalse(o.isPresent());
 
         when(mockMatch.isPresent()).thenReturn(true);
@@ -215,7 +244,7 @@ public class RestrictedFeatureSimilarityViewTest
     {
         Feature mockMatch = mock(Feature.class);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, AccessType.PRIVATE);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, priv);
         Assert.assertTrue(o.isPresent());
         Mockito.verify(mockMatch, Mockito.never()).isPresent();
     }
@@ -226,7 +255,7 @@ public class RestrictedFeatureSimilarityViewTest
     {
         Feature mockMatch = mock(Feature.class);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, AccessType.MATCH);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, limited);
         Assert.assertTrue(o.isPresent());
         Mockito.verify(mockMatch, Mockito.never()).isPresent();
     }
@@ -237,7 +266,7 @@ public class RestrictedFeatureSimilarityViewTest
     {
         Feature mockReference = mock(Feature.class);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, open);
         Assert.assertTrue(o.isPresent());
         Mockito.verify(mockReference, Mockito.never()).isPresent();
     }
@@ -247,7 +276,7 @@ public class RestrictedFeatureSimilarityViewTest
     public void testGetReference()
     {
         Feature mockReference = mock(Feature.class);
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, open);
         Assert.assertSame(mockReference, o.getReference());
     }
 
@@ -256,7 +285,7 @@ public class RestrictedFeatureSimilarityViewTest
     public void testGetReferenceWithNullReference()
     {
         Feature mockMatch = mock(Feature.class);
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, open);
         Assert.assertNull(o.getReference());
     }
 
@@ -265,7 +294,7 @@ public class RestrictedFeatureSimilarityViewTest
     public void testGetReferenceWithPrivateAccess()
     {
         Feature mockReference = mock(Feature.class);
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, AccessType.PRIVATE);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, priv);
         Assert.assertSame(mockReference, o.getReference());
     }
 
@@ -287,7 +316,7 @@ public class RestrictedFeatureSimilarityViewTest
         Mockito.<Map<String, ? extends FeatureMetadatum>> when(mockMatch.getMetadata()).thenReturn(matchMeta);
         Mockito.<Map<String, ? extends FeatureMetadatum>> when(mockReference.getMetadata()).thenReturn(referenceMeta);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Map<String, ? extends FeatureMetadatum> result = o.getMetadata();
 
         // Equal types should find a match
@@ -324,7 +353,7 @@ public class RestrictedFeatureSimilarityViewTest
 
         Mockito.<Map<String, ? extends FeatureMetadatum>> when(mockMatch.getMetadata()).thenReturn(matchMeta);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, open);
         Map<String, ? extends FeatureMetadatum> result = o.getMetadata();
 
         RestrictedFeatureMetadatumSimilarityView entry =
@@ -346,7 +375,7 @@ public class RestrictedFeatureSimilarityViewTest
         Mockito.<Map<String, ? extends FeatureMetadatum>> when(mockMatch.getMetadata()).thenReturn(matchMeta);
         when(mockReference.getMetadata()).thenReturn(null);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Map<String, ? extends FeatureMetadatum> result = o.getMetadata();
 
         // There should be an entry even if there's no related metadata in the reference
@@ -367,7 +396,7 @@ public class RestrictedFeatureSimilarityViewTest
 
         Mockito.<Map<String, ? extends FeatureMetadatum>> when(mockReference.getMetadata()).thenReturn(referenceMeta);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, open);
         Assert.assertTrue(o.getMetadata().isEmpty());
     }
 
@@ -383,7 +412,7 @@ public class RestrictedFeatureSimilarityViewTest
         when(mockMatch.getMetadata()).thenReturn(null);
         Mockito.<Map<String, ? extends FeatureMetadatum>> when(mockReference.getMetadata()).thenReturn(referenceMeta);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Assert.assertTrue(o.getMetadata().isEmpty());
     }
 
@@ -401,7 +430,7 @@ public class RestrictedFeatureSimilarityViewTest
         Mockito.<Map<String, ? extends FeatureMetadatum>> when(mockMatch.getMetadata()).thenReturn(matchMeta);
         Mockito.<Map<String, ? extends FeatureMetadatum>> when(mockReference.getMetadata()).thenReturn(referenceMeta);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PRIVATE);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, priv);
 
         Assert.assertTrue(o.getMetadata().isEmpty());
     }
@@ -420,7 +449,7 @@ public class RestrictedFeatureSimilarityViewTest
         Mockito.<Map<String, ? extends FeatureMetadatum>> when(mockMatch.getMetadata()).thenReturn(matchMeta);
         Mockito.<Map<String, ? extends FeatureMetadatum>> when(mockReference.getMetadata()).thenReturn(referenceMeta);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.MATCH);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, limited);
 
         Assert.assertTrue(o.getMetadata().isEmpty());
     }
@@ -433,7 +462,7 @@ public class RestrictedFeatureSimilarityViewTest
         Feature mockMatch = mock(Feature.class);
         Feature mockReference = mock(Feature.class);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
 
         // Maximum score for the same feature, present in both patients
         when(mockMatch.getId()).thenReturn("HP:0123456");
@@ -523,7 +552,7 @@ public class RestrictedFeatureSimilarityViewTest
         when(mockReference.isPresent()).thenReturn(true);
         matchMeta.put("age_of_onset", new MockFeatureMetadatum("HP:0003577", "Congenital onset", "age_of_onset"));
         referenceMeta.put("age_of_onset", new MockFeatureMetadatum("HP:0003581", "Adult onset", "age_of_onset"));
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Double scoreWith1MetadataMismatch = o.getScore();
         Assert.assertTrue(scoreWith1MetadataMismatch > 0.5);
         Assert.assertTrue(scoreWith1MetadataMismatch < 0.7);
@@ -531,7 +560,7 @@ public class RestrictedFeatureSimilarityViewTest
         // Lowered even more when there are more mismatched metadata pairs
         matchMeta.put("pace", new MockFeatureMetadatum("HP:0003680", "Slow", "pace"));
         referenceMeta.put("pace", new MockFeatureMetadatum("HP:0003678", "Rapid", "pace"));
-        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Double scoreWith2MetadataMismatches = o.getScore();
         Assert.assertTrue(scoreWith2MetadataMismatches > 0.5);
         Assert.assertTrue(scoreWith2MetadataMismatches < 0.6);
@@ -540,13 +569,13 @@ public class RestrictedFeatureSimilarityViewTest
         // But one-sided metadata doesn't affect the score
         matchMeta.put("death", new MockFeatureMetadatum("HP:0003680", "Slow", "death"));
         referenceMeta.put("speed_of_onset", new MockFeatureMetadatum("HP:0003678", "Rapid", "speed_of_onset"));
-        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Double scoreWith2MetadataMismatchesAndUnpairedMetadata = o.getScore();
         Assert.assertEquals(scoreWith2MetadataMismatches, scoreWith2MetadataMismatchesAndUnpairedMetadata, 1.0E-5);
 
         // Negative scores are symmetrically raised towards 0
         when(mockReference.isPresent()).thenReturn(false);
-        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Double negativeScore = o.getScore();
         Assert.assertEquals(scoreWith2MetadataMismatches, -negativeScore, 1.0E-5);
     }
@@ -568,7 +597,7 @@ public class RestrictedFeatureSimilarityViewTest
         when(mockReference.getId()).thenReturn("HP:0001249");
         when(mockMatch.isPresent()).thenReturn(true);
         when(mockReference.isPresent()).thenReturn(true);
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
 
         Double baseScore = o.getScore();
         Assert.assertTrue(baseScore < 1);
@@ -577,7 +606,7 @@ public class RestrictedFeatureSimilarityViewTest
         // Positive score is raised when metadata match
         matchMeta.put("age_of_onset", new MockFeatureMetadatum("HP:0003581", "Adult onset", "age_of_onset"));
         referenceMeta.put("age_of_onset", new MockFeatureMetadatum("HP:0003581", "Adult onset", "age_of_onset"));
-        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Double scoreWith1MetadataMatch = o.getScore();
         Assert.assertTrue(scoreWith1MetadataMatch > baseScore);
         Assert.assertTrue(scoreWith1MetadataMatch < 1);
@@ -585,7 +614,7 @@ public class RestrictedFeatureSimilarityViewTest
         // Raised even more when there are more matching metadata pairs
         matchMeta.put("pace", new MockFeatureMetadatum("HP:0003678", "Rapid", "pace"));
         referenceMeta.put("pace", new MockFeatureMetadatum("HP:0003678", "Rapid", "pace"));
-        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Double scoreWith2MetadataMatches = o.getScore();
         Assert.assertTrue(scoreWith2MetadataMatches > scoreWith1MetadataMatch);
         Assert.assertTrue(scoreWith2MetadataMatches < 1);
@@ -593,13 +622,13 @@ public class RestrictedFeatureSimilarityViewTest
         // But one-sided metadata doesn't affect the score
         matchMeta.put("death", new MockFeatureMetadatum("HP:0003680", "Slow", "death"));
         referenceMeta.put("speed_of_onset", new MockFeatureMetadatum("HP:0003678", "Rapid", "speed_of_onset"));
-        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Double scoreWith2MetadataMatchesAndUnpairedMetadata = o.getScore();
         Assert.assertEquals(scoreWith2MetadataMatches, scoreWith2MetadataMatchesAndUnpairedMetadata, 1.0E-5);
 
         // Negative scores are symmetrically raised towards 0
         when(mockReference.isPresent()).thenReturn(false);
-        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Double negativeScore = o.getScore();
         Assert.assertEquals(scoreWith2MetadataMatches, -negativeScore, 1.0E-5);
     }
@@ -621,7 +650,7 @@ public class RestrictedFeatureSimilarityViewTest
         when(mockReference.getId()).thenReturn("HP:0001249");
         when(mockMatch.isPresent()).thenReturn(true);
         when(mockReference.isPresent()).thenReturn(true);
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
 
         Double baseScore = o.getScore();
         Assert.assertTrue(baseScore < 1);
@@ -629,7 +658,7 @@ public class RestrictedFeatureSimilarityViewTest
 
         matchMeta.put("age_of_onset", new MockFeatureMetadatum("HP:0003581", "Adult onset", "age_of_onset"));
         referenceMeta.put("pace", new MockFeatureMetadatum("HP:0003678", "Rapid", "pace"));
-        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
         Double newScore = o.getScore();
         Assert.assertEquals(baseScore, newScore, 1.0E-5);
     }
@@ -642,7 +671,7 @@ public class RestrictedFeatureSimilarityViewTest
         Feature mockMatch = mock(Feature.class);
         Feature mockReference = mock(Feature.class);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
 
         // NaN when the reference is unknown
         when(mockMatch.getId()).thenReturn("HP:0001367");
@@ -672,7 +701,7 @@ public class RestrictedFeatureSimilarityViewTest
     public void testGetScoreWithNullMatch()
     {
         Feature mockReference = mock(Feature.class);
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, open);
         Assert.assertTrue(Double.isNaN(o.getScore()));
     }
 
@@ -681,7 +710,7 @@ public class RestrictedFeatureSimilarityViewTest
     public void testGetScoreWithNullReference()
     {
         Feature mockMatch = mock(Feature.class);
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, open);
         Assert.assertTrue(Double.isNaN(o.getScore()));
     }
 
@@ -692,7 +721,7 @@ public class RestrictedFeatureSimilarityViewTest
         Feature mockMatch = mock(Feature.class);
         Feature mockReference = mock(Feature.class);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PRIVATE);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, priv);
 
         when(mockMatch.getId()).thenReturn("HP:0123456");
         when(mockReference.getId()).thenReturn("HP:0123456");
@@ -729,7 +758,7 @@ public class RestrictedFeatureSimilarityViewTest
         Mockito.<Map<String, ? extends FeatureMetadatum>> when(mockMatch.getMetadata()).thenReturn(matchMeta);
         Mockito.<Map<String, ? extends FeatureMetadatum>> when(mockReference.getMetadata()).thenReturn(referenceMeta);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
 
         JSONObject result = o.toJSON();
         Assert.assertEquals("phenotype", result.getString("type"));
@@ -781,7 +810,7 @@ public class RestrictedFeatureSimilarityViewTest
         when(mockReference.getType()).thenReturn("phenotype");
         when(mockReference.isPresent()).thenReturn(true);
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, open);
 
         JSONObject result = o.toJSON();
         Assert.assertEquals("phenotype", result.getString("type"));
@@ -803,7 +832,7 @@ public class RestrictedFeatureSimilarityViewTest
         when(mockMatch.getId()).thenReturn("HP:0001382");
         when(mockMatch.getName()).thenReturn("Joint hypermobility");
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, null, open);
 
         JSONObject result = o.toJSON();
         Assert.assertEquals("phenotype", result.getString("type"));
@@ -823,7 +852,7 @@ public class RestrictedFeatureSimilarityViewTest
         when(mockReference.getType()).thenReturn("phenotype");
         when(mockReference.getId()).thenReturn("HP:0011729");
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, mockReference, open);
 
         Assert.assertTrue(o.toJSON().isNullObject());
     }
@@ -832,7 +861,7 @@ public class RestrictedFeatureSimilarityViewTest
     @Test
     public void testToJSONWithMissingMatchAndReference() throws ComponentLookupException
     {
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, null, AccessType.PUBLIC);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(null, null, open);
         JSONObject result = o.toJSON();
         Assert.assertTrue(result.isNullObject());
     }
@@ -843,7 +872,7 @@ public class RestrictedFeatureSimilarityViewTest
     {
         Feature mockMatch = mock(Feature.class);
         Feature mockReference = mock(Feature.class);
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.PRIVATE);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, priv);
         Assert.assertTrue(o.toJSON().isNullObject());
     }
 
@@ -862,7 +891,7 @@ public class RestrictedFeatureSimilarityViewTest
         when(mockReference.getName()).thenReturn("Abnormality of joint mobility");
         when(mockReference.getType()).thenReturn("prenatal_phenotype");
 
-        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.MATCH);
+        FeatureSimilarityView o = new RestrictedFeatureSimilarityView(mockMatch, mockReference, limited);
 
         JSONObject result = o.toJSON();
         Assert.assertFalse(result.has("type"));
@@ -880,10 +909,9 @@ public class RestrictedFeatureSimilarityViewTest
         Feature mockMatch = mock(Feature.class);
         Feature mockReference = mock(Feature.class);
 
-        Assert.assertTrue(new RestrictedFeatureSimilarityView(mockMatch, mockReference, AccessType.OWNED)
-            .isMatchingPair());
-        Assert.assertFalse(new RestrictedFeatureSimilarityView(mockMatch, null, AccessType.OWNED).isMatchingPair());
-        Assert.assertFalse(new RestrictedFeatureSimilarityView(null, mockReference, AccessType.OWNED).isMatchingPair());
+        Assert.assertTrue(new RestrictedFeatureSimilarityView(mockMatch, mockReference, open).isMatchingPair());
+        Assert.assertFalse(new RestrictedFeatureSimilarityView(mockMatch, null, open).isMatchingPair());
+        Assert.assertFalse(new RestrictedFeatureSimilarityView(null, mockReference, open).isMatchingPair());
     }
 
     private void setupComponents() throws ComponentLookupException

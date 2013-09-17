@@ -63,7 +63,7 @@ public class RestrictedFeatureMetadatumSimilarityView implements FeatureMetadatu
     {
         this.match = match;
         this.reference = reference;
-        this.access = access != null ? access : AccessType.PRIVATE;
+        this.access = access;
     }
 
     @Override

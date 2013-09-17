@@ -21,17 +21,20 @@ package org.phenotips.data.similarity.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Disorder;
-import org.phenotips.data.Patient;
 import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
+import org.phenotips.data.Patient;
+import org.phenotips.data.permissions.AccessLevel;
+import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.similarity.FeatureMetadatumSimilarityScorer;
 import org.phenotips.data.similarity.FeatureSimilarityScorer;
 import org.phenotips.data.similarity.PatientSimilarityView;
 import org.phenotips.data.similarity.PatientSimilarityViewFactory;
 import org.phenotips.data.similarity.internal.mocks.MockDisorder;
-import org.phenotips.data.similarity.internal.mocks.MockOntologyTerm;
 import org.phenotips.data.similarity.internal.mocks.MockFeature;
 import org.phenotips.data.similarity.internal.mocks.MockFeatureMetadatum;
+import org.phenotips.data.similarity.internal.mocks.MockOntologyTerm;
 import org.phenotips.ontology.OntologyManager;
 import org.phenotips.ontology.OntologyTerm;
 
@@ -60,7 +63,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the "restricted" {@link PatientSimilarityViewFactory} implementation, {@link RestrictedPatientSimilarityViewFactory}.
+ * Tests for the "restricted" {@link PatientSimilarityViewFactory} implementation,
+ * {@link RestrictedPatientSimilarityViewFactory}.
  * 
  * @version $Id$
  */
@@ -89,6 +93,11 @@ public class RestrictedPatientSimilarityViewFactoryTest
         when(mockMatch.getReporter()).thenReturn(USER_1);
         when(mockReference.getReporter()).thenReturn(USER_1);
 
+        PermissionsManager pm = this.mocker.getInstance(PermissionsManager.class);
+        PatientAccess pa = mock(PatientAccess.class);
+        when(pm.getPatientAccess(mockMatch)).thenReturn(pa);
+        when(pa.getAccessLevel()).thenReturn(this.mocker.<AccessLevel> getInstance(AccessLevel.class, "view"));
+
         PatientSimilarityView result = this.mocker.getComponentUnderTest().makeSimilarPatient(mockMatch, mockReference);
         Assert.assertNotNull(result);
         Assert.assertSame(PATIENT_1, result.getDocument());
@@ -104,6 +113,14 @@ public class RestrictedPatientSimilarityViewFactoryTest
         when(mockMatch.getDocument()).thenReturn(PATIENT_1);
         when(mockMatch.getReporter()).thenReturn(USER_1);
         when(mockReference.getReporter()).thenReturn(USER_2);
+
+        PermissionsManager pm = this.mocker.getInstance(PermissionsManager.class);
+        PatientAccess pa = mock(PatientAccess.class);
+        when(pm.getPatientAccess(mockMatch)).thenReturn(pa);
+        AccessLevel match = this.mocker.<AccessLevel> getInstance(AccessLevel.class, "match");
+        AccessLevel view = this.mocker.<AccessLevel> getInstance(AccessLevel.class, "view");
+        when(pa.getAccessLevel()).thenReturn(match);
+        when(match.compareTo(view)).thenReturn(-5);
 
         Map<String, FeatureMetadatum> matchMeta = new HashMap<String, FeatureMetadatum>();
         matchMeta.put("age_of_onset", new MockFeatureMetadatum("HP:0003577", "Congenital onset", "age_of_onset"));

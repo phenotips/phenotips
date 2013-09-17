@@ -19,83 +19,44 @@
  */
 package org.phenotips.data.similarity;
 
+import org.phenotips.data.permissions.AccessLevel;
+
 import org.xwiki.stability.Unstable;
 
-import java.util.Locale;
-
 /**
- * The possible types of access a user can have to other patient profiles.
+ * Helper class providing quick information about an {@link AccessLevel access level}.
  * 
  * @version $Id$
- * @since 1.0M8
+ * @since 1.0M9
  */
 @Unstable
-public enum AccessType
+public interface AccessType
 {
-    /** The user's own patient. */
-    OWNED(true, false),
-    /** A patient from one of the user's consortia. */
-    GROUP_OWNED(true, false),
-    /** A publicly shared patient from another organization. */
-    PUBLIC(true, false),
-    /** A matchable or private patient that has been explicitly shared with the user. */
-    SHARED(true, false),
-    /** A matchable patient. */
-    MATCH(false, true),
-    /** A private patient, this shouldn't be listed at all. */
-    PRIVATE(false, false);
-
-    /** @see #isOpenAccess() */
-    private final boolean openAccess;
-
-    /** @see #isLimitedAccess() */
-    private final boolean limitedAccess;
-
     /**
-     * Simple constructor identifying if the user has full or limited access.
+     * The real level of access the user has on the patient's data.
      * 
-     * @param openAccess the value to set for {@link #openAccess}
-     * @param limitedAccess the value to set for {@link #limitedAccess}
+     * @return the computed access level, can not be {@code null}
      */
-    AccessType(boolean openAccess, boolean limitedAccess)
-    {
-        this.openAccess = openAccess;
-        this.limitedAccess = limitedAccess;
-    }
+    AccessLevel getAccessLevel();
 
     /**
      * Indicates full access to the patient's data.
      * 
-     * @return {@code true} if the patient has full access to the patient, {@code false} otherwise
+     * @return {@code true} if the patient has full access to the patient data, {@code false} otherwise
      */
-    public boolean isOpenAccess()
-    {
-        return this.openAccess;
-    }
+    boolean isOpenAccess();
 
     /**
      * Indicates limited, obfuscated access to the patient's data.
      * 
-     * @return {@code true} if the patient has only limited access to the patient, {@code false} otherwise
+     * @return {@code true} if the patient has only limited access to the patient data, {@code false} otherwise
      */
-    public boolean isLimitedAccess()
-    {
-        return this.limitedAccess;
-    }
+    boolean isLimitedAccess();
 
     /**
      * Indicates no access to the patient's data.
      * 
-     * @return {@code true} if the patient has no access to the patient, {@code false} otherwise
+     * @return {@code true} if the patient has no access to the patient data, {@code false} otherwise
      */
-    public boolean isPrivateAccess()
-    {
-        return !(this.openAccess || this.limitedAccess);
-    }
-
-    @Override
-    public String toString()
-    {
-        return this.name().toLowerCase(Locale.ROOT);
-    }
+    boolean isPrivateAccess();
 }
