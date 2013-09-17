@@ -19,9 +19,10 @@
  */
 package org.phenotips.similarity.internal;
 
+import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
-import org.phenotips.data.Feature;
+import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.similarity.PatientSimilarityView;
 import org.phenotips.data.similarity.PatientSimilarityViewFactory;
 import org.phenotips.similarity.SimilarPatientsFinder;
@@ -66,6 +67,11 @@ public class SolrSimilarPatientsFinder implements SimilarPatientsFinder, Initial
     @Inject
     private PatientData patients;
 
+    /** The minimal access level needed for including a patient in the result. */
+    @Inject
+    @Named("match")
+    private AccessLevel accessLevelThreshold;
+
     /** Allows to make a secure pair of patients. */
     @Inject
     @Named("restricted")
@@ -94,7 +100,9 @@ public class SolrSimilarPatientsFinder implements SimilarPatientsFinder, Initial
             String name = (String) doc.getFieldValue("document");
             Patient matchPatient = this.patients.getPatientById(name);
             PatientSimilarityView result = this.factory.makeSimilarPatient(matchPatient, referencePatient);
-            results.add(result);
+            if (this.accessLevelThreshold.compareTo(result.getAccess()) <= 0) {
+                results.add(result);
+            }
         }
 
         return results;
