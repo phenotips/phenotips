@@ -39,7 +39,7 @@ import net.sf.json.JSONObject;
  * @version $Id$
  * @since 1.0M8
  */
-public abstract class AbstractPhenoTipsOntologyProperty implements OntologyProperty
+public abstract class AbstractPhenoTipsOntologyProperty implements OntologyProperty, Comparable<OntologyProperty>
 {
     /** Pattern used for identifying ontology terms from free text terms. */
     private static final Pattern ONTOLOGY_TERM_PATTERN = Pattern.compile("\\w++:\\w++");
@@ -105,5 +105,15 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
         result.element("id", getId());
         result.element("name", getName());
         return result;
+    }
+
+    @Override
+    public int compareTo(OntologyProperty o)
+    {
+        if (o == null) {
+            // Nulls at the end
+            return -1;
+        }
+        return getName().compareTo(o.getName());
     }
 }

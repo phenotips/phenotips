@@ -23,9 +23,9 @@ import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,7 +87,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
         Matcher nameMatch = NEGATIVE_PREFIX.matcher(this.propertyName);
         this.present = !nameMatch.lookingAt();
         this.type = nameMatch.replaceFirst("");
-        this.metadata = new HashMap<String, FeatureMetadatum>();
+        this.metadata = new TreeMap<String, FeatureMetadatum>();
         try {
             BaseObject metadataObject = findMetadataObject(doc);
             if (metadataObject != null) {

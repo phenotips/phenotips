@@ -21,6 +21,7 @@ package org.phenotips.data.internal;
 
 import org.phenotips.Constants;
 import org.phenotips.data.FeatureMetadatum;
+import org.phenotips.data.OntologyProperty;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -70,5 +71,18 @@ public class PhenoTipsFeatureMetadatum extends AbstractPhenoTipsOntologyProperty
         JSONObject result = super.toJSON();
         result.element("type", getType());
         return result;
+    }
+
+    @Override
+    public int compareTo(OntologyProperty o)
+    {
+        if (o == null) {
+            // Nulls at the end
+            return -1;
+        }
+        if (!(o instanceof FeatureMetadatum)) {
+            return super.compareTo(o);
+        }
+        return getType().compareTo(((FeatureMetadatum) o).getType());
     }
 }

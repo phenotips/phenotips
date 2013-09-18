@@ -29,8 +29,8 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,10 +72,10 @@ public class PhenoTipsPatient implements Patient
     private DocumentReference reporter;
 
     /** @see #getFeatures() */
-    private Set<Feature> features = new HashSet<Feature>();
+    private Set<Feature> features = new TreeSet<Feature>();
 
     /** @see #getDisorders() */
-    private Set<Disorder> disorders = new HashSet<Disorder>();
+    private Set<Disorder> disorders = new TreeSet<Disorder>();
 
     /**
      * Constructor that copies the data from an XDocument.
