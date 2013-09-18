@@ -32,6 +32,8 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -105,6 +107,14 @@ public class SolrSimilarPatientsFinder implements SimilarPatientsFinder, Initial
             }
         }
 
+        Collections.sort(results, new Comparator<PatientSimilarityView>()
+        {
+            @Override
+            public int compare(PatientSimilarityView o1, PatientSimilarityView o2)
+            {
+                return (int) Math.signum(o2.getScore() - o1.getScore());
+            }
+        });
         return results;
     }
 
