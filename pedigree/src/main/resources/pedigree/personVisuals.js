@@ -9,10 +9,11 @@
  * @param {Number} y The y coordinate on the canvas
  */
 
-
 var PersonVisuals = Class.create(AbstractPersonVisuals, {
     
     initialize: function($super, node, x, y) {
+    	console.log("person visuals");
+        $super(node, x, y);    	
         this._nameLabel = null;
         this._stillBirthLabel = null;
         this._ageLabel = null;
@@ -22,19 +23,20 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._unbornShape = null;
         this._childlessShape = null;
         this._isSelected = false;
-        $super(node, x, y);
-        this._hoverBox = new PersonHoverbox(node, x, y, this.getGenderSymbol());
+        this._hoverBox = new PersonHoverbox(node, x, y, this.getGenderGraphics());
+        console.log("person visuals end");
     },
 
     /**
      * Draws the icon for this Person depending on the gender, life status and whether this Person is the proband.
      * Updates the disorder shapes.
      *
-     * @method setGenderSymbol
+     * @method setGenderGraphics
      */
-    setGenderSymbol: function($super) {
+    setGenderGraphics: function($super) {    	
+        console.log("set gender graphics");
         if(this.getNode().getLifeStatus() == 'aborted') {
-            this._genderSymbol && this._genderSymbol.remove();
+            this._genderGraphics && this._genderGraphics.remove();
             var side = PedigreeEditor.attributes.radius * Math.sqrt(3.5),
                 height = side/Math.sqrt(2),
                 x = this.getX() - height,
@@ -50,34 +52,35 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             }
 
             if(this.getNode().getGender() == 'U') {
-                this._genderSymbol = shape;
+                this._genderGraphics = shape;
             }
             else {
                 x = this.getX();
                 y = this.getY() + PedigreeEditor.attributes.radius/1.4;
                 var text = (this.getNode().getGender() == 'M') ? "Male" : "Female";
                 var genderLabel = editor.getPaper().text(x, y, text).attr(PedigreeEditor.attributes.label);
-                this._genderSymbol = editor.getPaper().set(shape, genderLabel);
+                this._genderGraphics = editor.getPaper().set(shape, genderLabel);
             }
         }
         else {
             $super();
         }
+        
         if(this.getNode().isProband()) {
             this.getGenderShape().transform(["...s", 1.07]);
             this.getGenderShape().attr("stroke-width", 5);
         }
         if(this.getHoverBox()) {
-            this._genderSymbol.flatten().insertAfter(this.getBackElements().flatten());
-        }
-        else if (!this.getNode().isProband()) {
-            this._genderSymbol.flatten().insertAfter(editor.getGraph().getProband().getGraphics().getAllGraphics().flatten());
-        }
+            this._genderGraphics.flatten().insertAfter(this.getBackElements().flatten());
+        }        
+        //else if (!this.getNode().isProband()) {
+        //    this._genderGraphics.flatten().insertAfter(editor.getGraphicsSet().getProband().getGraphics().getAllGraphics().flatten());
+        //}
         this.updateDisorderShapes();
     },
 
     /**
-     * Returns all graphical elements that are behind the gender symbol
+     * Returns all graphical elements that are behind the gender graphics
      *
      * @method getBackElements
      * @return {Raphael.st}
@@ -133,6 +136,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @method updateDisorderShapes
      */
     updateDisorderShapes: function() {
+    	console.log("updateDisorderShapes");
         this._disorderShapes && this._disorderShapes.remove();
         var gradient = function(color, angle) {
             var hsb = Raphael.rgb2hsb(color),
@@ -143,6 +147,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             person = this.getNode(),
             delta,
             color;
+
         if(this.getNode().getLifeStatus() == 'aborted') {
 
             var side = PedigreeEditor.attributes.radius * Math.sqrt(3.5),
@@ -169,7 +174,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             }
         }
         else {
-            var disorderAngle = (person.getDisorders().length == 0)?0:(360/person.getDisorders().length).round();
+            var disorderAngle = (person.getDisorders().length == 0) ? 0 : (360/person.getDisorders().length).round();
             delta = (360/(person.getDisorders().length))/2;
 
             for(var i = 0; i < person.getDisorders().length; i++) {
@@ -184,7 +189,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             }
         }
         this._disorderShapes = disorderShapes;
-        this._disorderShapes.flatten().insertAfter(this.getGenderSymbol().flatten());
+        this._disorderShapes.flatten().insertAfter(this.getGenderGraphics().flatten());
+        console.log("updateDisorderShapes end");
     },
 
     /**
@@ -309,10 +315,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @method updateSBLabel
      */
     updateSBLabel: function() {
-        var SBLabel;
-        this.getNode().getLifeStatus() == 'stillborn' && (SBLabel = editor.getPaper().text(this.getX(), this.getY(), "SB"));
         this.getSBLabel() && this.getSBLabel().remove();
-        this._stillBirthLabel = SBLabel;
+        if (this.getNode().getLifeStatus() != 'stillborn') return;        
+        this._stillBirthLabel = editor.getPaper().text(this.getX(), this.getY(), "SB");
         this.drawLabels();
     },
 
@@ -323,29 +328,32 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     updateLifeStatusShapes: function() {
         var status = this.getNode().getLifeStatus();
-        this.getDeadShape() && this.getDeadShape().remove();
+        
+        this.getDeadShape()   && this.getDeadShape().remove();
         this.getUnbornShape() && this.getUnbornShape().remove();
-        this.setGenderSymbol();
-        (!this.getNode().getPartnerships()[0]) && !this.getNode().getChildlessStatus() && this.getHoverBox().unhideChildHandle();
-        this.getHoverBox().unhidePartnerHandles();
-
-        if(status == 'deceased'){
+        this.getSBLabel()     && this.getSBLabel().remove();
+        
+        this.setGenderGraphics();
+        
+        if(status == 'deceased' || status == 'aborted') {
             this.drawDeadShape();
         }
-        else if(status == 'stillborn') {
-            this.getHoverBox().hidePartnerHandles();
+        else if (status == 'stillborn') {
             this.drawDeadShape();
+            this.updateSBLabel();
         }
-        else if(status == 'aborted') {
-            this.drawDeadShape();
-            this.getHoverBox().hidePartnerHandles();
-        }
-        else if(status == 'unborn') {
+        else if (status == 'unborn') {
             this.drawUnbornShape();
         }
-        if(this.getNode().isFetus()){
+        
+        if(this.getNode().isFetus()) {
             this.getHoverBox().hidePartnerHandles();
             this.getHoverBox().hideChildHandle();
+        }
+        else
+        {
+            this.getHoverBox().unhidePartnerHandles();
+            this.getHoverBox().unhideChildHandle();            
         }
     },
 
@@ -447,6 +455,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @return {Raphael.st}
      */
     getAllGraphics: function($super) {
+        //console.log("Node " + this.getNode().getID() + " getAllGraphics");
         return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this.getHoverBox().getFrontElements());
     },
 
@@ -462,14 +471,14 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     setPos: function($super, x, y, animate, callback) {
     var funct;
-        if(animate) {
+        /*if(animate) {
             var me = this;
             this.getHoverBox().disable();
             funct = function () {
                 me.getHoverBox().enable();
                 callback && callback();
             };
-        }
+        }*/
         $super(x, y, animate, funct);
     },
 
@@ -482,10 +491,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @param {Number} y The new y coordinate
      * @private
      */
-    _updatePositionData: function($super, x, y) {
-        this.getHoverBox().enable.bind(this.getHoverBox());
-        $super(x, y)
-    }
+    //_updatePositionData: function($super, x, y) {
+    //    this.getHoverBox().enable.bind(this.getHoverBox());
+    //    $super(x, y)
+    //}
 });
 
 //ATTACHES CHILDLESS BEHAVIOR METHODS

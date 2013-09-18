@@ -51,6 +51,12 @@ $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('XWiki.DateTimePicker')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.Widgets')##
+$xwiki.jsfx.use('uicomponents/pedigree/phwork/graphdisplay.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/phwork/queues.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/phwork/graphclasses.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/phwork/xcoordclass.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/phwork/graphplot.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/phwork/positionedgraph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/nodeMenu.js', true)##
 $xwiki.jsfx.use('uicomponents/pedigree/nodetypeSelectionBubble.js')##
 $xwiki.ssfx.use('uicomponents/pedigree/editor.css', true)##
@@ -59,30 +65,20 @@ $xwiki.jsfx.use('uicomponents/pedigree/ageCalc.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/graphicHelpers.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/disorder.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/legend.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/layout.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/saveLoadEngine.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/saveLoadIndicator.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/templateSelector.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/abstractHoverbox.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/partnershipHoverbox.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/personHoverbox.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/groupHoverbox.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/abstractNode.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/abstractNodeVisuals.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/abstractPerson.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/abstractPersonVisuals.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/personGroup.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/personGroupVisuals.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/pregnancy.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/pregnancyVisuals.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/partnership.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/partnershipVisuals.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/person.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/personVisuals.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/placeHolder.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/placeHolderVisuals.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/kdTree.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/nodeIndex.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/graph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/actionStack.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/workspace.js')##

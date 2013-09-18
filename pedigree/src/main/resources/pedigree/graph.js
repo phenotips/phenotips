@@ -1,28 +1,28 @@
 /**
- * Graph is responsible for the adding and removal of nodes. It is also responsible for
+ * GraphicsSet is responsible for the adding and removal of nodes. It is also responsible for
  * node selection and interaction between nodes.
  *
- * @class Graph
+ * @class GraphicsSet
  * @constructor
  */
 
-var Graph = Class.create({
+var GraphicsSet = Class.create({
 
     initialize: function() {
+    	console.log("--- graph init ---");
+    	
+    	this._nodeMap = {};    	// {nodeID} : {AbstractNode}
+    	
         this.hoverModeZones = editor.getPaper().set();
-        this._placeHolderNodes = [];
-        this._partnershipNodes = [];
-        this._pregnancyNodes = [];
-        this._personGroupNodes = [];
-        this._personNodes = [];
-        this._idCount = 1;
-        this._nodeMap = {};
+        
+        this._currentMarkedNew   = [];
+        this._currentGrownNodes  = [];             
         this._currentHoveredNode = null;
-        this._currentDraggable = null;
+        this._currentDraggable   = null;        
     },
 
     /**
-     * Returns a map node IDs to nodes
+     * Returns a map of node IDs to nodes
      *
      * @method getNodeMap
      * @return {Object}
@@ -33,8 +33,37 @@ var Graph = Class.create({
      */
     getNodeMap: function() {
         return this._nodeMap;
-    },
+    },    
+   
+    /**
+     * Returns a node with the given node ID
+     *
+     * @method getNode
+     * @param {nodeId} id of the node to be returned
+     * @return {AbstractNode}
+     *
+     */    
+    getNode: function(nodeId) {
+        return this._nodeMap[nodeId];
+    },    
 
+    /**
+     * Returns the person node containing x and y coordinates, or null if outside all person nodes
+     *
+     * @method getPersonNodeNear
+     * @return {Object} or null
+     */    
+    getPersonNodeNear: function(x, y) {
+        for (var nodeID in this._nodeMap) {
+            if (this._nodeMap.hasOwnProperty(nodeID)) {
+                var node = this.getNode(nodeID);
+                if (node.getType() == "Person" && node.getGraphics().containsXY(x,y))
+                    return node;
+            }
+        }
+        return null;
+    },
+    
     /**
      * Returns the node that is currently selected
      *
@@ -76,73 +105,27 @@ var Graph = Class.create({
     },
 
     /**
-     * Generates an id for a node
+     * Removes given node from node index (Does not delete the node visuals).
      *
-     * @method generateID
-     * @return {Number} A unique id
-     */
-    generateID: function() {
-        return this._idCount++;
+     * @method removeFromNodeMap
+     * @param {nodeId} id of the node to be removed
+     */    
+    removeFromNodeMap: function(nodeID) {
+        delete this.getNodeMap()[nodeID];        
     },
-
-    /**
-     * Returns the highest generated id in this graph
-     *
-     * @method getIdCount
-     * @return {Number}
-     */
-    getIdCount: function() {
-        return this._idCount
-    },
-
-    /**
-     * Sets the highest generated id to maxID
-     *
-     * @method setIdCount
-     * @param maxID
-     */
-    setIdCount: function(maxID) {
-        this._idCount = maxID;
-    },
-
-    /**
-     * Returns the Proband node
-     *
-     * @method getProband
-     * @return {Person}
-     */
-    getProband: function() {
-        return this.getNodeMap()[1];
-    },
-
-    /**
-     * Returns a list containing all the nodes in the graph
-     *
-     * @method getAllNodes
-     * @return {Array} A list containing all nodes. The last element in the proband.
-     */
-    getAllNodes: function() {
-        var pregs = this.getPregnancyNodes(),
-            partnerships = this.getPartnershipNodes(),
-            placeHolders = this.getPlaceHolderNodes(),
-            persons = this.getPersonNodes(),
-            personGroups = this.getPersonGroupNodes();
-
-        return pregs.concat(partnerships, placeHolders, personGroups, persons.reverse());
-    },
-
+    
     /**
      * Deletes all nodes except the proband.
      *
      * @method clearGraph
-     * @param {Boolean} removeProband If True, the proband is deleted as well.
      */
-    clearGraph: function(removeProband) {
-        var nodes = this.getAllNodes();
-        var length = removeProband ? nodes.length : nodes.length - 1;
-        for(var i = 0 ; i< length ; i++) {
-            nodes[i] && nodes[i].remove(false);
-        }
+    clearGraph: function() {                
+    	for (var node in this.getNodeMap()) { 
+    		if (this.getNodeMap().hasOwnProperty(node) && this.getNodeMap()[node].getID() != 0) {
+    			this.getNodeMap()[node].remove(true);
+    			this.removeFromNodeMap(node);    			
+    		}
+    	}
     },
 
     /**
@@ -154,272 +137,99 @@ var Graph = Class.create({
         var lastAction = editor.getActionStack().peek();
         if(!lastAction || lastAction.property != "clearGraph") {
             var saveData = editor.getSaveLoadEngine().serialize();
-            this.clearGraph(false);
+            this.clearGraph();
             var undo = function() {
-                editor.getSaveLoadEngine().load(saveData);
+                editor.getSaveLoadEngine().createGraphFromSerializedData(saveData);
             };
             var redo = function() {
-                editor.getGraph().clearGraph(false);
+                editor.getGraphicsSet().clearGraph();
             };
             editor.getActionStack().push({undo: undo, redo:redo, property: "clearGraph"});
         }
     },
-
+ 
     /**
-     * Creates a Partnership and adds it to index of nodes.
-     *
-     * @method addPartnership
-     * @param {Number} x The x coordinate for the node
-     * @param {Number} y The y coordinate for the node
-     * @param {AbstractNode} node1 The first node in the partnership
-     * @param {AbstractNode} node2 The second node in the partnership
-     * @param {Number} [id] The id of the node
-     * @return {Partnership}
-     */
-    addPartnership : function(x, y, node1, node2, id) {
-        var partnership = new Partnership(x, y, node1, node2, id);
-        this.getNodeMap()[partnership.getID()] = partnership;
-        editor.getNodeIndex()._addNode(partnership, true);
-        this._partnershipNodes.push(partnership);
-        return partnership;
-    },
-
-    /**
-     * Removes partnership from index of nodes
-     *
-     * @method removePartnership
-     * @param partnership
-     */
-    removePartnership: function(partnership) {
-        delete this.getNodeMap()[partnership.getID()];
-        this._partnershipNodes = this._partnershipNodes.without(partnership);
-    },
-
-    /**
-     * Returns list containing all the pregnancy nodes in the graph
-     *
-     * @method getPregnancyNodes
-     * @return {Array}
-     */
-    getPregnancyNodes: function() {
-        return this._pregnancyNodes;
-    },
-
-    /**
-     * Returns list containing all the Person nodes in the graph
-     *
-     * @method getPersonNodes
-     * @return {Array}
-     */
-    getPersonNodes: function() {
-        return this._personNodes;
-    },
-
-    /**
-     * Returns list containing all the PlaceHolder nodes in the graph
-     *
-     * @method getPlaceHolderNodes
-     * @return {Array}
-     */
-    getPlaceHolderNodes: function() {
-        return this._placeHolderNodes;
-    },
-
-    /**
-     * Returns list containing all the Partnership nodes in the graph
-     *
-     * @method getPartnershipNodes
-     * @return {Array}
-     */
-    getPartnershipNodes: function() {
-        return this._partnershipNodes;
-    },
-
-    /**
-     * Returns list containing all the PersonGroup nodes in the graph
-     *
-     * @method getPersonGroupNodes
-     * @return {Array}
-     */
-    getPersonGroupNodes: function() {
-        return this._personGroupNodes;
-    },
-
-    /**
-     * Creates a Person in the graph and returns it
+     * Creates a new node in the graph and returns it. The node type is obtained from
+     * editor.getGraph() and may be on of Person, Partnership or ... TODO. The position
+     * of the node is also obtained form editor.getGraph()
      *
      * @method addPerson
-     * @param {Number} x The x coordinate for the node
-     * @param {Number} y The y coordinate for the node
-     * @param {String} gender Can be "M", "F", or "U"
      * @param {Number} [id] The id of the node
      * @return {Person}
      */
-    addPerson: function(x, y, gender, id) {
-        var isProband = this.getPersonNodes().length == 0;
-        if(!isProband) {
+    addNode: function(id) {
+        console.log("add node");
+        var positionedGraph = editor.getGraph();
+        
+        if (!positionedGraph.isValidID(id))
+            throw "addNode(): Invalid id";
+
+        var node;        
+        var properties = positionedGraph.getProperties(id);        
+        
+        var graphPos = positionedGraph.getPosition(id);
+        var position = editor.convertGraphCoordToCanvasCoord(graphPos.x, graphPos.y );        
+        
+        if (positionedGraph.isRelationship(id)) {
+            console.log("-> add partnership");
+            node = new Partnership(position.x, position.y, id);
         }
-        var node = new Person(x, y, gender, id, isProband);
-        this.getPersonNodes().push(node);
-        this.getNodeMap()[node.getID()] = node;
-        editor.getNodeIndex()._addNode(node, true);
+        else if (positionedGraph.isPerson(id)) {
+            console.log("-> add person");
+            node = new Person(position.x, position.y, properties["gender"], id);
+        }
+        else {
+            throw "addNode(): unsupported node type";
+        }
+        
+        //console.log("properties: " + stringifyObject(properties));
+        node.assignProperties(properties);
+        
+        this.getNodeMap()[id] = node;
+        
         return node;
     },
-
-    removePerson: function(person) {
-        delete this.getNodeMap()[person.getID()];
-        this._personNodes = this._personNodes.without(person);
+    
+    moveNode: function(id, animate) {
+        //console.log("moving: " + id + ", animate: " + animate);
+        var positionedGraph = editor.getGraph();
+        var graphPos = positionedGraph.getPosition(id);
+        var position = editor.convertGraphCoordToCanvasCoord(graphPos.x, graphPos.y );
+        this.getNode(id).setPos(position.x, position.y, animate);
     },
-
-    /**
-     * Creates a PlaceHolder in the graph and returns it
-     *
-     * @method addPlaceHolder
-     * @param {Number} x The x coordinate for the node
-     * @param {Number} y The y coordinate for the node
-     * @param {String} gender Can be "M", "F", or "U"
-     * @param {Number} [id] The id of the node
-     * @return {PlaceHolder}
-     */
-    addPlaceHolder: function(x, y, gender, id) {
-        var node = new PlaceHolder(x, y, gender, id);
-        this.getPlaceHolderNodes().push(node);
-        this.getNodeMap()[node.getID()] = node;
-        editor.getNodeIndex()._addNode(node, true);
-        return node;
-    },
-
-    /**
-     * Removes given PlaceHolder node from node index (Does not delete the node visuals).
-     *
-     * @method removePlaceHolder
-     * @param {PlaceHolder} placeholder
-     */
-    removePlaceHolder: function(placeholder) {
-        delete this.getNodeMap()[placeholder.getID()];
-        this._placeHolderNodes = this._placeHolderNodes.without(placeholder);
-    },
-
-    /**
-     * Creates a PersonGroup in the graph and returns it
-     *
-     * @method addPersonGroup
-     * @param {Number} x The x coordinate for the node
-     * @param {Number} y The y coordinate for the node
-     * @param {String} gender Can be "M", "F", or "U"
-     * @param {Number} [id] The id of the node
-     * @return {PersonGroup}
-     */
-    addPersonGroup: function(x, y, gender, id) {
-        var node = new PersonGroup(x, y, gender, id);
-        this.getPersonGroupNodes().push(node);
-        this.getNodeMap()[node.getID()] = node;
-        editor.getNodeIndex()._addNode(node, true);
-        return node;
-    },
-
-    /**
-     * Removes given PersonGroup node from node index (Does not delete the node visuals).
-     *
-     * @method removePersonGroup
-     * @param {PersonGroup} groupNode
-     */
-    removePersonGroup: function(groupNode) {
-        delete this.getNodeMap()[groupNode.getID()];
-        this._personGroupNodes = this._personGroupNodes.without(groupNode);
-    },
-
-    /**
-     * Creates a Pregnancy node in the graph and returns it
-     *
-     * @method addPregnancy
-     * @param {Number} x The x coordinate for the node
-     * @param {Number} y The y coordinate for the node
-     * @param {Partnership} partnership The Partnership that has this pregnancy
-     * @param {Number} [id] The id of the node
-     * @return {Pregnancy}
-     */
-    addPregnancy: function(x, y, partnership, id) {
-        var node = new Pregnancy(x, y, partnership, id);
-        this.getPregnancyNodes().push(node);
-        this.getNodeMap()[node.getID()] = node;
-        editor.getNodeIndex()._addNode(node, true);
-        return node;
-    },
-
-    /**
-     * Removes given Pregnancy node from node index (Does not delete the node visuals).
-     *
-     * @method removePregnancy
-     * @param {Pregnancy} pregnancy
-     */
-    removePregnancy: function(pregnancy) {
-        delete this.getNodeMap()[pregnancy.getID()];
-        this._pregnancyNodes = this._pregnancyNodes.without(pregnancy);
-    },
-
+  
     /**
      * Enters hover-mode state, which is when a handle or a PlaceHolder is being dragged around the screen
      *
      * @method enterHoverMode
      * @param sourceNode The node whose handle is being dragged, or the placeholder that is being dragged
-     * @param {Array} hoverTypes An array of strings containing the types of nodes that "react" to the sourceNode being
+     * @param hoverTypes Should be 'parent', 'child' or 'partner'. Only nodes which can be in the correponding
+     *                   relationship with sourceNode will be highlighted
      * dragged on top of them.
      */
-    enterHoverMode: function(sourceNode, hoverTypes) {
-        if(this.getCurrentDraggable().getType() == "parent") {
-            this.getPartnershipNodes().each(function(partnershipBubble) {
-                partnershipBubble.getGraphics().grow();
-            })
-        }
-        var me = this,
-            color,
-            hoverNodes = [];
-        hoverTypes.each(function(type) {
-            hoverNodes = hoverNodes.concat(me["get" + type + "Nodes"]())
-        });
-        hoverNodes.without(sourceNode).each(function(node) {
+    enterHoverMode: function(sourceNode, hoverType) {
+        
+        var me = this;
+        var validTargets = this.getValidDragTargets(sourceNode.getID(), hoverType);
+        
+        validTargets.each(function(nodeID) {
+            me._currentGrownNodes.push(nodeID);
+            
+            var node = me.getNode(nodeID);            
+            node.getGraphics().grow();
+                        
             var hoverModeZone = node.getGraphics().getHoverBox().getHoverZoneMask().clone().toFront();
             hoverModeZone.attr("cursor", "pointer");
             hoverModeZone.hover(
                 function() {
-                    me._currentHoveredNode = node;
-                    node.getGraphics().getHoverBox().setHovered(true);
-                    node.getGraphics().getHoverBox().getBoxOnHover().attr(PedigreeEditor.attributes.boxOnHover);
-
-                    if(me.getCurrentDraggable().getType() == 'PlaceHolder' && me.getCurrentDraggable().canMergeWith(node)) {
-                        me.getCurrentDraggable().validHoveredNode = node;
-                        color = "green";
-                    }
-                    else if(me.getCurrentDraggable().getType() == "partner" && sourceNode.canPartnerWith(node)) {
-                        node.validPartnerSelected = true;
-                        color = "green";
-                    }
-                    else if(me.getCurrentDraggable().getType() == "child" && sourceNode.canBeParentOf(node)) {
-                        node.validChildSelected = true;
-                        color = "green";
-                    }
-                    else if(me.getCurrentDraggable().getType() == "parent" && node.canBeParentOf(sourceNode)) {
-                        if(node.getType() == 'Person') {
-                            node.validParentSelected = true;
-                        }
-                        else {
-                            node.validParentsSelected = true;
-                        }
-                        color = "green";
-                    }
-                    else {
-                        color = "red";
-                    }
-                    node.getGraphics().getHoverBox().getBoxOnHover().attr("fill", color);
+                    me._currentHoveredNode = nodeID;
+                    node.getGraphics().getHoverBox().setHighlighted(true);
                 },
-                function() {
-                    me.getCurrentDraggable() && (me.getCurrentDraggable().validHoveredNode = null);
-                    node.getGraphics().getHoverBox().setHovered(false);
-                    node.getGraphics().getHoverBox().getBoxOnHover().attr(PedigreeEditor.attributes.boxOnHover).attr('opacity', 0);
+                function() {                    
                     me._currentHoveredNode = null;
-                    node.validPartnerSelected = node.validChildSelected =  node.validParentSelected = node.validParentsSelected = false;
+                    node.getGraphics().getHoverBox().setHighlighted(false);                    
                 });
+            
             me.hoverModeZones.push(hoverModeZone);
         });
     },
@@ -431,8 +241,131 @@ var Graph = Class.create({
      */
     exitHoverMode: function() {
         this.hoverModeZones.remove();
-        this.getPartnershipNodes().each(function(partnership) {
-            partnership.getGraphics().area && partnership.getGraphics().area.remove();
+        
+        var me = this;
+        this._currentGrownNodes.each(function(nodeID) {
+            var node = me.getNode(nodeID)
+            node.getGraphics().shrink();
+            node.getGraphics().getHoverBox().setHighlighted(false);            
         });
+        
+        this._currentGrownNodes = [];
+    },
+    
+    getValidDragTargets: function(sourceNodeID, hoverType) {
+        var result = [];
+        switch (hoverType) {
+        case "child":
+            // all person nodes which are not ancestors of sourse node and which do not already have parents            
+            result = editor.getGraph().getPossibleChildrenOf(sourceNodeID);
+            break;
+        case "parent":
+            // all person nodes which are not descendants of source node
+            // TODO: plus all relationships?
+            result = editor.getGraph().getPossibleParentsOf(sourceNodeID);
+            break;
+        case "partnerR":            
+        case "partnerL":
+            // all person nodes of the other gender or unknown gender
+            var oppositeGender  = this.getNode(sourceNodeID).getOppositeGender();
+            var validGendersSet = (oppositeGender == 'U') ? ['m','f','u'] : [oppositeGender,'u'];            
+            result = editor.getGraph().getAllPersonsOfGenders(validGendersSet);
+            result = result.without(sourceNodeID);
+            //console.log("possible partners: " + stringifyObject(result));
+            break;
+        case "PlaceHolder":
+            // all nodes which can be this placehodler: e.g. all that can be child of it's parents && 
+            // partners of it's partners
+            throw "TODO";
+        default:
+            throw "Incorrect hoverType";
+        }     
+        return result;
+    },
+    
+    applyChanges: function( changeSet, markNew ) {
+        // applies change set of the form {"new": {list of nodes}, "moved": {list of nodes} }        
+        console.log("Change set: " + stringifyObject(changeSet));
+        
+        for (var i = 0; i < this._currentMarkedNew.length; i++) {
+            var node = this.getNode(this._currentMarkedNew[i]);
+            node.getGraphics().unmark();
+        }
+        this._currentMarkedNew = [];
+        
+        // 0. remove all removed
+        //
+        // 1. move all person nodes
+        // 2. create all new person nodes
+        //
+        // 3. move all existing relationships - as all lines are attached to relationships we want to draw
+        //                                      them after all person nodes are already in correct position
+        // 4. create new relationships        
+                
+        if (changeSet.hasOwnProperty("removed")) {
+            for (var i = 0; i < changeSet.removed.length; i++) {
+                var nextRemoved = changeSet.removed[i];
+                
+                this.getNodeMap()[nextRemoved].remove(true);
+                this.removeFromNodeMap(nextRemoved);
+            }
+        }
+                   
+        var movedPersons       = [];
+        var movedRelationships = [];
+        var newPersons         = [];
+        var newRelationships   = [];
+        var animate            = {};
+        
+        if (changeSet.hasOwnProperty("animate")) {
+            for (var i = 0; i < changeSet.animate.length; i++) {
+                //animate[changeSet.animate[i]] = true;     // TODO: animations disabled becaus ehoverboxes behave strangely
+            }
+        }
+        
+        if (changeSet.hasOwnProperty("moved")) {
+            for (var i = 0; i < changeSet.moved.length; i++) {
+                var nextMoved = changeSet.moved[i];                
+                if (editor.getGraph().DG.GG.isRelationship(nextMoved))
+                    movedRelationships.push(nextMoved);
+                else
+                    movedPersons.push(nextMoved);
+            }
+        }
+        if (changeSet.hasOwnProperty("new")) {
+            for (var i = 0; i < changeSet.new.length; i++) {
+                var nextNew = changeSet.new[i];                
+                if (editor.getGraph().DG.GG.isRelationship(nextNew))
+                    newRelationships.push(nextNew);
+                else
+                    newPersons.push(nextNew);
+            }
+        }        
+        
+        // TODO: find which relationship nodes are affected by the move of other relationship nodes
+        //       via LineSet (because of the line intersection graphics) and add them to the moved set
+
+        for (var i = 0; i < movedPersons.length; i++)
+            editor.getGraphicsSet().moveNode(movedPersons[i], animate.hasOwnProperty(movedPersons[i]));        
+        for (var i = 0; i < newPersons.length; i++) {
+            var newPerson = editor.getGraphicsSet().addNode(newPersons[i]);
+            if (markNew) {
+                newPerson.getGraphics().markPermanently();
+                this._currentMarkedNew.push(newPersons[i]);
+            }
+        }
+        
+        for (var i = 0; i < movedRelationships.length; i++)
+            editor.getGraphicsSet().moveNode(movedRelationships[i]);        
+        for (var i = 0; i < newRelationships.length; i++)
+            editor.getGraphicsSet().addNode(newRelationships[i]);
+                
+        if (changeSet.hasOwnProperty("highlight")) {
+            for (var i = 0; i < changeSet.highlight.length; i++) {
+                var nextHighlight = changeSet.highlight[i];
+                //this.getNode(nextHighlight).getGraphics().markPermanently();
+                //this._currentMarkedNew.push(nextHighlight);                
+            }
+        }
     }
 });

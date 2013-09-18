@@ -15,9 +15,9 @@
 var PartnershipHoverbox = Class.create(AbstractHoverbox, {
 
     initialize: function($super, partnership, junctionX, junctionY, shapes) {
-        var radius = PedigreeEditor.attributes.radius;
+        var radius = PedigreeEditor.attributes.radius;        
+        $super(partnership, -radius/1.5, -radius/2, radius*(4/3), radius*1.7, junctionX, junctionY, shapes);
         this._isMenuToggled = false;
-        $super(partnership, junctionX - radius/1.5, junctionY - radius/2, radius*(4/3), radius*1.7, junctionX, junctionY, shapes);
     },
 
     /**
@@ -39,7 +39,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      */
     generateButtons: function($super) {
         var deleteButton = this.generateDeleteBtn();
-        var menuButton = this.generateMenuBtn();
+        var menuButton   = this.generateMenuBtn();
         return $super().push(deleteButton, menuButton);
     },
 
@@ -83,7 +83,6 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
     toggleMenu: function(isMenuToggled) {
         this._isMenuToggled = isMenuToggled;
         if(isMenuToggled) {
-            this.disable();
             var optBBox = this.getBoxOnHover().getBBox();
             var x = optBBox.x2;
             var y = optBBox.y;
@@ -94,6 +93,17 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
             editor.getPartnershipMenu().hide();
         }
     },
+    
+    /**
+     * Hides the hoverbox with a fade out animation
+     *
+     * @method animateHideHoverZone
+     */
+    animateHideHoverZone: function($super) {
+        if(!this.isMenuToggled()){
+            $super();
+        }
+    },    
 
     /**
      * Performs the appropriate action for clicking on the handle of type handleType
@@ -102,20 +112,20 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      * @param {String} handleType Can be either "child", "partner" or "parent"
      * @param {Boolean} isDrag Set to True if the handle is being dragged at the time of the action
      */
-    handleAction : function(handleType, isDrag) {
-        var curHovered = editor.getGraph().getCurrentHoveredNode();
-        if(isDrag && curHovered && curHovered.validChildSelected) {
-            curHovered.validChildSelected = false;
-            this.getNode().addChildAction(curHovered);
+    handleAction : function(handleType, isDrag, curHoveredId) {
+        if(isDrag && curHoveredId) {            
+            if(handleType == "child") { 
+                editor.getNode(curHoveredId).getGraphics().getHoverBox().hideParentHandle();                
+                var changeSet = editor.getGraph().assignParent(this.getNode().getID(), curHoveredId);
+                editor.getGraphicsSet().applyChanges(changeSet, true);                
+            }
         }
         else if (!isDrag && handleType == "child") {
-            //this.getNode().createChild();
             var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.radius * 2.3));
             editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
-            this.disable();
-            curHovered && curHovered.getGraphics().getHoverBox().getBoxOnHover().attr(PedigreeEditor.attributes.boxOnHover);
         }
-        editor.getGraph().setCurrentHoveredNode(null);
-        editor.getGraph().setCurrentDraggable(null);
+        editor.getGraphicsSet().setCurrentHoveredNode(null);
+        editor.getGraphicsSet().setCurrentDraggable(null);        
+        this.animateHideHoverZone();        
     }
 });

@@ -17,23 +17,22 @@
 
 var AbstractHoverbox = Class.create({
 
-    initialize: function(node, x, y, width, height, nodeX, nodeY, nodeShapes) {
+    initialize: function(node, shiftX, shiftY, width, height, nodeX, nodeY, nodeShapes) {
         var me = this;
         this._node = node;
-        this._relativeX = x;
-        this._relativeY = y;
+        this._relativeX = shiftX;
+        this._relativeY = shiftY;
         this._nodeX = nodeX;
         this._nodeY = nodeY;
         this._width = width;
         this._height = height;
         this._isHovered = false;
-        this._activeHandles = 0;
         this._orbs = editor.getPaper().set();
         this._connections = editor.getPaper().set();
         this._handles = this.generateHandles();
         this._currentHandles = this._handles;
         this._buttons = this.generateButtons();
-        this._boxOnHover = editor.getPaper().rect(x, y, this._width, this._height, 5).attr(PedigreeEditor.attributes.boxOnHover);
+        this._boxOnHover = editor.getPaper().rect(this.getX(), this.getY(), this._width, this._height, 5).attr(PedigreeEditor.attributes.boxOnHover);
         this._backElements = editor.getPaper().set(this._boxOnHover, this._connections);
         this._backElements.insertBefore(nodeShapes.flatten());
         var mask = this._boxOnHover.clone().attr({fill: 'green', opacity: 0});
@@ -52,8 +51,8 @@ var AbstractHoverbox = Class.create({
      * @method getX
      * @return {Number} The x coordinate in pixels
      */
-    getX: function() {
-        return this._relativeX;
+    getX: function() {        
+        return this.getNodeX() + this._relativeX;
     },
 
     /**
@@ -63,7 +62,7 @@ var AbstractHoverbox = Class.create({
      * @return {Number} The y coordinate in pixels
      */
     getY: function() {
-        return this._relativeY;
+        return this.getNodeY() + this._relativeY;
     },
 
     /**
@@ -72,7 +71,12 @@ var AbstractHoverbox = Class.create({
      * @method getNodeX
      * @return {Number} The x coordinate in pixels
      */
-    getNodeX: function() {
+    getNodeX: function() {        
+        // note: during construction getGraphics() isnot yet available, so need to store nodeX.
+        //       however node may have been moved later, in which case we need to use current graphics X
+        var nodeGraphics = this.getNode().getGraphics();
+        if (nodeGraphics)
+            this._nodeX = nodeGraphics.getX();        
         return this._nodeX;
     },
 
@@ -83,6 +87,9 @@ var AbstractHoverbox = Class.create({
      * @return {Number} The y coordinate in pixels
      */
     getNodeY: function() {
+        var nodeGraphics = this.getNode().getGraphics();
+        if (nodeGraphics)
+            this._nodeY = nodeGraphics.getY();          
         return this._nodeY;
     },
 
@@ -274,6 +281,22 @@ var AbstractHoverbox = Class.create({
     setHovered: function(isHovered) {
         this._isHovered = isHovered;
     },
+    
+    /**
+     * Enbales or disables the highlighting of the node
+     * @method setHighlighted
+     * @param {Boolean} isHighlighted Set to true enables green highlight box, false disables it
+     */
+    setHighlighted: function(isHighlighted) {
+        // autoimaticaly highlight and unhighlight the node being dragged over
+        if(isHighlighted) {
+            this.getBoxOnHover().attr(PedigreeEditor.attributes.boxOnHover);                    
+            this.getBoxOnHover().attr("fill", "green");
+        }
+        else {
+            this.getBoxOnHover().attr(PedigreeEditor.attributes.boxOnHover).attr('opacity', 0);            
+        }
+    },    
 
     /**
      * Returns the invisible mask layer in front of the hoverbox
@@ -317,33 +340,25 @@ var AbstractHoverbox = Class.create({
      * @return {Raphael.st} Raphael set of elements that make up the handle
      */
     generateHandle: function(type, orbX, orbY) {
-        var path = [["M", this.getNodeX(), this.getNodeY()],["L", orbX, orbY]],
-            connection = editor.getPaper().path(path).attr({"stroke-width": 4, stroke: "gray"}),
-            orbRadius = PedigreeEditor.attributes.radius/7,
-            orbHue = PedigreeEditor.attributes.orbHue,
-            orb = generateOrb(editor.getPaper(), orbX, orbY, orbRadius*1.1, orbHue).attr("cursor", "pointer");
-//            adoptionPath = [["M", orbX - orbRadius/2, orbY + orbRadius*1.3],["L", (orbX - orbRadius * 1.3), orbY + orbRadius*1.3],["L", (orbX - orbRadius * 1.3), orbY - orbRadius*1.3],["L", (orbX - orbRadius / 2), orbY - orbRadius*1.3],["M", orbX + orbRadius/2, orbY + orbRadius*1.3],["L", (orbX + orbRadius * 1.3), orbY + orbRadius*1.3],["L", (orbX + orbRadius * 1.3), orbY - orbRadius*1.3],["L", (orbX + orbRadius / 2), orbY - orbRadius*1.3]],
-//            adoptionSymbol = editor.getPaper().path(adoptionPath).attr({"stroke-width": 2, stroke: "#484848", opacity: 1});
-            //orb.push(adoptionSymbol);
-        var handle = editor.getPaper().set().push(connection, orb),
-            hasEnded = true,
-            hoverTypes = ["Person"],
-            me = this;
-        handle.type = type;
+        var path = [["M", this.getNodeX(), this.getNodeY()],["L", orbX, orbY]];
+        var connection   = editor.getPaper().path(path).attr({"stroke-width": 4, stroke: "gray"});
         connection.oPath = path;
-
-        if(type == 'parent') {
-            hoverTypes.push("Partnership")
-        }
+        
+        var orbRadius = PedigreeEditor.attributes.radius/7;
+        var orbHue    = PedigreeEditor.attributes.orbHue;
+        var orb       = generateOrb(editor.getPaper(), orbX, orbY, orbRadius*1.1, orbHue).attr("cursor", "pointer");
+        
+        //var adoptionPath = [["M", orbX - orbRadius/2, orbY + orbRadius*1.3],["L", (orbX - orbRadius * 1.3), orbY + orbRadius*1.3],["L", (orbX - orbRadius * 1.3), orbY - orbRadius*1.3],["L", (orbX - orbRadius / 2), orbY - orbRadius*1.3],["M", orbX + orbRadius/2, orbY + orbRadius*1.3],["L", (orbX + orbRadius * 1.3), orbY + orbRadius*1.3],["L", (orbX + orbRadius * 1.3), orbY - orbRadius*1.3],["L", (orbX + orbRadius / 2), orbY - orbRadius*1.3]],
+        //var adoptionSymbol = editor.getPaper().path(adoptionPath).attr({"stroke-width": 2, stroke: "#484848", opacity: 1});
+        //orb.push(adoptionSymbol);
+        
+        var handle  = editor.getPaper().set().push(connection, orb);
+        handle.type = type;
+        
+        var me = this;        
 
         var start = function() {
-//            if(!hasEnded) {
-//                //isDrag = true;
-//                //end();
-//                return;
-//            }
-            hasEnded = false;
-            //document.observe('mousedown', catchRightClick);
+        	console.log("handle: start");
             me.disable();
             me.getFrontElements().toFront();
             orb.ox = orb[0].attr("cx");
@@ -351,11 +366,11 @@ var AbstractHoverbox = Class.create({
             connection.ox = connection.oPath[1][1];
             connection.oy = connection.oPath[1][2];
             handle.isDragged = false;
-            editor.getGraph().setCurrentDraggable(handle);
-            editor.getGraph().enterHoverMode(me.getNode(), hoverTypes);
-            me._activeHandles++;
+            editor.getGraphicsSet().setCurrentDraggable(me.getNode().getID());
+            editor.getGraphicsSet().enterHoverMode(me.getNode(), type);
         };
         var move = function(dx, dy) {
+        	//console.log("handle: move");
             dx = dx/editor.getWorkspace().zoomCoefficient;
             dy = dy/editor.getWorkspace().zoomCoefficient;
             orb.attr("cx", orb.ox + dx);
@@ -365,37 +380,27 @@ var AbstractHoverbox = Class.create({
             connection.attr("path", connection.oPath);
             if(dx > 1 || dx < 1 || dy > 1 || dy < -1 ) {
                 handle.isDragged = true;
-            }
+            }            
+            //console.log("currentHover: " + editor.getGraphicsSet()._currentHoveredNode + ", currentDrag: " + editor.getGraphicsSet()._currentDraggable);
         };
         var end = function() {
-//            if(hasEnded) {
-//                return;
-//            }
-            //document.stopObserving('mousedown', catchRightClick);
-            editor.getGraph().exitHoverMode();
-            if(handle.isDragged){
+            editor.getGraphicsSet().exitHoverMode();
+            
+            if(handle.isDragged)
                 orb.animate({"cx": orb.ox, "cy": orb.oy}, + handle.isDragged * 1000, "elastic",
-                    function() {
-                        me._activeHandles--;
-                        if(me._activeHandles == 0) {
-                            me.enable();
-                            me.animateHideHoverZone();
-                            hasEnded = true;
-                            handle.isDragged = false;
-                        }
-                    });
-            }
-            else {
-                me._activeHandles--;
-                if(me._activeHandles == 0) {
-                    me.enable();
-                    hasEnded = true;
-                }
-            }
-            me.handleAction(handle.type, handle.isDragged);
+                            function() { me.animateHideHoverZone(); });
+            
+            me.enable();
+            var curHoveredId = editor.getGraphicsSet().getCurrentHoveredNode()
+            console.log("handle.isDragged: " + handle.isDragged + ", currentHover: " + curHoveredId);                       
             connection.oPath[1][1] = connection.ox;
             connection.oPath[1][2] = connection.oy;
             connection.animate({"path": connection.oPath},1000, "elastic");
+            
+            editor.getGraphicsSet().setCurrentHoveredNode(null);
+            editor.getGraphicsSet().setCurrentDraggable(null);
+            
+            me.handleAction(handle.type, handle.isDragged, curHoveredId);
         };
 
         orb.drag(move, start, end);
@@ -441,7 +446,9 @@ var AbstractHoverbox = Class.create({
      *
      * @method animateDrawHoverZone
      */
-    animateDrawHoverZone: function() {
+    animateDrawHoverZone: function() {        
+        if (editor.getGraphicsSet().getCurrentDraggable()) return;
+        
         this.getNode().getGraphics().setSelected(true);
         this.getBoxOnHover().stop().animate({opacity:0.7}, 300);
         this.getButtons().forEach(function(button) {
@@ -455,15 +462,15 @@ var AbstractHoverbox = Class.create({
      *
      * @method animateHideHoverZone
      */
-    animateHideHoverZone: function() {
-        if(!this.isHovered()) {
-            this.getNode().getGraphics().setSelected(false);
-            this.getBoxOnHover().stop().animate({opacity:0}, 200);
-            this.getButtons().forEach(function(button) {
-                button.icon.stop().animate({opacity:0}, 200);
-            });
-            this.getCurrentHandles().hide();
-        }
+    animateHideHoverZone: function() {        
+        if (editor.getGraphicsSet().getCurrentDraggable()) return;
+        
+        this.getNode().getGraphics().setSelected(false);
+        this.getBoxOnHover().stop().animate({opacity:0}, 200);
+        this.getButtons().forEach(function(button) {
+            button.icon.stop().animate({opacity:0}, 200);
+        });
+        this.getCurrentHandles().hide();
     },
 
     /**
@@ -516,6 +523,10 @@ var AbstractHoverbox = Class.create({
     onWidgetHide: function() {
         this._isMenuToggled = false;
         !this.isHovered() && this.animateHideHoverZone();
-        this._activeHandles == 0 && this.enable();
-    }
+        this.enable();
+    },
+    
+    onWidgetShow: function() {
+        this._isMenuToggled = true;
+    }        
 });

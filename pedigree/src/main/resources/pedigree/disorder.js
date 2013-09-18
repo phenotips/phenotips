@@ -49,7 +49,7 @@ var Disorder = Class.create( {
     /*
      * Returns the number of registered individuals carrying the disorder.
      */
-    getNumAffected: function() {
-        return this.getAffectedNodes().length;
-    }
+    //getNumAffected: function() {
+    //    return this.getAffectedNodes().length;
+    //}
 });

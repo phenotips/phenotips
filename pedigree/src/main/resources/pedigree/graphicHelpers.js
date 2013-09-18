@@ -27,7 +27,7 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
                 y = cy + r * Math.sin(-alpha * rad);
             return [x,y];
         };
-
+   
     if (gen === 'F') {
         if(endAngle-startAngle == 360)
         {

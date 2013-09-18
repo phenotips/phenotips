@@ -9,22 +9,31 @@
  */
 var PedigreeEditor = Class.create({
     initialize: function() {
-        this.DEBUG_MODE = false;
+        this.DEBUG_MODE = true;
         window.editor = this;
-
+                        
+        // initialize main data structure which holds the graph structure        
+        var G = new InternalGraph(PedigreeEditor.attributes.layoutRelativePersonWidth, PedigreeEditor.attributes.layoutRelativeOtherWidth);
+        var drawGraph = new DrawGraph(G);
+        this._mainGraph = new PositionedGraph(drawGraph);                
+               
         //initialize the elements of the app
         this._workspace = new Workspace();
         this._nodeMenu = this.generateNodeMenu();
         this._partnershipMenu = this.generatePartnershipMenu();
         this._nodetypeSelectionBubble = new NodetypeSelectionBubble();
         this._legend = new Legend();
-        this._nodeIndex = new NodeIndex();
-        this._graph = new Graph();
-        this._actionStack = new ActionStack();
-        this._saveLoadEngine = new SaveLoadEngine();
-        this._saveLoadIndicator = new SaveLoadIndicator();
+                
+        this._graphicsSet = new GraphicsSet();
+        
+        this._actionStack = new ActionStack();                
         this._templateSelector = new TemplateSelector();
-        this._saveLoadEngine.load();
+        this._saveLoadIndicator = new SaveLoadIndicator();               
+        this._saveLoadEngine = new SaveLoadEngine();
+        this._probandData = new ProbandDataLoader();
+        
+        // load proband data and load the graph after proband data is available
+        this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
 
         //attach actions to buttons on the top bar
         var undoButton = $('action-undo');
@@ -36,9 +45,14 @@ var PedigreeEditor = Class.create({
             editor.getActionStack().redo();
         });
 
+        var clearButton = $('action-clear');
+        clearButton && clearButton.on("click", function(event) {
+            editor.getGraphicsSet().clearGraphAction();
+        });
+        
         var saveButton = $('action-save');
         saveButton && saveButton.on("click", function(event) {
-            editor.getSaveLoadEngine().serialize();
+            editor.getSaveLoadEngine().save();
         });
 
         var loadButton = $('action-load');
@@ -50,6 +64,8 @@ var PedigreeEditor = Class.create({
         templatesButton && templatesButton.on("click", function(event) {
             editor.getTemplateSelector().show();
         });
+        
+        //this.startAutoSave(30);               
     },
 
     /**
@@ -59,15 +75,23 @@ var PedigreeEditor = Class.create({
      * @return {AbstractNode} the node whose id is nodeID
      */
     getNode: function(nodeID) {
-        return editor.getGraph().getNodeMap()[nodeID];
+        return this.getGraphicsSet().getNode(nodeID);
     },
-
+ 
+    /**
+     * @method getGraphicsGraph
+     * @return {Graph} (responsible for managing graphical representations of nodes in the editor)
+     */
+    getGraphicsSet: function() {
+        return this._graphicsSet;
+    },
+    
     /**
      * @method getGraph
-     * @return {Graph} (responsible for managing nodes in the editor)
-     */
+     * @return {PositionedGraph} (responsible for managing nodes and their positions)
+     */    
     getGraph: function() {
-        return this._graph;
+    	return this._mainGraph;
     },
 
     /**
@@ -84,14 +108,6 @@ var PedigreeEditor = Class.create({
      */
     getNodetypeSelectionBubble: function() {
         return this._nodetypeSelectionBubble;
-    },
-
-    /**
-     * @method getNodeIndex
-     * @return {NodeIndex} (indexes nodes and arranges the layout)
-     */
-    getNodeIndex: function() {
-        return this._nodeIndex;
     },
 
     /**
@@ -141,15 +157,8 @@ var PedigreeEditor = Class.create({
      * @return {NodeMenu}
      */
     generateNodeMenu: function() {
+        console.log("generateNodeMenu");    	
         var _this = this;
-        document.observe('mousedown', function(event) {
-            if (_this.getNodeMenu() && _this.getNodeMenu().isActive()) {
-                if (event.element().getAttribute('class') != 'menu-trigger' &&
-                    (!event.element().up || !event.element().up('.menu-box, .calendar_date_select, .suggestItems') && event.element().up('body'))) {
-                    _this.getNodeMenu().hide();
-                }
-            }
-        });
         return new NodeMenu([
             {
                 'name' : 'identifier',
@@ -261,14 +270,6 @@ var PedigreeEditor = Class.create({
      */
     generatePartnershipMenu: function() {
         var _this = this;
-        document.observe('mousedown', function(event) {
-            if (_this.getPartnershipMenu() && _this.getPartnershipMenu().isActive()) {
-                if (event.element().getAttribute('class') != 'menu-trigger' &&
-                    (!event.element().up || !event.element().up('.menu-box, .calendar_date_select, .suggestItems') && event.element().up('body'))) {
-                    _this.getPartnershipMenu().hide();
-                }
-            }
-        });
         return new NodeMenu([
             {
                 'label' : 'Heredity options',
@@ -294,27 +295,24 @@ var PedigreeEditor = Class.create({
     getPartnershipMenu: function() {
         return this._partnershipMenu;
     },
-
+   
+    /**
+     * @method convertGraphCoordToCanvasCoord
+     * @return [x,y] coordinates on the canvas
+     */
+    convertGraphCoordToCanvasCoord: function(x, y) {
+        var scale = PedigreeEditor.attributes.layoutScale;
+        return { x: x * scale.xscale,
+                 y: y * scale.yscale };
+    },
+        
     /**
      * Starts a timer to save the application state every 30 seconds
      *
      * @method initializeSave
      */
-    initializeSave: function() {
-        setInterval(function(){editor.getGraph().serialize()},30000);
-    },
-
-    /**
-     * Find the best position to insert one or more new neighbors for an existing node
-     *
-     * @method findPosition
-     * @param relativePosition an object with one field, which can be either 'above', 'below', 'side', or 'join', whose value indicated the id of a node
-     * @param identifiers an array of new ids for which positions must be found
-     *
-     * @return an object where each field is one of the ids given as input, and the value is the point where that node should be placed
-     */
-    findPosition : function (relativePosition, identifiers) {
-      return this.getNodeIndex().findPosition(relativePosition, identifiers);
+    startAutoSave: function(intervalInSeconds) {
+        setInterval(function(){editor.getGraphicsSet().save()}, intervalInSeconds*1000);
     }
 });
 
@@ -338,7 +336,11 @@ PedigreeEditor.attributes = {
     label: {'font-size': 18, 'font-family': 'Cambria'},
     disorderShapes: {},
     partnershipRadius: 6,
-        partnershipLines : {"stroke-width": 2, stroke : '#2E2E56'}
+        partnershipLines : {"stroke-width": 1.25, stroke : '#303058'},
+    graphToCanvasScale: 12,
+    layoutRelativePersonWidth: 10,
+    layoutRelativeOtherWidth: 2,
+    layoutScale: { xscale: 12.0, yscale: 3.0 }
 };
 
 document.observe("dom:loaded",function() {

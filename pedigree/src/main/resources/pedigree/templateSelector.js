@@ -61,6 +61,10 @@ var TemplateSelector = Class.create( {
     _onTemplateAvailable: function(pictureBox, response) {
         pictureBox.innerHTML = response.responseXML.documentElement.querySelector("property[name='data'] > value").textContent.replace(/&amp;/, '&');
         pictureBox.pedigreeData = JSON.parse(pictureBox.textContent);
+        pictureBox.pedigreeData.persons.push(pictureBox.pedigreeData.proband);
+        delete(pictureBox.pedigreeData.proband);
+        //console.log("Received template: " + stringifyObject(pictureBox.pedigreeData));
+        console.log("[Data from Template]");
         pictureBox.innerHTML = response.responseXML.documentElement.querySelector("property[name='image'] > value").textContent.replace(/&amp;/, '&');
         pictureBox.innerHTML = pictureBox.textContent;
         pictureBox.observe('click', this._onTemplateSelected.bindAsEventListener(this, pictureBox));
@@ -74,12 +78,13 @@ var TemplateSelector = Class.create( {
      * @private
      */
     _onTemplateSelected: function(event, pictureBox) {
+        console.log("observe onTemplateSelected");
         this.dialog.close();
         if(this.isStartupTemplateSelector()) {
-            editor.getSaveLoadEngine().load(pictureBox.pedigreeData);
+            editor.getSaveLoadEngine().createGraphFromSerializedData(pictureBox.pedigreeData);
         }
         else {
-            editor.getSaveLoadEngine().loadTemplateAction(pictureBox.pedigreeData);
+            editor.getSaveLoadEngine().loadWithUndo(pictureBox.pedigreeData, "loadTemplate");
         }
     },
 

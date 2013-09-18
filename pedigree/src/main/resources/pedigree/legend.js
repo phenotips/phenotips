@@ -245,7 +245,7 @@ var Legend = Class.create( {
     _onDropDisorder: function(disorderLabel, target, event) {
         var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
         var pos = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
-        var node = editor.getNodeIndex().getNodeNear(pos.x, pos.y);
+        var node = editor.getGraphicsSet().getPersonNodeNear(pos.x, pos.y);
         console.log("Position x: " + pos.x + " position y: " + pos.y);
         if (node && node.getType() == 'Person') {
             var id = disorderLabel.id.substring( disorderLabel.id.indexOf('-') + 1);

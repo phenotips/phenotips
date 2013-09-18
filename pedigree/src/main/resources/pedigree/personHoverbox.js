@@ -15,10 +15,11 @@
 var PersonHoverbox = Class.create(AbstractHoverbox, {
 
     initialize: function($super, personNode, centerX, centerY, nodeShapes) {
+        console.log("abstract hower box start");
         var radius = PedigreeEditor.attributes.radius * 2;
-        $super(personNode, centerX - radius, centerY - radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);
+        $super(personNode, -radius, -radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);
         this._isMenuToggled = false;
-        var r = PedigreeEditor.attributes.radius;
+        console.log("abstract hower box end");
     },
 
     /**
@@ -28,10 +29,11 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @return {Raphael.st} A set of handles
      */
     generateHandles: function($super) {
-        this._upHandle = this.generateHandle('parent', this.getNodeX(), this.getNodeY() - (PedigreeEditor.attributes.radius * 1.6));
+        if (editor.getGraph().DG.GG.getInEdges(this.getNode().getID()).length == 0)           
+            this._upHandle = this.generateHandle('parent', this.getNodeX(), this.getNodeY() - (PedigreeEditor.attributes.radius * 1.6));
         this._downHandle = this.generateHandle('child', this.getNodeX(), this.getNodeY() + (PedigreeEditor.attributes.radius * 1.6));
-        this._rightHandle = this.generateHandle('partner', this.getNodeX() + (PedigreeEditor.attributes.radius * 1.6), this.getNodeY());
-        this._leftHandle = this.generateHandle('partner', this.getNodeX() - (PedigreeEditor.attributes.radius * 1.6), this.getNodeY());
+        this._rightHandle = this.generateHandle('partnerR', this.getNodeX() + (PedigreeEditor.attributes.radius * 1.6), this.getNodeY());
+        this._leftHandle = this.generateHandle('partnerL', this.getNodeX() - (PedigreeEditor.attributes.radius * 1.6), this.getNodeY());
         return $super().push(this._upHandle, this._downHandle, this._rightHandle, this._leftHandle);
     },
 
@@ -129,9 +131,10 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method toggleMenu
      */
     toggleMenu: function(isMenuToggled) {
+        console.log("toggle menu");
         this._isMenuToggled = isMenuToggled;
         if(isMenuToggled) {
-            this.disable();
+            this.getNode().getGraphics().unmark();
             var optBBox = this.getBoxOnHover().getBBox();
             var x = optBBox.x2;
             var y = optBBox.y;
@@ -139,7 +142,6 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
             editor.getNodeMenu().show(this.getNode(), position.x, position.y);
         }
         else {
-            //this.enable();
             editor.getNodeMenu().hide();
         }
     },
@@ -151,7 +153,9 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      */
     animateHideHoverZone: function($super) {
         if(!this.isMenuToggled()){
-            this.getNode().getParentPregnancy() && this.getNode().getParentPregnancy().getGraphics().shrink();
+            var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
+            if (parentPartnershipNode)
+                editor.getNode(parentPartnershipNode).getGraphics().unmarkPregnancy();
             $super();
         }
     },
@@ -162,7 +166,9 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method animateDrawHoverZone
      */
     animateDrawHoverZone: function($super) {
-        this.getNode().getParentPregnancy() && this.getNode().getParentPregnancy().getGraphics().grow();
+        var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
+        if (parentPartnershipNode)
+            editor.getNode(parentPartnershipNode).getGraphics().markPregnancy();
         $super();
     },
 
@@ -173,43 +179,41 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @param {String} handleType "child", "partner" or "parent"
      * @param {Boolean} isDrag True if this handle is being dragged
      */
-    handleAction : function(handleType, isDrag) {
-        var curHovered = editor.getGraph().getCurrentHoveredNode();
-        if(isDrag && curHovered) {
-            if(curHovered.validPartnerSelected) {
-                curHovered.validPartnerSelected = false;
-                this.getNode().addPartnerAction(curHovered);
+    handleAction : function(handleType, isDrag, curHoveredId) {
+        
+        console.log("handleType: " + handleType + ", isDrag: " + isDrag + ", curHovered: " + curHoveredId);        
+        
+        if(isDrag && curHoveredId) {            
+            if(handleType == "parent") {                
+                this.hideParentHandle();
+                var changeSet = editor.getGraph().assignParent(curHoveredId, this.getNode().getID());
+                editor.getGraphicsSet().applyChanges(changeSet, true);
             }
-            else if(curHovered.validChildSelected) {
-                curHovered.validChildSelected = false;
-                this.getNode().addChildAction(curHovered);
-
+            else if(handleType == "partnerR" || handleType == "partnerL") {
+                // TODO
             }
-            else if(curHovered.validParentSelected) {
-                curHovered.validParentSelected = false;
-                this.getNode().addParentAction(curHovered);
-            }
-            else if(curHovered.validParentsSelected) {
-                curHovered.validParentsSelected = false;
-                this.getNode().addParentsAction(curHovered);
+            else if(handleType == "child") {
+                // TODO
             }
         }
         else if (!isDrag) {
-            if(handleType == "partner") {
-                this.getNode().createPartnerAction();
+            if(handleType == "partnerR" || handleType == "partnerL") {
+                var preferLeft = (handleType == "partnerL");                
+                var changeSet = editor.getGraph().addNewRelationship(this.getNode().getID(), {}, preferLeft);                
+                editor.getGraphicsSet().applyChanges(changeSet, true);
             }
             else if(handleType == "child") {
-                //this.getNode().createChild();
                 var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.radius * 2.3));
-                editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
-                this.disable();
+                editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);                
             }
             else if(handleType == "parent") {
-                this.getNode().createParentsAction();
+                this.hideParentHandle();
+                var changeSet = editor.getGraph().addNewParents(this.getNode().getID());
+                editor.getGraphicsSet().applyChanges(changeSet, true);
             }
-            curHovered && curHovered.getGraphics().getHoverBox().getBoxOnHover().attr(PedigreeEditor.attributes.boxOnHover);
         }
-        editor.getGraph().setCurrentHoveredNode(null);
-        editor.getGraph().setCurrentDraggable(null);
+        editor.getGraphicsSet().setCurrentHoveredNode(null);
+        editor.getGraphicsSet().setCurrentDraggable(null);        
+        this.animateHideHoverZone();
     }
 });
