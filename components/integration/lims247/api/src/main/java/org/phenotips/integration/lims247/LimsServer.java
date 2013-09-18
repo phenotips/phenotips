@@ -43,6 +43,9 @@ public interface LimsServer
     /** Parameter name used for the authentication token. */
     String TOKEN_KEY = "auth_token";
 
+    /** Parameter name used to specify the access level granted, view or edit. */
+    String ACCESS_MODE = "access";
+
     /**
      * Check if the authentication parameters are validated by the remote LIMS server.
      * 

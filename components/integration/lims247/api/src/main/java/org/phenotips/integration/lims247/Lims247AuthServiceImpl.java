@@ -65,6 +65,9 @@ public class Lims247AuthServiceImpl extends XWikiAuthServiceImpl implements XWik
     /** Key used for storing the logged in user in the session. */
     public static final String SESSION_KEY = "lims247_user";
 
+    /** Key used for storing the access (view or edit) granted to the user in the session. */
+    public static final String ACCESS_KEY = "lims247_access";
+
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -75,6 +78,7 @@ public class Lims247AuthServiceImpl extends XWikiAuthServiceImpl implements XWik
         if (user != null) {
             this.logger.debug("Previously authenticated LIMS user found in the session: [{}]", user.getUser());
             setupContextForLims(context);
+            storeAccesMode(context);
             return user;
         }
         XWikiRequest request = context.getRequest();
@@ -89,6 +93,7 @@ public class Lims247AuthServiceImpl extends XWikiAuthServiceImpl implements XWik
             if (user != null) {
                 storeUserInSession(new LimsAuthentication(token, user, pn), context);
                 setupContextForLims(context);
+                storeAccesMode(context);
                 return user;
             }
         }
@@ -185,6 +190,21 @@ public class Lims247AuthServiceImpl extends XWikiAuthServiceImpl implements XWik
         if (context.getWiki().exists(
             new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "EmbeddableSkin"), context)) {
             context.put("skin", Constants.CODE_SPACE + ".EmbeddableSkin");
+        }
+    }
+
+    /**
+     * Store the specified access mode, if any, in the session. This influences the {@link Lims247RightServiceImpl
+     * custom rights implementation}, overriding the granted rights.
+     * 
+     * @param context the current request context
+     */
+    private void storeAccesMode(XWikiContext context)
+    {
+        XWikiRequest request = context.getRequest();
+        String access = request.getParameter(LimsServer.ACCESS_MODE);
+        if (access != null) {
+            request.getSession().setAttribute(ACCESS_KEY, access);
         }
     }
 }

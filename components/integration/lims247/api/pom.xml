@@ -71,6 +71,11 @@
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-security-bridge</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
@@ -94,6 +99,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-constants</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-data-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- Test dependencies -->
