@@ -16,7 +16,7 @@ var NodetypeSelectionBubble = Class.create({
             tip  : "Create a person of male gender",
             symbol: "◻",
             callback : "CreateChild",
-            params: {"gender": "M"}
+            params: { parameters: {"gender": "M"} }
         }, {
             key: "F",
             type: "person",
@@ -24,7 +24,7 @@ var NodetypeSelectionBubble = Class.create({
             tip  : "Create a person of female gender",
             symbol: "◯",
             callback : "CreateChild",
-            params: {"gender": "F"}
+            params: { parameters: {"gender": "F"} }
         }, {
             key: "U",
             type: "person",
@@ -32,15 +32,15 @@ var NodetypeSelectionBubble = Class.create({
             tip  : "Create a person of unknown gender",
             symbol: "◇",
             callback : "CreateChild",
-            params: {"gender": "U"}
+            params: { parameters: {"gender": "U"} }
         }, {
             key: "T",
             type: "person",
             label: "Twins",
             tip  : "Create twins (expandable to triplets or more)",
             symbol: "⋀",
-            callback : "createTwinsAction",
-            params: [],
+            callback : "createChild",
+            params: { "twins": this.numTwinNodes },
             expandsTo: 'expandTwins'
         }, {
             type: "separator"
@@ -50,8 +50,8 @@ var NodetypeSelectionBubble = Class.create({
             label: "Multiple",
             tip  : "Create a node representing multiple siblings",
             symbol: "〈n〉",
-            callback : "createNodeAction",
-            params: ["PersonGroup", "U"],
+            callback : "createChild",
+            params: { "group": this.numPersonGroupNodes },
             expandsTo: "expandPersonGroup"
         }, {
             type: "separator"
@@ -131,14 +131,18 @@ var NodetypeSelectionBubble = Class.create({
                 var id       = _this._node.getID();
                 var nodeType = _this._node.getType();
                 if (nodeType == "Person") {
-                    var changeSet = editor.getGraph().addNewRelationship(id, data.params);                
-                    editor.getGraphicsSet().applyChanges(changeSet, true);
+                    if (data.params.twins) {} // TODO
+                    if (data.params.group) {} // TODO
+                    var event = { "personID": id, "childParams": data.params.parameters, "preferLeft": false };
+                    document.fire("pedigree:person:newpartnerandchild", event);
                 }
                 else if (nodeType == "Partnership") {
-                    var changeSet = editor.getGraph().addNewChild(id, data.params);                
-                    editor.getGraphicsSet().applyChanges(changeSet, true);                
+                    if (data.params.twins) {} // TODO
+                    if (data.params.group) {} // TODO                    
+                    var event = { "partnershipID": id, "childParams": data.params.parameters };
+                    document.fire("pedigree:partnership:newchild", event);
                 }                
-            }
+            }            
             _this.hide();
         });
         var container = new Element("span");

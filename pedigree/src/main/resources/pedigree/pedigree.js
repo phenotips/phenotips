@@ -34,6 +34,8 @@ var PedigreeEditor = Class.create({
         
         // load proband data and load the graph after proband data is available
         this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
+        
+        this._controller = new Controller();
 
         //attach actions to buttons on the top bar
         var undoButton = $('action-undo');

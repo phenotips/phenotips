@@ -15,11 +15,11 @@
 var PersonHoverbox = Class.create(AbstractHoverbox, {
 
     initialize: function($super, personNode, centerX, centerY, nodeShapes) {
-        console.log("abstract hower box start");
+        //console.log("abstract hower box start");
         var radius = PedigreeEditor.attributes.radius * 2;
         $super(personNode, -radius, -radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);
         this._isMenuToggled = false;
-        console.log("abstract hower box end");
+        //console.log("abstract hower box end");
     },
 
     /**
@@ -179,15 +179,13 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @param {String} handleType "child", "partner" or "parent"
      * @param {Boolean} isDrag True if this handle is being dragged
      */
-    handleAction : function(handleType, isDrag, curHoveredId) {
-        
+    handleAction : function(handleType, isDrag, curHoveredId) {        
         console.log("handleType: " + handleType + ", isDrag: " + isDrag + ", curHovered: " + curHoveredId);        
         
         if(isDrag && curHoveredId) {            
-            if(handleType == "parent") {                
-                this.hideParentHandle();
-                var changeSet = editor.getGraph().assignParent(curHoveredId, this.getNode().getID());
-                editor.getGraphicsSet().applyChanges(changeSet, true);
+            if(handleType == "parent") {    
+                var event = { "personID": this.getNode().getID(), "parentID": curHoveredId };
+                document.fire("pedigree:person:drag:newparent", event);
             }
             else if(handleType == "partnerR" || handleType == "partnerL") {
                 // TODO
@@ -198,18 +196,18 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         }
         else if (!isDrag) {
             if(handleType == "partnerR" || handleType == "partnerL") {
-                var preferLeft = (handleType == "partnerL");                
-                var changeSet = editor.getGraph().addNewRelationship(this.getNode().getID(), {}, preferLeft);                
-                editor.getGraphicsSet().applyChanges(changeSet, true);
+                var preferLeft = (handleType == "partnerL");          
+                var event = { "personID": this.getNode().getID(), "preferLeft": preferLeft };
+                document.fire("pedigree:person:newpartnerandchild", event);
             }
             else if(handleType == "child") {
                 var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.radius * 2.3));
-                editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);                
+                editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
+                // if user selects anything the bubble will fire an even on its own
             }
             else if(handleType == "parent") {
-                this.hideParentHandle();
-                var changeSet = editor.getGraph().addNewParents(this.getNode().getID());
-                editor.getGraphicsSet().applyChanges(changeSet, true);
+                var event = { "personID": this.getNode().getID() };
+                document.fire("pedigree:person:newparent", event);
             }
         }
         editor.getGraphicsSet().setCurrentHoveredNode(null);
