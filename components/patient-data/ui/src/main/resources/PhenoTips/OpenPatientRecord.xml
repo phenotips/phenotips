@@ -48,7 +48,7 @@
   #set ($patientObject = $patientDoc.getObject('PhenoTips.PatientClass'))
   #set ($validProperties = $patientClass.propertyNames)
   #set ($modified = false)
-  #if ("$!externalIdentifier" != '')
+  #if ("$!externalIdentifier" != '' &amp;&amp; $externalIdentifier != $patientObject.getProperty('external_id').value)
     $patientObject.set('external_id', $externalIdentifier)
     #set ($modified = true)
   #end
@@ -62,8 +62,10 @@
         ## Unknown values should be ignored
         #set ($value = '')
       #end
-      $patientObject.set($property, $value)
-      #set ($modified = true)
+      #if ($value != "$!patientObject.getProperty($property).value")
+        $patientObject.set($property, $value)
+        #set ($modified = true)
+      #end
     #end
   #end
   #if ($modified)
