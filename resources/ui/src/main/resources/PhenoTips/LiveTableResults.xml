@@ -175,10 +175,10 @@
  * @param $rows stores the JSON in memory so that it can be adjusted before serialization
  *#
 #macro(gridresult_buildRowJSON $item $rows)
-  #set($viewable = $xwiki.hasAccessLevel('view', $context.user, "${context.database}:${item}"))
+  #set($viewable = $xwiki.hasAccessLevel('view', $xcontext.user, "${xcontext.database}:${item}"))
   #set($row = {'doc_viewable': $viewable})
   #if(!$viewable)
-    #set($discard = $row.put('doc_fullName', "${context.database}:${item}"))
+    #set($discard = $row.put('doc_fullName', "${xcontext.database}:${item}"))
   #else
     #set($itemDoc = $xwiki.getDocument($item))
     #set($fullname = $services.model.serialize($itemDoc.documentReference, 'default'))
@@ -191,8 +191,8 @@
     #set($discard = $row.put('doc_wiki', $itemDoc.wiki))
     #set($discard = $row.put('doc_wiki_url', $xwiki.getURL($services.model.resolveDocument('', 'default', $itemDoc.documentReference.extractReference('WIKI')))))
     #set($discard = $row.put('doc_hasadmin', $xwiki.hasAdminRights()))
-    #set($discard = $row.put('doc_hasedit', $xwiki.hasAccessLevel('edit', $context.user, $fullname)))
-    #set($discard = $row.put('doc_hasdelete', $xwiki.hasAccessLevel('delete', $context.user, $fullname)))
+    #set($discard = $row.put('doc_hasedit', $xwiki.hasAccessLevel('edit', $xcontext.user, $fullname)))
+    #set($discard = $row.put('doc_hasdelete', $xwiki.hasAccessLevel('delete', $xcontext.user, $fullname)))
     #set($discard = $row.put('doc_edit_url', $itemDoc.getURL($itemDoc.defaultEditMode)))
     #set($discard = $row.put('doc_copy_url', $itemDoc.getURL('view', 'xpage=copy')))
     #set($discard = $row.put('doc_delete_url', $itemDoc.getURL('delete')))

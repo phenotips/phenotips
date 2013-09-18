@@ -64,14 +64,14 @@
 #end
 
 #macro (__displayIfNotEmpty $propName)
-  #if ($context.action == 'edit' || ($doc.display($propName) != ''))
+  #if ($xcontext.action == 'edit' || ($doc.display($propName) != ''))
     #__label($propName '')
     #__display($propName)
   #end
 #end
 
 #macro (__displayIfTrue $propName $withLabel)
-  #if ($context.action == 'edit' || $obj.getProperty($propertyName).value == 1)
+  #if ($xcontext.action == 'edit' || $obj.getProperty($propertyName).value == 1)
     #if ($withLabel)
       #__label($propName '')
     #end
@@ -80,7 +80,7 @@
 #end
 
 #macro (__displayIfNotUnknown $propName)
-  #if ($context.action == 'edit' || "$!obj.getProperty($propertyName).value" != 'Unknown')
+  #if ($xcontext.action == 'edit' || "$!obj.getProperty($propertyName).value" != 'Unknown')
     #__label($propName '')
     #__display($propName)
   #end
@@ -117,7 +117,7 @@
 #end
 
 #macro (__displayIfNotEmpty2Col $propName $label $groupCssClass $labelCssClass)
-  #if ($context.action == 'edit' || $doc.display(${propName}) != '')
+  #if ($xcontext.action == 'edit' || $doc.display(${propName}) != '')
     #__display2Col($propName $label "$!{groupCssClass}" "$!{labelCssClass}")
   #end
 #end

@@ -116,7 +116,7 @@
 
 {{velocity}}
 #macro (__qsBox $fieldName $cssClass)
-  #if ($context.action == 'edit')
+  #if ($xcontext.action == 'edit')
    (% id="quick-search-box"  class="group-other quick-search-box emphasized-box $!{cssClass}" %)(((
     {{html clean="false" wiki="false"}}
     &lt;fieldset&gt;
@@ -150,7 +150,7 @@
   )))
   (% class="controlled" %) (((
   #__qsBox("$!{class.name}_$!{obj.number}_phenotype" "controlled")
-  #if ($context.action == 'edit')
+  #if ($xcontext.action == 'edit')
     $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
     $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
     (% class="selector-panels"%)(((
