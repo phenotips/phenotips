@@ -129,6 +129,8 @@ public class SolrSimilarPatientsFinder implements SimilarPatientsFinder, Initial
         for (Feature phenotype : referencePatient.getFeatures()) {
             q.append(phenotype.getType() + ":" + ClientUtils.escapeQueryChars(phenotype.getId()) + " ");
         }
+        // Ignore the reference patient itself
+        q.append("-document:" + ClientUtils.escapeQueryChars(referencePatient.getDocument().toString()));
         query.add(CommonParams.Q, q.toString());
         return query;
     }
