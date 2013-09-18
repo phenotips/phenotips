@@ -1003,18 +1003,6 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #end
 #livetable('patients' $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
-#if ($hasCreatePage)
-  {{html clean="false" wiki="false"}}&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
-    &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-    &lt;input type="hidden" name="doCreate" value="1" /&gt;
-    &lt;input type="hidden" name="className" value="$patientClassName" /&gt;
-    &lt;input type="hidden" name="classTemplate" value="$!{config.getProperty('patientTemplate').value}" /&gt;
-    &lt;input type="hidden" name="idPrefix" value="$!{config.getProperty('idPrefix').value}" /&gt;
-    &lt;input type="hidden" name="space" value="$!{doc.space}" /&gt;
-    &lt;label class="create-button-label" for="create-patient-record"&gt;+&lt;/label&gt;&lt;input type="submit" class="button create-button" id="create-patient-record" title="Add new patient record" value="New patient record..."/&gt;
-&lt;span class="buttonwrapper"&gt;&lt;a class="button" id="phenotips_export" title="Export the database in CSV format (MS Excel compatible)" href="$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;outputSyntax=plain")"&gt;Export database&lt;/a&gt;&lt;/span&gt;
-  &lt;/div&gt;&lt;/form&gt;{{/html}}##
-#end
 #else
 {{warning}}**Configuration missing.**{{/warning}}
 #end
