@@ -19,6 +19,8 @@
  */
 package org.phenotips.ontology.internal.solr;
 
+import org.phenotips.ontology.OntologyTerm;
+
 import org.xwiki.component.annotation.Component;
 
 import java.util.HashSet;
@@ -26,6 +28,8 @@ import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Provides access to the Online Mendelian Inheritance in Man (OMIM) ontology. The ontology prefix is {@code MIM}.
@@ -38,6 +42,9 @@ import javax.inject.Singleton;
 @Singleton
 public class MendelianInheritanceInMan extends AbstractSolrOntologyService
 {
+    /** The standard name of this ontology, used as a term prefix. */
+    public static final String STANDARD_NAME = "MIM";
+
     @Override
     protected String getName()
     {
@@ -45,11 +52,24 @@ public class MendelianInheritanceInMan extends AbstractSolrOntologyService
     }
 
     @Override
+    public OntologyTerm getTerm(String id)
+    {
+        OntologyTerm result = super.getTerm(id);
+        if (result == null) {
+            String optionalPrefix = STANDARD_NAME + ":";
+            if (StringUtils.startsWith(id, optionalPrefix)) {
+                result = getTerm(StringUtils.substringAfter(id, optionalPrefix));
+            }
+        }
+        return result;
+    }
+
+    @Override
     public Set<String> getAliases()
     {
         Set<String> result = new HashSet<String>();
         result.add(getName());
-        result.add("MIM");
+        result.add(STANDARD_NAME);
         result.add("OMIM");
         return result;
     }
