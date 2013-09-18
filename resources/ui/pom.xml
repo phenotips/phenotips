@@ -44,7 +44,7 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.enterprise</groupId>
-      <artifactId>xwiki-enterprise-ui</artifactId>
+      <artifactId>xwiki-enterprise-ui-common</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>
       <scope>provided</scope>
