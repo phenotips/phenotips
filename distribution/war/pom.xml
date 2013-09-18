@@ -185,7 +185,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.0.11</version>
+      <version>1.0.13</version>
     </dependency>
   </dependencies>
   <build>
@@ -314,8 +314,6 @@ extension.repositories=extensions.xwiki.org:xwiki:http://extensions.xwiki.org/xw
             WEB-INF/lib/jdom-1.0.jar,
             WEB-INF/lib/jdom-1.1.jar,
             WEB-INF/lib/log4j-over-slf4j-1.7.2.jar,
-            WEB-INF/lib/logback-classic-1.0.9.jar,
-            WEB-INF/lib/logback-core-1.0.9.jar,
             WEB-INF/lib/plexus-utils-2.0.6.jar,
             WEB-INF/lib/rome-0.9.jar,
             WEB-INF/lib/slf4j-api-1.7.2.jar,
