@@ -32,8 +32,7 @@ import org.xwiki.component.manager.ComponentManager;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -61,7 +60,7 @@ public class DefaultPermissionsManager implements PermissionsManager
     public Collection<Visibility> listVisibilityOptions()
     {
         try {
-            Collection<Visibility> result = new PriorityQueue<Visibility>();
+            Collection<Visibility> result = new TreeSet<Visibility>();
             result.addAll(this.componentManager.get().<Visibility> getInstanceList(Visibility.class));
             return result;
         } catch (ComponentLookupException ex) {
@@ -86,15 +85,14 @@ public class DefaultPermissionsManager implements PermissionsManager
     public Collection<AccessLevel> listAccessLevels()
     {
         try {
-            Collection<AccessLevel> levels = new LinkedList<AccessLevel>();
-            levels.addAll(this.componentManager.get().<AccessLevel> getInstanceList(AccessLevel.class));
-            Iterator<AccessLevel> it = levels.iterator();
+            Collection<AccessLevel> result = new TreeSet<AccessLevel>();
+            result.addAll(this.componentManager.get().<AccessLevel> getInstanceList(AccessLevel.class));
+            Iterator<AccessLevel> it = result.iterator();
             while (it.hasNext()) {
                 if (!it.next().isAssignable()) {
                     it.remove();
                 }
             }
-            Collection<AccessLevel> result = new PriorityQueue<AccessLevel>(levels);
             return result;
         } catch (ComponentLookupException ex) {
             return Collections.emptyList();
