@@ -40,7 +40,6 @@
     <module>patient-update-listeners</module>
     <module>patient-data</module>
     <module>patient-access-rules</module>
-    <module>patient-network</module>
     <module>patient-measurements</module>
     <module>application-configuration</module>
     <module>patient-tools</module>
