@@ -684,7 +684,13 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
       <cache>long</cache>
     </property>
     <property>
-      <code>#patients-topfilters .toggle-filters {
+      <code>#xwikicontent {
+  overflow: visible;
+}
+#document-title h1 {
+  border: 0 none;
+}
+#patients-topfilters .toggle-filters {
   clear: both;
   cursor: pointer;
   font-size: 1em;
