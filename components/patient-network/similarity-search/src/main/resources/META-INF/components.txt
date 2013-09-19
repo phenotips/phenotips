@@ -1,2 +1,0 @@
-org.phenotips.similarity.internal.SolrSimilarPatientsFinder
-org.phenotips.similarity.script.SimilarPatientsScriptService

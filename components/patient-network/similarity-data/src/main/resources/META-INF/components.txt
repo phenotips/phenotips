@@ -1,5 +1,0 @@
-org.phenotips.data.similarity.internal.AgeOfOnsetFeatureMetadatumSimilarityScorer
-org.phenotips.data.similarity.internal.DefaultFeatureMetadatumSimilarityScorer
-org.phenotips.data.similarity.internal.DefaultFeatureSimilarityScorer
-org.phenotips.data.similarity.internal.PaceOfProgressionFeatureMetadatumSimilarityScorer
-org.phenotips.data.similarity.internal.RestrictedPatientSimilarityViewFactory
