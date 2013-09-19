@@ -684,26 +684,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
       <cache>long</cache>
     </property>
     <property>
-      <code>.viewbody #document-title,
-.viewbody #document-info {
-  display: none;
-}
-#mainContentArea, #mainEditArea {
-  background: transparent;
-  box-shadow: none;
-  border: 0 none;
-}
-#xwikicontent {
-  overflow: visible;
-}
-
-.xwiki-livetable-display-body td h3, .xwiki-livetable-display-body td .image-gallery {
-  display: none;
-}
-h1 {
-  border: 0 none;
-}
-#patients-topfilters .toggle-filters {
+      <code>#patients-topfilters .toggle-filters {
   clear: both;
   cursor: pointer;
   font-size: 1em;
@@ -939,8 +920,6 @@ h1 {
     </property>
   </object>
   <content>{{velocity}}
-= Phenotype  database =
-
 {{include document="PhenoTips.DatabaseFilters" /}}
 
 {{html wiki=false clean=false}}&lt;div class="general-tools"&gt;#if($hasCreatePage)&lt;label for="create-patient-record"&gt;&lt;span class="icon-plus-sign"&gt; &lt;/span&gt;New patient record&lt;/label&gt; · #end&lt;a id="phenotips_export" title="Export the database in CSV format (MS Excel compatible)" href="$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")"&gt;&lt;span class="icon-table"&gt; &lt;/span&gt;Export database&lt;/a&gt;&lt;/div&gt;{{/html}}{{/velocity}}
