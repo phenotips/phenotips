@@ -1011,16 +1011,11 @@ document.observe('dom:loaded', function() {
             var form = $('termSelect');
             //update Selection Summarry
             $('formsubmit').observe('click', function(){
-              var inputIds = [];
               var i = 0;          
               var terms = form.getInputs('checkbox');
               for(i=0;i &lt; terms.length;i++){
                 if(terms[i].checked){
-                  inputIds.push(i)
-                  var inputId = getInputId(_getResultFieldValue(results[terms[i].value],"id"));
-                 $$('label.yes[for="'+inputId+'"]').each(function(labelOfTerm){
-                    labelOfTerm.click();
-                  });
+                   $('quick-phenotype-search')._suggestPicker.acceptSuggestion({'id' : _getResultFieldValue(terms[i].value,"id"), 'value' : _getResultFieldValue(results[i], "term")});
                 }
               }
               modalPopup.closeDialog()
