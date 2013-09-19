@@ -473,7 +473,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
     dialog.showDialog();
     // =================================================================================
     // Generate the dialog content
-    new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + XWiki.currentSpace), {
+    new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1]), {
       onSuccess: function(transport) {
         var content = dialog.dialogBox._x_contentPlug;
         content.update(transport.responseText);
