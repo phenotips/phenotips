@@ -49,7 +49,7 @@
  * set of results serialized in JSON.
  *#
 #macro(gridresult $className $collist)
-  #gridresultwithfilter($className $collist '' '' [])
+  #gridresultwithfilter($className $collist "$!{request.filterFrom}" "$!{request.filterWhere}" [])
 #end
 
 
@@ -505,7 +505,7 @@
 {{/velocity}}
 
 {{velocity wiki="false"}}
-#set ($extra = '')
+#set ($extra = " $!{request.filterWhere} ")
 #set ($params = [])
 #if ("$!request.space" != '')
   #set ($extra = "${extra} and doc.space = ?")
@@ -518,6 +518,6 @@
 #if ("$!request.orphaned" == '1')
   #set ($extra = "${extra} and doc.parent='' and doc.name&lt;&gt;'WebHome'")
 #end
-#gridresultwithfilter("$!request.classname" $request.collist.split(',') '' "${extra}" $params)
+#gridresultwithfilter("$!request.classname" $request.collist.split(',') "$!{request.filterFrom}" "${extra}" $params)
 {{/velocity}}</content>
 </xwikidoc>
