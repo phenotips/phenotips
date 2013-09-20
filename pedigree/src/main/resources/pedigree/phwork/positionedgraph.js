@@ -5,7 +5,16 @@ PositionedGraph = function( drawGraph )
     this._heuristics = new Heuristics( drawGraph );  // heuristics & helper methods separated into a separate class
 
     this._heuristics.improvePositioning();
+
+    this._onlyProbandGraph = [ { name :'proband' } ];
 };
+
+PositionedGraph.makeEmpty = function (layoutRelativePersonWidth, layoutRelativeOtherWidth)
+{
+    var G         = new InternalGraph(layoutRelativePersonWidth, layoutRelativeOtherWidth);
+    var drawGraph = new DrawGraph(G);
+    return new PositionedGraph(drawGraph);
+}
 
 PositionedGraph.prototype = {
 
@@ -27,11 +36,29 @@ PositionedGraph.prototype = {
     {
         return this.DG.GG.isRelationship(id);
     },
+    
+    isConsangrRelationship: function( id )
+    {
+        if (!this.DG.GG.isRelationship(id))
+            throw "Assertion failed: isConsangrRelationship() is applied to a non-relationship";
+        
+        return this.DG.consangr.hasOwnProperty(id);
+    },
 
     getProperties: function( id )
     {
         return this.DG.GG.properties[id];
     },
+
+    setProperties: function( id, newSetOfProperties )
+    {
+        this.DG.GG.properties[id] = newSetOfProperties;
+    },
+    
+    //setProperty: function( id, propName, propValue )
+    //{
+    //    this.DG.GG.properties[id][propName] = propValue;
+    //},
 
     getPosition: function( v )
     {
@@ -83,12 +110,12 @@ PositionedGraph.prototype = {
 
         return this.DG.GG.getOutEdges(childhubId);
     },
-    
+
     getParentRelationship: function( v )
     {
         if (!this.DG.GG.isPerson(v))
             throw "Assertion failed: getParentRelationship() is applied to a non-person";
-        
+
         return this.DG.GG.getProducingRelationship(v);
     },
 
@@ -112,7 +139,7 @@ PositionedGraph.prototype = {
         // all person nodes which are not descendants of source node
         var result = [];
 
-        console.log("Ancestors: " + stringifyObject(this.DG.ancestors));
+        //console.log("Ancestors: " + stringifyObject(this.DG.ancestors));
         for (var i = 0; i <= this.DG.GG.maxRealVertexId; i++) {
            if (!this.DG.GG.isRelationship(i) && !this.DG.GG.isPerson(i)) continue;
            if (this.DG.ancestors[i].hasOwnProperty(v)) continue;
@@ -155,8 +182,8 @@ PositionedGraph.prototype = {
         console.log(stringifyObject(this.DG.ranks));
         console.log("== Orders:");
         console.log(stringifyObject(this.DG.order));
-        //console.log("== Positions:");
-        //console.log(stringifyObject(this.DG.positions));
+        console.log("== Positions:");
+        console.log(stringifyObject(this.DG.positions));
         //console.log("== RankY:");
         //console.log(stringifyObject(this.DG.rankY));
     },
@@ -185,12 +212,8 @@ PositionedGraph.prototype = {
         // find the best order to use for this new vertex: scan all orders on the rank, check number of crossed edges
         var insertOrder = this._findBestInsertPosition( insertRank, childhubId );
 
-        // insert the vertex into the base graph
-        var newNodeId = this.DG.GG.insertVertex("", TYPE.PERSON, properties, 1.0, [childhubId], []);  // for debug use name = "_" + (this.DG.GG.getMaxRealVertexId()+1)
-
-        // update GG, ranks, orders and positions - should make all those structures consistent
-        // (once those are updated, regular DrawGraph methods - which may assume consistency - can be used to update the rest of the graph structures)
-        this._updateGGRankOrderPositionsAfterNodeChange( newNodeId, insertRank, insertOrder, childhubId );
+        // insert the vertex into the base graph and update ranks, orders & positions
+        var newNodeId = this._insertVertex(TYPE.PERSON, properties, 1.0, childhubId, null, insertRank, insertOrder);
 
         // validate: by now the graph should satisfy all assumptions
         this.DG.GG.validate();
@@ -242,11 +265,8 @@ PositionedGraph.prototype = {
         // find the best order to use for this new vertex: scan all orders on the rank, check number of crossed edges
         var insertChildhubOrder = this._findBestInsertPosition( insertChildhubRank, personId );
 
-        // insert the vertex into the base graph
-        var newChildhubId = this.DG.GG.insertVertex("", TYPE.CHILDHUB, {}, 1.0, [], [personId]);  // for debug use name "_chhub" + (this.DG.GG.getMaxRealVertexId()+1)
-        // update GG, ranks, orders and positions - should make all those structures consistent
-        // (once those are updated, regular DrawGraph methods - which may assume consistency - can be used to update the rest of the graph structures)
-        this._updateGGRankOrderPositionsAfterNodeChange( newChildhubId, insertChildhubRank, insertChildhubOrder, personId );
+        // insert the vertex into the base graph and update ranks, orders & positions
+        var newChildhubId = this._insertVertex(TYPE.CHILDHUB, {}, 1.0, null, personId, insertChildhubRank, insertChildhubOrder);
 
         var insertParentsRank = this.DG.ranks[newChildhubId] - 1;   // note: rank may have changed since last insertion
                                                                     //       (iff childhub was insertion above all at rank 0 - which becomes rank1)
@@ -254,17 +274,13 @@ PositionedGraph.prototype = {
         // find the best order to use for this new vertex: scan all orders on the rank, check number of crossed edges
         var insertParentOrder = this._findBestInsertPosition( insertParentsRank, newChildhubId );
 
-        var newRelationshipId = this.DG.GG.insertVertex("", TYPE.RELATIONSHIP, {}, 1.0, [], [newChildhubId]); // for debug use name "_rel" + (this.DG.GG.getMaxRealVertexId()+1)
-        this._updateGGRankOrderPositionsAfterNodeChange( newRelationshipId, insertParentsRank, insertParentOrder, newChildhubId );
+        var newRelationshipId = this._insertVertex(TYPE.RELATIONSHIP, {}, 1.0, null, newChildhubId, insertParentsRank, insertParentOrder);
 
         insertParentsRank = this.DG.ranks[newRelationshipId];       // note: rank may have changed since last insertion again
                                                                     //       (iff relationship was insertion above all at rank 0 - which becomes rank1)
 
-        var newParent1Id = this.DG.GG.insertVertex("", TYPE.PERSON, {"gender": "M"}, 1.0, [], [newRelationshipId]);  // for debug use name "_" + (this.DG.GG.getMaxRealVertexId()+1)
-        this._updateGGRankOrderPositionsAfterNodeChange( newParent1Id, insertParentsRank, insertParentOrder + 1, newRelationshipId );
-
-        var newParent2Id = this.DG.GG.insertVertex("", TYPE.PERSON, {"gender": "F"}, 1.0, [], [newRelationshipId]);  // for debug use name "_" + (this.DG.GG.getMaxRealVertexId()+1)
-        this._updateGGRankOrderPositionsAfterNodeChange( newParent2Id, insertParentsRank, insertParentOrder, newRelationshipId );
+        var newParent1Id = this._insertVertex(TYPE.PERSON, {"gender": "M"}, 1.0, null, newRelationshipId, insertParentsRank, insertParentOrder + 1);
+        var newParent2Id = this._insertVertex(TYPE.PERSON, {"gender": "F"}, 1.0, null, newRelationshipId, insertParentsRank, insertParentOrder);
 
         // validate: by now the graph should satisfy all assumptions
         this.DG.GG.validate();
@@ -302,6 +318,7 @@ PositionedGraph.prototype = {
         var ranksBefore      = this.DG.ranks.slice(0);
         var vertLevelsBefore = this.DG.vertLevel.copy();
         var rankYBefore      = this.DG.rankY;
+        var consangrBefore   = this.DG.consangr;
 
         if (!childProperties) childProperties = {};
 
@@ -318,23 +335,19 @@ PositionedGraph.prototype = {
         // find the best order to use for this new vertex: scan all orders on the rank, check number of crossed edges
         var insertOrder = this._findBestInsertPosition( insertRank, personId, preferLeft );
 
-        var newRelationshipId = this.DG.GG.insertVertex("", TYPE.RELATIONSHIP, {}, 1.0, [personId], []);
-        this._updateGGRankOrderPositionsAfterNodeChange( newRelationshipId, insertRank, insertOrder, personId );
+        var newRelationshipId = this._insertVertex(TYPE.RELATIONSHIP, {}, 1.0, personId, null, insertRank, insertOrder);
 
         var insertPersonOrder = (insertOrder > personOrder) ? insertOrder + 1 : insertOrder;
 
-        var newPersonId = this.DG.GG.insertVertex("", TYPE.PERSON, parentProperties, 1.0, [], [newRelationshipId]);
-        this._updateGGRankOrderPositionsAfterNodeChange( newPersonId, insertRank, insertPersonOrder, newRelationshipId );
+        var newPersonId = this._insertVertex(TYPE.PERSON, parentProperties, 1.0, null, newRelationshipId, insertRank, insertPersonOrder);
 
         var insertChildhubRank  = insertRank + 1;
         var insertChildhubOrder = this._findBestInsertPosition( insertChildhubRank, newRelationshipId );
-        var newChildhubId       = this.DG.GG.insertVertex("", TYPE.CHILDHUB, {}, 1.0, [newRelationshipId], []);
-        this._updateGGRankOrderPositionsAfterNodeChange( newChildhubId, insertChildhubRank, insertChildhubOrder, newRelationshipId );
+        var newChildhubId       = this._insertVertex(TYPE.CHILDHUB, {}, 1.0, newRelationshipId, null, insertChildhubRank, insertChildhubOrder);
 
         var insertChildRank  = insertChildhubRank + 1;
         var insertChildOrder = this._findBestInsertPosition( insertChildRank, newChildhubId );
-        var newChildId       = this.DG.GG.insertVertex("", TYPE.PERSON, childProperties, 1.0, [newChildhubId], []);
-        this._updateGGRankOrderPositionsAfterNodeChange( newChildId, insertChildRank, insertChildOrder, newChildhubId );
+        var newChildId       = this._insertVertex(TYPE.PERSON, childProperties, 1.0, newChildhubId, null, insertChildRank, insertChildOrder);
 
         // validate: by now the graph should satisfy all assumptions
         this.DG.GG.validate();
@@ -352,7 +365,7 @@ PositionedGraph.prototype = {
 
         this.DG.displayGraph(this.DG.positions, "zz");
 
-        var movedNodes = this._findMovedNodes( positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore );
+        var movedNodes = this._findMovedNodes( positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore, consangrBefore );
         var newNodes   = [newRelationshipId, newPersonId, newChildId];
         return {"new": newNodes, "moved": movedNodes, "highlight": [personId]};
     },
@@ -377,6 +390,7 @@ PositionedGraph.prototype = {
             var ranksBefore      = this.DG.ranks.slice(0);
             var vertLevelsBefore = this.DG.vertLevel.copy();
             var rankYBefore      = this.DG.rankY;
+            var consangrBefore   = this.DG.consangr;
 
             // TODO: move vertex closer to other children, if possible?
 
@@ -387,7 +401,7 @@ PositionedGraph.prototype = {
             this._updateauxiliaryStructures(ranksBefore, rankYBefore);
 
             positionsBefore[parentId] = -1;
-            var movedNodes = this._findMovedNodes( positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore );
+            var movedNodes = this._findMovedNodes( positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore, consangrBefore );
             return {"moved": movedNodes, "animate": [childId]};
         }
         else {
@@ -415,24 +429,35 @@ PositionedGraph.prototype = {
         var movedNodes = this._getAllNodes();
         return {"moved": movedNodes};
     },
+    
+    clearAll: function()
+    {
+        var removedNodes = this._getAllNodes(1);  // all nodes from 1 and up
+
+        var node0properties = this.getProperties(0);
+
+        // it is easier to create abrand new graph transferirng node 0 propertie sthna to remove on-by-one
+        // each time updating ranks, orders, etc
+        
+        var baseGraph = InternalGraph.init_from_user_graph(this._onlyProbandGraph,
+                                                           this.DG.GG.defaultPersonNodeWidth, this.DG.GG.defaultNonPersonNodeWidth);
+
+        this._recreateUsingBaseGraph(baseGraph);
+        
+        this.setProperties(0, node0properties); 
+            
+        return {"removed": removedNodes, "moved": [0], "makevisible": [0]};
+    },
 
     redrawAll: function (animateList)
-    {
+    {        
         var ranksBefore = this.DG.ranks.slice(0);
 
         this._debugPrintAll("before");
 
         var baseGraph = this.DG.GG.makeGWithCollapsedMultiRankEdges();
-
-        this.DG = new DrawGraph( baseGraph,
-                                 this.DG.horizontalPersonSeparationDist,
-                                 this.DG.horizontalRelSeparationDist,
-                                 this.DG.maxInitOrderingBuckets,
-                                 this.DG.maxOrderingIterations,
-                                 this.DG.maxXcoordIterations );
-
-        this._heuristics = new Heuristics( this.DG );
-        this._heuristics.improvePositioning();
+        
+        if (!this._recreateUsingBaseGraph(baseGraph)) return {};  // no changes
 
         var movedNodes = this._getAllNodes();
 
@@ -522,11 +547,42 @@ PositionedGraph.prototype = {
     },
 
     //=============================================================
+    
+    _recreateUsingBaseGraph: function (baseGraph)
+    {        
+        try {
+            this.DG = new DrawGraph( baseGraph,
+                                     this.DG.horizontalPersonSeparationDist,
+                                     this.DG.horizontalRelSeparationDist,
+                                     this.DG.maxInitOrderingBuckets,
+                                     this.DG.maxOrderingIterations,
+                                     this.DG.maxXcoordIterations );
+            
+            this._heuristics = new Heuristics( this.DG );
+            this._heuristics.improvePositioning();            
+        }
+        catch (err) {
+            console.log("ERROR updating graph: " + err);
+            return false;
+        }            
+        return true;
+    },
 
-    _updateGGRankOrderPositionsAfterNodeChange: function (newNodeId, insertRank, insertOrder, connectedNodeId)
+    _insertVertex: function (type, properties, edgeWeights, inedge, outedge, insertRank, insertOrder)
     {
-        // does not assume the graph is consistent at this point, e.g. ther emay be childhubs with no relationships,
-        // or relationships without persons attached
+        // all nodes are connected to some other node, so either inedge or outedge should be given
+        if (inedge === null && outedge === null)
+            throw "Assertion failed: each node should be connected to at least one other node";
+        if (inedge !== null && outedge !== null)
+            throw "Assertion failed: not clear which edge crossing to optimize, can only insert one edge";
+
+        var inedges  = (inedge  !== null) ? [inedge]  : [];
+        var outedges = (outedge !== null) ? [outedge] : [];
+
+        var newNodeId = this.DG.GG.insertVertex(type, properties, edgeWeights, inedges, outedges);
+
+        // note: the graph may be inconsistent at this point, e.g. there may be childhubs with
+        // no relationships or relationships without any people attached
 
         if (newNodeId != this.DG.GG.getMaxRealVertexId())
             throw "Assertion failed: trying to update after an insert with a strange ID (not max ID)!";
@@ -550,7 +606,10 @@ PositionedGraph.prototype = {
         this.DG.order.insertAndShiftAllIdsAboveVByOne(newNodeId, insertRank, insertOrder);
 
         // update positions
+        var connectedNodeId = (inedge != null) ? inedge : outedge;
         this._updatePositionsAfterNodeInsert( newNodeId, insertOrder, insertRank, connectedNodeId );
+
+        return newNodeId;
     },
 
     _updateauxiliaryStructures: function(ranksBefore, rankYBefore)
@@ -577,7 +636,7 @@ PositionedGraph.prototype = {
         return nodes;
     },
 
-    _findMovedNodes: function (positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore)
+    _findMovedNodes: function (positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore, consangrBefore)
     {
         //console.log("Before: " + stringifyObject(vertLevelsBefore));
         //console.log("After:  " + stringifyObject(this.DG.vertLevel));
@@ -613,6 +672,10 @@ PositionedGraph.prototype = {
                 }
                 // or it is a relationship with a long edge - redraw just in case since long edges may have complicated curves around other nodes
                 if (this.DG.GG.type[i] == TYPE.RELATIONSHIP) {
+                    if (consangrBefore && !consangrBefore.hasOwnProperty(i) && this.DG.consangr.hasOwnProperty(i)) {
+                        result[i] = true;
+                        continue;
+                    }                    
                     var inEdges = this.DG.GG.getInEdges(i);
                     if (inEdges[0] > this.DG.GG.maxRealVertexId || inEdges[1] > this.DG.GG.maxRealVertexId) {
                         result[i] = true;
@@ -855,7 +918,7 @@ PositionedGraph.prototype = {
         //       in particular this can be called after a childhub was added but before it's relationship was added
 
         this.DG.positions.splice( newNodeId, 0, -1 );  // temporary -1 position: to bring this.DG.positions in sync with new node IDs
-
+        
         var xcoord = new XCoord();
         xcoord.init(this.DG.positions, this.DG.horizontalPersonSeparationDist, this.DG.horizontalRelSeparationDist,
                     this.DG.GG.vWidth, this.DG.order, this.DG.ranks, this.DG.GG.type);
@@ -1093,6 +1156,10 @@ Heuristics.prototype = {
 
         var partnerOrder = this.DG.order.vOrder[partnerId];
         if (partnerOrder != order - 2 && partnerOrder != order + 2) return;  // only if next to each other
+
+        // if both have parents do not swap so that parent edges are not crossed
+        if (this.DG.GG.getInEdges(personId).length != 0 &&
+            this.DG.GG.getInEdges(partnerId).length != 0 ) return;
 
         var childhubId = this.DG.GG.getOutEdges(relationship)[0]; // <=> getRelationshipChildhub(relationship)
         var children   = this.DG.GG.getOutEdges(childhubId);
@@ -1415,7 +1482,7 @@ Heuristics.prototype = {
             console.log("iter: " + iter);
         }
 
-        xcoord.normalize();  //<- no normalization to minimize the number of moved nodes; UI is ok with negative coords
+        //xcoord.normalize();  //<- no normalization to minimize the number of moved nodes; UI is ok with negative coords
 
         this.DG.positions = xcoord.xcoord;
     }
