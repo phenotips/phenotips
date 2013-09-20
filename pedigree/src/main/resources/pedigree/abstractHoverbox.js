@@ -355,7 +355,7 @@ var AbstractHoverbox = Class.create({
         var handle  = editor.getPaper().set().push(connection, orb);
         handle.type = type;
         
-        var me = this;        
+        var me = this;                
 
         var start = function() {
         	console.log("handle: start");
@@ -367,7 +367,11 @@ var AbstractHoverbox = Class.create({
             connection.oy = connection.oPath[1][2];
             handle.isDragged = false;
             editor.getGraphicsSet().setCurrentDraggable(me.getNode().getID());
-            editor.getGraphicsSet().enterHoverMode(me.getNode(), type);
+            // highlight valid targets (after a small delay - so that nothing gets annoyingly highlighted
+            // and instantly un-highlighted if the person just clicks the orb without dragging)
+            setTimeout(function() { if (editor.getGraphicsSet().getCurrentDraggable())
+                                        editor.getGraphicsSet().enterHoverMode(me.getNode(), type);
+                                  }, 100);
         };
         var move = function(dx, dy) {
         	//console.log("handle: move");
@@ -384,22 +388,21 @@ var AbstractHoverbox = Class.create({
             //console.log("currentHover: " + editor.getGraphicsSet()._currentHoveredNode + ", currentDrag: " + editor.getGraphicsSet()._currentDraggable);
         };
         var end = function() {
-            editor.getGraphicsSet().exitHoverMode();
+            var curHoveredId = editor.getGraphicsSet().getCurrentHoveredNode()
+            
+            editor.getGraphicsSet().setCurrentDraggable(null);
+            editor.getGraphicsSet().exitHoverMode();            
             
             if(handle.isDragged)
                 orb.animate({"cx": orb.ox, "cy": orb.oy}, + handle.isDragged * 1000, "elastic",
                             function() { me.animateHideHoverZone(); });
             
-            me.enable();
-            var curHoveredId = editor.getGraphicsSet().getCurrentHoveredNode()
+            me.enable();            
             console.log("handle.isDragged: " + handle.isDragged + ", currentHover: " + curHoveredId);                       
             connection.oPath[1][1] = connection.ox;
             connection.oPath[1][2] = connection.oy;
             connection.animate({"path": connection.oPath},1000, "elastic");
-            
-            editor.getGraphicsSet().setCurrentHoveredNode(null);
-            editor.getGraphicsSet().setCurrentDraggable(null);
-            
+                        
             me.handleAction(handle.type, handle.isDragged, curHoveredId);
         };
 
