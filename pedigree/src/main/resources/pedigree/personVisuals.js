@@ -425,7 +425,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             childlessOffset = (this.getChildlessStatusLabel()) ? PedigreeEditor.attributes.radius/2 : 0,
             startY = this.getY() + PedigreeEditor.attributes.radius * 1.7 + selectionOffset + childlessOffset;
         for (var i = 0; i < labels.length; i++) {
-            labels[i].attr("y", startY + 11);
+            labels[i].attr("y", startY);
             labels[i].attr(PedigreeEditor.attributes.label);
             labels[i].oy = (labels[i].attr("y") - selectionOffset);
             startY = labels[i].getBBox().y2;

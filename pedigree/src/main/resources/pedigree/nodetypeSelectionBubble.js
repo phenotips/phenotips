@@ -40,7 +40,7 @@ var NodetypeSelectionBubble = Class.create({
             tip  : "Create twins (expandable to triplets or more)",
             symbol: "⋀",
             callback : "createChild",
-            params: { "twins": this.numTwinNodes },
+            params: { "twins": this.numTwinNodes, "parameters": {"gender": "U"} },
             expandsTo: 'expandTwins'
         }, {
             type: "separator"
@@ -61,16 +61,16 @@ var NodetypeSelectionBubble = Class.create({
             label: "No children",
             tip  : "Mark as childless by choice",
             symbol: "┴",
-            callback : "setChildlessStatusAction",
-            params: ["childless"]
+            callback : "setProperty",
+            params: { setChildlessStatus: "childless" }
         }, {
             key: "i",
             type: "marker",
             label: "Infertile",
             tip  : "Mark as infertile",
             symbol: "╧",
-            callback : "setChildlessStatusAction",
-            params: ["infertile"]
+            callback : "setProperty",
+            params: { setChildlessStatus: "infertile" }
         }
     ],
 
@@ -122,14 +122,16 @@ var NodetypeSelectionBubble = Class.create({
         }).update(data.symbol); // TODO: eliminate symbol, do ".update(data.label)", add style (icons);
         var _this = this;
         o.observe('click', function(event) {
-            console.log("observe nodetype click: " + data.callback);
-            event.stop();
-            if (data.callback == "setChildlessStatusAction") {
-                _this._node && _this._node.setChildlessStatusAction.apply(_this._node, data.params);
+            event.stop();            
+            if (!_this._node) return;
+            console.log("observe nodetype click: " + data.callback);            
+            if (data.callback == "setProperty") {
+                var event = { "nodeID": _this._node.getID(), "properties": data.params };
+                document.fire("pedigree:node:setproperty", event);
             }
             else if (data.callback == "CreateChild") {
                 var id       = _this._node.getID();
-                var nodeType = _this._node.getType();
+                var nodeType = _this._node.getType();                                                   
                 if (nodeType == "Person") {
                     if (data.params.twins) {} // TODO
                     if (data.params.group) {} // TODO
@@ -142,8 +144,8 @@ var NodetypeSelectionBubble = Class.create({
                     var event = { "partnershipID": id, "childParams": data.params.parameters };
                     document.fire("pedigree:partnership:newchild", event);
                 }                
-            }            
-            _this.hide();
+            }                        
+            _this.hide();            
         });
         var container = new Element("span");
         container.insert(o);
@@ -362,8 +364,7 @@ var NodetypeSelectionBubble = Class.create({
         plusBtn.observe("click", function() { console.log("observePlus1"); me._incrementNumNodes(); svgContainer.update(generateIcon())});
         createBtn.observe("click", function() {
             console.log("observeCreate1");
-            //TODO
-            //me._node.createNodeAction("PersonGroup", "U").setNumPersons(me.numPersonGroupNodes);
+            //TODO: refer to the same code as in _createOption(), data.callback == "CreateChild" branch             
         });
         this.expandedOptionsContainer.insert(minusBtn);
         this.expandedOptionsContainer.insert(svgContainer);
@@ -402,8 +403,7 @@ var NodetypeSelectionBubble = Class.create({
         plusBtn.observe("click", function() { console.log("observePlus2"); me._incrementNumTwins(); svgContainer.update(generateIcon())});
         createBtn.observe("click", function() {
             console.log("observeCreate2");
-            //TODO
-            //me._node.createNodeAction("PersonGroup", "U").setNumPersons(me.numTwinNodes);
+            //TODO: refer to the same code as in _createOption(), data.callback == "CreateChild" branch            
         });
         this.expandedOptionsContainer.insert(minusBtn);
         this.expandedOptionsContainer.insert(svgContainer);

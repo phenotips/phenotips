@@ -75,16 +75,6 @@ var GraphicsSet = Class.create({
     },
 
     /**
-     * Changes currentHoveredNode to the specified node.
-     *
-     * @method getCurrentHoveredNode
-     * @param {AbstractNode} node
-     */
-    setCurrentHoveredNode: function(node) {
-        this._currentHoveredNode = node;
-    },
-
-    /**
      * Returns the currently dragged element
      *
      * @method getCurrentDraggable
@@ -114,40 +104,6 @@ var GraphicsSet = Class.create({
         delete this.getNodeMap()[nodeID];        
     },
     
-    /**
-     * Deletes all nodes except the proband.
-     *
-     * @method clearGraph
-     */
-    clearGraph: function() {                
-    	for (var node in this.getNodeMap()) { 
-    		if (this.getNodeMap().hasOwnProperty(node) && this.getNodeMap()[node].getID() != 0) {
-    			this.getNodeMap()[node].remove(true);
-    			this.removeFromNodeMap(node);    			
-    		}
-    	}
-    },
-
-    /**
-     * Removes all nodes except the proband and adds this action to the action stack.
-     *
-     * @method clearGraphAction
-     */
-    clearGraphAction: function() {
-        var lastAction = editor.getActionStack().peek();
-        if(!lastAction || lastAction.property != "clearGraph") {
-            var saveData = editor.getSaveLoadEngine().serialize();
-            this.clearGraph();
-            var undo = function() {
-                editor.getSaveLoadEngine().createGraphFromSerializedData(saveData);
-            };
-            var redo = function() {
-                editor.getGraphicsSet().clearGraph();
-            };
-            editor.getActionStack().push({undo: undo, redo:redo, property: "clearGraph"});
-        }
-    },
- 
     /**
      * Creates a new node in the graph and returns it. The node type is obtained from
      * editor.getGraph() and may be on of Person, Partnership or ... TODO. The position
@@ -240,6 +196,8 @@ var GraphicsSet = Class.create({
      * @method exitHoverMode
      */
     exitHoverMode: function() {
+        this._currentHoveredNode = null;
+        
         this.hoverModeZones.remove();
         
         var me = this;
@@ -310,6 +268,21 @@ var GraphicsSet = Class.create({
                 this.removeFromNodeMap(nextRemoved);
             }
         }
+        
+        if (changeSet.hasOwnProperty("changeID")) {
+            // when a node is removed all nodes with higher ids are shifted by one down
+            /* TODO
+            var newNodeMap = {};
+
+            for (var i = 0; i < changeSet.changeID.length; i++) {
+                var nextShifted = changeSet.changeID[i];
+                
+            }
+            
+            this._nodeMap = newNodeMap;
+            */
+        }        
+        
                    
         var movedPersons       = [];
         var movedRelationships = [];
@@ -367,5 +340,7 @@ var GraphicsSet = Class.create({
                 //this._currentMarkedNew.push(nextHighlight);                
             }
         }
+        
+        // TODO: move the viewport to make changeSet.makevisible nodes visible on screen
     }
 });

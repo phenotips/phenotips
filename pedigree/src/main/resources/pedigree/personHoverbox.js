@@ -210,8 +210,6 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
                 document.fire("pedigree:person:newparent", event);
             }
         }
-        editor.getGraphicsSet().setCurrentHoveredNode(null);
-        editor.getGraphicsSet().setCurrentDraggable(null);        
         this.animateHideHoverZone();
     }
 });

@@ -13,9 +13,7 @@ var PedigreeEditor = Class.create({
         window.editor = this;
                         
         // initialize main data structure which holds the graph structure        
-        var G = new InternalGraph(PedigreeEditor.attributes.layoutRelativePersonWidth, PedigreeEditor.attributes.layoutRelativeOtherWidth);
-        var drawGraph = new DrawGraph(G);
-        this._mainGraph = new PositionedGraph(drawGraph);                
+        this._mainGraph = PositionedGraph.makeEmpty(PedigreeEditor.attributes.layoutRelativePersonWidth, PedigreeEditor.attributes.layoutRelativeOtherWidth);                
                
         //initialize the elements of the app
         this._workspace = new Workspace();
@@ -47,16 +45,19 @@ var PedigreeEditor = Class.create({
             editor.getActionStack().redo();
         });
 
+        var autolayoutButton = $('action-layout');
+        autolayoutButton && autolayoutButton.on("click", function(event) {
+            document.fire("pedigree:autolayout");
+        });        
         var clearButton = $('action-clear');
         clearButton && clearButton.on("click", function(event) {
-            editor.getGraphicsSet().clearGraphAction();
+            document.fire("pedigree:graph:clear");            
         });
         
         var saveButton = $('action-save');
         saveButton && saveButton.on("click", function(event) {
             editor.getSaveLoadEngine().save();
         });
-
         var loadButton = $('action-load');
         loadButton && loadButton.on("click", function(event) {
             editor.getSaveLoadEngine().load();
@@ -177,39 +178,39 @@ var PedigreeEditor = Class.create({
                     { 'actual' : 'U', 'displayed' : 'Unknown' }
                 ],
                 'default' : 'U',
-                'function' : 'setGenderAction'
+                'function' : 'setGender'
             },
             {
                 'name' : 'first_name',
                 'label': 'First name',
                 'type' : 'text',
-                'function' : 'setFirstNameAction'
+                'function' : 'setFirstName'
             },
             {
                 'name' : 'last_name',
                 'label': 'Last name',
                 'type' : 'text',
-                'function' : 'setLastNameAction'
+                'function' : 'setLastName'
             },
             {
                 'name' : 'date_of_birth',
                 'label' : 'Date of birth',
                 'type' : 'date-picker',
                 'format' : 'dd/MM/yyyy',
-                'function' : 'setBirthDateAction'
+                'function' : 'setBirthDate'
             },
             {
                 'name' : 'date_of_death',
                 'label' : 'Date of death',
                 'type' : 'date-picker',
                 'format' : 'dd/MM/yyyy',
-                'function' : 'setDeathDateAction'
+                'function' : 'setDeathDate'
             },
             {
                 'name' : 'disorders',
                 'label' : 'Known disorders of this individual',
                 'type' : 'disease-picker',
-                'function' : 'setDisordersAction'
+                'function' : 'setDisorders'
             },
             {
                 'name' : 'gestation_age',
@@ -217,7 +218,7 @@ var PedigreeEditor = Class.create({
                 'type' : 'select',
                 'range' : {'start': 0, 'end': 50, 'item' : ['week', 'weeks']},
                 'nullValue' : true,
-                'function' : 'setGestationAgeAction'
+                'function' : 'setGestationAge'
             },
             {
                 'name' : 'state',
@@ -231,27 +232,27 @@ var PedigreeEditor = Class.create({
                     { 'actual' : 'unborn', 'displayed' : 'Unborn' }
                 ],
                 'default' : 'alive',
-                'function' : 'setLifeStatusAction'
+                'function' : 'setLifeStatus'
             },
             {
                 'label' : 'Heredity options',
                 'name' : 'childlessSelect',
                 'values' : [{'actual': 'none', displayed: 'None'},{'actual': 'childless', displayed: 'Childless'},{'actual': 'infertile', displayed: 'Infertile'}],
                 'type' : 'select',
-                'function' : 'setChildlessStatusAction'
+                'function' : 'setChildlessStatus'
             },
             {
                 'name' : 'childlessText',
                 'type' : 'text',
                 'dependency' : 'childlessSelect != none',
                 'tip' : 'Reason',
-                'function' : 'setChildlessReasonAction'
+                'function' : 'setChildlessReason'
             },
             {
                 'name' : 'adopted',
                 'label' : 'Adopted',
                 'type' : 'checkbox',
-                'function' : 'setAdoptedAction'
+                'function' : 'setAdopted'
             }
         ]);
     },
@@ -278,14 +279,14 @@ var PedigreeEditor = Class.create({
                 'name' : 'childlessSelect',
                 'values' : [{'actual': 'none', displayed: 'None'},{'actual': 'childless', displayed: 'Childless'},{'actual': 'infertile', displayed: 'Infertile'}],
                 'type' : 'select',
-                'function' : 'setChildlessStatusAction'
+                'function' : 'setChildlessStatus'
             },
             {
                 'name' : 'childlessText',
                 'type' : 'text',
                 'dependency' : 'childlessSelect != none',
                 'tip' : 'Reason',
-                'function' : 'setChildlessReasonAction'
+                'function' : 'setChildlessReason'
             }
         ]);
     },
@@ -339,6 +340,7 @@ PedigreeEditor.attributes = {
     disorderShapes: {},
     partnershipRadius: 6,
         partnershipLines : {"stroke-width": 1.25, stroke : '#303058'},
+        consangrPartnershipLines : {"stroke-width": 1.5, stroke : '#993058'},
     graphToCanvasScale: 12,
     layoutRelativePersonWidth: 10,
     layoutRelativeOtherWidth: 2,

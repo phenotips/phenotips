@@ -106,17 +106,17 @@ var Workspace = Class.create({
             items: [
                 { key : 'undo',   label : 'Undo'},
                 { key : 'redo',   label : 'Redo'},
-                { key : 'layout', label : 'Adjust layout'},
+                { key : 'layout', label : 'Automatic layout'},
                 { key : 'clear',  label : 'Clear all'}
             ]
         }, {
             name : 'external',
             items: [
-                { key : 'save', label : 'Save'},
-                { key : 'reaload', label : 'Reload'},
+                { key : 'save',      label : 'Save'},
+                { key : 'reaload',   label : 'Reload'},
                 { key : 'templates', label : 'Templates'},
-                { key : 'print',  label : 'Printable version'},
-                { key : 'close',  label : 'Close'}
+                { key : 'print',     label : 'Printable version'},
+                { key : 'close',     label : 'Close'}
             ]
         }];
         var _createSubmenu = function(data) {

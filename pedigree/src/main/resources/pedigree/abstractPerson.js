@@ -72,26 +72,6 @@ var AbstractPerson = Class.create(AbstractNode, {
     },
 
     /**
-     * Changes the gender of this node to gender and updates the action stack.
-     *
-     * @method setGenderAction
-     * @param {String} gender Should be "M", "F", or "U"
-     */
-    setGenderAction: function(gender) {
-        //var prevGenders = this.getTwinPartnerGenders();
-        this.setGender(gender);
-        //var newGenders = this.getTwinPartnerGenders();
-        // TODO:
-        /*editor.getActionStack().push({
-            undo: AbstractNode.setPropertyToListActionUndo,
-            redo: AbstractNode.setPropertyToListActionRedo,
-            oldValues: prevGenders,
-            newValues: newGenders,
-            property: 'Gender'
-        });*/
-    },
-
-    /**
      * Changes the adoption status of this Person to isAdopted. Updates the graphics.
      *
      * @method setAdopted
@@ -104,44 +84,6 @@ var AbstractPerson = Class.create(AbstractNode, {
             this.getGraphics().drawAdoptedShape();
         else
             this.getGraphics().removeAdoptedShape();
-
-        //TODO: check if needed
-        //var preg = this.getParentPregnancy();
-        //preg && preg.updateActive();
-    },
-
-    /**
-     * Changes the adoption status of this Person to isAdopted. Updates the graphics. Updates the
-     * action stack.
-     *
-     * @method setAdoptedAction
-     * @param {Boolean} isAdopted Set to true if you want to mark the Person adopted
-     */
-    setAdoptedAction: function(isAdopted) {
-        var oldStatus = this.isAdopted();
-        if(oldStatus != isAdopted) {
-        	//TODO: asm commented
-            //var twin = this.getTwins("PlaceHolder")[0],
-            //    twinInfo = twin ? twin.getInfo() : null;
-            this.setAdopted(isAdopted);
-            var nodeID = this.getID();
-            var undo = function() {
-                var node = editor.getGraphicsSet().getNode(nodeID);
-                if(node) {
-                    node.setAdopted(oldStatus);
-                	//TODO: asm commented                    
-                    //if(twinInfo && node.getParentPregnancy()) {
-                    //    var newPh = editor.getGraphicsSet().addPlaceHolder(twinInfo.x, twinInfo.y, twinInfo.gender, twinInfo.id);
-                    //    node.getParentPregnancy().addChild(newPh);
-                    //}
-                }
-            };
-            var redo = function() {
-                var node = editor.getGraphicsSet().getNode(nodeID);
-                node && node.setAdopted(isAdopted);
-            };
-            editor.getActionStack().push({undo: undo, redo: redo});
-        }
     },
 
     /**

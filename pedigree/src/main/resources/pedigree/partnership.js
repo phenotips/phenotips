@@ -106,58 +106,6 @@ var Partnership = Class.create(AbstractNode, {
             return true;
         }
         return false;
-    },
-
-    /**
-     * Changes the status of this partnership. Nullifies the status if the given status is not
-     * "childless" or "infertile". Adds an action stack entry for this action.
-     *
-     * @method setChildlessStatus
-     * @param {String} status Can be "childless", "infertile" or null
-     */
-    setChildlessStatusAction: function(status) {
-        if(status != this.getChildlessStatus() && (status || this.getChildlessStatus())) {
-            var me = this,
-                nodeID = this.getID(),
-                prevStatus = this.getChildlessStatus(),
-                prevReason = this.getChildlessReason();
-            this.setChildlessStatus(status, false);
-
-            // TODO
-            /*
-            editor.getActionStack().push({
-                undo: Partnership.childlessActionUndo,
-                redo: Partnership.childlessActionRedo,
-                nodeID: nodeID,
-                status: status,
-                prevStatus: prevStatus,
-                prevReason: prevReason,
-                nodesBeforeChange: nodesBeforeChange,
-                nodesAfterChange: nodesAfterChange
-            });
-            */
-        }
-    },
-
-    /**
-     * Changes the reason for this Partnership's childlessStatus. Adds an entry in the action stack for this action.
-     *
-     * @method setChildlessReasonAction
-     * @param {String} reason
-     */
-    setChildlessReasonAction: function(reason) {
-        var nodeID = this.getID();
-        var prevReason = this.getChildlessReason();
-        this.setChildlessReason(reason);
-        var undo = function() {
-            var partnership = editor.getGraphicsSet().getNode(nodeID);
-            partnership && partnership.setChildlessReason(prevReason);
-        };
-        var redo = function() {
-            var partnership = editor.getGraphicsSet().getNode(nodeID);
-            partnership && partnership.setChildlessReason(reason);
-        };
-        editor.getActionStack().push({undo: undo, redo: redo});
     }
 });
 

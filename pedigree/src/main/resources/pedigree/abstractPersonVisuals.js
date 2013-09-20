@@ -82,7 +82,8 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         if (this._callback)
             throw "Assertion failed: grow() during animation";
         if (this.glow) return;
-        this.glow = this._genderShape.glow({width: 8, fill: true, opacity: 0.3, color: "green"});
+        this.glow = this._genderShape.glow({width: 11, fill: true, opacity: 0.4, color: "green"});
+        if (this.marked) this.marked.hide();
     },
     
     /**
@@ -93,6 +94,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     shrink: function() {
         this.glow && this.glow.remove();
         delete this.glow;
+        if (this.marked) this.marked.show();        
     },      
     
     /**
@@ -107,7 +109,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
             return;
         }
         if (this.marked) return;
-        this.marked = this._genderShape.glow({width: 10, fill: true, opacity: 0.3, color: "yellow"});
+        this.marked = this._genderShape.glow({width: 11, fill: true, opacity: 0.6, color: "#ee8d00"});
     },
     
     /**

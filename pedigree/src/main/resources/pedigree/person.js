@@ -82,31 +82,6 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
-     * Replaces the first name of this Person with firstName, and displays the label. Creates an entry in action stack.
-     *
-     * @method setFirstNameAction
-     * @param {String} firstName
-     */
-    setFirstNameAction: function(firstName) {
-        var oldName = this.getFirstName();
-        var nodeID = this.getID();
-        this.setFirstName(firstName);
-        var actionElement = editor.getActionStack().peek();
-        if (actionElement && actionElement.nodeID == nodeID && actionElement.property == 'FirstName') {
-            actionElement.newValue = firstName;
-        } else {
-            editor.getActionStack().push({
-                undo: AbstractNode.setPropertyActionUndo,
-                redo: AbstractNode.setPropertyActionRedo,
-                nodeID: nodeID,
-                property: 'FirstName',
-                oldValue: oldName,
-                newValue: firstName
-            });
-        }
-    },
-
-    /**
      * Returns the last name of this Person
      *
      * @method getLastName
@@ -126,32 +101,6 @@ var Person = Class.create(AbstractPerson, {
         lastName && (lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1));
         this._lastName = lastName;
         this.getGraphics().updateNameLabel();
-        return lastName;
-    },
-
-    /**
-     * Replaces the last name of this Person with lastName, and displays the label. Creates an entry in action stack.
-     *
-     * @method setLastName
-     * @param lastName
-     */
-    setLastNameAction: function(lastName) {
-        var oldName = this.getLastName();
-        var nodeID = this.getID();
-        this.setLastName(lastName);
-        var actionElement = editor.getActionStack().peek();
-        if (actionElement && actionElement.nodeID == nodeID && actionElement.property == 'LastName') {
-            actionElement.newValue = lastName;
-        } else {
-            editor.getActionStack().push({
-                undo: AbstractNode.setPropertyActionUndo,
-                redo: AbstractNode.setPropertyActionRedo,
-                nodeID: nodeID,
-                property: 'LastName',
-                oldValue: oldName,
-                newValue: lastName
-            });
-        }
         return lastName;
     },
 
@@ -221,28 +170,6 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
-     * Changes the life status of this Person to newStatus and creates an entry in action stack.
-     *
-     * @method setLifeStatusAction
-     * @param {String} newStatus "alive", "deceased", "stillborn", "unborn" or "aborted"
-     */
-    setLifeStatusAction: function(newStatus) {
-        var prevStatus = this.getLifeStatus();
-        var nodeID = this.getID();
-        if(prevStatus != newStatus && this._isValidLifeStatus(newStatus)) {
-            this.setLifeStatus(newStatus);
-            editor.getActionStack().push({
-                undo: AbstractNode.setPropertyActionUndo,
-                redo: AbstractNode.setPropertyActionRedo,
-                nodeID: nodeID,
-                property: 'LifeStatus',
-                oldValue: prevStatus,
-                newValue: newStatus
-            });
-        }
-    },
-
-    /**
      * Returns the date of the conception date of this Person
      *
      * @method getConceptionDate
@@ -303,29 +230,6 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
-     * Updates the conception age of the Person given the number of weeks passed since conception.
-     * Creates entry in action stack
-     *
-     * @method setGestationAgeAction
-     * @param {Number} numWeeks Greater than or equal to 0
-     */
-    setGestationAgeAction: function(numWeeks) {
-        var oldDate = this.getGestationAge();
-        var nodeID = this.getID();
-        if(oldDate != numWeeks) {
-            this.setGestationAge(numWeeks);
-            editor.getActionStack().push({
-                undo: AbstractNode.setPropertyActionUndo,
-                redo: AbstractNode.setPropertyActionRedo,
-                nodeID: nodeID,
-                property: 'GestationAge',
-                oldValue: oldDate,
-                newValue: numWeeks
-            });
-        }
-    },
-
-    /**
      * Returns the the birth date of this Person
      *
      * @method getBirthDate
@@ -346,29 +250,6 @@ var Person = Class.create(AbstractPerson, {
         if (!newDate || newDate && !this.getDeathDate() || newDate.getDate() < this.getDeathDate()) {
             this._birthDate = newDate;
             this.getGraphics().updateAgeLabel();
-        }
-    },
-
-    /**
-     * Replaces the birth date with newDate
-     * Creates entry in action stack
-     *
-     * @method setBirthDate
-     * @param {Date} newDate Must be earlier date than deathDate and a later than conception date
-     */
-    setBirthDateAction: function(newDate) {
-        var oldDate = this.getBirthDate();
-        var nodeID = this.getID();
-        if(oldDate != newDate) {
-            this.setBirthDate(newDate);
-            editor.getActionStack().push({
-                undo: AbstractNode.setPropertyActionUndo,
-                redo: AbstractNode.setPropertyActionRedo,
-                nodeID: nodeID,
-                property: 'BirthDate',
-                oldValue: oldDate,
-                newValue: newDate
-            });
         }
     },
 
@@ -400,29 +281,6 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
-     * Replaces the death date with newDate
-     * Creates entry in action stack
-     *
-     * @method setDeathDate
-     * @param {Date} newDate Must be a later date than birthDate
-     */
-    setDeathDateAction: function(newDate) {
-        var oldDate = this.getDeathDate();
-        var nodeID = this.getID();
-        if(oldDate != newDate) {
-            this.setDeathDate(newDate);
-            editor.getActionStack().push({
-                undo: AbstractNode.setPropertyActionUndo,
-                redo: AbstractNode.setPropertyActionRedo,
-                nodeID: nodeID,
-                property: 'DeathDate',
-                oldValue: oldDate,
-                newValue: newDate
-            });
-        }
-    },
-
-    /**
      * Returns a list of disorders of this person.
      *
      * @method getDisorders
@@ -437,39 +295,14 @@ var Person = Class.create(AbstractPerson, {
      *
      * @method addDisorder
      * @param {Disorder} disorder Disorder object
-     * @param [forceDisplay] True if you want to display the change on the canvas
      */
-    addDisorder: function(disorder, forceDisplay) {
+    addDisorder: function(disorder) {
         console.log("add disorder");
         if(!this.getDisorderByID(disorder.getDisorderID())) {
             editor.getLegend().addCase(disorder.getDisorderID(), disorder.getName(), this.getID());
             this.getDisorders().push(disorder);
         }
-        forceDisplay && this.getGraphics().updateDisorderShapes();
-    },
-
-    /**
-     * Adds disorder to the list of this node's disorders and updates the Legend.
-     * Creates entry in action stack.
-     *
-     * @method addDisorderAction
-     * @param {Disorder} disorder
-     */
-    addDisorderAction: function(disorder) {
-        if(!this.getDisorderByID(disorder.getDisorderID())) {
-            var nodeID = this.getID();
-            this.addDisorder(disorder, true);
-            editor.getActionStack().push({
-                undo: function() {
-                    var node = editor.getGraphicsSet().getNode(nodeID);
-                    node && node.removeDisorder(disorder, true);
-                },
-                redo: function() {
-                    var node = editor.getGraphicsSet().getNode(nodeID);
-                    node && node.addDisorder(disorder, true);
-                }
-            })
-        }
+        this.getGraphics().updateDisorderShapes();
     },
 
     /**
@@ -517,27 +350,6 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
-     * Given a list of disorders, adds and removes the disorders of this node to match
-     * the new list. Adds entry in action stack.
-     *
-     * @method setDisorders
-     * @param {Array} disorders List of Disorder objects
-     */
-    setDisordersAction: function(disorders) {
-        var prevDisorders = this.getDisorders().clone();
-        var nodeID = this.getID();
-        this.setDisorders(disorders);
-        editor.getActionStack().push({
-            undo: AbstractNode.setPropertyActionUndo,
-            redo: AbstractNode.setPropertyActionRedo,
-            nodeID: nodeID,
-            property: 'Disorders',
-            oldValue: prevDisorders,
-            newValue: disorders
-        });
-    },
-
-    /**
      * Returns disorder with given id if this person has it. Returns null otherwise.
      *
      * @method getDisorderByID
@@ -562,57 +374,13 @@ var Person = Class.create(AbstractPerson, {
      * @param {Boolean} ignoreOthers If True, changing the status will not modify partnerships's statuses or
      * detach any children
      */
-    setChildlessStatus: function(status, ignoreOthers) {
+    setChildlessStatus: function(status) {
         if(!this.isValidChildlessStatus(status))
             status = null;
         if(status != this.getChildlessStatus()) {
             this._childlessStatus = status;
             this.setChildlessReason(null);
-            this.getGraphics().updateChildlessShapes();
-            
-            if(!ignoreOthers) {
-                // TODO:
-                //this.getPartnerships().each(function(partnership) {
-                //    if(!partnership.getChildlessReason())
-                //        partnership.setChildlessStatus(status);
-                //});
-            }
-        }
-        return this.getChildlessStatus();
-    },
-
-    /**
-     * Changes the childless status of this Person. Nullifies the status if the given status is not
-     * "childless" or "infertile". Modifies the status of the partnerships as well.
-     * Creates a an entry in action stack.
-     *
-     * @method setChildlessStatusAction
-     * @param {String} status Can be "childless", "infertile" or null
-     */
-    setChildlessStatusAction: function(status) {
-        if(status != this.getChildlessStatus()) {
-            var me = this;
-            var prevStatus = this.getChildlessStatus();
-            var nodeID = this.getID();
-            var markerID = editor.getActionStack().pushStartMarker();
-
-            //TODO:
-            //this.getPartnerships().each(function(partnership) {
-            //    partnership.setChildlessStatusAction(status);
-            //});
-
-            this.setChildlessStatus(status, true);
-            var undo = function() {
-                var node = editor.getGraphicsSet().getNode(nodeID);
-                    node && node.setChildlessStatus(prevStatus, true);
-            };
-
-            var redo = function() {
-                var node = editor.getGraphicsSet().getNode(nodeID);
-                node && node.setChildlessStatus(status, true);
-            };
-            editor.getActionStack().push({undo: undo, redo: redo});
-            editor.getActionStack().pushEndMarker(markerID);
+            this.getGraphics().updateChildlessShapes();            
         }
         return this.getChildlessStatus();
     },
@@ -658,16 +426,16 @@ var Person = Class.create(AbstractPerson, {
      */    
     getProperties: function($super) {
         var info = $super();
-        info['fName'] = this.getFirstName();
-        info['lName'] = this.getLastName();
-        info['dob'] = this.getBirthDate();
-        info['isAdopted'] = this.isAdopted();
-        info['lifeStatus'] = this.getLifeStatus();
-        info['dod'] = this.getDeathDate();
-        info['gestationAge'] = this.getGestationAge();
+        info['fName']           = this.getFirstName();
+        info['lName']           = this.getLastName();
+        info['dob']             = this.getBirthDate();
+        info['isAdopted']       = this.isAdopted();
+        info['lifeStatus']      = this.getLifeStatus();
+        info['dod']             = this.getDeathDate();
+        info['gestationAge']    = this.getGestationAge();
         info['childlessStatus'] = this.getChildlessStatus();
         info['childlessReason'] = this.getChildlessReason();
-        info['disorders'] = this.getDisorders();
+        info['disorders']       = this.getDisorders();
         return info;
      },
 

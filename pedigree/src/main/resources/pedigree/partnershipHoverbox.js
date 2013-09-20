@@ -115,17 +115,15 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
     handleAction : function(handleType, isDrag, curHoveredId) {
         if(isDrag && curHoveredId) {            
             if(handleType == "child") { 
-                editor.getNode(curHoveredId).getGraphics().getHoverBox().hideParentHandle();                
-                var changeSet = editor.getGraph().assignParent(this.getNode().getID(), curHoveredId);
-                editor.getGraphicsSet().applyChanges(changeSet, true);                
+                var event = { "personID": curHoveredId, "parentID": this.getNode().getID() };
+                document.fire("pedigree:person:drag:newparent", event);
             }
         }
         else if (!isDrag && handleType == "child") {
             var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.radius * 2.3));
             editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
+            // if user selects anything the bubble will fire an even on its own
         }
-        editor.getGraphicsSet().setCurrentHoveredNode(null);
-        editor.getGraphicsSet().setCurrentDraggable(null);        
         this.animateHideHoverZone();        
     }
 });

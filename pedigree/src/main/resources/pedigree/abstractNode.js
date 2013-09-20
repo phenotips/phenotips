@@ -30,6 +30,16 @@ var AbstractNode = Class.create( {
     },
 
     /**
+     * Sets the ID of this node
+     * (when nodes get removed all ids above the removed id shift by one down) 
+     *
+     * @method setID
+     */
+    setID: function(id) {
+        this._id = id;
+    },
+    
+    /**
      * Generates an instance of AbstractNodeVisuals
      *
      * @method _generateGraphics
@@ -102,124 +112,8 @@ var AbstractNode = Class.create( {
      * @method remove
      * @param [skipConfirmation=false] {Boolean} if true, no confirmation box will pop up
      */
-    remove: function(skipConfirmation) {
-    	
-    	// get the list of affected nodes
-    	//editor.getGraph().getDisconnectedSetIfNodeRemoved(this.getID());
-    	
+    remove: function(skipConfirmation) {    	    	
     	this.getGraphics().remove();    	    
-    },
-
-    /**
-     * Removes this node and all nodes that will end up disconnected from the
-     * Proband as a result. Pushes action onto actionStack.
-     *
-     * @method removeAction
-     */
-    removeAction: function() {
-        var result = this.remove(true);
-        if(result.confirmed) {
-        	/*
-            var removed = result.affected,
-                placeholders = result.created,
-                phPartnerships = [],
-                phPregnancies = [];
-            placeholders.each(function(ph) {
-                var node = editor.getGraphicsSet().getNodeMap()[ph.id];
-                if(node) {
-                    var parentPreg = node.getParentPregnancy();
-                    parentPreg && phPregnancies.push(parentPreg.getInfo());
-                    node.getPartnerships().each(function(p) {
-                        phPartnerships.push(p.getInfo());
-                        p.getPregnancies().each(function(preg) {
-                            phPregnancies.push(preg.getInfo());
-                        });
-                    });
-                }
-            });
-            var undoFunct = function() {
-                placeholders.each(function(ph) {
-                    var node = editor.getGraphicsSet().getNode(ph.id);
-                    node && node.remove(false);
-                });
-                removed.PersonNodes.each(function(p) {
-                    editor.getGraphicsSet().addPerson(p.x, p.y, p.gender, p.id).loadInfo(p);
-                });
-
-                removed.PlaceHolderNodes.each(function(p) {
-                    editor.getGraphicsSet().addPlaceHolder(p.x, p.y, p.gender, p.id).loadInfo(p);
-                });
-
-                removed.PersonGroupNodes.each(function(p) {
-                    editor.getGraphicsSet().addPersonGroup(p.x, p.y, p.id).loadInfo(p);
-                });
-
-                removed.PartnershipNodes.each(function(p) {
-                    var p1 = editor.getGraphicsSet().getNode(p.partner1ID);
-                    var p2 = editor.getGraphicsSet().getNode(p.partner2ID);
-                    if(p1 && p2)
-                        editor.getGraphicsSet().addPartnership(p.x, p.y, p1, p2, p.id).loadInfo(p);
-                });
-
-                removed.PregnancyNodes.each(function(p) {
-                    var partnership = editor.getGraphicsSet().getNode(p.partnershipID);
-                    if(partnership)
-                        editor.getGraphicsSet().addPregnancy(p.x, p.y, partnership, p.id).loadInfo(p);
-                });
-            };
-
-            var redoFunct = function() {
-                removed.PregnancyNodes.each(function(p) {
-                    var node = editor.getGraphicsSet().getNode(p.id);
-                    node && node.remove(false);
-                });
-
-                removed.PartnershipNodes.each(function(p) {
-                    var node = editor.getGraphicsSet().getNode(p.id);
-                    node && node.remove(false);
-                });
-
-                removed.PersonGroupNodes.each(function(p) {
-                    var node = editor.getGraphicsSet().getNode(p.id);
-                    node && node.remove(false);
-                });
-
-                removed.PlaceHolderNodes.each(function(p) {
-                    var node = editor.getGraphicsSet().getNode(p.id);
-                    node && node.remove(false);
-                });
-
-                removed.PersonNodes.each(function(p) {
-                    var node = editor.getGraphicsSet().getNode(p.id);
-                    node && node.remove(false);
-                });
-
-                placeholders.each(function(p) {
-                    editor.getGraphicsSet().addPlaceHolder(p.x, p.y, p.gender, p.id).loadInfo(p);
-                });
-
-                phPartnerships.each(function(p) {
-                    var p1 = editor.getGraphicsSet().getNode(p.partner1ID);
-                    var p2 = editor.getGraphicsSet().getNode(p.partner2ID);
-                    if(p1 && p2) {
-                        editor.getGraphicsSet().addPartnership(p.x, p.y, p1, p2, p.id).loadInfo(p);
-                    }
-                });
-
-                phPregnancies.each(function(p) {
-                    var partnership = editor.getGraphicsSet().getNode(p.partnershipID);
-                    if(partnership) {
-                        var preg = editor.getGraphicsSet().addPregnancy(p.x, p.y, partnership, p.id).loadInfo(p);
-                        p.childrenIDs.each(function(id){
-                            var child = editor.getGraphicsSet().getNode(id).loadInfo(p);
-                            child && preg.addChild(child);
-                        });
-                    }
-                });
-            };
-            editor.getActionStack().push({undo: undoFunct, redo: redoFunct});
-            */
-        }
     },
 
     /**
@@ -302,53 +196,5 @@ var ChildlessBehavior = {
             this._childlessReason = reason;
             this.getGraphics().updateChildlessStatusLabel();
         }
-    },
-
-    /**
-     * Changes the reason for this node's 'childless' or 'infertile' status and updates the action stack
-     *
-     * @method setChildlessReasonAction
-     * @param {String} reason Explanation for the condition (eg. "By Choice", "Vasectomy" etc)
-     */
-    setChildlessReasonAction: function(reason) {
-        var prevReason = this.getChildlessReason();
-        var nodeID = this.getID();
-        if(reason != prevReason && this.getChildlessStatus()) {
-            this.setChildlessReason(reason);
-            var actionElement = editor.getActionStack().peek();
-            if (actionElement.nodeID == nodeID && actionElement.property == 'ChildlessReason') {
-                actionElement.newValue = reason;
-            } else {
-                editor.getActionStack().push({
-                    undo: AbstractNode.setPropertyActionUndo,
-                    redo: AbstractNode.setPropertyActionRedo,
-                    nodeID: nodeID,
-                    property: 'ChildlessReason',
-                    oldValue: prevReason,
-                    newValue: reason
-                });
-            }
-        }
     }
-};
-
-AbstractNode.setPropertyActionUndo = function(actionElement) {
-    var node = editor.getGraphicsSet().getNode(actionElement.nodeID);
-    node && node['set' + actionElement.property](actionElement.oldValue);
-};
-AbstractNode.setPropertyActionRedo = function(actionElement) {
-    var node = editor.getGraphicsSet().getNode(actionElement.nodeID);
-    node && node['set' + actionElement.property](actionElement.newValue);
-};
-AbstractNode.setPropertyToListActionUndo = function(actionElement) {
-    Object.keys(actionElement.oldValues).forEach(function(key) {
-        var node = editor.getGraphicsSet().getNode(key);
-        node && node['set' + actionElement.property](actionElement.oldValues[key]);
-    });
-};
-AbstractNode.setPropertyToListActionRedo = function(actionElement) {
-    Object.keys(actionElement.newValues).forEach(function(key) {
-        var node = editor.getGraphicsSet().getNode(key);
-        node && node['set' + actionElement.property](actionElement.newValues[key]);
-    });
 };
