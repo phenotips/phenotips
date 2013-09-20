@@ -106,6 +106,8 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         
         var positionedGraph = editor.getGraph();
         
+        var lineAttr = positionedGraph.isConsangrRelationship(this.getNode().getID()) ? PedigreeEditor.attributes.consangrPartnershipLines : PedigreeEditor.attributes.partnershipLines;
+        
         var partnerPaths = positionedGraph.getPathToParents( this.getNode().getID() );        
         // partnerPaths = [ [virtual_node_1, virtual_node_2, ..., parent1] [virtual_node_1, virtual_node_2, ..., parent2] ]
         
@@ -120,8 +122,8 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             var nodePos  = editor.getGraph().getPosition(nextNodeOnPath);
             var position = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );
             raphaelPath.push(["L", position.x, position.y]); 
-        }               
-        this._partnerConnections[partner1] = editor.getPaper().path(raphaelPath).attr(PedigreeEditor.attributes.partnershipLines).toBack()
+        }                       
+        this._partnerConnections[partner1] = editor.getPaper().path(raphaelPath).attr(lineAttr).toBack()
 
         var path2    = partnerPaths[1];
         var partner2 = path2[path2.length-1];        
@@ -132,7 +134,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             var position = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );
             raphaelPath.push(["L", position.x, position.y]); 
         }               
-        this._partnerConnections[partner2] = editor.getPaper().path(raphaelPath).attr(PedigreeEditor.attributes.partnershipLines).toBack()        
+        this._partnerConnections[partner2] = editor.getPaper().path(raphaelPath).attr(lineAttr).toBack()        
     },
 
     /**
@@ -174,7 +176,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         
         //draw childhub junction orb
         //if (children.length > 1)
-        editor.getPaper().circle(this.getX(), childlineY, PedigreeEditor.attributes.partnershipRadius/2).attr({fill: '#CCEECC', stroke: 'black', 'stroke-width':1, 'opacity': 0.5});
+        editor.getPaper().circle(this.getX(), childlineY, PedigreeEditor.attributes.partnershipRadius/2).attr({fill: '#CCCCCC', stroke: '#888888', 'stroke-width':1, 'opacity': 0.6});
         
         this._childhubConnection = editor.getPaper().setFinish();        
     },
