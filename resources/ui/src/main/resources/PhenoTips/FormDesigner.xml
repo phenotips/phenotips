@@ -388,6 +388,9 @@
       var _this = this;
       var newSectionForm = $('create-section-form');
       var newSectionInputs = $('new-section')
+      if (!newSectionInputs) {
+        return;
+      }
       var newSectionButton = newSectionInputs.down('input[type="button"]');
       if (!newSectionForm || !newSectionInputs || !newSectionButton) {return;}
       // hide that form and duplicate the inputs under the section list
