@@ -65,6 +65,13 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>users-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>patient-data-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
@@ -105,6 +112,7 @@
         <configuration>
           <includes>
             <include>**/Main/*.xml</include>
+            <include>**/Groups/*.xml</include>
             <include>**/XWiki/*.xml</include>
             <include>**/PhenoTips/*.xml</include>
             <include>**/ColorThemes/*.xml</include>
