@@ -56,20 +56,12 @@
 #end
 ##
 ##
-#set ($targetSpace = "$!{request.space}")
-#if (!$targetSpace || $targetSpace == 'PhenoTips')
-  #break
-#end
-#set ($preferencesObject = $xwiki.getDocument("${targetSpace}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#if (!$preferencesObject)
-  #break
-#end
-#set ($targetClassName = $preferencesObject.getProperty('patientClass').value)
+#set ($targetClassName = 'PhenoTips.PatientClass')
 #set ($targetClass = $xwiki.getClass($targetClassName))
-#set ($activeFields = $preferencesObject.getProperty('activeFields').value)
+#set ($activeFields = $services.patientConfiguration.enabledFieldNames)
 #set ($dateFormat = $xwiki.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy'))
 #set ($query = ', BaseObject obj where doc.space = ? and obj.name = doc.fullName and obj.className = ?')
-#set ($parameters = [$targetSpace, $targetClassName])
+#set ($parameters = ['data', $targetClassName])
 #set ($isFirstReferrer = true)
 #foreach ($referrer in $request.getParameterValues('doc.creator'))
   #if ($referrer != '')
@@ -357,7 +349,7 @@ ${newline}##
       #set ($value = $!patientObj.getProperty($field).value)
       #if ("$!value.getTime()" != '')
         #set ($classFormat = "$!patientObj.xWikiClass.get($field).getProperty('dateFormat').value")
-        #set ($format = "$!{preferencesObject.getProperty('dateOfBirthFormat').value}")
+        #set ($format = "$!{xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass').getProperty('dateOfBirthFormat').value}")
         #if ("$!format" == '')
           #set ($format = $classFormat)
         #end

@@ -97,7 +97,7 @@
 {{/velocity}}
 
 {{velocity}}
-{{html clean="false" filter="indent"}}&lt;form class="xform" action="$xwiki.getURL('PhenoTips.Export', 'get', "space=${targetSpace}&amp;outputSyntax=plain")" method="post"&gt;&lt;div&gt;{{/html}}
+{{html clean="false" filter="indent"}}&lt;form class="xform" action="$xwiki.getURL('PhenoTips.Export', 'get', "space=data&amp;outputSyntax=plain")" method="post"&gt;&lt;div&gt;{{/html}}
 (% class="section filters"%)(((
 === (% class="step" %)1(%%) Filter records you wish to export ===
 
@@ -123,7 +123,7 @@
 #set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
 #set($metaFields = ['phenotype'])
 #set($selectedValues = ['phenotype'])
-#__export__displayFieldList( "$!{preferencesObject.getProperty('patientClass').value}" 'columns' $customValues $ignored $codeFields $selectedValues)
+#__export__displayFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $codeFields $selectedValues)
 )))##section columns
 
 (% class="buttons"%)(((

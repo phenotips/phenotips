@@ -43,15 +43,7 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity output=false}}
-#set ($targetSpace = "$!{request.space}")
-#if (!$targetSpace || $targetSpace == 'PhenoTips')
-  #break
-#end
-#set ($preferencesObject = $xwiki.getDocument("${targetSpace}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#if (!$preferencesObject)
-  #break
-#end
-#set ($activeFields = $preferencesObject.getProperty('activeFields').value)
+#set ($activeFields = $services.patientConfiguration.enabledFieldNames)
 #set ($dateFormat = "MM/dd/yyyy")
 ##
 ##
