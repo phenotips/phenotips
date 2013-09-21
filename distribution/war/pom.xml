@@ -153,6 +153,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>application-configuration-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>application-configuration-migrations</artifactId>
       <version>${project.version}</version>
     </dependency>
