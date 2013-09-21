@@ -128,7 +128,8 @@
       <parameters>title=OMIM disorder
 enabled=true
 required=
-order=1</parameters>
+order=1
+fields=omim_id</parameters>
     </property>
     <property>
       <scope>wiki</scope>

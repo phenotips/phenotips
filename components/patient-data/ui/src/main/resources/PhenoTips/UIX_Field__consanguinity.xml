@@ -132,7 +132,8 @@
       <parameters>title=Consanguinity
 enabled=true
 required=
-order=8</parameters>
+order=8
+fields=consanguinity</parameters>
     </property>
     <property>
       <scope>wiki</scope>

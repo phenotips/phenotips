@@ -136,7 +136,8 @@
       <parameters>title=Ethnicity
 enabled=true
 required=
-order=4</parameters>
+order=4
+fields=maternal_ethnicity,paternal_ethnicity</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -128,7 +128,8 @@
       <parameters>title=Health card information
 enabled=false
 required=
-order=7</parameters>
+order=7
+fields=health_card</parameters>
     </property>
     <property>
       <scope>wiki</scope>

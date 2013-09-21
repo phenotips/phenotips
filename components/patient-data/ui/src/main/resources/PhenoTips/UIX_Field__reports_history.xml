@@ -132,7 +132,8 @@
       <parameters>title=Reports
 enabled=true
 required=
-order=3</parameters>
+order=3
+fields=reports_history</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -128,7 +128,8 @@
       <parameters>title=Gestation at delivery (weeks)
 enabled=true
 required=
-order=1</parameters>
+order=1
+fields=gestation</parameters>
     </property>
     <property>
       <scope>wiki</scope>

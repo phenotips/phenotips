@@ -140,7 +140,8 @@
       <parameters>title=Growth charts
 enabled=true
 required=
-order=4</parameters>
+order=4
+fields=</parameters>
     </property>
     <property>
       <scope>wiki</scope>

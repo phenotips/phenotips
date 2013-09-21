@@ -135,7 +135,8 @@
       <parameters>title=In vitro fertilization
 enabled=true
 required=
-order=10</parameters>
+order=10
+fields=in_vitro</parameters>
     </property>
     <property>
       <scope>wiki</scope>

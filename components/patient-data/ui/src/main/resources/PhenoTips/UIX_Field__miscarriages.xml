@@ -132,7 +132,8 @@
       <parameters>title=Parents with at least 3 miscarriages
 enabled=true
 required=
-order=9</parameters>
+order=9
+fields=miscarriages</parameters>
     </property>
     <property>
       <scope>wiki</scope>

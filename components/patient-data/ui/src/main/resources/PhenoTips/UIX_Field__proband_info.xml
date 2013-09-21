@@ -147,7 +147,8 @@
       <parameters>title=Proband information
 enabled=false
 required=
-order=2</parameters>
+order=2
+fields=proband,family_of</parameters>
     </property>
     <property>
       <scope>wiki</scope>

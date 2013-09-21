@@ -152,7 +152,8 @@
       <parameters>title=Measurements
 enabled=true
 required=
-order=2</parameters>
+order=2
+fields=</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -150,7 +150,8 @@
       <parameters>title=Pedigree (interactive)
 enabled=false
 required=
-order=14</parameters>
+order=14
+fields=</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -132,7 +132,8 @@
       <parameters>title=Date of birth
 enabled=true
 required=
-order=5</parameters>
+order=5
+fields=date_of_birth</parameters>
     </property>
     <property>
       <scope>wiki</scope>

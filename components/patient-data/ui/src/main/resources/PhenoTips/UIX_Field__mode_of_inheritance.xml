@@ -128,7 +128,8 @@
       <parameters>title=Mode of inheritance
 enabled=true
 required=
-order=12</parameters>
+order=12
+fields=mode_of_inheritance</parameters>
     </property>
     <property>
       <scope>wiki</scope>

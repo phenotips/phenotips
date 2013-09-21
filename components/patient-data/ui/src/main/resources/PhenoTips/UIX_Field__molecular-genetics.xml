@@ -133,7 +133,8 @@
       <parameters>title=Molecular genetics
 enabled=true
 required=
-order=1</parameters>
+order=1
+fields=</parameters>
     </property>
     <property>
       <scope>wiki</scope>

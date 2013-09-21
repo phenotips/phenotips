@@ -128,7 +128,8 @@
       <parameters>title=PhenoTips Identifier
 enabled=false
 required=
-order=1</parameters>
+order=1
+fields=identifier</parameters>
     </property>
     <property>
       <scope>wiki</scope>

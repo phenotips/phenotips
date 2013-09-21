@@ -128,7 +128,8 @@
       <parameters>title=Health conditions found in family
 enabled=true
 required=
-order=6</parameters>
+order=6
+fields=family_comments</parameters>
     </property>
     <property>
       <scope>wiki</scope>

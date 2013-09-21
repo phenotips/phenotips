@@ -139,7 +139,8 @@
       <parameters>title=Patient name
 enabled=true
 required=
-order=4</parameters>
+order=4
+fields=last_name,first_name</parameters>
     </property>
     <property>
       <scope>wiki</scope>

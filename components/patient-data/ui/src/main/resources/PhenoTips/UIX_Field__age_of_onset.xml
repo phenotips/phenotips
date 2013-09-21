@@ -127,8 +127,9 @@
     <property>
       <parameters>title=Global age of onset
 enabled=true
+order=9
 required=
-order=9</parameters>
+fields=age_of_onset</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -128,7 +128,8 @@
       <parameters>title=Indication for referral
 enabled=true
 required=
-order=11</parameters>
+order=11
+fields=indication_for_referral</parameters>
     </property>
     <property>
       <scope>wiki</scope>

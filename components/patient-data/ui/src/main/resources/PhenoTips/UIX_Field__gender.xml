@@ -128,7 +128,8 @@
       <parameters>title=Sex
 enabled=true
 required=
-order=6</parameters>
+order=6
+fields=gender</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -134,7 +134,8 @@
       <parameters>title=Additional images
 enabled=true
 required=
-order=3</parameters>
+order=3
+fields=</parameters>
     </property>
     <property>
       <scope>wiki</scope>

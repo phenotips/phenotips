@@ -132,7 +132,8 @@
       <parameters>title=Exam date
 enabled=false
 required=
-order=3</parameters>
+order=3
+fields=exam_date</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -128,7 +128,8 @@
       <parameters>title=Additional notes
 enabled=true
 required=
-order=4</parameters>
+order=4
+fields=prenatal_comments</parameters>
     </property>
     <property>
       <scope>wiki</scope>
