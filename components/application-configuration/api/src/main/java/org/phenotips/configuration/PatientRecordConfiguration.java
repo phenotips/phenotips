@@ -19,7 +19,11 @@
  */
 package org.phenotips.configuration;
 
+import org.phenotips.Constants;
+
 import org.xwiki.component.annotation.Role;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
 import java.util.List;
@@ -34,6 +38,10 @@ import java.util.List;
 @Role
 public interface PatientRecordConfiguration
 {
+    /** The XClass used for storing the configuration. */
+    EntityReference PREFERENCES_CLASS = new EntityReference("DBConfigurationClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
+
     /**
      * The list of fields displayed in the patient record.
      * 
@@ -48,4 +56,11 @@ public interface PatientRecordConfiguration
      * @return an unmodifiable ordered list of field names, empty if none are available or the configuration is missing
      */
     List<String> getAllFieldNames();
+
+    /**
+     * The format of the date of birth, in the standard {@link java.text.SimpleDateFormat Java date format}.
+     * 
+     * @return the configured date format
+     */
+    String getDateOfBirthFormat();
 }

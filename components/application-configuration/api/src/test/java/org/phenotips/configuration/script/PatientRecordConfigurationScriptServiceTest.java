@@ -42,8 +42,8 @@ import static org.mockito.Mockito.when;
 public class PatientRecordConfigurationScriptServiceTest
 {
     @Rule
-    public final MockitoComponentMockingRule<ScriptService> mocker =
-        new MockitoComponentMockingRule<ScriptService>(PatientRecordConfigurationScriptService.class);
+    public final MockitoComponentMockingRule<ScriptService> mocker = new MockitoComponentMockingRule<ScriptService>(
+        PatientRecordConfigurationScriptService.class);
 
     /** Basic tests for {@link PatientRecordConfigurationScriptService#getEnabledFieldNames()}. */
     @Test
@@ -103,4 +103,13 @@ public class PatientRecordConfigurationScriptServiceTest
             .getAllFieldNames().isEmpty());
     }
 
+    /** Basic tests for {@link PatientRecordConfigurationScriptService#getDateOfBirthFormat()}. */
+    @Test
+    public void getDateOfBirthFormat() throws ComponentLookupException
+    {
+        PatientRecordConfiguration config = this.mocker.getInstance(PatientRecordConfiguration.class);
+        when(config.getDateOfBirthFormat()).thenReturn("MMMM yyyy");
+        Assert.assertEquals("MMMM yyyy",
+            ((PatientRecordConfigurationScriptService) this.mocker.getComponentUnderTest()).getDateOfBirthFormat());
+    }
 }

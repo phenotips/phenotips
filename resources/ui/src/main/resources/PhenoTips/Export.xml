@@ -348,11 +348,7 @@ ${newline}##
     #else
       #set ($value = $!patientObj.getProperty($field).value)
       #if ("$!value.getTime()" != '')
-        #set ($classFormat = "$!patientObj.xWikiClass.get($field).getProperty('dateFormat').value")
-        #set ($format = "$!{xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass').getProperty('dateOfBirthFormat').value}")
-        #if ("$!format" == '')
-          #set ($format = $classFormat)
-        #end
+        #set ($format = $services.patientConfiguration.dateOfBirthFormat)
         "$!{xwiki.formatDate($value, $format)}"##
       #elseif ("$!value.size()" != '')
         "##

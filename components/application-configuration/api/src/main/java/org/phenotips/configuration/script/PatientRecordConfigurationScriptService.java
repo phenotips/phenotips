@@ -62,12 +62,22 @@ public class PatientRecordConfigurationScriptService implements ScriptService
      * 
      * @return an unmodifiable ordered list of field names, empty if none are available or the configuration is missing
      */
-    List<String> getAllFieldNames()
+    public List<String> getAllFieldNames()
     {
         try {
             return this.configuration.getAllFieldNames();
         } catch (Exception ex) {
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * The format of the date of birth, in the standard {@link java.text.SimpleDateFormat Java date format}.
+     * 
+     * @return the configured date format
+     */
+    public String getDateOfBirthFormat()
+    {
+        return this.configuration.getDateOfBirthFormat();
     }
 }

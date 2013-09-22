@@ -25,6 +25,7 @@ import org.phenotips.data.Patient;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.uiextension.UIExtension;
 import org.xwiki.uiextension.UIExtensionFilter;
@@ -39,11 +40,13 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.classes.BaseClass;
 
 import static org.mockito.Mockito.mock;
@@ -242,5 +245,79 @@ public class DefaultPatientRecordConfigurationTest
         when(x.getDocument(Patient.CLASS_REFERENCE, context)).thenThrow(new XWikiException());
 
         Assert.assertTrue(this.mocker.getComponentUnderTest().getAllFieldNames().isEmpty());
+    }
+
+    /** Basic tests for {@link PatientRecordConfiguration#getDateOfBirthFormat()}. */
+    @Test
+    public void getDateOfBirthFormat() throws ComponentLookupException, XWikiException
+    {
+        Execution e = this.mocker.getInstance(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument wh = mock(XWikiDocument.class);
+        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        BaseObject o = mock(BaseObject.class);
+        when(wh.getXObject(PatientRecordConfiguration.PREFERENCES_CLASS)).thenReturn(o);
+        when(o.getStringValue("dateOfBirthFormat")).thenReturn("MMMM yyyy");
+
+        Assert.assertEquals("MMMM yyyy", this.mocker.getComponentUnderTest().getDateOfBirthFormat());
+    }
+
+    /** {@link PatientRecordConfiguration#getDateOfBirthFormat()} has a default format. */
+    @Test
+    public void getDateOfBirthFormatDefaultValue() throws ComponentLookupException, XWikiException
+    {
+        Execution e = this.mocker.getInstance(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument wh = mock(XWikiDocument.class);
+        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        BaseObject o = mock(BaseObject.class);
+        when(wh.getXObject(PatientRecordConfiguration.PREFERENCES_CLASS)).thenReturn(o);
+        when(o.getStringValue("dateOfBirthFormat")).thenReturn("");
+
+        Assert.assertEquals("dd/MM/yyyy", this.mocker.getComponentUnderTest().getDateOfBirthFormat());
+    }
+
+    /** {@link PatientRecordConfiguration#getDateOfBirthFormat()} catches exceptions. */
+    @Test
+    public void getDateOfBirthFormatWithException() throws ComponentLookupException, XWikiException
+    {
+        Execution e = this.mocker.getInstance(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenThrow(new XWikiException());
+
+        Assert.assertEquals("dd/MM/yyyy", this.mocker.getComponentUnderTest().getDateOfBirthFormat());
+    }
+
+    /** {@link PatientRecordConfiguration#getDateOfBirthFormat()} has a default format when the config is missing. */
+    @Test
+    public void getDateOfBirthFormatWithMissingConfiguration() throws ComponentLookupException, XWikiException
+    {
+        Execution e = this.mocker.getInstance(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument wh = mock(XWikiDocument.class);
+        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        when(wh.getXObject(PatientRecordConfiguration.PREFERENCES_CLASS)).thenReturn(null);
+
+        Assert.assertEquals("dd/MM/yyyy", this.mocker.getComponentUnderTest().getDateOfBirthFormat());
     }
 }

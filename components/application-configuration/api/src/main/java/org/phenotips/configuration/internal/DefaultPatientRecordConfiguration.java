@@ -24,6 +24,8 @@ import org.phenotips.data.Patient;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.uiextension.UIExtension;
 import org.xwiki.uiextension.UIExtensionFilter;
 import org.xwiki.uiextension.UIExtensionManager;
@@ -42,6 +44,7 @@ import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.classes.BaseClass;
 
 /**
@@ -53,21 +56,29 @@ import com.xpn.xwiki.objects.classes.BaseClass;
 @Singleton
 public class DefaultPatientRecordConfiguration implements PatientRecordConfiguration
 {
+    /** The location where preferences are stored. */
+    private static final EntityReference PREFERENCES_LOCATION = new EntityReference("WebHome", EntityType.DOCUMENT,
+        new EntityReference("data", EntityType.SPACE));
+
     /** The name of the UIX parameter used for specifying the order of fields and sections. */
     private static final String SORT_PARAMETER_NAME = "order";
 
     /** The name of the UIX parameter used for specifying which fields and sections are enabled. */
     private static final String ENABLED_PARAMETER_NAME = "enabled";
 
+    /** Logging helper object. */
     @Inject
     private Logger logger;
 
+    /** Provides access to the current request context. */
     @Inject
     private Execution execution;
 
+    /** Lists the patient form sections and fields. */
     @Inject
     private UIExtensionManager uixManager;
 
+    /** Sorts fields by their declared order. */
     @Inject
     @Named("sortByParameter")
     private UIExtensionFilter orderFilter;
@@ -101,13 +112,30 @@ public class DefaultPatientRecordConfiguration implements PatientRecordConfigura
     public List<String> getAllFieldNames()
     {
         try {
-            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
+            XWikiContext context = getXContext();
             BaseClass patientClass = context.getWiki().getDocument(Patient.CLASS_REFERENCE, context).getXClass();
             return Collections.unmodifiableList(Arrays.asList(patientClass.getPropertyNames()));
         } catch (XWikiException ex) {
             this.logger.error("Failed to access the patient class: {}", ex.getMessage(), ex);
             return Collections.emptyList();
         }
+    }
+
+    @Override
+    public String getDateOfBirthFormat()
+    {
+        XWikiContext context = getXContext();
+        String result = "dd/MM/yyyy";
+        try {
+            BaseObject settings =
+                context.getWiki().getDocument(PREFERENCES_LOCATION, context).getXObject(PREFERENCES_CLASS);
+            result = StringUtils.defaultIfBlank(settings.getStringValue("dateOfBirthFormat"), result);
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to read preferences: {}", ex.getMessage());
+        } catch (NullPointerException ex) {
+            // No value set, return the default
+        }
+        return result;
     }
 
     /**
@@ -121,5 +149,15 @@ public class DefaultPatientRecordConfiguration implements PatientRecordConfigura
     private boolean isEnabled(UIExtension extension)
     {
         return !StringUtils.equals("false", extension.getParameters().get(ENABLED_PARAMETER_NAME));
+    }
+
+    /**
+     * Get the current request context from the execution context manager.
+     * 
+     * @return the current request context
+     */
+    private XWikiContext getXContext()
+    {
+        return (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
     }
 }
