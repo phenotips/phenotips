@@ -58,6 +58,7 @@ public class LazySolrTermSet implements Set<OntologyTerm>
     {
         if (identifiers == null || identifiers.isEmpty()) {
             this.identifiers = Collections.emptySet();
+            this.terms = Collections.emptySet();
         } else {
             this.identifiers = new HashSet<String>(identifiers.size());
             for (Object id : identifiers) {
