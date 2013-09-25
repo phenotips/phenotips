@@ -233,6 +233,9 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     {
         StringBuilder query = new StringBuilder();
         for (Map.Entry<String, ?> field : fieldValues.entrySet()) {
+            if (Collection.class.isInstance(field.getValue()) && ((Collection<?>) field.getValue()).isEmpty()) {
+                continue;
+            }
             query.append("+");
             query.append(ClientUtils.escapeQueryChars(field.getKey()));
             query.append(":(");
