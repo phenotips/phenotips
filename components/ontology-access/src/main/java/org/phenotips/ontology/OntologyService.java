@@ -64,6 +64,16 @@ public interface OntologyService
     Set<OntologyTerm> search(Map<String, ?> fieldValues);
 
     /**
+     * Get the number of entries that match a specific query.
+     * 
+     * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
+     *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
+     *            single value, or a collection of values that can (OR) be matched by the term;
+     * @return the number of entries matching the query
+     */
+    long count(Map<String, ?> fieldValues);
+
+    /**
      * An ontology has an official name, but it can also have other aliases, for example the Human Phenotype Ontology is
      * known both as {@code HP}, which is the official prefix for its terms, {@code HPO}, which is its acronym, or the
      * lowercase {@code hpo}.
@@ -71,6 +81,13 @@ public interface OntologyService
      * @return a set of identifiers which can be used to reference this ontology, including the official name
      */
     Set<String> getAliases();
+
+    /**
+     * Get the size (i.e. total number of entries) in the index.
+     * 
+     * @return the number of entries in the index
+     */
+    long size();
 
     /**
      * Reindex the whole ontology, fetching the latest version from the source.

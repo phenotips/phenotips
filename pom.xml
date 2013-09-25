@@ -218,6 +218,16 @@
               <method>org.phenotips.data.similarity.AccessType getAccess()</method>
               <to>org.phenotips.data.permissions.AccessLevel</to>
             </difference>
+            <difference>
+              <className>**/ontology/*Service</className>
+              <differenceType>7012</differenceType>
+              <method>long size()</method>
+            </difference>
+            <difference>
+              <className>**/ontology/*Service</className>
+              <differenceType>7012</differenceType>
+              <method>long count(java.util.Map)</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

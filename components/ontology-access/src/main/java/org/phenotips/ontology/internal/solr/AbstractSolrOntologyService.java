@@ -142,26 +142,24 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     @Override
     public Set<OntologyTerm> search(Map<String, ?> fieldValues)
     {
-        StringBuilder query = new StringBuilder();
-        for (Map.Entry<String, ?> field : fieldValues.entrySet()) {
-            query.append("+");
-            query.append(ClientUtils.escapeQueryChars(field.getKey()));
-            query.append(":(");
-            if (Collection.class.isInstance(field.getValue())) {
-                for (Object value : (Collection<?>) field.getValue()) {
-                    query.append(ClientUtils.escapeQueryChars(String.valueOf(value)));
-                    query.append(' ');
-                }
-            } else {
-                query.append(ClientUtils.escapeQueryChars(String.valueOf(field.getValue())));
-            }
-            query.append(')');
-        }
         Set<OntologyTerm> result = new HashSet<OntologyTerm>();
-        for (SolrDocument doc : this.search(SolrQueryUtils.transformQueryToSolrParams(query.toString()))) {
+        for (SolrDocument doc : this
+            .search(SolrQueryUtils.transformQueryToSolrParams(generateLuceneQuery(fieldValues)))) {
             result.add(new SolrOntologyTerm(doc, this));
         }
         return result;
+    }
+
+    @Override
+    public long count(Map<String, ?> fieldValues)
+    {
+        return count(this.generateLuceneQuery(fieldValues));
+    }
+
+    @Override
+    public long size()
+    {
+        return count("*:*");
     }
 
     @Override
@@ -199,5 +197,55 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
             this.logger.error("Failed to search: {}", ex.getMessage(), ex);
         }
         return null;
+    }
+
+    /**
+     * Get the number of entries that match a specific Lucene query.
+     * 
+     * @param query a valid the Lucene query as string
+     * @return the number of entries matching the query
+     */
+    protected long count(String query)
+    {
+        ModifiableSolrParams params = new ModifiableSolrParams();
+        params.set(CommonParams.Q, query);
+        params.set(CommonParams.START, "0");
+        params.set(CommonParams.ROWS, "0");
+        SolrDocumentList results;
+        try {
+            results = this.server.query(params).getResults();
+            return results.getNumFound();
+        } catch (Exception ex) {
+            this.logger.error("Failed to count ontology terms: {}", ex.getMessage(), ex);
+            return 0;
+        }
+    }
+
+    /**
+     * Generate a Lucene query from a map of parameters, to be used in the "q" parameter for Solr.
+     * 
+     * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
+     *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
+     *            single value, or a collection of values that can (OR) be matched by the term;
+     * @return the String representation of the equivalent Lucene query
+     */
+    protected String generateLuceneQuery(Map<String, ?> fieldValues)
+    {
+        StringBuilder query = new StringBuilder();
+        for (Map.Entry<String, ?> field : fieldValues.entrySet()) {
+            query.append("+");
+            query.append(ClientUtils.escapeQueryChars(field.getKey()));
+            query.append(":(");
+            if (Collection.class.isInstance(field.getValue())) {
+                for (Object value : (Collection<?>) field.getValue()) {
+                    query.append(ClientUtils.escapeQueryChars(String.valueOf(value)));
+                    query.append(' ');
+                }
+            } else {
+                query.append(ClientUtils.escapeQueryChars(String.valueOf(field.getValue())));
+            }
+            query.append(')');
+        }
+        return query.toString();
     }
 }
