@@ -115,14 +115,11 @@
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#__hasBooleanDataToDisplay('in_vitro', $showInVitro)
-#if ($showInVitro)
-  #if ($xcontext.action == 'edit')
-    $doc.display('in_vitro') #__label('in_vitro' 'section' "$class.get('in_vitro').prettyName")
-  #else
-    $class.get('in_vitro').prettyName
-  #end
+#if ($xcontext.action == 'edit')
+  $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+  $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
 #end
+#__displayIfTrue('in_vitro', false)
 {{/velocity}}</content>
     </property>
     <property>
