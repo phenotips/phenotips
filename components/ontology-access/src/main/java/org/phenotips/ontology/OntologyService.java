@@ -74,6 +74,28 @@ public interface OntologyService
     long count(Map<String, ?> fieldValues);
 
     /**
+     * Find the distance between two terms identified by their {@link OntologyTerm#getId() term identifiers}. The
+     * parameters are interchangeable.
+     * 
+     * @param fromTermId the identifier of the term that is considered the start point
+     * @param toTermId the identifier of the term that is considered the end point
+     * @return the minimum number of edges that connect the two terms in the DAG representing the ontology, and -1 if
+     *         the terms are not connected or if at least one of the identifiers is invalid
+     * @see #getDistance(OntologyTerm, OntologyTerm)
+     */
+    long getDistance(String fromTermId, String toTermId);
+
+    /**
+     * Find the distance between two terms. The parameters are interchangeable.
+     * 
+     * @param fromTerm the term that is considered the start point
+     * @param toTerm the term that is considered the end point
+     * @return the minimum number of edges that connect the two terms in the DAG representing the ontology, and -1 if
+     *         the terms are not connected or if at least one of the terms is {@code null}
+     */
+    long getDistance(OntologyTerm fromTerm, OntologyTerm toTerm);
+
+    /**
      * An ontology has an official name, but it can also have other aliases, for example the Human Phenotype Ontology is
      * known both as {@code HP}, which is the official prefix for its terms, {@code HPO}, which is its acronym, or the
      * lowercase {@code hpo}.

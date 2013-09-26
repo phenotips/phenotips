@@ -169,6 +169,21 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public long getDistance(String fromTermId, String toTermId)
+    {
+        return getDistance(getTerm(fromTermId), getTerm(toTermId));
+    }
+
+    @Override
+    public long getDistance(OntologyTerm fromTerm, OntologyTerm toTerm)
+    {
+        if (fromTerm == null || toTerm == null) {
+            return -1;
+        }
+        return fromTerm.getDistanceTo(toTerm);
+    }
+
     /**
      * Perform a search, falling back on the suggested spellchecked query if the original query fails to return any
      * results.

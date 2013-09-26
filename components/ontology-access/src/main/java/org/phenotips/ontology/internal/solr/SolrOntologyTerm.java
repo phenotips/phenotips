@@ -23,6 +23,9 @@ import org.phenotips.ontology.OntologyService;
 import org.phenotips.ontology.OntologyTerm;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.solr.common.SolrDocument;
@@ -121,5 +124,58 @@ public class SolrOntologyTerm implements OntologyTerm
     public String toString()
     {
         return "[" + this.getId() + "] " + this.getName();
+    }
+
+    @Override
+    public long getDistanceTo(final OntologyTerm other)
+    {
+        if (other == null) {
+            return -1;
+        }
+        if (this.equals(other)) {
+            return 0;
+        }
+
+        long distance = Integer.MAX_VALUE;
+
+        Map<String, Integer> myLevelMap = new HashMap<String, Integer>();
+        myLevelMap.put(getId(), 0);
+        Map<String, Integer> otherLevelMap = new HashMap<String, Integer>();
+        otherLevelMap.put(other.getId(), 0);
+
+        Set<OntologyTerm> myCrtLevel = new HashSet<OntologyTerm>();
+        myCrtLevel.add(this);
+        Set<OntologyTerm> otherCrtLevel = new HashSet<OntologyTerm>();
+        otherCrtLevel.add(other);
+
+        for (int l = 1; l <= distance && !myCrtLevel.isEmpty() && !otherCrtLevel.isEmpty(); ++l) {
+            distance = Math.min(distance, processAncestorsAtDistance(l, myCrtLevel, myLevelMap, otherLevelMap));
+            distance = Math.min(distance, processAncestorsAtDistance(l, otherCrtLevel, otherLevelMap, myLevelMap));
+        }
+        return distance == Integer.MAX_VALUE ? -1 : distance;
+    }
+
+    private long processAncestorsAtDistance(int localDistance, Set<OntologyTerm> sourceUnprocessedAncestors,
+        Map<String, Integer> sourceDistanceMap, Map<String, Integer> targetDistanceMap)
+    {
+        long minDistance = Integer.MAX_VALUE;
+        Set<OntologyTerm> nextLevel = new HashSet<OntologyTerm>();
+        for (OntologyTerm term : sourceUnprocessedAncestors) {
+            for (OntologyTerm parent : term.getParents()) {
+                if (sourceDistanceMap.containsKey(parent.getId())) {
+                    continue;
+                }
+                if (targetDistanceMap.containsKey(parent.getId())) {
+                    minDistance = Math.min(minDistance, targetDistanceMap.get(parent.getId()) + localDistance);
+                }
+                nextLevel.add(parent);
+                sourceDistanceMap.put(parent.getId(), localDistance);
+            }
+        }
+        sourceUnprocessedAncestors.clear();
+        sourceUnprocessedAncestors.addAll(nextLevel);
+
+        return minDistance;
+
     }
 }

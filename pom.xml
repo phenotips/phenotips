@@ -224,9 +224,24 @@
               <method>long size()</method>
             </difference>
             <difference>
-              <className>**/ontology/*Service</className>
+              <className>**/ontology/OntologyService</className>
               <differenceType>7012</differenceType>
               <method>long count(java.util.Map)</method>
+            </difference>
+            <difference>
+              <className>**/ontology/OntologyService</className>
+              <differenceType>7012</differenceType>
+              <method>long getDistance(java.lang.String, java.lang.String)</method>
+            </difference>
+            <difference>
+              <className>**/ontology/OntologyService</className>
+              <differenceType>7012</differenceType>
+              <method>long getDistance(org.phenotips.ontology.OntologyTerm, org.phenotips.ontology.OntologyTerm)</method>
+            </difference>
+            <difference>
+              <className>**/ontology/OntologyTerm</className>
+              <differenceType>7012</differenceType>
+              <method>long getDistanceTo(org.phenotips.ontology.OntologyTerm)</method>
             </difference>
           </ignored>
           <excludes>

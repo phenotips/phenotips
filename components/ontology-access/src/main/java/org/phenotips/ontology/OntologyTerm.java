@@ -72,6 +72,15 @@ public interface OntologyTerm
     Set<OntologyTerm> getAncestors();
 
     /**
+     * Find the distance to another term in the ontology structure.
+     * 
+     * @param other the term to which the distance should be computed
+     * @return the minimum number of edges that connect the two terms in the DAG representing the ontology, or -1 if the
+     *         terms are not connected
+     */
+    long getDistanceTo(OntologyTerm other);
+
+    /**
      * Generic meta-property access. Any property defined in the ontology for this term can be accessed this way.
      * 
      * @param name the name of the property to access
