@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 
 /**
@@ -176,6 +177,24 @@ public class SolrOntologyTerm implements OntologyTerm
         sourceUnprocessedAncestors.addAll(nextLevel);
 
         return minDistance;
+    }
 
+    @Override
+    public int hashCode()
+    {
+        String id = getId();
+        return (id != null ? id.hashCode() : 0);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || !(obj instanceof OntologyTerm)) {
+            return false;
+        }
+        return StringUtils.equals(getId(), ((OntologyTerm) obj).getId());
     }
 }
