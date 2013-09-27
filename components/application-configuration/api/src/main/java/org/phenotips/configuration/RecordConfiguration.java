@@ -21,7 +21,6 @@ package org.phenotips.configuration;
 
 import org.phenotips.Constants;
 
-import org.xwiki.component.annotation.Role;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
@@ -35,12 +34,29 @@ import java.util.List;
  * @since 1.0M9
  */
 @Unstable
-@Role
-public interface PatientRecordConfiguration
+public interface RecordConfiguration
 {
-    /** The XClass used for storing the configuration. */
-    EntityReference PREFERENCES_CLASS = new EntityReference("DBConfigurationClass", EntityType.DOCUMENT,
-        Constants.CODE_SPACE_REFERENCE);
+    /** The XClass used for storing the global configuration. */
+    EntityReference GLOBAL_PREFERENCES_CLASS =
+        new EntityReference("DBConfigurationClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+    /** The XClass used for storing group- and user-specific configurations. */
+    EntityReference CUSTOM_PREFERENCES_CLASS =
+        new EntityReference("FormCustomizationClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+    /**
+     * The list of sections enabled in the patient record.
+     * 
+     * @return an unmodifiable ordered list of sections, empty if none are enabled or the configuration is missing
+     */
+    List<RecordSection> getEnabledSections();
+
+    /**
+     * The list of available sections, enabled or disabled, that can be displayed in the patient record.
+     * 
+     * @return an unmodifiable ordered list of sections, or an empty list if none are defined
+     */
+    List<RecordSection> getAllSections();
 
     /**
      * The list of fields displayed in the patient record.

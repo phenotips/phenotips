@@ -1,2 +1,2 @@
-org.phenotips.configuration.internal.DefaultPatientRecordConfiguration
-org.phenotips.configuration.script.PatientRecordConfigurationScriptService
+org.phenotips.configuration.internal.DefaultRecordConfigurationManager
+org.phenotips.configuration.script.RecordConfigurationManagerScriptService

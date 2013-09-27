@@ -287,8 +287,9 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 #if ($xcontext.action == 'view')
 #set ($obj = $doc.getObject('PhenoTips.PhenoTipsGroupClass'))
 #set ($sections = [
-  {'id' : 'members', 'name' : "Group members", 'icon' : 'group',       'content' : "{{include reference='XWiki.XWikiGroupSheet'/}}"},
-  {'id' : 'cases',   'name' : "Cases",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.GroupCases"/}}'}
+  {'id' : 'members', 'name' : "Group members", 'icon' : 'group',       'content' : '{{include reference="XWiki.XWikiGroupSheet"/}}'},
+  {'id' : 'cases',   'name' : "Cases",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.GroupCases"/}}'},
+  {'id' : 'form' ,   'name' : "Patient form",  'icon' : 'cogs',        'content' : '{{include reference="PhenoTips.FormDesigner"/}}'}
 ])
 #set ($menu = [])
 #set ($contents = {})

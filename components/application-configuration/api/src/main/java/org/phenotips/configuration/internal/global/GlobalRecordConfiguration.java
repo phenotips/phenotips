@@ -17,12 +17,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.phenotips.configuration.internal;
+package org.phenotips.configuration.internal.global;
 
-import org.phenotips.configuration.PatientRecordConfiguration;
+import org.phenotips.configuration.RecordConfiguration;
+import org.phenotips.configuration.RecordElement;
+import org.phenotips.configuration.RecordSection;
 import org.phenotips.data.Patient;
 
-import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -35,12 +36,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -48,13 +46,12 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.classes.BaseClass;
 
 /**
- * Default implementation of the {@link PatientRecordConfiguration} role.
+ * Default (global) implementation of the {@link RecordConfiguration} role.
  * 
  * @version $Id$
+ * @since 1.0M9
  */
-@Component
-@Singleton
-public class DefaultPatientRecordConfiguration implements PatientRecordConfiguration
+public class GlobalRecordConfiguration implements RecordConfiguration
 {
     /** The location where preferences are stored. */
     private static final EntityReference PREFERENCES_LOCATION = new EntityReference("WebHome", EntityType.DOCUMENT,
@@ -63,46 +60,64 @@ public class DefaultPatientRecordConfiguration implements PatientRecordConfigura
     /** The name of the UIX parameter used for specifying the order of fields and sections. */
     private static final String SORT_PARAMETER_NAME = "order";
 
-    /** The name of the UIX parameter used for specifying which fields and sections are enabled. */
-    private static final String ENABLED_PARAMETER_NAME = "enabled";
-
-    /** Logging helper object. */
-    @Inject
-    private Logger logger;
-
     /** Provides access to the current request context. */
-    @Inject
-    private Execution execution;
+    protected Execution execution;
 
     /** Lists the patient form sections and fields. */
-    @Inject
-    private UIExtensionManager uixManager;
+    protected UIExtensionManager uixManager;
 
     /** Sorts fields by their declared order. */
-    @Inject
-    @Named("sortByParameter")
-    private UIExtensionFilter orderFilter;
+    protected UIExtensionFilter orderFilter;
+
+    /** Logging helper object. */
+    private Logger logger = LoggerFactory.getLogger(GlobalRecordConfiguration.class);
+
+    /**
+     * Simple constructor passing all the needed components.
+     * 
+     * @param execution the execution context manager
+     * @param uixManager the UIExtension manager
+     * @param orderFilter UIExtension filter for ordering sections and elements
+     */
+    public GlobalRecordConfiguration(Execution execution, UIExtensionManager uixManager, UIExtensionFilter orderFilter)
+    {
+        this.execution = execution;
+        this.uixManager = uixManager;
+        this.orderFilter = orderFilter;
+    }
+
+    @Override
+    public List<RecordSection> getAllSections()
+    {
+        List<RecordSection> result = new LinkedList<RecordSection>();
+        List<UIExtension> sections = this.uixManager.get("org.phenotips.patientSheet.content");
+        sections = this.orderFilter.filter(sections, SORT_PARAMETER_NAME);
+        for (UIExtension sectionExtension : sections) {
+            RecordSection section = new DefaultRecordSection(sectionExtension, this.uixManager, this.orderFilter);
+            result.add(section);
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    @Override
+    public List<RecordSection> getEnabledSections()
+    {
+        List<RecordSection> result = new LinkedList<RecordSection>();
+        for (RecordSection section : getAllSections()) {
+            if (section.isEnabled()) {
+                result.add(section);
+            }
+        }
+        return Collections.unmodifiableList(result);
+    }
 
     @Override
     public List<String> getEnabledFieldNames()
     {
         List<String> result = new LinkedList<String>();
-        List<UIExtension> sections = this.uixManager.get("org.phenotips.patientSheet.content");
-        sections = this.orderFilter.filter(sections, SORT_PARAMETER_NAME);
-        for (UIExtension section : sections) {
-            if (!isEnabled(section)) {
-                continue;
-            }
-            List<UIExtension> fields = this.uixManager.get(section.getId());
-            fields = this.orderFilter.filter(fields, SORT_PARAMETER_NAME);
-            for (UIExtension field : fields) {
-                String usedFields = field.getParameters().get("fields");
-                if (StringUtils.isBlank(usedFields) || !isEnabled(field)) {
-                    continue;
-                }
-                for (String usedField : StringUtils.split(usedFields, ",")) {
-                    result.add(StringUtils.trim(usedField));
-                }
+        for (RecordSection section : getEnabledSections()) {
+            for (RecordElement element : section.getActiveElements()) {
+                result.addAll(element.getDisplayedFields());
             }
         }
         return Collections.unmodifiableList(result);
@@ -128,7 +143,7 @@ public class DefaultPatientRecordConfiguration implements PatientRecordConfigura
         String result = "dd/MM/yyyy";
         try {
             BaseObject settings =
-                context.getWiki().getDocument(PREFERENCES_LOCATION, context).getXObject(PREFERENCES_CLASS);
+                context.getWiki().getDocument(PREFERENCES_LOCATION, context).getXObject(GLOBAL_PREFERENCES_CLASS);
             result = StringUtils.defaultIfBlank(settings.getStringValue("dateOfBirthFormat"), result);
         } catch (XWikiException ex) {
             this.logger.warn("Failed to read preferences: {}", ex.getMessage());
@@ -138,17 +153,10 @@ public class DefaultPatientRecordConfiguration implements PatientRecordConfigura
         return result;
     }
 
-    /**
-     * Check if an extension is enabled. Extensions are disabled by adding a {@code enabled=false} parameter. By default
-     * extensions are enabled, so this method returns {@code false } only if it is explicitly disabled.
-     * 
-     * @param extension the extension to check
-     * @return {@code false} if this extension has a parameter named {@code enabled} with the value {@code false},
-     *         {@code true} otherwise
-     */
-    private boolean isEnabled(UIExtension extension)
+    @Override
+    public String toString()
     {
-        return !StringUtils.equals("false", extension.getParameters().get(ENABLED_PARAMETER_NAME));
+        return StringUtils.join(getEnabledSections(), ", ");
     }
 
     /**
