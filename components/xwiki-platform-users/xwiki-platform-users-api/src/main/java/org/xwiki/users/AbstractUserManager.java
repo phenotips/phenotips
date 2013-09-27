@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,21 +16,26 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.users;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>users</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Users and Groups</name>
+/**
+ * Base class for implementing a user manager.
+ * 
+ * @version $Id$
+ * @since 1.0M9
+ */
+public abstract class AbstractUserManager implements UserManager
+{
+    @Override
+    public User getUser(String identifier)
+    {
+        return getUser(identifier, false);
+    }
 
-  <modules>
-    <module>api</module>
-    <module>ui</module>
-  </modules>
-</project>
+    @Override
+    public User getCurrentUser()
+    {
+        return null;
+    }
+}

@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,21 +16,41 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.users.script;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>users</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Users and Groups</name>
+import org.xwiki.component.annotation.Component;
+import org.xwiki.script.service.ScriptService;
+import org.xwiki.stability.Unstable;
+import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
-  <modules>
-    <module>api</module>
-    <module>ui</module>
-  </modules>
-</project>
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+/**
+ * User management services.
+ * 
+ * @version $Id$
+ * @since 1.0M9
+ */
+@Unstable
+@Component
+@Named("users")
+@Singleton
+public class UserManagerScriptService implements ScriptService
+{
+    @Inject
+    private UserManager manager;
+
+    /**
+     * Get the currently logged in user.
+     * 
+     * @return the currently logged in user, or {@code null} if no user is logged in
+     */
+    public User getCurrentUser()
+    {
+        return this.manager.getCurrentUser();
+    }
+}

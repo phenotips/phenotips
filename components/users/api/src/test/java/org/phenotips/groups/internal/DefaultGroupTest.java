@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,21 +16,33 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.phenotips.groups.internal;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>users</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Users and Groups</name>
+import org.phenotips.groups.Group;
 
-  <modules>
-    <module>api</module>
-    <module>ui</module>
-  </modules>
-</project>
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.query.QueryException;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+/**
+ * Tests for the default {@link Group} implementation, {@link DefaultGroup}.
+ * 
+ * @version $Id$
+ */
+public class DefaultGroupTest
+{
+    /** Basic tests for {@link DefaultGroup#getReference()}. */
+    @Test
+    public void getReference() throws ComponentLookupException, QueryException
+    {
+        Group g = new DefaultGroup(null);
+        Assert.assertNull(g.getReference());
+
+        DocumentReference a = new DocumentReference("xwiki", "Groups", "Group A");
+        Assert.assertEquals(a, new DefaultGroup(a).getReference());
+    }
+}

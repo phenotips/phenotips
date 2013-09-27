@@ -41,6 +41,7 @@
     <module>patient-data</module>
     <module>patient-access-rules</module>
     <module>patient-measurements</module>
+    <module>xwiki-platform-users</module>
     <module>users</module>
     <module>application-configuration</module>
     <module>patient-tools</module>

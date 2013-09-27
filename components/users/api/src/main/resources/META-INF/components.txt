@@ -1,0 +1,2 @@
+org.phenotips.groups.internal.DefaultGroupManager
+org.phenotips.groups.script.GroupManagerScriptService
