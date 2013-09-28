@@ -102,9 +102,9 @@ public class DefaultRecordSectionTest
         Assert.assertFalse(s.isEnabled());
     }
 
-    /** {@link RecordSection#getActiveElements()} returns only enabled fields. */
+    /** {@link RecordSection#getEnabledElements()} returns only enabled fields. */
     @Test
-    public void getActiveElements() throws ComponentLookupException
+    public void getEnabledElements() throws ComponentLookupException
     {
         UIExtensionManager m = mock(UIExtensionManager.class);
         UIExtension ex = mock(UIExtension.class);
@@ -157,7 +157,7 @@ public class DefaultRecordSectionTest
         List<UIExtension> sorted = realFilter.filter(fields, "order");
         when(filter.filter(fields, "order")).thenReturn(sorted);
 
-        List<RecordElement> result = s.getActiveElements();
+        List<RecordElement> result = s.getEnabledElements();
         Assert.assertEquals(4, result.size());
         for (int i = 0; i < 4; ++i) {
             Assert.assertEquals(String.valueOf(i), result.get(i).getExtension().getId());

@@ -116,7 +116,7 @@ public class GlobalRecordConfiguration implements RecordConfiguration
     {
         List<String> result = new LinkedList<String>();
         for (RecordSection section : getEnabledSections()) {
-            for (RecordElement element : section.getActiveElements()) {
+            for (RecordElement element : section.getEnabledElements()) {
                 result.addAll(element.getDisplayedFields());
             }
         }

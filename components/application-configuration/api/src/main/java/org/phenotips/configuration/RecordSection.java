@@ -68,5 +68,5 @@ public interface RecordSection
      * @return an unmodifiable ordered list of {@link RecordElement#isEnabled() enabled elements}, empty if none are
      *         configured or enabled
      */
-    List<RecordElement> getActiveElements();
+    List<RecordElement> getEnabledElements();
 }

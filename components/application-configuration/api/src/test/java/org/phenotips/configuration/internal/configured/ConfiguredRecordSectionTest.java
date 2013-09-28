@@ -70,9 +70,9 @@ public class ConfiguredRecordSectionTest
         Assert.assertTrue(s.isEnabled());
     }
 
-    /** {@link RecordSection#getActiveElements()} returns only fields listed in the group configuration. */
+    /** {@link RecordSection#getEnabledElements()} returns only fields listed in the group configuration. */
     @Test
-    public void getActiveElements() throws ComponentLookupException
+    public void getEnabledElements() throws ComponentLookupException
     {
         CustomConfiguration cc = mock(CustomConfiguration.class);
         UIExtensionManager m = mock(UIExtensionManager.class);
@@ -139,7 +139,7 @@ public class ConfiguredRecordSectionTest
         configuredFields.add("onset");
         when(cc.getFieldsOverride()).thenReturn(configuredFields);
 
-        List<RecordElement> result = s.getActiveElements();
+        List<RecordElement> result = s.getEnabledElements();
         Assert.assertEquals(4, result.size());
         Assert.assertEquals("identifier", result.get(0).getExtension().getId());
         Assert.assertEquals("date_of_birth", result.get(1).getExtension().getId());

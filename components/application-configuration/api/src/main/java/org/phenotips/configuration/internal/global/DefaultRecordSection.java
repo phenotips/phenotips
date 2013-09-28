@@ -99,7 +99,7 @@ public class DefaultRecordSection implements RecordSection
     }
 
     @Override
-    public List<RecordElement> getActiveElements()
+    public List<RecordElement> getEnabledElements()
     {
         List<RecordElement> result = new LinkedList<RecordElement>();
         for (RecordElement element : getAllElements()) {
@@ -115,7 +115,7 @@ public class DefaultRecordSection implements RecordSection
     {
         StringBuilder result = new StringBuilder(getName());
         result.append(" [");
-        result.append(StringUtils.join(getActiveElements(), ", "));
+        result.append(StringUtils.join(getEnabledElements(), ", "));
         result.append("]");
         return result.toString();
     }
