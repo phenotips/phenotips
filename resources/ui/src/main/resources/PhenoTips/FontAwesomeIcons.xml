@@ -35,13 +35,123 @@
   <date>1378521916000</date>
   <contentUpdateDate>1378520932000</contentUpdateDate>
   <version>1.1</version>
-  <title/>
+  <title>Macro for inserting Font Awesome icons</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
+  <object>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.FontAwesomeIcons</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>20e6d01c-ccdd-4417-b3c5-b67851c65298</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>[class^="icon-"], [class*=" icon-"] {
+  font-family: inherit;
+}
+[class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: FontAwesome;
+}
+.icon-spin:before {
+  display: inline-block;
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  -webkit-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+}
+.icon-spin {
+  -moz-animation: none;
+  -o-animation: none;
+  -webkit-animation: none;
+  animation: none;
+}</code>
+    </property>
+    <property>
+      <name>FontAwesome text font override</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
   <object>
     <class>
       <name>XWiki.WikiMacroClass</name>
@@ -180,6 +290,7 @@
 ##
 ## Pull the Font Awesome style
 $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
 ##
 {{/velocity}}{{velocity}}(% class="icon-$!iconName $!iconSize $!cssClass" title="$!{xcontext.macro.params.title}"%)$!{text}(%%){{/velocity}}</code>
     </property>
