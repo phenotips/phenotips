@@ -134,5 +134,779 @@
       <sheet>PhenoTipsGroupSheet</sheet>
     </property>
   </object>
+  <object>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupClass</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>554a74fa-cfea-4b34-aed6-04a5a54311c2</guid>
+    <property>
+      <cache>forbid</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function() {
+  var groupsTable = $('groups-directory');
+  if (!groupsTable) {
+    return false;
+  }
+  groupsTable.select('tr .tools a.tool.delete').invoke('observe', 'click', function(clickEvent) {
+    clickEvent.stop();
+    var item = clickEvent.findElement('a');
+    item.blur();
+    if (item.disabled) {
+      // Do nothing if the button was already clicked and it's waiting for a response from the server.
+      return;
+    } else {
+      var url = item.href + "?confirm=1&amp;form_token=" + $$('meta[name=form_token]')[0].content + (Prototype.Browser.Opera ? "" : "&amp;ajax=1");
+      new XWiki.widgets.ConfirmedAjaxRequest(
+        /* Ajax request URL */
+        url,
+        /* Ajax request parameters */
+        {
+          onCreate : function() {
+            // Disable the button, to avoid a cascade of clicks from impatient users
+            item.disabled = true;
+          },
+          onSuccess : function() {
+            // Go to space WebHome
+            // window.location = new XWiki.Document('WebHome', XWiki.Document.currentSpace).getURL('view');
+            item.up('tr').remove();
+          },
+          onFailure : function() {
+            // Better luck next time!
+            item.disabled = false;
+          }
+        },
+        /* Interaction parameters */
+        {
+          confirmationText: "Are you sure you wish to delete this group?"
+        }
+      );
+    }
+  });
+
+  var creationForm = $('group-creation-form');
+  if (creationForm) {
+    creationForm.observe('submit', function(event) {
+      var iName = creationForm.down('input[name="name"]');
+      if (iName.value.strip() == '') {
+        event.stop();
+        iName.focus();
+      }
+    });
+  }
+});</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupClass</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>0f1cfed1-fd4f-49a8-941a-9fe90c159c11</guid>
+    <property>
+      <cache>forbid</cache>
+    </property>
+    <property>
+      <code>#template("colorThemeInit.vm")
+
+#groups-directory td {
+  border: 0 none;
+  border-bottom: 2px solid $theme.borderColor;
+  padding: 1em;
+  vertical-align: top;
+}
+#groups-directory tr:last-child td {
+  border-bottom: 0 none;
+}
+
+#groups-directory .members {
+  font-size: .8em;
+  font-style: italic;
+  opacity: .5;
+}
+
+#groups-directory td.desc &gt; div {
+  background-color: $theme.backgroundSecondaryColor;
+  border-radius: 0 4px 4px;
+  padding: 0.5em 1em;
+  position: relative;
+}
+#groups-directory td.desc &gt; div:before {
+  content: "";
+  border-top: 0 none;
+  border-right: 16px solid $theme.backgroundSecondaryColor;
+  border-bottom: 16px solid transparent;
+  border-left: 0 none;
+  position: absolute;
+  top: 0;
+  left: -16px;
+}
+
+#group-creation-form input {
+  width: auto;
+}
+#groups-tools {
+  text-align: right;
+}
+#groups-tools .read-more {
+  font-size: .9;
+}</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.WikiMacroClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>9</number>
+        <prettyName>Macro code</prettyName>
+        <rows>20</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentDescription>
+        <disabled>0</disabled>
+        <name>contentDescription</name>
+        <number>8</number>
+        <prettyName>Content description (Not applicable for "No content" type)</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </contentDescription>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>7</number>
+        <prettyName>Macro content type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>Optional|Mandatory|No content</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <defaultCategory>
+        <disabled>0</disabled>
+        <name>defaultCategory</name>
+        <number>4</number>
+        <prettyName>Default category</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </defaultCategory>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>3</number>
+        <prettyName>Macro description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <id>
+        <disabled>0</disabled>
+        <name>id</name>
+        <number>1</number>
+        <prettyName>Macro id</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </id>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Macro name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <supportsInlineMode>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>supportsInlineMode</name>
+        <number>5</number>
+        <prettyName>Supports inline mode</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </supportsInlineMode>
+      <visibility>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>visibility</name>
+        <number>6</number>
+        <prettyName>Macro visibility</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>|</separator>
+        <separators>|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>Current User|Current Wiki|Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </visibility>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupClass</name>
+    <number>0</number>
+    <className>XWiki.WikiMacroClass</className>
+    <guid>dbcd4ec8-4a94-4634-80c7-839729f02690</guid>
+    <property>
+      <code>{{velocity output="false"}}
+#set ($errorMessage = '')
+#if ($request.doCreate == '1' &amp;&amp; $services.csrf.isTokenValid($request.form_token))
+  #if ("$!{request.name.trim()}" == '')
+    #set ($errorMessage = 'Please enter a group name')
+  #else
+    #set ($targetDocument = $services.model.createDocumentReference($xcontext.database, $request.space, $request.name.trim()))
+    #if ($xwiki.exists($targetDocument))
+      #set ($errorMessage = "A group named //${request.name}// already exists. Please choose a different name")
+    #else
+      $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)"))
+      #break
+    #end
+  #end
+#end
+
+#set ($groupClassName = 'PhenoTips.PhenoTipsGroupClass')
+#set ($groupTemplateName = 'PhenoTips.PhenoTipsGroupTemplate')
+#set ($groupsHome = 'Groups.WebHome')
+#set ($orders = {
+  'name' : 'asc',
+  'members' : 'desc'
+})
+#set ($defaultOrder = 'name')
+#set ($order = "$!xcontext.macro.params.orderby")
+#if (!$orders.get($order))
+  #set($order = $defaultOrder)
+#end
+
+#set ($query = $services.query.xwql("from doc.object(${groupClassName}) as grp where doc.fullName &lt;&gt; :template").bindValue('template', $groupTemplateName))
+#set ($groupDocs = $xwiki.wrapDocs($query.execute()))
+
+#set ($groupData = [])
+
+#foreach ($groupDoc in $groupDocs)
+  #set ($groupObj = $groupDoc.getObject($groupClassName))
+  #set ($memberObjs = $groupDoc.getObjects('XWiki.XWikiGroups'))
+  #set ($phantomMemberObjs = $groupDoc.getObjects('XWiki.XWikiGroups', 'member', ''))
+  #set ($discard = $groupData.add({
+      'doc' : $groupDoc,
+      'obj' : $groupObj,
+      'doc.fullName' : $groupDoc.fullName,
+      'name' : $groupDoc.title,
+      'logo' : "$!groupObj.getProperty('image').value",
+      'members' : $mathtool.sub($memberObjs.size(), $phantomMemberObjs.size())
+  }))
+  #end
+#set ($groupSortedData = $sorttool.sort($groupData, ["${order}:${orders.get($order)}"]))
+
+#set ($max = $mathtool.toInteger($xcontext.macro.params.max))
+#if (!($max &gt; 0 &amp;&amp; $max &lt; $groupSortedData.size()))
+  #set ($max = $groupSortedData.size())
+#end
+
+$xwiki.ssx.use($groupClassName)
+$xwiki.jsx.use($groupClassName, {'minify' : false})
+{{/velocity}}
+
+{{velocity}}
+(% id="groups-directory" %)
+#foreach ($groupDatum in $groupSortedData)#if ($foreach.index &lt; $max)
+|(% class="logo" %) #if ("$!{groupDatum.get('logo')}" != '')[[[[image:${groupDatum.get('doc.fullName')}@${groupDatum.get('logo')}|| width="160px"]]&gt;&gt;$groupDatum.get('doc.fullName')]]#end ##
+|(% class="name" %) [[$groupDatum.get('name')&gt;&gt;$groupDatum.get('doc.fullName')]] \\(% class="members"%)$groupDatum.get('members') member#if($groupDatum.get('members') != 1)s#end(%%)##
+#if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{groupDatum.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($groupDatum.get('doc').display('description'))))#end#end
+#if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##
+  [[{{icon name="pencil" title="Edit this group"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'edit')||class="tool edit"]] ##
+  [[{{icon name="remove" title="Delete this group"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'delete')||class="tool delete"]] ##
+)))#end\\
+#end#end
+#if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)
+
+{{html}}
+&lt;form id="group-creation-form" class="xformInline" action="$xwiki.getURL(${groupsHome}).concat('#group-creation-form')" method="post"&gt;&lt;div&gt;
+  &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+  &lt;input type="hidden" name="doCreate" value="1" /&gt;
+  &lt;input type="hidden" name="classTemplate" value="$groupTemplateName" /&gt;
+  &lt;input type="hidden" name="space" value="$xwiki.getDocument(${groupsHome}).space" /&gt;
+  &lt;input type="hidden" name="parent" value="${groupsHome}" /&gt;
+  &lt;label&gt;&lt;span class="icon-plus-sign"&gt; &lt;/span&gt;New group: &lt;input type="text" name="name" placeholder="Name" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="Create"/&gt;
+&lt;/div&gt;&lt;/form&gt;
+{{/html}}
+#if ($errorMessage != '')
+
+{{error}}$errorMessage{{/error}}
+#end
+#end
+#if ($xcontext.macro.params.fullinfo != 'true')
+
+(% id="groups-tools" %)((([[Read more »&gt;&gt;$groupsHome|| class="tool read-more"]])))
+#end
+{{/velocity}}</code>
+    </property>
+    <property>
+      <contentDescription/>
+    </property>
+    <property>
+      <contentType>No content</contentType>
+    </property>
+    <property>
+      <defaultCategory/>
+    </property>
+    <property>
+      <description>Lists PhenoTips groups</description>
+    </property>
+    <property>
+      <id>phenotips-groups</id>
+    </property>
+    <property>
+      <name>PhenoTips groups list</name>
+    </property>
+    <property>
+      <supportsInlineMode>0</supportsInlineMode>
+    </property>
+    <property>
+      <visibility>Current Wiki</visibility>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.WikiMacroParameterClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <defaultValue>
+        <disabled>0</disabled>
+        <name>defaultValue</name>
+        <number>4</number>
+        <prettyName>Parameter default value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </defaultValue>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>2</number>
+        <prettyName>Parameter description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <mandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>mandatory</name>
+        <number>3</number>
+        <prettyName>Parameter mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </mandatory>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Parameter name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupClass</name>
+    <number>0</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>ab1c9598-a891-483f-b9e6-c9f040626944</guid>
+    <property>
+      <defaultValue>false</defaultValue>
+    </property>
+    <property>
+      <description>Whether to display the group description (true|false; defaults to false)</description>
+    </property>
+    <property>
+      <mandatory>0</mandatory>
+    </property>
+    <property>
+      <name>fullinfo</name>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.WikiMacroParameterClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <defaultValue>
+        <disabled>0</disabled>
+        <name>defaultValue</name>
+        <number>4</number>
+        <prettyName>Parameter default value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </defaultValue>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>2</number>
+        <prettyName>Parameter description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <mandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>mandatory</name>
+        <number>3</number>
+        <prettyName>Parameter mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </mandatory>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Parameter name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupClass</name>
+    <number>1</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>580415f3-fe52-483d-9638-b9b60882b526</guid>
+    <property>
+      <defaultValue>false</defaultValue>
+    </property>
+    <property>
+      <description>Whether to display the group management tools (edit, delete, create) for administrators (true|false; defaults to false)</description>
+    </property>
+    <property>
+      <mandatory>0</mandatory>
+    </property>
+    <property>
+      <name>tools</name>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.WikiMacroParameterClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <defaultValue>
+        <disabled>0</disabled>
+        <name>defaultValue</name>
+        <number>4</number>
+        <prettyName>Parameter default value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </defaultValue>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>2</number>
+        <prettyName>Parameter description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <mandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>mandatory</name>
+        <number>3</number>
+        <prettyName>Parameter mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </mandatory>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Parameter name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupClass</name>
+    <number>2</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>316f42fd-f7b0-4157-970c-cbd0507d2fc6</guid>
+    <property>
+      <defaultValue>name</defaultValue>
+    </property>
+    <property>
+      <description>How to sort the groups. Supported values: name, members. Default: name.</description>
+    </property>
+    <property>
+      <mandatory>0</mandatory>
+    </property>
+    <property>
+      <name>orderby</name>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.WikiMacroParameterClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <defaultValue>
+        <disabled>0</disabled>
+        <name>defaultValue</name>
+        <number>4</number>
+        <prettyName>Parameter default value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </defaultValue>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>2</number>
+        <prettyName>Parameter description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <mandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>mandatory</name>
+        <number>3</number>
+        <prettyName>Parameter mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </mandatory>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Parameter name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupClass</name>
+    <number>3</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>02c37cc2-92d8-4c15-8d6d-c66f7b0e39a4</guid>
+    <property>
+      <defaultValue/>
+    </property>
+    <property>
+      <description>How many entries to display for a list not displayed in full. Values that are not between 1 and the size of the list are interpreted as "display the entire list".</description>
+    </property>
+    <property>
+      <mandatory>0</mandatory>
+    </property>
+    <property>
+      <name>max</name>
+    </property>
+  </object>
   <content/>
 </xwikidoc>
