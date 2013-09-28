@@ -831,18 +831,34 @@ document.observe("xwiki:dom:loaded", function(){
 ## ----------------------------------------------------------------------
 #macro(_formDesigner__updateExtensionData $extensionDatum $extensionType $enabledExtensionIds)
   #if ($request.getParameterMap().containsKey("${extensionType}_${extensionDatum.id}_order") &amp;&amp; $request.getParameterMap().containsKey("${extensionType}_${extensionDatum.id}_extensionPointId"))
-    #set ($enabled = $enabledExtensionIds.contains($extensionDatum.id))
-    #set ($required = "$!request.get(""${extensionType}_${extensionDatum.id}_required"")")
-    #set ($order = $request.get("${extensionType}_${extensionDatum.id}_order"))
+    #set ($uixParams = {
+      'enabled'  : $enabledExtensionIds.contains($extensionDatum.id),
+      'required' : "$!request.get(""${extensionType}_${extensionDatum.id}_required"")",
+      'order'    : $request.get("${extensionType}_${extensionDatum.id}_order"),
+      'title'    : ${extensionDatum.title}
+    })
+    #set ($uixModifiedParams = {})
+    #foreach ($param in $uixParams.keySet())
+      #if ("$!{uixParams.get($param)}" != "$!{extensionDatum.uix.parameters.get($param)}")
+        #set ($discard = $uixModifiedParams.put($param, $uixParams.get($param)))
+      #end
+    #end
     #set ($extPt = $request.get("${extensionType}_${extensionDatum.id}_extensionPointId"))
-    #if ($enabled != $extensionDatum.uix.parameters.enabled || $required != "$!extensionDatum.uix.parameters.required" || $order != $extensionDatum.uix.parameters.order || $extPt != $extensionDatum.uix.getExtensionPointId())
-      * [$extensionType] Must update: $extensionDatum.doc.fullName
+    #if ($uixModifiedParams.size() &gt; 0 || $extPt != $extensionDatum.uix.getExtensionPointId())
       #set ($uixObj = $extensionDatum.doc.getObject($uixClass))
       #set ($discard = $uixObj.set('extensionPointId', $extPt))
-      #set ($discard = $uixObj.set('parameters', "title=${extensionDatum.title}$!{util.newline}enabled=$!{enabled}$!{util.newline}required=$!{required}$!{util.newline}order=$!{order}"))
+      #set ($originalParamsBlock = $uixObj.getProperty('parameters').value)
+      #set ($prevParamsBlock = $originalParamsBlock)
+      #set ($newParamsBlock = $originalParamsBlock)
+      #foreach ($param in $uixModifiedParams.keySet())
+        #set ($newParamsBlock = $prevParamsBlock.replaceAll("${param}=.*", "${param}=${uixModifiedParams.get($param)}"))
+        #if ($newParamsBlock == $prevParamsBlock)
+          #set ($newParamsBlock = "${prevParamsBlock}${util.newline}${param}=${uixModifiedParams.get($param)}")
+        #end
+        #set ($prevParamsBlock = $newParamsBlock)
+      #end
+      #set ($discard = $uixObj.set('parameters', $newParamsBlock))
       #set ($discard = $extensionDatum.doc.save())
-    #else
-      * [$extensionType] Unchanged: $extensionDatum.doc.fullName
     #end
   #end
 #end
