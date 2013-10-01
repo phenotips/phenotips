@@ -58,7 +58,7 @@
 ##
 #set ($targetClassName = 'PhenoTips.PatientClass')
 #set ($targetClass = $xwiki.getClass($targetClassName))
-#set ($activeFields = $services.patientConfiguration.enabledFieldNames)
+#set ($activeFields = $services.recordConfiguration.activeConfiguration.enabledFieldNames)
 #set ($dateFormat = $xwiki.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy'))
 #set ($query = ', BaseObject obj where doc.space = ? and obj.name = doc.fullName and obj.className = ?')
 #set ($parameters = ['data', $targetClassName])
@@ -348,7 +348,7 @@ ${newline}##
     #else
       #set ($value = $!patientObj.getProperty($field).value)
       #if ("$!value.getTime()" != '')
-        #set ($format = $services.patientConfiguration.dateOfBirthFormat)
+        #set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
         "$!{xwiki.formatDate($value, $format)}"##
       #elseif ("$!value.size()" != '')
         "##

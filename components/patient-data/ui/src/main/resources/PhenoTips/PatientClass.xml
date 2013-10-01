@@ -124,7 +124,7 @@
     </consanguinity>
     <date_of_birth>
       <customDisplay>{{velocity}}{{html clean=false}}
-#set ($format = $services.patientConfiguration.dateOfBirthFormat)
+#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
 #if ($xcontext.action == 'edit')
   #set ($date = $xwiki.jodatime.mutableDateTime)
@@ -192,7 +192,7 @@
     </date_of_birth>
     <exam_date>
       <customDisplay>{{velocity}}{{html clean=false}}
-#set ($format = $services.patientConfiguration.dateOfBirthFormat)
+#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
 #if ($xcontext.action == 'edit')
   #set ($date = $xwiki.jodatime.mutableDateTime)
