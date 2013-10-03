@@ -204,7 +204,7 @@
       this._ownershipManager.insert(info);
       var newOwnerInput = $('new-owner-input') || '';
       var newOwnerGroupSelect = $('new-owner-group-select') || '';
-      var canTransferOwnership = newOwnerInput &amp;&amp; newOwnerGroupSelect;
+      var canTransferOwnership = newOwnerInput || newOwnerGroupSelect;
       if (canTransferOwnership) {
         info.insert("You can transfer ownership:")
         var transfer = new Element('table', {id : 'transfer'});
@@ -226,7 +226,12 @@
                         .insert(controlledElement.wrap('td', {'class' : 'controlled-element'}));
            return optionWrapper;
         }
-        transfer.insert(_getTransferOption("group", "to one of your groups", newOwnerGroupSelect)).insert(_getTransferOption("user", "to another user", newOwnerInput));
+        if (newOwnerGroupSelect) {
+          transfer.insert(_getTransferOption("group", "to one of your groups", newOwnerGroupSelect));
+        }
+        if (newOwnerInput) {
+          transfer.insert(_getTransferOption("user", "to another user", newOwnerInput));
+        }
         transfer.select('.controlled-element input, .controlled-element select').each(function (item) {
           item.disabled = true;
         });
@@ -718,6 +723,7 @@ $xwiki.ssx.use($serviceDocName)
             #end
           #end
           #set ($groups = $phgroups)
+          #if (!$groups.isEmpty())
           &lt;select name="owner" id="new-owner-group-select"&gt;
             &lt;option value="" selected="selected"&gt;New owner group&lt;/option&gt;
             &lt;optgroup label="New owner group"&gt;
@@ -726,6 +732,7 @@ $xwiki.ssx.use($serviceDocName)
             #end
             &lt;/optgroup&gt;
           &lt;/select&gt;
+          #end
         #end
       {{/html}})))
     #end
