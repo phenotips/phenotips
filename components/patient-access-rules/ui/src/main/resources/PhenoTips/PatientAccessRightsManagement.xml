@@ -710,8 +710,14 @@ $xwiki.ssx.use($serviceDocName)
         #end
         #if ($canTransfer)
           &lt;div id="new-owner-input"&gt;&lt;input type="text" name="owner" class="suggestUsers" value="" placeholder="New owner" /&gt;&lt;/div&gt;
-##          #set ($groups = $xwiki.wrapDocs($xwiki.searchDocuments(", BaseObject group, BaseObject membership, StringProperty username where group.name = doc.fullName AND group.className = ? and membership.name = doc.fullName and membership.className = 'XWiki.XWikiGroups' and username.id.id = membership.id and username.id.name = 'member' and username.value = ? order by doc.title", ['PhenoTips.PhenoTipsGroupClass', $xcontext.user])))
           #set ($groups = $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
+          #set ($phgroups = [])
+          #foreach ($group in $groups)
+            #if ($group.getObject('PhenoTips.PhenoTipsGroupClass'))
+              #set ($discard = $phgroups.add($group))
+            #end
+          #end
+          #set ($groups = $phgroups)
           &lt;select name="owner" id="new-owner-group-select"&gt;
             &lt;option value="" selected="selected"&gt;New owner group&lt;/option&gt;
             &lt;optgroup label="New owner group"&gt;
