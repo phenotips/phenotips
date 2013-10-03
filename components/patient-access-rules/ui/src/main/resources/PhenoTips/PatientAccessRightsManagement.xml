@@ -318,13 +318,15 @@
             if (owner &amp;&amp; ownershipTransfer) {
               var newOwner = '';
               var newOwnerGroup = ownershipTransfer.down('select');
-              if (!newOwnerGroup.disabled &amp;&amp; newOwnerGroup.selectedIndex &gt; 0) {
+              if (newOwnerGroup &amp;&amp; !newOwnerGroup.disabled &amp;&amp; newOwnerGroup.selectedIndex &gt; 0) {
                 newOwner = newOwnerGroup.options[newOwnerGroup.selectedIndex].text;
               } else {
-                newOwnerUser = ownershipTransfer.down('input[type="text"]');
-                userName = ownershipTransfer.down('.accepted-suggestions li .user-name');
-                if (!newOwnerUser.disabled &amp;&amp; userName) {
-                  newOwner = userName.firstChild.nodeValue;
+                var newOwnerUser = ownershipTransfer.down('input[type="text"]');
+                if (newOwnerUser) {
+                  var userName = ownershipTransfer.down('.accepted-suggestions li .user-name');
+                  if (!newOwnerUser.disabled &amp;&amp; userName) {
+                    newOwner = userName.firstChild.nodeValue;
+                  }
                 }
               }
               if (newOwner) {
