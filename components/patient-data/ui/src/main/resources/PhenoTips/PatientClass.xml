@@ -124,14 +124,8 @@
     </consanguinity>
     <date_of_birth>
       <customDisplay>{{velocity}}{{html clean=false}}
+#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
-#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#if ($config)
-  #set ($format = "$!{config.getProperty('dateOfBirthFormat').value}")
-#end
-#if ("$!format" == '')
-  #set ($format = $definedFormat)
-#end
 #if ($xcontext.action == 'edit')
   #set ($date = $xwiki.jodatime.mutableDateTime)
   #if ("$!xwiki.getUserPreference('timezone')" != '')
@@ -198,14 +192,8 @@
     </date_of_birth>
     <exam_date>
       <customDisplay>{{velocity}}{{html clean=false}}
+#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
-#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#if ($config)
-  #set ($format = "$!{config.getProperty('dateOfBirthFormat').value}")
-#end
-#if ("$!format" == '')
-  #set ($format = $definedFormat)
-#end
 #if ($xcontext.action == 'edit')
   #set ($date = $xwiki.jodatime.mutableDateTime)
   #if ("$!xwiki.getUserPreference('timezone')" != '')
@@ -394,32 +382,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </family_comments>
-    <family_history>
-      <cache>0</cache>
-      <customDisplay>{{velocity}}
-#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#if ($config)
-  {{include document="PhenoTips.PhenotypeDisplay" /}}
-#end
-{{/velocity}}</customDisplay>
-      <disabled>0</disabled>
-      <displayType>select</displayType>
-      <multiSelect>1</multiSelect>
-      <name>family_history</name>
-      <number>19</number>
-      <picker>0</picker>
-      <prettyName>Family History</prettyName>
-      <relationalStorage>1</relationalStorage>
-      <separator> </separator>
-      <separators> ,|</separators>
-      <size>1</size>
-      <sort>none</sort>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <values/>
-      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </family_history>
     <family_of>
       <cache>0</cache>
       <classname/>
@@ -530,7 +492,7 @@
       <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
     </identifier>
     <in_vitro>
-      <customDisplay/>
+      <customDisplay>{{include document="PhenoTips.YesNoNAPicker" /}}</customDisplay>
       <defaultValue/>
       <disabled>0</disabled>
       <displayFormType>checkbox</displayFormType>
@@ -906,7 +868,13 @@
     <reports_history>
       <cache>0</cache>
       <classname/>
-      <customDisplay>{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
+      <customDisplay>{{velocity output="false"}}
+#if (!$value)
+  #set ($value = [])
+#end
+{{/velocity}}
+
+{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
       <disabled>0</disabled>
       <displayType>checkbox</displayType>
       <idField/>

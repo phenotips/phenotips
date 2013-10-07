@@ -43,26 +43,75 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity}}
+#macro (saveDataFromRequest)
+  #set ($patientClass = $xwiki.getClass('PhenoTips.PatientClass'))
+  #set ($patientObject = $patientDoc.getObject('PhenoTips.PatientClass'))
+  #set ($validProperties = $patientClass.propertyNames)
+  #set ($modified = false)
+  #if ("$!externalIdentifier" != '' &amp;&amp; $externalIdentifier != $patientObject.getProperty('external_id').value)
+    $patientObject.set('external_id', $externalIdentifier)
+    #set ($modified = true)
+  #end
+  #foreach ($property in $request.parameterNames)
+    #if ($validProperties.contains($property))
+      #set ($value = $request.getParameter($property))
+      #if ($patientClass.get($property).type == 'DateClass' &amp;&amp; "$!value" != '')
+        ## Dates are expected in the standard format, regardless of the format used to display them in PhenoTips
+        #set ($value = $xwiki.jodatime.getDateTimeFormatterForPattern('yyyy-M-d').parseDateTime($value).toDate())
+      #elseif ($property == 'gender' &amp;&amp; $value != 'M' &amp;&amp; $value != 'F')
+        ## Unknown values should be ignored
+        #set ($value = '')
+      #end
+      #if ($value != "$!patientObject.getProperty($property).value")
+        $patientObject.set($property, $value)
+        #set ($modified = true)
+      #end
+    #end
+  #end
+  #if ($modified)
+    $patientDoc.save('Updated patient data from external request', true)
+  #end
+#end
+#macro (fixMode)
+  #if (!$xwiki.hasAccessLevel($mode, $xcontext.user, $patientDoc.fullName))
+    #set ($mode = 'view')
+  #end
+#end
 #set ($identifier = "$!{request.id}")
 #set ($externalIdentifier = "$!{request.eid}")
 #set ($mode = "$!{request.mode}")
 #if ($mode == '')
   #set ($mode = 'view')
 #end
+#set ($patientDoc = $NULL)
 #if ($identifier != '')
-  #set ($source = $xwiki.getDocument($services.model.createDocumentReference('', 'data', $identifier)))
-  #if (!$source || $source.isNew())
+  #set ($patientDoc = $xwiki.getDocument($services.model.createDocumentReference('', 'data', $identifier)))
+  #if (!$patientDoc || $patientDoc.isNew())
     {{error}}Requested patient not found.{{/error}}
   #else
-    $response.sendRedirect($source.getURL($mode))
+    #fixMode()
+    #saveDataFromRequest()
+    $response.sendRedirect($patientDoc.getURL($mode))
   #end
 #elseif ($externalIdentifier != '')
   #set ($matchingDocuments = $xwiki.wrapDocs($services.query.xwql("where doc.object(PhenoTips.PatientClass).external_id = :eid").bindValue('eid', $externalIdentifier).execute()))
   #if ($matchingDocuments.size() == 1)
-    #set ($source = $matchingDocuments.get(0))
-    $response.sendRedirect($source.getURL($mode))
+    #set ($patientDoc = $matchingDocuments.get(0))
+    #fixMode()
+    #saveDataFromRequest()
+    $response.sendRedirect($patientDoc.getURL($mode))
   #elseif ($matchingDocuments.size() &gt; 1)
     {{error}}Non-unique identifier.{{/error}}
+  #elseif ("$!{request.create}" == 'true')
+    #set ($patient = $services.patients.createNewPatient())
+    #if ($patient)
+      #set ($patientDoc = $xwiki.getDocument($patient.document))
+      #fixMode()
+      #saveDataFromRequest()
+      $response.sendRedirect($xwiki.getURL($patientDoc, $mode))
+    #else
+    {{error}}You don't have the permission to create a new patient record.{{/error}}
+    #end
   #else
     {{error}}Requested patient not found.{{/error}}
   #end

@@ -50,7 +50,7 @@
 $doc.use($obj)
 $xwiki.ssx.use('XWiki.XWikiUserSheet')##
 {{html wiki="true"}}
-  &lt;div class="#if($context.action == 'view')half #{else}full #{end}column"&gt;
+  &lt;div class="#if($xcontext.action == 'view')half #{else}full #{end}column xform"&gt;
     &lt;div class="userPreferences"&gt;
       #if($xcontext.action == 'view' &amp;&amp; $hasEdit)
         &lt;div class="editProfileCategory"&gt;&lt;a href="$doc.getURL('inline', 'category=preferences')"&gt;&lt;span class="hidden"&gt;$services.localization.render('platform.core.profile.category.preferences.edit')&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;
@@ -88,12 +88,16 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
     &lt;/div&gt;
   &lt;/div&gt;
   #set($isMyProfile = ($xwiki.getDocument($xcontext.user).prefixedFullName == $doc.prefixedFullName))
-  #if(($isMyProfile || $hasAdmin) &amp;&amp; !$doc.getObject('XWiki.LDAPProfileClass') &amp;&amp; $xcontext.action == 'view')
+  #if(($isMyProfile || $hasAdmin) &amp;&amp; !$doc.getObject('XWiki.LDAPProfileClass'))
+    #if($xcontext.action == 'view')
     &lt;div class="half column"&gt;
+    #else
+    &lt;div class="full column"&gt;
+    #end
       &lt;div class="passwordManagement"&gt;
         &lt;h1&gt;$services.localization.render('platform.core.profile.section.security')&lt;/h1&gt;
-        &lt;span class="buttonwrapper"&gt;&lt;a id="changePassword" href="$doc.getURL("view", "xpage=passwd")"&gt;$services.localization.render('platform.core.profile.changePassword')&lt;/a&gt;&lt;/span&gt;
-     &lt;/div&gt;
+        &lt;span class="buttonwrapper"&gt;&lt;a id="changePassword" href="$doc.getURL('view', 'xpage=passwd')"&gt;$services.localization.render('platform.core.profile.changePassword')&lt;/a&gt;&lt;/span&gt;
+      &lt;/div&gt;
     &lt;/div&gt;
   #end
   &lt;div class="clearfloats"&gt;&amp;nbsp;&lt;/div&gt;

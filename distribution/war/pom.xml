@@ -23,7 +23,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>edu.toronto.cs.phenotips</groupId>
+    <groupId>org.phenotips</groupId>
     <artifactId>phenotips-distribution</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
@@ -38,7 +38,7 @@
     <xwiki.extension.features>org.xwiki.enterprise:xwiki-enterprise-web</xwiki.extension.features>
 
     <!-- The default UI associated to this WAR -->
-    <xwiki.extension.distribution.ui>edu.toronto.cs.phenotips:phenotips-ui</xwiki.extension.distribution.ui>
+    <xwiki.extension.distribution.ui>org.phenotips:phenotips-ui</xwiki.extension.distribution.ui>
   </properties>
   <dependencies>
     <dependency>
@@ -49,7 +49,35 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>component-registry</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>solr-access-service</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpmime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ontology-access</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
@@ -70,6 +98,33 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>patient-data-api</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <!-- Transitive dependencies that have a different version in the actual WAR but aren't visible through the war dependency -->
+        <exclusion>
+          <groupId>org.aspectj</groupId>
+          <artifactId>aspectjrt</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jdom</groupId>
+          <artifactId>jdom</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jdom</groupId>
+          <artifactId>jdom</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jdom</groupId>
+          <artifactId>jdom2</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>joda-time</groupId>
+          <artifactId>joda-time</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>rome</groupId>
+          <artifactId>rome</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -79,6 +134,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>patient-data-indexing</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-access-rules-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -93,6 +153,26 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>users-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-platform-users-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-platform-users-wiki</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>application-configuration-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>application-configuration-migrations</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -103,7 +183,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ncbieutils-access-service</artifactId>
+      <artifactId>ncbieutils-services-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -146,7 +226,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.0.11</version>
+      <version>1.0.13</version>
     </dependency>
   </dependencies>
   <build>
@@ -176,7 +256,7 @@
                 <xwikiDbDialect>org.hibernate.dialect.HSQLDialect</xwikiDbDialect>
                 <xwikiDbHbmXwiki>xwiki.hbm.xml</xwikiDbHbmXwiki>
                 <xwikiDbHbmFeeds>feeds.hbm.xml</xwikiDbHbmFeeds>
-                <xwikiDbHbmCommonExtraMappings>activitystream.hbm.xml</xwikiDbHbmCommonExtraMappings>
+                <xwikiDbHbmCommonExtraMappings>activitystream.hbm.xml,instance.hbm.xml</xwikiDbHbmCommonExtraMappings>
                 <xwikiCfgPlugins>\
   com.xpn.xwiki.monitor.api.MonitorPlugin,\
   com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
@@ -275,8 +355,6 @@ extension.repositories=extensions.xwiki.org:xwiki:http://extensions.xwiki.org/xw
             WEB-INF/lib/jdom-1.0.jar,
             WEB-INF/lib/jdom-1.1.jar,
             WEB-INF/lib/log4j-over-slf4j-1.7.2.jar,
-            WEB-INF/lib/logback-classic-1.0.9.jar,
-            WEB-INF/lib/logback-core-1.0.9.jar,
             WEB-INF/lib/plexus-utils-2.0.6.jar,
             WEB-INF/lib/rome-0.9.jar,
             WEB-INF/lib/slf4j-api-1.7.2.jar,

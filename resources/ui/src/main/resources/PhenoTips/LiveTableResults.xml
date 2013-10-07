@@ -49,7 +49,7 @@
  * set of results serialized in JSON.
  *#
 #macro(gridresult $className $collist)
-  #gridresultwithfilter($className $collist '' '' [])
+  #gridresultwithfilter($className $collist "$!{request.filterFrom}" "$!{request.filterWhere}" [])
 #end
 
 
@@ -175,10 +175,10 @@
  * @param $rows stores the JSON in memory so that it can be adjusted before serialization
  *#
 #macro(gridresult_buildRowJSON $item $rows)
-  #set($viewable = $xwiki.hasAccessLevel('view', $context.user, "${context.database}:${item}"))
+  #set($viewable = $xwiki.hasAccessLevel('view', $xcontext.user, "${xcontext.database}:${item}"))
   #set($row = {'doc_viewable': $viewable})
   #if(!$viewable)
-    #set($discard = $row.put('doc_fullName', "${context.database}:${item}"))
+    #set($discard = $row.put('doc_fullName', "${xcontext.database}:${item}"))
   #else
     #set($itemDoc = $xwiki.getDocument($item))
     #set($fullname = $services.model.serialize($itemDoc.documentReference, 'default'))
@@ -188,13 +188,11 @@
     #set($discard = $row.put('doc_space', $itemDoc.space))
     #set($discard = $row.put('doc_url', $xwiki.getURL($item)))
     #set($discard = $row.put('doc_space_url', $xwiki.getURL($services.model.createDocumentReference($!itemDoc.wiki, $!itemDoc.space, 'WebHome'))))
-    #if($xwiki.isVirtualMode())
-      #set($discard = $row.put('doc_wiki', $itemDoc.wiki))
-      #set($discard = $row.put('doc_wiki_url', $xwiki.getURL("${itemDoc.wiki}:Main.WebHome")))
-    #end
+    #set($discard = $row.put('doc_wiki', $itemDoc.wiki))
+    #set($discard = $row.put('doc_wiki_url', $xwiki.getURL($services.model.resolveDocument('', 'default', $itemDoc.documentReference.extractReference('WIKI')))))
     #set($discard = $row.put('doc_hasadmin', $xwiki.hasAdminRights()))
-    #set($discard = $row.put('doc_hasedit', $xwiki.hasAccessLevel('edit', $context.user, $fullname)))
-    #set($discard = $row.put('doc_hasdelete', $xwiki.hasAccessLevel('delete', $context.user, $fullname)))
+    #set($discard = $row.put('doc_hasedit', $xwiki.hasAccessLevel('edit', $xcontext.user, $fullname)))
+    #set($discard = $row.put('doc_hasdelete', $xwiki.hasAccessLevel('delete', $xcontext.user, $fullname)))
     #set($discard = $row.put('doc_edit_url', $itemDoc.getURL($itemDoc.defaultEditMode)))
     #set($discard = $row.put('doc_copy_url', $itemDoc.getURL('view', 'xpage=copy')))
     #set($discard = $row.put('doc_delete_url', $itemDoc.getURL('delete')))
@@ -245,9 +243,9 @@
     #end
     #set($fieldUrl = '')
     ## only retrieve an URL for a DBListClass item
-    #if($propType == 'DBListClass')
-      #set($fieldUrl = $xwiki.getDocument($fieldValue).getURL())
-      #if($fieldUrl == $xwiki.getURL('Main.WebHome'))
+    #if($propType == 'DBListClass' &amp;&amp; $propClass.get($colname).getProperty('multiSelect').value != 1)
+      #set($fieldUrl = $xwiki.getURL($fieldValue))
+      #if($fieldUrl == $xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI'))))
         #set($fieldUrl = '')
       #end
     #end
@@ -267,7 +265,7 @@
  *#
 #macro(gridresultwithfilter_buildJSON $className $collist $filterfrom $filterwhere $filterParams $map)
   #gridresultwithfilter_buildQuery($className $collist $filterfrom $filterwhere $filterParams)
-  #if("$!request.sql" != '1')
+  #if("$!request.sql" == '1')
     #set($discard = $map.put('sql', $sql))
     #set($discard = $map.put('countsql', $countSql))
     #set($discard = $map.put('params', $sqlParams))
@@ -381,7 +379,7 @@
   ## Filter values
   #if("$!filterValue" != '' || "$!filterValueLowLimit" != '' || "$!filterValueHighLimit" != '')
     #set($discard = $tablelist.add($tableAlias))
-    #if($colname.startsWith('doc.') &amp;&amp; $colname.endsWith('Date'))
+    #if($colname.startsWith('doc.') &amp;&amp; ($colname.endsWith('Date') || $colname.endsWith('date')))
       #if ($filterValue != '')
         #set($whereSql = "${whereSql} and upper(str(${safe_tableAlias})) like upper(?)")
         #set($discard = $whereParams.add("%${filterValue}%"))
@@ -397,7 +395,7 @@
           #set($discard = $whereParams.add($filterValueHighLimit.toDate()))
         #end
       #end
-    #elseif($colname == 'doc.creator')
+    #elseif($colname == 'doc.creator' || $colname == 'doc.author')
       #foreach ($filterValue in $request.getParameterValues($colname))
         #if ($foreach.index == 0)
           #set ($whereSql = "${whereSql} and (")
@@ -405,8 +403,11 @@
           #set ($whereSql = "${whereSql} or")
         #end
         #if ($filterValue.startsWith('XWiki.'))
-          #set($whereSql = "${whereSql} ${safe_colname.replace('_','.')} = ?")
+          #set($whereSql = "${whereSql} ${colname} = ?")
           #set($discard = $whereParams.add("${filterValue}"))
+        #elseif ($filterValue.contains(':'))
+          #set($whereSql = "${whereSql} ${colname} = ?")
+          #set($discard = $whereParams.add("${stringtool.substringAfter($filterValue, ':')}"))
         #else
           #set($whereSql = "${whereSql} upper(str(${safe_colname.replace('_','.')})) like upper(?)")
           #set($discard = $whereParams.add("%${filterValue}%"))
@@ -504,7 +505,7 @@
 {{/velocity}}
 
 {{velocity wiki="false"}}
-#set ($extra = '')
+#set ($extra = " $!{request.filterWhere} ")
 #set ($params = [])
 #if ("$!request.space" != '')
   #set ($extra = "${extra} and doc.space = ?")
@@ -517,6 +518,6 @@
 #if ("$!request.orphaned" == '1')
   #set ($extra = "${extra} and doc.parent='' and doc.name&lt;&gt;'WebHome'")
 #end
-#gridresultwithfilter("$!request.classname" $request.collist.split(',') '' "${extra}" $params)
+#gridresultwithfilter("$!request.classname" $request.collist.split(',') "$!{request.filterFrom}" "${extra}" $params)
 {{/velocity}}</content>
 </xwikidoc>

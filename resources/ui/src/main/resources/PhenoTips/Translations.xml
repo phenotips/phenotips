@@ -79,8 +79,9 @@ patient.livetable.family_of=Pedigree number
 patient.livetable.miscarriages=Parents with at least 3 miscarriages
 
 admin.phenotipscode=PhenoTips application code
-admin.dbconfig=Database and form configuration
+admin.dbconfig=Patient database
 admin.menuconfig=Menu configuration
+admin.formconfig=Patient form
 admin.ontology=Ontology index
 
 saveandview=Save

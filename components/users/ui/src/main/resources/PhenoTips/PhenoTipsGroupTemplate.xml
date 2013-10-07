@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc>
+  <web>PhenoTips</web>
+  <name>PhenoTipsGroupTemplate</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>PhenoTips.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1374323418000</creationDate>
+  <date>1377115390000</date>
+  <contentUpdateDate>1377115390000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Test Consortium</title>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <attachment>
+    <filename>logo.png</filename>
+    <filesize>7929</filesize>
+    <author>XWiki.marta</author>
+    <date>1371487973000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>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
+TkSuQmCC
+</content>
+  </attachment>
+  <object>
+    <class>
+      <name>PhenoTips.FormCustomizationClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <fields>
+        <cache>0</cache>
+        <classname/>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <idField/>
+        <multiSelect>1</multiSelect>
+        <name>fields</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>fields</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>1</size>
+        <sort>none</sort>
+        <sql/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+      </fields>
+      <mapping>
+        <cache>0</cache>
+        <classname/>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <idField/>
+        <multiSelect>0</multiSelect>
+        <name>mapping</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>mapping</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>1</size>
+        <sort>none</sort>
+        <sql/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+      </mapping>
+      <sections>
+        <cache>0</cache>
+        <classname/>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <idField/>
+        <multiSelect>1</multiSelect>
+        <name>sections</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>sections</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>1</size>
+        <sort>none</sort>
+        <sql/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+      </sections>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupTemplate</name>
+    <number>0</number>
+    <className>PhenoTips.FormCustomizationClass</className>
+    <guid>a00c416a-f4b9-4d0e-8fc2-f752c2a269f6</guid>
+  </object>
+  <object>
+    <class>
+      <name>PhenoTips.PhenoTipsGroupClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <description>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>description</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>Group description</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage>Some information about this group for other users visiting this page</validationMessage>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <image>
+        <customDisplay>{{include document="PhenoTips.ImageDisplayer" /}}
+(% class="clearfloats" %)((()))</customDisplay>
+        <disabled>0</disabled>
+        <name>image</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Image</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </image>
+      <public_sections>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>public_sections</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>public_sections</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>members=Show member list to non-members|cases=Show list of public cases to non-members</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </public_sections>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupTemplate</name>
+    <number>0</number>
+    <className>PhenoTips.PhenoTipsGroupClass</className>
+    <guid>204ad0ff-ee94-4c6e-a20e-c4beaf67bf00</guid>
+    <property>
+      <description>test description</description>
+    </property>
+    <property>
+      <image>logo.png</image>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.XWikiGroups</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <member>
+        <disabled>0</disabled>
+        <name>member</name>
+        <number>1</number>
+        <prettyName>Member</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </member>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupTemplate</name>
+    <number>0</number>
+    <className>XWiki.XWikiGroups</className>
+    <guid>324b229c-2f98-4f59-a762-cc5b269839e6</guid>
+    <property>
+      <member/>
+    </property>
+  </object>
+  <content/>
+</xwikidoc>

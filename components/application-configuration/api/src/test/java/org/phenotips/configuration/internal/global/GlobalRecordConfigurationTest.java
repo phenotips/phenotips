@@ -1,0 +1,604 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+package org.phenotips.configuration.internal.global;
+
+import org.phenotips.configuration.RecordConfiguration;
+import org.phenotips.configuration.RecordConfigurationManager;
+import org.phenotips.configuration.RecordSection;
+import org.phenotips.data.Patient;
+
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.uiextension.UIExtension;
+import org.xwiki.uiextension.UIExtensionFilter;
+import org.xwiki.uiextension.UIExtensionManager;
+import org.xwiki.uiextension.internal.filter.SortByParameterFilter;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.classes.BaseClass;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+/**
+ * Tests for the default {@link RecordConfiguration} implementation, {@link GlobalRecordConfiguration}.
+ * 
+ * @version $Id$
+ */
+public class GlobalRecordConfigurationTest
+{
+    /** {@link RecordConfiguration#getEnabledSections()} lists only the enabled sections. */
+    @Test
+    public void getEnabledSections() throws ComponentLookupException
+    {
+        Execution e = mock(Execution.class);
+        UIExtensionManager m = mock(UIExtensionManager.class);
+        UIExtension ex = mock(UIExtension.class);
+        UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
+        UIExtensionFilter realFilter = new SortByParameterFilter();
+        RecordConfiguration c = new GlobalRecordConfiguration(e, m, filter);
+
+        Map<String, String> params;
+        List<UIExtension> sections = new LinkedList<UIExtension>();
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("section1");
+        params = new HashMap<String, String>();
+        params.put("title", "Patient information");
+        params.put("enabled", "true");
+        params.put("order", "1");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("disabled_section");
+        params = new HashMap<String, String>();
+        params.put("title", "Family history");
+        params.put("enabled", "false");
+        params.put("order", "2");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("section4");
+        params = new HashMap<String, String>();
+        params.put("title", "Prenatal history");
+        params.put("enabled", "");
+        params.put("order", "4");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("section3");
+        params = new HashMap<String, String>();
+        params.put("title", "Clinical observations");
+        params.put("order", "3");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        when(m.get("org.phenotips.patientSheet.content")).thenReturn(sections);
+        List<UIExtension> sorted = realFilter.filter(sections, "order");
+        when(filter.filter(sections, "order")).thenReturn(sorted);
+
+        List<RecordSection> result = c.getEnabledSections();
+        Assert.assertEquals(3, result.size());
+        Assert.assertEquals("Patient information", result.get(0).getName());
+        Assert.assertEquals("Clinical observations", result.get(1).getName());
+        Assert.assertEquals("Prenatal history", result.get(2).getName());
+    }
+
+    /** {@link RecordConfiguration#getAllSections()} lists all the sections, in order. */
+    @Test
+    public void getAllSections() throws ComponentLookupException
+    {
+        Execution e = mock(Execution.class);
+        UIExtensionManager m = mock(UIExtensionManager.class);
+        UIExtension ex = mock(UIExtension.class);
+        UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
+        UIExtensionFilter realFilter = new SortByParameterFilter();
+        RecordConfiguration c = new GlobalRecordConfiguration(e, m, filter);
+
+        Map<String, String> params;
+        List<UIExtension> sections = new LinkedList<UIExtension>();
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("section1");
+        params = new HashMap<String, String>();
+        params.put("title", "Patient information");
+        params.put("enabled", "true");
+        params.put("order", "1");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("disabled_section");
+        params = new HashMap<String, String>();
+        params.put("title", "Family history");
+        params.put("enabled", "false");
+        params.put("order", "2");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("section4");
+        params = new HashMap<String, String>();
+        params.put("title", "Prenatal history");
+        params.put("enabled", "");
+        params.put("order", "4");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("section3");
+        params = new HashMap<String, String>();
+        params.put("title", "Clinical observations");
+        params.put("order", "3");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        when(m.get("org.phenotips.patientSheet.content")).thenReturn(sections);
+        List<UIExtension> sorted = realFilter.filter(sections, "order");
+        when(filter.filter(sections, "order")).thenReturn(sorted);
+
+        List<RecordSection> result = c.getAllSections();
+        Assert.assertEquals(4, result.size());
+        Assert.assertEquals("Patient information", result.get(0).getName());
+        Assert.assertEquals("Family history", result.get(1).getName());
+        Assert.assertEquals("Clinical observations", result.get(2).getName());
+        Assert.assertEquals("Prenatal history", result.get(3).getName());
+    }
+
+    /** Basic tests for {@link RecordConfiguration#getEnabledFieldNames()}. */
+    @Test
+    public void getEnabledFieldNames() throws ComponentLookupException
+    {
+        Execution e = mock(Execution.class);
+        UIExtensionManager m = mock(UIExtensionManager.class);
+        UIExtension ex = mock(UIExtension.class);
+        UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
+        UIExtensionFilter realFilter = new SortByParameterFilter();
+        RecordConfiguration c = new GlobalRecordConfiguration(e, m, filter);
+
+        Map<String, String> params;
+        List<UIExtension> sections = new LinkedList<UIExtension>();
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("section1");
+        params = new HashMap<String, String>();
+        params.put("enabled", "true");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("disabled_section");
+        params = new HashMap<String, String>();
+        params.put("enabled", "false");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("section3");
+        params = new HashMap<String, String>();
+        params.put("enabled", "");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("section4");
+        params = new HashMap<String, String>();
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        when(m.get("org.phenotips.patientSheet.content")).thenReturn(sections);
+        List<UIExtension> sorted = realFilter.filter(sections, "order");
+        when(filter.filter(sections, "order")).thenReturn(sorted);
+
+        List<UIExtension> fields = new LinkedList<UIExtension>();
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("fields", ",first_name ,, last_name,");
+        params.put("enabled", "");
+        params.put("order", "2");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("fields", "external_id");
+        params.put("enabled", "true");
+        params.put("order", "1");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("fields", "date_of_birth,");
+        params.put("enabled", "false");
+        params.put("order", "3");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("fields", "gender");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("fields", "");
+        params.put("order", "4");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        when(m.get("section1")).thenReturn(fields);
+        sorted = realFilter.filter(fields, "order");
+        when(filter.filter(fields, "order")).thenReturn(sorted);
+
+        fields = new LinkedList<UIExtension>();
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("fields", "maternal_ethnicity,paternal_ethnicity");
+        params.put("enabled", "true");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        when(m.get("disabled_section")).thenReturn(fields);
+        sorted = realFilter.filter(fields, "order");
+        when(filter.filter(fields, "order")).thenReturn(sorted);
+
+        fields = new LinkedList<UIExtension>();
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("fields", "gestation");
+        params.put("enabled", "true");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        when(m.get("section3")).thenReturn(fields);
+        sorted = realFilter.filter(fields, "order");
+        when(filter.filter(fields, "order")).thenReturn(sorted);
+
+        fields = new LinkedList<UIExtension>();
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("fields", "unaffected,phenotype,negative_phenotype");
+        params.put("enabled", "true");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        when(m.get("section4")).thenReturn(fields);
+        sorted = realFilter.filter(fields, "order");
+        when(filter.filter(fields, "order")).thenReturn(sorted);
+
+        List<String> expectedFields = new LinkedList<String>();
+        expectedFields.add("external_id");
+        expectedFields.add("first_name");
+        expectedFields.add("last_name");
+        expectedFields.add("gender");
+        expectedFields.add("gestation");
+        expectedFields.add("unaffected");
+        expectedFields.add("phenotype");
+        expectedFields.add("negative_phenotype");
+        Assert.assertEquals(expectedFields, c.getEnabledFieldNames());
+    }
+
+    /** Basic tests for {@link RecordConfigurationManager#getAllFieldNames()}. */
+    @Test
+    public void getAllFieldNames() throws ComponentLookupException, XWikiException
+    {
+        Execution e = mock(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument doc = mock(XWikiDocument.class);
+        when(x.getDocument(Patient.CLASS_REFERENCE, context)).thenReturn(doc);
+        BaseClass c = mock(BaseClass.class);
+        when(doc.getXClass()).thenReturn(c);
+        String[] props = new String[] {"external_id", "first_name", "last_name", "gender"};
+        when(c.getPropertyNames()).thenReturn(props);
+
+        List<String> expectedFields = new LinkedList<String>();
+        expectedFields.add("external_id");
+        expectedFields.add("first_name");
+        expectedFields.add("last_name");
+        expectedFields.add("gender");
+
+        RecordConfiguration config =
+            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+        Assert.assertEquals(expectedFields, config.getAllFieldNames());
+    }
+
+    /** {@link RecordConfigurationManager#getAllFieldNames()} catches exceptions. */
+    @Test
+    public void getAllFieldNamesWithException() throws ComponentLookupException, XWikiException
+    {
+        Execution e = mock(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        when(x.getDocument(Patient.CLASS_REFERENCE, context)).thenThrow(new XWikiException());
+
+        RecordConfiguration config =
+            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+        Assert.assertTrue(config.getAllFieldNames().isEmpty());
+    }
+
+    /** Basic tests for {@link RecordConfigurationManager#getDateOfBirthFormat()}. */
+    @Test
+    public void getDateOfBirthFormat() throws ComponentLookupException, XWikiException
+    {
+        Execution e = mock(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument wh = mock(XWikiDocument.class);
+        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        BaseObject o = mock(BaseObject.class);
+        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        when(o.getStringValue("dateOfBirthFormat")).thenReturn("MMMM yyyy");
+
+        RecordConfiguration config =
+            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+        Assert.assertEquals("MMMM yyyy", config.getDateOfBirthFormat());
+    }
+
+    /** {@link RecordConfigurationManager#getDateOfBirthFormat()} has a default format. */
+    @Test
+    public void getDateOfBirthFormatDefaultValue() throws ComponentLookupException, XWikiException
+    {
+        Execution e = mock(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument wh = mock(XWikiDocument.class);
+        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        BaseObject o = mock(BaseObject.class);
+        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        when(o.getStringValue("dateOfBirthFormat")).thenReturn("");
+
+        RecordConfiguration config =
+            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+        Assert.assertEquals("dd/MM/yyyy", config.getDateOfBirthFormat());
+    }
+
+    /** {@link RecordConfigurationManager#getDateOfBirthFormat()} catches exceptions. */
+    @Test
+    public void getDateOfBirthFormatWithException() throws ComponentLookupException, XWikiException
+    {
+        Execution e = mock(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenThrow(new XWikiException());
+
+        RecordConfiguration config =
+            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+        Assert.assertEquals("dd/MM/yyyy", config.getDateOfBirthFormat());
+    }
+
+    /** {@link RecordConfigurationManager#getDateOfBirthFormat()} has a default format when the config is missing. */
+    @Test
+    public void getDateOfBirthFormatWithMissingConfiguration() throws ComponentLookupException, XWikiException
+    {
+        Execution e = mock(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument wh = mock(XWikiDocument.class);
+        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(null);
+
+        RecordConfiguration config =
+            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+        Assert.assertEquals("dd/MM/yyyy", config.getDateOfBirthFormat());
+    }
+
+    /** {@link RecordConfiguration#toString()} lists all the enabled sections. */
+    @Test
+    public void toStringTest() throws ComponentLookupException
+    {
+        Execution e = mock(Execution.class);
+        UIExtensionManager m = mock(UIExtensionManager.class);
+        UIExtension ex = mock(UIExtension.class);
+        UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
+        UIExtensionFilter realFilter = new SortByParameterFilter();
+        RecordConfiguration c = new GlobalRecordConfiguration(e, m, filter);
+
+        Map<String, String> params;
+        List<UIExtension> sections = new LinkedList<UIExtension>();
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("section1");
+        params = new HashMap<String, String>();
+        params.put("title", "Patient information");
+        params.put("enabled", "true");
+        params.put("order", "1");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("disabled_section");
+        params = new HashMap<String, String>();
+        params.put("title", "Family history");
+        params.put("enabled", "false");
+        params.put("order", "2");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("section4");
+        params = new HashMap<String, String>();
+        params.put("title", "Prenatal history");
+        params.put("enabled", "");
+        params.put("order", "4");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        ex = mock(UIExtension.class);
+        when(ex.getId()).thenReturn("section3");
+        params = new HashMap<String, String>();
+        params.put("title", "Clinical observations");
+        params.put("order", "3");
+        when(ex.getParameters()).thenReturn(params);
+        sections.add(ex);
+
+        when(m.get("org.phenotips.patientSheet.content")).thenReturn(sections);
+        List<UIExtension> sorted = realFilter.filter(sections, "order");
+        when(filter.filter(sections, "order")).thenReturn(sorted);
+
+        List<UIExtension> fields = new LinkedList<UIExtension>();
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("title", "Patient name");
+        params.put("fields", ",first_name ,, last_name,");
+        params.put("enabled", "");
+        params.put("order", "2");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("fields", "external_id");
+        params.put("title", "Identifier");
+        params.put("enabled", "true");
+        params.put("order", "1");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("title", "Date of birth");
+        params.put("fields", "date_of_birth,");
+        params.put("enabled", "false");
+        params.put("order", "3");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("title", "Sex");
+        params.put("fields", "gender");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("title", "Pedigree");
+        params.put("fields", "");
+        params.put("order", "4");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        when(m.get("section1")).thenReturn(fields);
+        sorted = realFilter.filter(fields, "order");
+        when(filter.filter(fields, "order")).thenReturn(sorted);
+
+        fields = new LinkedList<UIExtension>();
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("title", "Ethnicity");
+        params.put("fields", "maternal_ethnicity,paternal_ethnicity");
+        params.put("enabled", "true");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        when(m.get("disabled_section")).thenReturn(fields);
+        sorted = realFilter.filter(fields, "order");
+        when(filter.filter(fields, "order")).thenReturn(sorted);
+
+        fields = new LinkedList<UIExtension>();
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("title", "Gestation at delivery");
+        params.put("fields", "gestation");
+        params.put("enabled", "true");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        when(m.get("section4")).thenReturn(fields);
+        sorted = realFilter.filter(fields, "order");
+        when(filter.filter(fields, "order")).thenReturn(sorted);
+
+        fields = new LinkedList<UIExtension>();
+
+        ex = mock(UIExtension.class);
+        params = new HashMap<String, String>();
+        params.put("title", "Clinical symptoms");
+        params.put("fields", "unaffected,phenotype,negative_phenotype");
+        params.put("enabled", "true");
+        when(ex.getParameters()).thenReturn(params);
+        fields.add(ex);
+
+        when(m.get("section3")).thenReturn(fields);
+        sorted = realFilter.filter(fields, "order");
+        when(filter.filter(fields, "order")).thenReturn(sorted);
+
+        Assert.assertEquals(
+            "Patient information [Identifier, Patient name, Pedigree, Sex], " +
+                "Clinical observations [Clinical symptoms], Prenatal history [Gestation at delivery]",
+            c.toString());
+    }
+}

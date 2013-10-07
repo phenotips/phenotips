@@ -1,3 +1,0 @@
-edu.toronto.cs.phenotips.ncbieutils.NCBIEUtilsAccessService
-edu.toronto.cs.phenotips.ncbieutils.OmimAccessService
-edu.toronto.cs.phenotips.ncbieutils.PubmedAccessService

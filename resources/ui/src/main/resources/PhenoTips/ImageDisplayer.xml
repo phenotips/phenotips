@@ -1218,7 +1218,7 @@
   'isImage' : true
 })
 
-#set($options.mode = "$!{context.action}")
+#set($options.mode = "$!{xcontext.action}")
 
 #if ("$!{name}" != '' &amp;&amp; "$!{prefix}" != '' &amp;&amp; "$!{object}" != '')
   ## In displayer mode
@@ -1239,7 +1239,7 @@
   #if ("$!{request.mode}" != '')
     #set($options.mode = "$!{request.mode}")
   #else
-    #set($options.mode = "$!{context.action}")
+    #set($options.mode = "$!{xcontext.action}")
   #end
   #if ("$!{request.manage}" != '')
     #set($options.manage = true)
@@ -1280,7 +1280,7 @@
   &lt;label for='${fieldName}_${attachment.filename}' title='${attachment.filename}'&gt;
   {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='${options.inputType}' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
   #if ($options.manage)
-  &lt;a class='action delete' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($context.action, $request.queryString))}")" title="Delete"&gt;Delete&lt;/a&gt;##
+  &lt;a class='action delete' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="Delete"&gt;Delete&lt;/a&gt;##
   #end
   #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||title="${attachment.filename}"]])))#else##
  &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="Open $!{attachment.filename}"&gt; [open]&lt;/a&gt;#end##
@@ -1321,7 +1321,7 @@
     #end
     &lt;input type="file" name="filepath" id="attachfile2" class="attachment" size="30" title="$!{escapetool.xml($options.rawfilter)}"/&gt;
     &lt;input type="hidden" name="filter" value="$!{escapetool.xml($options.html5Filter)}" /&gt;
-    &lt;input type="hidden" name="xredirect" value="$!{escapetool.xml($doc.getURL($context.action, $request.queryString))}" /&gt;
+    &lt;input type="hidden" name="xredirect" value="$!{escapetool.xml($doc.getURL($xcontext.action, $request.queryString))}" /&gt;
     &lt;input type="hidden" name="ajaxxredirect" value="$!{escapetool.xml($displayer.getURL('get', "$!{qString}&amp;xaction=lastatt" ))}" /&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
     &lt;input type="submit" name="action_upload" class="button" value='Upload and select'  title='Upload and select'/&gt;

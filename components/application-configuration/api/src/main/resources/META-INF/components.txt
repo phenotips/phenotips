@@ -1,0 +1,2 @@
+org.phenotips.configuration.internal.DefaultRecordConfigurationManager
+org.phenotips.configuration.script.RecordConfigurationManagerScriptService

@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc>
+  <web>PhenoTips</web>
+  <name>PubMedService</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>PhenoTips.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1373578591000</creationDate>
+  <date>1373988191000</date>
+  <contentUpdateDate>1373988191000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <object>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.PubMedService</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>388ca4f5-f8ef-4ebc-8b0d-fda89209c816</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function(PhenoTips) {
+  var PubMed = PhenoTips.PubMed = Class.create({
+    initialize : function() {
+      if (!PubMed.service.target) {
+        return;
+      }
+      document.observe('phenotips:phenotypeChanged', this.update.bind(this));
+    },
+    update: function(event) {
+      var data = PubMed.service;
+
+      // Clear the already scheduled request, if any
+      if (data.__pendingRequest !== undefined) {
+        window.clearTimeout(data.__pendingRequest);
+        data.__pendingRequest = undefined;
+      }
+      data.target.__initialized || (data.target.__initialized = true) &amp;&amp; (data.target.__hiddenParent = data.target.up('.background-search.hidden'));
+      if (!data.expectedReqNo) {
+        data.expectedReqNo = 0;
+      }
+      var queryString = '';
+      var parameters = {};
+      for (var k in event.memo.phenotype.displayed) {
+        var obj = event.memo.phenotype.all[k];
+        if (obj &amp;&amp; !obj.disabled) {
+          var list = parameters[obj.type];
+          if (!list) {
+            list = [];
+            parameters[obj.type] = list;
+          }
+          list.push(obj.key);
+        }
+      }
+      data.source.each(function(source) {
+        if (source &amp;&amp; source.value.strip()) {
+          queryString += source.value.strip() + ' ';
+        }
+      });
+
+      data.__pendingRequest = function() {
+        data.__pendingRequest = undefined;
+        new Ajax.Updater(data.target, data.script + encodeURIComponent(queryString.strip()) + "&amp;reqNo=" + ++data.expectedReqNo, {
+          parameters: parameters,
+          onCreate : this.requestCreated.bind(this, data),
+          onSuccess : this.responseReceived.bind(this, data),
+          onComplete : this.updateDone.bind(this, data)
+        });
+      }.bind(this).delay(0.5);
+    },
+    requestCreated : function(service, request) {
+      service.target.up().addClassName('loading');
+    },
+    responseReceived : function(service, request) {
+      if (request &amp;&amp; request.getHeader('X-ReqNo') == service.expectedReqNo) {
+        service.target.up().removeClassName('loading');
+      } else {
+        request.request.container = {};
+      }
+    },
+    updateDone : function(service) {
+      if (service.target.__hiddenParent) {
+        if (service.target.down('li')) {
+          //has results
+          service.target.__hiddenParent.removeClassName('hidden');
+        } else {
+          service.target.__hiddenParent.addClassName('hidden');
+        }
+      }
+    }
+  });
+
+  PubMed.service = {
+    'script' : "$xwiki.getURL('PhenoTips.PubMedService', 'get', 'format=html&amp;q=')",
+    'source' : [$('customSearchTermsInput'), $('defaultSearchTermsInput')],
+    'target' : $('pubmed-search-results')
+  };
+
+  var init = function(event) {
+    new PhenoTips.PubMed();
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+
+  return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <name>PhenoTips.PubMedService</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>48a3af1e-54ca-499e-85b9-4a6cdb765b2e</guid>
+    <property>
+      <content>{{velocity}}
+#if ($xcontext.action == 'edit')
+$xwiki.jsx.use('PhenoTips.PubMedService', {'minify' : false})##
+(% class="chapter pubmed-search" %)(((
+== Suggested reading on PubMed ==
+
+{{info}}PubMed suggestions will appear when clinical symptoms are selected{{/info}}
+
+(% id="pubmed-search-results" class="background-suggestions" %)((()))
+)))
+#end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.patientSheet.after</extensionPointId>
+    </property>
+    <property>
+      <name>pubmed-suggestions</name>
+    </property>
+    <property>
+      <parameters/>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <content>{{include document="PhenoTips.JSONMacros" /}}
+
+{{velocity filter="indent"}}
+#if ($xcontext.action == 'get' &amp;&amp; "$!request.q" != '')
+  #set ($_service = $services.pubmed)
+  #set ($limit = $mathtool.toInteger("$!{request.limit}"))
+  #if (!$limit || $limit &lt; 0)
+    #set ($limit = 20)
+  #end
+  #set ($start = $mathtool.toInteger("$!{request.start}"))
+  #if (!($start &gt;= 0))
+    #set ($start = 0)
+  #end
+  #if ("$!{request.format}" == 'html'){{html clean="false"}}##
+$response.setHeader("X-ReqNo", "$!request.reqNo")##
+#set ($results = $_service.getSuggestions("$!request.q", $limit, $start))
+#if ($results.size() &gt; 0)
+&lt;ul&gt;
+#foreach($item in $results)
+  #if ("$!item.id"!= '' &amp;&amp; "$!item.Title" != '')
+  &lt;li class="article"&gt;
+    #if ("$!item.Source" != '')
+      &lt;div class="pub-info"&gt;
+        &lt;span class="journal"&gt;#if ("$!item.FullJournalName" != '')${item.FullJournalName}#else${item.Source}#end&lt;/span&gt;
+        #if ("$!item.Volume" != ''), Volume ${item.Volume}#end
+        #if ("$!item.Issue" != ''), Issue ${item.Issue}#end
+        #if ("$!item.Pages" != ''), ${item.Pages}#end
+        #if ("$!item.EPubDate" != '') | &lt;span class="pub-date"&gt;$item.EPubDate&lt;/span&gt;#end
+      &lt;/div&gt;
+    #end
+    &lt;cite class="title"&gt;&lt;a href="http://www.ncbi.nlm.nih.gov/pubmed?term=${item.id}" target="_blank" title="See this article on PubMed"&gt;${item.Title}&lt;/a&gt;&lt;/cite&gt;
+    #if ("$!item.AuthorList" != '' &amp;&amp; $item.AuthorList.size() &gt; 0)
+      &lt;div class="authors"&gt;Authors:
+      #foreach ($author in $item.AuthorList)
+        &lt;span class="author"&gt;$author&lt;/span&gt;#if($foreach.hasNext()), #end
+      #end
+      &lt;/div&gt;
+    #end
+  &lt;/li&gt;
+  #end
+#end## foreach item
+&lt;ul&gt;
+#else
+&lt;div class="hint"&gt;No matches found.&lt;/div&gt;
+#end
+  {{/html}}
+  #elseif ("$!{request.format}" == 'xml')
+  {{html clean="false"}}
+    $response.setContentType('text/xml')
+    $_service.getSuggestionsXML("$!request.q", $limit, $start)
+  {{/html}}
+  #else
+    #json__respondJSON($_service.getSuggestions("$!request.q", $limit, $start), {})
+  #end
+#end
+{{/velocity}}</content>
+</xwikidoc>
