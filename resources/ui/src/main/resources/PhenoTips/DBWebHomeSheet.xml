@@ -591,7 +591,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
   $$('.xwiki-livetable-topfilters-container .toggle-filters').invoke('observe', 'click', function() {
     $('patients-topfilters').toggleClassName('collapsed');
   });
-  $('patients-topfilters').addClassName('collapsed');
+  $('patients-topfilters') &amp;&amp; $('patients-topfilters').addClassName('collapsed');
 });</code>
     </property>
     <property>
