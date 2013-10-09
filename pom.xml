@@ -211,44 +211,12 @@
                See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
           <ignored>
-            <!-- Remove the following ignores after we release 1.0-milestone-9 -->
-            <difference>
-              <className>**/similarity/PatientSimilarityView</className>
-              <differenceType>7006</differenceType>
-              <method>org.phenotips.data.similarity.AccessType getAccess()</method>
-              <to>org.phenotips.data.permissions.AccessLevel</to>
-            </difference>
-            <difference>
-              <className>**/ontology/*Service</className>
-              <differenceType>7012</differenceType>
-              <method>long size()</method>
-            </difference>
-            <difference>
-              <className>**/ontology/OntologyService</className>
-              <differenceType>7012</differenceType>
-              <method>long count(java.util.Map)</method>
-            </difference>
-            <difference>
-              <className>**/ontology/OntologyService</className>
-              <differenceType>7012</differenceType>
-              <method>long getDistance(java.lang.String, java.lang.String)</method>
-            </difference>
-            <difference>
-              <className>**/ontology/OntologyService</className>
-              <differenceType>7012</differenceType>
-              <method>long getDistance(org.phenotips.ontology.OntologyTerm, org.phenotips.ontology.OntologyTerm)</method>
-            </difference>
-            <difference>
-              <className>**/ontology/OntologyTerm</className>
-              <differenceType>7012</differenceType>
-              <method>long getDistanceTo(org.phenotips.ontology.OntologyTerm)</method>
-            </difference>
+            <!-- Remove the following ignores after we release 1.0-milestone-10 -->
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
             <exclude>**/test/**</exclude>
             <!-- Remove the following excludes after we release the current version as final -->
-            <className>**/AccessType</className>
           </excludes>
         </configuration>
       </plugin>
