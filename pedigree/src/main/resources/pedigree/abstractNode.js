@@ -36,7 +36,9 @@ var AbstractNode = Class.create( {
      * @method setID
      */
     setID: function(id) {
+        console.log("Updating ID " + this._id + " to " + id); 
         this._id = id;
+        this._graphics.onSetID(id);
     },
     
     /**
@@ -112,7 +114,7 @@ var AbstractNode = Class.create( {
      * @method remove
      * @param [skipConfirmation=false] {Boolean} if true, no confirmation box will pop up
      */
-    remove: function(skipConfirmation) {    	    	
+    remove: function() {    	    	
     	this.getGraphics().remove();    	    
     },
 
@@ -192,9 +194,10 @@ var ChildlessBehavior = {
      * @param {String} reason Explanation for the condition (eg. "By Choice", "Vasectomy" etc)
      */
     setChildlessReason: function(reason) {
-        if(this.getChildlessStatus() != null) {
-            this._childlessReason = reason;
-            this.getGraphics().updateChildlessStatusLabel();
-        }
+        if(this.getChildlessStatus() == null)
+            reson = null;
+        
+        this._childlessReason = reason;
+        this.getGraphics().updateChildlessStatusLabel();
     }
 };

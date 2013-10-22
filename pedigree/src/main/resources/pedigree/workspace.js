@@ -113,7 +113,7 @@ var Workspace = Class.create({
             name : 'external',
             items: [
                 { key : 'save',      label : 'Save'},
-                { key : 'reaload',   label : 'Reload'},
+                { key : 'reload',    label : 'Reload'},
                 { key : 'templates', label : 'Templates'},
                 { key : 'print',     label : 'Printable version'},
                 { key : 'close',     label : 'Close'}
@@ -291,27 +291,30 @@ var Workspace = Class.create({
      * @param {Number} x The x coordinate relative to the Raphael canvas
      * @param {Number} y The y coordinate relative to the Raphael canvas
      */
-    panTo: function(x, y) {
+    panTo: function(x, y, instant) {
         var me = this,
             oX = this.viewBoxX,
             oY = this.viewBoxY,
             xDisplacement = x - oX,
-            yDisplacement = y - oY,
-            numSeconds = .5,
-            fps = 50,
-            xStep = xDisplacement/(fps*numSeconds),
-            yStep = yDisplacement/(fps*numSeconds);
+            yDisplacement = y - oY;
+        
+        var numSeconds = instant ? 0 : .5;
+        var frames     = instant ? 1 : 25;
+        
+        var xStep = xDisplacement/frames,
+            yStep = yDisplacement/frames;
+        
         var progress = 0;
 
         (function draw() {
             setTimeout(function() {
-                if(progress++ < fps * numSeconds) {
+                if(progress++ < frames) {
                     me.viewBoxX += xStep;
                     me.viewBoxY += yStep;
                     me.getPaper().setViewBox(me.viewBoxX, me.viewBoxY, me.width/me.zoomCoefficient, me.height/me.zoomCoefficient);
                     draw();
                 }
-            }, 1000 / fps);
+            }, 1000 * numSeconds / frames);
         })();
     },
 
@@ -334,18 +337,40 @@ var Workspace = Class.create({
 
     /**
      * Pans the canvas to put the node with the given id at the center.
-     *
+     * 
+     * When (xCenterShift, yCenterShift) are given positions the node with the given shift relative
+     * to the center instead of exact center of the screen
+     * 
      * @method centerAroundNode
      * @param {Number} nodeID The id of the node
      */
-    centerAroundNode: function(nodeID) {
+    centerAroundNode: function(nodeID, instant, xCenterShift, yCenterShift) {
         var node = editor.getGraphicsSet().getNodeMap()[nodeID];
         if(node) {
             var x = node.getX(),
                 y = node.getY();
+            if (!xCenterShift) xCenterShift = 0;
+            if (!yCenterShift) yCenterShift = 0;
             var xOffset = this.getWidth()/this.zoomCoefficient;
             var yOffset = this.getHeight()/this.zoomCoefficient;
-            this.panTo(x - xOffset/2, y - yOffset/2);
+            this.panTo(x - xOffset/2 - xCenterShift, y - yOffset/2 - yCenterShift, instant);
         }
-    }
+    },
+
+    /**
+     * Returns the current screen coordinates of the node with the given id
+     *
+     * @method getCurrentNodeLocation
+     * @param {Number} nodeID The id of the node
+     *    
+    getNodeShiftFromCenterOfScreen: function(nodeID) {
+        var node = editor.getGraphicsSet().getNodeMap()[nodeID];
+        if(node) {
+            var x = node.getX(),
+                y = node.getY();
+            ...
+            return {"x": xShift, "y": yShift}; 
+        }   
+        return {};
+    }*/
 });

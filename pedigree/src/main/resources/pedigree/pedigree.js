@@ -9,7 +9,7 @@
  */
 var PedigreeEditor = Class.create({
     initialize: function() {
-        this.DEBUG_MODE = true;
+        //this.DEBUG_MODE = true;
         window.editor = this;
                         
         // initialize main data structure which holds the graph structure        
@@ -38,11 +38,11 @@ var PedigreeEditor = Class.create({
         //attach actions to buttons on the top bar
         var undoButton = $('action-undo');
         undoButton && undoButton.on("click", function(event) {
-            editor.getActionStack().undo();
+            document.fire("pedigree:undo");            
         });
         var redoButton = $('action-redo');
         redoButton && redoButton.on("click", function(event) {
-            editor.getActionStack().redo();
+            document.fire("pedigree:redo");            
         });
 
         var autolayoutButton = $('action-layout');
@@ -58,14 +58,20 @@ var PedigreeEditor = Class.create({
         saveButton && saveButton.on("click", function(event) {
             editor.getSaveLoadEngine().save();
         });
-        var loadButton = $('action-load');
-        loadButton && loadButton.on("click", function(event) {
+        var loadButton = $('action-reload');
+        loadButton && loadButton.on("click", function(event) {            
             editor.getSaveLoadEngine().load();
         });
 
         var templatesButton = $('action-templates');
         templatesButton && templatesButton.on("click", function(event) {
             editor.getTemplateSelector().show();
+        });
+
+        var closeButton = $('action-close');
+        closeButton && closeButton.on("click", function(event) {
+            //editor.getSaveLoadEngine().save();
+            window.location=XWiki.currentDocument.getURL('edit');
         });
         
         //this.startAutoSave(30);               
@@ -97,6 +103,14 @@ var PedigreeEditor = Class.create({
     	return this._mainGraph;
     },
 
+    /**
+     * @method getController
+     * @return {Controller} (responsible for managing data changes)
+     */        
+    getController: function() {
+        return this._controller;
+    },
+    
     /**
      * @method getActionStack
      * @return {ActionStack} (responsible undoing and redoing actions)
@@ -145,6 +159,14 @@ var PedigreeEditor = Class.create({
         return this._saveLoadEngine;
     },
 
+    /**
+     * @method getProbandDataFromPhenotips
+     * @return {firstName: "...", lastName: "..."}
+     */    
+    getProbandDataFromPhenotips: function() {
+        return this._probandData.probandData;
+    },
+    
     /**
      * @method getTemplateSelector
      * @return {TemplateSelector}
@@ -233,7 +255,7 @@ var PedigreeEditor = Class.create({
                 ],
                 'default' : 'alive',
                 'function' : 'setLifeStatus'
-            },
+            },           
             {
                 'label' : 'Heredity options',
                 'name' : 'childlessSelect',
@@ -253,7 +275,19 @@ var PedigreeEditor = Class.create({
                 'label' : 'Adopted',
                 'type' : 'checkbox',
                 'function' : 'setAdopted'
-            }
+            },
+            {
+                'name' : 'monozygotic',
+                'label' : 'Monozygotic twin',
+                'type' : 'checkbox',
+                'function' : 'setMonozygotic'
+            },            
+            {
+                'name' : 'placeholder',
+                'label' : 'Placeholder node',
+                'type' : 'checkbox',
+                'function' : 'makePlaceholder'
+            }          
         ]);
     },
 
@@ -287,7 +321,19 @@ var PedigreeEditor = Class.create({
                 'dependency' : 'childlessSelect != none',
                 'tip' : 'Reason',
                 'function' : 'setChildlessReason'
-            }
+            },
+            {
+                'name' : 'consangr',
+                'label' : 'Consanguinity of this relationship',
+                'type' : 'radio',
+                'values' : [
+                    { 'actual' : 'A', 'displayed' : 'Automatic' },
+                    { 'actual' : 'Y', 'displayed' : 'Yes' },
+                    { 'actual' : 'N', 'displayed' : 'No' }
+                ],
+                'default' : 'A',
+                'function' : 'setConsanguinity'
+            }            
         ]);
     },
 
@@ -324,6 +370,9 @@ var editor;
 //attributes for graphical elements in the editor
 PedigreeEditor.attributes = {
     radius: 40,
+    childlessLength: 10,
+    twinCommonVerticalLength: 7,
+    curvedLinesCornerRadius: 25,
     unbornShape: {'font-size': 50, 'font-family': 'Cambria'},
     nodeShape: {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
     boxOnHover : {fill: "gray", stroke: "none",opacity: 1, "fill-opacity":.25},
@@ -336,15 +385,15 @@ PedigreeEditor.attributes = {
         phShape: {fill: "white","fill-opacity": 0, "stroke": 'black', "stroke-dasharray": "- "},
     dragMeLabel: {'font-size': 14, 'font-family': 'Tahoma'},
     descendantGroupLabel: {'font-size': 20, 'font-family': 'Tahoma'},
-    label: {'font-size': 18, 'font-family': 'Cambria'},
+    label: {'font-size': 20, 'font-family': 'Arial'},
     disorderShapes: {},
     partnershipRadius: 6,
-        partnershipLines : {"stroke-width": 1.25, stroke : '#303058'},
-        consangrPartnershipLines : {"stroke-width": 1.5, stroke : '#993058'},
-    graphToCanvasScale: 12,
+        partnershipLines :         {"stroke-width": 1.25, stroke : '#303058'},
+        consangrPartnershipLines : {"stroke-width": 1.25, stroke : '#402058'},
+    graphToCanvasScale: 12,    
     layoutRelativePersonWidth: 10,
     layoutRelativeOtherWidth: 2,
-    layoutScale: { xscale: 12.0, yscale: 3.0 }
+    layoutScale: { xscale: 12.0, yscale: 7 }
 };
 
 document.observe("dom:loaded",function() {

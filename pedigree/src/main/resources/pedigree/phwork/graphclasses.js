@@ -3,7 +3,7 @@ var TYPE = {
   RELATIONSHIP: 1,
   CHILDHUB:     2,
   PERSON:       3,
-  VIRTUALEDGE:  4
+  VIRTUALEDGE:  4    // for nodes not present in the original graph used as intermediate steps in multi-rank edges
 };
 
 InternalGraph = function(defaultPersonNodeWidth, defaultNonPersonNodeWidth)
@@ -113,7 +113,7 @@ InternalGraph.init_from_user_graph = function(inputG, defaultPersonNodeWidth, de
     for (var v = 0; v < inputG.length; v++) {
         var nextV = inputG[v];
 
-        var vID    = nextV.id ? nextV.id : nameToId[nextV.name];
+        var vID    = nextV.hasOwnProperty("id") ? nextV.id : nameToId[nextV.name];
         var origID = vID;
 
         var substitutedID = false;
@@ -368,18 +368,31 @@ InternalGraph.prototype = {
     },
 
     addEdge: function(fromV, toV, weight) {
-            // same as _addEdge, but also updates leaf/parentless nodes
-            this._addEdge(fromV, toV, weight);
-            this._updateLeafAndParentlessNodes();
+        // same as _addEdge, but also updates leaf/parentless nodes
+        this._addEdge(fromV, toV, weight);
+        this._updateLeafAndParentlessNodes();
     },
 
-    insertVertex: function(type, properties, edgeWeights, inedges, outedges) {
-        var width = (type == TYPE.PERSON) ? this.defaultPersonNodeWidth : this.defaultNonPersonNodeWidth;
+    removeEdge: function(fromV, toV) {
+        if (!this.hasEdge(fromV,toV))
+            throw "removeEdge: edge does not exist";
+
+        removeFirstOccurrenceByValue(this.v[fromV], toV);
+        removeFirstOccurrenceByValue(this.inedges[toV], fromV);
+
+        var weight = this.weights[fromV][toV]
+        delete this.weights[fromV][toV];
+
+        return weight;
+    },
+
+    insertVertex: function(type, properties, edgeWeights, inedges, outedges, width) {
+        var width = width ? width : ((type == TYPE.PERSON) ? this.defaultPersonNodeWidth : this.defaultNonPersonNodeWidth);
 
         if (type == TYPE.PERSON && !properties.hasOwnProperty("gender"))
             properties["gender"] = "U";
 
-        var newNodeId = this.maxRealVertexId + 1;    // all real node IDs should be <= maxRealVertexId, so have to insert new node here
+        var newNodeId = (type == TYPE.VIRTUALEDGE) ? this.v.length : this.maxRealVertexId + 1;    // all real node IDs should be <= maxRealVertexId, so have to insert new node here
 
         // shift all IDs greater or equal to newNodeId up by one (can only hapen when virtual nodes are present)
         if (this.v.length >= newNodeId) {
@@ -395,7 +408,9 @@ InternalGraph.prototype = {
         this.vWidth    .splice(newNodeId,0,width);
         this.type      .splice(newNodeId,0,type);
         this.properties.splice(newNodeId,0,properties);
-        this.maxRealVertexId++;
+
+        if (type != TYPE.VIRTUALEDGE)
+            this.maxRealVertexId++;
 
         // add new edges
         for (var i = 0; i < inedges.length; i++)
@@ -475,8 +490,9 @@ InternalGraph.prototype = {
 
             var newWeights = {};
             var weights = this.weights[i];
-            for (u in weights) {
+            for (var u in weights) {
                 if (weights.hasOwnProperty(u))
+                    u = parseInt(u);
                     if (test(u))
                         newWeights[modification(u)] = weights[u];
                     else
@@ -487,7 +503,7 @@ InternalGraph.prototype = {
     },
 
     validate: function() {
-        console.log("THIS: " + stringifyObject(this));
+        //console.log("-- VALIDATING: " + stringifyObject(this));
 
         if( this.v.length == 0 ) return;
 
@@ -602,7 +618,7 @@ InternalGraph.prototype = {
         case TYPE.PERSON:       desc += "PERSON";   break;
         case TYPE.RELATIONSHIP: desc += "RELATION"; break;
         case TYPE.CHILDHUB:     desc += "CHILDHUB"; break;
-        case TYPE.VIRTUAL:      desc += "VIRTUAL";  break;
+        case TYPE.VIRTUALEDGE:  desc += "VIRTUAL";  break;
         default:                desc += "ERROR";    break;
         }
         return "[" + desc + "]";
@@ -633,15 +649,11 @@ InternalGraph.prototype = {
     },
 
     getMaxRealVertexId: function() {
-        return this.maxRealVertexId; // vertices with IDs less or equal to this are guaranteed to be "real"
+        return this.maxRealVertexId; // all vertices with IDs greater than this are of type VIRTUALEDGE
     },
 
     getOutEdges: function(v) {
         return this.v[v];
-    },
-
-    getNumOutEdges: function(v) {
-        return this.v[v].length;
     },
 
     getInEdges: function(v) {
@@ -679,8 +691,30 @@ InternalGraph.prototype = {
 	},
 
 	isVirtual: function(v) {
-        return (v > this.getMaxRealVertexId());
+        return (this.type[v] == TYPE.VIRTUALEDGE);  // also: v > getmaxRealVertexId()
 	},
+
+    isAdopted: function(v)
+    {
+        if (this.properties[v].hasOwnProperty("isAdopted"))
+            return this.properties[v]["isAdopted"];
+        return false;
+    },
+
+    getOppositeGender: function(v) {
+        if (!this.isPerson(v))
+	        throw "Assertion failed: attempting to get gender of a non-person";
+
+        if (this.properties[v]["gender"] == "U") {
+            return "U";
+        }
+        else if(this.properties[v]["gender"] == "M") {
+            return "F";
+        }
+        else {
+            return "M";
+        }
+    },
 
 	getRelationshipChildhub: function(v) {
 	    if (!this.isRelationship(v))
@@ -689,15 +723,30 @@ InternalGraph.prototype = {
 	    return this.v[v][0];
 	},
 
-	getAllPartners: function(v) {
+    getAllRelationships: function(v) {
 	    if (!this.isPerson(v))
-	        throw "Assertion failed: attempting to get partners of a non-person";
+	        throw "Assertion failed: attempting to get relationships of a non-person";
 
         var relationships = this.v[v];
 
         var result = [];
         for (var r = 0; r < relationships.length; r++) {
-            var partners = this.inedges[relationships[r]];
+            var edgeTo       = relationships[r];
+            var relationship = this.downTheChainUntilNonVirtual(edgeTo);
+            result.push(relationship);
+        }
+        return result;
+	},
+
+	getAllPartners: function(v) {
+	    if (!this.isPerson(v))
+	        throw "Assertion failed: attempting to get partners of a non-person";
+
+        var relationships = this.getAllRelationships(v);
+
+        var result = [];
+        for (var r = 0; r < relationships.length; r++) {
+            var partners = this.getParents(relationships[r]);
             if (partners[0] != v)
                 result.push(partners[0]);
             else
@@ -707,41 +756,135 @@ InternalGraph.prototype = {
 	},
 
 	getParents: function(v) {
-	    if (!this.isPerson(v))
-	        throw "Assertion failed: attempting to get parents of a non-person";
-
-	    if (this.inedges[v].length == 0)
-	        return [];
+	    if (!this.isPerson(v) && !this.isRelationship(v))
+	        throw "Assertion failed: attempting to get parents of a non-person and non-relationship";
 
 	    // skips through relationship and child nodes and returns an array of two real parents. If none found returns []
 
-	    var parentRelationship = this.getProducingRelationship(v);
+	    var parentRelationship = this.isPerson(v) ? this.getProducingRelationship(v) : v;
+
+	    if (parentRelationship == null)  // no parents
+	        return [];
 
 	    var inEdges = this.getInEdges(parentRelationship);
 
 	    if (inEdges.length != 2)
 	        throw "Assertion failed: exactly two parents";
 
-	    return [this.upTheChainUntilPerson(inEdges[0]), this.upTheChainUntilPerson(inEdges[1])];
+	    return [this.upTheChainUntilNonVirtual(inEdges[0]), this.upTheChainUntilNonVirtual(inEdges[1])];
 	},
+
+    getPathToParents: function(v)
+    {
+        // returns an array with two elements: path to parent1 (excluding v) and path to parent2 (excluding v):
+        // [ [virtual_node_11, ..., virtual_node_1n, parent1], [virtual_node_21, ..., virtual_node_2n, parent21] ]
+
+        var result = [];
+
+        if (!this.isRelationship(v))
+            throw "Assertion failed: incorrect v in getPathToParents()";
+
+        var inEdges = this.getInEdges(v);
+
+        result.push( this.getUpPathEndingInNonVirtual(inEdges[0]) );
+        result.push( this.getUpPathEndingInNonVirtual(inEdges[1]) );
+
+        return result;
+    },
 
 	getProducingRelationship: function(v) {
 	    if (!this.isPerson(v))
 	        throw "Assertion failed: attempting to get producing relationship of a non-person";
 
 	    // find the relationship which produces this node (or null if not present)
-	    if (this.inedges[v].length == 0) return null;
-	    return this.inedges[this.inedges[v][0]][0];
+	    if (this.inedges[v].length == 0) return null;	    
+	    var chHub = this.inedges[v][0];
+	    
+	    if (this.inedges[chHub].length == 0) return null;
+	    return this.inedges[chHub][0];
 	},
 
-	upTheChainUntilPerson: function(v) {
-	    if (this.isPerson(v)) return v;
+	upTheChainUntilNonVirtual: function(v) {
+	    if (!this.isVirtual(v)) return v;
 
-	    if (!this.isVirtual(v))
-	        throw "Assertion failed: upTheChainUntilPerson() can be applied to a perosn or a virtual node only";
-
-	    return this.upTheChainUntilPerson( this.inedges[v][0] );  // virtual nodes have only one in-edges, all the way up until a person node
+	    return this.upTheChainUntilNonVirtual( this.inedges[v][0] );  // virtual nodes have only one in-edges, all the way up until a person node
 	},
+
+	downTheChainUntilNonVirtual: function(v) {
+	    if (!this.isVirtual(v)) return v;
+
+	    return this.downTheChainUntilNonVirtual( this.v[v][0] );  // virtual nodes have only one in-edges, all the way up until a person node
+	},
+
+    getUpPathEndingInNonVirtual: function(v)
+    {
+        var path = [v];
+
+        while (this.isVirtual(v))
+        { 
+            v = this.inedges[v][0];
+            path.push(v);
+        }
+
+        return path;
+    },
+
+    getUnusedTwinGroupId: function(v)
+    {
+        if (!this.isRelationship(v))
+            throw "Assertion failed: incorrect v in getNumTwinGroups()";
+
+        var childhubId = this.v[v][0];
+        var children = this.v[childhubId];
+
+        var twinGroupExists = [];
+        for (var c = 0; c < children.length; c++) {
+            var child = children[c];
+            if (this.properties[child].hasOwnProperty('twinGroup'))
+                twinGroupExists[this.properties[child]['twinGroup']] = true;
+        }
+
+        var firstFreeTwinGroupId = 0;
+        for (var i = 0; i < twinGroupExists.length; i++) {
+            if (twinGroupExists[i] !== undefined)
+                firstFreeTwinGroupId = i+1;
+            else
+                break;
+        }
+        return firstFreeTwinGroupId;
+    },
+
+    getTwinGroupId: function(v)
+    {
+        if (!this.properties[v].hasOwnProperty('twinGroup'))
+            return null;
+        return this.properties[v]['twinGroup'];
+    },
+
+    getAllTwinsOf: function(v)
+    {
+        if (!this.isPerson(v))
+            throw "Assertion failed: incorrect v in getAllTwinsOf()";
+
+        if (!this.properties[v].hasOwnProperty('twinGroup'))
+            return [v];
+
+        var twinGroupId = this.properties[v]['twinGroup'];
+
+        if (this.inedges[v].length == 0)
+            throw "Assertion failed: a node with no parents can not have twins";
+
+        var childhubId = this.inedges[v][0];
+        var children = this.v[childhubId];
+
+        var twins = [];
+        for (var c = 0; c < children.length; c++) {
+            var child = children[c];
+            if (this.properties[child].hasOwnProperty('twinGroup') && this.properties[child]['twinGroup'] == twinGroupId)
+                twins.push(child);
+        }
+        return twins;
+    }
 };
 
 
@@ -765,6 +908,9 @@ RankedSpanningTree.prototype = {
         //   Nodes are placed in the queue when they have no unscanned in-edges.
         //   As nodes are taken off the queue, they are assigned the least rank
         //   that satisfies their in-edges, and their out-edges are marked as scanned.
+        //
+        //   Note: the resulting tree only uses edges in the direction they are
+        //         used in the original graph.
 
         if (G.v.length == 0) return;
 
@@ -822,11 +968,6 @@ RankedSpanningTree.prototype = {
                 }
             }
         }
-
-        // Note: so far resulting tree only uses edges in the direction they are
-        //       used in the original graph. Some other algorithms in the paper
-        //       (the "cut_values" part) may violate this property, if applied
-        //       to this tree
     },
 
     getRanks: function() {
@@ -976,6 +1117,12 @@ Ordering.prototype = {
 
         return result;
     },
+    
+    remove: function(v, rank) {
+        var order = this.vOrder[v];
+        this.moveVertexToRankAndOrder(rank, order, 0, 0);       
+        this.removeUnplugged();        
+    },
 
 	insertAndShiftAllIdsAboveVByOne: function ( v, rank, newOrder ) {
 	    // used when when a new vertex is inserted into the graph, which increases all IDs above v by one
@@ -1003,37 +1150,10 @@ Ordering.prototype = {
 //==================================================================================================
 
 _copy2DArray = function(from, to) {
-    for (var i = 0; i < from.length; i++) {
+    for (var i = 0; i < from.length; ++i) {
         to.push(from[i].slice(0));
     }
 }
-
-_makeFlattened2DArrayCopy = function(array) {
-    var flattenedcopy = [].concat.apply([], array);
-    return flattenedcopy;
-}
-
-
-/*
-function shuffleArray (array) {
-    // Using Fisher-Yates Shuffle algorithm
-
-    var counter = array.length, temp, index;
-
-    // While there are elements in the array
-    while (counter > 0) {
-        // Pick a random index
-        index = (Math.random() * counter--) | 0;
-
-        // And swap the last element with it
-        temp = array[counter];
-        array[counter] = array[index];
-        array[index] = temp;
-    }
-
-    return array;
-}
-*/
 
 function cloneObject(obj) {
     var target = {};
@@ -1044,17 +1164,44 @@ function cloneObject(obj) {
     return target;
 }
 
+
 function arrayContains(array, item) {
     if (Array.prototype.indexOf) {
         return !(array.indexOf(item) < 0);
     }
     else {
-        for (var i = 0; i < array.length; i++) {
+        for (var i = 0; i < array.length; ++i) {
             if (array[i] === item)
                 return true;
         }
         return false;
     }
+}
+
+function arrayIndexOf(array, item) {
+    if (Array.prototype.indexOf) {
+        return (array.indexOf(item));
+    }
+    else {
+        for (var i = 0; i < array.length; ++i) {
+            if (array[i] === item)
+                return i;
+        }
+        return -1;
+    }
+}
+
+function indexOfLastMinElementInArray(array) {
+    var min      = array[0];
+    var minIndex = 0;
+
+    for (var i = 1; i < array.length; ++i) {
+        if(array[i] <= min) {
+            minIndex = i;
+            min      = array[i];
+        }
+    }
+    return minIndex;
 }
 
 function replaceInArray(array, value, newValue) {
@@ -1080,18 +1227,22 @@ function isInt(n) {
     return !(n % 1);
 }
 
-function swap (array, x, y) {
-    var b = array[y];
-    array[y] = array[x];
-    array[x] = b;
+_makeFlattened2DArrayCopy = function(array) {
+    var flattenedcopy = [].concat.apply([], array);
+    return flattenedcopy;
+}
+
+function swap (array, i, j) {
+    var b = array[j];
+    array[j] = array[i];
+    array[i] = b;
 }
 
 function permute2DArrayInFirstDimension (permutations, array, from) {
    var len = array.length;
 
    if (from == len-1) {
-       //if ( len == 1 || Math.max.apply(null, array[0]) < Math.max.apply(null, array[len-1]) )   // discard mirror copies of other permutations
-           permutations.push(_makeFlattened2DArrayCopy(array));
+       permutations.push(_makeFlattened2DArrayCopy(array));
        return;
    }
 

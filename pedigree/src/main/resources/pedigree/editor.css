@@ -422,7 +422,9 @@
   text-align: center;
   line-height: 24px;
 }
-
+.expand-arrow {
+  cursor: pointer;
+}
 .node-type-options .expandable-node-type-option {
     background: transparent none center center no-repeat;
     border: 1px solid #F5F5F5;

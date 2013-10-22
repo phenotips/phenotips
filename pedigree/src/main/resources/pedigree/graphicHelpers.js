@@ -120,12 +120,50 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
  * @param {Number} hue Hue value between 0 and 1
  * @return {Raphael.st}
  */
-function generateOrb(canvas, x, y, r, hue) {
+function generateOrb (canvas, x, y, r, hue) {
     hue = hue || 0;
     return canvas.set(
         canvas.ellipse(x, y, r, r).attr({fill: "r(.5,.9)hsb(" + hue + ", 1, .75)-hsb(" + hue + ", .5, .25)", stroke: "none"}),
         canvas.ellipse(x, y, r - r / 5, r - r / 20).attr({stroke: "none", fill: "r(.5,.1)#ccc-#ccc", opacity: 0})
     );
+}
+
+/**
+ * Draws a quarter-circle-like curve connecting xFrom,Yfrom and xTo,yTo
+ * with the given attributes and bend (upwars or downwards)
+ * 
+ * Iff "doubleCurve" is true, cones the curve and shifts one curve by (shiftx1, shifty1) and the other by (shiftx2, shifty2)
+ */
+function drawCornerCurve (xFrom, yFrom, xTo, yTo, bendDown, attr, doubleCurve, shiftx1, shifty1, shiftx2, shifty2 ) {
+    var xDistance = xTo - xFrom;
+    var yDistance = yFrom - yTo;
+    
+    var dist1x = xDistance/2;
+    var dist2x = xDistance/10;
+    var dist1y = yDistance/2;
+    var dist2y = yDistance/10;
+        
+    var curve;
+    
+    if (bendDown) {
+        var raphaelPath =  "M " + (xFrom)          + " " + (yFrom) +
+                          " C " + (xFrom + dist1x) + " " + (yFrom + dist2y) +
+                            " " + (xTo   + dist2x) + " " + (yTo   + dist1y) +
+                            " " + (xTo)            + " " + (yTo);
+        curve = editor.getPaper().path(raphaelPath).attr(attr).toBack();                            
+    } else {
+        var raphaelPath =   "M " + (xFrom)          + " " + (yFrom) +
+                           " C " + (xFrom - dist2x) + " " + (yFrom - dist1y) +
+                             " " + (xTo   - dist1x) + " " + (yTo   - dist2y) +
+                             " " + (xTo)            + " " + (yTo);
+        curve = editor.getPaper().path(raphaelPath).attr(attr).toBack();
+    }
+    
+    if (doubleCurve) {
+        var curve2 = curve.clone().toBack();
+        curve .transform("t " + shiftx1  + "," + shifty1 + "...");
+        curve2.transform("t " + shiftx2 + "," + shifty2 + "..."); 
+    }
 }
 
 /**

@@ -15,11 +15,11 @@
 var PersonHoverbox = Class.create(AbstractHoverbox, {
 
     initialize: function($super, personNode, centerX, centerY, nodeShapes) {
-        //console.log("abstract hower box start");
         var radius = PedigreeEditor.attributes.radius * 2;
         $super(personNode, -radius, -radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);
         this._isMenuToggled = false;
-        //console.log("abstract hower box end");
+        //if (editor.getGraph().getParentRelationship(this.getNode().getID()) !== null)
+        //    this.hideParentHandle();
     },
 
     /**
@@ -28,12 +28,11 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method generateHandles
      * @return {Raphael.st} A set of handles
      */
-    generateHandles: function($super) {
-        if (editor.getGraph().DG.GG.getInEdges(this.getNode().getID()).length == 0)           
-            this._upHandle = this.generateHandle('parent', this.getNodeX(), this.getNodeY() - (PedigreeEditor.attributes.radius * 1.6));
-        this._downHandle = this.generateHandle('child', this.getNodeX(), this.getNodeY() + (PedigreeEditor.attributes.radius * 1.6));
-        this._rightHandle = this.generateHandle('partnerR', this.getNodeX() + (PedigreeEditor.attributes.radius * 1.6), this.getNodeY());
-        this._leftHandle = this.generateHandle('partnerL', this.getNodeX() - (PedigreeEditor.attributes.radius * 1.6), this.getNodeY());
+    generateHandles: function($super) {                  
+        this._upHandle    = this.generateHandle('parent',   this.getNodeX(), this.getNodeY() - (PedigreeEditor.attributes.radius * 1.6), "Click to create new nodes or drag to an existing node or relationship");
+        this._downHandle  = this.generateHandle('child',    this.getNodeX(), this.getNodeY() + (PedigreeEditor.attributes.radius * 1.6), "Click to create a new child node or drag to an existing parentless node");
+        this._rightHandle = this.generateHandle('partnerR', this.getNodeX() + (PedigreeEditor.attributes.radius * 1.6), this.getNodeY(), "Click to create a new partner node or drag to an existing node. Valid choices are highlighted in green");
+        this._leftHandle  = this.generateHandle('partnerL', this.getNodeX() - (PedigreeEditor.attributes.radius * 1.6), this.getNodeY(), "Click to create a new partner node or drag to an existing node. Valid choices are highlighted in green");
         return $super().push(this._upHandle, this._downHandle, this._rightHandle, this._leftHandle);
     },
 
@@ -46,9 +45,31 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
     generateButtons: function($super) {
         var buttons = $super().push(this.generateMenuBtn());
         (!this.getNode().isProband()) && buttons.push(this.generateDeleteBtn());
+        this._twinButton = this.generateAddTwinButton();        
+        buttons.push(this._twinButton);
         return buttons;
     },
 
+    /**
+     * Creates and returns a "create a twin" button
+     *
+     * @method generateAddTwinButton
+     * @return {Raphael.st} the generated button
+     */    
+    generateAddTwinButton: function() {
+        var me = this;        
+        var action = function() {
+            var id = me.getNode().getID(); // may chnage since graphics was created
+            var event = { "nodeID": id, "modifications": { "addTwin": 1 } };
+            document.fire("pedigree:node:modify", event);             
+        };
+        var path = "M0,25L10,0L20,25";
+        var attributes = {}; //PedigreeEditor.attributes.menuBtnIcon;        
+        var x = this.getX() + this.getWidth()*0.5 - 5.5;
+        var y = this.getY() + this.getHeight()/70;
+        return this.createButton(x, y, path, attributes, action, "twin", "add a twin");        
+    },
+    
     /**
      * Hides the partner and children handles
      *
@@ -101,6 +122,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      */
     hideParentHandle: function() {
         this.getCurrentHandles().exclude(this._upHandle.hide());
+        this._twinButton.show();
     },
 
     /**
@@ -112,7 +134,8 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         if(this.isHovered() || this.isMenuToggled()) {
             this._upHandle.show();
         }
-        this.getCurrentHandles().push(this._upHandle);
+        (!this.getCurrentHandles().contains(this._upHandle)) && this.getCurrentHandles().push(this._upHandle);
+        this._twinButton.hide();        
     },
 
     /**
@@ -154,7 +177,8 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
     animateHideHoverZone: function($super) {
         if(!this.isMenuToggled()){
             var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
-            if (parentPartnershipNode)
+            //console.log("Node: " + this.getNode().getID() + ", parentPartnershipNode: " + parentPartnershipNode);            
+            if (parentPartnershipNode && editor.getNode(parentPartnershipNode))
                 editor.getNode(parentPartnershipNode).getGraphics().unmarkPregnancy();
             $super();
         }
@@ -167,7 +191,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      */
     animateDrawHoverZone: function($super) {
         var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
-        if (parentPartnershipNode)
+        if (parentPartnershipNode && editor.getNode(parentPartnershipNode))
             editor.getNode(parentPartnershipNode).getGraphics().markPregnancy();
         $super();
     },
@@ -188,10 +212,12 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
                 document.fire("pedigree:person:drag:newparent", event);
             }
             else if(handleType == "partnerR" || handleType == "partnerL") {
-                // TODO
+                var event = { "personID": this.getNode().getID(), "partnerID": curHoveredId };
+                document.fire("pedigree:person:drag:newpartner", event);
             }
             else if(handleType == "child") {
-                // TODO
+                var event = { "personID": curHoveredId, "parentID": this.getNode().getID() };
+                document.fire("pedigree:person:drag:newparent", event);                
             }
         }
         else if (!isDrag) {

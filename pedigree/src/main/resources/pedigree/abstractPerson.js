@@ -59,7 +59,7 @@ var AbstractPerson = Class.create(AbstractNode, {
     },
 
     /**
-     * Updates the gender of this node and updates gender of all partners and twins if it is unknown
+     * Updates the gender of this node
      *
      * @method setGender
      * @param {String} gender Should be "U", "F", or "M" depending on the gender
@@ -67,8 +67,6 @@ var AbstractPerson = Class.create(AbstractNode, {
     setGender: function(gender) {
     	this._gender = this.parseGender(gender);
         this.getGraphics().setGenderGraphics();
-        
-        // TODO: Updates gender of all partners and twins if it is unknown
     },
 
     /**
@@ -95,24 +93,11 @@ var AbstractPerson = Class.create(AbstractNode, {
     isAdopted: function() {
         return this._isAdopted;
     },
-
-    /**
-     * Returns a string representing the opposite gender of this node ("M" or "F"). Returns "U"
-     * if the gender of this node is unknown
-     *
-     * @method getOppositeGender
-     * @return {String} "M", "F" or "U" depending on the gender of this person
-     */
-    getOppositeGender : function() {
-        if (this.getGender() == "U") {
-            return "U";
-        }
-        else if(this.getGender() == "M") {
-            return "F";
-        }
-        else {
-            return "M";
-        }
+    
+    // TODO: for automated setMethod -> getMethod used for undo/redo 
+    getAdopted: function() {
+        console.log("GET ADOPTED: " + this.isAdopted()); 
+        return this.isAdopted();
     },
 
     /**

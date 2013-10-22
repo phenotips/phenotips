@@ -125,21 +125,48 @@ NodeMenu = Class.create({
         return result;
     },
 
-    _attachFieldEventListeners : function (field, eventNames, values) {
+    _attachFieldEventListeners : function (field, eventNames, values) {        
       var _this = this;
       eventNames.each(function(eventName) {
         field.observe(eventName, function(event) {
+          if (_this._updating) return; // otherwise a field change triggers an update which triggers field change etc
           var target = _this.targetNode;
+          if (!target) return;
           _this.fieldMap[field.name].crtValue = field._getValue && field._getValue()[0];
           var method = _this.fieldMap[field.name]['function'];
-          if (target && typeof(target[method]) == 'function') {
-            target[method].apply(target, field._getValue && field._getValue());
-          }
+          
+          if (target.getSummary()[field.name].value == _this.fieldMap[field.name].crtValue)
+              return;
+                                           
+          if (method.indexOf("set") == 0 && typeof(target[method]) == 'function') {
+              var properties = {};
+              properties[method] = _this.fieldMap[field.name].crtValue;
+              var event = { "nodeID": target.getID(), "properties": properties };
+              document.fire("pedigree:node:setproperty", event);
+          }          
+          else {
+              var properties = {};
+              properties[method] = _this.fieldMap[field.name].crtValue;
+              var event = { "nodeID": target.getID(), "modifications": properties };
+              document.fire("pedigree:node:modify", event);              
+          }          
           field.fire('pedigree:change');
         });
       });
     },
-
+    
+    update: function(newTarget) {
+        console.log("Node menu: update");
+        if (newTarget)
+            this.targetNode = newTarget;
+        
+        if (this.targetNode) {
+            this._updating = true;   // needed to avoid infinite loop: update -> _attachFieldEventListeners -> update -> ...
+            this._setCrtData(this.targetNode.getSummary());
+            delete this._updating;
+        }        
+    },    
+    
     _attachDependencyBehavior : function(field, data) {
         if (data.dependency) {
             var dependency = data.dependency.split(' ', 3);
@@ -151,6 +178,7 @@ NodeMenu = Class.create({
             dependency[0].observe('pedigree:change', function() {
                 this._updatedDependency(field, dependency);
                 field.value = '';
+                //console.log("dependency observed: " + field + ", dep: " + dependency);
             }.bindAsEventListener(this));
         }
     },
@@ -272,16 +300,16 @@ NodeMenu = Class.create({
     },
 
     show : function(node, x, y) {
-        console.log("nodeMenu show");
+        //console.log("nodeMenu show");
         this.targetNode = node;
         this._setCrtData(node.getSummary());
         this.menuBox.show();
         this.reposition(x, y);
         document.observe('mousedown', this._onClickOutside);
     },
-    
+        
     hide : function() {
-        console.log("nodeMenu hide");
+        //console.log("nodeMenu hide");
         document.stopObserving('mousedown', this._onClickOutside);
         if (this.targetNode) {
             this.targetNode.onWidgetHide();
@@ -292,7 +320,7 @@ NodeMenu = Class.create({
     },
 
     _onClickOutside: function (event) {
-        console.log("nodeMenu clickoutside");
+        //console.log("nodeMenu clickoutside");
         if (!event.findElement('.menu-box') && !event.findElement('.calendar_date_select') && !event.findElement('.suggestItems')) {
             this.hide();
         }
@@ -315,14 +343,6 @@ NodeMenu = Class.create({
       }
     },
     
-    update : function (node, data) {
-    	console.log("Node menu: update");
-        if (this.targetNode === node) {
-           this._setCrtData(data);
-        }
-        //this.reposition();
-    },
-
     _clearCrtData : function () {
         var _this = this;
         Object.keys(this.fieldMap).each(function (name) {
@@ -334,7 +354,8 @@ NodeMenu = Class.create({
     
     _setCrtData : function (data) {
         var _this = this;
-        Object.keys(this.fieldMap).each(function (name) {
+        Object.keys(this.fieldMap).each(function (name) {            
+            
             _this.fieldMap[name].crtValue = data && data[name] && typeof(data[name].value) != "undefined" ? data[name].value : _this.fieldMap[name].crtValue || _this.fieldMap[name]["default"];
             _this.fieldMap[name].inactive = (data && data[name] && (typeof(data[name].inactive) == 'boolean' || typeof(data[name].inactive) == 'object')) ? data[name].inactive : _this.fieldMap[name].inactive;
             _this.fieldMap[name].disabled = (data && data[name] && (typeof(data[name].disabled) == 'boolean' || typeof(data[name].disabled) == 'object')) ? data[name].disabled : _this.fieldMap[name].disabled;
@@ -342,6 +363,8 @@ NodeMenu = Class.create({
             _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
             _this._setFieldDisabled[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].disabled);
             //_this._updatedDependency(_this.fieldMap[name].element, _this.fieldMap[name].element);
+            
+            //console.log("name = " + name + ", data = " + stringifyObject(data[name]) + ", inactive: " + stringifyObject(_this.fieldMap[name].inactive));            
         });
     },
     
@@ -369,7 +392,7 @@ NodeMenu = Class.create({
             if (target) {
                 target.value = value && value.toFormattedString({'format_mask' : target.title}) || '';
                 target.alt = value && value.toISO8601() || '';
-                Event.fire(target, 'xwiki:date:changed');
+                //Event.fire(target, 'xwiki:date:changed');
             }
         },
         'disease-picker' : function (container, values) {
@@ -400,6 +423,7 @@ NodeMenu = Class.create({
             }
         }
     },
+    
     _toggleFieldVisibility : function(container, doHide) {
         if (doHide) {
           container.addClassName('hidden');
@@ -407,16 +431,19 @@ NodeMenu = Class.create({
           container.removeClassName('hidden');
         }
     },
+    
     _setFieldInactive : {
         'radio' : function (container, inactive) {
             if (inactive === true) {
-              container.addClassName('hidden');
+                container.addClassName('hidden');
             } else {
-              container.removeClassName('hidden');
-              var hasInactiveList = inactive && (typeof(inactive.indexOf) == 'function');
-              container.select('input[type=radio]').each(function(item) {
-                  item.disabled = hasInactiveList && (inactive.indexOf(item.value) >= 0);
-              });
+                container.removeClassName('hidden');
+                container.select('input[type=radio]').each(function(item) {                    
+                    if (inactive && Object.prototype.toString.call(inactive) === '[object Array]')                        
+                        item.disabled = (inactive.indexOf(item.value) >= 0);
+                    if (!inactive)
+                        item.disabled = false;
+                });
             }
         },
         'checkbox' : function (container, inactive) {

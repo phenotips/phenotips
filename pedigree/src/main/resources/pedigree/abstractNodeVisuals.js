@@ -39,6 +39,14 @@ var AbstractNodeVisuals = Class.create({
     getX: function() {
         return this._absoluteX;
     },
+    
+    /**
+     * Updates whatever needs to change when node id changes (e.g. id label) 
+     *
+     * @method onSetID
+     */    
+    onSetID: function(id) {
+    },
 
     /**
      * Returns the current Y coordinate of this node on the canvas, taking into consideration transformation data.
@@ -210,11 +218,11 @@ var ChildlessBehaviorVisuals = {
 
             this._childlessShape = editor.getPaper().path(childlessPath);
             this._childlessShape.attr({"stroke-width": 2.5, stroke: "#3C3C3C"});
-            this._childlessShape.insertAfter(this.getHoverBox().getBackElements().flatten());
-            this.getHoverBox().hideChildHandle();
+            this._childlessShape.insertAfter(this.getHoverBox().getBackElements().flatten());            
+            //this.getHoverBox().hideChildHandle();  // not hiding becaus epartnerships may still get new adopted children
         }
         else {
-           	this.getHoverBox().unhideChildHandle();
+           	//this.getHoverBox().unhideChildHandle();
         }
     },
 
@@ -225,17 +233,17 @@ var ChildlessBehaviorVisuals = {
      */
     updateChildlessStatusLabel: function() {
         this._childlessStatusLabel && this._childlessStatusLabel.remove();
-        // TODO: && this._childlessStatusLabel = null ??
+        this._childlessStatusLabel = null;
         
         var text = "";
         this.getNode().getChildlessReason() && (text += this.getNode().getChildlessReason());
         
         if(text.strip() != '') {
-            this._childlessStatusLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius * 2, "(" + text.slice(0, 14) +")" );
+            this._childlessStatusLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius + PedigreeEditor.attributes.childlessLength + 15, "(" + text.slice(0, 14) +")" );
             this._childlessStatusLabel.attr({'font-size': 18, 'font-family': 'Cambria'});
-        }
+            this._childlessStatusLabel.insertAfter(this.getChildlessShape().flatten());
+        }        
         
-        this._childlessStatusLabel && this._childlessStatusLabel.insertAfter(this.getChildlessShape().flatten());
         this.drawLabels();
     }
 };

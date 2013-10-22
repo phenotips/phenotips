@@ -79,6 +79,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/partnership.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/partnershipVisuals.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/person.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/personVisuals.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/lineSet.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/graph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/actionStack.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/workspace.js')##
@@ -89,6 +90,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/pedigree.js')##
 
 {{html}}
 &lt;div id="editor-menu"&gt;
+&lt;!--
 &lt;div class="action-group internal-actions"&gt;
 &lt;span class="menu-item new" id="action-new"&gt;New node&lt;/span&gt;
 &lt;span class="menu-item undo" id="action-undo"&gt;Undo&lt;/span&gt;
@@ -99,9 +101,10 @@ $xwiki.jsfx.use('uicomponents/pedigree/pedigree.js')##
 &lt;div class="action-group external-actions"&gt;
 &lt;span class="menu-item print" id="action-print"&gt;Printable version&lt;/span&gt;
 &lt;span class="menu-item save" id="action-save"&gt;Save&lt;/span&gt;
-&lt;!--&lt;span class="menu-item export" id="action-export"&gt;Export&lt;/span&gt;--&gt;
+&lt;span class="menu-item export" id="action-export"&gt;Export&lt;/span&gt;
 &lt;span class="menu-item close" id="action-close"&gt;Close&lt;/span&gt;
 &lt;/div&gt;
+--&gt;
 &lt;/div&gt;
 
 &lt;div id="workspace"&gt;

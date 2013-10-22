@@ -39,12 +39,14 @@ var NodetypeSelectionBubble = Class.create({
             label: "Twins",
             tip  : "Create twins (expandable to triplets or more)",
             symbol: "⋀",
-            callback : "createChild",
-            params: { "twins": this.numTwinNodes, "parameters": {"gender": "U"} },
+            callback : "CreateChild",
+            params: { "twins": true, "parameters": {"gender": "U"} },
             expandsTo: 'expandTwins'
         }, {
             type: "separator"
-        }, {
+        }, /*
+           // TODO: when person groups are supported
+           {
             key: "m",
             type: "person",
             label: "Multiple",
@@ -55,7 +57,7 @@ var NodetypeSelectionBubble = Class.create({
             expandsTo: "expandPersonGroup"
         }, {
             type: "separator"
-        }, {
+        },*/ {
             key: "n",
             type: "marker",
             label: "No children",
@@ -130,20 +132,7 @@ var NodetypeSelectionBubble = Class.create({
                 document.fire("pedigree:node:setproperty", event);
             }
             else if (data.callback == "CreateChild") {
-                var id       = _this._node.getID();
-                var nodeType = _this._node.getType();                                                   
-                if (nodeType == "Person") {
-                    if (data.params.twins) {} // TODO
-                    if (data.params.group) {} // TODO
-                    var event = { "personID": id, "childParams": data.params.parameters, "preferLeft": false };
-                    document.fire("pedigree:person:newpartnerandchild", event);
-                }
-                else if (nodeType == "Partnership") {
-                    if (data.params.twins) {} // TODO
-                    if (data.params.group) {} // TODO                    
-                    var event = { "partnershipID": id, "childParams": data.params.parameters };
-                    document.fire("pedigree:partnership:newchild", event);
-                }                
+                _this.handleCreateAction(data);                                      
             }                        
             _this.hide();            
         });
@@ -153,6 +142,28 @@ var NodetypeSelectionBubble = Class.create({
         return container;
     },
 
+    handleCreateAction: function(data) {
+        var id       = this._node.getID();
+        var nodeType = this._node.getType();                                                   
+        if (nodeType == "Person") {
+            var event = { "personID": id, "childParams": data.params.parameters, "preferLeft": false };
+            if (data.params.twins) {
+                event["twins"] = this.numTwinNodes;
+            }
+            if (data.params.group) {} // TODO                    
+            document.fire("pedigree:person:newpartnerandchild", event);
+        }
+        else if (nodeType == "Partnership") {
+            var event = { "partnershipID": id, "childParams": data.params.parameters };
+            if (data.params.twins) {
+                event["twins"] = this.numTwinNodes;
+            }                    
+            if (data.params.group) {} // TODO                    
+            document.fire("pedigree:partnership:newchild", event);
+        }           
+        this.hide();
+    },
+    
     /**
      * Creates an arrow button that expands or shrinks the bubble
      *
@@ -165,18 +176,18 @@ var NodetypeSelectionBubble = Class.create({
             'class' : 'expand-arrow collapsed',
             'title' : "show more options",
             'href' : '#'
-        }).update("V");
+        }).update("▾");
 
         expandArrow.expand = function() {
             $$(".expand-arrow").forEach(function(arrow) {arrow.collapse()});
             this[data.expandsTo]();
-            expandArrow.update("^");
+            expandArrow.update("▴");
             Element.removeClassName(expandArrow, "collapsed");
         }.bind(this);
 
         expandArrow.collapse = function() {
             this.expandedOptionsContainer.update("");
-            expandArrow.update("V");
+            expandArrow.update("▾");
             Element.addClassName(expandArrow, "collapsed");
         }.bind(this);
 
@@ -239,7 +250,7 @@ var NodetypeSelectionBubble = Class.create({
     show : function(node, x, y) {
         this._node = node;
         if (!this._node) return;
-        console.log("show1");
+        //console.log("show1");
         this._node.onWidgetShow();
         // TODO decide which options to display, depending on the source node's status
         // E.g.:
@@ -260,7 +271,7 @@ var NodetypeSelectionBubble = Class.create({
      * @method hide
      */
     hide : function() {
-	    console.log("hide1");
+        //console.log("hide1");
         document.stopObserving('mousedown', this._onClickOutside);        
         $$(".expand-arrow").forEach(function(arrow) {
             arrow.collapse();
@@ -400,10 +411,10 @@ var NodetypeSelectionBubble = Class.create({
             "class": 'plus-button'
         }).update("+");
         minusBtn.observe("click", function() { console.log("observeMinus2"); me._decrementNumTwins(); svgContainer.update(generateIcon())});
-        plusBtn.observe("click", function() { console.log("observePlus2"); me._incrementNumTwins(); svgContainer.update(generateIcon())});
+        plusBtn.observe("click", function() { console.log("observePlus2"); me._incrementNumTwins(); svgContainer.update(generateIcon())});        
         createBtn.observe("click", function() {
             console.log("observeCreate2");
-            //TODO: refer to the same code as in _createOption(), data.callback == "CreateChild" branch            
+            me.handleCreateAction(me.buttonsDefs[3]);            
         });
         this.expandedOptionsContainer.insert(minusBtn);
         this.expandedOptionsContainer.insert(svgContainer);

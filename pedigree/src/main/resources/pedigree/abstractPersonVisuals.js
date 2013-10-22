@@ -27,8 +27,25 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         this.setGenderGraphics();   
         this.setHighlightBox();
         
-        this._idLabel = editor.getPaper().text(x, y,  editor.DEBUG_MODE ? node.getID() : "").attr(PedigreeEditor.attributes.dragMeLabel).insertAfter(this.getGenderGraphics().flatten());
+        this.updateIDLabel();
         //console.log("abstract person visuals end");
+    },
+    
+    updateIDLabel: function() {
+        var x = this.getX();
+        var y = this.getY();
+        this._idLabel && this._idLabel.remove();
+        this._idLabel = editor.getPaper().text(x, y,  editor.DEBUG_MODE ? this.getNode().getID() : "").attr(PedigreeEditor.attributes.dragMeLabel).insertAfter(this.getGenderGraphics().flatten());
+    },
+    
+    /**
+     * Updates whatever needs to change when node id changes (e.g. id label) 
+     *
+     * @method onSetID
+     */        
+    onSetID: function($super, id) {
+        $super(id);
+        this.updateIDLabel();
     },
 
     /**
@@ -103,6 +120,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * @method grow
      */
     markPermanently: function() {
+        //console.log("marking " + this.getNode().getID());
         if (this._callback && !this._toMark) {
             // trying to mark during animation - need ot wait until animation finishes to mark @ the final location
             this._toMark = true;
@@ -141,7 +159,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * @return {Number} The y coordinate
      */    
     getBottomY: function() {
-        return this._absoluteY + this._radius * 2;
+        return this._absoluteY + this._radius + PedigreeEditor.attributes.childlessLength;
     },
     
     /**
@@ -300,4 +318,9 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     unHighlight: function() {
         this.getHighlightBox().attr({"opacity": 0, 'fill-opacity':0});
     },    
+    
+    remove: function($super) {
+        this.marked && this.marked.remove();
+        $super();
+    }
 });

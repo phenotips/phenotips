@@ -250,7 +250,7 @@ var Legend = Class.create( {
         if (node && node.getType() == 'Person') {
             var id = disorderLabel.id.substring( disorderLabel.id.indexOf('-') + 1);
             var disName = disorderLabel.value = disorderLabel.down('.disorder-name').firstChild.nodeValue;
-            node.addDisorderAction(new Disorder(id, disName));
+            node.addDisorder(new Disorder(id, disName));
         }
     },
 

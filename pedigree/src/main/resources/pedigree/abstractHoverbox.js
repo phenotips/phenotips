@@ -18,20 +18,25 @@
 var AbstractHoverbox = Class.create({
 
     initialize: function(node, shiftX, shiftY, width, height, nodeX, nodeY, nodeShapes) {
+        //var timer = new Timer();        
         var me = this;
         this._node = node;
         this._relativeX = shiftX;
         this._relativeY = shiftY;
         this._nodeX = nodeX;
         this._nodeY = nodeY;
+        this._hidden = true; 
         this._width = width;
         this._height = height;
         this._isHovered = false;
         this._orbs = editor.getPaper().set();
         this._connections = editor.getPaper().set();
+        //var timer1 = new Timer();
         this._handles = this.generateHandles();
+        //timer1.printSinceLast("=== abstract howerbox generate handles runtime: ");
         this._currentHandles = this._handles;
         this._buttons = this.generateButtons();
+        //timer1.printSinceLast("=== abstract howerbox generate buttons runtime: ");
         this._boxOnHover = editor.getPaper().rect(this.getX(), this.getY(), this._width, this._height, 5).attr(PedigreeEditor.attributes.boxOnHover);
         this._backElements = editor.getPaper().set(this._boxOnHover, this._connections);
         this._backElements.insertBefore(nodeShapes.flatten());
@@ -43,6 +48,7 @@ var AbstractHoverbox = Class.create({
         this.animateHideHoverZone =  this.animateHideHoverZone.bind(this);
         this.hide();
         this.enable();
+        //timer.printSinceLast("=== abstract howerbox runtime: ");
     },
 
     /**
@@ -186,30 +192,39 @@ var AbstractHoverbox = Class.create({
      *
      * @return {Raphael.st} The generated button
      */
-    createButton: function(x, y, svgPath, attributes, onClick, className) {
+    createButton: function(x, y, svgPath, attributes, onClick, className, title) {
         var iconScale = PedigreeEditor.attributes.radius * 0.014,
             icon = editor.getPaper().path(svgPath).attr(attributes);
 
-        icon.transform(["t" , x , y, "s", iconScale, iconScale, 0, 0]);
+        icon.transform(["t" , x , y, "s", iconScale, iconScale, 0, 0]);      // <--- TODO: extremely SLOW        
         var mask = editor.getPaper().rect(icon.getBBox().x, icon.getBBox().y,
-            icon.getBBox().width, icon.getBBox().height, 1);
+            icon.getBBox().width, icon.getBBox().height, 1);        
         mask.attr({fill: 'gray', opacity: 0, "stroke-width" : 0}).transform("s1.5");
         var button = editor.getPaper().set(mask, icon);
+        var me = this;
         var clickFunct = function() {
-            onClick && onClick();
-            button.isClicked = !button.isClicked;
-            if(button.isClicked)
+            onClick && onClick();            
+            if (me._hidden) {
+                button.isClicked = false;
+                return;
+            }
+            button.isClicked = !button.isClicked;            
+            if(button.isClicked) {                
                 mask.attr(PedigreeEditor.attributes.btnMaskClick);
-            else
+            }
+            else {
                 mask.attr(PedigreeEditor.attributes.btnMaskHoverOn);
+            }
         };
         button.click(clickFunct);
         button.mousedown(function(){mask.attr(PedigreeEditor.attributes.btnMaskClick)});
         button.hover(function() {
-                mask.attr(PedigreeEditor.attributes.btnMaskHoverOn)
+                mask.attr(PedigreeEditor.attributes.btnMaskHoverOn);
+                if (title)
+                    mask.attr({"title": title});
             },
             function() {
-                mask.attr(PedigreeEditor.attributes.btnMaskHoverOff)
+                mask.attr(PedigreeEditor.attributes.btnMaskHoverOff);
             });
         className && button.forEach(function(element) {
             element.node.setAttribute('class', className);
@@ -233,7 +248,7 @@ var AbstractHoverbox = Class.create({
         var attributes = PedigreeEditor.attributes.menuBtnIcon;
         var x = this.getX() + this.getWidth() - 18 - this.getWidth()/40;
         var y = this.getY() + this.getHeight()/40;
-        return this.createButton(x, y, path, attributes, action, "menu-trigger");
+        return this.createButton(x, y, path, attributes, action, "menu-trigger", "node properties");
     },
     /**
      * Creates and returns a delete button (big red X).
@@ -244,13 +259,15 @@ var AbstractHoverbox = Class.create({
     generateDeleteBtn: function() {
         var me = this;
         var action = function() {
-            me.getNode().removeAction();
+            me.hide();
+            var event = { "nodeID": me.getNode().getID() };
+            document.fire("pedigree:node:remove", event);            
         };
         var path = "M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z";
         var attributes = PedigreeEditor.attributes.deleteBtnIcon;
         var x = this.getX() + this.getWidth()/40;
         var y = this.getY() + this.getHeight()/40;
-        return this.createButton(x, y, path, attributes, action, "delete");
+        return this.createButton(x, y, path, attributes, action, "delete", "remove node");
     },
 
     /**
@@ -339,7 +356,7 @@ var AbstractHoverbox = Class.create({
      * @param {Number} orbY The y coordinate of the orb
      * @return {Raphael.st} Raphael set of elements that make up the handle
      */
-    generateHandle: function(type, orbX, orbY) {
+    generateHandle: function(type, orbX, orbY, title) {
         var path = [["M", this.getNodeX(), this.getNodeY()],["L", orbX, orbY]];
         var connection   = editor.getPaper().path(path).attr({"stroke-width": 4, stroke: "gray"});
         connection.oPath = path;
@@ -369,7 +386,7 @@ var AbstractHoverbox = Class.create({
             editor.getGraphicsSet().setCurrentDraggable(me.getNode().getID());
             // highlight valid targets (after a small delay - so that nothing gets annoyingly highlighted
             // and instantly un-highlighted if the person just clicks the orb without dragging)
-            setTimeout(function() { if (editor.getGraphicsSet().getCurrentDraggable())
+            setTimeout(function() { if (editor.getGraphicsSet().getCurrentDraggable() !== null)
                                         editor.getGraphicsSet().enterHoverMode(me.getNode(), type);
                                   }, 100);
         };
@@ -409,6 +426,8 @@ var AbstractHoverbox = Class.create({
         orb.drag(move, start, end);
         orb.hover(function() {
                 orb[0].attr({fill: "r(.5,.9)hsb(" + (orbHue + .36) + ", 1, .75)-hsb(" + (orbHue + .36) + ", .5, .25)", stroke: "none"});
+                //if (title)
+                //    orb[0].attr({"title": title});                
                 //orb[0].attr({fill: "r(.5,.9)hsb(" + orbHue +.7 + ", 1, .75)-hsb(" + orbHue + .7 + ", .5, .25)"})
             },
             function () {
@@ -449,7 +468,8 @@ var AbstractHoverbox = Class.create({
      *
      * @method animateDrawHoverZone
      */
-    animateDrawHoverZone: function() {        
+    animateDrawHoverZone: function() {     
+        this._hidden = false;
         if (editor.getGraphicsSet().getCurrentDraggable()) return;
         
         this.getNode().getGraphics().setSelected(true);
@@ -482,6 +502,7 @@ var AbstractHoverbox = Class.create({
      * @method hide
      */
     hide: function() {
+        this._hidden = true;
         this.getBoxOnHover().attr({opacity:0});
         this.getButtons().forEach(function(button) {
             button.icon.attr({opacity:0});

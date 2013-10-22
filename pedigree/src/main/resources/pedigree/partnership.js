@@ -15,12 +15,14 @@
 var Partnership = Class.create(AbstractNode, {
 
    initialize: function($super, x, y, id) {
-       console.log("partnership");
+       //console.log("partnership");
        this._childlessStatus = null;
        this._childlessReason = "";
-       this._type = 'Partnership';
+       this._type            = 'Partnership';
+       this._consangrMode    = "A";           // "Autodetect" mode: determine base don the current pedigree.
+                                              //  Can be either "A", "Y" (always consider consangr.) or "N" (never)
        $super(x, y, id);       
-       console.log("partnership end");
+       //console.log("partnership end");
    },
 
     /**
@@ -42,9 +44,8 @@ var Partnership = Class.create(AbstractNode, {
      *
      * @method setChildlessStatus
      * @param {String} status Can be "childless", "infertile" or null
-     * @param {Boolean} ignoreChildren If True, changing the status will not detach any children
      */
-    setChildlessStatus: function(status, ignoreChildren) {
+    setChildlessStatus: function(status) {
         if(!this.isValidChildlessStatus(status))
             status = null;
         
@@ -52,10 +53,33 @@ var Partnership = Class.create(AbstractNode, {
             this._childlessStatus = status;
             this.setChildlessReason(null);
             this.getGraphics().updateChildlessShapes();
-            this.getGraphics().this.updateChildhubConnection(); 
+            this.getGraphics().updateChildhubConnection(); 
         }
         
         return this.getChildlessStatus();
+    },
+    
+    /**
+     * Sets the consanguinity setting of this relationship. Valid inputs are "A" (automatic"), "Y" (yes) and "N" (no)
+     *
+     * @method setConsanguinity
+     */        
+    setConsanguinity: function(value) {
+        if (value != "A" && value != "N" && value != "Y")
+            value = "A";
+        if (this._consangrMode != value) {
+            this._consangrMode = value;
+            this.getGraphics().updatePartnerConnections();
+        }
+    },
+    
+    /**
+     * Returns the consanguinity setting of this relationship: "A" (automatic"), "Y" (yes) or "N" (no)
+     *
+     * @method getConsanguinity
+     */    
+    getConsanguinity: function() {
+        return this._consangrMode;
     },
 
     /**
@@ -65,11 +89,12 @@ var Partnership = Class.create(AbstractNode, {
      * @return {Object}
      */
     getSummary: function() {
-        var childlessInactive = false; //TODO: use node.poroperties
+        var childlessInactive = editor.getGraph().hasNonPlaceholderNonAdoptedChildren(this.getID());
         return {
             identifier:    {value : this.getID()},
             childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive: childlessInactive},
-            childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive: childlessInactive}
+            childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive: childlessInactive},
+            consangr: {value: this._consangrMode, inactive: false }
         };
     },
 
@@ -81,10 +106,15 @@ var Partnership = Class.create(AbstractNode, {
      * @return {Object} in the form
      *
      */
-    getProperties: function() {
+    getProperties: function($super) {
         var info = $super();
-        info['childlessStatus'] = this.getChildlessStatus();
-        info['childlessReason'] = this.getChildlessReason();
+        if (this.getChildlessStatus() != null) {
+            info['childlessStatus'] = this.getChildlessStatus();
+            info['childlessReason'] = this.getChildlessReason();
+        }
+        if (this.getConsanguinity() != "A") {
+            info['consangr'] = this.getConsanguinity();
+        }
         return info;
     },
 
@@ -102,6 +132,9 @@ var Partnership = Class.create(AbstractNode, {
             }
             if(info.childlessReason && info.childlessReason != this.getChildlessReason()) {
                 this.setChildlessReason(info.childlessReason);
+            }
+            if (info.consangr && info.consangr != this.getConsanguinity()) {                
+                this.setConsanguinity(info.consangr);
             }
             return true;
         }
