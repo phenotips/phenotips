@@ -40,6 +40,9 @@ var Controller = Class.create({
         console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
         var changeSet = editor.getGraph().redrawAll();
         editor.getGraphicsSet().applyChanges(changeSet, true);
+        
+        if (!event.memo.noUndoRedo)
+            editor.getActionStack().addState( event );        
     },
     
     handleClearGraph: function(event)

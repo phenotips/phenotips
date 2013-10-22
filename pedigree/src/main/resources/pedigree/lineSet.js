@@ -74,8 +74,8 @@ var LineSet = Class.create({
             for (var o in newAffected) {
                 if (newAffected.hasOwnProperty(o)) {
                     if (!processed.hasOwnProperty(o)) {
-                        affected.push(o);
-                        returnNewAffected.push(o);
+                        affected.push(parseInt(o));
+                        returnNewAffected.push(parseInt(o));
                         processed[o] = true;
                     }
                 }                

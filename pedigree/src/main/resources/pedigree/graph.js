@@ -474,9 +474,12 @@ var GraphicsSet = Class.create({
                 this.removeFromNodeMap(nextRemoved);
                 
                 var affected = this._lineSet.removeAllLinesAffectedByOwnerMovement(nextRemoved);
+                
                 for (var j = 0; j < affected.length; j++)
-                    if (!arrayContains(changeSet.removed, affected[j]))   // ignore nodes which are removed anyway 
+                    if (!arrayContains(changeSet.removed, affected[j])) { // ignore nodes which are removed anyway
+                        //console.log("adding due to line removal: " + affected[j]);
                         affectedByLineRemoval[affected[j]] = true;
+                    }
             }
                         
             // for each removed node all nodes with higher ids get their IDs shifted down by 1
@@ -501,8 +504,10 @@ var GraphicsSet = Class.create({
             for (node in affectedByLineRemoval)
                 if (affectedByLineRemoval.hasOwnProperty(node)) {
                     var newID = changedIDs.hasOwnProperty(node) ? changedIDs[node] : node; 
-                    if (!arrayContains(changeSet.moved, newID))
+                    if (!arrayContains(changeSet.moved, newID)) {
+                        //console.log("moved due to line removal: oldID="+node + ", newID=" + newID); 
                         changeSet.moved.push(newID);
+                    }
                 }
         }
         
