@@ -6,6 +6,30 @@
  * @constructor
  */
 
+/*var DisorderLoader = Class.create( {
+    initialize: function(id, callWhenReady) {
+        this._id       = id;
+        this._disorder = undefined;
+        this.load(callWhenReady);
+    },
+    
+    load: function(callWhenReady) {       
+        var z = XWiki;
+        var URL = XWiki.currentDocument.getURL() + "/OmimService?outputSyntax=plain&q=id:" + this._id;      
+        console.log("URL: " + URL);
+        new Ajax.Request(URL, {
+            method: "GET",
+            onSuccess: this.onDataReady.bind(this),
+            onComplete: callWhenReady ? callWhenReady : {}
+        });
+    },
+    
+    onDataReady : function(response) {
+        console.log("response: " + repsonse);
+    }   
+});*/
+
+            
 var Legend = Class.create( {
 
     initialize: function() {
@@ -33,6 +57,12 @@ var Legend = Class.create( {
         Droppables.add(editor.getWorkspace().canvas, {accept: 'disorder', onDrop: this._onDropDisorder.bind(this)});
     },
 
+    //loadDisorder: function(id) {
+    //    var onReady = function() {};
+    //    
+    //    var loader = new DisorderLoader(id, onReady); 
+    //},
+    
     /**
      * Returns an object of disorder IDs mapped to their names.
      *

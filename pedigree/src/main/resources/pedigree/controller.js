@@ -144,7 +144,8 @@ var Controller = Class.create({
                         if (twin == nodeID) continue;
                         var twinNode = editor.getGraphicsSet().getNode(twin);
                         twinNode.setMonozygotic(propValue);
-                        var twinProperties = twinNode.getProperties();              
+                        var twinProperties = twinNode.getProperties();        
+                        console.log("Setting twin properties: " + stringifyObject(twinProperties));
                         editor.getGraph().setProperties( twin, twinProperties );                        
                     }
                 }
@@ -191,19 +192,20 @@ var Controller = Class.create({
             if (modifications.hasOwnProperty(modificationType)) {
                 var modValue = modifications[modificationType];  
                                                
-                if (modificationType == "addTwin") {
+                if (modificationType == "addTwin") {                    
                     for (var i = 0; i < modValue; i++ ) {
-                        var twinProperty = { "gender": "U" };
+                        var twinProperty = { "gender": node.getGender() };
                         var changeSet = editor.getGraph().addTwin( nodeID, twinProperty );        
                         editor.getGraphicsSet().applyChanges(changeSet, true);
-                    }
+                    }                    
+                    editor.getGraphicsSet().getNode(nodeID).assignProperties(editor.getGraph().getProperties(nodeID));
                 }
                 
                 if (modificationType == "makePlaceholder") {
                     // TODO
                 }                
-            }
-                             
+            }                                     
+        
         editor.getNodeMenu().update(editor.getNode(nodeID));
         
         if (!event.memo.noUndoRedo)

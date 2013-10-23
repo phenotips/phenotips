@@ -377,6 +377,7 @@ var Person = Class.create(AbstractPerson, {
             if (typeof disorder != 'object') {
                 // create a disorder object based on disorder id
                 // TODO
+                //disorder = editor.getLegend().loadDisorder(disorder);
             }
             else  // TODO: for now disregard raw IDs
             this.addDisorder( disorder, true );

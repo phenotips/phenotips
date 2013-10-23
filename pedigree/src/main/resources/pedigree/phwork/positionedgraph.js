@@ -26,7 +26,7 @@ PositionedGraph.prototype = {
         return false;
       return true;
     },
-    
+
     getMaxNodeId: function()
     {
         return this.DG.GG.getMaxRealVertexId();
@@ -142,7 +142,7 @@ PositionedGraph.prototype = {
         }
         else
         if (this.isRelationship(v)) {
-            var partners = this.DG.GG.getParents(v);            
+            var partners = this.DG.GG.getParents(v);
             var level1   = this.DG.vertLevel.outEdgeVerticalLevel[partners[0]].hasOwnProperty(v) ? this.DG.vertLevel.outEdgeVerticalLevel[partners[0]][v].verticalLevel : 0;
             var level2   = this.DG.vertLevel.outEdgeVerticalLevel[partners[1]].hasOwnProperty(v) ? this.DG.vertLevel.outEdgeVerticalLevel[partners[1]][v].verticalLevel : 0;
             var level    = Math.min(level1, level2);
@@ -312,21 +312,21 @@ PositionedGraph.prototype = {
 
         return result;
     },
-    
+
     getOppositeGender: function( v )
     {
         if (!this.isPerson(v))
             throw "Assertion failed: getOppositeGender() is applied to a non-person";
-        
+
         return this.DG.GG.getOppositeGender(v);
     },
-    
+
     getDisconnectedSetIfNodeRemoved: function( v )
     {
         var removedList = {};
         removedList[v] = true;
-        
-        if (this.isPerson(v)) {            
+
+        if (this.isPerson(v)) {
             // special case: removing the only child also removes the relationship
             if (this.DG.GG.getInEdges(v).length != 0) {
                 var chhub = this.DG.GG.getInEdges(v)[0];
@@ -334,37 +334,39 @@ PositionedGraph.prototype = {
                     removedList[ this.DG.GG.getInEdges(chhub)[0] ] = true;
                 }
             }
-            
+
             // also remove all relationships by this person
-            for (var i = 0; i < this.DG.GG.getOutEdges(v).length; i++)
-                removedList[this.DG.GG.getOutEdges(v)[i]] = true;
+            var allRels = this.DG.GG.getAllRelationships(v);
+            for (var i = 0; i < allRels.length; i++) {
+                removedList[allRels[i]] = true;
+            }
         }
-        
+
         // go through all the edges in the tree starting from proband and disregarding any edges going to or from v
         var connected = {};
 
         var queue = new Queue();
-        queue.push( 0 );        
+        queue.push( 0 );
 
         while ( queue.size() > 0 ) {
             var next = parseInt(queue.pop());
-            
+
             if (connected.hasOwnProperty(next)) continue;
             connected[next] = true;
-            
+
             var outEdges = this.DG.GG.getOutEdges(next);
             for (var i = 0; i < outEdges.length; i++) {
-                if (!removedList.hasOwnProperty(outEdges[i])) 
+                if (!removedList.hasOwnProperty(outEdges[i]))
                     queue.push(outEdges[i]);
             }
             var inEdges = this.DG.GG.getInEdges(next);
             for (var i = 0; i < inEdges.length; i++) {
                 if (!removedList.hasOwnProperty(inEdges[i]))
                     queue.push(inEdges[i]);
-            }            
+            }
         }
         console.log("Connected nodes: " + stringifyObject(connected));
-        
+
         var affected = [];
         for (var i = 0; i < this.DG.GG.getNumVertices(); i++) {
             if (this.isPerson(i) || this.isRelationship(i)) {
@@ -372,13 +374,13 @@ PositionedGraph.prototype = {
                     affected.push(i);
             }
         }
-        
+
         console.log("Affected nodes: " + stringifyObject(affected));
         return affected;
     },
 
     _debugPrintAll: function( headerMessage )
-    {           
+    {
         console.log("========== " + headerMessage + " ==========");
         console.log("== GG:");
         console.log(stringifyObject(this.DG.GG));
@@ -821,6 +823,7 @@ PositionedGraph.prototype = {
         var twinGroupId = this.DG.GG.getTwinGroupId(personId);
         if (twinGroupId === null) {
             twinGroupId = this.DG.GG.getUnusedTwinGroupId(parentRel);
+            console.log("new twin id: " + twinGroupId);
             this.DG.GG.properties[personId]['twinGroup'] = twinGroupId;
         }
         properties['twinGroup'] = twinGroupId;
@@ -855,28 +858,28 @@ PositionedGraph.prototype = {
     removeNodes: function( nodeList )
     {
         this._debugPrintAll("before");
-        
+
         //var positionsBefore  = this.DG.positions.slice(0);
         //var ranksBefore      = this.DG.ranks.slice(0);
         //var vertLevelsBefore = this.DG.vertLevel.copy();
         //var rankYBefore      = this.DG.rankY.slice(0);
         //var consangrBefore   = this.DG.consangr;
-        //var numNodesBefore   = this.DG.GG.getMaxRealVertexId();        
-        
+        //var numNodesBefore   = this.DG.GG.getMaxRealVertexId();
+
         var removed = nodeList.slice(0);
         removed.sort();
         var moved = [];
-            
+
         for (var i = 0; i < nodeList.length; i++) {
             if (this.isRelationship(nodeList[i])) {
                 // also add its childhub
-                var chHub = this.DG.GG.getOutEdges(nodeList[i])[0]; 
+                var chHub = this.DG.GG.getOutEdges(nodeList[i])[0];
                 nodeList.push(chHub);
                 console.log("adding " + chHub + " to removal list (chhub of " + nodeList[i] + ")");
-                
+
                 // also add its long multi-rank edges
                 var pathToParents = this.getPathToParents(nodeList[i]);
-                for (var p = 0; p < pathToParents.length; p++) {  
+                for (var p = 0; p < pathToParents.length; p++) {
                     for (var j = 0; j < pathToParents[p].length; j++)
                         if (this.DG.GG.isVirtual(pathToParents[p][j])) {
                             console.log("adding " + pathToParents[p][j] + " to removal list (virtual of " + nodeList[i] + ")");
@@ -885,15 +888,15 @@ PositionedGraph.prototype = {
                 }
             }
         }
-        
+
         nodeList.sort(function(a,b){return a-b});
-        
+
         console.log("nodeList: " + stringifyObject(nodeList));
-        
+
         for (var i = nodeList.length-1; i >= 0; i--) {
             var v = nodeList[i];
             console.log("removing: " + v);
-            
+
             //// add person't relationship to the list of moved nodes
             //if (this.isPerson(v)) {
             //    var rel = this.DG.GG.getProducingRelationship(v);
@@ -901,27 +904,27 @@ PositionedGraph.prototype = {
             //    if (rel !== null && !arrayContains(nodeList, rel))
             //        moved.push(rel);
             //}
-            
+
             this.DG.GG.remove(v);
             console.log("order before: " + stringifyObject(this.DG.order));
             this.DG.order.remove(v, this.DG.ranks[v]);
             console.log("order after: " + stringifyObject(this.DG.order));
             this.DG.ranks.splice(v,1);
             this.DG.positions.splice(v, 1);
-            
+
             //// update moved IDs accordingly
             //for (var m = 0; m < moved.length; m++ ) {
             //    if (moved[m] > v)
             //        moved[m]--;
             //}
         }
-        
+
         this.DG.GG.validate();
-        
+
         // note: do not update rankY, as we do not want to move anything
         this.DG.vertLevel = this.DG.positionVertically();
         this.updateAncestors();
-        
+
         // TODO: for now: redraw all relationships
         for (var i = 0 ; i <= this.getMaxNodeId(); i++)
             if (this.isRelationship(i))
@@ -936,7 +939,7 @@ PositionedGraph.prototype = {
         // note: moved now has the correct IDs valid in the graph with all affected nodes removed
         return {"removed": removed, "removedInternally": nodeList, "moved": moved };
     },
-    
+
     repositionAll: function ()
     {
         this.DG.positions = this.DG.position(this.DG.horizontalPersonSeparationDist, this.DG.horizontalRelSeparationDist);
@@ -971,6 +974,8 @@ PositionedGraph.prototype = {
         this._debugPrintAll("before");
 
         var baseGraph = this.DG.GG.makeGWithCollapsedMultiRankEdges();
+        
+        //var byRankAndOrder = 
 
         if (!this._recreateUsingBaseGraph(baseGraph)) return {};  // no changes
 
@@ -1016,7 +1021,7 @@ PositionedGraph.prototype = {
 
         // note: everything else can be recomputed based on the information above
 
-        //console.log("JSON represenation: " + JSON.stringify(output));
+        console.log("JSON represenation: " + JSON.stringify(output));
 
         return JSON.stringify(output);
     },
@@ -1329,7 +1334,7 @@ PositionedGraph.prototype = {
                     leftNodePos--;
                 rightNodePos = o;
                 while (rightNodePos < this.DG.order.order[rank].length-1 && this.DG.GG.isVirtual(this.DG.order.order[rank][rightNodePos]))
-                    rightNodePos--;                
+                    rightNodePos--;
                 var nodeToTheLeft  = this.DG.order.order[rank][leftNodePos];
                 var nodeToTheRight = this.DG.order.order[rank][rightNodePos];
 
@@ -1510,11 +1515,11 @@ PositionedGraph.prototype = {
         // add penalties for crossing child-to-parent lines, and forbid inserting inbetween twin nodes
         for (var o = 0; o < orderR.length; o++) {
             if (o == vOrder) continue;
-            
+
             var node = orderR[o];
             if (!this.isPerson(node)) continue;
             var allTwins = this.getAllTwinsSortedByOrder(node);
-            
+
             // forbid inserting inbetween twins
             if (allTwins.length > 1) {
                 var leftMostTwinOrder  = this.DG.order.vOrder[ allTwins[0] ];
@@ -1523,7 +1528,7 @@ PositionedGraph.prototype = {
                     penaltySameRank[j] = Infinity;
                 o = rightMostTwinOrder; // skip thorugh all other twins in this group
             }
-        
+
             // penalty for crossing peron-to-parent line
             if (this.DG.GG.getProducingRelationship(node) != null) {
                 if (o < vOrder) {
@@ -1534,7 +1539,7 @@ PositionedGraph.prototype = {
                     for (var j = o+1; j <= orderR.length; j++)
                         penaltySameRank[j]++;
                 }
-            }            
+            }
         }
 
         console.log("Insertion same rank penalties: " + stringifyObject(penaltySameRank));
@@ -1967,7 +1972,6 @@ Heuristics.prototype = {
 
     improvePositioning: function ()
     {
-        //return;
         // given a finished positioned graph (asserts the graph is valid):
         //
         // 1. fix some display requirements, such as relationship lines always going to the right or left first before going down
@@ -2092,7 +2096,7 @@ Heuristics.prototype = {
                 if (childhubX != relX) {
                     improved = xcoord.moveNodeAsCloseToXAsPossible(childhub, relX, true);
                     childhubX = xcoord.xcoord[childhub];
-                    console.log("moving " + childhub + " to " + xcoord.xcoord[childhub]);
+                    //console.log("moving " + childhub + " to " + xcoord.xcoord[childhub]);
                 }
 
                 var childInfo = this.analizeChildren(childhub);
@@ -2103,7 +2107,7 @@ Heuristics.prototype = {
                     if (xcoord.xcoord[childId] == childhubX) continue;
 
                     improved = xcoord.moveNodeAsCloseToXAsPossible(childId, childhubX, true);
-                    console.log("moving " + childId + " to " + xcoord.xcoord[childId]);
+                    //console.log("moving " + childId + " to " + xcoord.xcoord[childId]);
 
                     if (xcoord.xcoord[childId] == childhubX) continue;
 
@@ -2111,20 +2115,20 @@ Heuristics.prototype = {
 
                 }
                 // B) relationship not above one of it's multiple children (preferably one in the middle)
-                else {                    
+                else {
                     var leftMost  = childInfo.leftMostChildId;
                     var rightMost = childInfo.rightMostChildId;
-                    
+
                     var leftX  = xcoord.xcoord[leftMost];
                     var rightX = xcoord.xcoord[rightMost];
                     var middle = (leftX + rightX)/2;
-                    
-                    console.log("childhubx: " + childhubX + ", leftX: " + leftX + ", rightX: " + rightX);
-                    
+
+                    //console.log("childhubx: " + childhubX + ", leftX: " + leftX + ", rightX: " + rightX);
+
                     if (middle == childhubX) continue;
-                    
+
                     var needToShift = childhubX - middle;
-                    
+
                     if (childInfo.numWithPartners == 0) {
                         // can shift children easily
                         if (needToShift < 0) {  // need to shift children left
@@ -2300,7 +2304,7 @@ Heuristics.prototype = {
                     alreadyProcessed[rightDisturbed] = true;
                     xcoord.xcoord[rightDisturbed] += (vrank == originalDisturbRank) ? toMove : shiftAmount;
                     disturbedNodes.push(rightDisturbed);
-                    console.log("add1: " + rightDisturbed + " (toMove: " + toMove +")");
+                    //console.log("add1: " + rightDisturbed + " (toMove: " + toMove +")");
                 }
 
                 if (v == newNodeId && this.DG.GG.type[v] != TYPE.VIRTUALEDGE) continue;
@@ -2315,7 +2319,7 @@ Heuristics.prototype = {
                     var toMove     = position - childPos;
                     if (toMove > shiftAmount)
                         shiftAmount = toMove;
-                    console.log("----- id: " + childHubId + ", pos: " + childPos + ", move: " + toMove);
+                    //console.log("----- id: " + childHubId + ", pos: " + childPos + ", move: " + toMove);
                 }
 
                 // go though out- and in- edges and propagate the movement
@@ -2324,6 +2328,11 @@ Heuristics.prototype = {
                 var skipInEdges = false;
                 if ((type == TYPE.PERSON || type == TYPE.VIRTUALEDGE) && v == newNodeId)
                     skipInEdges = true;
+                if (type == TYPE.VIRTUALEDGE) {
+                    var inEdgeV = inEdges[0];
+                    if (this.DG.ranks[inEdgeV] == vrank)
+                        skipInEdges = true;
+                }
                 // if we need to strech something -> stretch relationship edges to the right of
                 if (type == TYPE.RELATIONSHIP) {
                     skipInEdges = true;
@@ -2359,7 +2368,7 @@ Heuristics.prototype = {
                         alreadyProcessed[u] = true;
                         xcoord.xcoord[u] += shiftAmount;
                         disturbedNodes.push(u);
-                        console.log("add2: " + u + " (shift: " + shiftAmount + ")");
+                        //console.log("add2: " + u + " (shift: " + shiftAmount + ")   by " + v);
                     }
                 }
                 //---------
@@ -2396,7 +2405,7 @@ Heuristics.prototype = {
                     alreadyProcessed[u] = true;
                     xcoord.xcoord[u] += shiftAmount;
                     disturbedNodes.push(u);
-                    console.log("add3: " + u + " (shift: " + shiftAmount + ")");
+                    //console.log("add3: " + u + " (shift: " + shiftAmount + ")");
                 }
                 //---------
             }

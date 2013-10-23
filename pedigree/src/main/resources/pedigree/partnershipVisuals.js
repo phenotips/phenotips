@@ -148,7 +148,18 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         var cornerRadius  = PedigreeEditor.attributes.curvedLinesCornerRadius;
         
         for (var p = 0; p < partnerPaths.length; p++) {
-            var path     = partnerPaths[p];                                      
+            var path = partnerPaths[p];                                      
+            
+            // for the last piece which attaches to the person:
+            // need to consider which attachment point to use, and may have to do a bended curve from current Y to the attachment point Y
+            var person           = path[path.length-1];           
+            var finalSegmentInfo = editor.getGraph().getRelationshipLineInfo(id, person);
+            
+            var nodePos       = editor.getGraph().getPosition(person);
+            var finalPosition = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );            
+            var finalYTo      = finalPosition.y - finalSegmentInfo.attachmentPort * 12;
+            var lastBend      = PedigreeEditor.attributes.radius * (2.3 - finalSegmentInfo.attachmentPort*0.35);               
+            var yTop          = editor.convertGraphCoordToCanvasCoord( 0, finalSegmentInfo.verticalY ).y;            
             
             var goesLeft = false;                        // indicates if the current step fo the path is right-to-left or left-to-right            
             var xFrom    = this.getX();                  // always the X of the end of the previous segment of the curve
@@ -174,16 +185,21 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                     goesLeft = true;
                 else if (position.x > xFrom)
                     goesLeft = false;
-                
-                if (i == path.length - 1 && Math.abs(prevY - position.y) <= cornerRadius )
-                    position.y = prevY;
-                                                                         
+                                                                                         
                 var newVertical = (prevY != position.y);                    
                                 
                 var angled = (prevX != position.x && prevY != position.y);
                                 
-                var changesDirection = ((vertical && !newVertical) || (!vertical && newVertical)) || angled;                
+                var changesDirection = ((vertical && !newVertical) || (!vertical && newVertical)) || angled;
                 
+                if (i == path.length-1 && prevY == yTop) {
+                    angled = false;
+                    changesDirection = true;
+                    newVertical = false;
+                }                
+                
+                //console.log("angled: " + angled + ", changes: " + changesDirection);
+                        
                 if (changesDirection) {  // finish drawing the current segment
                     editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xTo, yTo, lineAttr, consangr, goesLeft);
                     xFrom = xTo;
@@ -191,14 +207,14 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 }
                                 
                 xTo      = position.x;
-                yTo      = position.y;
+                yTo      = (i == path.length - 1) ? finalYTo : position.y;
                 prevY    = position.y;                
                 prevX    = position.x;
                                                 
                 //------------------
                 // note: assume that we always draw bottom to top, as relationship nodes are always at or below partner level                
                 
-                if (smoothCorners && !wasAngle && !angled) {
+                if (smoothCorners && ( (!wasAngle && !angled) || (position.y == yTop)) ) {
                     //console.log("corner from " + xFrom + "," + yFrom + ", newVert: " + newVertical );
                     if (newVertical && !vertical) {
                         // was horizontal, now vertical - draw the smooth corner Horiz->Vert (curve bends down)
@@ -243,27 +259,13 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 vertical = newVertical;
                 wasAngle = angled;
             }
-
-            // draw the last segment: need to consider which attachment point to use, and may have to do
-            // a bended curve from current Y to the attachment point Y
-            var person           = path[path.length-1];
             
-            var finalSegmentInfo = editor.getGraph().getRelationshipLineInfo(id, person);
-            
-            var nodePos  = editor.getGraph().getPosition(person);
-            var position = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );            
-            yTo = position.y - finalSegmentInfo.attachmentPort * 12;
-            
-            var lastBend = PedigreeEditor.attributes.radius * (2.3 - finalSegmentInfo.attachmentPort*0.35);   
-            
-            var yTop = editor.convertGraphCoordToCanvasCoord( 0, finalSegmentInfo.verticalY ).y;
-
-            if (yFrom >= position.y + cornerRadius*2)
-                editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xTo, yTo, lineAttr, consangr, false);
+            if (yFrom >= finalPosition.y + cornerRadius*2)
+                editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xTo, finalYTo, lineAttr, consangr, false);
             else
                 // draw a line/curve from (xFrom, yFrom) trough (..., yTop) to (xTo, yTo).
                 // It may be a line if all y are the same, a lline with one bend or a line with two bends
-                editor.getGraphicsSet().drawCurvedLineWithCrossings( id, xFrom, yFrom, yTop, xTo, yTo, lastBend, lineAttr, consangr, goesLeft );
+                editor.getGraphicsSet().drawCurvedLineWithCrossings( id, xFrom, yFrom, yTop, xTo, finalYTo, lastBend, lineAttr, consangr, goesLeft );
         }
         
         this._partnerConnections = editor.getPaper().setFinish();
@@ -319,8 +321,8 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 // draw the mponozygothinc line, if necessary
                 if (editor.getGraphicsSet().getNode(allTwins[0]).getMonozygotic()) {
                     // TODO: hack
-                    var xTwinLineShift = 8 + 4*(allTwins.length-2);
-                    editor.getGraphicsSet().drawLineWithCrossings( id, currentTwinGroupCenterX - xTwinLineShift, childlineY+twinCommonVerticalPieceLength*2, currentTwinGroupCenterX + xTwinLineShift, childlineY+twinCommonVerticalPieceLength*2, PedigreeEditor.attributes.partnershipLines); 
+                    var xTwinLineShift = 10 + 10*(allTwins.length-2);
+                    editor.getGraphicsSet().drawLineWithCrossings( id, currentTwinGroupCenterX - xTwinLineShift, childlineY+twinCommonVerticalPieceLength*2.5, currentTwinGroupCenterX + xTwinLineShift, childlineY+twinCommonVerticalPieceLength*2.5, PedigreeEditor.attributes.partnershipLines); 
                 }
             }
             else if (twinGroupId == null)
@@ -365,6 +367,9 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             throw "Can't animate a partnership node";
         }
         
+        this.mark && this.mark.remove();
+        this.mark2 && this.mark2.remove();
+
         this.getAllGraphics().transform("t " + (x-this.getX()) + "," + (y-this.getY()) + "...");
         $super(x,y, animate, callback);
                 

@@ -6,8 +6,33 @@
  */
 var LineSet = Class.create({
     initialize: function() {        
-        this._lineCrossings   = {};  // { owner: [list of owners of lines crossing its lines] }
+        this._lineCrossings   = {};  // { owner: {set of owners of lines crossing its lines} }
         this._lines           = [];  // array of sets {owner, x1, y1, x2, y2}
+    },
+    
+    replaceIDs: function( changedIdsSet ) {
+        var newLineCrossings = {};                
+        for (oldOwnerID in this._lineCrossings)
+            if (this._lineCrossings.hasOwnProperty(oldOwnerID)) {
+                var crosses    = this._lineCrossings[oldOwnerID];
+                var newCrosses = {};
+                
+                for (oldID in crosses)
+                    if (crosses.hasOwnProperty(oldID)) {
+                        var newID = changedIdsSet.hasOwnProperty(oldID) ? changedIdsSet[oldID] : oldID;
+                        newCrosses[newID] = true;
+                    }
+                
+                var newOwnerID = changedIdsSet.hasOwnProperty(oldOwnerID) ? changedIdsSet[oldOwnerID] : oldOwnerID;
+                newLineCrossings[newOwnerID] = newCrosses;
+            }
+        this._lineCrossings = newLineCrossings; 
+
+        for (var i = 0; i < this._lines.length; i++) {
+            var oldID = this._lines[i].owner;            
+            var newID = changedIdsSet.hasOwnProperty(oldID) ? changedIdsSet[oldID] : oldID;
+            this._lines[i].owner = newID;
+        }
     },
 
     addLine: function( owner, x1, y1, x2, y2 ) {
@@ -28,7 +53,7 @@ var LineSet = Class.create({
             if (line.owner == owner) continue;
             
             var crossingPoint = this._getLineCrossing(thisLine, line);
-            if (crossingPoint) {
+            if (crossingPoint) { 
                 this._lineCrossings[line.owner][owner] = true;  // that line affects this one                    
                 bendPoints.push(crossingPoint);
             }                                
@@ -51,6 +76,13 @@ var LineSet = Class.create({
         
         var affectedOwners = this._lineCrossings[owner];
         delete this._lineCrossings[owner];
+        
+        for (ownerID in this._lineCrossings)
+            if (this._lineCrossings.hasOwnProperty(ownerID)) {                
+                var crosses = this._lineCrossings[ownerID];
+                if (crosses.hasOwnProperty(owner))
+                    delete crosses.owner;
+            }
         
         //console.log("Removing " + owner + ", affected: " + stringifyObject(affectedOwners)); 
         

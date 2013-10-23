@@ -115,7 +115,7 @@ var Workspace = Class.create({
                 { key : 'save',      label : 'Save'},
                 { key : 'reload',    label : 'Reload'},
                 { key : 'templates', label : 'Templates'},
-                { key : 'print',     label : 'Printable version'},
+                //{ key : 'print',     label : 'Printable version'},
                 { key : 'close',     label : 'Close'}
             ]
         }];

@@ -1152,6 +1152,12 @@ DrawGraph.prototype = {
             var b = order.order[rank][o];
             if (this.GG.getInEdges(b).length > 0)
                 numNodes++;
+            /* TODO:
+            // count twins, as twins have multiple up-edges
+            var twinGroupId = this.GG.getTwinGroupId(b);
+            if (twinGroupId != null) {
+                numNodes++;
+            }*/
         }
         return numNodes;
     },
@@ -1539,7 +1545,7 @@ DrawGraph.prototype = {
                 //      - try not to get inbetween well-placed relationships
                 //      - count edge crossings (TODO)
 
-                var insertOrder = undefined;
+                var insertOrder = null;
                 
                 /*
                 if (this.GG.isVirtual(parents[0])) {
@@ -1602,6 +1608,15 @@ DrawGraph.prototype = {
                                 insertOrder = o;
                                 break;
                             }
+                        }
+                        if (insertOrder == null) {
+                            var parentsOfLeft = this.GG.getInEdges(leftOfParent1);
+                            var otherP1 = (parentsOfLeft[0] != parents[1]) ? parentsOfLeft[0] : parentsOfLeft[1];
+                            var orderP1 = this.order.vOrder[otherP1];
+                            if (orderP1 < order1)
+                                insertOrder = order2;
+                            else
+                                insertOrder = order1 + 1;
                         }
                     }
                     else if (p1busy) {
@@ -1939,6 +1954,8 @@ DrawGraph.prototype = {
                 if (this.GG.isPerson(v)) {
                     var outEdges = this.GG.getOutEdges(v);
                     if (outEdges.length <= 0) continue;
+                    
+                    //console.log("person: " + v);
 
                     verticalLevels.outEdgeVerticalLevel[v] = {};
 
@@ -1954,6 +1971,7 @@ DrawGraph.prototype = {
 
                     var nextAttachL   = 0;      // attachment point of the line connecting the node and it's relationship
                     var nextVerticalL = 0;      // vertical level of the line
+                    var prevOrder     = Infinity;
                     for (var k = 0; k < leftEdges.length; k++) {
                         var u = this.GG.downTheChainUntilNonVirtual( leftEdges[k] );
 
@@ -1961,11 +1979,19 @@ DrawGraph.prototype = {
                             for (var o = vOrder[leftEdges[k]] + 1; o < vOrder[v]; o++) {
                                 // there are non-virtual vertices between the node and it's relationship - need to draw the line above the nodes
                                 var w = this.order.order[r][o];
-                                if (!this.GG.isVirtual(w)) { nextVerticalL = 1; break; }
+                                if (!this.GG.isVirtual(w) && !this.GG.isRelationship(w)) { nextVerticalL = 1; break; }
                             }
                         }
                         verticalLevels.outEdgeVerticalLevel[v][u] = { attachlevel: nextAttachL, verticalLevel: nextVerticalL };
-
+                       
+                        if (vOrder[u] == prevOrder - 1) {
+                            var prevU = this.GG.downTheChainUntilNonVirtual( leftEdges[k-1] );
+                            console.log("prevU: " + prevU);
+                            verticalLevels.outEdgeVerticalLevel[v][u]     = { attachlevel: nextAttachR-1, verticalLevel: nextVerticalR-1 };
+                            verticalLevels.outEdgeVerticalLevel[v][prevU] = { attachlevel: nextAttachR,   verticalLevel: nextVerticalR };
+                        }                        
+                        prevOrder = vOrder[u];
+                        
                         var changed = true;
                         while (changed) {
                             changed = false;
@@ -1984,7 +2010,6 @@ DrawGraph.prototype = {
                     var nextVerticalR = 0;      // vertical level of the line
                     for (var k = 0; k < rightEdges.length; k++) {
                         var u = this.GG.downTheChainUntilNonVirtual( rightEdges[k] );
-
                         if (nextVerticalR == 0) {
                             for (var o = vOrder[v] + 1; o < vOrder[rightEdges[k]]; o++) {
                                 // there are non-virtual vertices between the node and it's relationship - need to draw the line above the nodes
@@ -1992,8 +2017,9 @@ DrawGraph.prototype = {
                                 if (!this.GG.isVirtual(w)) { nextVerticalR = 1; break; }
                             }
                         }
-
+                        
                         verticalLevels.outEdgeVerticalLevel[v][u] = { attachlevel: nextAttachR, verticalLevel: nextVerticalR };
+                                                
                         nextAttachR++;
                         nextVerticalR++;
                     }

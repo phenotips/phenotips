@@ -343,6 +343,8 @@ var GraphicsSet = Class.create({
         }
         
         this._nodeMap = newNodeMap;
+        
+        this._lineSet.replaceIDs(changedIdsSet);
     },
   
     /**
@@ -499,7 +501,9 @@ var GraphicsSet = Class.create({
             
             // change all IDs at once so that have both new and old references at the same time
             if (idChanged)
-                this.changeNodeIds(changedIDs);            
+                this.changeNodeIds(changedIDs);
+            
+            //console.log("LineSet: " + stringifyObject(this._lineSet));
             
             for (node in affectedByLineRemoval)
                 if (affectedByLineRemoval.hasOwnProperty(node)) {
@@ -526,19 +530,21 @@ var GraphicsSet = Class.create({
             }
         }        
         
+        //console.log("moved: " + stringifyObject(changeSet.moved));
+                
         if (changeSet.hasOwnProperty("moved")) {
             // remove all lines so that we start drawing anew
             for (var i = 0; i < changeSet.moved.length; i++) {
-                var nextMoved = changeSet.moved[i];            
+                var nextMoved = changeSet.moved[i];                      
                 if (editor.getGraph().isRelationship(nextMoved)) {        
                     var affected = this._lineSet.removeAllLinesAffectedByOwnerMovement(nextMoved);
                     for (var j = 0; j < affected.length; j++) {
-                        var node = affected[j];
-                        if (changeSet.removed.indexOf(node) != -1 && changeSet.moved.indexOf(node) != -1)
+                        var node = affected[j];                        
+                        if (!arrayContains(changeSet.moved, node))
                             changeSet.moved.push(node);
                     }
                 }
-            }
+            }                        
                
             // move actual nodes
             for (var i = 0; i < changeSet.moved.length; i++) {
@@ -549,6 +555,7 @@ var GraphicsSet = Class.create({
                     movedPersons.push(nextMoved);
             }
         }
+        console.log("moved: " + stringifyObject(changeSet.moved));
         if (changeSet.hasOwnProperty("new")) {
             for (var i = 0; i < changeSet.new.length; i++) {
                 var nextNew = changeSet.new[i];                
