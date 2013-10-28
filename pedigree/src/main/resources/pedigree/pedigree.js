@@ -20,7 +20,7 @@ var PedigreeEditor = Class.create({
         this._nodeMenu = this.generateNodeMenu();
         this._partnershipMenu = this.generatePartnershipMenu();
         this._nodetypeSelectionBubble = new NodetypeSelectionBubble();
-        this._legend = new Legend();
+        this._disorderLegend = new DisorgerLegend();
                 
         this._graphicsSet = new GraphicsSet();
         
@@ -136,11 +136,11 @@ var PedigreeEditor = Class.create({
     },
 
     /**
-     * @method getLegend
+     * @method getDisorderLegend
      * @return {Legend} Responsible for managing and displaying the disorder legend
      */
-    getLegend: function() {
-        return this._legend;
+    getDisorderLegend: function() {
+        return this._disorderLegend;
     },
 
     /**

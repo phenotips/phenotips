@@ -326,37 +326,31 @@ var Person = Class.create(AbstractPerson, {
      * @method addDisorder
      * @param {Disorder} disorder Disorder object
      */
-    addDisorder: function(disorder, noDidsplayUpdate) {
-        console.log("add disorder");
+    addDisorder: function(disorder) {
         if(!this.hasDisorder(disorder.getDisorderID())) {
-            editor.getLegend().addCase(disorder.getDisorderID(), disorder.getName(), this.getID());
+            editor.getDisorderLegend().addCase(disorder.getDisorderID(), disorder.getName(), this.getID());
             this.getDisorders().push(disorder.getDisorderID());
         }
         else {
             alert("This person already has the specified disorder");
         }        
-        if (!noDidsplayUpdate) this.getGraphics().updateDisorderShapes();
-        console.log("add disorder end");
     },
 
     /**
      * Removes disorder from the list of this node's disorders and updates the Legend.
      *
      * @method removeDisorder
-     * @param {Disorder} disorder
-     * @param forceDisplay True if you want to display the change on the canvas
+     * @param {Number} disorderID id of the disorder to be removed 
      */
-    removeDisorder: function(disorderID, noDidsplayUpdate) {
-        console.log("remove disorder");
+    removeDisorder: function(disorderID) {
         var personsDisorder = null;
         if(this.hasDisorder(disorderID)) {
-            editor.getLegend().removeCase(disorderID, this.getID());
+            editor.getDisorderLegend().removeCase(disorderID, this.getID());
             this._disorders = this.getDisorders().without(disorderID);
         }
         else {
             alert("This person doesn't have the specified disorder");
         }
-        if (!noDidsplayUpdate) this.getGraphics().updateDisorderShapes();
     },
 
     /**
@@ -370,17 +364,14 @@ var Person = Class.create(AbstractPerson, {
         console.log("Set disorders: " + stringifyObject(disorders));
         
         for(var i = this.getDisorders().length-1; i >= 0; i--) {
-            this.removeDisorder( this.getDisorders()[i], true );
+            this.removeDisorder( this.getDisorders()[i] );
         }
         for(var i = 0; i < disorders.length; i++) {
             var disorder = disorders[i];
             if (typeof disorder != 'object') {
-                // create a disorder object based on disorder id
-                // TODO
-                //disorder = editor.getLegend().loadDisorder(disorder);
+                disorder = editor.getDisorderLegend().getDisorder(disorder);
             }
-            else  // TODO: for now disregard raw IDs
-            this.addDisorder( disorder, true );
+            this.addDisorder( disorder );
         }        
         this.getGraphics().updateDisorderShapes();
     },
@@ -453,7 +444,7 @@ var Person = Class.create(AbstractPerson, {
                                                  // maybe: use editor.getGraph().hasNonPlaceholderNonAdoptedChildren() ?
         var disorders = [];
         this.getDisorders().forEach(function(disorder) {
-            var disorderName = editor.getLegend().getDisorderNames()[disorder];
+            var disorderName = editor.getDisorderLegend().getDisorderName(disorder);
             disorders.push({id: disorder, value: disorderName});
         });
         

@@ -206,7 +206,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
     handleAction : function(handleType, isDrag, curHoveredId) {        
         console.log("handleType: " + handleType + ", isDrag: " + isDrag + ", curHovered: " + curHoveredId);        
         
-        if(isDrag && curHoveredId) {            
+        if(isDrag && curHoveredId !== null) {            
             if(handleType == "parent") {    
                 var event = { "personID": this.getNode().getID(), "parentID": curHoveredId };
                 document.fire("pedigree:person:drag:newparent", event);

@@ -164,7 +164,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                     corner = ["L", this.getX(), this.getY()-height];
                 }
                 var slice = editor.getPaper().path(["M", x1, y1, corner,"L", x2, y2, 'L',this.getX(), this.getY(),'z']);
-                color = gradient(editor.getLegend().getDisorderColor(this.getNode().getDisorders()[k]), 70);
+                color = gradient(editor.getDisorderLegend().getDisorderColor(this.getNode().getDisorders()[k]), 70);
                 disorderShapes.push(slice.attr({fill: color, 'stroke-width':.5, stroke: 'none' }));
                 x1 = x2;
                 y1 = y2;
@@ -178,7 +178,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             delta = (360/(person.getDisorders().length))/2;
 
             for(var i = 0; i < person.getDisorders().length; i++) {
-                color = gradient(editor.getLegend().getDisorderColor(person.getDisorders()[i]), (i * disorderAngle)+delta);
+                color = gradient(editor.getDisorderLegend().getDisorderColor(person.getDisorders()[i]), (i * disorderAngle)+delta);
                 disorderShapes.push(sector(editor.getPaper(), this.getX(), this.getY(), PedigreeEditor.attributes.radius,
                     person.getGender(), i * disorderAngle, (i+1) * disorderAngle, color));
             }

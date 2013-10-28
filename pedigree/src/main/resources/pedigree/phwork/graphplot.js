@@ -1040,7 +1040,7 @@ DrawGraph.prototype = {
         // nodes on given rank.
         //
         // Assumes that edges always go from lower ranks to higher ranks or
-        // between nodes on the same rank
+        // between nodes of the same rank
 
         var numCrossings = 0.0;
 
@@ -1051,7 +1051,7 @@ DrawGraph.prototype = {
         for (var r = rankFrom; r <= rankTo; r++) {
             var numVert = order.order[r].length;
 
-            for (var i = 0; i < numVert - 1; i++) {   // -1 because we only check crossings of edges goigmn out of vertices of higher orders
+            for (var i = 0; i < numVert - 1; i++) {   // -1 because we only check crossings of edges going out of vertices of higher orders
                 var v = order.order[r][i];
 
                 var outEdges = this.GG.getOutEdges(v);

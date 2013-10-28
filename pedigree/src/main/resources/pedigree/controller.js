@@ -343,7 +343,7 @@ var Controller = Class.create({
         if (editor.getGraph().isChildless(partnershipID))
             childParams["isAdopted"] = true;
         
-        // TODO: twins & groups
+        // TODO: person groups
         
         var changeSet = editor.getGraph().addNewChild(partnershipID, childParams, numTwins);                
         editor.getGraphicsSet().applyChanges(changeSet, true);

@@ -404,7 +404,7 @@ NodeMenu = Class.create({
                 if (values) {
                     values.each(function(v) {
                         target._suggestPicker.addItem(v.id, v.value, '');
-                        _this._updateDisorderColor(v.id, editor.getLegend().getDisorderColor(v.id));
+                        _this._updateDisorderColor(v.id, editor.getDisorderLegend().getDisorderColor(v.id));
                     })
                 }
                 target._silent = false;
