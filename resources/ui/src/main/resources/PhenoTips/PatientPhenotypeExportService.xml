@@ -44,12 +44,10 @@
   <hidden>false</hidden>
   <content>{{include document="PhenoTips.JSONMacros" /}}
 
-{{velocity wiki=false}}
+{{velocity}}
 #if ($xcontext.action != 'get')
   #break
 #end
-## what is the source of the data?
-## TODO find the document by UDP number, not by PhenoTips ID
 #set ($identifier = "$!{request.id}")
 #set ($externalIdentifier = "$!{request.eid}")
 #set ($results = [])
@@ -138,7 +136,11 @@
      #end
   #end
 #end## !source.isNew
-#json__respondJSON($results, $metadata)
+#if ("$!{request.outputSyntax}" == 'plain')
+{{content syntax="plain/1.0"}}#json__respondJSON($results, $metadata){{/content}}
+#else
+{{html wiki="false" clean="false"}}#json__respondJSON($results, $metadata){{/html}}
+#end
 {{/velocity}}
 </content>
 </xwikidoc>

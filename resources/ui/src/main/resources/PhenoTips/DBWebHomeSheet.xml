@@ -122,7 +122,12 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe('xwiki:livetable:newrow', function(tableEvent){
+      <code>document.observe('xwiki:livetable:displayComplete', function(tableEvent){
+  $(tableEvent.memo.tableId).select("tr.xwiki-livetable-display-filters td input").each(function(item) {
+    item.placeholder = "Type to filter...";
+  });
+});
+document.observe('xwiki:livetable:newrow', function(tableEvent){
   tableEvent.memo.row.select(".actionedit").invoke('setAttribute', 'title', 'Edit');
   tableEvent.memo.row.select(".actiondelete").invoke('setAttribute', 'title', 'Delete');
   tableEvent.memo.row.select(".actiondelete").invoke('observe', 'click', function(clickEvent){
@@ -248,110 +253,6 @@
     <name>PhenoTips.DBWebHomeSheet</name>
     <number>1</number>
     <className>XWiki.JavaScriptExtension</className>
-    <guid>51a47b60-13f0-4294-8b0a-314e3189163b</guid>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>/*document.observe("xwiki:dom:loaded", function(){
-  var createForm = $('patient-creation-form');
-  var livetable = $('patients');
-  if (!createForm || !livetable) {
-    return;
-  }
-  var parent = livetable.down('td.xwiki-livetable-pagination', 1);
-  if (parent) {
-    parent.insert({'top' : createForm});
-  }
-});*/
-
-</code>
-    </property>
-    <property>
-      <name>Move the creation button</name>
-    </property>
-    <property>
-      <parse>0</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <name>PhenoTips.DBWebHomeSheet</name>
-    <number>2</number>
-    <className>XWiki.JavaScriptExtension</className>
     <guid>384096ac-eb19-4fea-a2c6-337b350ca71b</guid>
     <property>
       <cache>long</cache>
@@ -416,23 +317,6 @@
             enableHierarchy: false,
             fadeOnClear : false,
             timeout : 30000
-        },
-        "pubmed" : {
-            script: "$xwiki.getURL('PhenoTips.PubMedService', 'get')?",
-            varname: "q",
-            noresults: "No matching articles",
-            json: true,
-            resultsParameter : "rows",
-            resultId : "id",
-            resultValue : "Title",
-            resultInfo : {
-                           "Authors"   : {"selector"  : "AuthorList"},
-                           "Date"      : {"selector"  : "EPubDate"},
-                           "Journal"   : {"selector"  : "Source"}
-                         },
-            enableHierarchy: false,
-            fadeOnClear : false,
-            timeout : 30000
         }
   };
   // =================================================================================
@@ -461,16 +345,6 @@
   };
 
   var enhanceDialog = function(content) {
-    // =============================================================================
-    // Referrer suggest
-    var referrer = content.down('input[name="doc.creator"]');
-    if (referrer) {
-      referrer._suggestPicker = new MS.widgets.SuggestPicker(referrer, referrer.__x_suggest, {'showKey': false, 'inputType': 'checkbox'});
-      referrer.value.split(',').each(function(value) {
-        referrer._suggestPicker.addItem(value, value, '', '');
-      });
-      referrer.value = '';
-    }
     // =============================================================================
     // Phenotype suggest
     if (typeof(MS.widgets.Suggest) != "undefined") {
@@ -584,6 +458,7 @@
       updateMatchCounter();
       content.select('.xwiki-date').invoke('observe', 'xwiki:form:field-value-changed', updateMatchCounter);
       document.observe('custom:selection:changed', updateMatchCounter);
+      document.observe('xwiki:multisuggestpicker:selectionchanged', updateMatchCounter);
       content.select('input[type=radio]').invoke('observe', 'click', updateMatchCounter);
       //content.select('input[type=text]').invoke('observe', 'blur', updateMatchCounter);
     }
@@ -598,7 +473,7 @@
     dialog.showDialog();
     // =================================================================================
     // Generate the dialog content
-    new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + XWiki.currentSpace), {
+    new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1]), {
       onSuccess: function(transport) {
         var content = dialog.dialogBox._x_contentPlug;
         content.update(transport.responseText);
@@ -606,6 +481,10 @@
         document.fire('xwiki:dom:updated', {'elements': [content]});
       }
     });
+  });
+
+  document.observe('xwiki:multisuggestpicker:selectionchanged', function() {
+    document.fire('xwiki:livetable:patients:filtersChanged');
   });
   ['xwiki:dom:loaded', 'xwiki:dom:updated'].each(function(eventName) {
     document.observe(eventName, function(event) {
@@ -701,7 +580,7 @@
       </use>
     </class>
     <name>PhenoTips.DBWebHomeSheet</name>
-    <number>3</number>
+    <number>2</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>d9b727a8-4e6b-498f-8584-80dcac64c352</guid>
     <property>
@@ -805,23 +684,10 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>.viewbody #document-title,
-.viewbody #document-info {
-  display: none;
-}
-#mainContentArea, #mainEditArea {
-  background: transparent;
-  box-shadow: none;
-  border: 0 none;
-}
-#xwikicontent {
+      <code>#xwikicontent {
   overflow: visible;
 }
-
-.xwiki-livetable-display-body td h3, .xwiki-livetable-display-body td .image-gallery {
-  display: none;
-}
-h1 {
+#document-title h1 {
   border: 0 none;
 }
 #patients-topfilters .toggle-filters {
@@ -952,12 +818,6 @@ h1 {
     </property>
     <property>
       <code>#template("colorThemeInit.vm")
-#phenotips_export {
-   background-image: url("$xwiki.getSkinFile('icons/silk/page_white_excel.png')");
-   background-position: .3em center;
-   background-repeat: no-repeat;
-   padding: 0.3em 0.3em 0.3em 2.2em;
-}
 .export-dialog {
   width: 80% !important;
 }
@@ -1066,11 +926,9 @@ h1 {
     </property>
   </object>
   <content>{{velocity}}
-{{html wiki=false clean=false}}&lt;div class="general-tools"&gt;&lt;a href="#patients"&gt;Browse patients&lt;/a&gt;#if($hasCreatePage) · &lt;label for="create-patient-record"&gt;New patient record&lt;/label&gt;#end&lt;/div&gt;{{/html}}{{/velocity}}
-
-= Phenotype  database =
-
 {{include document="PhenoTips.DatabaseFilters" /}}
+
+{{html wiki=false clean=false}}&lt;div class="general-tools"&gt;#if($hasCreatePage)&lt;label for="create-patient-record"&gt;&lt;span class="icon-plus-sign"&gt; &lt;/span&gt;New patient record&lt;/label&gt; · #end&lt;a id="phenotips_export" title="Export the database in CSV format (MS Excel compatible)" href="$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")"&gt;&lt;span class="icon-table"&gt; &lt;/span&gt;Export database&lt;/a&gt;&lt;/div&gt;{{/html}}{{/velocity}}
 
 {{velocity}}
 $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
@@ -1086,68 +944,52 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('XWiki.DateTimePicker')##
-#set($config = $doc.getObject('PhenoTips.DBConfigurationClass'))
-#set($patientClassName = "$!{config.getProperty('patientClass').value}")
+#set ($config = $doc.getObject('PhenoTips.DBConfigurationClass'))
+#set ($patientClassName = "$!{config.getProperty('patientClass').value}")
 #if ($config &amp;&amp; $patientClassName != '')
-#set($configuredColumns = $config.getProperty('livetableColumns').value)
+#set ($configuredColumns = $config.getProperty('livetableColumns').value)
 #if (!$configuredColumns &amp;&amp; !($configuredColumns.length &gt; 0))
-  #set($configuredColumns = 'doc.name')
+  #set ($configuredColumns = 'doc.name')
 #end
-#set($columns = [])
-#set($discard = $columns.addAll($configuredColumns))
-#set($columnsProperties = {
-      "_actions" : {"actions": ["edit", "delete"]}
+#set ($columns = [])
+#set ($discard = $columns.addAll($configuredColumns))
+#set ($columnsProperties = {
+  '_actions' : {'actions': ['edit', 'delete']}
 })
-#foreach($column in $columns)
-      #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0))
-      #set($discard = $columnsProperties.put($column, { "type" : "text", "link" : "view", "size" : 7, "filterable" : $isFilterable, "sortable": true  }))
+#foreach ($column in $columns)
+  #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0))
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true, 'html': true }))
 #end
 #foreach ($filterableColumn in ['date_of_birth', 'omim_id', 'phenotype'])
   #if (!$configuredColumns.contains($filterableColumn))
-    #set($discard = $columns.add($filterableColumn))
-    #set($discard = $columnsProperties.put($filterableColumn, { "type" : "hidden" }))
+    #set ($discard = $columns.add($filterableColumn))
+    #set ($discard = $columnsProperties.put($filterableColumn, { 'type' : 'hidden' }))
   #end
 #end
-
-#set($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
+##
+#set ($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
 == Filters ==
 
 {{velocity}}#__filters_display('xform'){{/velocity}})))", "xwiki/2.1"))
-#set($discard = $columns.add("_actions"))
+#set ($discard = $columns.add('_actions'))
 ##
-#set($options = {
-"className"         : $patientClassName,
-"translationPrefix" : "patient.livetable.",
-"rowCount"          : 25,
-"maxPages"          : 10,
-"selectedColumn"    : $config.getProperty('livetableSortColumn').value,
-"defaultOrder"      : "asc",
-"topFilters"        : $topFilters,
-"resultPage"        : 'PhenoTips.LiveTableResults'
+#set ($options = {
+  'className'         : $patientClassName,
+  'translationPrefix' : 'patient.livetable.',
+  'rowCount'          : 25,
+  'maxPages'          : 10,
+  'selectedColumn'    : $config.getProperty('livetableSortColumn').value,
+  'defaultOrder'      : 'asc',
+  'topFilters'        : $topFilters,
+  'resultPage'        : 'PhenoTips.LiveTableResults'
 })
 #if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
   #set ($options.rowCount = $config.getProperty('livetableRows').value)
 #end
-#livetable("patients" $columns $columnsProperties $options)
+#livetable('patients' $columns $columnsProperties $options)
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
-#if($hasCreatePage)
-  {{html clean="false" wiki="false"}}&lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
-    &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-    &lt;input type="hidden" name="doCreate" value="1" /&gt;
-    &lt;input type="hidden" name="className" value="$patientClassName" /&gt;
-    &lt;input type="hidden" name="classTemplate" value="$!{config.getProperty('patientTemplate').value}" /&gt;
-    &lt;input type="hidden" name="idField" value="$!{config.getProperty('idField').value}" /&gt;
-    &lt;input type="hidden" name="idPrefix" value="$!{config.getProperty('idPrefix').value}" /&gt;
-    &lt;input type="hidden" name="space" value="$!{doc.space}" /&gt;
-    &lt;label class="create-button-label" for="create-patient-record"&gt;+&lt;/label&gt;&lt;input type="submit" class="button create-button" id="create-patient-record" title="Add new patient record" value="New patient record..."/&gt;
-&lt;span class="buttonwrapper"&gt;&lt;a class="button" id="phenotips_export" title="Export the database in CSV format (MS Excel compatible)" href="$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;outputSyntax=plain")"&gt;Export database&lt;/a&gt;&lt;/span&gt;
-  &lt;/div&gt;&lt;/form&gt;{{/html}}##
-#end
-
 #else
-
 {{warning}}**Configuration missing.**{{/warning}}
-
 #end
 {{/velocity}}</content>
 </xwikidoc>

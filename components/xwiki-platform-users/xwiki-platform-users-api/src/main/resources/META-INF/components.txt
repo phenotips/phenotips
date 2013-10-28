@@ -1,0 +1,2 @@
+org.xwiki.users.internal.MetaUserManager
+org.xwiki.users.script.UserManagerScriptService

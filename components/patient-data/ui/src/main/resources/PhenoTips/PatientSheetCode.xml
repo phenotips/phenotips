@@ -1651,203 +1651,6 @@ document.observe('dom:loaded', function() {
       </use>
     </class>
     <name>PhenoTips.PatientSheetCode</name>
-    <number>5</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>7cd26f5b-19a1-423c-a406-0cb0df23f9b4</guid>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>var ExtraData = (function (ExtraData) {
-  var tools = ExtraData.tools = ExtraData.tools || {};
-  tools.Editor = Class.create({
-    initialize : function () {
-      $$('.extradata-list a.delete').invoke('observe', 'click', this.ajaxDeleteData.bindAsEventListener(this));
-      $$('.list-actions a.add').invoke('observe', 'click', this.ajaxAddData.bindAsEventListener(this));
-    },
-    ajaxDeleteData : function (event) {
-      event.stop();
-      var deleteTrigger = event.element();
-      if (deleteTrigger.disabled) {
-         return;
-      }
-      new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.href, {
-        onCreate : function() {
-          deleteTrigger.disabled = true
-        },
-        onSuccess : function() {
-          var dataRow = deleteTrigger.up('tr:not(.head-group)');
-          var dataTable = deleteTrigger.up('table.extradata-list');
-          if (dataRow) {
-            dataRow.remove();
-          }
-          if (dataTable) {
-            var i = 1;
-            dataTable.select('th.row-count').each(function(item) {
-              item.update((i++));
-            });
-          }
-        },
-        onComplete : function() {
-          deleteTrigger.disabled = false;
-        }
-      },
-      {
-         confirmationText : "Are you sure you wish to delete this row?"
-      });
-    },
-    ajaxAddData : function (event) {
-      event.stop();
-      var addTrigger = event.element();
-      if (addTrigger.disabled) {
-         return;
-      }
-      var classname = '';
-      try {
-        var classname = /classname=([^&amp;]+)/.exec(addTrigger.href)[1];
-      } catch (err) {
-         new XWiki.widgets.Notification('Cannot add data: type not found', 'error');
-         return;
-      }
-      var dataTable = addTrigger.up('.list-actions').previous('table[id^="extradata-list-' + classname + '"]');
-      if (!dataTable) {
-        new XWiki.widgets.Notification("Cannot find the list to update " + classname, 'error');
-      }
-      var propertyName = addTrigger.href.replace(/.*&amp;xredirect=.*propertyName=([^&amp;]+).*/, '$1');
-      var propertyValue = addTrigger.href.replace(/.*&amp;xredirect=.*propertyValue=([^&amp;]+).*/, '$1');
-      var url = addTrigger.href.replace(/(&amp;xredirect=[^&amp;]*)/m, '$1' + encodeURIComponent('?&amp;xpage=plain&amp;xaction=lastentry&amp;dataClassName=' + classname + '&amp;withLabel=' + dataTable.hasClassName('withLabel') + '&amp;propertyName=' + propertyName + '&amp;propertyValue=' + propertyValue));
-      new Ajax.Request(url, {
-        onCreate : function() {
-          addTrigger.disabled = true
-          addTrigger._x_notif = new XWiki.widgets.Notification('Adding...', 'inprogress');
-        },
-        onSuccess : function (response) {
-          addTrigger._x_notif.hide();
-          var rowHead = '';
-          if (dataTable.hasClassName('withCounter')) {
-            var idx = dataTable.select('.row-count').size() + 1;
-            rowHead = '&lt;th scope="row" class="row-count"&gt;' + idx + '&lt;/th&gt;';
-          }
-          dataTable.down('tbody').insert({'bottom' : '&lt;tr class="new"&gt;' + rowHead + response.responseText + '&lt;/tr&gt;'});
-          var lastAdded = dataTable.down('.new');
-          lastAdded.down('a.delete').observe('click', this.ajaxDeleteData.bindAsEventListener(this));
-          lastAdded.removeClassName('new');
-          Event.fire(dataTable, 'extradata:added', {'element' : lastAdded});
-          Event.fire(document, 'xwiki:dom:updated', {'elements' : [lastAdded]});
-        }.bind(this),
-        onFailure : function(response) {
-          var failureReason = response.statusText;
-          if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-            failureReason = 'Server not responding';
-          }
-          if (addTrigger._x_notif) {
-            addTrigger._x_notif.replace(new XWiki.widgets.Notification("Failed: " + failureReason, "error"));
-          } else {
-            new XWiki.widgets.Notification(this.interactionParameters.failureMessageText + failureReason, "error");
-          }
-        },
-        on1223 : function(response) {
-          response.request.options.onSuccess(response);
-        },
-        on0 : function(response) {
-          response.request.options.onFailure(response);
-        },
-        onComplete : function() {
-          addTrigger.disabled = false
-        }
-      });
-    }
-  });
-  return ExtraData;
-}(ExtraData || {}));
-
-document.observe('xwiki:dom:loaded', function() {
-  new ExtraData.tools.Editor();
-})</code>
-    </property>
-    <property>
-      <name>Add/Remove data associated with the patient report</name>
-    </property>
-    <property>
-      <parse>1</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <name>PhenoTips.PatientSheetCode</name>
     <number>6</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>762f626c-9e6e-4a95-89bd-0217053bf947</guid>
@@ -2405,11 +2208,11 @@ document.observe('xwiki:dom:loaded', function() {
 
   // TODO: make sure events work on all browsers
   var handleValueChanged = function (elementsList) {
-    ['blur', 'keypress', 'keyup', 'xwiki:date:changed'].each(function (eventName) {
+    ['blur', 'keypress', 'keyup', 'phenotips:measurement-updated', 'xwiki:date:changed'].each(function (eventName) {
       elementsList.invoke('observe', eventName, valueChanged);
     })
     if (chartContainer) {
-      ['blur', 'xwiki:date:changed'].each(function (eventName) {
+      ['blur', 'phenotips:measurement-updated', 'xwiki:date:changed'].each(function (eventName) {
         elementsList.invoke('observe', eventName, updateCharts);
       })
     }
@@ -2431,6 +2234,19 @@ document.observe('xwiki:dom:loaded', function() {
        }
      }
   });
+  dataTable.observe('extradata:deleted', function (event) {
+     dataTable.select('tr.data-row').each(function (row) {
+       updateDataRow(row);
+     });
+     updateCharts(event);
+  });
+
+  // Also attach the measurement switcher
+  var configuredUnitSystem = $('measurementUnitSystem');
+  // this element will exist iff the imerial system is enabled
+  if (configuredUnitSystem) {
+    new PhenoTips.widgets.UnitConverter($('extradata-list-PhenoTips.MeasurementsClass'), 'input[type="text"]:not([name$="date"])', $('extradata-list-PhenoTips.MeasurementsClass'), 'before', configuredUnitSystem.value || '');
+  }
 });</code>
     </property>
     <property>
@@ -2714,7 +2530,6 @@ document.observe('xwiki:dom:loaded', function() {
   $$('.ncbi-search-box h3, .ncbi-search-box .expand-tools .tool').invoke('observe', 'click', function(event) {
      event.element().up('.ncbi-search-box').toggleClassName('collapsed');
   });
-  //$$('.ncbi-search-box').invoke('toggleClassName' ,'collapsed');
 
   var defaultSearchTerms = $('defaultSearchTerms');
   var defaultSearchTermsInput = $('defaultSearchTermsInput');
@@ -2730,11 +2545,6 @@ document.observe('xwiki:dom:loaded', function() {
        'target' : $('omim-search-results'),
        'suggestFor' : omimField
     },
-    'pubmed' : {
-       'script' : "$xwiki.getURL('PhenoTips.PubMedService', 'get', 'format=html&amp;q=')",
-       'source' : [customSearchTermsInput, defaultSearchTermsInput],
-       'target' : $('pubmed-search-results')
-    },
     'diffDiagnosis' : {
        'script' : "$xwiki.getURL('PhenoTips.DiffDiagnosisService', 'get', 'format=html&amp;q=')",
        'source' : [defaultSearchTermIDsInput],
@@ -2743,7 +2553,7 @@ document.observe('xwiki:dom:loaded', function() {
     }
   };
 
-  if (!defaultSearchTerms || !defaultSearchTermsInput || (!services.omim.target &amp;&amp; !services.pubmed.target &amp;&amp; !services.diffDiagnosis.target)) {return;}
+  if (!defaultSearchTerms || !defaultSearchTermsInput || (!services.omim.target &amp;&amp; !services.diffDiagnosis.target)) {return;}
 
   var cache = {'all' : {}, 'displayed' : {}};
 
@@ -2751,13 +2561,15 @@ document.observe('xwiki:dom:loaded', function() {
     var prevValue = defaultSearchTermsInput.value;
     defaultSearchTermsInput.value = '';
     defaultSearchTermIDsInput.value = '';
+    var termNames = [];
     defaultSearchTerms.select('.search-term:not(.disabled)').each(function(term) {
+      termNames.push(term.innerHTML);
       defaultSearchTermsInput.value += ' "' + term.innerHTML + '"';
       defaultSearchTermIDsInput.value += term.__key + ' ';
     });
     if (defaultSearchTermsInput.value != prevValue) {
+      document.fire('phenotips:phenotypeChanged', {phenotype: cache});
       doSearch('omim');
-      doSearch('pubmed');
       doSearch('diffDiagnosis');
     }
   }
@@ -2987,7 +2799,6 @@ document.observe('xwiki:dom:loaded', function() {
   if (customSearchTermsInput) {
     customSearchTermsInput.observe('keyup', function(event) {
        doSearch('omim');
-       doSearch('pubmed');
        doSearch('diffDiagnosis');
     });
   }
@@ -4696,72 +4507,11 @@ label.selected input[type="checkbox"] {
       <cache>long</cache>
     </property>
     <property>
-      <code>#template('colorThemeInit.vm')
-table.extradata-list {
-    width: 100%;
-}
-.extradata-list td, .extradata-list th {
-    border: 1px solid $theme.backgroundSecondaryColor;
-    border-left: 1px solid $theme.pageContentBackgroundColor;
-    border-right: 1px solid $theme.pageContentBackgroundColor;
-}
-.extradata-list th.col-label {
-    font-weight: normal;
-    font-variant: small-caps;
-}
-.extradata th.col-label, .viewbody td {
-    text-align: center;
-}
-.viewbody td.comments, .editbody th.comments {
-    text-align: left;
-    border-right: 0 none;
-}
-.extradata-list th.row-count {
-    background: transparent;
-}
-.extradata-list th.row-count,
-.extradata-list td.start,
-.extradata-list td.end {
-    text-align: right;
-}
-.extradata-list td.start,
-.extradata-list td.end,
-.extradata-list td.band {
-    min-width: 6em;
-}
-.extradata-list th.comments {
-    min-width: 20em;
-}
-.extradata-list .xwiki-form-listclass {
-    display: block;
-    white-space: nowrap;
-}
-.extradata-list th.actions {
-  width: 24px;
-}
-.extradata-list th.actions .buttonwrapper {
-    display: block;
-    height: 2.3em;
-    position: relative;
-    margin: 0;
-}
-.extradata-list th.actions .add-data-button {
-    position: absolute;
-    right: 0;
-}
-.list-actions {
-  position: relative;
-  width: 99%;
-}
-.list-actions .buttonwrapper {
+      <code>.measurement-info .extradata-list td {
   text-align: left;
-  margin: 0 !important;
 }
-table.withLabel td, table.withLabel th {
-  border: 0 none;
-}
-table.withLabel tr:first-child th {
-  display: none;
+.measurement-info .extradata-list th {
+  width: 16em;
 }
 .extradata-list .bmi, .extradata-list .hc_percentile {
   min-width: 4em;
@@ -4815,6 +4565,9 @@ form .extradata-list tr:hover td {
   font-size: 1em;
   color: $theme.textColor;
   font-weight: bold;
+}
+#extradata-list-PhenoTips\.MeasurementsClass td input {
+  width: auto;
 }
 #extradata-list-PhenoTips\.MeasurementsClass td.date input {
   width: 10em;
@@ -4882,42 +4635,6 @@ form .extradata-list tr:hover td {
 .extradata-list .right-side-group .icon {
   background-image: url("$xwiki.getSkinFile('body-icon-right-s.png')");
   opacity: .4;
-}
-
-.extradata-list .file {
-  width: 160px;
-}
-.extradata-list .file .attachment-list .attachment-item, .extradata-list .file .attachment-list .attachment-item input {
-  display: none;
-}
-.extradata-list .file .attachment-list .attachment-item.selected {
-  display: block;
-  width: 100%;
-}
-.extradata-list .file .attachment-list .attachment-item.image {
-  width: 150px !important;
-}
-.extradata-list .file .attachment-list .attachment-item.selected label {
-  padding: 3px 0 3px 20px;
-}
-.extradata-list .file .attachment-list .attachment-item.image label {
-  padding: 0 !important;
-}
-
-.extradata-list .file .attachment-list .attachment-item .attachment-preview {
-    width: 140px;
-}
-
-.extradata-list .file p img {
-  max-width: 480px !important;
-  max-height: 480px !important;
-}
-
-
-.extradata-list .file .attachment-list .attachment-item .view {
-  background-color: $theme.pageContentBackgroundColor;
-  bottom: 0;
-  padding: 5px;
 }
 
 .extradata-list .relative_type, .extradata-list .relative_of {
@@ -5086,6 +4803,7 @@ form .extradata-list tr:hover td {
   padding-left: 20px;
   background-position: left 2px;
   background-repeat: no-repeat;
+  page-break-inside: avoid;
 }
 #omim-search-results ul li label input {
   vertical-align: middle;
@@ -5448,696 +5166,5 @@ input.LV_invalid_field {
       <use>onDemand</use>
     </property>
   </object>
-  <content>{{include document="PhenoTips.ChartServiceMacros" /}}
-
-{{velocity output=false}}
-#macro (__label $propName $cssClass $text)
-   #set($displayedText = "$!{text}")
-   #if ($displayedText == '' &amp;&amp; "$!{propName}" != '')
-     #set($displayedText = "$!{class.get($propName).prettyName}:")
-   #end
-   #if ($xcontext.action != 'edit')
-     (% class="label $!{cssClass}" %)${displayedText}(%%)##
-   #else
-     #set($for = '')
-     #if ("$!{propName}" != '')
-       #set($for = "for='$!{class.name}_$!{obj.number}_$!{propName}'")
-     #end
-     {{html clean="false" wiki="false"}}&lt;label class="$!{cssClass}" $!{for}&gt;${displayedText}&lt;/label&gt;{{/html}}##
-   #end
-#end
-
-#macro (__display $propName)
-(% class="displayed-value"%)(((#if($xcontext.action == 'edit' || ($doc.display($propName) != ''))${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#{else}-#{end})))##
-#end
-
-#macro (__displayIfNotEmpty $propName)
-#if ($context.action == 'edit' || ($doc.display($propName) != ''))
-#__label($propName '')
-#__display($propName)
-#end
-#end
-
-#macro (__hasDataToDisplay $propertyName $shouldDisplay)
-  #if ($activeFields.contains($propertyName) &amp;&amp; ($xcontext.action == 'edit' || "$doc.display($propertyName)" != ''))
-    #setVariable("$shouldDisplay", true)
-  #end
-#end
-
-#macro (__hasBooleanDataToDisplay $propertyName $shouldDisplay)
-  #if ($activeFields.contains($propertyName) &amp;&amp; ($xcontext.action == 'edit' || $obj.getProperty($propertyName).value == 1))
-    #setVariable("$shouldDisplay", true)
-  #end
-#end
-
-#macro (__display2Col $propName $label $groupCssClass $labelCssClass)
-  (% class="fieldset ${propName} $!{groupCssClass}" %)(((
-  (% class="half-width ${propName}" %)(((
-    #__label(${propName} "section $!{labelCssClass}" "$!{label}")
-  )))
-  (% class="half-width ${propName}" %)(((
-    #__display(${propName})
-  )))
-  )))##fieldset
-#end
-
-#macro (__displayIfNotEmpty2Col $propName $label $groupCssClass $labelCssClass)
-#if ($context.action == 'edit' || $doc.display(${propName}) != '')
-#__display2Col($propName $label "$!{groupCssClass}" "$!{labelCssClass}")
-#end
-#end
-
-#macro(__markIfMandatory $propName)#if ("$!mandatoryFields.contains($propName)" != 'false')mandatory#{end}#end
-
-#macro (__displayHalfWidth $propName $label $groupCssClass $labelCssClass)
-  (% class="half-width $groupCssClass ${propName}" %)(((
-    #__label(${propName} "hint $!{labelCssClass}" $label)
-    #__display(${propName}, $obj)
-  )))
-#end
-
-#macro (__displayFormatted $mode $propName $label $groupCssClass $labelCssClass)
-#if ("$!activeFields.contains($propName)" != 'false' &amp;&amp; ($xcontext.action == 'edit' || $doc.display(${propName}) != ''))
-  #set($_groupCssClass = "$!{groupCssClass} #__markIfMandatory($propName)")
-  #if ($xcontext.action != 'edit')
-    #if ($mode == 'half-width')
-      #__displayHalfWidth($propName $label $_groupCssClass $labelCssClass)
-    #else
-      #__label($propName $labelCssClass $label) (% class="displayed-value"%)#if ("$!{doc.display($propName)}" == '')-#else${doc.display($propName).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')}#end(%%)
-    #end
-  #else
-    #if ($mode == 'half-width')
-      #__displayHalfWidth($propName $label $_groupCssClass $labelCssClass)
-    #elseif ($mode == '2-col')
-      #__display2Col($propName $label $_groupCssClass $labelCssClass)
-    #else
-    (% class="$groupCssClass ${propName}" %)(((
-      #__label($propName $labelCssClass $label)
-      #__display($propName)
-    )))
-    #end
-  #end## export
-#end## field not configured as inactive, field not empty in view mode
-#end
-
-#macro (__qsBox $fieldName $cssClass)
-#if ($context.action == 'edit')
-(% id="quick-search-box"  class="group-other quick-search-box emphasized-box $!{cssClass}" %)(((
-  {{html clean="false" wiki="false"}}
-  &lt;fieldset&gt;
-    ##&lt;h3 class="section"&gt;Quick phenotype search&lt;/h3&gt;
-    &lt;table&gt;&lt;tbody&gt;&lt;tr&gt;
-    &lt;td&gt;&lt;label for="quick-phenotype-search"&gt;Quick phenotype search:&lt;/label&gt;&lt;/td&gt;&lt;td class="input"&gt;
-    &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip generateYesNo' placeholder='Enter keywords and choose among suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
-    &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-  &lt;/fieldset&gt;
-  {{/html}}
-)))
-#end
-#end
-
-#macro(__ncbiSBox $fieldName $cssClass)
-#if ($xcontext.action == 'edit')
-(% class="ncbi-search-box $!{cssClass}" %)(((
-=== Instant OMIM search ===
-(% class="expand-tools" %)(((
-(% class="tool show" %)Show(%%) (% class="tool hide" %)Hide(%%)
-)))
-(% class="ncbi-search-box-content"%)(((
-(% class="hint"%)The following terms are extracted from the phenotypic description and used automatically in searches. You can disable or re-enable their contribution in OMIM and PubMed search results by clicking on them.(%%)
-{{html wiki=false clean=false}}&lt;input type="hidden" id="defaultSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="defaultSearchTermIDsInput" value="" /&gt;{{/html}}
-(% id="defaultSearchTerms" %)(((
-)))
-##(% class="hint"%)Include the following custom terms in your search:(%%)
-## {{html wiki=false clean=false}}&lt;input type="text" id="customSearchTermsInput" value="" /&gt;{{/html}}
-(% class="background-search omim-search hidden" %)(((
-==== Matching disorders in OMIM ====
-(% id="omim-search-results" class="background-suggestions" %)((()))
-)))
-##(% class="half-width background-search pubmed-search" %)(((
-##==== Suggested reading on PubMed ====
-##(% id="pubmed-search-results" class="background-suggestions" %)((()))
-##)))
-)))
-)))
-#end
-#end
-
-## =====================================================================
-##
-## "Tabelar" data associated with the patient report
-##
-##
-#macro (__extradata_deleteTool $object $anchor)
-  {{html clean="false"}}&lt;a class="action delete" href="$doc.getURL('objectremove', "classname=${object.xWikiClass.name}&amp;amp;classid=${object.number}&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title="Delete"&gt;✖&lt;/a&gt;{{/html}}##
-#end
-
-#macro (__extradata_addTool $classname $anchor $options)
-  {{html clean="false"}}&lt;span class="buttonwrapper"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;a class="add button add-data-button" href="$doc.getURL('objectadd', "classname=${classname}&amp;amp;${classname}_$!{options.propertyName}=$!escapetool.url($!{options.propertyValue})&amp;amp;xredirect=$escapetool.url($doc.getURL('edit'))&amp;amp;propertyName=$!{options.propertyName}&amp;amp;propertyValue=$!escapetool.url($!{options.propertyValue})&amp;amp;form_token=$!{services.csrf.getToken()}#$!{anchor}")" title='New entry'&gt;New entry&lt;/a&gt;&lt;/span&gt;{{/html}}#end
-
-#macro (__extradata_displayTable $dataClassName $options)
-  #set($dataClass = $xwiki.getDocument($dataClassName).xWikiClass)
-  #if ($dataClass)
-    #set($dataObjects = $doc.getObjects($dataClassName, "$!{options.propertyName}", "$!{options.propertyValue}"))
-    #if ($xcontext.action != 'edit' &amp;&amp; $dataObjects.size() == 0)
-      (% class="hint" %)None specified
-    #elseif ($xcontext.action == 'export')
-      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
-      #set ($disableLabels = true)
-      #foreach ($o in $dataObjects)
-        #foreach($prop in $dataClass.properties)#if ($prop.name != $options.propertyName)|= ${prop.prettyName}: |#if ($velocityCount &lt;= 2)=#end $doc.display($prop.getName(), $o)#if ($velocityCount %2 == 0)
-
-        #end#end#end## foreach object
-
-      #end## foreach object
-    #else
-      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
-      #if ("$!{options.counter}" == 'true')|=(% class="col-label" %)# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name#if ($prop.name == $options.propertyName) hidden#end" %)$prop.prettyName#end#if ($xcontext.action == 'edit')|=(% class="actions" %)
-      #else
-
-      #end
-      #if ($xcontext.action == 'export')#set ($disableLabels = true)#end
-      #foreach ($o in $dataObjects)
-        #if ("$!{options.counter}" == 'true')|=(% class="row-count" %)${velocityCount}#end#foreach($prop in $dataClass.properties)|(% class="$prop.name#if ($prop.name == $options.propertyName) hidden#end" %)#if ("$!{options.labels}$!{disableLabels}" == 'true'){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.prettyName}&lt;/label&gt;{{/html}}#end $doc.display($prop.getName(), $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')#end#if ($xcontext.action == 'edit')|(% class="actions" %)#__extradata_deleteTool($o "extradata-${dataClassName}")#end
-
-      #end## foreach object
-
-      #if ($xcontext.action == 'edit')(% class="list-actions" %)(((#__extradata_addTool($dataClassName "extradata-${dataClassName}" $options))))
-      #end
-    #end## if xcontext.action
-  #end## if dataclass
-#end
-
-#macro (__extradata_displayLastEntry $dataClassName $options)
-  #set ($objects = $doc.getObjects($dataClassName))
-  #if ($objects.size() &gt; 0)
-    #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
-    #set($dataClass = $targetObj.xWikiClass)
-    {{html wiki="true" clean="false"}}#foreach($prop in $dataClass.properties)&lt;td class="${prop.name}#if ($prop.name == $options.propertyName) hidden#end"&gt;#if ("$!{options.labels}" == 'true'){{html clean="false" wiki="false"}}&lt;label &gt;${prop.prettyName}:&lt;/label&gt;{{/html}}#end$doc.display($prop.getName(), $targetObj)&lt;/td&gt;#end#if ($context.action == 'edit')&lt;td class="actions"&gt;#__extradata_deleteTool($targetObj '')&lt;/td&gt;#end{{/html}}
-  #end
-#end
-
-#macro (__measurements_displayCompact)
-  #set($dataClass = $xwiki.getDocument('PhenoTips.MeasurementsClass').xWikiClass)
-  #if ($dataClass)
-    #set($dataObjects = $doc.getObjects('PhenoTips.MeasurementsClass'))
-    #if ($dataObjects.size() == 0)
-      (% class="hint" %)None specified
-    #else
-      (% class="extradata-list" %)
-      #foreach ($o in $dataObjects)
-        #foreach($prop in $dataClass.properties)
-           #if (!$prop.name.endsWith('_evaluation') &amp;&amp; "$!o.getProperty($prop.getName()).value" != '')
-             |= ${prop.prettyName}: | $doc.display($prop.getName(), $o) | $!doc.display("${prop.getName()}_evaluation", $o)
-          #end
-        #end
-      #end## foreach object
-    #end## if $dataObjects.size()
-  #end## if dataclass
-#end
-
-## =====================================================================
-##
-## PHENOTYPE METADATA
-##
-##
-#macro (__phenotypeMeta_displayEntry $targetObj)
-    #set($dataClass = $targetObj.xWikiClass)
-    #set($enabledProperties = ['age_of_onset', 'pace_of_progression', 'comments', 'supporting_images', 'supporting_documents'])
-    #set($targetId = "phenotypeMeta__$!{class.name}_$!{obj.number}_$!{targetObj.getProperty('target_property_name').value}__$!{targetObj.getProperty('target_property_value').value}")
-    {{html wiki="true" clean="false"}}##
-    {{html wiki="false" clean="false"}}&lt;dl id="$targetId"&gt;{{/html}}##
-      #foreach($prop in $dataClass.properties)##
-        #if ($enabledProperties.contains($prop.name))#set($displayMode='')#else#set($displayMode=' hidden')#end##
-        &lt;dt class="${prop.name}${displayMode}"&gt;&lt;label for=""&gt;${prop.prettyName}:&lt;/label&gt;&lt;/dt&gt;##
-        &lt;dd class="${prop.name}${displayMode}"&gt;$doc.display($prop.getName(), $targetObj)&lt;/dd&gt;##
-      #end##
-    &lt;/dl&gt;##
-    &lt;input type="hidden" name="delete-action" value="$doc.getURL('objectremove', "classname=${targetObj.xWikiClass.name}&amp;amp;classid=${targetObj.number}&amp;amp;form_token=$!{services.csrf.getToken()}")"/&gt;##
-    {{/html}}
-#end
-
-#macro (__phenotypeMeta_displayLastEntry)
-  #set($dataClassName = 'PhenoTips.PhenotypeMetaClass')
-  #set ($objects = $doc.getObjects($dataClassName))
-  #if ($objects.size() &gt; 0)
-    #set ($targetObj = $objects.get($mathtool.sub($objects.size(), 1)))
-    #__phenotypeMeta_displayEntry($targetObj $mode)
-  #end
-#end
-
-#macro (__phenotypeMeta_displayAll)
-  #set($dataClassName = 'PhenoTips.PhenotypeMetaClass')
-  #set ($objects = $doc.getObjects($dataClassName))
-  #if ($objects.size() &gt; 0)
-    (% class="hidden" %)(((
-    #foreach ($pmObj in $objects)
-      #__phenotypeMeta_displayEntry($pmObj)
-    #end
-    )))
-  #end
-#end
-
-## =====================================================================
-##
-## SECTIONS DISPLAY
-##
-##
-#macro(__reportSection_display $sectionName)
-  #set($cleanSectionName = $sectionName)
-  #set($cleanSectionName = $cleanSectionName.replace('-', '_'))
-  #evaluate("#__reportSection__${cleanSectionName}()")
-#end
-
-## =================================================================
-## Patient information
-##
-#macro(__reportSection__patient_info)
-(% class="clear patient-info chapter" %)(((
-== Patient Information ==
-  #if ("$!activeFields.contains('external_id')" != false &amp;&amp; "$!activeFields.contains('exam_date')" != false)
-  (% class="fieldset" %)(((
-    #__displayFormatted('half-width' 'external_id')
-    #__displayFormatted('half-width' 'exam_date')
-  )))##fieldset
-  (% class="clear" %)((()))
-  #else
-  #__displayFormatted('2-col' 'external_id' '' '' '')
-  #__displayFormatted('2-col' 'exam_date' '' '' '')
-  #end## display exam id / date
-  #if ("$!activeFields.contains('last_name')" != false &amp;&amp; "$!activeFields.contains('first_name')" != false &amp;&amp; ($xcontext.action == 'edit' || "$!{doc.display('last_name')}$!{doc.display('first_name')}" != ''))
-  (% class="fieldset" %)(((
-    #__label('last_name' 'section clear' 'Patient name:')
-    #if ($xcontext.action == 'edit')
-      #__displayFormatted('half-width' 'last_name')
-      #__displayFormatted('half-width' 'first_name')
-    #else
-      (% class="displayed-value"%)${doc.display('last_name')}, ${doc.display('first_name')}(%%)##
-    #end
-  )))##fieldset
-  #end## display first name / last name
-  #__displayFormatted('2-col' 'date_of_birth' '' 'date' '')
-  #__displayFormatted('2-col' 'gender' 'Sex:' 'gender' 'group-title')
-  #__displayFormatted('2-col' 'health_card' '' '' '')
-  #set ($targetClassName = 'PhenoTips.RelativeClass')
-  #if ($config &amp;&amp; $config.getProperty('section__patient-info').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
-
-    ----
-    (% class="clear relatives-info" %)(((
-    === Family study ===
-    #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
-    )))
-  #end
-#if ("$!activeFields.contains('age_of_onset')" != 'false')
-  #if($doc.display('age_of_onset') != '')
-
-    ----
-  #end
-  #__displayIfNotEmpty('age_of_onset')
-  (% class="clear" %)((()))
-#end
-#if ("$!activeFields.contains('indication_for_referral')" != 'false')
-  #if($xcontext.action == 'edit' || ($doc.display('indication_for_referral') != ''))
-
-    ----
-  #end
-  #__displayIfNotEmpty('indication_for_referral')
-#end
-)))##chapter
-#end
-##
-## =================================================================
-## Measurements
-##
-#macro(__reportSection__measurements)
-#set ($targetClassName = 'PhenoTips.MeasurementsClass')
-#if ($config &amp;&amp; $config.getProperty('section__measurements').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
-(% class="clear measurement-info chapter" %)(((
-== Measurements ==
-#if ($xcontext.action != 'export')
-#if ($xcontext.action == 'edit')
-{{warning}}It is recommended to record **weight**, **height** and **head circumference** for all patients.{{/warning}}
-
-#end
-#__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true})
-#if ($config.getProperty('section__measurements').value.contains('growth-charts'))
-(% class="growth-charts-section" %)(((
-=== Growth charts ===
-(% class="expand-tools" %)(((
-(% class="tool show" %)Show(%%) (% class="tool hide" %)Hide(%%)
-)))
-(% id="charts"%)(((
-#set($chartOptions = {'targetClassName' : $targetClassName, 'obj': $obj, 'link': true})
-#_measurementCharts($chartOptions)
-)))##charts
-)))
-(% class="clear"%)((()))
-#end
-#else
-#__measurements_displayCompact()
-#end
-)))##chapter
-#end
-#end
-##
-## =================================================================
-## Phenotype information
-##
-#macro(__reportSection__phenotype_info)
-  #__hasBooleanDataToDisplay('unaffected', $showUnaffected)
-  #__hasDataToDisplay('phenotype' $showPhenotype)
-  #__hasDataToDisplay('negative_phenotype' $showNegativePhenotype)
-#if ($showUnaffected || $showPhenotype || $showNegativePhenotype)
-#if ($showUnaffected)
-  (% class="controlled-group complete-hide" %)(((
-#end
-#if ("$!activeFields.contains('phenotype')" != 'false')
-  (% class="clear clinical-info phenotype-info chapter" %)(((
-  #if ("$!activeFields.contains('unaffected')" != 'false')#set ($__qsBoxCssClass = 'controlled')#end
-    (% class="group-title" %)
-    == $!{class.get('phenotype').prettyName} ==
-      #if ("$!activeFields.contains('unaffected')" != 'false')
-        (% class="fieldset unaffected controller exclude" %)(((
-        #if ($xcontext.action == 'edit')
-          $doc.display('unaffected') #__label('unaffected' '' "$class.get('unaffected').prettyName")
-
-          (% class="hint controlled" %)Or select observed phenotypes:(%%)
-        #else
-          #if ($doc.display('unaffected') == 'Yes')$class.get('unaffected').prettyName#end
-        #end
-        )))
-        (% class="controlled" %) (((
-      #end
-      #__qsBox("$!{class.name}_$!{obj.number}_phenotype" "$!{__qsBoxCssClass}")
-        #if ($context.action == 'edit')
-          (% class="selector-panels"%)(((
-          (% class="half-width selector-panel browser browse-phenotype-categories force-collapse"%)(((
-          (% class="browser-title"%)
-          === **Browse categories** ===
-(% class="background-search diffDiagnosis-search phenotype-group collapsible-group hidden" title="Phenotypes that are likely to help improve differential diagnosis"%)(((
-=== You might want to check for... ===
-(% class="hint" %)Phenotypes that are likely to help improve differential diagnosis
-(% id="diffDiagnosis-search-results" class="background-suggestions" %)((()))
-)))
-        #end
-          (% class="phenotype  #__markIfMandatory('phenotype')" %)(((
-            $doc.display('phenotype')##
-          )))
-        #if ($xcontext.action == 'edit')
-          #__phenotypeMeta_displayAll('edit')##
-          )))## browse-phenotype-categories
-          (% class="half-width selector-panel current-phenotype-selection"%)(((
-          === **Current selection** ===
-             (% id="current-phenotype-selection"%)(((
-              {{html clean="false"}}&lt;input type="hidden" id="phenotype-meta-add-action" value="$doc.getURL('objectadd', "classname=PhenoTips.PhenotypeMetaClass&amp;amp;xredirect=$escapetool.url($doc.getURL('edit', 'xaction=lastmeta&amp;xpage=plain'))&amp;amp;form_token=$!{services.csrf.getToken()}")"/&gt;{{/html}}
-             )))
-          )))
-          (% class="clear"%)((()))
-          )))## selector-panels
-        #end
-      #if ("$!activeFields.contains('unaffected')" != 'false')
-        )))## controlled (phenotype)
-      #end
-  )))## chapter
-#end
-#if ($showUnaffected)
-  )))## controlled-group
-#end
-#end## section has content
-#end
-##
-## =================================================================
-## Prenatal information
-##
-#macro(__reportSection__prenatal_phenotype_info)
-  #__hasDataToDisplay('prenatal_phenotype' $showPrenatalPhenotype)
-  #__hasDataToDisplay('gestation' $showGestation)
-  #__hasDataToDisplay('prenatal_comments' $showPrenatalComments)
-#if ($showPrenatalPhenotype || $showGestation || $showPrenatalComments)
-(% class="clear clinical-info prenatal_phenotype-info chapter #__markIfMandatory('prenatal_phenotype')" %)(((
-== $!{class.get('prenatal_phenotype').prettyName} ==
-#if ($showGestation)
-  #__displayFormatted('2-col' 'gestation' '' '' '')
-  (% class="clear" %)((()))
-#end
-#if ($showPrenatalPhenotype)
-  #if ($showGestation)----
-  #end
-  $doc.display('prenatal_phenotype')
-  (% class="clear" %)((()))
-#end
-#if ($showPrenatalComments)
-  #if ($showGestation || $showPrenatalPhenotype)----
-  #end
-  (((#__displayIfNotEmpty('prenatal_comments'))))
-#end
-)))
-##chapter
-#end
-#end
-##
-## =================================================================
-## Family history
-##
-#macro(__reportSection__family_history)
-  #__hasDataToDisplay('consanguinity' $showConsanguinity)
-  #__hasDataToDisplay('miscarriages' $showMiscarriages)
-  #__hasDataToDisplay('mode_of_inheritance' $showModeOfInheritance)
-  #__hasDataToDisplay('pedigree' $showPedigree)
-  #__hasBooleanDataToDisplay('proband', $showProband)
-  #__hasDataToDisplay('family_of' $showFamilyOf)
-  #__hasDataToDisplay('maternal_ethnicity' $showMaternalEthnicity)
-  #__hasDataToDisplay('paternal_ethnicity' $showPaternalEthnicity)
-  #__hasBooleanDataToDisplay('in_vitro', $showInVitro)
-  #__hasDataToDisplay('family_comments' $showFamilyComments)
-#if ($showConsanguinity || $showMiscarriages || $showModeOfInheritance || $showPedigree || $showProband || $showFamilyOf || $showMaternalEthnicity || $showPaternalEthnicity || $showInVitro || $showFamilyComments)
-(% class="clear clinical-info family_history-info chapter #__markIfMandatory('family_history')" %)(((
-== $!{class.get('family_history').prettyName} ==
-
-(((
-#if ($showProband || $showFamilyOf)
-  #if ($xcontext.action == 'edit')
-    (% class="controlled-group complete-hide" %)(((
-      (% class="controller" %)(((
-        $doc.display('proband') #__label('proband' 'section' "$class.get('proband').prettyName")
-      )))
-      (% class="controlled" %)(((
-        #__displayFormatted('2-col' 'family_of' '' '' '')
-      )))
-    )))
-  #else
-    #if ($showProband)
-      $class.get('proband').prettyName
-    #else
-      #__displayFormatted('2-col' 'family_of' '' '' '')
-    #end
-  #end
-#end
-#if ($showMaternalEthnicity || $showPaternalEthnicity)
-  (% class="fieldset ethnicity" %)(((
-    #__displayFormatted('half-width' 'maternal_ethnicity')
-    #__displayFormatted('half-width' 'paternal_ethnicity')
-  )))##fieldset
-  (% class="clearfloats" %)((()))
-#end
-#if ($showInVitro)
-  #if ($xcontext.action == 'edit')
-
-    ----
-    $doc.display('in_vitro') #__label('in_vitro' 'section' "$class.get('in_vitro').prettyName")
-  #else
-
-    ----
-    $class.get('in_vitro').prettyName
-  #end
-#end
-#if ($showConsanguinity || $showMiscarriages)
-
-  ----
-  #if ($showConsanguinity)
-    ((($doc.display('consanguinity'))))
-  #end
-  #if ($showMiscarriages)
-    ((($doc.display('miscarriages'))))
-  #end
-#end
-#if ($showModeOfInheritance)
-
-  #__displayIfNotEmpty('mode_of_inheritance')
-#end
-#if ($showFamilyComments)
-
-  #__displayIfNotEmpty('family_comments')
-#end
-#set ($pedigreeObj = $doc.getObject('PhenoTips.PedigreeClass'))
-#if ($pedigreeObj)
-  #set ($data = $!pedigreeObj.getProperty('data').value)
-  #set ($image = $pedigreeObj.getProperty('image').value)
-#end## pedigree obj exists
-#if ($xcontext.action == 'edit' || "$!{doc.display('pedigree')}" != '' || "$!data" != '')
-
-  === Pedigree ===
-
-  #if ($xcontext.action == 'edit')
-    #if ("$!data" != '')
-      #set ($pAction = 'Edit pedigree')
-    #else
-      #set ($pAction = 'Draw pedigree')
-    #end## pedigree data exists
-    (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]]
-  #end## action == edit
-  #if ("$!image" != '')
-    {{html clean="false"}}
-      $!image
-    {{/html}}
-  #end
-#end## action == edit || data
-)))
-)))##chapter
-#end## if &lt;should show this section&gt;
-#end
-##
-## =================================================================
-## Medical history
-##
-#macro(__reportSection__medical_history)
-#if ("$!activeFields.contains('medical_developmental_history')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('medical_developmental_history')$doc.display('reports_history')" != ''))
-(% class="clear clinical-info medical_history-info chapter #__markIfMandatory('medical_history')" %)(((
-== $!{class.get('medical_developmental_history').prettyName} ==
-(((
-#__displayIfNotEmpty('medical_developmental_history')
-#if ($xcontext.action != 'export' &amp;&amp; "$doc.display('reports_history')" != '')
-
-=== Previous medical reports ===
-$doc.display('reports_history')
-#end
-)))
-)))##chapter
-#end
-#end
-##
-## =================================================================
-## Diagnosis information
-##
-#macro(__reportSection__diagnosis_info)
-#if ("$!activeFields.contains('omim_id')" != 'false' &amp;&amp; ($xcontext.action == 'edit' || "$doc.display('omim_id')$!doc.display('comments')" != ''))
-(% class="clear chapter" %)(((
-##(% class="diagnosis-info"%)(((
-== Diagnosis ==
-#__displayIfNotEmpty2Col('omim_id' '' '' '')
-(% class="clear" %)(((#__displayIfNotEmpty('comments'))))
-##)))
-#__ncbiSBox("$!{class.name}_$!{obj.number}_phenotype" '')
-(% class="clear" %)((()))
-)))##chapter
-#end
-#end
-##
-## =================================================================
-## Variants information
-##
-#macro(__reportSection__variant_info)
-#set ($targetClassName = 'PhenoTips.VariantClass')
-#if ($config &amp;&amp; $config.getProperty('section__variant-info').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
-(% class="clear variant-info chapter" %)(((
-== Variants ==
-#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false})
-)))##chapter
-#end
-#set ($targetClassName = 'PhenoTips.InvestigationClass')
-#if ($config &amp;&amp; $config.getProperty('section__variant-info').value.contains($targetClassName) &amp;&amp; ($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
-(% class="clear variant-info chapter" %)(((
-== Investigations ==
-(((
-=== Genetic investigation ===
-#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'genetic'})
-=== Molecular genetics ===
-#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular'})
-)))
-)))##chapter
-#end
-#end
-##
-## =================================================================
-## More information
-#macro(__reportSection__other)
-#if ($xcontext.action == 'edit' || ($xcontext.action != 'export' &amp;&amp; (!$doc.getObjects('PhenoTips.ExternalFileClass').isEmpty() || !$doc.getObjects('PhenoTips.ExternalImageClass').isEmpty())))
-(% class="clear clinical-info other-info chapter" %)(((
-== Additional files ==
-(((
-#set ($targetClassName = 'PhenoTips.ExternalFileClass')
-#if (($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
-=== Documents ===
-#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false})
-#end
-#set ($targetClassName = 'PhenoTips.ExternalImageClass')
-#if (($xcontext.action == 'edit' || $doc.getObject($targetClassName)))
-=== Imaging ===
-#__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false})
-#end
-)))
-)))##chapter
-#end## if action != export
-#end
-##
-##
-## =====================================================================
-{{/velocity}}
-
-{{velocity}}
-#if ("$!{request.xaction}" == 'lastentry')  #set ($entryClassName = $request.dataClassName)
-  #set ($options = {})
-  #set ($discard = $options.put('propertyName', "$!{request.propertyName}"))
-  #set ($discard = $options.put('propertyValue', "$!{request.propertyValue}"))
-  #set ($discard = $options.put('labels', "$!{request.withLabel}"))
-  #__extradata_displayLastEntry($request.dataClassName $options)
-#elseif ("$!{request.xaction}" == 'lastmeta')
-  #__phenotypeMeta_displayLastEntry()
-#else
-#if ($xcontext.action != 'export')
-(% id="table-of-contents" %)(((
-{{toc /}}
-
-(% class="hide-toc" id="hide-toc" %)((([[×&gt;&gt;#tmToC||title="Hide table of contents"]])))
-
-(% class="hide-toc hide-toc-ghost" %)((([[Hide table of contents&gt;&gt;#tmToC||id="tmHideToC" class="document-action" title="Hide table of contents"]])))
-)))
-#end
-##
-$xwiki.jsx.use('PhenoTips.TouchscreenEvents', {'minify' : false})##
-$xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('PhenoTips.YesNoNAPicker', {'minify' : false})##
-$xwiki.ssx.use('XWiki.DateTimePicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('XWiki.DateTimePicker')##
-$xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.ssx.use('PhenoTips.Widgets', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('PhenoTips.Widgets', {'minify' : false})##
-$xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('PhenoTips.PatientSheetCode', {'minify' : false})##
-$xwiki.jsfx.use('js/xwiki/actionbuttons/actionButtons.js', true)##
-$xwiki.jsfx.use('js/xwiki/editors/autosave.js')##
-$xwiki.ssfx.use('uicomponents/widgets/validation/livevalidation.css', true)##
-$xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
-##
-##
-#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#if ($config)
-#set($obj = $doc.getObject("$!{config.getProperty('patientClass').value}"))
-#set($class = $obj.xWikiClass)
-#set($discard = $doc.use($obj))
-#set($activeFields = $!{config.getProperty('activeFields').value})
-#set($mandatoryFields = $!{config.getProperty('mandatoryFields').value})
-{{include document="PhenoTips.PatientSheetMenu" /}}
-
-#if ($context.action == 'edit')
-#set($previewenabled = false)
-{{html clean="false" wiki="false"}}&lt;input type='hidden' id='prefix' value='$!{class.name}_$!{obj.number}_'/&gt;{{/html}}##
-
-#end
-#else
-
-{{warning}}**Configuration missing**{{/warning}}
-#end
-#end
-{{/velocity}}</content>
+  <content/>
 </xwikidoc>

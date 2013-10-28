@@ -43,15 +43,7 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity output=false}}
-#set ($targetSpace = "$!{request.space}")
-#if (!$targetSpace || $targetSpace == 'PhenoTips')
-  #break
-#end
-#set ($preferencesObject = $xwiki.getDocument("${targetSpace}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#if (!$preferencesObject)
-  #break
-#end
-#set ($activeFields = $preferencesObject.getProperty('activeFields').value)
+#set ($activeFields = $services.recordConfiguration.activeConfiguration.enabledFieldNames)
 #set ($dateFormat = "MM/dd/yyyy")
 ##
 ##
@@ -70,7 +62,9 @@
 #macro(__filters_display $cssClass)
 (% class="filters $!cssClass" %)
 * By **referrer**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all referrers are considered)&lt;/p&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
+* By **last author**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all authors are considered)&lt;/p&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="doc.author" value=""/&gt;{{/html}}
 * By **creation date**: #__filters_dateRange("doc.creationDate")
+* By **last modification date**: #__filters_dateRange("doc.date")
 #if ($activeFields.contains('date_of_birth'))
   * By **date of birth** of the patient: #__filters_dateRange("date_of_birth")
 #end

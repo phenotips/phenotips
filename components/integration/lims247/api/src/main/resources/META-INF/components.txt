@@ -1,0 +1,3 @@
+org.phenotips.integration.lims247.internal.DefaultLimsServer
+org.phenotips.integration.lims247.internal.LimsSynchronizationEventListener
+org.phenotips.integration.lims247.script.PhenoTipsTokenAuthenticatorScriptService

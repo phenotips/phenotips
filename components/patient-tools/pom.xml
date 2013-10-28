@@ -23,7 +23,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>edu.toronto.cs.phenotips</groupId>
+    <groupId>org.phenotips</groupId>
     <artifactId>phenotips-components</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
@@ -60,9 +60,9 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-math3</artifactId>
-      <version>3.1</version>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-constants</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -89,5 +89,6 @@
   </dependencies>
   <properties>
     <checkstyle.skip>true</checkstyle.skip>
+    <coverage.instructionRatio>0.12</coverage.instructionRatio>
   </properties>
 </project>

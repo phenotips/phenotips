@@ -46,7 +46,7 @@
 #set($phenotypeDisplayTools = $services.phenotype)
 #set ($data = $services.phenotypeMapping.get($name))
 #if ("$!{data}" != '')
-  $phenotypeDisplayTools.setMode($context.action)##
+  $phenotypeDisplayTools.setMode($xcontext.action)##
   $phenotypeDisplayTools.setDocument($doc)##
   #if ($object.getProperty("negative_${name}"))
     #set ($nname = "negative_${name}")##

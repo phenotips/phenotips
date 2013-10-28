@@ -1145,22 +1145,22 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
       <backgroundSecondaryColor>#F8EFE0</backgroundSecondaryColor>
     </property>
     <property>
-      <borderColor>#E8E8E8</borderColor>
+      <borderColor>#DDDDDD</borderColor>
     </property>
     <property>
       <buttonPrimaryBackgroundColor>#222222</buttonPrimaryBackgroundColor>
     </property>
     <property>
-      <buttonPrimaryGradientColor/>
+      <buttonPrimaryGradientColor>#555555</buttonPrimaryGradientColor>
     </property>
     <property>
       <buttonPrimaryTextColor>#F3F3F3</buttonPrimaryTextColor>
     </property>
     <property>
-      <buttonSecondaryBackgroundColor>#E1E1E1</buttonSecondaryBackgroundColor>
+      <buttonSecondaryBackgroundColor>#F5F5F5</buttonSecondaryBackgroundColor>
     </property>
     <property>
-      <buttonSecondaryGradientColor/>
+      <buttonSecondaryGradientColor>#E5E5E5</buttonSecondaryGradientColor>
     </property>
     <property>
       <buttonSecondaryTextColor>#4D5860</buttonSecondaryTextColor>
@@ -1363,5 +1363,5 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
       <users>XWiki.XWikiGuest</users>
     </property>
   </object>
-  <content>{{include document="ColorThemes.ColorThemeSheet"/}}</content>
+  <content/>
 </xwikidoc>

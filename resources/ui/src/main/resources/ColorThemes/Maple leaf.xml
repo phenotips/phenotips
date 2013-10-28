@@ -2302,5 +2302,5 @@ fieldset.xwikimessage legend {
       <users>XWiki.XWikiGuest</users>
     </property>
   </object>
-  <content>{{include document="ColorThemes.ColorThemeSheet"/}}</content>
+  <content/>
 </xwikidoc>

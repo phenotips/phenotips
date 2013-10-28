@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc>
+  <web>PhenoTips</web>
+  <name>PhenoTipsGroupSheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>PhenoTips.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1378930776000</creationDate>
+  <date>1379620181000</date>
+  <contentUpdateDate>1379620181000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <object>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupSheet</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>9ecdf0df-db3b-45cb-8ce2-cdfe888fd7b3</guid>
+    <property>
+      <cache>forbid</cache>
+    </property>
+    <property>
+      <code>#template("colorThemeInit.vm")
+
+.doc-tools {
+  float: right;
+  font-size: 1.5em;
+}
+
+.doc-tools a.doc-tool.edit {
+  margin: -1.2em -0.3em 0 0 !important;
+  padding: 0.1em 0 0 0.3em !important;
+}
+.group-logo {
+  float: left;
+  max-width: 30%;
+  margin: 0 10px 10px 0;
+}
+.vertical-menu a {
+  color: $theme.textColor !important;
+  text-transform: uppercase;
+  padding-left: .5em;
+}
+.vertical-menu i {
+  font-size: 1.2em;
+}
+.menu-section {
+  margin-left: 16em;
+}
+.menu-section h2 {
+  margin-top: 0;
+}
+.menu-section input[name="action_save"] {
+    background-image: none !important;
+}</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupSheet</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>f501f9c0-0ee3-4ec1-8a7e-cb81db0ab52b</guid>
+    <property>
+      <content>{{velocity}}#if ($xcontext.action == 'view' &amp;&amp; $hasEdit &amp;&amp; $doc.getObject('PhenoTips.PhenoTipsGroupClass'))(% class="doc-tools buttonwrapper" %)((([[ {{icon name="pencil"/}}&gt;&gt;path:$doc.getURL('edit') || title="Edit" class="doc-tool edit button"]])))#end{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.xwiki.platform.content.top</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.groupSheet.tools</name>
+    </property>
+    <property>
+      <parameters/>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <content>{{velocity}}
+$xwiki.ssx.use('PhenoTips.PhenoTipsGroupSheet')##
+$xwiki.jsx.use('PhenoTips.Widgets')##
+$xwiki.ssx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('PhenoTips.ImageDisplayer')##
+$xwiki.ssx.use('PhenoTips.ImageDisplayer')##
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
+#if ($xcontext.action == 'edit')
+(% class="xform" %)(((
+; Group name
+: {{html}}&lt;input type="text" name="title" value="$!doc.title"/&gt;{{/html}}
+; Image
+: $doc.display('image')
+; Group description
+: $doc.display('description')
+; Public information
+: $doc.display('public_sections')
+
+)))
+(% class="xform" %)(((
+== Manage group members ==
+
+{{include reference='XWiki.XWikiGroupSheet'/}}
+
+)))
+#else
+#if ("$!{doc.getObject('PhenoTips.PhenoTipsGroupClass').getProperty('image').value}" != '')(% class="group-logo" %)((($doc.display('image'))))#{end}$doc.display('description')
+
+#set ($isMyGroup = $doc.getObject('XWiki.XWikiGroups', 'member', $xcontext.userReference))
+#if ($isMyGroup){{info}}You are a member of this group.{{/info}}#end
+(% class="clearfloats" %)((()))
+#end
+
+#if ($xcontext.action == 'view')
+#set ($obj = $doc.getObject('PhenoTips.PhenoTipsGroupClass'))
+#set ($sections = [
+  {'id' : 'members', 'name' : "Group members", 'icon' : 'group',       'content' : '{{include reference="XWiki.XWikiGroupSheet"/}}'},
+  {'id' : 'cases',   'name' : "Cases",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.GroupCases"/}}'},
+  {'id' : 'form' ,   'name' : "Patient form",  'icon' : 'cogs',        'content' : '{{include reference="PhenoTips.FormDesigner"/}}'}
+])
+#set ($menu = [])
+#set ($contents = {})
+#foreach ($s in $sections)
+  #if ($isMyGroup || $hasAdmin || $obj.getProperty('public_sections').value.contains($s.id))
+    #set ($discard = $menu.add({
+      'id' : $s.id,
+      'name' : "&lt;i class='icon-$s.icon'&gt;&lt;/i&gt; $s.name",
+      'url' : "?s=${s.id}#content-${s.id}"
+    }))
+    #set ($discard = $contents.put($s.id, $s.content))
+  #end
+#end
+
+#set ($crtContent = '')
+
+#if ($menu.size() &gt; 0)
+  #set ($crtItem = "$!request.s")
+  #if ("$!contents.get($crtItem)" == '')
+    #set ($crtItem = "$!menu.get(0).id")
+  #end
+  #set ($crtContent = "$!contents.get($crtItem)")
+#end
+#if ($menu.size() &gt; 1)
+(% class="vertical-menu $!{options.cssClass}" %)(((
+#foreach ($i in $menu)
+* {{html clean=false wiki=false}}&lt;a href="$i.url" id="group-section-$i.id" #if ($i.id == $crtItem) class="current" #end&gt;$i.name&lt;/a&gt;{{/html}}
+#end
+)))
+(% class="menu-section" id="content-${crtItem}" %)#end((($crtContent)))
+#end
+{{/velocity}}
+</content>
+</xwikidoc>
