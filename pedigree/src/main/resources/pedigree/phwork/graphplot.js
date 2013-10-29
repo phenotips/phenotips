@@ -981,12 +981,14 @@ DrawGraph.prototype = {
 
     edge_length_score: function(order, onlyRank)
     {
-        var totalEdgeLengthInPositions = 0;
-        var totalEdgeLengthInChildren  = 0;
-
+        // TODO
         // Two goals: without increasing the number of edge crossings try to
         //   higher priority: place people in a relationship close(r) to each other
         //   lower priority:  place all children close(r) to each other
+        
+        var totalEdgeLengthInPositions = 0;
+        var totalEdgeLengthInChildren  = 0;
+
         for (var i = 0; i < this.GG.getNumVertices(); i++) {
 
             if (onlyRank) {
@@ -1053,10 +1055,12 @@ DrawGraph.prototype = {
 
             for (var i = 0; i < numVert - 1; i++) {   // -1 because we only check crossings of edges going out of vertices of higher orders
                 var v = order.order[r][i];
-
+                
                 var outEdges = this.GG.getOutEdges(v);
                 var len      = outEdges.length;
 
+                var isChhub = this.GG.isChildhub(v); 
+                
                 for (var j = 0; j < len; j++) {
                     var targetV = outEdges[j];
 
@@ -1076,10 +1080,16 @@ DrawGraph.prototype = {
                                                          // - and if "1" is assigned transpose wont fix certain local cases
                         }
                     }
-
+                    
                     // so we have an edge v->targetV. Have to check how many edges
-                    // between rank[v] and rank[targetV] this particular edge corsses.
-                    numCrossings += this._edge_crossing_crossingsByOneEdge(order, v, targetV);
+                    // between rank[v] and rank[targetV] this particular edge corsses.                    
+                    var crossings = this._edge_crossing_crossingsByOneEdge(order, v, targetV);
+
+                    // special case: count edges from parents to twins twice
+                    // (since all twins are combined into one, and this edge actually represents multiple parent-child edges)                    
+                    var twinCoeff = (isChhub && this.GG.isParentToTwinEdge(v, targetV)) ? 2.0 : 1.0;
+                    
+                    numCrossings += crossings * twinCoeff;                                           
                 }
             }
         }
@@ -1113,13 +1123,16 @@ DrawGraph.prototype = {
         if (rankV == rankT)
         {
             return this.numNodesWithParentsInBetween(order, rankV, orderV, orderT);
-        }
+        }        
+        //if (rankV +1 != rankT) throw "Assertion failed: edge corssings";
 
         var verticesAtRankV = order.order[ rankV ];    // all vertices at rank V
 
         // edges from rankV to rankT: only those after v (orderV+1)
         for (var ord = orderV+1; ord < verticesAtRankV.length; ord++) {
             var vertex = verticesAtRankV[ord];
+            
+            var isChhub = this.GG.isChildhub(vertex); 
 
             var outEdges = this.GG.getOutEdges(vertex);
             var len      = outEdges.length;
@@ -1131,6 +1144,11 @@ DrawGraph.prototype = {
 
                 if (orderTarget < orderT) {
                     crossings++;
+                    
+                    // special case: count edges from parents to twins twice
+                    // (since all twins are combined into one, and this edge actually represents multiple parent-child edges)
+                    if (isChhub && this.GG.isParentToTwinEdge(vertex, target))
+                        crossings++;                            
                 }
             }
         }
@@ -1140,24 +1158,32 @@ DrawGraph.prototype = {
 
     numNodesWithParentsInBetween: function (order, rank, order1, order2)
     {
-        // TODO!
-        // TODO: treat special case of same-rank edges (relationship edges):
-        //   - first, some may not cross because both source and target are between order1 & order2
-        //   - second, it mya be an out edge not in edge, but still crosses as sourc eis inside, but target is outside [order1, order2]
-
+        // TODO: while this function correctly computes what its name suggests, it is
+        //       actually used to compute number of crossings for same-rank edges. And for that
+        //       need not only to sompute nodes with parents, but correctly compute crossings of
+        //       other same-rank edges (relationship edges). The difference is:
+        //       - even if a node between order1 and order2 has an in-edge, that in-edge may not cross the
+        //         edge from order1 to order2 because both source and target are between order1 & order2
+        //       - it may be an out-edge instead of an in-edge, but still crosses as source is inside,
+        //         but target is outside [order1, order2]
+        
         var numNodes = 0;
         var fromBetween = Math.min(order1, order2) + 1;
         var toBetween   = Math.max(order1, order2) - 1;
         for (var o = fromBetween; o <= toBetween; o++) {
             var b = order.order[rank][o];
+            
             if (this.GG.getInEdges(b).length > 0)
                 numNodes++;
-            /* TODO:
-            // count twins, as twins have multiple up-edges
-            var twinGroupId = this.GG.getTwinGroupId(b);
-            if (twinGroupId != null) {
-                numNodes++;
-            }*/
+
+            if (this.GG.isPerson(b)) {
+                // count crossing twin's parental edge as a multiple crossing
+                // (since all twins are combined into one, and this one parent edge actually represents multiple edges)
+                var twinGroupId = this.GG.getTwinGroupId(b);
+                if (twinGroupId != null) {
+                    numNodes++;
+                }
+            }
         }
         return numNodes;
     },

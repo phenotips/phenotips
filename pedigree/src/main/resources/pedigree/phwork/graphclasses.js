@@ -884,6 +884,14 @@ InternalGraph.prototype = {
                 twins.push(child);
         }
         return twins;
+    },
+    
+    isParentToTwinEdge: function (fromV, toV)
+    {
+        if (this.isPerson(toV) && this.isChildhub(fromV) &&
+            this.getTwinGroupId(toV) != null) return true;
+        
+        return false;
     }
 };
 
