@@ -48,15 +48,10 @@
     <!-- "solr" webapp. -->
     <dependencySet>
       <includes>
-        <include>org.apache.solr:solr</include>
+        <include>${project.groupId}:solr-war</include>
       </includes>
       <outputDirectory>webapps/solr</outputDirectory>
       <unpack>true</unpack>
-      <unpackOptions>
-        <excludes>
-          <exclude>WEB-INF/lib/slf4j-jdk14-*.jar</exclude>
-        </excludes>
-      </unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <!-- Solr configuration. -->
@@ -92,10 +87,4 @@
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>
-  <files>
-    <file>
-      <source>${basedir}/src/main/resources/logback.xml</source>
-      <outputDirectory>webapps/solr/WEB-INF/classes</outputDirectory>
-    </file>
-  </files>
 </assembly>

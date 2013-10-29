@@ -305,6 +305,8 @@ model.reference.default.space=data
 extension.repositories=maven-xwiki:maven:http://nexus.xwiki.org/nexus/content/groups/public
 extension.repositories=maven-phenotips:maven:http://nexus.cs.toronto.edu/nexus/content/repositories/releases/
 extension.repositories=extensions.xwiki.org:xwiki:http://extensions.xwiki.org/xwiki/rest/
+solr.type=remote
+solr.remote.url=http://localhost:8080/solr/xwiki/
                 </xwikiPropertiesAdditionalProperties>
               </properties>
             </configuration>

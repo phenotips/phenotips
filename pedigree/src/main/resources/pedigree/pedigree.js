@@ -396,6 +396,6 @@ PedigreeEditor.attributes = {
     layoutScale: { xscale: 12.0, yscale: 7 }
 };
 
-document.observe("dom:loaded",function() {
+document.observe("xwiki:dom:loaded",function() {
     editor = new PedigreeEditor();
 });
