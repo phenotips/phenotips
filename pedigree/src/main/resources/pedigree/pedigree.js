@@ -341,6 +341,6 @@ PedigreeEditor.attributes = {
         partnershipLines : {"stroke-width": 2, stroke : '#2E2E56'}
 };
 
-document.observe("dom:loaded",function() {
+document.observe("xwiki:dom:loaded",function() {
     editor = new PedigreeEditor();
 });
