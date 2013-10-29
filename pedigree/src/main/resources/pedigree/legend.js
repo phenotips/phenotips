@@ -155,7 +155,7 @@ var DisorgerLegend = Class.create( {
       var label = this._legendBox.down('li#disorder-' + disorderID + ' .disorder-cases');
       if (label) {
         var cases = this._affectedNodes.hasOwnProperty(disorderID) ? this._affectedNodes[disorderID].length : 0;
-        label.update(cases + " case" + ((cases - 1) && "s" || ""));
+        label.update(cases + "&nbsp;case" + ((cases - 1) && "s" || ""));
       }
     },
     

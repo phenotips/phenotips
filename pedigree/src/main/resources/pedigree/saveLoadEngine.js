@@ -31,7 +31,9 @@ var ProbandDataLoader = Class.create( {
         this.probandData = {};        
         this.probandData.firstName = unescapeRestData(data.querySelector("property[name='first_name'] > value"));
         this.probandData.lastName  = unescapeRestData(data.querySelector("property[name='last_name'] > value"));
-        this.probandData.gender    = unescapeRestData(data.querySelector("property[name='gender'] > value"));        
+        this.probandData.gender    = unescapeRestData(data.querySelector("property[name='gender'] > value")); 
+        if (this.probandData.gender == '')
+            this.probandData.gender = 'U';
         console.log("Proband data: " + stringifyObject(this.probandData));
     },    
 });
