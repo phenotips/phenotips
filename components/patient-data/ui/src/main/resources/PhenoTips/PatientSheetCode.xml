@@ -503,7 +503,7 @@ var isValueSelected = function (fieldName, value) {
   return (elt &amp;&amp; elt.checked);
 };
 
-document.observe('dom:loaded', function() {
+document.observe('xwiki:dom:loaded', function() {
   $$('.editbody .negative_phenotype-group').invoke('hide');
   // ------------------------------------------------------------------------
   // Selected term highlighting
