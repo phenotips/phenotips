@@ -9,7 +9,7 @@
  */
 var PedigreeEditor = Class.create({
     initialize: function() {
-        this.DEBUG_MODE = true;
+        this.DEBUG_MODE = false;
         window.editor = this;
                         
         // initialize main data structure which holds the graph structure        
@@ -396,6 +396,6 @@ PedigreeEditor.attributes = {
     layoutScale: { xscale: 12.0, yscale: 7 }
 };
 
-document.observe("dom:loaded",function() {
+document.observe("xwiki:dom:loaded",function() {
     editor = new PedigreeEditor();
 });

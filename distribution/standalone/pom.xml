@@ -36,13 +36,6 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>org.apache.solr</groupId>
-      <artifactId>solr</artifactId>
-      <version>4.0.0</version>
-      <type>war</type>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <version>2.2.9</version>
@@ -51,6 +44,13 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-war</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>solr-war</artifactId>
       <version>${project.version}</version>
       <type>war</type>
       <optional>true</optional>
