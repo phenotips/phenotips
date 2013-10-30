@@ -1487,7 +1487,7 @@
   removeItem : function(event) {
     var item = event.findElement('li');
     this.synchronizeSelection({
-      value   : item.down('input[type=checkbox]').value,
+      value   : (item.down('input[type=checkbox]') || item.down('input')).value,
       checked : false
     });
     item.remove();
@@ -1497,8 +1497,12 @@
   },
 
   clearAcceptedList : function () {
-    this.list.update("");
-    this.updateListTools();
+    // The list items are recreated after each update, so we can't cache the set of items, we must request them one by one
+    var item = this.list.down('li .delete-tool');
+    while (item) {
+      item.click();
+      item = this.list.down('li .delete-tool');
+    }
   },
 
   updateListTools : function () {
