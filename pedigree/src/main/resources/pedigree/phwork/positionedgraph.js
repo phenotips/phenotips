@@ -507,8 +507,8 @@ PositionedGraph.prototype = {
         insertParentsRank = this.DG.ranks[newRelationshipId];       // note: rank may have changed since last insertion again
                                                                     //       (iff relationship was insertion above all at rank 0 - which becomes rank1)
 
-        var newParent1Id = this._insertVertex(TYPE.PERSON, {"gender": "M"}, 1.0, null, newRelationshipId, insertParentsRank, insertParentOrder + 1);
-        var newParent2Id = this._insertVertex(TYPE.PERSON, {"gender": "F"}, 1.0, null, newRelationshipId, insertParentsRank, insertParentOrder);
+        var newParent1Id = this._insertVertex(TYPE.PERSON, {"gender": "F"}, 1.0, null, newRelationshipId, insertParentsRank, insertParentOrder + 1);
+        var newParent2Id = this._insertVertex(TYPE.PERSON, {"gender": "M"}, 1.0, null, newRelationshipId, insertParentsRank, insertParentOrder);
 
         // validate: by now the graph should satisfy all assumptions
         this.DG.GG.validate();

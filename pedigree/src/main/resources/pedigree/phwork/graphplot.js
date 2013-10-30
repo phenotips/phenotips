@@ -981,13 +981,17 @@ DrawGraph.prototype = {
 
     edge_length_score: function(order, onlyRank)
     {
-        // TODO
-        // Two goals: without increasing the number of edge crossings try to
-        //   higher priority: place people in a relationship close(r) to each other
-        //   lower priority:  place all children close(r) to each other
+        // Returns the penalty score that penalizes:
+        //   higher priority: people in a relationship being far from each other
+        //                    (higher penalty for greater distance)
+        //   lower priority:  children of the same relationship not being close to each other
+        //                    (higher penalty for greater distance between leftmost and rightmost child)
+        //   lowest priority: father not being on the left, mother notbeing on the right
+        //                    (constant penalty for each case)
         
-        var totalEdgeLengthInPositions = 0;
-        var totalEdgeLengthInChildren  = 0;
+        var totalEdgeLengthInPositions     = 0;
+        var totalEdgeLengthInChildren      = 0;
+        var totalEdgeLengthInFatherOnRight = 0;
 
         for (var i = 0; i < this.GG.getNumVertices(); i++) {
 
@@ -1000,7 +1004,6 @@ DrawGraph.prototype = {
     		    var parents = this.GG.getInEdges(i);
 
                 if (parents.length == 2) {     // while each relationship has 2 parents, during ordering some parents may be "unplugged" to simplify the graph
-
                     // only if parents have the same rank
                     if ( this.ranks[parents[0]] != this.ranks[parents[1]] )
         			    continue;
@@ -1009,6 +1012,12 @@ DrawGraph.prototype = {
                     var order2 = order.vOrder[parents[1]];
 
                     totalEdgeLengthInPositions += Math.abs(order1 - order2);
+                    
+                    // penalty, if any, for fathe ron the left, mother on the right
+                    var leftParent   = (order1 < order2) ? parents[0] : parents[1]; 
+                    var genderOfLeft = this.GG.properties[leftParent]["gender"];
+                    if (genderOfLeft == 'F')
+                        totalEdgeLengthInFatherOnRight++;
                 }
             }
 
@@ -1031,7 +1040,7 @@ DrawGraph.prototype = {
         }
 
         //console.log("r = " + onlyRank + ", edgeLength = " + totalEdgeLengthInPositions + ", childLen = " + totalEdgeLengthInChildren);
-        return totalEdgeLengthInPositions*1000 + totalEdgeLengthInChildren;
+        return totalEdgeLengthInPositions*100000 + totalEdgeLengthInChildren*1000 + totalEdgeLengthInFatherOnRight;
     },
 
     edge_crossing: function(order, onlyRank, dontUseApproximationForRelationshipEdges)
