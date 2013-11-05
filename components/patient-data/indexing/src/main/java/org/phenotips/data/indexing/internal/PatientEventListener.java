@@ -19,24 +19,31 @@
  */
 package org.phenotips.data.indexing.internal;
 
+import org.phenotips.data.Disorder;
+import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.indexing.PatientIndexer;
 
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.bridge.event.DocumentCreatedEvent;
 import org.xwiki.bridge.event.DocumentDeletedEvent;
 import org.xwiki.bridge.event.DocumentUpdatedEvent;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 import org.xwiki.observation.event.FilterableEvent;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import net.sf.json.JSONObject;
 
 /**
  * Monitors document changes and submits modified patients to the {@link PatientIndexer indexer}.
@@ -49,6 +56,58 @@ import javax.inject.Singleton;
 @Singleton
 public class PatientEventListener implements EventListener
 {
+    /**
+     * A deleted patient, we only care about its document.
+     * 
+     * @version $Id$
+     * @since 1.0M10
+     */
+    private static class DeletedPatient implements Patient
+    {
+        /** @see #getDocument() */
+        private final DocumentReference document;
+
+        /**
+         * Simple constructor passing the document reference.
+         * 
+         * @param document the document reference where this patient existed
+         */
+        public DeletedPatient(DocumentReference document)
+        {
+            this.document = document;
+        }
+
+        @Override
+        public JSONObject toJSON()
+        {
+            return null;
+        }
+
+        @Override
+        public DocumentReference getReporter()
+        {
+            return null;
+        }
+
+        @Override
+        public Set<? extends Feature> getFeatures()
+        {
+            return null;
+        }
+
+        @Override
+        public DocumentReference getDocument()
+        {
+            return this.document;
+        }
+
+        @Override
+        public Set<? extends Disorder> getDisorders()
+        {
+            return null;
+        }
+    }
+
     /** Does the actual indexing. */
     @Inject
     private PatientIndexer indexer;
@@ -71,15 +130,13 @@ public class PatientEventListener implements EventListener
     }
 
     @Override
-    public void onEvent(Event event, Object source, Object data)
+    public void onEvent(final Event event, final Object source, final Object data)
     {
         Patient patient = this.patients.getPatientById(((FilterableEvent) event).getEventFilter().getFilter());
-        if (patient != null) {
-            if (event instanceof DocumentDeletedEvent) {
-                this.indexer.delete(patient);
-            } else {
-                this.indexer.index(patient);
-            }
+        if (event instanceof DocumentDeletedEvent) {
+            this.indexer.delete(new DeletedPatient(((DocumentModelBridge) source).getDocumentReference()));
+        } else if (patient != null) {
+            this.indexer.index(patient);
         }
     }
 }

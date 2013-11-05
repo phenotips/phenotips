@@ -35,6 +35,7 @@ import javax.inject.Singleton;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 
@@ -92,7 +93,7 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     public void delete(Patient patient)
     {
         try {
-            this.server.deleteByQuery("document:" + patient.getDocument());
+            this.server.deleteByQuery("document:" + ClientUtils.escapeQueryChars(patient.getDocument().toString()));
             this.server.commit();
         } catch (SolrServerException ex) {
             this.logger.warn("Failed to delete from Solr: {}", ex.getMessage());
