@@ -19,6 +19,12 @@
  */
 package org.phenotips.tools;
 
+import org.phenotips.solr.HPOScriptService;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
+import org.xwiki.script.service.ScriptService;
+
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,14 +34,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.phenotips.solr.HPOScriptService;
-
-import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
-import org.xwiki.script.service.ScriptService;
-
 import com.xpn.xwiki.api.Document;
-
 
 /**
  * Display lists of phenotype properties.
@@ -112,7 +111,7 @@ public class PhenotypeDisplayTools implements ScriptService
         this.execution.getContext().setProperty(MESSAGES_KEY, messageMap);
     }
 
-    public String display(Collection<Map<String, ? >> template)
+    public String display(Collection<Map<String, ?>> template)
     {
         return new PropertyDisplayer(template, getFormData(), (HPOScriptService) this.ontologyService).display();
     }
