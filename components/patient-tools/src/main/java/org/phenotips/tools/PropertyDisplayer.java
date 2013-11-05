@@ -134,6 +134,12 @@ public class PropertyDisplayer
         for (FormSection section : this.sections) {
             str.append(section.display(this.data.getMode(), this.fieldNames));
         }
+        if (DisplayMode.Edit.equals(this.data.getMode())) {
+            str.append("<input type=\"hidden\" name=\"" + this.fieldNames[0] + "\" value=\"\" />");
+            if (this.fieldNames[1] != null) {
+                str.append("<input type=\"hidden\" name=\"" + this.fieldNames[1] + "\" value=\"\" />");
+            }
+        }
         return str.toString();
     }
 
