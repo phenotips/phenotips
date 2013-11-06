@@ -209,7 +209,7 @@ var ChildlessBehaviorVisuals = {
             
 	        var x    = this.getX();
 	        var y    = this.getY();
-	        var r    = PedigreeEditor.attributes.partnershipRadius;
+	        var r    = PedigreeEditor.attributes.partnershipRadius * 1.25;
 	        var lowY = this.getBottomY();
 	        
 	        var childlessPath = [["M", x, y],["L", x, lowY],["M", x - r, lowY], ["l", 2 * r, 0]];
