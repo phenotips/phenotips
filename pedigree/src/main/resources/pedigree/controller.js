@@ -112,10 +112,11 @@ var Controller = Class.create({
         var node    = editor.getGraphicsSet().getNode(nodeID);
         var changed = false;
         
+        var twinUpdate = undefined;
         var needUpdateAncestors = false;
         var needUpdateRelationship = false;
         
-        for (propertySetFunction in properties)
+        for (propertySetFunction in properties) {
             if (properties.hasOwnProperty(propertySetFunction)) {
                 var propValue = properties[propertySetFunction];  
                                
@@ -132,25 +133,41 @@ var Controller = Class.create({
                     node[propertySetFunction](propValue);
                 }
                 
-                if (propertySetFunction == "setAdopted")
+                if (propertySetFunction == "setAdopted") {
                     needUpdateAncestors = true;
+                    if (!twinUpdate) twinUpdate = {};
+                    twinUpdate[propertySetFunction] = propValue;                                      
+                }
                 
                 if (propertySetFunction == "setMonozygotic") {
                     needUpdateRelationship = true;
-                    // need to update all other twins in the group
-                    var allTwins = editor.getGraph().getAllTwinsSortedByOrder(nodeID);
+                    if (!twinUpdate) twinUpdate = {};
+                    twinUpdate[propertySetFunction] = propValue;
+                }
+            }
+        }
+        
+        // some properties should be the same for all the twins. If one of those
+        // was changed, need to update all the twins
+        if (twinUpdate) {
+            var allTwins = editor.getGraph().getAllTwinsSortedByOrder(nodeID);
+            for (propertySetFunction in twinUpdate) {
+                if (twinUpdate.hasOwnProperty(propertySetFunction)) {
+                    var propValue = twinUpdate[propertySetFunction];
+                    
                     for (var i = 0; i < allTwins.length; i++) {
                         var twin = allTwins[i];
                         if (twin == nodeID) continue;
                         var twinNode = editor.getGraphicsSet().getNode(twin);
-                        twinNode.setMonozygotic(propValue);
+                        twinNode[propertySetFunction](propValue);
                         var twinProperties = twinNode.getProperties();        
                         console.log("Setting twin properties: " + stringifyObject(twinProperties));
                         editor.getGraph().setProperties( twin, twinProperties );                        
-                    }
+                    }                    
                 }
             }
-        
+        }
+                        
         var allProperties = node.getProperties();              
         editor.getGraph().setProperties( nodeID, allProperties );
         
@@ -270,10 +287,15 @@ var Controller = Class.create({
         var preferLeft  = event.memo.preferLeft;
         var childParams = event.memo.childParams ? cloneObject(event.memo.childParams) : {};
         var numTwins    = event.memo.twins ? event.memo.twins : 1;
+        var numPersons  = event.memo.groupSize ? event.memo.groupSize : 0;
         
         if (editor.getGraph().isChildless(personID)) {
-            var childParams = { "isAdopted": true };                  
+            childParams["isAdopted"] = true;                  
         }        
+        
+        if (numPersons > 0) {
+            childParams["numPersons"] = numPersons;
+        }
         
         var changeSet = editor.getGraph().addNewRelationship(personID, childParams, preferLeft, numTwins);                
         editor.getGraphicsSet().applyChanges(changeSet, true);
@@ -340,10 +362,14 @@ var Controller = Class.create({
         var numTwins = event.memo.twins ? event.memo.twins : 1;        
         
         var childParams = cloneObject(event.memo.childParams);        
-        if (editor.getGraph().isChildless(partnershipID))
+        if (editor.getGraph().isChildless(partnershipID)) {
             childParams["isAdopted"] = true;
+        }
         
-        // TODO: person groups
+        var numPersons = event.memo.groupSize ? event.memo.groupSize : 0;               
+        if (numPersons > 0) {
+            childParams["numPersons"] = numPersons;
+        }
         
         var changeSet = editor.getGraph().addNewChild(partnershipID, childParams, numTwins);                
         editor.getGraphicsSet().applyChanges(changeSet, true);
