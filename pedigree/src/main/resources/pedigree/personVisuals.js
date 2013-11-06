@@ -75,6 +75,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         
         if(this.getNode().isProband()) {
+            this._genderGraphics.push(this.generateProbandArrow());
             this.getGenderShape().transform(["...s", 1.07]);
             this.getGenderShape().attr("stroke-width", 5);
         }
@@ -85,6 +86,15 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         //    this._genderGraphics.flatten().insertAfter(editor.getGraphicsSet().getProband().getGraphics().getAllGraphics().flatten());
         //}
         this.updateDisorderShapes();
+    },
+    
+    generateProbandArrow: function() {
+        var path  = "M7.589,20.935l-6.87,6.869l2.476,2.476l6.869-6.869l1.858,1.857l2.258-8.428l-8.428,2.258L7.589,20.935z";
+        //var path = "M5.542,11.731l8.428,2.258l-2.258-8.428L9.874,7.398L3.196,0.72L0.72,3.196l6.678,6.678L5.542,11.731z";                
+        var icon = editor.getPaper().path(path).attr({fill: "#595959", stroke: "none",opacity: 1});        
+        //icon.transform(["t" , this.getX()-this._shapeRadius , this.getY()-this._shapeRadius])
+        icon.transform(["t" , this.getX()-this._shapeRadius-20, this.getY()+this._shapeRadius-10])
+        return icon;
     },
 
     /**
