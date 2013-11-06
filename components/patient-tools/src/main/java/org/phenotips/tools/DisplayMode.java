@@ -26,7 +26,8 @@ package org.phenotips.tools;
  */
 public enum DisplayMode
 {
-    View, Edit;
+    View,
+    Edit;
 
     public static DisplayMode get(String mode)
     {

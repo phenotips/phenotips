@@ -19,6 +19,8 @@
  */
 package org.phenotips.tools;
 
+import org.phenotips.solr.HPOScriptService;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,13 +28,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.phenotips.solr.HPOScriptService;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 
 import com.xpn.xwiki.api.Property;
-
 
 public class PropertyDisplayer
 {
@@ -72,7 +71,7 @@ public class PropertyDisplayer
 
     private List<FormSection> sections = new LinkedList<FormSection>();
 
-    PropertyDisplayer(Collection<Map<String, ? >> template, FormData data, HPOScriptService ontologyService)
+    PropertyDisplayer(Collection<Map<String, ?>> template, FormData data, HPOScriptService ontologyService)
     {
         this.data = data;
         this.ontologyService = ontologyService;
@@ -89,7 +88,7 @@ public class PropertyDisplayer
         if (data.getNegativeFieldName() != null && data.getSelectedNegativeValues() != null) {
             customNoSelected.addAll(data.getSelectedNegativeValues());
         }
-        for (Map<String, ? > sectionTemplate : template) {
+        for (Map<String, ?> sectionTemplate : template) {
             if (isSection(sectionTemplate)) {
                 this.sections.add(generateSection(sectionTemplate, customYesSelected, customNoSelected));
             }
@@ -134,29 +133,35 @@ public class PropertyDisplayer
         for (FormSection section : this.sections) {
             str.append(section.display(this.data.getMode(), this.fieldNames));
         }
+        if (DisplayMode.Edit.equals(this.data.getMode())) {
+            str.append("<input type=\"hidden\" name=\"" + this.fieldNames[0] + "\" value=\"\" />");
+            if (this.fieldNames[1] != null) {
+                str.append("<input type=\"hidden\" name=\"" + this.fieldNames[1] + "\" value=\"\" />");
+            }
+        }
         return str.toString();
     }
 
-    private boolean isSection(Map<String, ? > item)
+    private boolean isSection(Map<String, ?> item)
     {
         return ITEM_TYPE_SECTION.equals(item.get(TYPE_KEY)) && Collection.class.isInstance(item.get(CATEGORIES_KEY))
             && String.class.isInstance(item.get(TITLE_KEY)) && Collection.class.isInstance(item.get(DATA_KEY));
     }
 
-    private boolean isSubsection(Map<String, ? > item)
+    private boolean isSubsection(Map<String, ?> item)
     {
         return ITEM_TYPE_SUBSECTION.equals(item.get(TYPE_KEY)) && String.class.isInstance(item.get(TITLE_KEY))
             && Collection.class.isInstance(item.get(DATA_KEY));
     }
 
-    private boolean isField(Map<String, ? > item)
+    private boolean isField(Map<String, ?> item)
     {
         return item.get(TYPE_KEY) == null || ITEM_TYPE_FIELD.equals(item.get(TYPE_KEY)) && item.get(ID_KEY) != null
             && String.class.isAssignableFrom(item.get(ID_KEY).getClass());
     }
 
     @SuppressWarnings("unchecked")
-    private FormSection generateSection(Map<String, ? > sectionTemplate, List<String> customYesSelected,
+    private FormSection generateSection(Map<String, ?> sectionTemplate, List<String> customYesSelected,
         List<String> customNoSelected)
     {
         String title = (String) sectionTemplate.get(TITLE_KEY);
@@ -166,7 +171,7 @@ public class PropertyDisplayer
         return section;
     }
 
-    private FormElement generateSubsection(Map<String, ? > subsectionTemplate, List<String> customYesSelected,
+    private FormElement generateSubsection(Map<String, ?> subsectionTemplate, List<String> customYesSelected,
         List<String> customNoSelected)
     {
         String title = (String) subsectionTemplate.get(TITLE_KEY);
@@ -180,11 +185,11 @@ public class PropertyDisplayer
     }
 
     @SuppressWarnings("unchecked")
-    private void generateData(FormGroup formGroup, Map<String, ? > groupTemplate, List<String> customYesSelected,
+    private void generateData(FormGroup formGroup, Map<String, ?> groupTemplate, List<String> customYesSelected,
         List<String> customNoSelected)
     {
-        Collection<Map<String, ? >> data = (Collection<Map<String, ? >>) groupTemplate.get(DATA_KEY);
-        for (Map<String, ? > item : data) {
+        Collection<Map<String, ?>> data = (Collection<Map<String, ?>>) groupTemplate.get(DATA_KEY);
+        for (Map<String, ?> item : data) {
             if (isSubsection(item)) {
                 formGroup.addElement(generateSubsection(item, customYesSelected, customNoSelected));
             } else if (isField(item)) {
@@ -193,7 +198,7 @@ public class PropertyDisplayer
         }
     }
 
-    private FormElement generateField(Map<String, ? > fieldTemplate, List<String> customYesSelected,
+    private FormElement generateField(Map<String, ?> fieldTemplate, List<String> customYesSelected,
         List<String> customNoSelected)
     {
         String id = (String) fieldTemplate.get(ID_KEY);

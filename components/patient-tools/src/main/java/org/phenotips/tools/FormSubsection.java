@@ -19,8 +19,9 @@
  */
 package org.phenotips.tools;
 
-import org.apache.commons.lang3.StringUtils;
 import org.xwiki.xml.XMLUtils;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class FormSubsection extends FormGroup
 {

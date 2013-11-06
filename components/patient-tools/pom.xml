@@ -89,6 +89,6 @@
   </dependencies>
   <properties>
     <checkstyle.skip>true</checkstyle.skip>
-    <coverage.instructionRatio>0.12</coverage.instructionRatio>
+    <coverage.instructionRatio>0.21</coverage.instructionRatio>
   </properties>
 </project>
