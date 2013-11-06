@@ -249,11 +249,12 @@ var DisorgerLegend = Class.create( {
         var pos = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
         var node = editor.getGraphicsSet().getPersonNodeNear(pos.x, pos.y);
         //console.log("Position x: " + pos.x + " position y: " + pos.y);
-        if (node && node.getType() == 'Person') {
+        if (node) {
             var disorderID = disorderLabel.id.substring( disorderLabel.id.indexOf('-') + 1);
             var currentDisorders = node.getDisorders();
-            if (currentDisorders.indexOf(disorderID) == -1) {   // only if th enode doe snot have this disorder yet
+            if (currentDisorders.indexOf(disorderID) == -1) {   // only if the node does not have this disorder yet
                 currentDisorders.push(disorderID);
+                editor.getGraphicsSet().unmarkAll();
                 var properties = { "setDisorders": currentDisorders };
                 var event = { "nodeID": node.getID(), "properties": properties };
                 document.fire("pedigree:node:setproperty", event);

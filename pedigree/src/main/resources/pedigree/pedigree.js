@@ -9,7 +9,7 @@
  */
 var PedigreeEditor = Class.create({
     initialize: function() {
-        this.DEBUG_MODE = false;
+        //this.DEBUG_MODE = true;
         window.editor = this;
                         
         // initialize main data structure which holds the graph structure        
@@ -18,6 +18,7 @@ var PedigreeEditor = Class.create({
         //initialize the elements of the app
         this._workspace = new Workspace();
         this._nodeMenu = this.generateNodeMenu();
+        this._nodeGroupMenu = this.generateNodeGroupMenu();
         this._partnershipMenu = this.generatePartnershipMenu();
         this._nodetypeSelectionBubble = new NodetypeSelectionBubble();
         this._disorderLegend = new DisorgerLegend();
@@ -181,8 +182,7 @@ var PedigreeEditor = Class.create({
      * @method generateNodeMenu
      * @return {NodeMenu}
      */
-    generateNodeMenu: function() {
-        console.log("generateNodeMenu");    	
+    generateNodeMenu: function() {    	
         var _this = this;
         return new NodeMenu([
             {
@@ -300,6 +300,82 @@ var PedigreeEditor = Class.create({
     },
 
     /**
+     * Creates the context menu for PersonGroup nodes
+     *
+     * @method generateNodeGroupMenu
+     * @return {NodeMenu}
+     */
+    generateNodeGroupMenu: function() {        
+        var _this = this;
+        return new NodeMenu([
+            {
+                'name' : 'identifier',
+                'label' : '',
+                'type'  : 'hidden'
+            },
+            {
+                'name' : 'gender',
+                'label' : 'Gender',
+                'type' : 'radio',
+                'values' : [
+                    { 'actual' : 'M', 'displayed' : 'Male' },
+                    { 'actual' : 'F', 'displayed' : 'Female' },
+                    { 'actual' : 'U', 'displayed' : 'Unknown' }
+                ],
+                'default' : 'U',
+                'function' : 'setGender'
+            },
+            {
+                'name' : 'comment',
+                'label': 'Comment',
+                'type' : 'text',
+                'function' : 'setFirstName'
+            },
+            {
+                'name' : 'numInGroup',
+                'label': 'Number of persons in this group',
+                'type' : 'select',
+                'values' : [{'actual': 1, displayed: 'N'}, {'actual': 2, displayed: '2'}, {'actual': 3, displayed: '3'},
+                            {'actual': 4, displayed: '4'}, {'actual': 5, displayed: '5'}, {'actual': 6, displayed: '6'},
+                            {'actual': 7, displayed: '7'}, {'actual': 8, displayed: '8'}, {'actual': 9, displayed: '9'}],                
+                'function' : 'setNumPersons'                
+            },            
+            {
+                'name' : 'disorders',
+                'label' : 'Known disorders common to all individuals in the group',
+                'type' : 'disease-picker',
+                'function' : 'setDisorders'
+            },
+            {
+                'name' : 'state',
+                'label' : 'All individuals in the group are',
+                'type' : 'radio',
+                'values' : [
+                    { 'actual' : 'alive', 'displayed' : 'Alive' },
+                    { 'actual' : 'deceased', 'displayed' : 'Deceased' },
+                    { 'actual' : 'aborted', 'displayed' : 'Aborted' }
+                ],
+                'default' : 'alive',
+                'function' : 'setLifeStatus'
+            },           
+            {
+                'name' : 'adopted',
+                'label' : 'Adopted',
+                'type' : 'checkbox',
+                'function' : 'setAdopted'
+            }
+        ]);
+    },
+
+    /**
+     * @method getNodeGroupMenu
+     * @return {NodeMenu} Context menu for nodes
+     */
+    getNodeGroupMenu: function() {
+        return this._nodeGroupMenu;
+    },
+    
+    /**
      * Creates the context menu for Partnership nodes
      *
      * @method generatePartnershipMenu
@@ -370,11 +446,13 @@ var editor;
 //attributes for graphical elements in the editor
 PedigreeEditor.attributes = {
     radius: 40,
+    groupNodesScale: 0.85,
     childlessLength: 10,
     twinCommonVerticalLength: 7,
     curvedLinesCornerRadius: 25,
     unbornShape: {'font-size': 50, 'font-family': 'Cambria'},
-    nodeShape: {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
+    nodeShape:     {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},    
+    nodeShapeDiag: {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
     boxOnHover : {fill: "gray", stroke: "none",opacity: 1, "fill-opacity":.25},
     menuBtnIcon : {fill: "#1F1F1F", stroke: "none"},
     deleteBtnIcon : {fill: "#990000", stroke: "none"},
@@ -384,8 +462,9 @@ PedigreeEditor.attributes = {
     orbHue : .53,
         phShape: {fill: "white","fill-opacity": 0, "stroke": 'black', "stroke-dasharray": "- "},
     dragMeLabel: {'font-size': 14, 'font-family': 'Tahoma'},
-    descendantGroupLabel: {'font-size': 20, 'font-family': 'Tahoma'},
+    descendantGroupLabel: {'font-size': 21, 'font-family': 'Tahoma'},
     label: {'font-size': 20, 'font-family': 'Arial'},
+    nameLabels: {'font-size': 20, 'font-family': 'Arial'},    
     disorderShapes: {},
     partnershipRadius: 6,
         partnershipLines :         {"stroke-width": 1.25, stroke : '#303058'},

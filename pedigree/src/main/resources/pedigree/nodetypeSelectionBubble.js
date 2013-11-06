@@ -44,20 +44,19 @@ var NodetypeSelectionBubble = Class.create({
             expandsTo: 'expandTwins'
         }, {
             type: "separator"
-        }, /*
-           // TODO: when person groups are supported
+        }, 
            {
             key: "m",
             type: "person",
             label: "Multiple",
             tip  : "Create a node representing multiple siblings",
             symbol: "〈n〉",
-            callback : "createChild",
-            params: { "group": this.numPersonGroupNodes },
+            callback : "CreateChild",
+            params: { "group": true },
             expandsTo: "expandPersonGroup"
         }, {
             type: "separator"
-        },*/ {
+        }, {
             key: "n",
             type: "marker",
             label: "No children",
@@ -99,8 +98,8 @@ var NodetypeSelectionBubble = Class.create({
     },
     
     resetParameters: function() {
-        this.numPersonGroupNodes = 1;
-        this.numTwinNodes = 2;        
+        this.numPersonsInGroup = 1;
+        this.numTwinNodes      = 2;        
     },
 
     /**
@@ -150,7 +149,9 @@ var NodetypeSelectionBubble = Class.create({
             if (data.params.twins) {
                 event["twins"] = this.numTwinNodes;
             }
-            if (data.params.group) {} // TODO                    
+            if (data.params.group) {
+                event["groupSize"] = this.numPersonsInGroup;
+            }                    
             document.fire("pedigree:person:newpartnerandchild", event);
         }
         else if (nodeType == "Partnership") {
@@ -158,7 +159,9 @@ var NodetypeSelectionBubble = Class.create({
             if (data.params.twins) {
                 event["twins"] = this.numTwinNodes;
             }                    
-            if (data.params.group) {} // TODO                    
+            if (data.params.group) {
+                event["groupSize"] = this.numPersonsInGroup;
+            }
             document.fire("pedigree:partnership:newchild", event);
         }           
         this.hide();
@@ -309,7 +312,7 @@ var NodetypeSelectionBubble = Class.create({
      * @private
      */
     _decrementNumNodes: function() {
-        return this.numPersonGroupNodes > 1 ? --this.numPersonGroupNodes : this.numPersonGroupNodes;
+        return this.numPersonsInGroup > 1 ? --this.numPersonsInGroup : this.numPersonsInGroup;
     },
 
     /**
@@ -320,7 +323,7 @@ var NodetypeSelectionBubble = Class.create({
      * @private
      */
     _incrementNumNodes: function() {
-        return this.numPersonGroupNodes < 9 ? ++this.numPersonGroupNodes : this.numPersonGroupNodes;
+        return this.numPersonsInGroup < 9 ? ++this.numPersonsInGroup : this.numPersonsInGroup;
     },
     
     /**
@@ -358,7 +361,7 @@ var NodetypeSelectionBubble = Class.create({
         //var icon = '<svg <desc>Number of children</desc><text x="250" y="150" font-family="Verdana" font-size="12" fill="blue" >n</text></svg>';
         var me = this;
         var generateIcon = function(){
-                var iconText = (me.numPersonGroupNodes > 1) ? String(me.numPersonGroupNodes) : "n";
+                var iconText = (me.numPersonsInGroup > 1) ? String(me.numPersonsInGroup) : "n";
                 return '<svg version="1.1" viewBox="0.0 0.0 100.0 100.0" width=50 height=50 fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><clipPath id="p.0"><path d="m0 0l960.0 0l0 720.0l-960.0 0l0 -720.0z" clip-rule="nonzero"></path></clipPath><g clip-path="url(#p.0)"><path fill="#000000" fill-opacity="0.0" d="m0 0l960.0 0l0 720.0l-960.0 0z" fill-rule="nonzero"></path><path fill="#cfe2f3" d="m1.2283465 49.97113l48.53543 -48.535435l48.53543 48.535435l-48.53543 48.53543z" fill-rule="nonzero"></path><path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m1.2283465 49.97113l48.53543 -48.535435l48.53543 48.535435l-48.53543 48.53543z" fill-rule="nonzero"></path><path fill="#000000" fill-opacity="0.0" d="m20.661417 22.068241l58.204727 0l0 48.000004l-58.204727 0z" fill-rule="nonzero"></path></g><desc>Number of children</desc><text x="35" y="60" font-family="Verdana" font-size="40" fill="black">'
                     + iconText + '</text></svg>';
 
@@ -375,7 +378,7 @@ var NodetypeSelectionBubble = Class.create({
         plusBtn.observe("click", function() { console.log("observePlus1"); me._incrementNumNodes(); svgContainer.update(generateIcon())});
         createBtn.observe("click", function() {
             console.log("observeCreate1");
-            //TODO: refer to the same code as in _createOption(), data.callback == "CreateChild" branch             
+            me.handleCreateAction(me.buttonsDefs[5]);             
         });
         this.expandedOptionsContainer.insert(minusBtn);
         this.expandedOptionsContainer.insert(svgContainer);

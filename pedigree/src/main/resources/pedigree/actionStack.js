@@ -105,7 +105,7 @@ var ActionStack = Class.create({
             console.log("combining state chnages");
             currentState.eventToGetToThisState = eventToGetToThisState;
             currentState.serializedState       = serializedState;
-            this._debug_print_states();
+            //this._debug_print_states();
             return;
         }
         

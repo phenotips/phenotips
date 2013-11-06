@@ -495,6 +495,9 @@
 .msdialog-box .content {
     text-align: center;
 }
+.no-mouse-interaction {
+    pointer-events: none;
+}
 
 /* TODO: add icons to each option type:
 .node-type-options .node-type-M {

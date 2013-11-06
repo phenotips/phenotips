@@ -15,11 +15,9 @@
 var PersonHoverbox = Class.create(AbstractHoverbox, {
 
     initialize: function($super, personNode, centerX, centerY, nodeShapes) {
-        var radius = PedigreeEditor.attributes.radius * 2;
+        var radius = PedigreeEditor.attributes.radius * 2;        
         $super(personNode, -radius, -radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);
         this._isMenuToggled = false;
-        //if (editor.getGraph().getParentRelationship(this.getNode().getID()) !== null)
-        //    this.hideParentHandle();
     },
 
     /**
@@ -28,11 +26,11 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method generateHandles
      * @return {Raphael.st} A set of handles
      */
-    generateHandles: function($super) {                  
-        this._upHandle    = this.generateHandle('parent',   this.getNodeX(), this.getNodeY() - (PedigreeEditor.attributes.radius * 1.6), "Click to create new nodes or drag to an existing node or relationship");
+    generateHandles: function($super) {
+        this._upHandle    = this.generateHandle('parent',   this.getNodeX(), this.getNodeY() - (PedigreeEditor.attributes.radius * 1.6), "Click to create new nodes or drag to an existing node or relationship");        
         this._downHandle  = this.generateHandle('child',    this.getNodeX(), this.getNodeY() + (PedigreeEditor.attributes.radius * 1.6), "Click to create a new child node or drag to an existing parentless node");
         this._rightHandle = this.generateHandle('partnerR', this.getNodeX() + (PedigreeEditor.attributes.radius * 1.6), this.getNodeY(), "Click to create a new partner node or drag to an existing node. Valid choices are highlighted in green");
-        this._leftHandle  = this.generateHandle('partnerL', this.getNodeX() - (PedigreeEditor.attributes.radius * 1.6), this.getNodeY(), "Click to create a new partner node or drag to an existing node. Valid choices are highlighted in green");
+        this._leftHandle  = this.generateHandle('partnerL', this.getNodeX() - (PedigreeEditor.attributes.radius * 1.6), this.getNodeY(), "Click to create a new partner node or drag to an existing node. Valid choices are highlighted in green");                       
         return $super().push(this._upHandle, this._downHandle, this._rightHandle, this._leftHandle);
     },
 
@@ -76,6 +74,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method hidePartnerHandles
      */
     hidePartnerHandles: function() {
+        if (!this._rightHandle || !this._leftHandle) return;
         this.getCurrentHandles().exclude(this._rightHandle.hide());
         this.getCurrentHandles().exclude(this._leftHandle.hide());
     },
@@ -86,6 +85,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method unhidePartnerHandles
      */
     unhidePartnerHandles: function() {
+        if (!this._rightHandle || !this._leftHandle) return;
         if(this.isHovered() || this.isMenuToggled()) {
             this._rightHandle.show();
             this._leftHandle.show();
@@ -100,6 +100,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method hideChildHandle
      */
     hideChildHandle: function() {
+        if (!this._downHandle) return;
         this.getCurrentHandles().exclude(this._downHandle.hide());
     },
 
@@ -109,6 +110,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method unhideChildHandle
      */
     unhideChildHandle: function() {
+        if (!this._downHandle) return;
         if(this.isHovered() || this.isMenuToggled()) {
             this._downHandle.show();
         }
@@ -121,8 +123,9 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method hideParentHandle
      */
     hideParentHandle: function() {
+        if (!this._upHandle) return;
         this.getCurrentHandles().exclude(this._upHandle.hide());
-        this._twinButton.show();
+        this._twinButton && this._twinButton.show();
     },
 
     /**
@@ -131,11 +134,12 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method unHideParentHandle
      */
     unHideParentHandle: function() {
+        if (!this._upHandle) return;
         if(this.isHovered() || this.isMenuToggled()) {
             this._upHandle.show();
         }
         (!this.getCurrentHandles().contains(this._upHandle)) && this.getCurrentHandles().push(this._upHandle);
-        this._twinButton.hide();        
+        this._twinButton && this._twinButton.hide();        
     },
 
     /**

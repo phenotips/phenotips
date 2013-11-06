@@ -32,6 +32,11 @@ PositionedGraph.prototype = {
         return this.DG.GG.getMaxRealVertexId();
     },
 
+    isPersonGroup: function( id )
+    {
+        return this.getProperties(id).hasOwnProperty("numPersons");
+    },
+    
     isPerson: function( id )
     {
         return this.DG.GG.isPerson(id);
@@ -290,6 +295,7 @@ PositionedGraph.prototype = {
         //console.log("Ancestors: " + stringifyObject(this.DG.ancestors));
         for (var i = 0; i <= this.DG.GG.getMaxRealVertexId(); i++) {
            if (!this.isRelationship(i) && !this.isPerson(i)) continue;
+           if (this.isPersonGroup(i)) continue;
            if (this.DG.ancestors[i].hasOwnProperty(v)) continue;
            result.push(i);
         }
@@ -1640,6 +1646,7 @@ PositionedGraph.prototype = {
 
          for (var i = 0; i <= this.DG.GG.getMaxRealVertexId(); i++) {
             if (!this.isPerson(i)) continue;
+            if (this.isPersonGroup(i)) continue;
             var gender = this.getProperties(i)["gender"].toLowerCase();
             //console.log("trying: " + i + ", gender: " + gender + ", validSet: " + stringifyObject(validGendersSet));
             if (arrayContains(validGendersSet, gender))

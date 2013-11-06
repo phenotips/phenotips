@@ -72,7 +72,7 @@ var GraphicsSet = Class.create({
         for (var nodeID in this._nodeMap) {
             if (this._nodeMap.hasOwnProperty(nodeID)) {
                 var node = this.getNode(nodeID);
-                if (node.getType() == "Person" && node.getGraphics().containsXY(x,y))
+                if ((node.getType() == "Person" || node.getType() == "PersonGroup") && node.getGraphics().containsXY(x,y))
                     return node;
             }
         }
@@ -306,6 +306,10 @@ var GraphicsSet = Class.create({
             console.log("-> add partnership");
             node = new Partnership(position.x, position.y, id);
         }
+        else if (positionedGraph.isPersonGroup(id)) {
+            console.log("-> add person group");
+            node = new PersonGroup(position.x, position.y, properties["gender"], id, properties["numPersons"]);
+        }        
         else if (positionedGraph.isPerson(id)) {
             console.log("-> add person");
             node = new Person(position.x, position.y, properties["gender"], id);

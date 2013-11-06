@@ -59,6 +59,13 @@ var AbstractPerson = Class.create(AbstractNode, {
     },
 
     /**
+     * @method isPersonGroup
+     */    
+    isPersonGroup: function() {
+        return (this._type == "PersonGroup");
+    },
+    
+    /**
      * Updates the gender of this node
      *
      * @method setGender

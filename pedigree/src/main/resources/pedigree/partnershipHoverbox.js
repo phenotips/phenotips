@@ -16,7 +16,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
 
     initialize: function($super, partnership, junctionX, junctionY, shapes) {
         var radius = PedigreeEditor.attributes.radius;        
-        $super(partnership, -radius/1.5, -radius/2, radius*(4/3), radius*1.7, junctionX, junctionY, shapes);
+        $super(partnership, -radius/1.5, -radius/1.5, radius*(4/3), radius*2.1, junctionX, junctionY, shapes);
         this._isMenuToggled = false;
     },
 
@@ -27,7 +27,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      * @return {Raphael.st} A set of handles
      */
     generateHandles: function($super) {
-        this._downHandle = this.generateHandle('child', this.getNodeX(), this.getNodeY() + (PedigreeEditor.attributes.radius *.8));
+        this._downHandle = this.generateHandle('child', this.getNodeX(), this.getNodeY() + (PedigreeEditor.attributes.radius *.9));
         return $super().push(this._downHandle);
     },
 

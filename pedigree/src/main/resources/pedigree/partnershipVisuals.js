@@ -422,20 +422,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      * @method drawLabels
      */
     drawLabels: function() {
-        // TODO
-        /*
-        var selectionOffset = (this.isSelected() && !this.getChildlessStatusLabel()) ? PedigreeEditor.attributes.radius/1.5 : 0;
-        var childlessOffset = (this.getChildlessStatusLabel()) ? PedigreeEditor.attributes.radius/2 : 0;
-        var startY = this.getY() + PedigreeEditor.attributes.radius * 1.7 + selectionOffset + childlessOffset;
-        
-        for (var i = 0; i < labels.length; i++) {
-            labels[i].attr("y", startY + 11);
-            labels[i].attr(PedigreeEditor.attributes.label);
-            labels[i].oy = (labels[i].attr("y") - selectionOffset);
-            startY = labels[i].getBBox().y2;
-        }
-        labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
-        */
+        // if need to add some - see PersonVisuals.drawLabels()
     }  
 });
 

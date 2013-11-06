@@ -18,7 +18,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     	
         this._radius = PedigreeEditor.attributes.radius;
         this._width  = PedigreeEditor.attributes.radius * 4;
-        
+                
         this._highlightBox   = null;        
         this._adoptedShape   = null;
         this._genderShape    = null;                        
@@ -29,6 +29,8 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         
         this.updateIDLabel();
         //console.log("abstract person visuals end");
+        
+        this._hoverBox = this.generateHoverbox(x, y);
     },
     
     updateIDLabel: function() {
@@ -36,6 +38,11 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         var y = this.getY();
         this._idLabel && this._idLabel.remove();
         this._idLabel = editor.getPaper().text(x, y,  editor.DEBUG_MODE ? this.getNode().getID() : "").attr(PedigreeEditor.attributes.dragMeLabel).insertAfter(this.getGenderGraphics().flatten());
+        this._idLabel.node.setAttribute("class", "no-mouse-interaction");
+    },
+    
+    generateHoverbox: function(x, y) {
+        return null;
     },
     
     /**
@@ -148,7 +155,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     containsXY: function(x,y) {
         if ( Math.abs(x - this.getX()) <= this._radius &&
              Math.abs(y - this.getY()) <= this._radius )
-            return true;                
+            return true;
         return false;
     },
     
@@ -249,11 +256,15 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      */
     setGenderGraphics: function() {
         this._genderGraphics && this._genderGraphics.remove();
+
+        this._shapeRadius = (this.getNode().getGender() == 'U') ? PedigreeEditor.attributes.radius * 1.1 / Math.sqrt(2) : PedigreeEditor.attributes.radius;            
+        if (this.getNode().isPersonGroup())
+            this._shapeRadius *= PedigreeEditor.attributes.groupNodesScale;            
         
-        var shape,
-            x = this.getX(),
-            y = this.getY(),
-            radius = this._radius = (this.getNode().getGender() == 'U') ? PedigreeEditor.attributes.radius * (Math.sqrt(3)/2) : PedigreeEditor.attributes.radius;
+        var shape;
+        var x      = this.getX(),
+            y      = this.getY(),
+            radius = this._shapeRadius;        
 
         if (this.getNode().getGender() == 'F') {
             shape = editor.getPaper().circle(x, y, radius);
@@ -264,15 +275,22 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
             //if (this.getNode().getGender() == 'M') {
             //    shape.node.setAttribute("shape-rendering","crispEdges");
             //}
+        }        
+                
+        if (this.getNode().getGender() == 'U') {
+            shape.attr(PedigreeEditor.attributes.nodeShapeDiag);
+            shape.attr({transform: "...R45"});            
+        } else {
+            shape.attr(PedigreeEditor.attributes.nodeShape);
         }
-        shape.attr(PedigreeEditor.attributes.nodeShape);
-        shape = (this.getNode().getGender() == 'U') ? shape.transform("...r45") : shape;
-        this._genderShape = shape;
-
+        
         //var shadow = shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3);
         var shadow = shape.clone().attr({stroke: 'none', fill: 'gray', opacity: .3});
         shadow.translate(3,3);
         shadow.insertBefore(shape);
+        
+        this._genderShape = shape;
+
         
         this._genderGraphics = editor.getPaper().set(shadow, shape);
     },
