@@ -71,4 +71,15 @@ public class CustomConfigurationTest
         CustomConfiguration result = new CustomConfiguration(o);
         Assert.assertSame(fields, result.getFieldsOverride());
     }
+
+    /** {@link CustomConfiguration#getPhenotypeMapping()} returns the list specified in the object. */
+    @Test
+    public void getPhenotypeMapping() throws ComponentLookupException, XWikiException
+    {
+        BaseObject o = mock(BaseObject.class);
+        when(o.getStringValue("mapping")).thenReturn("PhenoTips.XPhenotypeMapping");
+
+        CustomConfiguration result = new CustomConfiguration(o);
+        Assert.assertEquals("PhenoTips.XPhenotypeMapping", result.getPhenotypeMapping());
+    }
 }

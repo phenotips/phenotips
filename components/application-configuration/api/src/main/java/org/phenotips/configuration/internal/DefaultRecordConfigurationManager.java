@@ -19,6 +19,7 @@
  */
 package org.phenotips.configuration.internal;
 
+import org.phenotips.Constants;
 import org.phenotips.configuration.RecordConfiguration;
 import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.configuration.internal.configured.ConfiguredRecordConfiguration;
@@ -27,8 +28,12 @@ import org.phenotips.configuration.internal.global.GlobalRecordConfiguration;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.uiextension.UIExtensionFilter;
 import org.xwiki.uiextension.UIExtensionManager;
 import org.xwiki.users.UserManager;
@@ -39,6 +44,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
@@ -55,6 +61,10 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class DefaultRecordConfigurationManager implements RecordConfigurationManager
 {
+    /** Reference to the xclass which allows to bind a specific form customization to a patient record. */
+    public static final EntityReference CUSTOMIZATION_BINDING_CLASS_REFERENCE = new EntityReference(
+        "FormCustomizationBindingClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
     /** Logging helper. */
     @Inject
     private Logger logger;
@@ -80,9 +90,27 @@ public class DefaultRecordConfigurationManager implements RecordConfigurationMan
     @Inject
     private UserManager userManager;
 
+    /** Provides access to the data. */
+    @Inject
+    private DocumentAccessBridge dab;
+
+    /** Completes xclass references with the current wiki. */
+    @Inject
+    @Named("current")
+    private DocumentReferenceResolver<EntityReference> resolver;
+
+    /** Parses serialized document references into proper references. */
+    @Inject
+    @Named("current")
+    private DocumentReferenceResolver<String> referenceParser;
+
     @Override
     public RecordConfiguration getActiveConfiguration()
     {
+        RecordConfiguration boundConfig = getBoundConfiguration();
+        if (boundConfig != null) {
+            return boundConfig;
+        }
         Group configurationGroup = findConfigurationGroup();
         if (configurationGroup != null) {
             try {
@@ -98,6 +126,32 @@ public class DefaultRecordConfigurationManager implements RecordConfigurationMan
             }
         }
         return new GlobalRecordConfiguration(this.execution, this.uixManager, this.orderFilter);
+    }
+
+    /**
+     * If the current document is a patient record, and it has a valid specific form configuration binding specified,
+     * then return that configuration.
+     * 
+     * @return a form configuration, if one is bound to the current document, or {@code null} otherwise
+     */
+    private RecordConfiguration getBoundConfiguration()
+    {
+        String boundConfig = (String) this.dab.getProperty(this.dab.getCurrentDocumentReference(),
+            this.resolver.resolve(CUSTOMIZATION_BINDING_CLASS_REFERENCE), "configReference");
+        if (StringUtils.isNotBlank(boundConfig)) {
+            try {
+                XWikiContext context = getXContext();
+                XWikiDocument doc = context.getWiki().getDocument(this.referenceParser.resolve(boundConfig), context);
+                CustomConfiguration configuration =
+                    new CustomConfiguration(doc.getXObject(RecordConfiguration.CUSTOM_PREFERENCES_CLASS));
+                return new ConfiguredRecordConfiguration(configuration, this.execution, this.uixManager,
+                    this.orderFilter);
+            } catch (Exception ex) {
+                this.logger.warn("Failed to read the bound configuration [{}] for [{}]: {}",
+                    boundConfig, this.dab.getCurrentDocumentReference(), ex.getMessage());
+            }
+        }
+        return null;
     }
 
     /**

@@ -19,13 +19,17 @@
  */
 package org.phenotips.configuration.internal.global;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.configuration.RecordConfiguration;
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
 import org.phenotips.data.Patient;
 
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.uiextension.UIExtension;
 import org.xwiki.uiextension.UIExtensionFilter;
@@ -137,16 +141,30 @@ public class GlobalRecordConfiguration implements RecordConfiguration
     }
 
     @Override
+    public DocumentReference getPhenotypeMapping()
+    {
+        try {
+            String mapping = "PhenoTips.PhenotypeMapping";
+            BaseObject settings = getGlobalConfigurationObject();
+            mapping = StringUtils.defaultIfBlank(settings.getStringValue("phenotypeMapping"), mapping);
+            DocumentReferenceResolver<String> resolver = ComponentManagerRegistry.getContextComponentManager()
+                .getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+            return resolver.resolve(mapping);
+        } catch (NullPointerException ex) {
+            // No value set, return the default
+        } catch (ComponentLookupException e) {
+            // Shouldn't happen, base components must be available
+        }
+        return null;
+    }
+
+    @Override
     public String getDateOfBirthFormat()
     {
-        XWikiContext context = getXContext();
         String result = "dd/MM/yyyy";
         try {
-            BaseObject settings =
-                context.getWiki().getDocument(PREFERENCES_LOCATION, context).getXObject(GLOBAL_PREFERENCES_CLASS);
+            BaseObject settings = getGlobalConfigurationObject();
             result = StringUtils.defaultIfBlank(settings.getStringValue("dateOfBirthFormat"), result);
-        } catch (XWikiException ex) {
-            this.logger.warn("Failed to read preferences: {}", ex.getMessage());
         } catch (NullPointerException ex) {
             // No value set, return the default
         }
@@ -167,5 +185,16 @@ public class GlobalRecordConfiguration implements RecordConfiguration
     private XWikiContext getXContext()
     {
         return (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
+    }
+
+    private BaseObject getGlobalConfigurationObject()
+    {
+        try {
+            XWikiContext context = getXContext();
+            return context.getWiki().getDocument(PREFERENCES_LOCATION, context).getXObject(GLOBAL_PREFERENCES_CLASS);
+        } catch (XWikiException ex) {
+            this.logger.warn("Failed to read preferences: {}", ex.getMessage());
+        }
+        return null;
     }
 }
