@@ -160,7 +160,7 @@ aUMtbJAu0bykQcJQIBEodaqI9bEjCRrGBYc0gdOGjRo0ZzAbFDKjdGkZQRqqLhgQADs=
   <attachment>
     <filename>check-s-gray.png</filename>
     <filesize>372</filesize>
-    <author>XWiki.Admin</author>
+    <author>xwiki:XWiki.Admin</author>
     <date>1358884707000</date>
     <version>1.1</version>
     <comment/>
@@ -292,7 +292,7 @@ NvdC1Fq2Gj5FnmSEMQthbo40djMHQviZT4YQj63IMQdDQOYpfEXUV0AdQupnSF1E1FVM/RnNNBph
   <attachment>
     <filename>edit-s-gray.png</filename>
     <filesize>381</filesize>
-    <author>XWiki.Admin</author>
+    <author>xwiki:XWiki.Admin</author>
     <date>1358882861000</date>
     <version>1.1</version>
     <comment/>
@@ -370,7 +370,7 @@ U8wbudQAAAAASUVORK5CYII=
   <attachment>
     <filename>editinline.vm</filename>
     <filesize>4384</filesize>
-    <author>XWiki.Admin</author>
+    <author>xwiki:XWiki.Admin</author>
     <date>1378847911000</date>
     <version>1.1</version>
     <comment/>
@@ -478,7 +478,7 @@ E2LzAAAAAElFTkSuQmCC
   <attachment>
     <filename>head-icon-s.png</filename>
     <filesize>235</filesize>
-    <author>XWiki.Admin</author>
+    <author>xwiki:XWiki.Admin</author>
     <date>1363902620000</date>
     <version>1.1</version>
     <comment/>
@@ -520,7 +520,7 @@ TkSuQmCC
   <attachment>
     <filename>layoutExtraVars.vm</filename>
     <filesize>444</filesize>
-    <author>XWiki.Admin</author>
+    <author>xwiki:XWiki.Admin</author>
     <date>1378848245000</date>
     <version>1.1</version>
     <comment/>
@@ -537,7 +537,7 @@ ZW51ID0gZmFsc2UpCiNzZXQgKCRkaXNwbGF5U2hvcnRjdXRzID0gZmFsc2Up
   <attachment>
     <filename>logo.png</filename>
     <filesize>1782</filesize>
-    <author>XWiki.Admin</author>
+    <author>xwiki:XWiki.Admin</author>
     <date>1368557198000</date>
     <version>1.1</version>
     <comment/>
@@ -611,7 +611,7 @@ t7aX5VejAAAAAElFTkSuQmCC
   <attachment>
     <filename>ratios-icon-s.png</filename>
     <filesize>549</filesize>
-    <author>XWiki.Admin</author>
+    <author>xwiki:XWiki.Admin</author>
     <date>1363905937000</date>
     <version>1.1</version>
     <comment/>
