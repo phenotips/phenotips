@@ -869,11 +869,16 @@ TXVppcEAAAAASUVORK5CYII=
   width: 20em;
 }
 #phenotips-globalTools label {
+  margin-left: 2em;
+}
+
+#phenotips-globalTools label, #phenotips-globalTools input[type="submit"], #create-patient-record {
+  background: transparent;
+  border: 0 none;
   color: $theme.menuLinkColor;
   cursor: pointer;
   display: inline-block;
   font: 700 0.8em/1.8em sans-serif;
-  margin-left: 2em;
   padding: 2px;
   text-transform: uppercase;
   white-space: nowrap;

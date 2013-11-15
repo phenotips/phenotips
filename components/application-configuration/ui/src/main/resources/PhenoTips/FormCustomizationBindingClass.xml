@@ -193,14 +193,13 @@
         },
         onSuccess : function(response) {
            templateSelectionContainer.update(response.responseText);
-           
         },
         onFailure : function(response) {
           var failureReason = response.responseText || response.statusText;
           if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
              failureReason = 'Server not responding';
           }
-          _this._messages.update(new Element('div', {'class' : 'errormessage'}).update('Failed to retrieve contact dialog. ' + failureReason));
+          _this._messages.update(new Element('div', {'class' : 'errormessage'}).update('Failed to retrieve the list of available configurations. ' + failureReason));
         },
         on0 : function (response) {
           response.request.options.onFailure(response);
@@ -461,8 +460,8 @@ value=PhenoTips.FormCustomizationBindingSheet</parameters>
       #end
     #end
     [[${configTitle}&gt;&gt;${value}]]
-#end    
   #end
+#end
 #end
 {{/html}}{{/velocity}}
 </content>

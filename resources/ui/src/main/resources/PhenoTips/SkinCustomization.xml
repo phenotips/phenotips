@@ -445,20 +445,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
       &lt;/form&gt;
       #end
     &lt;/div&gt;
-    &lt;div class="topmenuentry add"&gt;
-      #if($hasCreatePage)
-      &lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
-        &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-        &lt;input type="hidden" name="doCreate" value="1" /&gt;
-        &lt;input type="hidden" name="className" value="$patientClassName" /&gt;
-        &lt;input type="hidden" name="classTemplate" value="$!{config.getProperty('patientTemplate').value}" /&gt;
-        &lt;input type="hidden" name="idField" value="$!{config.getProperty('idField').value}" /&gt;
-        &lt;input type="hidden" name="idPrefix" value="$!{config.getProperty('idPrefix').value}" /&gt;
-        &lt;input type="hidden" name="space" value="$!{doc.space}" /&gt;
-        &lt;label for="create-patient-record"&gt;&lt;span class="icon-plus-sign"&gt; &lt;/span&gt;New patient record&lt;/label&gt;&lt;input type="submit" class="hidden" id="create-patient-record" title="Add new patient record" value="New patient record"/&gt;
-      &lt;/div&gt;&lt;/form&gt;
-      #end
-    &lt;/div&gt;
+    &lt;div class="topmenuentry add"&gt;{{/html}}{{include reference="PhenoTips.CreatePatientRecordForm" /}}{{html clean=false}}&lt;/div&gt;
   &lt;/div&gt;
   &lt;div class="breadcrumbs leftmenu"&gt;
     &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;&lt;span class="icon-home icon-large"&gt;&lt;/span&gt;&lt;/a&gt; &amp;raquo;
