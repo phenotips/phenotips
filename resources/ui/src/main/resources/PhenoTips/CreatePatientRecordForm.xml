@@ -49,6 +49,19 @@ $xwiki.ssx.use('PhenoTips.FormCustomizationBindingClass')##
   &lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
     &lt;input type="hidden" name="doCreate" value="1" /&gt;
+    ##
+    ## Is there more than one sheet option?
+    ## Check out all the groups this user is part of
+    #set ($groups = $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
+    #set ($phgroups = [])
+    #foreach ($group in $groups)
+      #if ($group.getObject('PhenoTips.PhenoTipsGroupClass') &amp;&amp; $group.getObject('PhenoTips.FormCustomizationClass') &amp;&amp; !$group.getObject('PhenoTips.FormCustomizationClass').getProperty('fields').value.isEmpty())
+        #set ($discard = $phgroups.add($group))
+      #end
+    #end
+    #if ($phgroups.size() &gt; 0)
+      &lt;input type="hidden" name="sheet" value="PhenoTips.FormCustomizationBindingSheet" /&gt;
+    #end
     ## Extensions displayed before the content
     #foreach ($e in $services.uix.getExtensions('org.phenotips.newPatientForm'))
       &lt;input type="hidden" name="$!e.parameters.name" value="$!e.parameters.value" /&gt;
