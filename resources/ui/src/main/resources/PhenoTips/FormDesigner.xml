@@ -119,7 +119,7 @@
     <className>XWiki.JavaScriptExtension</className>
     <guid>f932f5b4-9eb5-4334-9fdf-d92946a5d6c5</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>var PhenoTips = (function (PhenoTips) {
@@ -533,7 +533,7 @@ document.observe("xwiki:dom:loaded", function(){
     <className>XWiki.StyleSheetExtension</className>
     <guid>8d49282c-87bb-4a60-a5ea-83a25d3c87fc</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>#template("colorThemeInit.vm")
