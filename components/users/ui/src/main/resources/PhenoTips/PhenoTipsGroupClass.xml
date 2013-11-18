@@ -369,7 +369,7 @@
   border-bottom: 0 none;
 }
 
-#groups-directory .members {
+#groups-directory .members, #groups-directory .patients {
   font-size: .8em;
   font-style: italic;
   opacity: .5;
@@ -548,7 +548,8 @@
 #set ($groupsHome = 'Groups.WebHome')
 #set ($orders = {
   'name' : 'asc',
-  'members' : 'desc'
+  'members' : 'desc',
+  'cases' : 'desc'
 })
 #set ($defaultOrder = 'name')
 #set ($order = "$!xcontext.macro.params.orderby")
@@ -571,7 +572,8 @@
       'doc.fullName' : $groupDoc.fullName,
       'name' : $groupDoc.title,
       'logo' : "$!groupObj.getProperty('image').value",
-      'members' : $mathtool.sub($memberObjs.size(), $phantomMemberObjs.size())
+      'members' : $mathtool.sub($memberObjs.size(), $phantomMemberObjs.size()),
+      'cases' : $services.query.xwql('from doc.object(PhenoTips.PatientClass) as p, doc.object(PhenoTips.OwnerClass) as o where o.owner = :grp').bindValue('grp', $groupDoc.documentReference.toString()).count()
   }))
   #end
 #set ($groupSortedData = $sorttool.sort($groupData, ["${order}:${orders.get($order)}"]))
@@ -587,15 +589,21 @@ $xwiki.jsx.use($groupClassName, {'minify' : false})
 
 {{velocity}}
 (% id="groups-directory" %)
+#if ($groupSortedData.size() == 0)
+
+{{info}}No groups have been defined yet.#if($hasAdmin &amp;&amp; !($xcontext.macro.params.tools == 'true')) [[Manage groups »&gt;&gt;${groupsHome}]]#end{{/info}}
+
+#else
 #foreach ($groupDatum in $groupSortedData)#if ($foreach.index &lt; $max)
 |(% class="logo" %) #if ("$!{groupDatum.get('logo')}" != '')[[[[image:${groupDatum.get('doc.fullName')}@${groupDatum.get('logo')}|| width="160px"]]&gt;&gt;$groupDatum.get('doc.fullName')]]#end ##
-|(% class="name" %) [[$groupDatum.get('name')&gt;&gt;$groupDatum.get('doc.fullName')]] \\(% class="members"%)$groupDatum.get('members') member#if($groupDatum.get('members') != 1)s#end(%%)##
+|(% class="name" %) [[$groupDatum.get('name')&gt;&gt;$groupDatum.get('doc.fullName')]] \\(% class="members"%)$groupDatum.get('members') member#if($groupDatum.get('members') != 1)s#end(%%) \\(% class="patients"%)$groupDatum.get('cases') case#if($groupDatum.get('cases') != 1)s#end(%%) ##
 #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{groupDatum.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($groupDatum.get('doc').display('description'))))#end#end
 #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##
   [[{{icon name="pencil" title="Edit this group"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'edit')||class="tool edit"]] ##
   [[{{icon name="remove" title="Delete this group"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'delete')||class="tool delete"]] ##
 )))#end\\
 #end#end
+#end
 #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)
 
 {{html}}
@@ -612,10 +620,6 @@ $xwiki.jsx.use($groupClassName, {'minify' : false})
 
 {{error}}$errorMessage{{/error}}
 #end
-#end
-#if ($xcontext.macro.params.fullinfo != 'true')
-
-(% id="groups-tools" %)((([[Read more »&gt;&gt;$groupsHome|| class="tool read-more"]])))
 #end
 {{/velocity}}</code>
     </property>

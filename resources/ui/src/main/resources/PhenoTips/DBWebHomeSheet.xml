@@ -935,7 +935,6 @@ $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
 $xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
 $xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
 $xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
-$xwiki.ssx.use('PhenoTips.DBWebHomeSheet')##
 $xwiki.ssx.use('PhenoTips.DatabaseFilters')##
 $xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('PhenoTips.DBWebHomeSheet')##
