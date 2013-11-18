@@ -85,9 +85,9 @@ START_OPTS="$START_OPTS -Djetty.port=$JETTY_PORT"
 START_OPTS="$START_OPTS -Djetty.home=$JETTY_HOME"
 
 # Specify port and key to stop a running Jetty instance
-START_OPTS="$START_OPTS -DSTOP.KEY=solrjettystop -DSTOP.PORT=$JETTY_STOPPORT"
+START_OPTS="$START_OPTS -DSTOP.KEY=phenotipsstop -DSTOP.PORT=$JETTY_STOPPORT"
 
-# Specify the encoding to use
+# Force UTF8 as the global JVM encoding
 START_OPTS="$START_OPTS -Dfile.encoding=UTF8"
 
 # Path to the solr configuration
