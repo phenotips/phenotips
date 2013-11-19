@@ -1247,19 +1247,19 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
       <panelCollapsedBackgroundColor>#E1E1E1</panelCollapsedBackgroundColor>
     </property>
     <property>
-      <panelCollapsedGradientColor/>
+      <panelCollapsedGradientColor>#FFFFFF</panelCollapsedGradientColor>
     </property>
     <property>
       <panelCollapsedTextColor>#16620F</panelCollapsedTextColor>
     </property>
     <property>
-      <panelHeaderBackgroundColor>#16620F</panelHeaderBackgroundColor>
+      <panelHeaderBackgroundColor>#E1E1E1</panelHeaderBackgroundColor>
     </property>
     <property>
-      <panelHeaderGradientColor/>
+      <panelHeaderGradientColor>#FFFFFF</panelHeaderGradientColor>
     </property>
     <property>
-      <panelHeaderTextColor>#FFFFFF</panelHeaderTextColor>
+      <panelHeaderTextColor>#4D5860</panelHeaderTextColor>
     </property>
     <property>
       <panelTextColor>#636B75</panelTextColor>
