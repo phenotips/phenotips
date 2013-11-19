@@ -65,24 +65,30 @@
 
 #macro (__displayIfNotEmpty $propName)
   #if ($xcontext.action == 'edit' || ($doc.display($propName) != ''))
-    #__label($propName '')
-    #__display($propName)
+    (% class="fieldset ${propName} %)(((
+      #__label($propName 'section group-title' '')
+      #__display($propName)
+    )))
   #end
 #end
 
 #macro (__displayIfTrue $propName $withLabel)
   #if ($xcontext.action == 'edit' || $obj.getProperty($propertyName).value == 1)
-    #if ($withLabel)
-      #__label($propName '')
-    #end
-    #__display($propName)
+    (% class="fieldset ${propName} %)(((
+      #if ($withLabel)
+        #__label($propName '')
+      #end
+      #__display($propName)
+    )))
   #end
 #end
 
 #macro (__displayIfNotUnknown $propName)
   #if ($xcontext.action == 'edit' || "$!obj.getProperty($propertyName).value" != 'Unknown')
-    #__label($propName '')
-    #__display($propName)
+    (% class="fieldset ${propName} %)(((
+      #__label($propName '')
+      #__display($propName)
+    )))
   #end
 #end
 

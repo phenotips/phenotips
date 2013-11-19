@@ -4083,20 +4083,16 @@ label.selected input[type="checkbox"] {
 }
 /** ----------------------------------------------------------- */
 /** Patient info zone **/
-.patient-info .fieldset {
-  margin: .3em 0 !important;
+.clinical-info .fieldset {
+  margin: 1em 0 !important;
 }
-.editbody .patient-info .family_study {
+.editbody .family_study {
   margin-top: 1.2em ! important;
 }
-.patient-info .side {
+.clinical-info .side {
   padding-top: .3em;
 }
-.editbody .patient-info label.section {
-  font-weight: bold;
-}
-.viewbody .patient-info .label, .viewbody .patient-info label {
-  color: $theme.linkColor;
+.viewbody .clinical-info .label, .viewbody .clinical-info label {
   font-weight: bold;
   display: inline-block;
   width: 33%;
@@ -4203,6 +4199,10 @@ label.selected input[type="checkbox"] {
 /** edit mode **/
 .editbody .clinical-info label.section {
   line-height: 1.4em;
+  font-weight: bold;
+}
+.editbody .clinical-info .predefined-entries label.section {
+  font-weight: normal;
 }
 .editbody .clinical-info .phenotypes-main label.section:before {
   content: "\25bc";
