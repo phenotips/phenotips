@@ -235,9 +235,6 @@ $!value
       <enableImperialUnitSystem>0</enableImperialUnitSystem>
     </property>
     <property>
-      <idPrefix>P</idPrefix>
-    </property>
-    <property>
       <livetableColumns>
         <value>doc.name</value>
         <value>doc.creator</value>
@@ -256,12 +253,6 @@ $!value
     </property>
     <property>
       <measurementUnitSystem>metric</measurementUnitSystem>
-    </property>
-    <property>
-      <patientClass>PhenoTips.PatientClass</patientClass>
-    </property>
-    <property>
-      <patientTemplate>PhenoTips.PatientTemplate</patientTemplate>
     </property>
     <property>
       <phenotypeMapping>PhenoTips.FPhenotypeMapping</phenotypeMapping>
@@ -2155,8 +2146,8 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('XWiki.DateTimePicker')##
 #set ($config = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))
-#set ($patientClassName = "$!{config.getProperty('patientClass').value}")
-#if ($config &amp;&amp; $patientClassName != '')
+#set ($patientClassName = 'PhenoTips.PatientClass')
+#if ($config)
 #set ($columns = ['external_id', 'doc.creator', 'doc.creationDate', '_actions'])
 #set ($columnsProperties = {
   '_actions' : {'actions': ['edit', 'delete']}
@@ -2283,8 +2274,8 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('XWiki.DateTimePicker')##
 #set ($config = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))
-#set ($patientClassName = "$!{config.getProperty('patientClass').value}")
-#if ($config &amp;&amp; $patientClassName != '')
+#set ($patientClassName = 'PhenoTips.PatientClass')
+#if ($config)
 #set ($columns = ['external_id', 'doc.creator', 'doc.creationDate', '_actions'])
 #set ($columnsProperties = {
   '_actions' : {'actions': ['edit', 'delete']}

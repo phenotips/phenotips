@@ -100,6 +100,6 @@
 //Select the fields that will be displayed in this section: //
 #end
 
-{{html wiki=false clean=false}}#__xclass__displayFieldList($object.getProperty('patientClass').value "$prefix$name" $displayType $value){{/html}}
+{{html wiki=false clean=false}}#__xclass__displayFieldList('PhenoTips.PatientClass' "$prefix$name" $displayType $value){{/html}}
 {{/velocity}}</content>
 </xwikidoc>

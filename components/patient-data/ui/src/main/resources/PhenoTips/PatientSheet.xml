@@ -61,7 +61,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 ##
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
 #if ($config)
-#set($obj = $doc.getObject("$!{config.getProperty('patientClass').value}"))
+#set($obj = $doc.getObject('PhenoTips.PatientClass'))
 #set($class = $obj.xWikiClass)
 #set($discard = $doc.use($obj))
 #end

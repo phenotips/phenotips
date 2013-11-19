@@ -58,8 +58,8 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('XWiki.DateTimePicker')##
 #set ($config = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))
-#set ($patientClassName = "$!{config.getProperty('patientClass').value}")
-#if ($config &amp;&amp; $patientClassName != '')
+#set ($patientClassName = 'PhenoTips.PatientClass')
+#if ($config)
 #set ($configuredColumns = $config.getProperty('livetableColumns').value)
 #if (!$configuredColumns &amp;&amp; !($configuredColumns.length &gt; 0))
   #set ($configuredColumns = 'doc.name')

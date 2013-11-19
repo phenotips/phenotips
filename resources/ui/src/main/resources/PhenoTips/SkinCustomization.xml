@@ -427,13 +427,8 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
     <className>XWiki.UIExtensionClass</className>
     <guid>e90fed84-04a2-48f8-bbae-c6f2b1ad8a60</guid>
     <property>
-      <content>{{velocity output=false}}
+      <content>{{velocity}}{{html clean=false}}
 $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
-#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#set($patientClassName = "$!{config.getProperty('patientClass').value}")
-{{/velocity}}
-
-{{velocity}}{{html clean=false}}
 &lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
   &lt;div class="rightmenu"&gt;
     &lt;div class="topmenuentry search"&gt;
@@ -1219,13 +1214,8 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
     <className>XWiki.UIExtensionClass</className>
     <guid>885cbc76-bfb3-4756-9671-a2f718b814fe</guid>
     <property>
-      <content>{{velocity output=false}}
+      <content>{{velocity}}{{html clean=false}}
 $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
-#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#set($patientClassName = "$!{config.getProperty('patientClass').value}")
-{{/velocity}}
-
-{{velocity}}{{html clean=false}}
 &lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
   &lt;div class="rightmenu"&gt;
   &lt;/div&gt;
@@ -1453,13 +1443,8 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
     <className>XWiki.UIExtensionClass</className>
     <guid>625ee288-0cf6-4dd3-b094-ed6f1aea6987</guid>
     <property>
-      <content>{{velocity output=false}}
+      <content>{{velocity}}{{html clean=false}}
 $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
-#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#set($patientClassName = "$!{config.getProperty('patientClass').value}")
-{{/velocity}}
-
-{{velocity}}{{html clean=false}}
 &lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
   &lt;div class="rightmenu"&gt;
   &lt;/div&gt;
