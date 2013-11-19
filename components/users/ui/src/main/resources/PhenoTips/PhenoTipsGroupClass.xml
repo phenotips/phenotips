@@ -781,17 +781,24 @@
 #set ($groupDocs = $xwiki.wrapDocs($query.execute()))
 
 #set ($groupData = [])
+#set ($defaultLogo = "$groupTemplateName@$!{xwiki.getDocument($groupTemplateName).getObject($groupClassName).getProperty('image').value}")
 
 #foreach ($groupDoc in $groupDocs)
   #set ($groupObj = $groupDoc.getObject($groupClassName))
   #set ($memberObjs = $groupDoc.getObjects('XWiki.XWikiGroups'))
   #set ($phantomMemberObjs = $groupDoc.getObjects('XWiki.XWikiGroups', 'member', ''))
+  #set ($logo = "$!groupObj.getProperty('image').value")
+  #if ("$!logo" != '')
+    #set ($logo = "${groupDoc.fullName}@${logo}")
+  #else
+    #set ($logo = $defaultLogo)
+  #end
   #set ($discard = $groupData.add({
       'doc' : $groupDoc,
       'obj' : $groupObj,
       'doc.fullName' : $groupDoc.fullName,
       'name' : $groupDoc.title,
-      'logo' : "$!groupObj.getProperty('image').value",
+      'logo' : $logo,
       'members' : $mathtool.sub($memberObjs.size(), $phantomMemberObjs.size()),
       'cases' : $services.query.xwql('from doc.object(PhenoTips.PatientClass) as p, doc.object(PhenoTips.OwnerClass) as o where o.owner = :grp').bindValue('grp', $groupDoc.documentReference.toString()).count()
   }))
@@ -815,7 +822,7 @@ $xwiki.jsx.use($groupClassName, {'minify' : false})
 
 #else
 #foreach ($groupDatum in $groupSortedData)#if ($foreach.index &lt; $max)
-|(% class="logo" %) #if ("$!{groupDatum.get('logo')}" != '')[[[[image:${groupDatum.get('doc.fullName')}@${groupDatum.get('logo')}|| width="160px"]]&gt;&gt;$groupDatum.get('doc.fullName')]]#end ##
+|(% class="logo" %) #if ("$!{groupDatum.get('logo')}" != '')[[[[image:${groupDatum.get('logo')}|| width="80px"]]&gt;&gt;$groupDatum.get('doc.fullName')]]#end ##
 |(% class="name" %) [[$groupDatum.get('name')&gt;&gt;$groupDatum.get('doc.fullName')]] \\(% class="members"%)$groupDatum.get('members') member#if($groupDatum.get('members') != 1)s#end(%%) \\(% class="patients"%)$groupDatum.get('cases') case#if($groupDatum.get('cases') != 1)s#end(%%) ##
 #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{groupDatum.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($groupDatum.get('doc').display('description'))))#end#end
 #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##
