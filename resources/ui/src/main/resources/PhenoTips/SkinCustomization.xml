@@ -246,7 +246,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 ##
 #set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
 #if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
-  #set ($adminspaceaction = $!xwiki.getURL("${doc.space}.WebPreferences", 'admin'))
+  #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
   #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'icon-cogs')
 #end
 &lt;/div&gt;
@@ -1129,7 +1129,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 ##
 #set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
 #if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
-  #set ($adminspaceaction = $!xwiki.getURL("${doc.space}.WebPreferences", 'admin'))
+  #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
   #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'icon-cogs')
 #end
 &lt;/div&gt;
@@ -1363,7 +1363,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 ##
 #set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
 #if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
-  #set ($adminspaceaction = $!xwiki.getURL("${doc.space}.WebPreferences", 'admin'))
+  #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
   #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'icon-cogs')
 #end
 &lt;/div&gt;

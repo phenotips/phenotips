@@ -49,39 +49,6 @@
 
 
 #*
- * Any documents which are on the provided list ($documentNames) which are locked by the current user will be unlocked.
- * If this macro has programming rights, then they are unlocked programmatically, otherwise a javascript tag is
- * generated with ajax calls to cancel for all of the documents. If there are documents on this list which are not
- * locked by the current user, then they are ignored.
- *
- * @param $documentNames - List&lt;String&gt; - fullNames of documents which should be unlocked if they are locked by the
- *                                        current user.
- *###
-#macro(unlockDocuments $documentNames)
-  #if($documentNames.size() &gt; 0)
-    #set($sql = "doc.fullName=")
-    #foreach($documentName in $documentNames)
-      #set($sql = "${sql}'$documentName' or doc.fullName=")
-    #end
-    ## Trim the dangling ' or doc.fullName=?'
-    #set($sql = $sql.substring(0, $sql.lastIndexOf(' or doc.fullName=')))
-    #set($sql = ", XWikiLock lock where lock.docId=doc.id and lock.userName='$xcontext.getUser()' and (${sql})")
-    #set($namesOfdocumentsToUnlock = $services.query.hql($sql).addFilter('unique').execute())
-    ## Use ajax and hope the user runs javascript.
-    {{html}}
-      &lt;script type="text/javascript"&gt;
-        document.observe("xwiki:dom:loaded", function() {
-          #foreach($nameOflockedDocument in $namesOfdocumentsToUnlock)
-            new Ajax.Request("$xwiki.getURL($nameOflockedDocument, 'cancel', 'ajax=1')");
-          #end
-        });
-      &lt;/script&gt;
-    {{/html}}
-  #end## If output list size &gt; 0
-#end
-
-
-#*
  * Try to determine whether a document was edited by a user who has edit right on this page. This is tricky because
  * documents are imported with the name XWiki.XWikiGuest who has no access to anything after import.
  *
@@ -181,8 +148,25 @@
     #end
     ##
     #foreach ($configurableObject in $app.getObjects($nameOfThisDocument))
-      #set ($displayInSection = $app.getValue('displayInSection', $configurableObject))
+      #set ($displayInCategory = $app.getValue('displayInCategory', $configurableObject))
+      ## If there is no category specified in the object, use the default
+      #if ("$!{displayInCategory}" == '')
+        #set ($displayInCategory = 'applications')
+      #elseif ("$!{categoriesByName.get($displayInCategory)}" == '')
+        #set ($priority = $mathtool.toInteger("$!app.getValue('categoryPriority', $configurableObject)"))
+        #if ("$!priority" == '')
+          #set ($priority = 10000)
+        #end
+        #set ($newCategory = {
+          'id' : $displayInCategory,
+          'priority' : $priority,
+          'children': []
+        })
+        #set ($discard = $adminMenu.add($newCategory))
+        #set ($discard = $categoriesByName.put($newCategory.id, $newCategory))
+      #end
       ##
+      #set ($displayInSection = $app.getValue('displayInSection', $configurableObject))
       ## If there is no section specified in the object, just skip it
       #if ("$!{displayInSection}" == '')
         ## Skip, bad object
@@ -202,12 +186,19 @@
         #if ($app.getValue('configureGlobally', $configurableObject) != 1)
           #set ($appSection.perSpace = true)
         #end
+        #if ($app.getValue('advancedOnly', $configurableObject) == 1)
+          #set ($appSection.advanced = true)
+        #end
+        #set ($sectionPriority = $mathtool.toInteger("$!app.getValue('sectionPriority', $configurableObject)"))
+        #if ("$!sectionPriority" != '')
+          #set ($appSection.priority = $sectionPriority)
+        #end
         #set ($key = "admin.${displayInSection.toLowerCase()}.description")
         #if ($services.localization.get($key))
           #set ($appSection.description = $services.localization.render($key))
         #end
         #set ($discard = $sectionsByName.put($displayInSection, $appSection))
-        #set ($discard = $categoriesByName.get('applications').children.add($appSection))
+        #set ($discard = $categoriesByName.get($displayInCategory).children.add($appSection))
         #set ($newSection = true)
       #end
       ##
@@ -228,6 +219,18 @@
       #end
     #end## Foreach configurable object in this app.
   #end## Foreach application which is configurable.
+  ##
+  ## Sort the adminMenu by category and section priority
+  ##
+  #set ($adminMenu = $sorttool.sort($adminMenu, 'priority'))
+  #foreach ($category in $adminMenu)
+    #foreach ($section in $category.children)
+      #if ("$!section.priority" == '')
+        #set ($discard = $section.put('priority', $mathtool.mul($foreach.count, 100)))
+      #end
+    #end
+      #set ($discard = $category.put('children', $sorttool.sort($category.children, 'priority')))
+  #end
 #end
 
 

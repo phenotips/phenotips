@@ -78,11 +78,15 @@ patient.livetable.paternal_ethnicity=Paternal ethnicity
 patient.livetable.family_of=Pedigree number
 patient.livetable.miscarriages=Parents with at least 3 miscarriages
 
+admin.phenotips=PhenoTips
+admin.phenotips.description=Phenotype data settings.
+admin.welcome=Welcome message
 admin.phenotipscode=PhenoTips application code
 admin.dbconfig=Patient database
 admin.menuconfig=Menu configuration
 admin.formconfig=Patient form
 admin.ontology=Ontology index
+admin.workgroups=Work groups
 
 saveandview=Save
 
