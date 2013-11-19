@@ -91,19 +91,6 @@ $!value
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </enableImperialUnitSystem>
-      <idPrefix>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <name>idPrefix</name>
-        <number>3</number>
-        <picker>0</picker>
-        <prettyName>Database identifier prefix</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </idPrefix>
       <livetableColumns>
         <cache>0</cache>
         <customDisplay>//Meta information: //
@@ -212,54 +199,6 @@ $!value
         <values>metric|imperial</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </measurementUnitSystem>
-      <patientClass>
-        <cache>0</cache>
-        <classname/>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <displayType>input</displayType>
-        <idField/>
-        <multiSelect>0</multiSelect>
-        <name>patientClass</name>
-        <number>1</number>
-        <picker>0</picker>
-        <prettyName>Patient class</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators/>
-        <size>1</size>
-        <sort>none</sort>
-        <sql/>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <valueField/>
-        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-      </patientClass>
-      <patientTemplate>
-        <cache>0</cache>
-        <classname/>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <displayType>input</displayType>
-        <idField>doc.fullName</idField>
-        <multiSelect>0</multiSelect>
-        <name>patientTemplate</name>
-        <number>2</number>
-        <picker>0</picker>
-        <prettyName>Patient template</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators/>
-        <size>30</size>
-        <sort>none</sort>
-        <sql/>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <valueField/>
-        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-      </patientTemplate>
       <phenotypeMapping>
         <cache>0</cache>
         <classname/>
@@ -1285,9 +1224,6 @@ $!value
     </property>
     <property>
       <propertiesToShow>
-        <value>patientClass</value>
-        <value>patientTemplate</value>
-        <value>idPrefix</value>
         <value>phenotypeMapping</value>
         <value>dateOfBirthFormat</value>
         <value>enableImperialUnitSystem</value>
