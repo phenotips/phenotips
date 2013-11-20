@@ -255,7 +255,7 @@ $!value
       <measurementUnitSystem>metric</measurementUnitSystem>
     </property>
     <property>
-      <phenotypeMapping>PhenoTips.FPhenotypeMapping</phenotypeMapping>
+      <phenotypeMapping>PhenoTips.Generic phenotype configuration</phenotypeMapping>
     </property>
   </object>
   <object>
