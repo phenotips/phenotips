@@ -275,7 +275,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>enableDeleteTool</name>
-        <number>5</number>
+        <number>4</number>
         <picker>0</picker>
         <prettyName>Enable delete tool for</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -296,7 +296,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>enableEditTool</name>
-        <number>4</number>
+        <number>3</number>
         <picker>0</picker>
         <prettyName>Enable edit tools for</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -310,30 +310,6 @@ $!value
         <values>view|edit</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </enableEditTool>
-      <enableForObject>
-        <cache>0</cache>
-        <classname/>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <displayType>input</displayType>
-        <idField/>
-        <multiSelect>0</multiSelect>
-        <name>enableForObject</name>
-        <number>1</number>
-        <picker>1</picker>
-        <prettyName>Enable this menu for pages of this type</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators/>
-        <size>1</size>
-        <sort>none</sort>
-        <sql/>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <valueField/>
-        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-      </enableForObject>
       <enableHistoryTool>
         <cache>0</cache>
         <customDisplay/>
@@ -341,7 +317,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>enableHistoryTool</name>
-        <number>2</number>
+        <number>1</number>
         <picker>0</picker>
         <prettyName>Enable history tool for</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -362,7 +338,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>enablePdfTool</name>
-        <number>6</number>
+        <number>5</number>
         <picker>0</picker>
         <prettyName>Enable PDF export for</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -383,7 +359,7 @@ $!value
         <displayType>checkbox</displayType>
         <multiSelect>1</multiSelect>
         <name>enableTocTool</name>
-        <number>3</number>
+        <number>2</number>
         <picker>0</picker>
         <prettyName>Enable table of contents for</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -412,9 +388,6 @@ $!value
         <value>view</value>
         <value>edit</value>
       </enableEditTool>
-    </property>
-    <property>
-      <enableForObject/>
     </property>
     <property>
       <enableHistoryTool>
