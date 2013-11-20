@@ -1227,6 +1227,9 @@ $!value
     <className>XWiki.ConfigurableClass</className>
     <guid>73d1fb26-3da7-4f17-91be-25c84b0282f3</guid>
     <property>
+      <advancedOnly/>
+    </property>
+    <property>
       <categoryPriority>0</categoryPriority>
     </property>
     <property>
@@ -1448,6 +1451,9 @@ $!value
     <className>XWiki.ConfigurableClass</className>
     <guid>fe29a271-94ae-433b-8b46-fde8f028f1f8</guid>
     <property>
+      <advancedOnly/>
+    </property>
+    <property>
       <categoryPriority>0</categoryPriority>
     </property>
     <property>
@@ -1665,6 +1671,9 @@ $!value
     <className>XWiki.ConfigurableClass</className>
     <guid>5ba6063a-8aa3-4790-9264-61feef60ad35</guid>
     <property>
+      <advancedOnly/>
+    </property>
+    <property>
       <categoryPriority>0</categoryPriority>
     </property>
     <property>
@@ -1881,6 +1890,9 @@ $!value
     <number>3</number>
     <className>XWiki.ConfigurableClass</className>
     <guid>7a2b8d61-609c-4751-b25b-ec13d7664244</guid>
+    <property>
+      <advancedOnly/>
+    </property>
     <property>
       <categoryPriority>0</categoryPriority>
     </property>
