@@ -991,7 +991,13 @@
       <pedigree/>
     </property>
     <property>
+      <phenotype/>
+    </property>
+    <property>
       <prenatal_comments/>
+    </property>
+    <property>
+      <prenatal_phenotype/>
     </property>
     <property>
       <proband>1</proband>
