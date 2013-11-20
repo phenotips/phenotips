@@ -3777,7 +3777,7 @@ hr {
       <code>#template('colorThemeInit.vm')
 /** ----------------------------------------------------------- */
 /** Default style fixes **/
-#mainContentArea, #mainEditArea {
+.space-data #mainContentArea, #mainEditArea {
     background-color: #F9F9F9;
     border: 1px solid #FFFFFF;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
@@ -3785,17 +3785,17 @@ hr {
     padding: 0.5em 10px;
     text-shadow: 1px 1px 0 #FFFFFF;
 }
-.bottombuttons {
+.space-data .bottombuttons {
    margin: 3em -10px -3em;
 }
-#document-head {
+.space-data #document-head {
   border-bottom: .4em solid $theme.buttonPrimaryBackgroundColor;
   margin: -2.7em -12px 0;
 }
-#document-head #document-title {
+.space-data #document-head #document-title {
   display: inline-block;
 }
-#document-head h1 {
+.space-data #document-head h1 {
     background-color: $theme.buttonPrimaryBackgroundColor;
     border-bottom: 0 none;
     border-radius: 8px 8px 0 0;

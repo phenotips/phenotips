@@ -201,26 +201,26 @@ $!value
       </measurementUnitSystem>
       <phenotypeMapping>
         <cache>0</cache>
-        <classname/>
+        <classname>PhenoTips.PhenotypeMappingClass</classname>
         <customDisplay/>
         <disabled>0</disabled>
-        <displayType>input</displayType>
-        <idField/>
+        <displayType>radio</displayType>
+        <idField>doc.fullName</idField>
         <multiSelect>0</multiSelect>
         <name>phenotypeMapping</name>
         <number>4</number>
         <picker>0</picker>
-        <prettyName>Phenotype mapping document</prettyName>
+        <prettyName>Phenotype configuration document</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
         <separators/>
         <size>30</size>
         <sort>none</sort>
-        <sql/>
+        <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where obj.name = doc.fullName and obj.className = 'PhenoTips.PhenotypeMappingClass'</sql>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <valueField/>
+        <valueField>doc.name</valueField>
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </phenotypeMapping>
     </class>
@@ -2108,7 +2108,17 @@ $!value
       <categoryPriority>0</categoryPriority>
     </property>
     <property>
-      <codeToExecute/>
+      <codeToExecute>{{info}}The phenotype categories and phenotypes that are displayed by default in the patient form, on the in the left side of the "Clinical symptoms &amp; physical findings" section, are defined in a separate configuration document. Choose the configuration document to use from the options listed below. A preview of the selected configuration will be displayed on the right.{{/info}}
+
+(% class="mappingPreviewContainer side" %)(((
+(% class="hint side" %)(((Preview)))
+(% id="mappingPreview"%)((()))
+)))
+$xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.ssx.use('PhenoTips.Widgets', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.ssx.use('PhenoTips.PhenotypeMappingPreview', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
     </property>
     <property>
       <configurationClass>PhenoTips.DBConfigurationClass</configurationClass>
