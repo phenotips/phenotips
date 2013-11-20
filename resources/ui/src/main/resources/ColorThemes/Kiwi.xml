@@ -41,7 +41,7 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden>true</hidden>
   <attachment>
     <filename>header.png</filename>
     <filesize>27167</filesize>
@@ -1142,10 +1142,10 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
     <className>ColorThemes.ColorThemeClass</className>
     <guid>8eea84bf-2dd7-4948-a20a-548dad97b5bf</guid>
     <property>
-      <backgroundSecondaryColor>#F8EFE0</backgroundSecondaryColor>
+      <backgroundSecondaryColor>#F3F3F3</backgroundSecondaryColor>
     </property>
     <property>
-      <borderColor>#DDDDDD</borderColor>
+      <borderColor>#E8E8E8</borderColor>
     </property>
     <property>
       <buttonPrimaryBackgroundColor>#222222</buttonPrimaryBackgroundColor>
@@ -1157,16 +1157,13 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
       <buttonPrimaryTextColor>#F3F3F3</buttonPrimaryTextColor>
     </property>
     <property>
-      <buttonSecondaryBackgroundColor>#F5F5F5</buttonSecondaryBackgroundColor>
+      <buttonSecondaryBackgroundColor>#E1E1E1</buttonSecondaryBackgroundColor>
     </property>
     <property>
-      <buttonSecondaryGradientColor>#E5E5E5</buttonSecondaryGradientColor>
+      <buttonSecondaryGradientColor>#FFFFFF</buttonSecondaryGradientColor>
     </property>
     <property>
       <buttonSecondaryTextColor>#4D5860</buttonSecondaryTextColor>
-    </property>
-    <property>
-      <fieldGradientColor/>
     </property>
     <property>
       <headerBackgroundImage>header.png</headerBackgroundImage>
@@ -1175,10 +1172,10 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
       <headerBackgroundPosition/>
     </property>
     <property>
-      <highlightColor>#FFEEBB</highlightColor>
+      <highlightColor>#F6FFD0</highlightColor>
     </property>
     <property>
-      <linkColor>#C66331</linkColor>
+      <linkColor>#276400</linkColor>
     </property>
     <property>
       <logoImage/>
@@ -1190,19 +1187,19 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
       <menuAddEntryLinkColor>#F3F3F3</menuAddEntryLinkColor>
     </property>
     <property>
-      <menuBackgroundColor>#222222</menuBackgroundColor>
+      <menuBackgroundColor>#276400</menuBackgroundColor>
     </property>
     <property>
-      <menuContentBackgroundColor>#222222</menuContentBackgroundColor>
+      <menuContentBackgroundColor>#E1E1E1</menuContentBackgroundColor>
     </property>
     <property>
-      <menuContentGradientColor/>
+      <menuContentGradientColor>#FFFFFF</menuContentGradientColor>
     </property>
     <property>
-      <menuContentLinkColor>#F3F3F3</menuContentLinkColor>
+      <menuContentLinkColor>#4D5860</menuContentLinkColor>
     </property>
     <property>
-      <menuGradientColor/>
+      <menuGradientColor>#427D3B</menuGradientColor>
     </property>
     <property>
       <menuLinkColor>#F3F3F3</menuLinkColor>
@@ -1238,7 +1235,7 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
       <pageContentBackgroundColor>#FFFFFF</pageContentBackgroundColor>
     </property>
     <property>
-      <pageHeaderBackgroundColor>#4D9244</pageHeaderBackgroundColor>
+      <pageHeaderBackgroundColor>#6CB100</pageHeaderBackgroundColor>
     </property>
     <property>
       <panelBackgroundColor>#FFFFFF</panelBackgroundColor>
@@ -1265,10 +1262,10 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
       <panelTextColor>#636B75</panelTextColor>
     </property>
     <property>
-      <submenuContentBackgroundColor>#222222</submenuContentBackgroundColor>
+      <submenuContentBackgroundColor>#F5F5F5</submenuContentBackgroundColor>
     </property>
     <property>
-      <textColor>#000000</textColor>
+      <textColor>#636B75</textColor>
     </property>
     <property>
       <textPrimaryColor>#888888</textPrimaryColor>
@@ -1277,7 +1274,7 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
       <textSecondaryColor>#656565</textSecondaryColor>
     </property>
     <property>
-      <titleColor>#276400</titleColor>
+      <titleColor>#414141</titleColor>
     </property>
   </object>
   <object>
@@ -1349,7 +1346,7 @@ ksT5AbWhTQAAAABAkf8HQ9KhZ4UQB8EAAAAASUVORK5CYII=
     <name>ColorThemes.Kiwi</name>
     <number>0</number>
     <className>XWiki.XWikiRights</className>
-    <guid>a810b28b-b809-403a-b691-cf1fa5a6c32f</guid>
+    <guid>a1635932-95e9-418e-a908-6209ca65dd4b</guid>
     <property>
       <allow>1</allow>
     </property>

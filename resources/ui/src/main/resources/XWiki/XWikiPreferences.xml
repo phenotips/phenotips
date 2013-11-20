@@ -2595,7 +2595,7 @@
       <authenticate_view>0</authenticate_view>
     </property>
     <property>
-      <colorTheme>ColorThemes.Kiwi</colorTheme>
+      <colorTheme>ColorThemes.Blue</colorTheme>
     </property>
     <property>
       <comment_anonymous>---</comment_anonymous>

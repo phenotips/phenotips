@@ -22,7 +22,7 @@
 
 <xwikidoc>
   <web>ColorThemes</web>
-  <name>SickKids</name>
+  <name>Blue</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,111 +31,22 @@
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1329596427000</creationDate>
-  <date>1332169633000</date>
-  <contentUpdateDate>1332169633000</contentUpdateDate>
+  <creationDate>1384892422000</creationDate>
+  <date>1384892422000</date>
+  <contentUpdateDate>1384892422000</contentUpdateDate>
   <version>1.1</version>
-  <title>SickKids</title>
+  <title>Blue</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.0</syntaxId>
-  <hidden>false</hidden>
-  <attachment>
-    <filename>sickkids.png</filename>
-    <filesize>4557</filesize>
-    <author>xwiki:XWiki.Admin</author>
-    <date>1329611024000</date>
-    <version>1.1</version>
-    <comment/>
-    <content>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
-</content>
-  </attachment>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
   <attachment>
     <filename>header.png</filename>
     <filesize>31799</filesize>
     <author>xwiki:XWiki.Admin</author>
-    <date>1329596427000</date>
+    <date>1380493544000</date>
     <version>1.1</version>
     <comment/>
     <content>iVBORw0KGgoAAAANSUhEUgAABYsAAAFBCAMAAAABlADpAAACiFBMVEURg7MXsc8YtNEXstAYs9AY
@@ -1307,75 +1218,96 @@ JB+c1NM62E24I6RhRDBxq0NfFDe4ClSsv8TDMIzfoQ0Tt+s6Zh8AAAAASUVORK5CYII=
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </titleColor>
     </class>
-    <name>ColorThemes.SickKids</name>
+    <name>ColorThemes.Blue</name>
     <number>0</number>
     <className>ColorThemes.ColorThemeClass</className>
-    <guid>6c39c452-4d59-405f-b5bb-41c8e19357c3</guid>
+    <guid>e2fc387c-de26-4328-b256-8ae73d83cad7</guid>
     <property>
-      <backgroundSecondaryColor>#DDEEFF</backgroundSecondaryColor>
+      <backgroundSecondaryColor>#F3F3F3</backgroundSecondaryColor>
     </property>
     <property>
-      <borderColor>#DFDFF2</borderColor>
+      <borderColor>#E8E8E8</borderColor>
     </property>
     <property>
-      <buttonPrimaryBackgroundColor>#414142</buttonPrimaryBackgroundColor>
+      <buttonPrimaryBackgroundColor>#2173AF</buttonPrimaryBackgroundColor>
+    </property>
+    <property>
+      <buttonPrimaryGradientColor>#0089DC</buttonPrimaryGradientColor>
     </property>
     <property>
       <buttonPrimaryTextColor>#FFFFFF</buttonPrimaryTextColor>
     </property>
     <property>
-      <buttonSecondaryBackgroundColor>#FFFFFF</buttonSecondaryBackgroundColor>
+      <buttonSecondaryBackgroundColor>#E1E1E1</buttonSecondaryBackgroundColor>
     </property>
     <property>
-      <buttonSecondaryTextColor>#1183B3</buttonSecondaryTextColor>
+      <buttonSecondaryGradientColor>#FFFFFF</buttonSecondaryGradientColor>
+    </property>
+    <property>
+      <buttonSecondaryTextColor>#4D5860</buttonSecondaryTextColor>
+    </property>
+    <property>
+      <fieldGradientColor>#F5F5F5</fieldGradientColor>
     </property>
     <property>
       <headerBackgroundImage>header.png</headerBackgroundImage>
     </property>
     <property>
-      <headerBackgroundPosition>left top no-repeat</headerBackgroundPosition>
+      <headerBackgroundPosition/>
     </property>
     <property>
-      <highlightColor>#FFEE99</highlightColor>
+      <highlightColor>#FFFFCC</highlightColor>
     </property>
     <property>
-      <linkColor>#1183B3</linkColor>
+      <linkColor>#0089DC</linkColor>
     </property>
     <property>
-      <logoImage>sickkids.png</logoImage>
+      <logoImage/>
     </property>
     <property>
-      <menuAddEntryBackgroundColor>#269A26</menuAddEntryBackgroundColor>
+      <menuAddEntryBackgroundColor>#4D9244</menuAddEntryBackgroundColor>
     </property>
     <property>
       <menuAddEntryLinkColor>#FFFFFF</menuAddEntryLinkColor>
     </property>
     <property>
-      <menuBackgroundColor>#414142</menuBackgroundColor>
+      <menuBackgroundColor>#0272A6</menuBackgroundColor>
     </property>
     <property>
-      <menuLinkColor>#FFFFFF</menuLinkColor>
+      <menuContentBackgroundColor>#E1E1E1</menuContentBackgroundColor>
+    </property>
+    <property>
+      <menuContentGradientColor>#FFFFFF</menuContentGradientColor>
+    </property>
+    <property>
+      <menuContentLinkColor>#4D5860</menuContentLinkColor>
+    </property>
+    <property>
+      <menuGradientColor>#3A8ABC</menuGradientColor>
+    </property>
+    <property>
+      <menuLinkColor>#F3F3F3</menuLinkColor>
     </property>
     <property>
       <menuSelectedEntryBackgroundColor>#EFEFEF</menuSelectedEntryBackgroundColor>
     </property>
     <property>
-      <menuSelectedEntryLinkColor>#000000</menuSelectedEntryLinkColor>
+      <menuSelectedEntryLinkColor>#2173AF</menuSelectedEntryLinkColor>
     </property>
     <property>
-      <notificationErrorColor/>
+      <notificationErrorColor>#CC3333</notificationErrorColor>
     </property>
     <property>
-      <notificationInfoColor/>
+      <notificationInfoColor>#336699</notificationInfoColor>
     </property>
     <property>
-      <notificationSuccessColor/>
+      <notificationSuccessColor>#008000</notificationSuccessColor>
     </property>
     <property>
-      <notificationWarningColor/>
+      <notificationWarningColor>#D09000</notificationWarningColor>
     </property>
     <property>
-      <pageBackgroundColor>#FFFFFF</pageBackgroundColor>
+      <pageBackgroundColor>#F5F5F5</pageBackgroundColor>
     </property>
     <property>
       <pageBackgroundImage/>
@@ -1387,425 +1319,46 @@ JB+c1NM62E24I6RhRDBxq0NfFDe4ClSsv8TDMIzfoQ0Tt+s6Zh8AAAAASUVORK5CYII=
       <pageContentBackgroundColor>#FFFFFF</pageContentBackgroundColor>
     </property>
     <property>
-      <pageHeaderBackgroundColor>#1187B6</pageHeaderBackgroundColor>
+      <pageHeaderBackgroundColor>#3A8ABC</pageHeaderBackgroundColor>
     </property>
     <property>
       <panelBackgroundColor>#FFFFFF</panelBackgroundColor>
     </property>
     <property>
-      <panelCollapsedBackgroundColor>#DFDFF2</panelCollapsedBackgroundColor>
+      <panelCollapsedBackgroundColor>#E1E1E1</panelCollapsedBackgroundColor>
     </property>
     <property>
-      <panelCollapsedTextColor>#444444</panelCollapsedTextColor>
+      <panelCollapsedGradientColor>#FFFFFF</panelCollapsedGradientColor>
     </property>
     <property>
-      <panelHeaderBackgroundColor>#414142</panelHeaderBackgroundColor>
+      <panelCollapsedTextColor>#4D5860</panelCollapsedTextColor>
     </property>
     <property>
-      <panelHeaderTextColor>#FFFFFF</panelHeaderTextColor>
+      <panelHeaderBackgroundColor>#E1E1E1</panelHeaderBackgroundColor>
     </property>
     <property>
-      <panelTextColor>#000000</panelTextColor>
+      <panelHeaderGradientColor>#FFFFFF</panelHeaderGradientColor>
     </property>
     <property>
-      <textColor>#222222</textColor>
+      <panelHeaderTextColor>#4D5860</panelHeaderTextColor>
     </property>
     <property>
-      <textPrimaryColor>#555555</textPrimaryColor>
+      <panelTextColor>#636B75</panelTextColor>
     </property>
     <property>
-      <textSecondaryColor>#6D6870</textSecondaryColor>
+      <submenuContentBackgroundColor>#F5F5F5</submenuContentBackgroundColor>
     </property>
     <property>
-      <titleColor>#000000</titleColor>
-    </property>
-  </object>
-  <object>
-    <class>
-      <name>XWiki.PDFClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <fopxsl>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <editor>---</editor>
-        <name>fopxsl</name>
-        <number>3</number>
-        <picker>0</picker>
-        <prettyName>fopxsl</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </fopxsl>
-      <style>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <editor>---</editor>
-        <name>style</name>
-        <number>1</number>
-        <picker>0</picker>
-        <prettyName>style</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </style>
-      <xhtmlxsl>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <editor>---</editor>
-        <name>xhtmlxsl</name>
-        <number>2</number>
-        <picker>0</picker>
-        <prettyName>xhtmlxsl</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </xhtmlxsl>
-    </class>
-    <name>ColorThemes.SickKids</name>
-    <number>0</number>
-    <className>XWiki.PDFClass</className>
-    <guid>af93cea9-ef63-4a84-9011-5b255a4959f2</guid>
-    <property>
-      <fopxsl>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;xsl:stylesheet version="1.0"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:fo="http://www.w3.org/1999/XSL/Format"
-    xmlns:html="http://www.w3.org/1999/xhtml"&gt;
-
-  &lt;xsl:output method="xml"/&gt;
-
-  &lt;xsl:template match="@*|node()"&gt;
-    &lt;xsl:copy&gt;
-      &lt;xsl:apply-templates select="@*|node()"/&gt;
-    &lt;/xsl:copy&gt;
-  &lt;/xsl:template&gt;
-
-  &lt;!-- Skip fo:table-and-caption because Fop won't render tables otherwise --&gt;
-  &lt;xsl:template match="fo:table-and-caption"&gt;
-    &lt;xsl:apply-templates/&gt;
-  &lt;/xsl:template&gt;
-
-  &lt;!-- Ignore fo:table-caption because it is not supported --&gt;
-  &lt;xsl:template match="fo:table-caption" /&gt;
-
-  &lt;!-- Change the page dimensions to Letter --&gt;
-  &lt;xsl:template match="fo:simple-page-master/@page-height"&gt;
-    &lt;xsl:attribute name="page-height"&gt;
-      &lt;xsl:value-of select="'11in'"/&gt;
-    &lt;/xsl:attribute&gt;
-  &lt;/xsl:template&gt;
-  &lt;xsl:template match="fo:simple-page-master/@page-width"&gt;
-    &lt;xsl:attribute name="page-width"&gt;
-      &lt;xsl:value-of select="'8.5in'"/&gt;
-    &lt;/xsl:attribute&gt;
-  &lt;/xsl:template&gt;
-  &lt;!-- Change the font to FreeSans --&gt;
-  &lt;xsl:template match="fo:root/@font-family"&gt;
-    &lt;xsl:attribute name="font-family"&gt;
-      &lt;xsl:value-of select="'FreeSans'"/&gt;
-    &lt;/xsl:attribute&gt;
-  &lt;/xsl:template&gt;
-
-  &lt;!-- Change the header --&gt;
-  &lt;xsl:template match="fo:static-content[@flow-name='page-header']"&gt;
-    &lt;xsl:copy&gt;
-      &lt;xsl:attribute name="precedence"&gt;true&lt;/xsl:attribute&gt;
-      &lt;xsl:apply-templates select="@*"/&gt;
-      &lt;fo:table margin-top="2em"&gt;&lt;fo:table-body&gt;&lt;fo:table-row&gt;&lt;fo:table-cell&gt;
-      &lt;fo:block text-align="leftl"&gt;
-        &lt;fo:instream-foreign-object content-width="scale-to-fit" content-height="scale-to-fit"
-            inline-progression-dimension.minimum="auto" inline-progression-dimension.maximum="100%"
-            block-progression-dimension.minimum="auto" block-progression-dimension.maximum="700px"&gt;
-          &lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" text-rendering="geometricPrecision" viewBox="-0.5 9.5 301 60" width="100" height="20"&gt;
-            &lt;title&gt;SickKids&lt;/title&gt;
-            &lt;text x="0" y="50" font-family="Impact" font-size="50" letter-spacing="3%"&gt;
-              &lt;tspan fill="#00b6de"&gt;Sick&lt;/tspan&gt;&lt;tspan fill="#0068b3"&gt;Kids&lt;/tspan&gt;
-            &lt;/text&gt;
-          &lt;/svg&gt;
-        &lt;/fo:instream-foreign-object&gt;
-      &lt;/fo:block&gt;
-     &lt;/fo:table-cell&gt;&lt;fo:table-cell&gt;
-      &lt;fo:block font-size="large" space-after="0.5in" space-after.conditionality="retain" text-align="right"&gt;&lt;xsl:value-of select="//fo:block[@role='html:h1']"/&gt;&lt;/fo:block&gt;
-     &lt;/fo:table-cell&gt;&lt;/fo:table-row&gt;&lt;/fo:table-body&gt;&lt;/fo:table&gt;
-&lt;!--      &lt;fo:block margin-top="-2em"&gt;
-        &lt;fo:instream-foreign-object content-width="scale-to-fit" content-height="scale-to-fit"
-            inline-progression-dimension.minimum="auto" inline-progression-dimension.maximum="100%"
-            block-progression-dimension.minimum="auto" block-progression-dimension.maximum="700px"&gt;
-          &lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" text-rendering="geometricPrecision" viewBox="-0.5 5.5 261 80" width="220"&gt;
-            &lt;title&gt;SickKids&lt;/title&gt;
-            &lt;text x="0" y="50" font-family="Impact" font-size="50" letter-spacing="3%"&gt;
-              &lt;tspan fill="#00b6de"&gt;Sick&lt;/tspan&gt;&lt;tspan fill="#0068b3"&gt;Kids&lt;/tspan&gt;
-            &lt;/text&gt;
-            &lt;rect x="0" y="55" width="300" height="20"  fill="#0068b3" /&gt;
-            &lt;text x="10" y="69" font-family="Arial" font-size="11" fill="#FFF" font-weight="bold"&gt;
-              &lt;tspan&gt;&amp;lt;Your Department/Lab Name&amp;gt;&lt;/tspan&gt;
-            &lt;/text&gt;
-          &lt;/svg&gt;
-        &lt;/fo:instream-foreign-object&gt;
-      &lt;/fo:block&gt;--&gt;
-    &lt;/xsl:copy&gt;
-  &lt;/xsl:template&gt;
-
-  &lt;!-- Change the footer --&gt;
-  &lt;xsl:template match="fo:static-content[@flow-name='page-footer']"&gt;
-    &lt;xsl:copy&gt;
-      &lt;xsl:apply-templates select="@*"/&gt;
-      &lt;fo:block font-size="small" space-after="0.5in" space-after.conditionality="retain" text-align="center"&gt;Page &lt;fo:page-number/&gt; of &lt;fo:page-number-citation-last ref-id="x-page-sequence"/&gt;&lt;/fo:block&gt;
-    &lt;/xsl:copy&gt;
-  &lt;/xsl:template&gt;
-
-  &lt;!-- Move gallery images to the end --&gt;
-  &lt;!-- Step one, copy them at the end of the body --&gt;
-  &lt;xsl:template match="fo:flow[@flow-name='xsl-region-body']"&gt;
-    &lt;xsl:copy&gt;
-      &lt;xsl:apply-templates select="@*|node()"/&gt;
-      &lt;xsl:for-each select=".//*[text()='Facial dysmorphism photos:']/parent::*"&gt;
-        &lt;xsl:copy&gt;
-          &lt;xsl:apply-templates select="@*|node()"/&gt;
-        &lt;/xsl:copy&gt;
-      &lt;/xsl:for-each&gt;
-      &lt;fo:block id="last-page"/&gt;
-    &lt;/xsl:copy&gt;
-  &lt;/xsl:template&gt;
-  &lt;!-- Step two, ignore them in the body --&gt;
-  &lt;xsl:template match="*[*/text()='Facial dysmorphism photos:']"&gt;
-    &lt;xsl:text&gt;See attached images&lt;/xsl:text&gt;
-  &lt;/xsl:template&gt;
-  &lt;xsl:template match="*[text()='Facial dysmorphism photos:']"/&gt;
-
-  &lt;!-- Ignore some elements --&gt;
-  &lt;xsl:template match="fo:block[@id='document-actions']" /&gt;
-  &lt;xsl:template match="fo:block[@role='html:h1']" /&gt;
-
-  &lt;!-- Add an ID to the whole page sequence, to be able to get the total number of pages --&gt;
-  &lt;xsl:template match="fo:page-sequence"&gt;
-    &lt;xsl:copy&gt;
-      &lt;xsl:attribute name="id"&gt;&lt;xsl:text&gt;x-page-sequence&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;
-      &lt;xsl:apply-templates select="@*|node()"/&gt;
-    &lt;/xsl:copy&gt;
-  &lt;/xsl:template&gt;
-
-  &lt;!-- Change the header --&gt;
-  &lt;xsl:template match="fo:block[@id='xwikicontent']/fo:block[3]/fo:block-container"&gt;
-      &lt;fo:table&gt;&lt;fo:table-body&gt;&lt;fo:table-row&gt;&lt;fo:table-cell&gt;
-      &lt;fo:block block-progression-dimension="1pt" inline-progression-dimension="1pt" content-height="1pt"&gt;
-        &lt;fo:instream-foreign-object content-width="scale-to-fit" content-height="scale-to-fit"
-            inline-progression-dimension.minimum="auto" inline-progression-dimension.maximum="100%"
-            block-progression-dimension.minimum="auto" block-progression-dimension.maximum="700px"&gt;
-          &lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" text-rendering="geometricPrecision" viewBox="-0.5 5.5 301 80" width="150"&gt;
-            &lt;title&gt;SickKids&lt;/title&gt;
-            &lt;text x="0" y="50" font-family="Impact" font-size="50" letter-spacing="3%"&gt;
-              &lt;tspan fill="#00b6de"&gt;Sick&lt;/tspan&gt;&lt;tspan fill="#0068b3"&gt;Kids&lt;/tspan&gt;
-            &lt;/text&gt;
-            &lt;rect x="0" y="55" width="300" height="30"  fill="#0068b3" /&gt;
-            &lt;text x="10" y="75" font-family="Arial" font-size="15" fill="#FFF" font-weight="bold"&gt;
-              &lt;tspan&gt;&amp;lt;Your Department/Lab Name&amp;gt;&lt;/tspan&gt;
-            &lt;/text&gt;
-          &lt;/svg&gt;
-        &lt;/fo:instream-foreign-object&gt;
-      &lt;/fo:block&gt;
-     &lt;/fo:table-cell&gt;&lt;fo:table-cell&gt;
-      &lt;xsl:copy&gt;
-        &lt;xsl:apply-templates select="@*|node()"/&gt;
-      &lt;/xsl:copy&gt;
-     &lt;/fo:table-cell&gt;&lt;/fo:table-row&gt;&lt;/fo:table-body&gt;&lt;/fo:table&gt;
-  &lt;/xsl:template&gt;
-&lt;/xsl:stylesheet&gt;
-</fopxsl>
+      <textColor>#636B75</textColor>
     </property>
     <property>
-      <style>#template('colorThemeInit.vm')
-h2 {
-  color: $theme.linkColor;
-  font-family: serif;
-  margin-top: 0;
-}
-h3 {
-  text-transform: uppercase;
-  font-weight: normal;
-  font-size: 1em;
-}
-hr {
-  display: none;
-}
-.phenotypes-main {
-  margin: 0 2%;
-}
-.chapter {
-  clear: both;
-  font-family: sans-serif;
-  border: 1px solid $theme.borderColor;
-  margin: .5em 0;
-  width: 96%;
-  padding: .5em 2%;
-}
-.patient-info h2 {
-  display: none;
-}
-.patient-info p {
-  margin: 0 !important;
-  padding: 0 !important;
-  text-indent: 0 !important;
-}
-.patient-info .label, .patient-info label {
-  color: $theme.linkColor;
-  font-weight: bold;
-}
-.family_study * {
-  display: inline !important;
-}
-.viewbody .family_study .half-width * {
-  margin: 0 !important;
-}
-.negative_phenotype-group h3 {
-  color: $theme.notificationErrorColor;
-}
-.negative_phenotype-group .selected .value, .negative_phenotype-group .value-checked , .negative_phenotype-group .section{
-  color: $theme.notificationErrorColor;
-  text-decoration: line-through;
-}
-.extradata-list {
-  border-collapse: collapse;
-}
-.extradata-list th, .extradata-list td {
-  border: 0 none;
-  border-top: 1px solid $theme.backgroundSecondaryColor;
-  border-bottom: 1px solid $theme.backgroundSecondaryColor;
-  text-align: center;
-}
-.extradata-list th {
-  background-color: $theme.backgroundSecondaryColor;
-}
-.extradata-list .bmi, .extradata-list .hc_percentile {
-  min-width: 4em;
-}
-.extradata-list .normal {
-  color: $theme.notificationSuccessColor;
-}
-.extradata-list .extreme-below-normal, .extradata-list .extreme-above-normal {
-  color: $theme.notificationErrorColor;
-}
-.extradata-list .below-normal, .extradata-list .above-normal {
-  color: $theme.notificationWarningColor;
-}</style>
+      <textPrimaryColor>#9F9F9F</textPrimaryColor>
     </property>
     <property>
-      <xhtmlxsl/>
-    </property>
-  </object>
-  <object>
-    <class>
-      <name>XWiki.StyleSheetExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <name>ColorThemes.SickKids</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>7a9d4bf3-601c-42ae-b7bb-9180486c4508</guid>
-    <property>
-      <cache>long</cache>
+      <textSecondaryColor>#9F9F9F</textSecondaryColor>
     </property>
     <property>
-      <code>#company h1 {
-  bottom: 2px;
-}
-#companylogo a img {
-  margin: 8px 8px -12px 8px;
-}
-#companylogo {
-  padding:  0 0 0 5%;
-}</code>
-    </property>
-    <property>
-      <name/>
-    </property>
-    <property>
-      <parse>0</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
+      <titleColor>#2173AF</titleColor>
     </property>
   </object>
   <object>
@@ -1874,10 +1427,10 @@ hr {
         <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
       </users>
     </class>
-    <name>ColorThemes.SickKids</name>
+    <name>ColorThemes.Blue</name>
     <number>0</number>
     <className>XWiki.XWikiRights</className>
-    <guid>2c78e686-b715-45ed-862f-7af1eb6298a6</guid>
+    <guid>3e96ac14-b5b3-4232-9570-46482ae3f066</guid>
     <property>
       <allow>1</allow>
     </property>
