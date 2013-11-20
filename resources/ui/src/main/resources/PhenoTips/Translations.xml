@@ -81,10 +81,11 @@ patient.livetable.miscarriages=Parents with at least 3 miscarriages
 admin.phenotips=PhenoTips
 admin.phenotips.description=Phenotype data settings.
 admin.welcome=Welcome message
-admin.phenotipscode=PhenoTips application code
-admin.dbconfig=Patient database
+admin.tablesconfig=Data tables
+admin.dataformats=Data formats
 admin.menuconfig=Menu configuration
-admin.formconfig=Patient form
+admin.formconfig=Patient form structure
+admin.mapping=Phenotypes displayed by default
 admin.ontology=Ontology index
 admin.workgroups=Work groups
 
