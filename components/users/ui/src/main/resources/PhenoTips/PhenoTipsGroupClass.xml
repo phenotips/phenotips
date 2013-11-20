@@ -806,7 +806,7 @@
 #set ($groupSortedData = $sorttool.sort($groupData, ["${order}:${orders.get($order)}"]))
 
 #set ($max = $mathtool.toInteger($xcontext.macro.params.max))
-#if (!($max &gt; 0 &amp;&amp; $max &lt; $groupSortedData.size()))
+#if (!($max &amp;&amp; $max &gt; 0 &amp;&amp; $max &lt; $groupSortedData.size()))
   #set ($max = $groupSortedData.size())
 #end
 
