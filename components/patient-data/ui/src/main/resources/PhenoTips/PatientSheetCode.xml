@@ -2243,11 +2243,48 @@ document.observe('xwiki:dom:loaded', function() {
      updateCharts(event);
   });
 
+
+  // ------------------------------------------------------------------------------------------
   // Also attach the measurement switcher
   var configuredUnitSystem = $('measurementUnitSystem');
   // this element will exist iff the imerial system is enabled
   if (configuredUnitSystem) {
     new PhenoTips.widgets.UnitConverter($('extradata-list-PhenoTips.MeasurementsClass'), 'input[type="text"]:not([name$="date"])', $('extradata-list-PhenoTips.MeasurementsClass'), 'before', configuredUnitSystem.value || '');
+  }
+
+  // ------------------------------------------------------------------------------------------
+  // And one more thing (not exactly related to measurements directly:
+  // If we're collecting data about gestational age, select premature birth for low gestational ages
+  var gaInput = $$('input[type="text"][name$="_gestation"]');
+  gaInput = gaInput.size() &gt; 0 &amp;&amp; gaInput[0] || '';
+  var pbInput = findFormElementForPhenotype('HP:0001622');
+  if (gaInput &amp;&amp; pbInput) {
+    gaInput.observe('blur', function (event) {
+      var ga = parseInt(gaInput.value);
+      var targetElt = pbInput;
+      if (!isNaN(ga)) {
+        if (ga &lt; 37) {
+          if (!targetElt.checked) {
+            if (targetElt._ynpicker) {
+              targetElt._ynpicker._onYes();
+            } else {
+              targetElt.checked = true;
+            }
+            highlightChecked(targetElt);
+          }
+        } else {
+          if (targetElt._ynpicker) {
+            targetElt._ynpicker._onNo();
+            highlightChecked(targetElt);
+          }
+        }
+      } else {
+          if (targetElt._ynpicker) {
+            targetElt._ynpicker._onNA();
+            highlightChecked(targetElt);
+          }
+      }
+    });
   }
 });</code>
     </property>
