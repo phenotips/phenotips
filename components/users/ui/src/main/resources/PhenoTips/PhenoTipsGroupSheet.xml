@@ -260,13 +260,20 @@ $xwiki.ssx.use('PhenoTips.ImageDisplayer')##
 $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
 #if ($xcontext.action == 'edit')
 (% class="xform" %)(((
-; Group name
+; {{html}}&lt;label&gt;Name&lt;/label&gt;{{/html}}
+: (% class="xHint" %)The group's name, as it should appear on the group's presentation page and anywhere else this group is referenced.
 : {{html}}&lt;input type="text" name="title" value="$!doc.title"/&gt;{{/html}}
-; Image
+; {{html}}&lt;label&gt;Image&lt;/label&gt;{{/html}}
+: (% class="xHint" %)Upload a logo or any other type of graphic representation for this group. The optimal image size is {{{200px x 200px}}}. If the logo is missing, a default image will be displayed instead.
 : $doc.display('image')
-; Group description
+; {{html}}&lt;label&gt;Group description&lt;/label&gt;{{/html}}
+: (% class="xHint" %)A short presentation to inform visitors what this group's purpose is.
 : $doc.display('description')
-; Public information
+; {{html}}&lt;label&gt;Contact&lt;/label&gt;{{/html}}
+: (% class="xHint" %)An email address where one (or more) of the admins can be contacted
+: $doc.display('contact')
+; {{html}}&lt;label&gt;Public information&lt;/label&gt;{{/html}}
+: (% class="xHint" %)What else will be shown to visitors landing on this group's presentation page?
 : $doc.display('public_sections')
 
 )))
