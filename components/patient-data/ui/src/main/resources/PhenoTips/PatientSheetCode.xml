@@ -2149,6 +2149,7 @@ document.observe('xwiki:dom:loaded', function() {
        hand : {
          evaluation : row.down('td.hand_evaluation'),
          valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0004279'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001176')
          }
        },
@@ -2168,6 +2169,7 @@ document.observe('xwiki:dom:loaded', function() {
        hand_right : {
          evaluation : row.down('td.hand_right_evaluation'),
          valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0004279'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001176')
          }
        },
