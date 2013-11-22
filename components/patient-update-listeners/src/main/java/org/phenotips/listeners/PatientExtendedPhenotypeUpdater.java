@@ -116,6 +116,7 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
      */
     private void updateField(String baseFieldName, String extendedFieldName, BaseObject patientRecordObj)
     {
+        @SuppressWarnings("unchecked")
         List<String> phenotypes = patientRecordObj.getListValue(baseFieldName);
         Set<String> extendedPhenotypes = new HashSet<String>();
         for (String phenotype : phenotypes) {
