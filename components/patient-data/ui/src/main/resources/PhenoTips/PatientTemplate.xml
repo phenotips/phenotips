@@ -99,7 +99,7 @@
         <disabled>0</disabled>
         <editor>---</editor>
         <name>comments</name>
-        <number>30</number>
+        <number>29</number>
         <picker>0</picker>
         <prettyName>Additional comments</prettyName>
         <rows>5</rows>
@@ -125,14 +125,8 @@
       </consanguinity>
       <date_of_birth>
         <customDisplay>{{velocity}}{{html clean=false}}
+#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
-#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#if ($config)
-  #set ($format = "$!{config.getProperty('dateOfBirthFormat').value}")
-#end
-#if ("$!format" == '')
-  #set ($format = $definedFormat)
-#end
 #if ($xcontext.action == 'edit')
   #set ($date = $xwiki.jodatime.mutableDateTime)
   #if ("$!xwiki.getUserPreference('timezone')" != '')
@@ -180,8 +174,8 @@
   #if ("$!xwiki.getUserPreference('timezone')" != '')
     #set ($discard = $value.setZoneRetainFields($xwiki.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
   #end
+  &lt;span class="date"&gt;$!xwiki.formatDate($value.toDate(), $format)&lt;/span&gt;
 #end
-&lt;span class="date"&gt;$!xwiki.formatDate($value.toDate(), $format)&lt;/span&gt;
 #end
 {{/html}}{{/velocity}}</customDisplay>
         <dateFormat>MM/dd/yyyy</dateFormat>
@@ -199,14 +193,8 @@
       </date_of_birth>
       <exam_date>
         <customDisplay>{{velocity}}{{html clean=false}}
+#set ($format = $services.recordConfiguration.activeConfiguration.dateOfBirthFormat)
 #set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
-#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#if ($config)
-  #set ($format = "$!{config.getProperty('dateOfBirthFormat').value}")
-#end
-#if ("$!format" == '')
-  #set ($format = $definedFormat)
-#end
 #if ($xcontext.action == 'edit')
   #set ($date = $xwiki.jodatime.mutableDateTime)
   #if ("$!xwiki.getUserPreference('timezone')" != '')
@@ -280,7 +268,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>extended_negative_phenotype</name>
-        <number>35</number>
+        <number>34</number>
         <picker>0</picker>
         <prettyName>extended_negative_phenotype</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -304,7 +292,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>extended_negative_prenatal_phenotype</name>
-        <number>36</number>
+        <number>35</number>
         <picker>0</picker>
         <prettyName>extended_negative_prenatal_phenotype</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -328,7 +316,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>extended_phenotype</name>
-        <number>33</number>
+        <number>32</number>
         <picker>0</picker>
         <prettyName>extended_phenotype</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -352,7 +340,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>extended_prenatal_phenotype</name>
-        <number>34</number>
+        <number>33</number>
         <picker>0</picker>
         <prettyName>extended_prenatal_phenotype</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -385,7 +373,7 @@
         <disabled>0</disabled>
         <editor>---</editor>
         <name>family_comments</name>
-        <number>28</number>
+        <number>27</number>
         <picker>0</picker>
         <prettyName>List health conditions found in family (describe the relationship with proband)</prettyName>
         <rows>5</rows>
@@ -469,7 +457,7 @@
         <customDisplay/>
         <disabled>0</disabled>
         <name>gestation</name>
-        <number>27</number>
+        <number>26</number>
         <numberType>integer</numberType>
         <prettyName>Gestation at delivery (weeks)</prettyName>
         <size>30</size>
@@ -505,7 +493,7 @@
         <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
       </identifier>
       <in_vitro>
-        <customDisplay/>
+        <customDisplay>{{include document="PhenoTips.YesNoNAPicker" /}}</customDisplay>
         <defaultValue/>
         <disabled>0</disabled>
         <displayFormType>checkbox</displayFormType>
@@ -586,7 +574,7 @@
         <disabled>0</disabled>
         <editor>---</editor>
         <name>medical_developmental_history</name>
-        <number>31</number>
+        <number>30</number>
         <picker>0</picker>
         <prettyName>Medical and developmental history</prettyName>
         <rows>5</rows>
@@ -669,7 +657,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>negative_phenotype</name>
-        <number>23</number>
+        <number>22</number>
         <picker>0</picker>
         <prettyName>Symptoms NOT observed in this patient</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -693,7 +681,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>negative_prenatal_phenotype</name>
-        <number>25</number>
+        <number>24</number>
         <picker>0</picker>
         <prettyName>negative_prenatal_phenotype</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -717,7 +705,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>omim_id</name>
-        <number>20</number>
+        <number>19</number>
         <picker>0</picker>
         <prettyName>OMIM disorder</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -776,7 +764,7 @@
         <idField/>
         <multiSelect>0</multiSelect>
         <name>pedigree</name>
-        <number>29</number>
+        <number>28</number>
         <picker>0</picker>
         <prettyName>Pedigree</prettyName>
         <relationalStorage>0</relationalStorage>
@@ -805,7 +793,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>phenotype</name>
-        <number>22</number>
+        <number>21</number>
         <picker>0</picker>
         <prettyName>Clinical symptoms &amp; physical findings</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -825,7 +813,7 @@
         <disabled>0</disabled>
         <editor>---</editor>
         <name>prenatal_comments</name>
-        <number>26</number>
+        <number>25</number>
         <picker>0</picker>
         <prettyName>Notes</prettyName>
         <rows>5</rows>
@@ -849,7 +837,7 @@
         <idField/>
         <multiSelect>1</multiSelect>
         <name>prenatal_phenotype</name>
-        <number>24</number>
+        <number>23</number>
         <picker>0</picker>
         <prettyName>Prenatal and Perinatal History</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -881,13 +869,19 @@
       <reports_history>
         <cache>0</cache>
         <classname/>
-        <customDisplay>{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
+        <customDisplay>{{velocity output="false"}}
+#if (!$value)
+  #set ($value = [])
+#end
+{{/velocity}}
+
+{{include document="PhenoTips.ImageDisplayer" /}}</customDisplay>
         <disabled>0</disabled>
         <displayType>checkbox</displayType>
         <idField/>
         <multiSelect>1</multiSelect>
         <name>reports_history</name>
-        <number>32</number>
+        <number>31</number>
         <picker>0</picker>
         <prettyName>Reports</prettyName>
         <relationalStorage>1</relationalStorage>
@@ -909,7 +903,7 @@
         <displayFormType>checkbox</displayFormType>
         <displayType/>
         <name>unaffected</name>
-        <number>21</number>
+        <number>20</number>
         <prettyName>This patient is clinically normal</prettyName>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
