@@ -5066,16 +5066,10 @@ input.xwiki-free-multiselect-value {
       <cache>long</cache>
     </property>
     <property>
-      <code>#template("colorThemeInit.vm")
-
-.unit-system-selector {
+      <code>.unit-system-selector {
   float: right;
   padding: 3px 3px 0;
   border-radius: 3px;
-}
-#body select.unit-system-selector, .unit-system-selector option {
-  background-color: $theme.buttonPrimaryBackgroundColor !important;
-  color: $theme.buttonPrimaryTextColor !important;
 }</code>
     </property>
     <property>
