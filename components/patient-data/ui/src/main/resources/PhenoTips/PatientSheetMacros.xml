@@ -76,7 +76,7 @@
   #if ($xcontext.action == 'edit' || $obj.getProperty($propertyName).value == 1)
     (% class="fieldset ${propName} %)(((
       #if ($withLabel)
-        #__label($propName '')
+        #__label($propName '' '')
       #end
       #__display($propName)
     )))
@@ -86,7 +86,7 @@
 #macro (__displayIfNotUnknown $propName)
   #if ($xcontext.action == 'edit' || "$!obj.getProperty($propertyName).value" != 'Unknown')
     (% class="fieldset ${propName} %)(((
-      #__label($propName '')
+      #__label($propName '' '')
       #__display($propName)
     )))
   #end
@@ -105,7 +105,7 @@
 #end
 
 #macro (__hasKnownDataToDisplay $propertyName $shouldDisplay)
-  #if ($xcontext.action == 'edit' || "$!obj.getProperty($propertyName).value" != 'Unknown')
+  #if ($xcontext.action == 'edit' || "$!obj.getProperty($propertyName).value.toLowerCase()" != 'unknown')
     #setVariable("$shouldDisplay", true)
   #end
 #end
