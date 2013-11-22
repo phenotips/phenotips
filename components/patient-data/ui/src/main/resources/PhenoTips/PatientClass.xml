@@ -283,8 +283,8 @@
   #if ("$!xwiki.getUserPreference('timezone')" != '')
     #set ($discard = $value.setZoneRetainFields($xwiki.jodatime.getTimezone($xwiki.getUserPreference('timezone'))))
   #end
+  &lt;span class="date"&gt;$!xwiki.formatDate($value.toDate(), $format)&lt;/span&gt;
 #end
-&lt;span class="date"&gt;$!xwiki.formatDate($value.toDate(), $format)&lt;/span&gt;
 #end
 {{/html}}{{/velocity}}</customDisplay>
       <dateFormat>MM/dd/yyyy</dateFormat>
