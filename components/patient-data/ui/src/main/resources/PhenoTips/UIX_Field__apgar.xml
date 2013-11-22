@@ -22,7 +22,7 @@
 
 <xwikidoc>
   <web>PhenoTips</web>
-  <name>UIX_Field__prenatal_phenotype</name>
+  <name>UIX_Field__apgar</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,11 +31,11 @@
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1377394297000</creationDate>
-  <date>1377392505000</date>
-  <contentUpdateDate>1377101963000</contentUpdateDate>
+  <creationDate>1385130800000</creationDate>
+  <date>1385131151000</date>
+  <contentUpdateDate>1385130818000</contentUpdateDate>
   <version>1.1</version>
-  <title>Prenatal and Perinatal History</title>
+  <title>APGAR scores</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -107,21 +107,21 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.UIX_Field__prenatal_phenotype</name>
+    <name>PhenoTips.UIX_Field__apgar</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>4b05398d-9818-4c81-b631-06f94ec3b2fa</guid>
+    <guid>11907b9d-0459-4675-be8e-ef9a912eedad</guid>
     <property>
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#__hasDataToDisplay('prenatal_phenotype' $showPrenatalPhenotype)
-#if ($xcontext.action == 'edit')
-  $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-  $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
+#__hasKnownDataToDisplay('apgar1' $showApgar1Score)
+#__hasKnownDataToDisplay('apgar5' $showApgar5Score)
+#if ($showApgar1Score)
+  #__displayFormatted('2-col' 'apgar1' '' '' '')
 #end
-#if ($showPrenatalPhenotype)
-  $doc.display('prenatal_phenotype')
+#if ($showApgar5Score)
+  #__displayFormatted('2-col' 'apgar5' '' '' '')
 #end
 {{/velocity}}</content>
     </property>
@@ -129,14 +129,14 @@
       <extensionPointId>org.phenotips.patientSheet.section.prenatal-info</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.prenatal_phenotype</name>
+      <name>org.phenotips.patientSheet.field.apgar</name>
     </property>
     <property>
-      <parameters>title=Prenatal and perinatal phenotypes
+      <parameters>title=APGAR scores
 enabled=true
 required=
-order=3
-fields=prenatal_phenotype,negative_prenatal_phenotype</parameters>
+order=2
+fields=apgar1,apgar2</parameters>
     </property>
     <property>
       <scope>wiki</scope>

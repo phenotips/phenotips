@@ -93,6 +93,48 @@
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </age_of_onset>
+    <apgar1>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>apgar1</name>
+      <number>36</number>
+      <picker>0</picker>
+      <prettyName>APGAR score (1 minute)</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>unknown|0|1|2|3|4|5|6|7|8|9|10</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </apgar1>
+    <apgar5>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>apgar5</name>
+      <number>37</number>
+      <picker>0</picker>
+      <prettyName>APGAR score (5 minutes)</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>unknown|0|1|2|3|4|5|6|7|8|9|10</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </apgar5>
     <comments>
       <customDisplay/>
       <disabled>0</disabled>
