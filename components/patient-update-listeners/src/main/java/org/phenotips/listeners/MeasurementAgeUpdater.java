@@ -38,10 +38,8 @@ import javax.inject.Singleton;
 import org.joda.time.DateTime;
 import org.joda.time.Months;
 
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.PropertyInterface;
 
 /**
  * Update the Age property whenever the birth date or measurement date properties are changed.
@@ -53,6 +51,12 @@ import com.xpn.xwiki.objects.PropertyInterface;
 @Singleton
 public class MeasurementAgeUpdater implements EventListener
 {
+    /** The name of the XProperty holding the age at the time of measurement, which will be updated by this listener. */
+    private static final String AGE_PROPERTY_NAME = "age";
+
+    /** The name of the XProperty holding the date when the measurement occurred. */
+    private static final String DATE_PROPERTY_NAME = "date";
+
     @Override
     public String getName()
     {
@@ -80,7 +84,6 @@ public class MeasurementAgeUpdater implements EventListener
         if (birthDate == null) {
             return;
         }
-        String targetPropertyName = "age";
         List<BaseObject> objects = doc.getXObjects(new DocumentReference(
             doc.getDocumentReference().getRoot().getName(), Constants.CODE_SPACE, "MeasurementsClass"));
         if (objects == null || objects.isEmpty()) {
@@ -90,20 +93,12 @@ public class MeasurementAgeUpdater implements EventListener
             if (measurement == null) {
                 continue;
             }
-            Date measurementDate = measurement.getDateValue("date");
+            Date measurementDate = measurement.getDateValue(DATE_PROPERTY_NAME);
             if (measurementDate == null) {
-                PropertyInterface prop = null;
-                try {
-                    prop = measurement.get(targetPropertyName);
-                } catch (XWikiException ex) {
-                    // Shouldn't happen, ignore it
-                }
-                if (prop != null) {
-                    measurement.addPropertyForRemoval(prop);
-                }
+                measurement.removeField(AGE_PROPERTY_NAME);
             } else {
                 int age = Months.monthsBetween(new DateTime(birthDate), new DateTime(measurementDate)).getMonths();
-                measurement.setIntValue(targetPropertyName, age);
+                measurement.setIntValue(AGE_PROPERTY_NAME, age);
             }
         }
     }
