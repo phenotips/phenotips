@@ -1897,10 +1897,34 @@ $!value
       <categoryPriority>0</categoryPriority>
     </property>
     <property>
-      <codeToExecute/>
+      <codeToExecute>#set($targetDocName = 'data.WebHome')
+#set($targetDoc = $xwiki.getDocument($targetDocName))
+#set($className = 'XWiki.GadgetClass')
+#set($gadgetObj = $targetDoc.getObject($className))
+#set($prefix = "${className}_${gadgetObj.number}_")
+#set($fullPrefix = "${targetDocName}_${prefix}")
+
+{{html clean=false}}
+&lt;form id="welcome_${targetDocName}" method="post" action="$targetDoc.getURL('save')" class="xform half"&gt;
+&lt;fieldset&gt;&lt;dl&gt;
+&lt;dt&gt;&lt;label for="${targetDocName}_title"&gt;Homepage title&lt;/label&gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;input id="${targetDocName}title" name="title" size="30" type="text" value="$!targetDoc.title"&gt;&lt;/input&gt;&lt;/dd&gt;
+&lt;dt&gt;&lt;label for="${fullPrefix}title"&gt;Welcome message box title&lt;/label&gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;input id="${fullPrefix}title" name="${prefix}title" size="30" type="text" value="$!gadgetObj.getProperty('title').value"&gt;&lt;/input&gt;&lt;/dd&gt;
+&lt;dt&gt;&lt;label for="${fullPrefix}content"&gt;Welcome message content&lt;/label&gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;textarea cols="40" id="${fullPrefix}content" name="${prefix}content" rows="5"&gt;PhenoTips enables the capture and analysis of phenotypic information for patients with genetic disorders.&lt;/textarea&gt;&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;input type="hidden" id="${targetDocName}_redirect" name="xredirect" value="$doc.getURL($xcontext.action, $request.queryString)" /&gt;
+&lt;input type="hidden" name="form_token" value="$!{services.csrf.token}" /&gt;
+&lt;/fieldset&gt;
+&lt;div class="bottombuttons"&gt;&lt;p class="admin-buttons"&gt;
+&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="action_saveandcontinue" value="Save" /&gt;&lt;/span&gt;
+&lt;/p&gt;&lt;/div&gt;
+&lt;/form&gt;
+{{/html}}</codeToExecute>
     </property>
     <property>
-      <configurationClass>GadgetClass</configurationClass>
+      <configurationClass/>
     </property>
     <property>
       <configureGlobally>1</configureGlobally>
@@ -1912,7 +1936,7 @@ $!value
       <displayInSection>welcome</displayInSection>
     </property>
     <property>
-      <heading>Welcome message displayed on the homepage</heading>
+      <heading/>
     </property>
     <property>
       <iconAttachment/>
@@ -1921,10 +1945,7 @@ $!value
       <linkPrefix/>
     </property>
     <property>
-      <propertiesToShow>
-        <value>title</value>
-        <value>content</value>
-      </propertiesToShow>
+      <propertiesToShow/>
     </property>
     <property>
       <sectionPriority>0</sectionPriority>
