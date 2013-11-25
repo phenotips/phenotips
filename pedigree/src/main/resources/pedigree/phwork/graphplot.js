@@ -1330,11 +1330,10 @@ DrawGraph.prototype = {
                 if (this.GG.isChildhub(v0)) {
                     // just assign all childhubs the same order as their relationships)
                     var byRelOrder = function(a,b) {
-                           var rel1 = GG.getInEdges(a)[0];
-                           var rel2 = GG.getInEdges(b)[0];
-                           
-                           return (order.vOrder[rel1] > order.vOrder[rel2]);
-                        }
+                        var rel1 = GG.getInEdges(a)[0];
+                        var rel2 = GG.getInEdges(b)[0];
+                        return order.vOrder[rel1] - order.vOrder[rel2];
+                     }                    
                     order.order[r].sort(byRelOrder);
                     
                     for (var i = 0; i <= order.order[r].length; i++)                                                
