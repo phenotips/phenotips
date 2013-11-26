@@ -19,7 +19,11 @@
  */
 package org.phenotips.groups;
 
+import org.phenotips.Constants;
+
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -31,6 +35,10 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public interface Group
 {
+    /** The XClass used for storing work groups. */
+    EntityReference CLASS_REFERENCE = new EntityReference("PhenoTipsGroupClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
+
     /**
      * Get a reference to the XDocument where this group is defined.
      * 
