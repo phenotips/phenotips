@@ -890,7 +890,7 @@ TXVppcEAAAAASUVORK5CYII=
   opacity: .2;
 }
 
-input[name=action_saveandcontinue] {
+.editbody input[name=action_saveandcontinue] {
   display: none;
 }
 
