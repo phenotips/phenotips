@@ -136,6 +136,34 @@
         <values>unknown|0|1|2|3|4|5|6|7|8|9|10</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </apgar5>
+      <assistedReproduction_fertilityMeds>
+        <customDisplay>{{include document="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>assistedReproduction_fertilityMeds</name>
+        <number>38</number>
+        <prettyName>Conception after fertility medication</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </assistedReproduction_fertilityMeds>
+      <assistedReproduction_surrogacy>
+        <customDisplay>{{include document="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>assistedReproduction_surrogacy</name>
+        <number>39</number>
+        <prettyName>Gestational surrogacy</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </assistedReproduction_surrogacy>
       <comments>
         <customDisplay/>
         <disabled>0</disabled>
@@ -534,20 +562,6 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
       </identifier>
-      <in_vitro>
-        <customDisplay>{{include document="PhenoTips.YesNoNAPicker" /}}</customDisplay>
-        <defaultValue/>
-        <disabled>0</disabled>
-        <displayFormType>checkbox</displayFormType>
-        <displayType/>
-        <name>in_vitro</name>
-        <number>16</number>
-        <prettyName>In vitro fertilization</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </in_vitro>
       <indication_for_referral>
         <customDisplay/>
         <disabled>0</disabled>
@@ -563,6 +577,20 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </indication_for_referral>
+      <ivf>
+        <customDisplay>{{include document="PhenoTips.YesNoNAPicker" /}}</customDisplay>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>ivf</name>
+        <number>16</number>
+        <prettyName>In vitro fertilization</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </ivf>
       <last_name>
         <customDisplay/>
         <disabled>0</disabled>

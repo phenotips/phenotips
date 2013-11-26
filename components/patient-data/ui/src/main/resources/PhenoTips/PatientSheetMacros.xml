@@ -83,6 +83,17 @@
   #end
 #end
 
+#macro (__displayIfSet $propName $withLabel)
+  #if ($xcontext.action == 'edit' || $obj.getProperty($propName).value == 1 || $obj.getProperty($propName).value == 0)
+    (% class="fieldset ${propName} %)(((
+      #if ($withLabel)
+        #__label($propName '' '')
+      #end
+      #__display($propName)
+    )))
+  #end
+#end
+
 #macro (__displayIfNotUnknown $propName)
   #if ($xcontext.action == 'edit' || "$!obj.getProperty($propName).value" != 'Unknown')
     (% class="fieldset ${propName} %)(((
