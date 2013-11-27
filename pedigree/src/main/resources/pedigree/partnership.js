@@ -19,6 +19,7 @@ var Partnership = Class.create(AbstractNode, {
        this._childlessStatus = null;
        this._childlessReason = "";
        this._type            = 'Partnership';
+       this._broken          = false;
        this._consangrMode    = "A";           // "Autodetect" mode: determine base don the current pedigree.
                                               //  Can be either "A", "Y" (always consider consangr.) or "N" (never)
        $super(x, y, id);       
@@ -83,6 +84,27 @@ var Partnership = Class.create(AbstractNode, {
     },
 
     /**
+     * Sets relationship as either broken or not
+     *
+     * @method getBrokenStatus
+     */    
+    setBrokenStatus: function(value) {
+        if (this._broken != value) {
+            this._broken = value;
+            this.getGraphics().updatePartnerConnections();
+        }
+    },
+    
+    /**
+     * Returns the status of this relationship (broken or not)
+     *
+     * @method getBrokenStatus
+     */        
+    getBrokenStatus: function() {
+        return this._broken;
+    },
+    
+    /**
      * Returns an object (to be accepted by the menu) with information about this Partnership
      *
      * @method getSummary
@@ -93,8 +115,9 @@ var Partnership = Class.create(AbstractNode, {
         return {
             identifier:    {value : this.getID()},
             childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive: childlessInactive},
-            childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive: childlessInactive},
-            consangr: {value: this._consangrMode, inactive: false }
+            childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive: childlessInactive},            
+            consangr: {value: this._consangrMode, inactive: false},
+            broken: {value: this.getBrokenStatus(), inactive: false}
         };
     },
 
@@ -114,6 +137,9 @@ var Partnership = Class.create(AbstractNode, {
         }
         if (this.getConsanguinity() != "A") {
             info['consangr'] = this.getConsanguinity();
+        }
+        if (this.getBrokenStatus()) {
+            info['broken'] = this.getBrokenStatus();
         }
         return info;
     },
@@ -135,6 +161,9 @@ var Partnership = Class.create(AbstractNode, {
             }
             if (info.consangr && info.consangr != this.getConsanguinity()) {                
                 this.setConsanguinity(info.consangr);
+            }
+            if (info.broken && info.broken != this.getBrokenStatus()) {
+                this.setBrokenStatus(info.broken);
             }
             return true;
         }

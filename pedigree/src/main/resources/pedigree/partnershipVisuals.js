@@ -178,24 +178,32 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 
                 var nodePos  = editor.getGraph().getPosition(nextNodeOnPath);
                 var position = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );
-                
+                                
                 //console.log("NextNode: " + nextNodeOnPath + ", nodePos: " + stringifyObject(nodePos) + ", position: " + stringifyObject(position) );
                                 
                 if (position.x < xFrom)   // depending on curve direction upper/lower curves of  adouble-line are shifted in different directions
                     goesLeft = true;
                 else if (position.x > xFrom)
                     goesLeft = false;
-                                                                                         
+                                                                                                         
                 var newVertical = (prevY != position.y);                    
                                 
                 var angled = (prevX != position.x && prevY != position.y);
                                 
                 var changesDirection = ((vertical && !newVertical) || (!vertical && newVertical)) || angled;
-                
+
                 if (i == path.length-1 && prevY == yTop) {
                     angled = false;
-                    changesDirection = true;
+                    changesDirection = (xFrom != xTo || yFrom != yTo);
                     newVertical = false;
+                }                
+
+                // if necessary, mark first segment on the left as broken
+                if (i == 0 && goesLeft && this.getNode().getBrokenStatus()) {
+                    editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xFrom-15, yFrom, lineAttr, consangr, goesLeft);
+                    editor.getPaper().path("M " + (xFrom-28) + " " + (yFrom+10) + " L " + (xFrom-14) + " " + (yFrom-10)).attr(lineAttr).toBack();
+                    editor.getPaper().path("M " + (xFrom-23) + " " + (yFrom+10) + " L " + (xFrom- 9) + " " + (yFrom-10)).attr(lineAttr).toBack();
+                    xFrom -= 22;
                 }                
                 
                 //console.log("angled: " + angled + ", changes: " + changesDirection);
@@ -259,7 +267,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 vertical = newVertical;
                 wasAngle = angled;
             }
-            
+
             if (yFrom >= finalPosition.y + cornerRadius*2)
                 editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xTo, finalYTo, lineAttr, consangr, false);
             else

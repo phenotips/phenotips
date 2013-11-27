@@ -409,6 +409,12 @@ var PedigreeEditor = Class.create({
                 ],
                 'default' : 'A',
                 'function' : 'setConsanguinity'
+            },
+            {
+                'name' : 'broken',
+                'label' : 'Broken',
+                'type' : 'checkbox',
+                'function' : 'setBrokenStatus'
             }            
         ]);
     },
