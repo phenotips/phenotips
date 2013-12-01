@@ -2139,7 +2139,23 @@ Heuristics.prototype = {
                     if (xcoord.xcoord[childId] == childhubX) continue;
 
                     // ok, we can't move the child. Try to move the relationship & the parent(s)
-                    //var needShift = (xcoord.xcoord[childId] -
+                    var needShift = xcoord.xcoord[childId] - childhubX;
+                    if (needShift < 0) { // need to shift childhub + relationship + one parent to the left
+                        var parent = (xcoord.xcoord[parents[0]] < xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
+                        var willShift = Math.min(xcoord.getSlackOnTheLeft(childhub), xcoord.getSlackOnTheLeft(parent), -needShift);
+                        //console.log("will shift " + parent + " by " + willShift);
+                        xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   - willShift, true);
+                        xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        - willShift, true);
+                        xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] - willShift, true);
+                    }
+                    else {
+                        var parent = (xcoord.xcoord[parents[0]] > xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
+                        var willShift = Math.min(xcoord.getSlackOnTheRight(childhub), xcoord.getSlackOnTheRight(parent), needShift);
+                        //console.log("will shift " + parent + " by " + willShift);
+                        xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   + willShift, true);
+                        xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        + willShift, true);
+                        xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] + willShift, true);
+                    }
                 }
                 // B) relationship not above one of it's multiple children (preferably one in the middle)
                 else {

@@ -26,7 +26,7 @@ XCoord.prototype = {
             (this.graph.GG.getTwinGroupId(v1) == this.graph.GG.getTwinGroupId(v2)) &&
             (this.graph.GG.getTwinGroupId(v1) != null) )
             return this.graph.horizontalTwinSeparationDist;
-        
+
         return this.graph.horizontalPersonSeparationDist;
     },
 
@@ -47,6 +47,10 @@ XCoord.prototype = {
         return leftBoundary;
     },
 
+    getSlackOnTheLeft: function(v) {
+        return this.xcoord[v] - this.getLeftMostNoDisturbPosition(v,true);
+    },
+
     getRightMostNoDisturbPosition: function(v, alsoMoveRelationship) {
         var rightBoundary = Infinity;
 
@@ -54,7 +58,7 @@ XCoord.prototype = {
         if ( order < this.graph.order.order[this.graph.ranks[v]].length-1 ) {
             var rightNeighbour = this.graph.order.order[this.graph.ranks[v]][order+1];
             rightBoundary = this.getLeftEdge(rightNeighbour) - this.getSeparation(v, rightNeighbour) - this.halfWidth[v];
-            
+
             if (alsoMoveRelationship && this.graph.GG.type[rightNeighbour] == TYPE.RELATIONSHIP) {
                 var rightMost = this.getRightMostNoDisturbPosition(rightNeighbour);
                 var slack     = rightMost - this.xcoord[rightNeighbour];
@@ -63,6 +67,10 @@ XCoord.prototype = {
         }
 
         return rightBoundary;
+    },
+
+    getSlackOnTheRight: function(v) {
+        return this.getRightMostNoDisturbPosition(v,false) - this.xcoord[v];
     },
 
     getLeftEdge: function(v) {
