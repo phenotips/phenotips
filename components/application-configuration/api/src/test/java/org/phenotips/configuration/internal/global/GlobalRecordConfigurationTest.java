@@ -200,30 +200,34 @@ public class GlobalRecordConfigurationTest
         Map<String, String> params;
         List<UIExtension> sections = new LinkedList<UIExtension>();
 
-        ex = mock(UIExtension.class);
+        ex = mock(UIExtension.class, "section1");
         when(ex.getId()).thenReturn("section1");
         params = new HashMap<String, String>();
         params.put("enabled", "true");
+        params.put("order", "1");
         when(ex.getParameters()).thenReturn(params);
         sections.add(ex);
 
-        ex = mock(UIExtension.class);
+        ex = mock(UIExtension.class, "disabled_section");
         when(ex.getId()).thenReturn("disabled_section");
         params = new HashMap<String, String>();
         params.put("enabled", "false");
+        params.put("order", "2");
         when(ex.getParameters()).thenReturn(params);
         sections.add(ex);
 
-        ex = mock(UIExtension.class);
+        ex = mock(UIExtension.class, "section3");
         when(ex.getId()).thenReturn("section3");
         params = new HashMap<String, String>();
         params.put("enabled", "");
+        params.put("order", "3");
         when(ex.getParameters()).thenReturn(params);
         sections.add(ex);
 
-        ex = mock(UIExtension.class);
+        ex = mock(UIExtension.class, "section4");
         when(ex.getId()).thenReturn("section4");
         params = new HashMap<String, String>();
+        params.put("order", "4");
         when(ex.getParameters()).thenReturn(params);
         sections.add(ex);
 
