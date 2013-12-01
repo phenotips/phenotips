@@ -13,7 +13,6 @@
 var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, node, x, y) {
-    	//console.log("abstract person visuals");
     	$super(node, x, y);
     	
         this._radius = PedigreeEditor.attributes.radius;
@@ -23,12 +22,12 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         this._adoptedShape   = null;
         this._genderShape    = null;                        
         this._genderGraphics = null;  // == set(_genderShape, shadow)
-             
-        this.setGenderGraphics();   
+                     
+        this.setGenderGraphics();
+        
         this.setHighlightBox();
         
         this.updateIDLabel();
-        //console.log("abstract person visuals end");
         
         this._hoverBox = this.generateHoverbox(x, y);
     },
@@ -66,6 +65,9 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      */
     setPos: function($super, x, y, animate, callback) {
 
+        this.getHoverBox().removeHandles();
+        this.getHoverBox().removeButtons();
+        
         var moveX = x - this.getX();
         var moveY = y - this.getY();
         
@@ -94,7 +96,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         else {
             this.getAllGraphics().transform("t " + moveX + "," + moveY + "...");
             callback && callback();
-        }
+        }                
     },
     
     /**
@@ -102,12 +104,13 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      *
      * @method grow
      */
-    grow: function() {
+    grow: function($super) {
+        $super();
         if (this._callback)
             throw "Assertion failed: grow() during animation";
         if (this.glow) return;
         this.glow = this._genderShape.glow({width: 11, fill: true, opacity: 0.4, color: "green"});
-        if (this.marked) this.marked.hide();
+        if (this.marked) this.marked.hide();        
     },
     
     /**
@@ -115,10 +118,11 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      *
      * @method shrink
      */    
-    shrink: function() {
+    shrink: function($super) {
         this.glow && this.glow.remove();
         delete this.glow;
-        if (this.marked) this.marked.show();        
+        if (this.marked) this.marked.show();
+        $super();
     },      
     
     /**
@@ -290,7 +294,6 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         shadow.insertBefore(shape);
         
         this._genderShape = shape;
-
         
         this._genderGraphics = editor.getPaper().set(shadow, shape);
     },

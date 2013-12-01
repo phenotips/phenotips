@@ -120,12 +120,33 @@ function sector(canvas, xPosition, yPosition, radius, gender, startAngle, endAng
  * @param {Number} hue Hue value between 0 and 1
  * @return {Raphael.st}
  */
-function generateOrb (canvas, x, y, r, hue) {
-    hue = hue || 0;
-    return canvas.set(
-        canvas.ellipse(x, y, r, r).attr({fill: "r(.5,.9)hsb(" + hue + ", 1, .75)-hsb(" + hue + ", .5, .25)", stroke: "none"}),
-        canvas.ellipse(x, y, r - r / 5, r - r / 20).attr({stroke: "none", fill: "r(.5,.1)#ccc-#ccc", opacity: 0})
-    );
+function generateOrb (canvas, x, y, r, gender) {
+    if (!gender || gender == 'F' || gender == "U") {
+        return canvas.set(
+                canvas.ellipse(x, y, r, r),
+                canvas.ellipse(x, y, r - r / 5, r - r / 20).attr({stroke: "none", fill: "r(.5,.1)#ccc-#ccc", opacity: 0})
+            );        
+    }        
+    
+    if (gender == "M") {
+        var rr = r - 1;
+        return canvas.set(                                
+                canvas.rect(x-rr, y-rr, rr*2, rr*2, 0),
+                canvas.rect(x-rr, y-rr, rr*2, rr*2, 1).attr({stroke: "none", fill: "330-#ccc-#ccc", opacity: 0})
+            );
+    }
+    
+    /*
+    // TODO: path has no x, y coordinates and moving it is different from moving other objects
+    //       while translated (rotated) objects can't be filled. Cna work around by either translating path
+    //       or rotating/filling/rotating again a rect
+    var rr   = Math.sqrt(2)*(r-1);
+    var path = "M" + (x-rr) + "," + y + "L" + x + "," + (y-rr) + "L" + (x+rr) + "," + y + "L" +  x + "," + (y+rr) + "Z"; 
+    return canvas.set(                                
+            canvas.path(path),
+            canvas.path(path).attr({stroke: "none", fill: "330-#ccc-#ccc", opacity: 0})
+        );
+    */    
 }
 
 /**

@@ -13,16 +13,17 @@ var PedigreeEditor = Class.create({
         window.editor = this;
                         
         // initialize main data structure which holds the graph structure        
-        this._mainGraph = PositionedGraph.makeEmpty(PedigreeEditor.attributes.layoutRelativePersonWidth, PedigreeEditor.attributes.layoutRelativeOtherWidth);                
+        this._mainGraph = DynamicPositionedGraph.makeEmpty(PedigreeEditor.attributes.layoutRelativePersonWidth, PedigreeEditor.attributes.layoutRelativeOtherWidth);                
                
         //initialize the elements of the app
         this._workspace = new Workspace();
         this._nodeMenu = this.generateNodeMenu();
         this._nodeGroupMenu = this.generateNodeGroupMenu();
         this._partnershipMenu = this.generatePartnershipMenu();
-        this._nodetypeSelectionBubble = new NodetypeSelectionBubble();
+        this._nodetypeSelectionBubble = new NodetypeSelectionBubble(false);
+        this._siblingSelectionBubble  = new NodetypeSelectionBubble(true);
         this._disorderLegend = new DisorgerLegend();
-                
+                        
         this._graphicsSet = new GraphicsSet();
         
         this._actionStack = new ActionStack();                
@@ -128,6 +129,14 @@ var PedigreeEditor = Class.create({
         return this._nodetypeSelectionBubble;
     },
 
+    /**
+     * @method getSiblingSelectionBubble
+     * @return {NodetypeSelectionBubble} (floating window with initialization options for new sibling nodes)
+     */
+    getSiblingSelectionBubble: function() {
+        return this._siblingSelectionBubble;
+    },    
+    
     /**
      * @method getWorkspace
      * @return {Workspace}
@@ -451,7 +460,15 @@ var editor;
 
 //attributes for graphical elements in the editor
 PedigreeEditor.attributes = {
-    radius: 40,
+    radius: 40,    
+    personHoverBoxRadius: 90,  // 80    for old handles, 90 for new
+    newHandles: true,          // false for old handles
+    personHandleLength: 75,    // 60    for old handles, 75 for new
+    personHandleBreakX: 55,
+    personHandleBreakY: 53,
+    personSiblingHandleLengthX: 65,
+    personSiblingHandleLengthY: 30,
+    enableHandleHintImages: true,    
     groupNodesScale: 0.85,
     childlessLength: 10,
     twinCommonVerticalLength: 7,
@@ -459,7 +476,7 @@ PedigreeEditor.attributes = {
     unbornShape: {'font-size': 50, 'font-family': 'Cambria'},
     nodeShape:     {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},    
     nodeShapeDiag: {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
-    boxOnHover : {fill: "gray", stroke: "none",opacity: 1, "fill-opacity":.25},
+    boxOnHover : {fill: "gray", stroke: "none", opacity: 1, "fill-opacity":.35},
     menuBtnIcon : {fill: "#1F1F1F", stroke: "none"},
     deleteBtnIcon : {fill: "#990000", stroke: "none"},
     btnMaskHoverOn : {opacity:.6, stroke: 'none'},
@@ -475,10 +492,12 @@ PedigreeEditor.attributes = {
     partnershipRadius: 6,
         partnershipLines :         {"stroke-width": 1.25, stroke : '#303058'},
         consangrPartnershipLines : {"stroke-width": 1.25, stroke : '#402058'},
+        partnershipHandleBreakY: 15,
+        partnershipHandleLength: 36,
     graphToCanvasScale: 12,    
     layoutRelativePersonWidth: 10,
     layoutRelativeOtherWidth: 2,
-    layoutScale: { xscale: 12.0, yscale: 7 }
+    layoutScale: { xscale: 12.0, yscale: 8 }
 };
 
 document.observe("xwiki:dom:loaded",function() {

@@ -190,11 +190,11 @@ var Workspace = Class.create({
         var trackLength = 200;
         this.__zoom = new Element('div', {'class' : 'view-controls-zoom', title : 'Zoom'});
         this.__controls.insert(this.__zoom);
-        this.__zoom.track = new Element('div', {'class' : 'zoom-track'});
+        this.__zoom.track  = new Element('div', {'class' : 'zoom-track'});
         this.__zoom.handle = new Element('div', {'class' : 'zoom-handle', title : 'Drag to zoom'});
-        this.__zoom['in'] = new Element('div', {'class' : 'zoom-button zoom-in', title : 'Zoom in'});
-        this.__zoom.out = new Element('div', {'class' : 'zoom-button zoom-out', title : 'Zoom out'});
-        this.__zoom.label = new Element('div', {'class' : 'zoom-crt-value'});
+        this.__zoom['in']  = new Element('div', {'class' : 'zoom-button zoom-in', title : 'Zoom in'});
+        this.__zoom['out'] = new Element('div', {'class' : 'zoom-button zoom-out', title : 'Zoom out'});
+        this.__zoom.label  = new Element('div', {'class' : 'zoom-crt-value'});
         this.__zoom.insert(this.__zoom['in']);
         this.__zoom.insert(this.__zoom.track);
         this.__zoom.track.insert(this.__zoom.handle);
@@ -229,11 +229,23 @@ var Workspace = Class.create({
         this.__zoom['in'].observe('click', function(event) {
             _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue + .25))
         });
-        this.__zoom.out.observe('click', function(event) {
+        this.__zoom['out'].observe('click', function(event) {
             _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue - .25))
         });
         // Insert all controls in the document
         this.getWorkArea().insert(this.__controls);
+    },    
+    
+    /* To work around a bug in Raphael or Raphaelzpd (?) which creates differently sized lines
+     * @ different zoom levels given the same "stroke-width" in pixels this function computes
+     * the pixel size to be used at this zoom level to create a line of the correct size.
+     * 
+     * Returns the pixel value to be used in stoke-width
+     */
+    getSizeNormalizedToDefaultZoom: function(pixelSizeAtDefaultZoom) {
+        var zoomValue = 0.25 + this.__zoom.__crtValue;
+        
+        return pixelSizeAtDefaultZoom * zoomValue / 0.75; 
     },
 
     /**

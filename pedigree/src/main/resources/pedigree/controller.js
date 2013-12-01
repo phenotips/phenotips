@@ -18,7 +18,9 @@ var Controller = Class.create({
         document.observe("pedigree:node:modify",               this.handleModification);
         document.observe("pedigree:person:drag:newparent",     this.handlePersonDragToNewParent);
         document.observe("pedigree:person:drag:newpartner",    this.handlePersonDragToNewPartner);        
+        document.observe("pedigree:person:drag:newsibling",    this.handlePersonDragToNewSibling);
         document.observe("pedigree:person:newparent",          this.handlePersonNewParents);
+        document.observe("pedigree:person:newsibling",         this.handlePersonNewSibling);
         document.observe("pedigree:person:newpartnerandchild", this.handlePersonNewPartnerAndChild);        
         document.observe("pedigree:partnership:newchild",      this.handleRelationshipNewChild);
     },      
@@ -242,7 +244,7 @@ var Controller = Class.create({
         if (!editor.getGraph().isPerson(personID) || !editor.getGraph().isValidID(parentID)) return;
         
         if (editor.getGraph().isChildless(parentID)) {            
-            editor.getController().handleSetProperty( { "memo": { "nodeID": personID, "properties": { "setAdopted": true } } } );                  
+            editor.getController().handleSetProperty( { "memo": { "nodeID": personID, "properties": { "setAdopted": true }, "noUndoRedo": true } } );                  
         }
                   
         try {
@@ -269,6 +271,65 @@ var Controller = Class.create({
         
         var changeSet = editor.getGraph().addNewParents(personID);
         editor.getGraphicsSet().applyChanges(changeSet, true);
+        
+        if (!event.memo.noUndoRedo)
+            editor.getActionStack().addState( event );
+        
+        return changeSet.new[0]; // new relationship
+    },
+    
+    handlePersonNewSibling: function(event)    
+    {
+        console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
+                
+        // { "personID": id, "childParams": data.params.parameters, "preferLeft": false };
+        var personID    = event.memo.personID;
+        var childParams = event.memo.childParams ? cloneObject(event.memo.childParams) : {};
+        var numTwins    = event.memo.twins ? event.memo.twins : 1;
+        var numPersons  = event.memo.groupSize ? event.memo.groupSize : 0;
+        
+        var parentRelationship = editor.getGraph().getParentRelationship(personID);
+        
+        if (parentRelationship === null) {  
+            // need to add new parents
+            parentRelationship = editor.getController().handlePersonNewParents( { "memo": { "personID": personID, "noUndoRedo": true } } );
+        }
+        
+        var nextEvent = { "partnershipID": parentRelationship, "childParams": childParams, "noUndoRedo": true };
+        if (event.memo.twins)
+            nextEvent["twins"] = event.memo.twins;           
+        if (event.memo.groupSize)
+            nextEvent["groupSize"] = event.memo.groupSize;        
+        
+        editor.getController().handleRelationshipNewChild( { "memo": nextEvent } );
+        
+        if (!event.memo.noUndoRedo)
+            editor.getActionStack().addState( event );        
+    },
+    
+    handlePersonDragToNewSibling: function(event)
+    {
+        console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
+        
+        var sibling1 = event.memo.sibling1ID;
+        var sibling2 = event.memo.sibling2ID;
+        
+        var parentRelationship = editor.getGraph().getParentRelationship(sibling1);
+        if (parentRelationship == null)
+            parentRelationship = editor.getGraph().getParentRelationship(sibling2);
+        
+        if (parentRelationship === null) {  
+            // need to add new parents
+            parentRelationship = editor.getController().handlePersonNewParents( { "memo": { "personID": sibling1, "noUndoRedo": true } } );
+        }
+        
+        if (editor.getGraph().getParentRelationship(sibling2) != parentRelationship) {
+            // assign sibling 2 to this relationship: covers the case when none have parents or sibling1 has parents
+            editor.getController().handlePersonDragToNewParent( { "memo": { "personID": sibling2, "parentID": parentRelationship, "noUndoRedo": true } } );            
+        } else {
+            // assign sibling 1 to this relationship
+            editor.getController().handlePersonDragToNewParent( { "memo": { "personID": sibling1, "parentID": parentRelationship, "noUndoRedo": true } } );            
+        }            
         
         if (!event.memo.noUndoRedo)
             editor.getActionStack().addState( event );        
@@ -340,6 +401,8 @@ var Controller = Class.create({
             node2.setGender(gender2);              
             editor.getGraph().setProperties( partnerID, node2.getProperties() );                        
         }
+        
+        // TODO: propagate change of gender down the partnership chain 
                 
         var changeSet = editor.getGraph().assignPartner(personID, partnerID, childProperties);
         editor.getGraphicsSet().applyChanges(changeSet, true);

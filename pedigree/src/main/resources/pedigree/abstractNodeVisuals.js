@@ -17,6 +17,7 @@ var AbstractNodeVisuals = Class.create({
         this._absoluteX = x;
         this._absoluteY = y;
         this._hoverBox  = null;
+        this._isGrown   = false;
         //console.log("abstract node visuals end");
     },
 
@@ -90,6 +91,7 @@ var AbstractNodeVisuals = Class.create({
      * @method grow
      */
     grow: function() {
+        this._isGrown = true;
     },    
 
     /**
@@ -98,6 +100,16 @@ var AbstractNodeVisuals = Class.create({
      * @method shrink
      */
     shrink: function() {
+        this._isGrown = false;
+    },
+
+    /**
+     * Returns current growth status of the node (true if grown, false if not)
+     *
+     * @method isGrown
+     */    
+    isGrown: function() { 
+        return this._isGrown;
     },
 
     /**
@@ -202,7 +214,6 @@ var ChildlessBehaviorVisuals = {
     updateChildlessShapes: function() {
         var status = this.getNode().getChildlessStatus();
         this._childlessShape && this._childlessShape.remove();
-        // TODO:  && this._childlessShape = null ?
         
         if(status) {
             console.log("childless shape!");
@@ -219,10 +230,6 @@ var ChildlessBehaviorVisuals = {
             this._childlessShape = editor.getPaper().path(childlessPath);
             this._childlessShape.attr({"stroke-width": 2.5, stroke: "#3C3C3C"});
             this._childlessShape.insertAfter(this.getHoverBox().getBackElements().flatten());            
-            //this.getHoverBox().hideChildHandle();  // not hiding becaus epartnerships may still get new adopted children
-        }
-        else {
-           	//this.getHoverBox().unhideChildHandle();
         }
     },
 

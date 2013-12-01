@@ -14,9 +14,9 @@
 
 var PartnershipHoverbox = Class.create(AbstractHoverbox, {
 
-    initialize: function($super, partnership, junctionX, junctionY, shapes) {
+    initialize: function($super, partnership, junctionX, junctionY, nodeShapes) {
         var radius = PedigreeEditor.attributes.radius;        
-        $super(partnership, -radius/1.5, -radius/1.5, radius*(4/3), radius*2.1, junctionX, junctionY, shapes);
+        $super(partnership, -radius/1.5, -radius/1.5, radius*(4/3), radius*2.1, junctionX, junctionY, nodeShapes);
         this._isMenuToggled = false;
     },
 
@@ -27,41 +27,32 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      * @return {Raphael.st} A set of handles
      */
     generateHandles: function($super) {
-        this._downHandle = this.generateHandle('child', this.getNodeX(), this.getNodeY() + (PedigreeEditor.attributes.radius *.9));
-        return $super().push(this._downHandle);
+        if (this._currentHandles !== null) return;
+        $super();        
+        
+        var x = this.getNodeX();
+        var y = this.getNodeY();     
+        var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(4);
+
+        editor.getPaper().setStart();        
+        //static part (going right below the node)            
+        var path = [["M", x, y],["L", x, y+PedigreeEditor.attributes.partnershipHandleBreakY]];
+        editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(this.getNode().getGraphics().getJunctionShape());            
+        this.generateHandle('child', x, y+PedigreeEditor.attributes.partnershipHandleBreakY, x, y+PedigreeEditor.attributes.partnershipHandleLength);
+                
+        this._currentHandles.push( editor.getPaper().setFinish() );
     },
 
     /**
      * Creates the buttons used in this hoverbox
      *
      * @method generateButtons
-     * @return {Raphael.st} A set of buttons
      */
     generateButtons: function($super) {
-        var deleteButton = this.generateDeleteBtn();
-        var menuButton   = this.generateMenuBtn();
-        return $super().push(deleteButton, menuButton);
-    },
-
-    /**
-     * Hides the child handle
-     *
-     * @method hideChildHandle
-     */
-    hideChildHandle: function() {
-        this.getCurrentHandles().exclude(this._downHandle.hide());
-    },
-
-    /**
-     * Unhides the child handle
-     *
-     * @method unhideChildHandle
-     */
-    unhideChildHandle: function() {
-        if(this.isHovered() || this.isMenuToggled()) {
-            this._downHandle.show();
-        }
-        (!this.getCurrentHandles().contains(this._downHandle)) && this.getCurrentHandles().push(this._downHandle);
+        if (this._currentButtons !== null) return;
+        $super();
+        this.generateDeleteBtn();
+        this.generateMenuBtn();        
     },
 
     /**
@@ -73,7 +64,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
     isMenuToggled: function() {
         return this._isMenuToggled;
     },
-
+    
     /**
      * Shows/hides the menu for this partnership node
      *
@@ -100,11 +91,24 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      * @method animateHideHoverZone
      */
     animateHideHoverZone: function($super) {
+        this._hidden = true;
         if(!this.isMenuToggled()){
             $super();
         }
     },    
 
+    /**
+     * Displays the hoverbox with a fade in animation
+     *
+     * @method animateDrawHoverZone
+     */
+    animateDrawHoverZone: function($super) {
+        this._hidden = false;
+        if(!this.isMenuToggled()){
+            $super();
+        }
+    },
+    
     /**
      * Performs the appropriate action for clicking on the handle of type handleType
      *
@@ -120,7 +124,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
             }
         }
         else if (!isDrag && handleType == "child") {
-            var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.radius * 2.3));
+            var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.partnershipHandleLength + 15));
             editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
             // if user selects anything the bubble will fire an even on its own
         }

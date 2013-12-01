@@ -11,6 +11,8 @@ var GraphicsSet = Class.create({
     initialize: function() {
     	console.log("--- graph init ---");
     	
+        this.preGenerateGraphics();
+        
     	this._nodeMap = {};    	// {nodeID} : {AbstractNode}
     	
         this.hoverModeZones = editor.getPaper().set();
@@ -23,6 +25,37 @@ var GraphicsSet = Class.create({
         this._lineSet = new LineSet();   // used to track intersecting lines
     },
 
+    /**
+     * Pre-generates shapes which are commonly used in the graph. Raphael is slow and
+     * re-buuilding each shape from a path for every node is noticeable slow
+     * 
+     * @method preGenerateGraphics
+     */
+    preGenerateGraphics: function() {
+        //
+        // computing scaled icons:
+        //   var iconScale = 0.6;
+        //   var path = "...";
+        //   console.log("scaled path: " + Raphael.transformPath(path, ["s", iconScale, iconScale, 0, 0])); 
+        //
+        
+        // 1) menu button
+        // nonScaledPath = "M2.021,9.748L2.021,9.748V9.746V9.748zM2.022,9.746l5.771,5.773l-5.772,5.771l2.122,2.123l7.894-7.895L4.143,7.623L2.022,9.746zM12.248,23.269h14.419V20.27H12.248V23.269zM16.583,17.019h10.084V14.02H16.583V17.019zM12.248,7.769v3.001h14.419V7.769H12.248z";        
+        this.__menuButton_svgPath = "M1.213,5.849C1.213,5.849,1.213,5.849,1.213,5.849C1.213,5.849,1.213,5.848,1.213,5.848C1.213,5.848,1.213,5.849,1.213,5.849C1.213,5.849,1.213,5.849,1.213,5.849M1.213,5.848C1.213,5.848,4.676,9.3114,4.676,9.3114C4.676,9.3114,1.2126,12.774,1.2126,12.774C1.2126,12.774,2.486,14.048,2.486,14.048C2.486,14.048,7.222,9.311,7.222,9.311C7.222,9.311,2.486,4.574,2.486,4.574C2.486,4.574,1.213,5.848,1.213,5.8476C1.2131999999999998,5.8476,1.2131999999999998,5.8476,1.2131999999999998,5.8476M7.348799999999999,13.9614C7.348799999999999,13.9614,16.0002,13.9614,16.0002,13.9614C16.0002,13.9614,16.0002,12.161999999999999,16.0002,12.161999999999999C16.0002,12.161999999999999,7.348799999999999,12.161999999999999,7.348799999999999,12.161999999999999C7.348799999999999,12.161999999999999,7.348799999999999,13.9614,7.348799999999999,13.9614C7.348799999999999,13.9614,7.348799999999999,13.9614,7.348799999999999,13.9614M9.949799999999998,10.2114C9.949799999999998,10.2114,16.0002,10.2114,16.0002,10.2114C16.0002,10.2114,16.0002,8.411999999999999,16.0002,8.411999999999999C16.0002,8.411999999999999,9.949799999999998,8.411999999999999,9.949799999999998,8.411999999999999C9.949799999999998,8.411999999999999,9.949799999999998,10.2114,9.949799999999998,10.2114C9.949799999999998,10.2114,9.949799999999998,10.2114,9.949799999999998,10.2114M7.348799999999999,4.6613999999999995C7.348799999999999,4.6613999999999995,7.348799999999999,6.462,7.348799999999999,6.462C7.348799999999999,6.462,16.0002,6.462,16.0002,6.462C16.0002,6.462,16.0002,4.661,16.0,4.6614C16.0,4.6614,7.349,4.6614,7.349,4.6614C7.349,4.6614,7.349,4.6614,7.349,4.6614";
+        this.__menuButton_BBox    = Raphael.pathBBox(this.__menuButton_svgPath);
+
+        // 2) delete button
+        // nonScaledPath = var path = "M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z";
+        this.__deleteButton_svgPath = "M14.867,12.851C14.867,12.851,11.566,9.55,11.566,9.55C11.566,9.55,14.866,6.249,14.866,6.249C14.866,6.249,13.169,4.551,13.169,4.551C13.169,4.551,9.868,7.852,9.868,7.852C9.868,7.852,6.567,4.551,6.567,4.551C6.567,4.551,4.87,6.249,4.87,6.249C4.87,6.249,8.171,9.55,8.171,9.55C8.171,9.55,4.87,12.851,4.870,12.851C4.870,12.851,6.568,14.549,6.568,14.549C6.568,14.549,9.868,11.248,9.868,11.248C9.868,11.248,13.169,14.549,13.169,14.549C13.169,14.549,14.867,12.851,14.867,12.851";
+        this.__deleteButton_BBox    = Raphael.pathBBox(this.__deleteButton_svgPath);
+                
+        // 3) twins button
+        this.__twinsButton_svgPath = "M0,15L8,0L16,15";
+        this.__twinsButton_BBox    = Raphael.pathBBox(this.__twinsButton_svgPath);
+        
+        // 4) orbs
+    },
+    
     /**
      * Returns a map of node IDs to nodes
      *
@@ -362,9 +395,11 @@ var GraphicsSet = Class.create({
      */
     enterHoverMode: function(sourceNode, hoverType) {
         
+        //var timer = new Timer();
+        
         var me = this;
         var validTargets = this.getValidDragTargets(sourceNode.getID(), hoverType);
-        
+                
         validTargets.each(function(nodeID) {
             me._currentGrownNodes.push(nodeID);
             
@@ -372,7 +407,7 @@ var GraphicsSet = Class.create({
             node.getGraphics().grow();
                         
             var hoverModeZone = node.getGraphics().getHoverBox().getHoverZoneMask().clone().toFront();
-            hoverModeZone.attr("cursor", "pointer");
+            //var hoverModeZone = node.getGraphics().getHoverBox().getHoverZoneMask().toFront();
             hoverModeZone.hover(
                 function() {
                     me._currentHoveredNode = nodeID;
@@ -385,6 +420,8 @@ var GraphicsSet = Class.create({
             
             me.hoverModeZones.push(hoverModeZone);
         });
+        
+        //timer.printSinceLast("=== Enter hover mode - highlight: ");
     },
 
     /**
@@ -418,6 +455,9 @@ var GraphicsSet = Class.create({
     getValidDragTargets: function(sourceNodeID, hoverType) {
         var result = [];
         switch (hoverType) {
+        case "sibling":
+            result = editor.getGraph().getPossibleSiblingsOf(sourceNodeID);
+            break;
         case "child":
             // all person nodes which are not ancestors of sourse node and which do not already have parents            
             result = editor.getGraph().getPossibleChildrenOf(sourceNodeID);
@@ -606,23 +646,20 @@ var GraphicsSet = Class.create({
             }
         }
         
+        timer.printSinceLast("=== highlight: ");
         
-        // re-evaluate which handles are hidden and which are shown
+        // re-evaluate which buttons & handles are appropriate for the nodes (e.g. twin button appears/disappears)
         for (nodeID in this._nodeMap)
             if (this._nodeMap.hasOwnProperty(nodeID))
                 if (editor.getGraph().isPerson(nodeID)) {
-                    if (editor.getGraph().getParentRelationship(nodeID) !== null) {
-                        this.getNode(nodeID).getGraphics().getHoverBox().hideParentHandle();
-                    } else {
-                        this.getNode(nodeID).getGraphics().getHoverBox().unHideParentHandle();
-                    }
+                    this.getNode(nodeID).getGraphics().getHoverBox().removeButtons();
+                    this.getNode(nodeID).getGraphics().getHoverBox().removeHandles();
                 }
-            
-        
+
         // TODO: move the viewport to make changeSet.makevisible nodes visible on screen
         
-        timer.printSinceLast("=== highlight + update handled runtime: ");
-        timer2.printSinceLast("=== Total aply changes runtime: ");
+        timer.printSinceLast("=== update handles & butons runtime: ");
+        timer2.printSinceLast("=== Total apply changes runtime: ");
         
         } catch(err) {
             console.log("err: " + err);

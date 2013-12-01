@@ -305,6 +305,7 @@ NodeMenu = Class.create({
     },
 
     show : function(node, x, y) {
+        this._onscreen = true;
         //console.log("nodeMenu show");
         this.targetNode = node;
         this._setCrtData(node.getSummary());
@@ -314,6 +315,7 @@ NodeMenu = Class.create({
     },
         
     hide : function() {
+        this._onscreen = false;
         //console.log("nodeMenu hide");
         document.stopObserving('mousedown', this._onClickOutside);
         if (this.targetNode) {
@@ -322,6 +324,10 @@ NodeMenu = Class.create({
         }
         this.menuBox.hide();
         this._clearCrtData();
+    },
+    
+    isVisible: function() {
+        return this._onscreen;
     },
 
     _onClickOutside: function (event) {

@@ -72,8 +72,13 @@ var AbstractPerson = Class.create(AbstractNode, {
      * @param {String} gender Should be "U", "F", or "M" depending on the gender
      */
     setGender: function(gender) {
-    	this._gender = this.parseGender(gender);
-        this.getGraphics().setGenderGraphics();
+        var gender = this.parseGender(gender);
+        if (this._gender != gender) {
+            this._gender = gender;
+            this.getGraphics().setGenderGraphics();
+
+            this.getGraphics().getHoverBox().regenerateHandles();
+        }
     },
 
     /**

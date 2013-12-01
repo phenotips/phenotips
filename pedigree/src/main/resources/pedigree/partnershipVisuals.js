@@ -200,10 +200,10 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
                 // if necessary, mark first segment on the left as broken
                 if (i == 0 && goesLeft && this.getNode().getBrokenStatus()) {
-                    editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xFrom-15, yFrom, lineAttr, consangr, goesLeft);
-                    editor.getPaper().path("M " + (xFrom-28) + " " + (yFrom+10) + " L " + (xFrom-14) + " " + (yFrom-10)).attr(lineAttr).toBack();
-                    editor.getPaper().path("M " + (xFrom-23) + " " + (yFrom+10) + " L " + (xFrom- 9) + " " + (yFrom-10)).attr(lineAttr).toBack();
-                    xFrom -= 22;
+                    editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xFrom-16, yFrom, lineAttr, consangr, goesLeft);
+                    editor.getPaper().path("M " + (xFrom-29) + " " + (yFrom+9) + " L " + (xFrom-15) + " " + (yFrom-9)).attr(lineAttr).toBack();
+                    editor.getPaper().path("M " + (xFrom-24) + " " + (yFrom+9) + " L " + (xFrom-10) + " " + (yFrom-9)).attr(lineAttr).toBack();
+                    xFrom -= 23;
                 }                
                 
                 //console.log("angled: " + angled + ", changes: " + changesDirection);
@@ -371,6 +371,10 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
      * @param {Function} callback Executed at the end of the animation
      */
     setPos: function($super, x, y, animate, callback) {
+        
+        this.getHoverBox().removeHandles();
+        this.getHoverBox().removeButtons();
+        
         if(animate) {
             throw "Can't animate a partnership node";
         }

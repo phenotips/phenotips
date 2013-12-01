@@ -16,7 +16,8 @@ var NodetypeSelectionBubble = Class.create({
             tip  : "Create a person of male gender",
             symbol: "◻",
             callback : "CreateChild",
-            params: { parameters: {"gender": "M"} }
+            params: { parameters: {"gender": "M"} },
+            inSiblingMode: true
         }, {
             key: "F",
             type: "person",
@@ -24,7 +25,8 @@ var NodetypeSelectionBubble = Class.create({
             tip  : "Create a person of female gender",
             symbol: "◯",
             callback : "CreateChild",
-            params: { parameters: {"gender": "F"} }
+            params: { parameters: {"gender": "F"} },
+            inSiblingMode: true
         }, {
             key: "U",
             type: "person",
@@ -32,7 +34,8 @@ var NodetypeSelectionBubble = Class.create({
             tip  : "Create a person of unknown gender",
             symbol: "◇",
             callback : "CreateChild",
-            params: { parameters: {"gender": "U"} }
+            params: { parameters: {"gender": "U"} },
+            inSiblingMode: true
         }, {
             key: "T",
             type: "person",
@@ -41,7 +44,8 @@ var NodetypeSelectionBubble = Class.create({
             symbol: "⋀",
             callback : "CreateChild",
             params: { "twins": true, "parameters": {"gender": "U"} },
-            expandsTo: 'expandTwins'
+            expandsTo: 'expandTwins',
+            inSiblingMode: true
         }, {
             type: "separator"
         }, 
@@ -53,7 +57,8 @@ var NodetypeSelectionBubble = Class.create({
             symbol: "〈n〉",
             callback : "CreateChild",
             params: { "group": true },
-            expandsTo: "expandPersonGroup"
+            expandsTo: "expandPersonGroup",
+            inSiblingMode: true
         }, {
             type: "separator"
         }, {
@@ -63,7 +68,8 @@ var NodetypeSelectionBubble = Class.create({
             tip  : "Mark as childless by choice",
             symbol: "┴",
             callback : "setProperty",
-            params: { setChildlessStatus: "childless" }
+            params: { setChildlessStatus: "childless" },
+            inSiblingMode: false
         }, {
             key: "i",
             type: "marker",
@@ -71,11 +77,14 @@ var NodetypeSelectionBubble = Class.create({
             tip  : "Mark as infertile",
             symbol: "╧",
             callback : "setProperty",
-            params: { setChildlessStatus: "infertile" }
+            params: { setChildlessStatus: "infertile" },
+            inSiblingMode: false
         }
     ],
 
-    initialize : function() {
+    initialize : function(siblingMode) {
+        this._siblingMode = siblingMode;
+        
         this.element = new Element('div', {'class' : 'callout'});
         this.element.insert(new Element('span', {'class' : 'callout-handle'}));
 
@@ -84,11 +93,11 @@ var NodetypeSelectionBubble = Class.create({
         this.element.insert(container);
         this.element.insert(this.expandedOptionsContainer);
 
-
         var _this = this;
         this.buttonsDefs.each(function(def) {
-            container.insert(def.type == 'separator' ? _this._generateSeparator() : _this._createOption(def));
-        });
+            if (!siblingMode || (def.hasOwnProperty("inSiblingMode") && def.inSiblingMode))
+                container.insert(def.type == 'separator' ? _this._generateSeparator() : _this._createOption(def));
+        });        
         this.element.hide();
         editor.getWorkspace().getWorkArea().insert(this.element);
 
@@ -151,8 +160,12 @@ var NodetypeSelectionBubble = Class.create({
             }
             if (data.params.group) {
                 event["groupSize"] = this.numPersonsInGroup;
-            }                    
-            document.fire("pedigree:person:newpartnerandchild", event);
+            }
+            
+            if (this._siblingMode)
+                document.fire("pedigree:person:newsibling", event);
+            else
+                document.fire("pedigree:person:newpartnerandchild", event);
         }
         else if (nodeType == "Partnership") {
             var event = { "partnershipID": id, "childParams": data.params.parameters };

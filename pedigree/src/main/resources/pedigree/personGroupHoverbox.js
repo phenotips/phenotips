@@ -18,26 +18,29 @@ var PersonGroupHoverbox = Class.create(PersonHoverbox, {
        },
 
     /**
-    * Creates the handles used in this hoverbox
+    * Creates the handles used in this hoverbox - overriden to generate no handles 
     *
     * @method generateHandles
     * @return {Raphael.st} A set of handles
     */
-    generateHandles: function($super) {        
-        return editor.getPaper().set();
+    generateHandles: function($super) {            
+        if (this._currentHandles !== null) return;
+        
+        if (PedigreeEditor.attributes.newHandles) {
+            // TODO: siblling handle
+        }
+        // else: no handles
     },
        
     /**
      * Creates the buttons used in this hoverbox
      *
      * @method generateButtons
-     * @return {Raphael.st} A set of buttons
      */
     generateButtons: function($super) {
-        var buttons = editor.getPaper().set();
-        buttons.push(this.generateMenuBtn());
-        buttons.push(this.generateDeleteBtn());        
-        return buttons;
+        // note: no call to super as we don't want default person buttons
+        this.generateMenuBtn();
+        this.generateDeleteBtn();
     },
     
     /**
@@ -77,6 +80,7 @@ var PersonGroupHoverbox = Class.create(PersonHoverbox, {
      * @method animateHideHoverZone
      */
     animateHideHoverZone: function($super) {
+        this._hidden = true;
         if(!this.isMenuToggled()){
             var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
             //console.log("Node: " + this.getNode().getID() + ", parentPartnershipNode: " + parentPartnershipNode);            
@@ -92,9 +96,12 @@ var PersonGroupHoverbox = Class.create(PersonHoverbox, {
      * @method animateDrawHoverZone
      */
     animateDrawHoverZone: function($super) {
-        var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
-        if (parentPartnershipNode && editor.getNode(parentPartnershipNode))
-            editor.getNode(parentPartnershipNode).getGraphics().markPregnancy();
-        $super();
+        this._hidden = false;
+        if(!this.isMenuToggled()){
+            var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
+            if (parentPartnershipNode && editor.getNode(parentPartnershipNode))
+                editor.getNode(parentPartnershipNode).getGraphics().markPregnancy();
+            $super();
+        }
     }    
 });

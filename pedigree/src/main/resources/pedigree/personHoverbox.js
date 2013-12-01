@@ -15,9 +15,9 @@
 var PersonHoverbox = Class.create(AbstractHoverbox, {
 
     initialize: function($super, personNode, centerX, centerY, nodeShapes) {
-        var radius = PedigreeEditor.attributes.radius * 2;        
+        var radius = PedigreeEditor.attributes.personHoverBoxRadius;        
         $super(personNode, -radius, -radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);
-        this._isMenuToggled = false;
+        this._isMenuToggled = false;        
     },
 
     /**
@@ -27,25 +27,111 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @return {Raphael.st} A set of handles
      */
     generateHandles: function($super) {
-        this._upHandle    = this.generateHandle('parent',   this.getNodeX(), this.getNodeY() - (PedigreeEditor.attributes.radius * 1.6), "Click to create new nodes or drag to an existing node or relationship");        
-        this._downHandle  = this.generateHandle('child',    this.getNodeX(), this.getNodeY() + (PedigreeEditor.attributes.radius * 1.6), "Click to create a new child node or drag to an existing parentless node");
-        this._rightHandle = this.generateHandle('partnerR', this.getNodeX() + (PedigreeEditor.attributes.radius * 1.6), this.getNodeY(), "Click to create a new partner node or drag to an existing node. Valid choices are highlighted in green");
-        this._leftHandle  = this.generateHandle('partnerL', this.getNodeX() - (PedigreeEditor.attributes.radius * 1.6), this.getNodeY(), "Click to create a new partner node or drag to an existing node. Valid choices are highlighted in green");                       
-        return $super().push(this._upHandle, this._downHandle, this._rightHandle, this._leftHandle);
+        if (this._currentHandles !== null) return;        
+        $super();
+        
+        //var timer = new Timer();
+        
+        var x          = this.getNodeX();
+        var y          = this.getNodeY();
+        var node       = this.getNode();
+        var nodeShapes = node.getGraphics().getGenderGraphics().flatten();
+                
+        editor.getPaper().setStart();
+        
+        if (PedigreeEditor.attributes.newHandles) {            
+            var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(4);
+            
+            var partnerGender = 'U';
+            if (node.getGender() == 'F') partnerGender = 'M';
+            if (node.getGender() == 'M') partnerGender = 'F';
+                       
+            // static part (2 lines: going above the node + going to the left)
+            var splitLocationY = y-PedigreeEditor.attributes.personHandleBreakY-3;
+            var path = [["M", x, y],["L", x, splitLocationY], ["L", x-PedigreeEditor.attributes.personSiblingHandleLengthX, splitLocationY]];
+            editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(nodeShapes);
+            
+            // sibling handle
+            this.generateHandle('sibling', x-PedigreeEditor.attributes.personSiblingHandleLengthX+strokeWidth/3, splitLocationY, x-PedigreeEditor.attributes.personSiblingHandleLengthX+strokeWidth/2, splitLocationY+PedigreeEditor.attributes.personSiblingHandleLengthY,
+                                "Click to create a sibling or drag to an existing parentless person (valid choices will be highlighted in green)", "U");                
+
+            if (editor.getGraph().getParentRelationship(node.getID()) === null) {
+                // hint for the parent handle
+                var topHandleHint = undefined;
+                if (PedigreeEditor.attributes.enableHandleHintImages) {
+                    var hintSize = PedigreeEditor.attributes.radius/2;
+                    var path = [["M", x-hintSize, y- PedigreeEditor.attributes.personHandleLength],["L", x+hintSize, y- PedigreeEditor.attributes.personHandleLength]];
+                    var line1  = editor.getPaper().path(path).attr({"stroke-width": strokeWidth/3, stroke: "#555555"}).toBack();
+                    var father = editor.getPaper().rect(x-hintSize-11,y-PedigreeEditor.attributes.personHandleLength-5.5,11,11).attr({fill: "#CCCCCC"}).toBack();
+                    var mother = editor.getPaper().circle(x+hintSize+6,y-PedigreeEditor.attributes.personHandleLength,6).attr({fill: "#CCCCCC"}).toBack();                    
+                    var topHandleHint = editor.getPaper().set().push(line1, father, mother);
+                }
+                // parent handle
+                this.generateHandle('parent', x, splitLocationY, x, y - PedigreeEditor.attributes.personHandleLength,
+                                    "Click to create new nodes for the parents or drag to an existing person or partnership (valid choices will be highlighted in green)", "F", topHandleHint);
+            }
+            else {
+                if (PedigreeEditor.attributes.enableHandleHintImages) {
+                    var path = [["M", x, splitLocationY],["L", x, y-PedigreeEditor.attributes.personHoverBoxRadius+4]];
+                    editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(nodeShapes);                    
+                }
+            }
+            
+            if (!node.isFetus()) {
+                
+                if (node.getChildlessStatus() === null) {
+                    // children handle
+                    //static part (going right below the node)            
+                    var path = [["M", x, y],["L", x, y+PedigreeEditor.attributes.personHandleBreakX]];
+                    editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(nodeShapes);            
+                    this.generateHandle('child', x, y+PedigreeEditor.attributes.personHandleBreakX-2, x, y+PedigreeEditor.attributes.personHandleLength,
+                                        "Click to create a new child node or drag to an existing parentless person (valid choices will be highlighted in green)", "U");            
+                }
+                
+                // partner handle
+                var vertPosForPartnerHandles = y;                       
+                //static part (going right form the node)            
+                var path = [["M", x, vertPosForPartnerHandles],["L", x + PedigreeEditor.attributes.personHandleBreakX, vertPosForPartnerHandles]];
+                editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(nodeShapes);
+                this.generateHandle('partnerR', x + PedigreeEditor.attributes.personHandleBreakX - 2, vertPosForPartnerHandles, x + PedigreeEditor.attributes.personHandleLength, vertPosForPartnerHandles,
+                                    "Click to create a new partner node or drag to an existing node (valid choices will be highlighted in green). Prefer to place the new partner to the right of this person.", partnerGender);
+            }
+        }
+        else {            
+            if (editor.getGraph().getParentRelationship(node.getID()) === null)
+                this.generateHandle('parent',   x, y, x, y - PedigreeEditor.attributes.personHandleLength, "Click to create new nodes for the parents or drag to an existing person or partnership (valid choices will be highlighted in green)");
+            
+            if (!node.isFetus()) {
+                if (node.getChildlessStatus() === null)
+                    this.generateHandle('child',x, y, x, y + PedigreeEditor.attributes.personHandleLength, "Click to create a new child node or drag to an existing parentless node (valid choices will be highlighted in green)");            
+                this.generateHandle('partnerR', x, y, x + PedigreeEditor.attributes.personHandleLength, y, "Click to create a new partner node or drag to an existing node (valid choices will be highlighted in green)");
+                this.generateHandle('partnerL', x, y, x - PedigreeEditor.attributes.personHandleLength, y, "Click to create a new partner node or drag to an existing node (valid choices will be highlighted in green)");
+            }
+        }
+                       
+        this._currentHandles.push( editor.getPaper().setFinish() );
+                 
+        //timer.printSinceLast("Generate handles ");
     },
 
     /**
      * Creates the buttons used in this hoverbox
      *
      * @method generateButtons
-     * @return {Raphael.st} A set of buttons
      */
-    generateButtons: function($super) {
-        var buttons = $super().push(this.generateMenuBtn());
-        (!this.getNode().isProband()) && buttons.push(this.generateDeleteBtn());
-        this._twinButton = this.generateAddTwinButton();        
-        buttons.push(this._twinButton);
-        return buttons;
+    generateButtons: function($super) {  
+        if (this._currentButtons !== null) return;
+        $super();
+        
+        this.generateMenuBtn();
+        
+        // proband can't be removed
+        if (!this.getNode().isProband())
+            this.generateDeleteBtn();
+        
+        // noparents => no twin button
+        if (editor.getGraph().getParentRelationship(this.getNode().getID()) !== null)
+            this.generateAddTwinButton();        
     },
 
     /**
@@ -54,93 +140,19 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method generateAddTwinButton
      * @return {Raphael.st} the generated button
      */    
-    generateAddTwinButton: function() {
+    generateAddTwinButton: function() {        
         var me = this;        
         var action = function() {
             var id = me.getNode().getID(); // may chnage since graphics was created
             var event = { "nodeID": id, "modifications": { "addTwin": 1 } };
             document.fire("pedigree:node:modify", event);             
         };
-        var path = "M0,25L10,0L20,25";
         var attributes = {}; //PedigreeEditor.attributes.menuBtnIcon;        
-        var x = this.getX() + this.getWidth()*0.5 - 5.5;
+        var x = this.getX() + this.getWidth()*0.5 - 7.75;
         var y = this.getY() + this.getHeight()/70;
-        return this.createButton(x, y, path, attributes, action, "twin", "add a twin");        
-    },
-    
-    /**
-     * Hides the partner and children handles
-     *
-     * @method hidePartnerHandles
-     */
-    hidePartnerHandles: function() {
-        if (!this._rightHandle || !this._leftHandle) return;
-        this.getCurrentHandles().exclude(this._rightHandle.hide());
-        this.getCurrentHandles().exclude(this._leftHandle.hide());
-    },
-
-    /**
-     * Displays the partner and children handles
-     *
-     * @method unhidePartnerHandles
-     */
-    unhidePartnerHandles: function() {
-        if (!this._rightHandle || !this._leftHandle) return;
-        if(this.isHovered() || this.isMenuToggled()) {
-            this._rightHandle.show();
-            this._leftHandle.show();
-        }
-        (!this.getCurrentHandles().contains(this._rightHandle)) && this.getCurrentHandles().push(this._rightHandle);
-        (!this.getCurrentHandles().contains(this._leftHandle)) && this.getCurrentHandles().push(this._leftHandle);
-    },
-
-    /**
-     * Hides the child handle
-     *
-     * @method hideChildHandle
-     */
-    hideChildHandle: function() {
-        if (!this._downHandle) return;
-        this.getCurrentHandles().exclude(this._downHandle.hide());
-    },
-
-    /**
-     * Displays the child handle
-     *
-     * @method unhideChildHandle
-     */
-    unhideChildHandle: function() {
-        if (!this._downHandle) return;
-        if(this.isHovered() || this.isMenuToggled()) {
-            this._downHandle.show();
-        }
-        (!this.getCurrentHandles().contains(this._downHandle)) && this.getCurrentHandles().push(this._downHandle);
-    },
-
-    /**
-     * Hides the parent handle
-     *
-     * @method hideParentHandle
-     */
-    hideParentHandle: function() {
-        if (!this._upHandle) return;
-        this.getCurrentHandles().exclude(this._upHandle.hide());
-        this._twinButton && this._twinButton.show();
-    },
-
-    /**
-     * Displays the parent handle
-     *
-     * @method unHideParentHandle
-     */
-    unHideParentHandle: function() {
-        if (!this._upHandle) return;
-        if(this.isHovered() || this.isMenuToggled()) {
-            this._upHandle.show();
-        }
-        (!this.getCurrentHandles().contains(this._upHandle)) && this.getCurrentHandles().push(this._upHandle);
-        this._twinButton && this._twinButton.hide();        
-    },
+        this.createButton(x, y, editor.getGraphicsSet().__twinsButton_svgPath, editor.getGraphicsSet().__twinsButton_BBox,
+                          attributes, action, "twin", "add a twin");        
+    },    
 
     /**
      * Returns true if the menu for this node is open
@@ -157,8 +169,8 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      *
      * @method toggleMenu
      */
-    toggleMenu: function(isMenuToggled) {
-        console.log("toggle menu");
+    toggleMenu: function(isMenuToggled) {        
+        console.log("toggle menu: current = " + this._isMenuToggled);        
         this._isMenuToggled = isMenuToggled;
         if(isMenuToggled) {
             this.getNode().getGraphics().unmark();
@@ -179,6 +191,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method animateHideHoverZone
      */
     animateHideHoverZone: function($super) {
+        this._hidden = true;
         if(!this.isMenuToggled()){
             var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
             //console.log("Node: " + this.getNode().getID() + ", parentPartnershipNode: " + parentPartnershipNode);            
@@ -194,10 +207,13 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method animateDrawHoverZone
      */
     animateDrawHoverZone: function($super) {
-        var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
-        if (parentPartnershipNode && editor.getNode(parentPartnershipNode))
-            editor.getNode(parentPartnershipNode).getGraphics().markPregnancy();
-        $super();
+        this._hidden = false;
+        if(!this.isMenuToggled()){
+            var parentPartnershipNode = editor.getGraph().getParentRelationship(this.getNode().getID());
+            if (parentPartnershipNode && editor.getNode(parentPartnershipNode))
+                editor.getNode(parentPartnershipNode).getGraphics().markPregnancy();
+            $super();
+        }
     },
 
     /**
@@ -210,12 +226,16 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
     handleAction : function(handleType, isDrag, curHoveredId) {        
         console.log("handleType: " + handleType + ", isDrag: " + isDrag + ", curHovered: " + curHoveredId);        
         
-        if(isDrag && curHoveredId !== null) {            
-            if(handleType == "parent") {    
+        if(isDrag && curHoveredId !== null) {                   
+            
+            if(handleType == "parent") {
+                this.removeHandles();
+                this.removeButtons();
                 var event = { "personID": this.getNode().getID(), "parentID": curHoveredId };
                 document.fire("pedigree:person:drag:newparent", event);
             }
             else if(handleType == "partnerR" || handleType == "partnerL") {
+                this.removeHandles();                
                 var event = { "personID": this.getNode().getID(), "partnerID": curHoveredId };
                 document.fire("pedigree:person:drag:newpartner", event);
             }
@@ -223,19 +243,31 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
                 var event = { "personID": curHoveredId, "parentID": this.getNode().getID() };
                 document.fire("pedigree:person:drag:newparent", event);                
             }
+            else if(handleType == "sibling") {
+                var event = { "sibling2ID": curHoveredId, "sibling1ID": this.getNode().getID() };
+                document.fire("pedigree:person:drag:newsibling", event);                  
+            }
         }
         else if (!isDrag) {
             if(handleType == "partnerR" || handleType == "partnerL") {
+                this.removeHandles();                
                 var preferLeft = (handleType == "partnerL");          
                 var event = { "personID": this.getNode().getID(), "preferLeft": preferLeft };
                 document.fire("pedigree:person:newpartnerandchild", event);
             }
             else if(handleType == "child") {
-                var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.radius * 2.3));
+                var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.personHandleLength + 15));
                 editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
                 // if user selects anything the bubble will fire an even on its own
             }
+            else if(handleType == "sibling") {                
+                var position = editor.getWorkspace().canvasToDiv(this.getNodeX() - PedigreeEditor.attributes.personSiblingHandleLengthX,
+                                                                 this.getNodeY() - PedigreeEditor.attributes.personHandleBreakY+PedigreeEditor.attributes.personSiblingHandleLengthY + 15);
+                editor.getSiblingSelectionBubble().show(this.getNode(), position.x, position.y);                
+            }
             else if(handleType == "parent") {
+                this.removeHandles();
+                this.removeButtons();
                 var event = { "personID": this.getNode().getID() };
                 document.fire("pedigree:person:newparent", event);
             }

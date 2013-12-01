@@ -196,6 +196,7 @@ var Person = Class.create(AbstractPerson, {
                 this.setChildlessStatus(null);
             }
             this.getGraphics().updateLifeStatusShapes();
+            this.getGraphics().getHoverBox().regenerateHandles();
         }
     },
 
@@ -414,11 +415,7 @@ var Person = Class.create(AbstractPerson, {
             this._childlessStatus = status;
             this.setChildlessReason(null);
             this.getGraphics().updateChildlessShapes();
-            if (status != null)
-                this.getGraphics().getHoverBox().hideChildHandle();
-            else
-                this.getGraphics().getHoverBox().unhideChildHandle();
-                
+            this.getGraphics().getHoverBox().regenerateHandles();
         }
         return this.getChildlessStatus();
     },
