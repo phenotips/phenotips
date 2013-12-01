@@ -2178,6 +2178,7 @@ PositionedGraph.prototype = {
                     var nextAttachL   = 0;      // attachment point of the line connecting the node and it's relationship
                     var nextVerticalL = 0;      // vertical level of the line
                     var prevOrder     = Infinity;
+                    var prevRank      = Infinity;
                     for (var k = 0; k < leftEdges.length; k++) {
                         var u = this.GG.downTheChainUntilNonVirtual( leftEdges[k] );
 
@@ -2188,15 +2189,17 @@ PositionedGraph.prototype = {
                                 if (!this.GG.isVirtual(w) && !this.GG.isRelationship(w)) { nextVerticalL = 1; break; }
                             }
                         }
+                        console.log("attaching " + leftEdges[k] + " at level " + nextAttachL);
                         verticalLevels.outEdgeVerticalLevel[v][u] = { attachlevel: nextAttachL, verticalLevel: nextVerticalL };
 
-                        if (vOrder[u] == prevOrder - 1) {
+                        if (this.ranks[u] == r && prevRank == r && vOrder[u] == prevOrder - 1) {
                             var prevU = this.GG.downTheChainUntilNonVirtual( leftEdges[k-1] );
                             console.log("prevU: " + prevU);
                             verticalLevels.outEdgeVerticalLevel[v][u]     = { attachlevel: nextAttachR-1, verticalLevel: nextVerticalR-1 };
                             verticalLevels.outEdgeVerticalLevel[v][prevU] = { attachlevel: nextAttachR,   verticalLevel: nextVerticalR };
                         }
                         prevOrder = vOrder[u];
+                        prevRank  = this.ranks[u];
 
                         var changed = true;
                         while (changed) {

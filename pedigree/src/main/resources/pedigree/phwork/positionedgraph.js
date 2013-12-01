@@ -286,7 +286,7 @@ DynamicPositionedGraph.prototype = {
         }
         return result;
     },
-    
+
     getPossibleSiblingsOf: function( v )
     {
         // all person nodes which are not ancestors and not descendants
@@ -297,10 +297,10 @@ DynamicPositionedGraph.prototype = {
            if (!this.isPerson(i)) continue;
            if (this.DG.ancestors[v].hasOwnProperty(i)) continue;
            if (this.DG.ancestors[i].hasOwnProperty(v)) continue;
-           if (hasParents && this.DG.GG.inedges[i].length != 0) continue;           
+           if (hasParents && this.DG.GG.inedges[i].length != 0) continue;
            result.push(i);
         }
-        return result;        
+        return result;
     },
 
     getPossibleParentsOf: function( v )
@@ -2060,20 +2060,31 @@ Heuristics.prototype = {
 
                 this.DG.ranks.splice(newNodeId, 0, rank);
 
-                var insertToTheRight = true;
-                if (sameRankToTheRight > 0 && sameRankToTheLeft == 0 && multiRankEdges.length == 1) {
-                    insertToTheRight = false;  // only one long edge and only one other edge: insert on the other side regardless of anything else
-                } if (sameRankToTheRight == 0 && sameRankToTheLeft > 0 && multiRankEdges.length == 1) {
-                    insertToTheRight = true;  // only one long edge and only one other edge: insert on the other side regardless of anything else
-                } else {
-                    if (this.DG.positions[relNode] < this.DG.positions[parent])
-                        insertToTheRight = false;
+                var insertToTheRight = (this.DG.positions[relNode] < this.DG.positions[parent]) ? false : true;
+
+                if (this.DG.positions[relNode] == this.DG.positions[parent]) {
+                    if (sameRankToTheRight > 0 && sameRankToTheLeft == 0 && multiRankEdges.length == 1) {
+                        insertToTheRight = false;  // only one long edge and only one other edge: insert on the other side regardless of anything else
+                    }
                 }
 
                 //console.log("inserting " + newNodeId + " (->" + firstOnPath + "), rightSide: " + insertToTheRight + " (pos[relNode]: " + this.DG.positions[relNode] + ", pos[parent]: " + this.DG.positions[parent]);
 
-                var parentOrder = this.DG.order.vOrder[parent]; // may have changed form waht it was before due to insertions
-                this.DG.order.insertAndShiftAllIdsAboveVByOne(newNodeId, rank, insertToTheRight ? parentOrder+1 : parentOrder);
+                var parentOrder = this.DG.order.vOrder[parent]; // may have changed form what it was before due to insertions
+
+                var newOrder = insertToTheRight ? parentOrder + 1 : parentOrder;
+                if (insertToTheRight) {
+                    while (newOrder < this.DG.order.order[rank].length &&
+                           this.DG.positions[firstOnPath] > this.DG.positions[ this.DG.order.order[rank][newOrder] ])
+                        newOrder++;
+                }
+                else {
+                    while (newOrder > 0 &&
+                           this.DG.positions[firstOnPath] < this.DG.positions[ this.DG.order.order[rank][newOrder-1] ])
+                        newOrder--;
+                }
+
+                this.DG.order.insertAndShiftAllIdsAboveVByOne(newNodeId, rank, newOrder);
 
                 // update positions
                 this.DG.positions.splice( newNodeId, 0, -Infinity );  // temporary position: will move to the correct location and shift other nodes below
@@ -2128,7 +2139,7 @@ Heuristics.prototype = {
                     if (xcoord.xcoord[childId] == childhubX) continue;
 
                     // ok, we can't move the child. Try to move the relationship & the parent(s)
-
+                    //var needShift = (xcoord.xcoord[childId] -
                 }
                 // B) relationship not above one of it's multiple children (preferably one in the middle)
                 else {
