@@ -1,4 +1,6 @@
-PositionedGraph = function( drawGraph )
+// DynamicPositionedGraph adds support for online modifications and provides a convenient API for UI implementations
+
+DynamicPositionedGraph = function( drawGraph )
 {
     this.DG = drawGraph;
 
@@ -9,14 +11,14 @@ PositionedGraph = function( drawGraph )
     this._onlyProbandGraph = [ { name :'proband' } ];
 };
 
-PositionedGraph.makeEmpty = function (layoutRelativePersonWidth, layoutRelativeOtherWidth)
+DynamicPositionedGraph.makeEmpty = function (layoutRelativePersonWidth, layoutRelativeOtherWidth)
 {
-    var G         = new InternalGraph(layoutRelativePersonWidth, layoutRelativeOtherWidth);
-    var drawGraph = new DrawGraph(G);
-    return new PositionedGraph(drawGraph);
+    var baseG       = new BaseGraph(layoutRelativePersonWidth, layoutRelativeOtherWidth);
+    var positionedG = new PositionedGraph(baseG);
+    return new DynamicPositionedGraph(positionedG);
 }
 
-PositionedGraph.prototype = {
+DynamicPositionedGraph.prototype = {
 
     isValidID: function( id )
     {
@@ -36,7 +38,7 @@ PositionedGraph.prototype = {
     {
         return this.getProperties(id).hasOwnProperty("numPersons");
     },
-    
+
     isPerson: function( id )
     {
         return this.DG.GG.isPerson(id);
@@ -276,22 +278,35 @@ PositionedGraph.prototype = {
     {
         // all person nodes which are not ancestors of v and which do not already have parents
         var result = [];
-
         for (var i = 0; i <= this.DG.GG.getMaxRealVertexId(); i++) {
            if (!this.isPerson(i)) continue;
            if (this.DG.GG.inedges[i].length != 0) continue;
            if (this.DG.ancestors[v].hasOwnProperty(i)) continue;
            result.push(i);
         }
-
         return result;
+    },
+    
+    getPossibleSiblingsOf: function( v )
+    {
+        // all person nodes which are not ancestors and not descendants
+        // if v has parents only nodes without parents are returned
+        var hasParents = (this.getParentRelationship(v) !== null);
+        var result = [];
+        for (var i = 0; i <= this.DG.GG.getMaxRealVertexId(); i++) {
+           if (!this.isPerson(i)) continue;
+           if (this.DG.ancestors[v].hasOwnProperty(i)) continue;
+           if (this.DG.ancestors[i].hasOwnProperty(v)) continue;
+           if (hasParents && this.DG.GG.inedges[i].length != 0) continue;           
+           result.push(i);
+        }
+        return result;        
     },
 
     getPossibleParentsOf: function( v )
     {
         // all person nodes which are not descendants of source node
         var result = [];
-
         //console.log("Ancestors: " + stringifyObject(this.DG.ancestors));
         for (var i = 0; i <= this.DG.GG.getMaxRealVertexId(); i++) {
            if (!this.isRelationship(i) && !this.isPerson(i)) continue;
@@ -299,7 +314,6 @@ PositionedGraph.prototype = {
            if (this.DG.ancestors[i].hasOwnProperty(v)) continue;
            result.push(i);
         }
-
         return result;
     },
 
@@ -963,8 +977,8 @@ PositionedGraph.prototype = {
         // it is easier to create abrand new graph transferirng node 0 propertie sthna to remove on-by-one
         // each time updating ranks, orders, etc
 
-        var baseGraph = InternalGraph.init_from_user_graph(this._onlyProbandGraph,
-                                                           this.DG.GG.defaultPersonNodeWidth, this.DG.GG.defaultNonPersonNodeWidth);
+        var baseGraph = BaseGraph.init_from_user_graph(this._onlyProbandGraph,
+                                                       this.DG.GG.defaultPersonNodeWidth, this.DG.GG.defaultNonPersonNodeWidth);
 
         this._recreateUsingBaseGraph(baseGraph);
 
@@ -980,8 +994,8 @@ PositionedGraph.prototype = {
         this._debugPrintAll("before");
 
         var baseGraph = this.DG.GG.makeGWithCollapsedMultiRankEdges();
-        
-        //var byRankAndOrder = 
+
+        //var byRankAndOrder =
 
         if (!this._recreateUsingBaseGraph(baseGraph)) return {};  // no changes
 
@@ -1040,9 +1054,9 @@ PositionedGraph.prototype = {
 
         //console.log("Got serialization object: " + stringifyObject(serializedData));
 
-        this.DG.GG = InternalGraph.init_from_user_graph(serializedData["GG"],
-                                                        this.DG.GG.defaultPersonNodeWidth, this.DG.GG.defaultNonPersonNodeWidth,
-                                                        true);
+        this.DG.GG = BaseGraph.init_from_user_graph(serializedData["GG"],
+                                                    this.DG.GG.defaultPersonNodeWidth, this.DG.GG.defaultNonPersonNodeWidth,
+                                                    true);
 
         this.DG.ranks = serializedData["ranks"];
 
@@ -1072,26 +1086,21 @@ PositionedGraph.prototype = {
 
     _recreateUsingBaseGraph: function (baseGraph)
     {
-        //try {
-            this.DG = new DrawGraph( baseGraph,
-                                     this.DG.horizontalPersonSeparationDist,
-                                     this.DG.horizontalRelSeparationDist,
-                                     this.DG.maxInitOrderingBuckets,
-                                     this.DG.maxOrderingIterations,
-                                     this.DG.maxXcoordIterations );
+        this.DG = new PositionedGraph( baseGraph,
+                                       this.DG.horizontalPersonSeparationDist,
+                                       this.DG.horizontalRelSeparationDist,
+                                       this.DG.maxInitOrderingBuckets,
+                                       this.DG.maxOrderingIterations,
+                                       this.DG.maxXcoordIterations );
 
-            this._heuristics = new Heuristics( this.DG );
+        this._heuristics = new Heuristics( this.DG );
 
-            this._debugPrintAll("before improvement");
+        this._debugPrintAll("before improvement");
 
-            this._heuristics.improvePositioning();
+        this._heuristics.improvePositioning();
 
-            this._debugPrintAll("after improvement");
-        //}
-        //catch (err) {
-        //    console.log("ERROR updating graph: " + err);
-        //    return false;
-        //}
+        this._debugPrintAll("after improvement");
+
         return true;
     },
 
@@ -1302,7 +1311,7 @@ PositionedGraph.prototype = {
 
     _findBestInsertPosition: function ( rank, edgeToV, preferLeft, _fromOrder, _toOrder )
     {
-        // note: does not assert that the graph satisfies all the assumptions in InternalGraph.validate()
+        // note: does not assert that the graph satisfies all the assumptions in BaseGraph.validate()
 
         if (rank == 0 || rank > this.DG.maxRank)
             return 0;
@@ -2226,7 +2235,7 @@ Heuristics.prototype = {
         //       to the right of relationship node. Some of the heuristics below assume that this is the
         //       part that may have been stretched
         //
-        // note: does not assert the graph satisfies all the assumptions in InternalGraph.validate(),
+        // note: does not assert the graph satisfies all the assumptions in BaseGraph.validate(),
         //       in particular this can be called after a childhub was added but before it's relationship was added
 
         var originalDisturbRank = this.DG.ranks[newNodeId];

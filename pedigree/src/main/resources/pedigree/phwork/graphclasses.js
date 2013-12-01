@@ -1,4 +1,30 @@
-//-------------------------------------------------------------
+// BaseGraph represents the pedigree tree as a graph of nodes and edges with certain
+//           properties attached to both (e.g. names for nodes and weights for edges).
+//
+//           Nodes represent either persons or partnerships, while edges represent
+//           either "is part of this partnership" or "is a child of" relationships
+//           between the connected nodes.
+//
+// BaseGraph contains only the information found in the pedigree (plus possibly
+//           some cached data), i.e. there is no layout data here.
+
+BaseGraph = function ( defaultPersonNodeWidth, defaultNonPersonNodeWidth )
+{
+    this.v        = [];        // for each V lists (as unordered arrays of ids) vertices connected from V
+    this.inedges  = [];        // for each V lists (as unordered arrays of ids) vertices connecting to V
+
+    this.maxRealVertexId = -1; // used for separation of real vertices from virtual-multi-rank-edge-breaking ones (stored for performance)
+
+    this.weights  = [];        // for each V contains outgoing edge weights as {target1: weight1, t2: w2}
+
+    this.type       = [];      // for each V node type (see TYPE)
+    this.properties = [];      // for each V a set of type-specific properties {"gender": "M"/"F"/"U", etc.}
+
+    this.vWidth = [];
+    this.defaultPersonNodeWidth    = defaultPersonNodeWidth    ? defaultPersonNodeWidth    : 1;
+    this.defaultNonPersonNodeWidth = defaultNonPersonNodeWidth ? defaultNonPersonNodeWidth : 1;
+};
+
 var TYPE = {
   RELATIONSHIP: 1,
   CHILDHUB:     2,
@@ -6,32 +32,11 @@ var TYPE = {
   VIRTUALEDGE:  4    // for nodes not present in the original graph used as intermediate steps in multi-rank edges
 };
 
-InternalGraph = function(defaultPersonNodeWidth, defaultNonPersonNodeWidth)
-{
-    this.v        = [];        // for each V lists (as unordered arrays of ids) vertices connected from V
-    this.inedges  = [];        // for each V lists (as unordered arrays of ids) vertices connecting to V
-
-    this.maxRealVertexId = -1; // used for separation of real vertices from virtual-multi-rank-edge-breaking ones (kept for performance)
-
-    this.weights  = [];        // for each V contains outgoing edge weights as {target1: weight1, t2: w2}
-
-    this.parentlessNodes = [];
-    this.leafNodes       = [];
-
-    this.vWidth = [];
-    this.defaultPersonNodeWidth    = defaultPersonNodeWidth    ? defaultPersonNodeWidth    : 1;
-    this.defaultNonPersonNodeWidth = defaultNonPersonNodeWidth ? defaultNonPersonNodeWidth : 1;
-
-    this.type       = [];      // for each V node type (see TYPE)
-    this.properties = [];      // for each V a set of type-specific properties {"gender": "M"/"F"/"U", etc.}
-};
-
-
-InternalGraph.init_from_user_graph = function(inputG, defaultPersonNodeWidth, defaultNonPersonNodeWidth, checkIDs)
+BaseGraph.init_from_user_graph = function(inputG, defaultPersonNodeWidth, defaultNonPersonNodeWidth, checkIDs)
 {
     // note: serialize() produces the correct input for this function
 
-    var newG = new InternalGraph();
+    var newG = new BaseGraph();
 
     var nameToId = {};
 
@@ -141,17 +146,14 @@ InternalGraph.init_from_user_graph = function(inputG, defaultPersonNodeWidth, de
                 if ( weight > maxChildEdgeWeight )
                     maxChildEdgeWeight = weight;
 
-                newG._addEdge( vID, targetID, weight );
+                newG.addEdge( vID, targetID, weight );
             }
         }
 
         if (substitutedID) {
-            newG._addEdge( origID, vID, maxChildEdgeWeight );
+            newG.addEdge( origID, vID, maxChildEdgeWeight );
         }
     }
-
-    // find all vertices without an in-edge and vertices without out-edges
-    newG._updateLeafAndParentlessNodes();
 
     newG.validate();
 
@@ -159,7 +161,7 @@ InternalGraph.init_from_user_graph = function(inputG, defaultPersonNodeWidth, de
 }
 
 
-InternalGraph.prototype = {
+BaseGraph.prototype = {
 
     serialize: function(saveWidth) {
         var output = [];
@@ -216,11 +218,8 @@ InternalGraph.prototype = {
     //
     // Note: ranks is modified to contain ranks of virtual nodes as well
 
-    makeGWithSplitMultiRankEdges: function (ranks, maxRank, doNotValidate, addOneMoreOnTheSameRank) {
-        var newG = new InternalGraph();
-
-        newG.defaultNonPersonNodeWidth = this.defaultNonPersonNodeWidth;
-        newG.defaultPersonNodeWidth    = this.defaultPersonNodeWidth;
+    makeGWithSplitMultiRankEdges: function (ranks) {
+        var newG = new BaseGraph( this.defaultPersonNodeWidth, this.defaultNonPersonNodeWidth );
 
         // add all original vertices
         for (var i = 0; i < this.v.length; i++) {
@@ -245,39 +244,30 @@ InternalGraph.prototype = {
                     throw "Assertion failed: only forward edges";
 
                 if (targetRank == sourceRank + 1 || targetRank == sourceRank ) {
-                    newG._addEdge( sourceV, targetV, weight );
+                    newG.addEdge( sourceV, targetV, weight );
                 }
                 else {
                     // create virtual vertices & edges
                     var prevV = sourceV;
-                    var lastVirtualRank = addOneMoreOnTheSameRank ? targetRank : targetRank - 1;
-
-                    for (var midRank = sourceRank+1; midRank <= lastVirtualRank; midRank++) {
+                    for (var midRank = sourceRank+1; midRank <= targetRank - 1; midRank++) {
                         var nextV = newG._addVertex( null, TYPE.VIRTUALEDGE, {"fName": "_" + sourceV + '->' + targetV + '_' + (midRank-sourceRank-1)}, this.defaultNonPersonNodeWidth);
                         ranks[nextV] = midRank;
-                        newG._addEdge( prevV, nextV, weight );
+                        newG.addEdge( prevV, nextV, weight );
                         prevV = nextV;
                     }
-                    newG._addEdge(prevV, targetV, weight);
+                    newG.addEdge(prevV, targetV, weight);
                 }
             }
         }
 
-        newG.parentlessNodes = this.parentlessNodes;
-        newG.leafNodes       = this.leafNodes;
-
-        if (!doNotValidate)
-            newG.validate();
+        newG.validate();
 
         return newG;
     },
 
     makeGWithCollapsedMultiRankEdges: function () {
         // performs the opposite of what makeGWithSplitMultiRankEdges() does
-        var newG = new InternalGraph();
-
-        newG.defaultNonPersonNodeWidth = this.defaultNonPersonNodeWidth;
-        newG.defaultPersonNodeWidth    = this.defaultPersonNodeWidth;
+        var newG = new BaseGraph( this.defaultPersonNodeWidth, this.defaultNonPersonNodeWidth );
 
         // add all original vertices
         for (var i = 0; i <= this.maxRealVertexId; i++) {
@@ -297,12 +287,9 @@ InternalGraph.prototype = {
                 while (targetV > this.maxRealVertexId)
                     targetV = this.getOutEdges(targetV)[0];
 
-                newG._addEdge( sourceV, targetV, weight );
+                newG.addEdge( sourceV, targetV, weight );
             }
         }
-
-        newG.parentlessNodes = this.parentlessNodes;
-        newG.leafNodes       = this.leafNodes;
 
         newG.validate();
 
@@ -311,20 +298,22 @@ InternalGraph.prototype = {
 
     //--------------------------[construction for ordering]-
 
-    _updateLeafAndParentlessNodes: function () {
-        this.parentlessNodes = [];
-        this.leafNodes       = [];
+    getLeafAndParentlessNodes: function () {
+        var result = { "parentlessNodes": [],
+                       "leafNodes":       [] };
 
         // find all vertices without an in-edge
         for (var vid = 0; vid <= this.maxRealVertexId; vid++) {
             if ( this.getInEdges(vid).length == 0 ) {
-                this.parentlessNodes.push(vid);
+                result.parentlessNodes.push(vid);
             }
             else
             if ( this.getOutEdges(vid).length == 0 ) {
-                this.leafNodes.push(vid);
+                result.leafNodes.push(vid);
             }
         }
+
+        return result;
     },
 
     // id: optional. If not specified then next available is used.
@@ -352,7 +341,7 @@ InternalGraph.prototype = {
         return nextId;
     },
 
-    _addEdge: function(fromV, toV, weight) {
+    addEdge: function(fromV, toV, weight) {
         // adds an edge, but does not update all the internal structures for performance reasons.
         // shoudl be used for bulk updates where it makes sense to do one maintenance run for all the nodes
         if (this.v.length < Math.max(fromV, toV))
@@ -365,12 +354,6 @@ InternalGraph.prototype = {
         this.v[fromV].push(toV);
         this.inedges[toV].push(fromV);
         this.weights[fromV][toV] = weight;
-    },
-
-    addEdge: function(fromV, toV, weight) {
-        // same as _addEdge, but also updates leaf/parentless nodes
-        this._addEdge(fromV, toV, weight);
-        this._updateLeafAndParentlessNodes();
     },
 
     removeEdge: function(fromV, toV) {
@@ -414,11 +397,9 @@ InternalGraph.prototype = {
 
         // add new edges
         for (var i = 0; i < inedges.length; i++)
-            this._addEdge( inedges[i], newNodeId, edgeWeights);
+            this.addEdge( inedges[i], newNodeId, edgeWeights);
         for (var i = 0; i < outedges.length; i++)
-            this._addEdge( newNodeId, outedges[i], edgeWeights);
-
-        this._updateLeafAndParentlessNodes();
+            this.addEdge( newNodeId, outedges[i], edgeWeights);
 
         return newNodeId;
     },
@@ -471,8 +452,6 @@ InternalGraph.prototype = {
         var test         = function(u) { return (u > v); }
         var modification = function(u) { return u - 1; }
         this._updateAllReferencesToNewIDs( test, modification );
-
-        this._updateLeafAndParentlessNodes();
     },
 
     _updateAllReferencesToNewIDs: function ( test, modification ) {
@@ -546,18 +525,19 @@ InternalGraph.prototype = {
             }
         }
 
-        // check for cycles - supposedly pedigrees can't have any
-        if (this.parentlessNodes.length == 0)
-            throw "Assertion failed: pedigrees should have no cycles (no parentless nodes found)";
+        var leafAndRootlessInfo = this.getLeafAndParentlessNodes();
 
-        for (var j = 0; j < this.parentlessNodes.length; j++) {
-            if ( this._DFSFindCycles( this.parentlessNodes[j], {} ) )
+        // check for cycles - supposedly pedigrees can't have any
+        if (leafAndRootlessInfo.parentlessNodes.length == 0)
+            throw "Assertion failed: pedigrees should have no cycles (no parentless nodes found)";
+        for (var j = 0; j < leafAndRootlessInfo.parentlessNodes.length; j++) {
+            if ( this._DFSFindCycles( leafAndRootlessInfo.parentlessNodes[j], {} ) )
                 throw "Assertion failed: pedigrees should have no cycles";
         }
 
         // check for disconnected components
         var reachable = {};
-        this._markAllReachableComponents( this.parentlessNodes[0], reachable );
+        this._markAllReachableComponents( leafAndRootlessInfo.parentlessNodes[0], reachable );
         for (var v = 0; v < this.v.length; v++) {
             if (!reachable.hasOwnProperty(v))
                 throw "Assertion failed: disconnected component detected (" + this.getVertexDescription(v) + ")";
@@ -797,9 +777,9 @@ InternalGraph.prototype = {
 	        throw "Assertion failed: attempting to get producing relationship of a non-person";
 
 	    // find the relationship which produces this node (or null if not present)
-	    if (this.inedges[v].length == 0) return null;	    
+	    if (this.inedges[v].length == 0) return null;
 	    var chHub = this.inedges[v][0];
-	    
+
 	    if (this.inedges[chHub].length == 0) return null;
 	    return this.inedges[chHub][0];
 	},
@@ -821,7 +801,7 @@ InternalGraph.prototype = {
         var path = [v];
 
         while (this.isVirtual(v))
-        { 
+        {
             v = this.inedges[v][0];
             path.push(v);
         }
@@ -885,12 +865,12 @@ InternalGraph.prototype = {
         }
         return twins;
     },
-    
+
     isParentToTwinEdge: function (fromV, toV)
     {
         if (this.isPerson(toV) && this.isChildhub(fromV) &&
             this.getTwinGroupId(toV) != null) return true;
-        
+
         return false;
     }
 };
@@ -898,96 +878,6 @@ InternalGraph.prototype = {
 
 //==================================================================================================
 
-RankedSpanningTree = function() {
-    this.maxRank = 0;
-
-    this.edges  = [];         // similar to G.v - list of list of edges: [ [...], [...] ]
-                              // but each edge is listed twice: both for in- and out-vertex
-
-    this.rank   = [];         // list of ranks, index == vertexID
-    this.parent = [];         // list of parents, index == vertexID
-};
-
-RankedSpanningTree.prototype = {
-
-    initTreeByInEdgeScanning: function(G, initRank) {
-        //   [precondition] graph must be acyclic.
-        //
-        //   Nodes are placed in the queue when they have no unscanned in-edges.
-        //   As nodes are taken off the queue, they are assigned the least rank
-        //   that satisfies their in-edges, and their out-edges are marked as scanned.
-        //
-        //   Note: the resulting tree only uses edges in the direction they are
-        //         used in the original graph.
-
-        if (G.v.length == 0) return;
-
-        this.maxRank = initRank;
-
-        var numScanedInEdges = [];
-
-        for (var i = 0; i < G.getNumVertices(); i++) {
-            this.rank.push(undefined);
-            this.parent.push(undefined);
-            this.edges.push([]);
-            numScanedInEdges.push(0);
-        }
-
-        var queue = new Queue();
-        for (var i = 0; i < G.parentlessNodes.length; i++ )
-            queue.push( G.parentlessNodes[i] );
-
-        while ( queue.size() > 0 ) {
-            var nextParent = queue.pop();
-
-            // ...assign the least rank satisfying nextParent's in-edges
-            var inEdges = G.getInEdges(nextParent);
-            var useRank = initRank;
-            var parent  = undefined;
-            for (var i = 0; i < inEdges.length; i++) {
-                var v = inEdges[i];
-                if (this.rank[v] >= useRank)
-                {
-                    useRank = this.rank[v] + 1;
-                    parent  = v;
-                }
-            }
-
-            // add edge to spanning tree
-            this.rank[nextParent]   = useRank;
-            if (useRank > this.maxRank)
-                this.maxRank = useRank;
-            this.parent[nextParent] = parent;
-            if (parent != undefined)
-                this.edges[parent].push(nextParent);
-
-            // ...mark out-edges as scanned
-            var outEdges = G.getOutEdges(nextParent);
-
-            for (var u = 0; u < outEdges.length; u++) {
-                var vertex = outEdges[u];
-
-                numScanedInEdges[vertex]++;
-
-                var numRealInEdges = G.getInEdges(vertex).length;
-
-                if (numScanedInEdges[vertex] == numRealInEdges) {
-                    queue.push(vertex);
-                }
-            }
-        }
-    },
-
-    getRanks: function() {
-        return this.rank;
-    },
-
-    getMaxRank: function() {
-        return this.maxRank;
-    }
-};
-
-//==================================================================================================
 
 Ordering = function (order, vOrder) {
     this.order  = order;        // 1D array of 1D arrays - for each rank list of vertices in order
@@ -1072,12 +962,7 @@ Ordering.prototype = {
 
     copy: function () {
         // returns a deep copy
-        var newO = new Ordering([],[]);
-
-        _copy2DArray(this.order, newO.order);     // copy a 2D array
-        newO.vOrder = this.vOrder.slice(0);       // fast copy of 1D arrays
-
-        return newO;
+        return new Ordering(clone2DArray(this.order), this.vOrder.slice());
     },
 
     moveVertexToRankAndOrder: function ( oldRank, oldOrder, newRank, newOrder ) {
@@ -1125,11 +1010,11 @@ Ordering.prototype = {
 
         return result;
     },
-    
+
     remove: function(v, rank) {
         var order = this.vOrder[v];
-        this.moveVertexToRankAndOrder(rank, order, 0, 0);       
-        this.removeUnplugged();        
+        this.moveVertexToRankAndOrder(rank, order, 0, 0);
+        this.removeUnplugged();
     },
 
 	insertAndShiftAllIdsAboveVByOne: function ( v, rank, newOrder ) {
@@ -1152,146 +1037,5 @@ Ordering.prototype = {
 	insertRank: function (insertBeforeRank) {
 	    this.order.splice(insertBeforeRank, 0, []);
 	}
-};
-
-
-//==================================================================================================
-
-_copy2DArray = function(from, to) {
-    for (var i = 0; i < from.length; ++i) {
-        to.push(from[i].slice(0));
-    }
-}
-
-function cloneObject(obj) {
-    var target = {};
-    for (var i in obj) {
-        if (obj.hasOwnProperty(i))
-            target[i] = obj[i];
-    }
-    return target;
-}
-
-
-function arrayContains(array, item) {
-    if (Array.prototype.indexOf) {
-        return !(array.indexOf(item) < 0);
-    }
-    else {
-        for (var i = 0; i < array.length; ++i) {
-            if (array[i] === item)
-                return true;
-        }
-        return false;
-    }
-}
-
-function arrayIndexOf(array, item) {
-    if (Array.prototype.indexOf) {
-        return (array.indexOf(item));
-    }
-    else {
-        for (var i = 0; i < array.length; ++i) {
-            if (array[i] === item)
-                return i;
-        }
-        return -1;
-    }
-}
-
-function indexOfLastMinElementInArray(array) {
-    var min      = array[0];
-    var minIndex = 0;
-
-    for (var i = 1; i < array.length; ++i) {
-        if(array[i] <= min) {
-            minIndex = i;
-            min      = array[i];
-        }
-    }
-    return minIndex;
-}
-
-function replaceInArray(array, value, newValue) {
-    for(var i in array){
-        if(array[i] == value) {
-            array[i] = newValue;
-            break;
-        }
-    }
-}
-
-function removeFirstOccurrenceByValue(array, item) {
-    for(var i in array) {
-        if(array[i] == item) {
-            array.splice(i,1);
-            break;
-        }
-    }
-}
-
-function isInt(n) {
-    //return +n === n && !(n % 1);
-    return !(n % 1);
-}
-
-_makeFlattened2DArrayCopy = function(array) {
-    var flattenedcopy = [].concat.apply([], array);
-    return flattenedcopy;
-}
-
-function swap (array, i, j) {
-    var b = array[j];
-    array[j] = array[i];
-    array[i] = b;
-}
-
-function permute2DArrayInFirstDimension (permutations, array, from) {
-   var len = array.length;
-
-   if (from == len-1) {
-       permutations.push(_makeFlattened2DArrayCopy(array));
-       return;
-   }
-
-   for (var j = from; j < len; j++) {
-      swap(array, from, j);
-      permute2DArrayInFirstDimension(permutations, array, from+1);
-      swap(array, from, j);
-   }
-}
-
-
-
-// used for profiling code
-Timer = function() {
-    this.startTime = undefined;
-    this.lastCheck = undefined;
-    this.start();
-};
-
-Timer.prototype = {
-
-    start: function() {
-        this.startTime = new Date().getTime();
-        this.lastCheck = this.startTime;
-    },
-
-    restart: function() {
-        this.start();
-    },
-
-    report: function() {
-        var current = new Date().getTime();
-        var elapsed = current - this.lastCheck;
-        return elapsed;
-    },
-
-    printSinceLast: function( msg ) {
-        var current = new Date().getTime();
-        var elapsed = current - this.lastCheck;
-        this.lastCheck = current;
-        console.log( msg + elapsed + "ms" );
-    },
 };
 

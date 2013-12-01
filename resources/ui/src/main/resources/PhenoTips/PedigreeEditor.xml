@@ -51,7 +51,7 @@ $xwiki.jsx.use('XWiki.DateTimePicker')##
 $xwiki.ssx.use('XWiki.DateTimePicker')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.Widgets')##
-$xwiki.jsfx.use('uicomponents/pedigree/phwork/graphdisplay.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/phwork/helpers.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/phwork/queues.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/phwork/graphclasses.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/phwork/xcoordclass.js')##

@@ -5,7 +5,7 @@ Queue = function() {
 Queue.prototype = {
 
     setTo: function(list) {
-        this.data = list.slice(0);
+        this.data = list.slice();
     },
 
     push: function(v) {
@@ -30,7 +30,7 @@ Stack = function() {
 Stack.prototype = {
 
     setTo: function(list) {
-        this.data = list.slice(0);
+        this.data = list.slice();
     },
 
     push: function(v) {
