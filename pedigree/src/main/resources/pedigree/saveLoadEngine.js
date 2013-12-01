@@ -68,10 +68,12 @@ var SaveLoadEngine = Class.create( {
             
             var changeSet = positionedGraph.fromJSON(JSONString);
             
-            var probandData = editor.getProbandDataFromPhenotips();            
-            var genderOk = positionedGraph.setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
-            if (!genderOk && !noUndo)
-                alert("Gender defined in phenotips is incompatible with this pedigree. Setting proband gender to 'Unknown'");
+            if (!noUndo) {
+                var probandData = editor.getProbandDataFromPhenotips();            
+                var genderOk = positionedGraph.setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
+                if (!genderOk)
+                    alert("Gender defined in phenotips is incompatible with this pedigree. Setting proband gender to 'Unknown'");
+            }
             
             if (editor.getGraphicsSet().applyChanges(changeSet, false)) {                       
                 successfulLoad = true;
