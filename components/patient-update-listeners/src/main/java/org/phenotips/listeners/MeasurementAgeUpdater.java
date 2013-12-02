@@ -92,6 +92,10 @@ public class MeasurementAgeUpdater implements EventListener
         for (BaseObject measurement : objects) {
             if (measurement == null) {
                 continue;
+            } else if ("birth".equals(measurement.getStringValue("type"))) {
+                measurement.setIntValue(AGE_PROPERTY_NAME, 0);
+                measurement.removeField(DATE_PROPERTY_NAME);
+                continue;
             }
             Date measurementDate = measurement.getDateValue(DATE_PROPERTY_NAME);
             if (measurementDate == null) {
