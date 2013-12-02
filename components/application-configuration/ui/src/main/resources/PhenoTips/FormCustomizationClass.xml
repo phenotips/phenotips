@@ -92,7 +92,7 @@
       <separators/>
       <size>1</size>
       <sort>none</sort>
-      <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where obj.name = doc.fullName and obj.className = 'PhenoTips.PhenotypeMappingClass'</sql>
+      <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.PhenotypeMappingTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.PhenotypeMappingClass'</sql>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>

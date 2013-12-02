@@ -216,7 +216,7 @@ $!value
         <separators/>
         <size>30</size>
         <sort>none</sort>
-        <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where obj.name = doc.fullName and obj.className = 'PhenoTips.PhenotypeMappingClass'</sql>
+        <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.PhenotypeMappingTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.PhenotypeMappingClass'</sql>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
@@ -2142,6 +2142,39 @@ $!value
     </property>
     <property>
       <codeToExecute>{{info}}The phenotype categories and phenotypes that are displayed by default in the patient form, on the in the left side of the "Clinical symptoms &amp; physical findings" section, are defined in a separate configuration document. Choose the configuration document to use from the options listed below. A preview of the selected configuration will be displayed on the right.{{/info}}
+
+#if ($isAdvancedUser)
+#set ($errorMessage = '')
+#if ($request.doCreate == '1' &amp;&amp; $services.csrf.isTokenValid($request.form_token))
+  #if ("$!{request.name.trim()}" == '')
+    #set ($errorMessage = 'Please enter a phenotype configuration name')
+  #else
+    #set ($targetDocument = $services.model.createDocumentReference($xcontext.database, $request.space, $request.name.trim()))
+    #if ($xwiki.exists($targetDocument))
+      #set ($errorMessage = "A document named //${request.name}// already exists. Please choose a different name")
+    #else
+      $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)"))
+      #break
+    #end
+  #end
+#end
+
+
+#if ("$!errorMessage" != '')
+{{error}}$errorMessage{{/error}}
+
+#end
+{{html clean=false}}
+&lt;form class="xformInline" action="$doc.getURL($xcontext.action, $request.queryString)" method="post"&gt;&lt;div&gt;
+  &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+  &lt;input type="hidden" name="doCreate" value="1" /&gt;
+  &lt;input type="hidden" name="classTemplate" value="PhenoTips.PhenotypeMappingTemplate" /&gt;
+  &lt;input type="hidden" name="space" value="PhenoTips" /&gt;
+  &lt;input type="hidden" name="parent" value="data.WebHome" /&gt;
+  &lt;label for="config-name"&gt;New configuration name:&lt;/label&gt;&lt;input type="text" name="name" id="config-name" placeholder="E.g. My configuration"/&gt;&lt;input class="button" type="submit" value="Create"/&gt;
+&lt;/div&gt;&lt;/form&gt;
+{{/html}}
+#end
 
 (% class="mappingPreviewContainer side" %)(((
 (% class="hint side" %)(((Preview)))
