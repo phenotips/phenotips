@@ -136,7 +136,7 @@ $displayedContent
       <parameters>title=Assisted reproduction
 enabled=true
 required=
-order=1
+order=2
 fields=assistedReproduction_fertilityMeds,ivf,assistedReproduction_surrogacy</parameters>
     </property>
     <property>
