@@ -408,7 +408,8 @@ pb7anctwOkHezrnk8peX/weiaAV0JCDGhgAAAABJRU5ErkJggg==
   var inputs = $('admin-page-content').select('input');
   for (var i = 0; i &lt; inputs.length; i++) {
     if (inputs[i].getAttribute('type') != undefined &amp;&amp; inputs[i].getAttribute('type').toLowerCase() == 'submit') {
-      inputs[i].up('.bottombuttons').remove();
+      var bottombuttons = inputs[i].up('.bottombuttons');
+      bottombuttons &amp;&amp; bottombuttons.remove();
     }
   }
 
