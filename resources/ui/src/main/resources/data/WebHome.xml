@@ -1227,7 +1227,7 @@ $!value
     <className>XWiki.ConfigurableClass</className>
     <guid>73d1fb26-3da7-4f17-91be-25c84b0282f3</guid>
     <property>
-      <advancedOnly/>
+      <advancedOnly>1</advancedOnly>
     </property>
     <property>
       <categoryPriority>0</categoryPriority>
@@ -1451,7 +1451,7 @@ $!value
     <className>XWiki.ConfigurableClass</className>
     <guid>fe29a271-94ae-433b-8b46-fde8f028f1f8</guid>
     <property>
-      <advancedOnly/>
+      <advancedOnly>1</advancedOnly>
     </property>
     <property>
       <categoryPriority>0</categoryPriority>
