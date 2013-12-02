@@ -78,9 +78,13 @@
   #end
   #set ($bDate = $xwiki.jodatime.getMutableDateTime($obj.getProperty('date_of_birth').value.time).toMutableDateTime($xwiki.jodatime.getUTCTimezone()))
   #foreach ($o in $doc.getObjects($targetClassName))
-    #set ($mDate = $xwiki.jodatime.getMutableDateTime($o.getProperty('date').value.time).toMutableDateTime($xwiki.jodatime.getUTCTimezone()))
-    #set ($age = $mDate.toInstant().minus($bDate.toInstant().getMillis()).toDateTime($xwiki.jodatime.getUTCTimezone()))
-    #set ($age = ($age.year - 1970) * 12 + $age.monthOfYear - 1)
+    #if ($o.getProperty('date') &amp;&amp; $o.getProperty('date').value)
+      #set ($mDate = $xwiki.jodatime.getMutableDateTime($o.getProperty('date').value.time).toMutableDateTime($xwiki.jodatime.getUTCTimezone()))
+      #set ($age = $mDate.toInstant().minus($bDate.toInstant().getMillis()).toDateTime($xwiki.jodatime.getUTCTimezone()))
+      #set ($age = ($age.year - 1970) * 12 + $age.monthOfYear - 1)
+    #else
+      #set ($age = $o.getProperty('age').value)
+    #end
     #if ($age &gt;= 0)
       #foreach ($measurementName in $services.measurements.getAvailableMeasurementNames())
         #_updateMeasurements($measurements.get($measurementName) $o $measurementName $age)
