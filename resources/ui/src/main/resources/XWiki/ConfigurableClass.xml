@@ -569,7 +569,7 @@ $doc.dropPermissions()##
           &lt;/noscript&gt;
           &lt;script type="text/javascript"&gt;
             document.observe("xwiki:dom:loaded", function() {
-              new XWiki.DocumentLock('$escapetool.javascript($app.fullName)').lock();
+              XWiki.DocumentLock &amp;&amp; new XWiki.DocumentLock('$escapetool.javascript($app.fullName)').lock();
             });
           &lt;/script&gt;
         {{/html}}
