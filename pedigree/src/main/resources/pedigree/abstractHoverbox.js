@@ -32,7 +32,8 @@ var AbstractHoverbox = Class.create({
         this._isHovered = false;
         this._currentHandles = null;    
         this._currentOrbs    = null;
-        this._currentButtons = null;        
+        this._currentButtons = null; 
+        this._handlesZoomSz  = null;
         this._boxOnHover    = editor.getPaper().rect(this.getX(), this.getY(), this._width, this._height, 5).attr(PedigreeEditor.attributes.boxOnHover);
         this._backElements  = editor.getPaper().set(this._boxOnHover);
         this._mask          = this._boxOnHover.clone().attr({fill: 'green', opacity: 0});
@@ -219,6 +220,7 @@ var AbstractHoverbox = Class.create({
         if (this._currentHandles !== null) return;
         this._currentHandles = [];
         this._currentOrbs    = [];
+        this._handlesZoomSz  = editor.getWorkspace().getCurrentZoomLevel();
     },
     
     /**
@@ -428,7 +430,7 @@ var AbstractHoverbox = Class.create({
     generateHandle: function(type, startX, startY, orbX, orbY, title, orbShapeGender, toHide) {
         if (!orbShapeGender)
             orbShapeGender = "F";
-        var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(4);
+        var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(PedigreeEditor.attributes.handleStrokeWidth);
         var path = [["M", startX, startY],["L", orbX, orbY]];
         var connection   = editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).toBack();
         connection.oPath = path;
@@ -559,22 +561,22 @@ var AbstractHoverbox = Class.create({
      */
     animateDrawHoverZone: function() {     
         this._hidden = false;        
-        if (editor.getGraphicsSet().getCurrentDraggable() !== null) return;
+        if (editor.getGraphicsSet().getCurrentDraggable() == this.getNode().getID()) return; // do not redraw when dragging
         //console.log("show HB");
                 
         this.getNode().getGraphics().setSelected(true);
         this.getBoxOnHover().stop().animate({opacity:0.7}, 200);
         
-        if (!editor.getNodeMenu().isVisible()) {
-            this.generateButtons();
-            this.showButtons();
-            this.getCurrentButtons().forEach(function(button) {
-                button.icon.stop().animate({opacity:1}, 200);
-            });
-            
-            this.generateHandles();
-            this.showHandles();
-        }
+        this.generateButtons();
+        this.showButtons();
+        this.getCurrentButtons().forEach(function(button) {
+            button.icon.stop().animate({opacity:1}, 200);
+        });
+        
+        if (this._handlesZoomSz  != editor.getWorkspace().getCurrentZoomLevel())
+            this.removeHandles();
+        this.generateHandles();
+        this.showHandles();
     },
 
     /**
@@ -584,7 +586,7 @@ var AbstractHoverbox = Class.create({
      */
     animateHideHoverZone: function() {
         this._hidden = true;        
-        if (editor.getGraphicsSet().getCurrentDraggable() !== null) return;
+        if (editor.getGraphicsSet().getCurrentDraggable() == this.getNode().getID()) return; // do not hide when dragging
         //console.log("hide HB");
         
         //this.removeHandles();

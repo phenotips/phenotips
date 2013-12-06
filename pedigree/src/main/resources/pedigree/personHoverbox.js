@@ -40,7 +40,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         editor.getPaper().setStart();
         
         if (PedigreeEditor.attributes.newHandles) {            
-            var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(4);
+            var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(PedigreeEditor.attributes.handleStrokeWidth);
             
             var partnerGender = 'U';
             if (node.getGender() == 'F') partnerGender = 'M';

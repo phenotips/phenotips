@@ -249,6 +249,13 @@ var Workspace = Class.create({
     },
 
     /**
+     * Returns the current zoom level (not normalized to any value, larger numbers mean deeper zoom-in)
+     */
+    getCurrentZoomLevel: function(pixelSizeAtDefaultZoom) {
+        return this.__zoom.__crtValue;
+    },
+
+    /**
      * Converts the coordinates relative to the Raphael canvas to coordinates relative to the canvas div
      * and returns them
      *
