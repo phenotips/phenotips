@@ -421,7 +421,7 @@ var PedigreeEditor = Class.create({
             },
             {
                 'name' : 'broken',
-                'label' : 'Broken',
+                'label' : 'Separated',
                 'type' : 'checkbox',
                 'function' : 'setBrokenStatus'
             }            
