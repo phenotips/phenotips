@@ -95,7 +95,8 @@ function removeFirstOccurrenceByValue(array, item) {
 // Used for: user input validation
 function isInt(n) {
     //return +n === n && !(n % 1);
-    return !(n % 1);
+    //return !(n % 1);
+    return (parseInt(n) == parseFloat(n));
 }
 
 //-------------------------------------------------------------

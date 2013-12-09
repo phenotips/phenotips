@@ -9,7 +9,12 @@
 var Disorder = Class.create( {
 
     initialize: function(disorderID, name, callWhenReady) {
-        this._disorderID = disorderID;                
+        // user-defined disorders
+        if (name == null && !isInt(disorderID)) {
+            name = disorderID.replace("___", " ");            
+        }
+        
+        this._disorderID = disorderID;                        
         this._name       = name ? name : "loading...";
         
         if (!name)
@@ -46,6 +51,7 @@ var Disorder = Class.create( {
     onDataReady : function(response) {
         try {
             var parsed = JSON.parse(response.responseText);
+            //console.log(stringifyObject(parsed));
             console.log("RESPONSE: disorder id = " + this._disorderID + ", name = " + parsed.rows[0].name);
             this._name = parsed.rows[0].name;
         } catch (err) {

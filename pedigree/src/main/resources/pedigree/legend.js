@@ -65,6 +65,10 @@ var DisorgerLegend = Class.create( {
      * @return {Object}
      */    
     getDisorder: function(disorderID) {
+        if (!isInt(disorderID)) {
+            disorderID = disorderID.replace(" ","___");
+        }
+        
         if (!this._disorderCache.hasOwnProperty(disorderID)) {
             var whenNameIsLoaded = function() { this._updateDisorderName(disorderID); }
             this._disorderCache[disorderID] = new Disorder(disorderID, null, whenNameIsLoaded.bind(this));            
