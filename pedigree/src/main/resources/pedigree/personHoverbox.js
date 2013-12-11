@@ -68,7 +68,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
                 }
                 // parent handle
                 this.generateHandle('parent', x, splitLocationY, x, y - PedigreeEditor.attributes.personHandleLength,
-                                    "Click to create new nodes for the parents or drag to an existing person or partnership (valid choices will be highlighted in green)", "F", topHandleHint);
+                                    "Click to create new nodes for the parents or drag to an existing person or partnership (valid choices will be highlighted in green). Dragging to a person will create a new relationship.", "F", topHandleHint);
             }
             else {
                 if (PedigreeEditor.attributes.enableHandleHintImages) {

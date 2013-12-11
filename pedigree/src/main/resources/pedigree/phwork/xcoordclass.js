@@ -145,15 +145,11 @@ XCoord.prototype = {
     },
 
     normalize: function() {
-        // finds the smallest margin on the left and shifts the entire graph to the left
-        var minExtra = this.xcoord[0] - this.halfWidth[0];
-        for (var i = 1; i < this.xcoord.length; i++) {
-            if ((this.xcoord[i] - this.halfWidth[i]) < minExtra)
-                minExtra = (this.xcoord[i] - this.halfWidth[i]);
-        }
+        var leftMostElement  = indexOfLastMinElementInArray(this.xcoord);
+        var moveAmount       = this.xcoord[leftMostElement] - this.halfWidth[leftMostElement];
 
         for (var i = 0; i < this.xcoord.length; i++)
-            this.xcoord[i] -= minExtra;
+            this.xcoord[i] -= moveAmount;
     },
 
     copy: function () {

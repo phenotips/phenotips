@@ -2077,10 +2077,24 @@ Heuristics.prototype = {
                     while (newOrder < this.DG.order.order[rank].length &&
                            this.DG.positions[firstOnPath] > this.DG.positions[ this.DG.order.order[rank][newOrder] ])
                         newOrder++;
+
+                    // fix common imprefetion when this edge will cross a node-relationship edge. Testcase 4e covers this case.
+                    var toTheLeft  = this.DG.order.order[rank][newOrder-1];
+                    var toTheRight = this.DG.order.order[rank][newOrder];
+                    if (this.DG.GG.isRelationship(toTheLeft) && this.DG.GG.isPerson(toTheRight) &&
+                        this.DG.GG.hasEdge(toTheRight, toTheLeft) && this.DG.GG.getOutEdges(toTheRight).length ==1 )
+                        newOrder++;
                 }
                 else {
                     while (newOrder > 0 &&
                            this.DG.positions[firstOnPath] < this.DG.positions[ this.DG.order.order[rank][newOrder-1] ])
+                        newOrder--;
+
+                    // fix common imprefetion when this edge will cross a node-relationship edge
+                    var toTheLeft  = this.DG.order.order[rank][newOrder-1];
+                    var toTheRight = this.DG.order.order[rank][newOrder];
+                    if (this.DG.GG.isRelationship(toTheRight) && this.DG.GG.isPerson(toTheLeft) &&
+                        this.DG.GG.hasEdge(toTheLeft, toTheRight) && this.DG.GG.getOutEdges(toTheLeft).length ==1 )
                         newOrder--;
                 }
 
@@ -2126,7 +2140,10 @@ Heuristics.prototype = {
                     //console.log("moving " + childhub + " to " + xcoord.xcoord[childhub]);
                 }
 
+                //----------------------------------------------------------------
                 var childInfo = this.analizeChildren(childhub);
+
+                var needShiftParents = 0;
 
                 // A) relationship not right above the only child
                 if (childInfo.orderedChildren.length == 1) {
@@ -2139,23 +2156,7 @@ Heuristics.prototype = {
                     if (xcoord.xcoord[childId] == childhubX) continue;
 
                     // ok, we can't move the child. Try to move the relationship & the parent(s)
-                    var needShift = xcoord.xcoord[childId] - childhubX;
-                    if (needShift < 0) { // need to shift childhub + relationship + one parent to the left
-                        var parent = (xcoord.xcoord[parents[0]] < xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
-                        var willShift = Math.min(xcoord.getSlackOnTheLeft(childhub), xcoord.getSlackOnTheLeft(parent), -needShift);
-                        //console.log("will shift " + parent + " by " + willShift);
-                        xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   - willShift, true);
-                        xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        - willShift, true);
-                        xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] - willShift, true);
-                    }
-                    else {
-                        var parent = (xcoord.xcoord[parents[0]] > xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
-                        var willShift = Math.min(xcoord.getSlackOnTheRight(childhub), xcoord.getSlackOnTheRight(parent), needShift);
-                        //console.log("will shift " + parent + " by " + willShift);
-                        xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   + willShift, true);
-                        xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        + willShift, true);
-                        xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] + willShift, true);
-                    }
+                    needShiftParents = xcoord.xcoord[childId] - childhubX;
                 }
                 // B) relationship not above one of it's multiple children (preferably one in the middle)
                 else {
@@ -2165,44 +2166,91 @@ Heuristics.prototype = {
                     var leftX  = xcoord.xcoord[leftMost];
                     var rightX = xcoord.xcoord[rightMost];
                     var middle = (leftX + rightX)/2;
+                    var median = (childInfo.orderedChildren.length == 3) ? xcoord.xcoord[childInfo.orderedChildren[1]] : middle;
 
-                    //console.log("childhubx: " + childhubX + ", leftX: " + leftX + ", rightX: " + rightX);
+                    if (v == 5) {
+                        console.log("childhubx: " + childhubX + ", leftX: " + leftX + ", rightX: " + rightX + ", middle: " + middle + ", median: " + median);
+                    }
 
-                    if (middle == childhubX) continue;
+                    // looks good when parent line is either above the mid-point between th eleftmost and rightmost child
+                    // or above the middle child of the three
+                    var minIntervalX = Math.min(middle, median);
+                    var maxIntervalX = Math.max(middle, median);
+                    if (minIntervalX <= childhubX && childhubX <= maxIntervalX) continue;
 
-                    var needToShift = childhubX - middle;
+                    var shiftToX = (childhubX > maxIntervalX) ? maxIntervalX : minIntervalX;
+
+                    var needToShift = childhubX - shiftToX;
 
                     if (childInfo.numWithPartners == 0) {
                         // can shift children easily
                         if (needToShift < 0) {  // need to shift children left
                             var leftMostOkPosition = xcoord.getLeftMostNoDisturbPosition(leftMost, true);
                             var haveSlack = Math.min(Math.abs(needToShift), leftX - leftMostOkPosition);
-                            if (haveSlack <= 0) continue;
-                            for (var i = 0; i < childInfo.orderedChildren.length; i++)
-                                xcoord.xcoord[childInfo.orderedChildren[i]] -= haveSlack;
-                            improved = true;
+                            if (haveSlack > 0) {
+                                for (var i = 0; i < childInfo.orderedChildren.length; i++)
+                                    xcoord.xcoord[childInfo.orderedChildren[i]] -= haveSlack;
+                                improved = true;
+                                needToShift += haveSlack;
+                            }
                         }
                         else {  // need to shift children right
+                            var rightMostOkPosition = xcoord.getRightMostNoDisturbPosition(rightMost);
+                            var haveSlack = Math.min(Math.abs(needToShift), leftMostOkPosition - rightX);
+                            if (haveSlack > 0) {
+                                for (var i = 0; i < childInfo.orderedChildren.length; i++)
+                                    xcoord.xcoord[childInfo.orderedChildren[i]] += haveSlack;
+                                improved = true;
+                                needToShift -= haveSlack;
+                            }
                         }
-                    } else
-                        // maybe we can shift the parents
-                        if (this.DG.GG.getInEdges(parents[0]).length != 0 ||
-                            this.DG.GG.getInEdges(parents[1]).length != 0) continue;
-                        // TODO
                     }
 
-                // D) check if any relationship edges can be made shorter
-                //    (and bring two parts of the graph separated by the edge closer together)
+                    needShiftParents = -needToShift;
+                }
 
+                if (needShiftParents == 0) continue;
+
+                //console.log("v = " + v + ", needShiftParents = " + needShiftParents);
+
+                if (needShiftParents < 0) { // need to shift childhub + relationship + one parent to the left
+                    var parent = (xcoord.xcoord[parents[0]] < xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
+                    if (this.DG.GG.getInEdges(parent) != 0) continue;
+                    var willShift = Math.min(xcoord.getSlackOnTheLeft(childhub), xcoord.getSlackOnTheLeft(parent), -needShiftParents);
+                    improved = improved || (willShift != 0);
+                    //console.log("will shift " + parent + " by " + willShift);
+                    xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   - willShift, true);
+                    xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        - willShift, true);
+                    xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] - willShift, true);
+                }
+                else {
+                    var parent = (xcoord.xcoord[parents[0]] > xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
+                    if (this.DG.GG.getInEdges(parent) != 0) continue;
+                    var willShift = Math.min(xcoord.getSlackOnTheRight(childhub), xcoord.getSlackOnTheRight(parent), needShiftParents);
+                    improved = improved || (willShift != 0);
+                    //console.log("will shift " + parent + " by " + willShift);
+                    xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   + willShift, true);
+                    xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        + willShift, true);
+                    xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] + willShift, true);
+                }
+                //----------------------------------------------------------------
             }
-
-
         }
 
-        //if (this.DEBUGNORMALIZE)
-        //    xcoord.normalize();  // normaly don't do normalization to minimize the number of moved nodes; UI is ok with negative coords
+        // 2D) check if there is any extra whitespace in the graph, e.g. if a subgraph can be
+        //     moved closer to the rest of the graph by shortening some edges (this may be
+        //     the case after some imperfect insertion heuristics move stuff too far).
+        //     TODO: interesting testcases:
+        //           - #4D: nodes 9,10,11 can be moved ot the right, until either 9'th
+        //                  relationship hits the right limit or parentline from 9&10 is
+        //                  in the middle btween 9 & 10
+        //           - #4E: nodes a & b cna bemoved right a bit until a's parent edge is straight
+        //           - #5C: node "A" should be move left a bit
+
 
         this.DG.try_straighten_long_edges(xcoord);
+
+        //xcoord.normalize();
 
         this.DG.positions = xcoord.xcoord;
     },
