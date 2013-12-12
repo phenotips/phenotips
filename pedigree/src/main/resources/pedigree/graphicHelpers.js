@@ -188,6 +188,19 @@ function drawCornerCurve (xFrom, yFrom, xTo, yTo, bendDown, attr, doubleCurve, s
 }
 
 /**
+ * Computes the intersection point between a horizontal line @ y == crossY and a line from x1,y1 to x2,y2
+ */
+function findXInterceptGivenLineAndY(crossY, x1, y1, x2, y2) {
+    // y = ax + b   
+    var a = (y1 - y2)/(x1 - x2);
+    var b = y1 - a*x1;    
+    var interceptX = (crossY - b)/a;
+    
+    console.log("x1: " + x1 + ", y1: " + y1 + ", x2: " + x2 + ", y2: " + y2 + ", crossY: " + crossY + ", X: " + interceptX + ", a: " + a + ", b: " + b); 
+    return interceptX;
+}
+
+/**
  * Joins all the subsets into one set and returns it.
  * @return {Raphael.st}
  */

@@ -183,13 +183,13 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         var r = PedigreeEditor.attributes.radius,
             x1 = this.getX() - ((0.8) * r),
             x2 = this.getX() + ((0.8) * r),
-            y = this.getY() - ((1.3) * r),
+            y = this.getY() - ((1.3) * r) + 1,
             brackets = "M" + x1 + " " + y + "l" + r/(-2) +
-                " " + 0 + "l0 " + (2.6 * r) + "l" + (r)/2 + " 0M" + x2 +
-                " " + y + "l" + (r)/2 + " 0" + "l0 " + (2.6 * r) + "l" +
+                " " + 0 + "l0 " + (2.6 * r - 2) + "l" + (r)/2 + " 0M" + x2 +
+                " " + y + "l" + (r)/2 + " 0" + "l0 " + (2.6 * r - 2) + "l" +
                 (r)/(-2) + " 0";
-        this._adoptedShape = editor.getPaper().path(brackets).attr("stroke-width", 3);
-        this._adoptedShape.insertBefore(this.getGenderShape().flatten());
+        this._adoptedShape = editor.getPaper().path(brackets).attr("stroke-width", 2.5);
+        this._adoptedShape.toBack();
     },
 
     /**

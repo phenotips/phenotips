@@ -288,7 +288,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     updateChildhubConnection: function(preg, pregX, pregY, partnershipX, partnershipY, animate) {
         this._childhubConnection && this._childhubConnection.remove();
         
-        var twinCommonVerticalPieceLength = PedigreeEditor.attributes.twinCommonVerticalLength;
+        var twinCommonVerticalPieceLength = PedigreeEditor.attributes.twinCommonVerticalLength;        
         
         var positionedGraph = editor.getGraph();
         
@@ -323,14 +323,16 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 var allTwins  = positionedGraph.getAllTwinsSortedByOrder(child);
                 var positionL = editor.getGraphicsSet().getNode(allTwins[0]).getX();
                 var positionR = editor.getGraphicsSet().getNode(allTwins[allTwins.length-1]).getX();
+                var positionY = editor.getGraphicsSet().getNode(allTwins[0]).getY();
                 currentTwinGroupCenterX = (positionL + positionR)/2;
                 editor.getGraphicsSet().drawLineWithCrossings( id, currentTwinGroupCenterX, childlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, PedigreeEditor.attributes.partnershipLines);
                 
                 // draw the mponozygothinc line, if necessary
                 if (editor.getGraphicsSet().getNode(allTwins[0]).getMonozygotic()) {
-                    // TODO: hack
-                    var xTwinLineShift = 10 + 10*(allTwins.length-2);
-                    editor.getGraphicsSet().drawLineWithCrossings( id, currentTwinGroupCenterX - xTwinLineShift, childlineY+twinCommonVerticalPieceLength*2.5, currentTwinGroupCenterX + xTwinLineShift, childlineY+twinCommonVerticalPieceLength*2.5, PedigreeEditor.attributes.partnershipLines); 
+                    var twinlineY   = childlineY+PedigreeEditor.attributes.twinMonozygothicLineShiftY;
+                    var xIntercept1 = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, positionL, positionY);
+                    var xIntercept2 = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, positionR, positionY);
+                    editor.getGraphicsSet().drawLineWithCrossings( id, xIntercept1, twinlineY, xIntercept2, twinlineY, PedigreeEditor.attributes.partnershipLines); 
                 }
             }
             else if (twinGroupId == null)

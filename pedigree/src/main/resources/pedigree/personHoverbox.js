@@ -47,7 +47,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
             if (node.getGender() == 'M') partnerGender = 'F';
                        
             // static part (2 lines: going above the node + going to the left)
-            var splitLocationY = y-PedigreeEditor.attributes.personHandleBreakY-3;
+            var splitLocationY = y-PedigreeEditor.attributes.personHandleBreakY-4;
             var path = [["M", x, y],["L", x, splitLocationY], ["L", x-PedigreeEditor.attributes.personSiblingHandleLengthX, splitLocationY]];
             editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(nodeShapes);
             
