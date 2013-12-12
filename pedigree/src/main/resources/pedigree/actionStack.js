@@ -201,7 +201,8 @@ var ActionStack = Class.create({
         console.log("------------");
         for (var i = 0; i < this._stack.length; i++) {
             console.log("[" + i + "] EventToState: " + stringifyObject(this._stack[i].eventToGetToThisState) + "\n" +
-                                "    EventUndo: " + stringifyObject(this._stack[i].eventToUndo));
+                                "    EventUndo: " + stringifyObject(this._stack[i].eventToUndo) + "\n" +
+                                "    EventSerial: " + stringifyObject(this._stack[i].serializedState));
         }
         console.log("------------");
     }

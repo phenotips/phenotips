@@ -359,6 +359,8 @@ DynamicPositionedGraph.prototype = {
             var allRels = this.DG.GG.getAllRelationships(v);
             for (var i = 0; i < allRels.length; i++) {
                 removedList[allRels[i]] = true;
+                var chhubId = this.DG.GG.getOutEdges(allRels[i])[0];
+                removedList[chhubId] = true;
             }
         }
 

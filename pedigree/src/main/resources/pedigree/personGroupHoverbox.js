@@ -25,9 +25,10 @@ var PersonGroupHoverbox = Class.create(PersonHoverbox, {
     */
     generateHandles: function($super) {            
         if (this._currentHandles !== null) return;
+        $super();
         
         if (PedigreeEditor.attributes.newHandles) {
-            // TODO: siblling handle
+            // TODO: sibling handle
         }
         // else: no handles
     },
@@ -38,6 +39,9 @@ var PersonGroupHoverbox = Class.create(PersonHoverbox, {
      * @method generateButtons
      */
     generateButtons: function($super) {
+        if (this._currentButtons !== null) return;
+        $super();
+
         // note: no call to super as we don't want default person buttons
         this.generateMenuBtn();
         this.generateDeleteBtn();
