@@ -130,7 +130,7 @@
     #else
       #set ($pAction = 'Draw pedigree')
     #end## pedigree data exists
-    (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]]
+    (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]](%%)
   #end## action == edit
   #if ("$!image" != '')
     {{html clean="false"}}
