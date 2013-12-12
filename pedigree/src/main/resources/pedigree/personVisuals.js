@@ -90,12 +90,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.updateDisorderShapes();      
     },
     
-    generateProbandArrow: function() {
-        var path  = "M7.589,20.935l-6.87,6.869l2.476,2.476l6.869-6.869l1.858,1.857l2.258-8.428l-8.428,2.258L7.589,20.935z";
-        //var path = "M5.542,11.731l8.428,2.258l-2.258-8.428L9.874,7.398L3.196,0.72L0.72,3.196l6.678,6.678L5.542,11.731z";                
-        var icon = editor.getPaper().path(path).attr({fill: "#595959", stroke: "none",opacity: 1});        
-        //icon.transform(["t" , this.getX()-this._shapeRadius , this.getY()-this._shapeRadius])
-        icon.transform(["t" , this.getX()-this._shapeRadius-20, this.getY()+this._shapeRadius-10])
+    generateProbandArrow: function() {        
+        var icon = editor.getPaper().path(editor.getGraphicsSet().__probandArrowPath).attr({fill: "#595959", stroke: "none", opacity: 1});        
+        icon.transform(["t" , this.getX()-this._shapeRadius-22, this.getY()+this._shapeRadius-11])
         return icon;
     },
 
@@ -228,6 +225,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @method drawDeadShape
      */
     drawDeadShape: function() {
+        var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(2.5);
         var x, y;
         if(this.getNode().getLifeStatus() == 'aborted') {
             var side   = PedigreeEditor.attributes.radius * Math.sqrt(3.5);
@@ -241,7 +239,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             
             var y = this.getY() + height/3;
             this._deadShape = editor.getPaper().path(["M", x, y, 'l', height + height/3, -(height+ height/3), "z"]);
-            this._deadShape.attr("stroke-width", 3);
+            this._deadShape.attr("stroke-width", strokeWidth);
         }
         else {
             x = this.getX();
@@ -251,9 +249,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 y1 = y + coeff * PedigreeEditor.attributes.radius,
                 x2 = x + coeff * PedigreeEditor.attributes.radius,
                 y2 = y - coeff * PedigreeEditor.attributes.radius;
-            this._deadShape = editor.getPaper().path(["M", x1,y1,"L",x2, y2]).attr("stroke-width", 3);
+            this._deadShape = editor.getPaper().path(["M", x1,y1,"L",x2, y2]).attr("stroke-width", strokeWidth);
         }
-        this._deadShape.insertAfter(this.getHoverBox().getFrontElements().flatten());
+        this._deadShape.insertAfter(this.getGenderGraphics().flatten());
     },
 
     /**

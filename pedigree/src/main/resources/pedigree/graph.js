@@ -53,7 +53,9 @@ var GraphicsSet = Class.create({
         this.__twinsButton_svgPath = "M0,15L8,0L16,15";
         this.__twinsButton_BBox    = Raphael.pathBBox(this.__twinsButton_svgPath);
         
-        // 4) orbs
+        // 4) proband arrow
+        this.__probandArrowPath = Raphael.transformPath("M7.589,20.935l-6.87,6.869l2.476,2.476l6.869-6.869l1.858,1.857l2.258-8.428l-8.428,2.258L7.589,20.935z", ["s", 1.1, 1.1, 0, 0]);
+        // 5) orbs
     },
     
     /**
