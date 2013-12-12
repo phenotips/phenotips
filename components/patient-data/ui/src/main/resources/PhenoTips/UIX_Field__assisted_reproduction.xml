@@ -22,7 +22,7 @@
 
 <xwikidoc>
   <web>PhenoTips</web>
-  <name>UIX_Field__in_vitro</name>
+  <name>UIX_Field__assisted_reproduction</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,17 +31,17 @@
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1377394234000</creationDate>
-  <date>1377392986000</date>
-  <contentUpdateDate>1377144298000</contentUpdateDate>
+  <creationDate>1385135171000</creationDate>
+  <date>1385137417000</date>
+  <contentUpdateDate>1385135343000</contentUpdateDate>
   <version>1.1</version>
-  <title>In vitro fertilization</title>
+  <title>Assisted reproduction</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden>true</hidden>
   <object>
     <class>
       <name>XWiki.UIExtensionClass</name>
@@ -107,33 +107,37 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.UIX_Field__in_vitro</name>
+    <name>PhenoTips.UIX_Field__assisted_reproduction</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>368c5ff4-e049-4f4c-9c12-6573b5785bbe</guid>
+    <guid>4353f1b4-8227-44ec-80c5-0f55079e328a</guid>
     <property>
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
 #if ($xcontext.action == 'edit')
-  $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+  $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$!{themeDocFullName}"})##
   $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
 #end
-#__displayIfTrue('in_vitro', false)
+#set ($displayedContent = "#__displayIfSet('assistedReproduction_fertilityMeds', false)${util.newline}#__displayIfSet('ivf', false)${util.newline}#__displayIfSet('assistedReproduction_surrogacy', false)")
+#if ($displayedContent.trim() != '')
+**Assisted reproduction:**
+$displayedContent
+#end
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.family-info</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.prenatal-info</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.in_vitro</name>
+      <name>org.phenotips.patientSheet.assistedReproduction</name>
     </property>
     <property>
-      <parameters>title=In vitro fertilization
+      <parameters>title=Assisted reproduction
 enabled=true
 required=
-order=10
-fields=in_vitro</parameters>
+order=2
+fields=assistedReproduction_fertilityMeds,ivf,assistedReproduction_surrogacy</parameters>
     </property>
     <property>
       <scope>wiki</scope>

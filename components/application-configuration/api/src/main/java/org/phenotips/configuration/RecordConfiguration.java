@@ -22,6 +22,7 @@ package org.phenotips.configuration;
 import org.phenotips.Constants;
 
 import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
@@ -72,6 +73,18 @@ public interface RecordConfiguration
      * @return an unmodifiable ordered list of field names, empty if none are available or the configuration is missing
      */
     List<String> getAllFieldNames();
+
+    /**
+     * The custom predefined phenotypes displayed in the "Clinical Symptoms" section are configured in a document, and
+     * this type of configuration is called a "Phenotype Mapping". Multiple such mappings can exist in a PhenoTips
+     * instance, and one of these mappings can be selected as the preferred mapping to be used globally or for each
+     * group. Warning! The return type of this method is likely to change once a more specific class for representing
+     * mappings will be implemented.
+     * 
+     * @return the selected phenotype mapping, as a reference to the document where the mapping is defined
+     */
+    @Unstable
+    DocumentReference getPhenotypeMapping();
 
     /**
      * The format of the date of birth, in the standard {@link java.text.SimpleDateFormat Java date format}.

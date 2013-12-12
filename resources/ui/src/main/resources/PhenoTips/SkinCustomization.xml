@@ -246,7 +246,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 ##
 #set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
 #if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
-  #set ($adminspaceaction = $!xwiki.getURL("${doc.space}.WebPreferences", 'admin'))
+  #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
   #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'icon-cogs')
 #end
 &lt;/div&gt;
@@ -427,13 +427,8 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
     <className>XWiki.UIExtensionClass</className>
     <guid>e90fed84-04a2-48f8-bbae-c6f2b1ad8a60</guid>
     <property>
-      <content>{{velocity output=false}}
+      <content>{{velocity}}{{html clean=false}}
 $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
-#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#set($patientClassName = "$!{config.getProperty('patientClass').value}")
-{{/velocity}}
-
-{{velocity}}{{html clean=false}}
 &lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
   &lt;div class="rightmenu"&gt;
     &lt;div class="topmenuentry search"&gt;
@@ -445,20 +440,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
       &lt;/form&gt;
       #end
     &lt;/div&gt;
-    &lt;div class="topmenuentry add"&gt;
-      #if($hasCreatePage)
-      &lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
-        &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-        &lt;input type="hidden" name="doCreate" value="1" /&gt;
-        &lt;input type="hidden" name="className" value="$patientClassName" /&gt;
-        &lt;input type="hidden" name="classTemplate" value="$!{config.getProperty('patientTemplate').value}" /&gt;
-        &lt;input type="hidden" name="idField" value="$!{config.getProperty('idField').value}" /&gt;
-        &lt;input type="hidden" name="idPrefix" value="$!{config.getProperty('idPrefix').value}" /&gt;
-        &lt;input type="hidden" name="space" value="$!{doc.space}" /&gt;
-        &lt;label for="create-patient-record"&gt;&lt;span class="icon-plus-sign"&gt; &lt;/span&gt;New patient record&lt;/label&gt;&lt;input type="submit" class="hidden" id="create-patient-record" title="Add new patient record" value="New patient record"/&gt;
-      &lt;/div&gt;&lt;/form&gt;
-      #end
-    &lt;/div&gt;
+    &lt;div class="topmenuentry add"&gt;{{/html}}{{include reference="PhenoTips.CreatePatientRecordForm" /}}{{html clean=false}}&lt;/div&gt;
   &lt;/div&gt;
   &lt;div class="breadcrumbs leftmenu"&gt;
     &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;&lt;span class="icon-home icon-large"&gt;&lt;/span&gt;&lt;/a&gt; &amp;raquo;
@@ -1142,7 +1124,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 ##
 #set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
 #if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
-  #set ($adminspaceaction = $!xwiki.getURL("${doc.space}.WebPreferences", 'admin'))
+  #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
   #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'icon-cogs')
 #end
 &lt;/div&gt;
@@ -1232,13 +1214,8 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
     <className>XWiki.UIExtensionClass</className>
     <guid>885cbc76-bfb3-4756-9671-a2f718b814fe</guid>
     <property>
-      <content>{{velocity output=false}}
+      <content>{{velocity}}{{html clean=false}}
 $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
-#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#set($patientClassName = "$!{config.getProperty('patientClass').value}")
-{{/velocity}}
-
-{{velocity}}{{html clean=false}}
 &lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
   &lt;div class="rightmenu"&gt;
   &lt;/div&gt;
@@ -1376,7 +1353,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 ##
 #set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
 #if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
-  #set ($adminspaceaction = $!xwiki.getURL("${doc.space}.WebPreferences", 'admin'))
+  #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
   #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'icon-cogs')
 #end
 &lt;/div&gt;
@@ -1466,13 +1443,8 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
     <className>XWiki.UIExtensionClass</className>
     <guid>625ee288-0cf6-4dd3-b094-ed6f1aea6987</guid>
     <property>
-      <content>{{velocity output=false}}
+      <content>{{velocity}}{{html clean=false}}
 $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
-#set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
-#set($patientClassName = "$!{config.getProperty('patientClass').value}")
-{{/velocity}}
-
-{{velocity}}{{html clean=false}}
 &lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
   &lt;div class="rightmenu"&gt;
   &lt;/div&gt;

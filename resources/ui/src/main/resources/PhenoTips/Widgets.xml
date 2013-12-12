@@ -3718,6 +3718,10 @@ document.observe("xwiki:dom:loaded", function() {
 
      initializeElements : function(element) {
        container = element || this._container;
+       if (container.__unitSwitcher) {
+         return;
+       }
+       container.__unitSwitcher = this;
        container.select(this._selector).each(this.attachConverter);
        this.switchUnits(this.crtUnitSystem, container);
      },
@@ -5066,23 +5070,17 @@ input.xwiki-free-multiselect-value {
       <cache>long</cache>
     </property>
     <property>
-      <code>#template("colorThemeInit.vm")
-
-.unit-system-selector {
+      <code>.unit-system-selector {
   float: right;
   padding: 3px 3px 0;
   border-radius: 3px;
-}
-#body select.unit-system-selector, .unit-system-selector option {
-  background-color: $theme.buttonPrimaryBackgroundColor !important;
-  color: $theme.buttonPrimaryTextColor !important;
 }</code>
     </property>
     <property>
       <name>Unit system selector</name>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>

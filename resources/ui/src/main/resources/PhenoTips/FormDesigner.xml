@@ -119,7 +119,7 @@
     <className>XWiki.JavaScriptExtension</className>
     <guid>f932f5b4-9eb5-4334-9fdf-d92946a5d6c5</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>var PhenoTips = (function (PhenoTips) {
@@ -533,7 +533,7 @@ document.observe("xwiki:dom:loaded", function(){
     <className>XWiki.StyleSheetExtension</className>
     <guid>8d49282c-87bb-4a60-a5ea-83a25d3c87fc</guid>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>#template("colorThemeInit.vm")
@@ -936,7 +936,8 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
   #set ($formParams = {
     "xredirect" : "$doc.getURL($xcontext.action)",
     "${prefix}sections" : "",
-    "${prefix}fields" : ""
+    "${prefix}fields" : "",
+    "${prefix}mapping" : ""
   })
 #end
 
@@ -1066,8 +1067,10 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 #end
 )))
 ##
-## Only enable reorganization for global config
 #if ($globalConfig)
+##
+## Only enable reorganization for global config
+##
 (% class="designer-panel hint" %)(((Drag and drop to organize the form)))
 (% class="designer-panel extensions" %)(((
 #set ($defaultSectionData = {
@@ -1077,6 +1080,31 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 })
 #_formDesigner__displaySection($defaultSectionData false)
 )))
+#elseif ($groupConfig)
+##
+## Enable mapping configuration as well
+##
+(% class="mappingPreviewContainer" %)(((
+== Phenotypes to display by default ==
+
+{{info}}The phenotype categories and phenotypes that are displayed by default in the patient form, on the in the left side of the "Clinical symptoms &amp; physical findings" section, are defined in a separate configuration document. Choose below the configuration document to use.{{/info}}
+; Phenotype configuration document
+: (((
+{{html clean=false wiki=false}}&lt;label class="xwiki-form-listclass default" for="xwiki-form-mapping-0-default"&gt;&lt;input id="xwiki-form-mapping-0-default" type="radio" name="${prefix}mapping" value="" #if ("$!{groupConfig.getProperty('mapping').value}" == '') checked="checked" #end/&gt;None (use the global default)&lt;/label&gt;{{/html}}
+$doc.display('mapping', 'edit')
+)))
+
+(% class="hint under" %)(((Preview)))
+
+(% id="mappingPreview"%)((()))
+)))
+$xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.ssx.use('PhenoTips.Widgets', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.ssx.use('PhenoTips.PhenotypeMappingPreview', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##
+##
+##
 #end
 (% class="clearfloats" %)((()))
 )))

@@ -35,7 +35,7 @@
   <date>1324352514000</date>
   <contentUpdateDate>1324352514000</contentUpdateDate>
   <version>1.1</version>
-  <title>XWiki Preferences</title>
+  <title>Global Administration</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -2595,7 +2595,7 @@
       <authenticate_view>0</authenticate_view>
     </property>
     <property>
-      <colorTheme>ColorThemes.Kiwi</colorTheme>
+      <colorTheme>ColorThemes.Blue</colorTheme>
     </property>
     <property>
       <comment_anonymous>---</comment_anonymous>

@@ -85,13 +85,16 @@ START_OPTS="$START_OPTS -Djetty.port=$JETTY_PORT"
 START_OPTS="$START_OPTS -Djetty.home=$JETTY_HOME"
 
 # Specify port and key to stop a running Jetty instance
-START_OPTS="$START_OPTS -DSTOP.KEY=solrjettystop -DSTOP.PORT=$JETTY_STOPPORT"
+START_OPTS="$START_OPTS -DSTOP.KEY=phenotipsstop -DSTOP.PORT=$JETTY_STOPPORT"
 
-# Specify the encoding to use
+# Force UTF8 as the global JVM encoding
 START_OPTS="$START_OPTS -Dfile.encoding=UTF8"
 
 # Path to the solr configuration
 START_OPTS="$START_OPTS -Dsolr.solr.home=${PRGDIR}/solrconfig/"
+
+# Optional: enable remote debugging
+# START_OPTS="$START_OPTS -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
 
 # In order to avoid getting a "java.lang.IllegalStateException: Form too large" error
 # when editing large page in XWiki we need to tell Jetty to allow for large content

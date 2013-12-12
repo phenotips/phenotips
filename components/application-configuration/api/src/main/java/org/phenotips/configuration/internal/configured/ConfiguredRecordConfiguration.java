@@ -19,11 +19,15 @@
  */
 package org.phenotips.configuration.internal.configured;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.configuration.RecordConfiguration;
 import org.phenotips.configuration.RecordSection;
 import org.phenotips.configuration.internal.global.GlobalRecordConfiguration;
 
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.uiextension.UIExtensionFilter;
 import org.xwiki.uiextension.UIExtensionManager;
 
@@ -31,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Implementation of {@link RecordConfiguration} that takes into account a {@link CustomConfiguration custom
@@ -82,5 +88,21 @@ public class ConfiguredRecordConfiguration extends GlobalRecordConfiguration imp
             });
         }
         return Collections.unmodifiableList(result);
+    }
+
+    @Override
+    public DocumentReference getPhenotypeMapping()
+    {
+        try {
+            String mapping = this.configuration.getPhenotypeMapping();
+            if (StringUtils.isNotBlank(mapping)) {
+                DocumentReferenceResolver<String> resolver = ComponentManagerRegistry.getContextComponentManager()
+                    .getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+                return resolver.resolve(mapping);
+            }
+        } catch (ComponentLookupException e) {
+            // Shouldn't happen, base components must be available
+        }
+        return super.getPhenotypeMapping();
     }
 }

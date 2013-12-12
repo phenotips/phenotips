@@ -135,7 +135,7 @@
       <parameters>title=Prenatal and perinatal phenotypes
 enabled=true
 required=
-order=2
+order=4
 fields=prenatal_phenotype,negative_prenatal_phenotype</parameters>
     </property>
     <property>

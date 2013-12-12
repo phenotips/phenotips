@@ -46,6 +46,16 @@
 #if ($request.get('doCreate') == '1')
   #set ($patient = $services.patients.createNewPatient())
   #if ($patient)
+    #set ($formBindingClassName = 'PhenoTips.FormCustomizationBindingClass')
+    #set ($formBindingPropertyName = 'configReference')
+    #set ($formBindingPropertyValue = $request.get("$!{formBindingClassName}_${formBindingPropertyName}"))
+    #if ($formBindingPropertyValue)
+      #set ($patientDoc = $xwiki.getDocument($patient.document))
+      #set ($formBindingObj = $patientDoc.getObject($formBindingClassName, true))
+      #if ("$!formBindingObj" == '')no obj #end
+      #set ($discard = $formBindingObj.set($formBindingPropertyName, $formBindingPropertyValue))
+      #set ($discard = $patientDoc.save())
+    #end
     $response.sendRedirect($xwiki.getURL($patient.document, 'edit', ''))
   #else
     Cannot create patient

@@ -230,8 +230,9 @@ $response.setContentType('text/csv')##
 #end
 ${newline}##
 #foreach ($patient in $patients)
-  #set ($patientDoc = $xwiki.getDocument($patient))
-  #set ($patientObj = $patientDoc.getObject($targetClassName))
+ #set ($patientDoc = $xwiki.getDocument($patient))
+ #set ($patientObj = $patientDoc.getObject($targetClassName))
+ #if ($patientDoc &amp;&amp; $patientObj)
   #if ($enabledFields.contains('doc.name'))${patientDoc.documentReference.name},#end
   #if ($enabledFields.contains('referrer'))${xwiki.getUserName($patientDoc.creator, false)},#end
   #if ($enabledFields.contains('creationDate'))$!{xwiki.formatDate($patientDoc.creationDate, 'MM/dd/yyyy')},#end
@@ -375,6 +376,7 @@ ${newline}##
     #end
   #end
   ${newline}##
+ #end## Patient is accessible
 #end
 }}}
 {{/velocity}}</content>

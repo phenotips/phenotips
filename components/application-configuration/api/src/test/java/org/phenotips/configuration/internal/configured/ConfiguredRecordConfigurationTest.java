@@ -19,12 +19,19 @@
  */
 package org.phenotips.configuration.internal.configured;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.configuration.RecordConfiguration;
 import org.phenotips.configuration.RecordSection;
 import org.phenotips.configuration.internal.global.GlobalRecordConfiguration;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.uiextension.UIExtension;
 import org.xwiki.uiextension.UIExtensionFilter;
 import org.xwiki.uiextension.UIExtensionManager;
@@ -36,8 +43,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Provider;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -407,5 +423,112 @@ public class ConfiguredRecordConfigurationTest
         expectedFields.add("maternal_ethnicity");
         expectedFields.add("paternal_ethnicity");
         Assert.assertEquals(expectedFields, c.getEnabledFieldNames());
+    }
+
+    /** Basic tests for {@link ConfiguredRecordConfiguration#getPhenotypeMapping()}. */
+    @Test
+    public void getPhenotypeMapping() throws ComponentLookupException
+    {
+        CustomConfiguration cc = mock(CustomConfiguration.class);
+        Execution e = mock(Execution.class);
+        UIExtensionManager m = mock(UIExtensionManager.class);
+        UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
+        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, e, m, filter);
+        when(cc.getPhenotypeMapping()).thenReturn("PhenoTips.XPhenotypeMapping");
+        ComponentManager cm = mock(ComponentManager.class);
+        @SuppressWarnings("unchecked")
+        Provider<ComponentManager> mockProvider = mock(Provider.class);
+        // This is a bit fragile, let's hope the field name doesn't change
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", mockProvider);
+        when(mockProvider.get()).thenReturn(cm);
+        @SuppressWarnings("unchecked")
+        DocumentReferenceResolver<String> resolver = mock(DocumentReferenceResolver.class);
+        when(cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenReturn(resolver);
+        DocumentReference expectedMapping = new DocumentReference("xwiki", "PhenoTips", "XPhenotypeMapping");
+        when(resolver.resolve("PhenoTips.XPhenotypeMapping")).thenReturn(expectedMapping);
+
+        Assert.assertEquals(expectedMapping, c.getPhenotypeMapping());
+    }
+
+    /**
+     * {@link ConfiguredRecordConfiguration#getPhenotypeMapping()} returns the global mapping when there's no custom
+     * mapping.
+     */
+    @Test
+    public void getPhenotypeMappingWithMissingConfiguration() throws ComponentLookupException, XWikiException
+    {
+        CustomConfiguration cc = mock(CustomConfiguration.class);
+        Execution e = mock(Execution.class);
+        UIExtensionManager m = mock(UIExtensionManager.class);
+        UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
+        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, e, m, filter);
+        when(cc.getPhenotypeMapping()).thenReturn("");
+        ComponentManager cm = mock(ComponentManager.class);
+        @SuppressWarnings("unchecked")
+        Provider<ComponentManager> mockProvider = mock(Provider.class);
+        // This is a bit fragile, let's hope the field name doesn't change
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", mockProvider);
+        when(mockProvider.get()).thenReturn(cm);
+        @SuppressWarnings("unchecked")
+        DocumentReferenceResolver<String> resolver = mock(DocumentReferenceResolver.class);
+        when(cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenReturn(resolver);
+        DocumentReference expectedMapping = new DocumentReference("xwiki", "PhenoTips", "XPhenotypeMapping");
+        when(resolver.resolve("PhenoTips.XPhenotypeMapping")).thenReturn(expectedMapping);
+
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument wh = mock(XWikiDocument.class);
+        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        BaseObject o = mock(BaseObject.class);
+        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        when(o.getStringValue("phenotypeMapping")).thenReturn("PhenoTips.XPhenotypeMapping");
+
+        Assert.assertEquals(expectedMapping, c.getPhenotypeMapping());
+    }
+
+    /**
+     * {@link ConfiguredRecordConfiguration#getPhenotypeMapping()} returns the global mapping when getting the custom
+     * mapping fails.
+     */
+    @Test
+    public void getPhenotypeMappingWithExceptions() throws ComponentLookupException, XWikiException
+    {
+        CustomConfiguration cc = mock(CustomConfiguration.class);
+        Execution e = mock(Execution.class);
+        UIExtensionManager m = mock(UIExtensionManager.class);
+        UIExtensionFilter filter = mock(UIExtensionFilter.class, "sortByParameter");
+        RecordConfiguration c = new ConfiguredRecordConfiguration(cc, e, m, filter);
+        when(cc.getPhenotypeMapping()).thenReturn("PhenoTips.YPhenotypeMapping");
+        ComponentManager cm = mock(ComponentManager.class);
+        @SuppressWarnings("unchecked")
+        Provider<ComponentManager> mockProvider = mock(Provider.class);
+        // This is a bit fragile, let's hope the field name doesn't change
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", mockProvider);
+        when(mockProvider.get()).thenReturn(cm);
+        @SuppressWarnings("unchecked")
+        DocumentReferenceResolver<String> resolver = mock(DocumentReferenceResolver.class);
+        when(cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenThrow(
+            new ComponentLookupException("No such component")).thenReturn(resolver);
+        DocumentReference expectedMapping = new DocumentReference("xwiki", "PhenoTips", "XPhenotypeMapping");
+        when(resolver.resolve("PhenoTips.YPhenotypeMapping")).thenReturn(null);
+        when(resolver.resolve("PhenoTips.XPhenotypeMapping")).thenReturn(expectedMapping);
+
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument wh = mock(XWikiDocument.class);
+        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        BaseObject o = mock(BaseObject.class);
+        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        when(o.getStringValue("phenotypeMapping")).thenReturn("PhenoTips.XPhenotypeMapping");
+
+        Assert.assertEquals(expectedMapping, c.getPhenotypeMapping());
     }
 }
