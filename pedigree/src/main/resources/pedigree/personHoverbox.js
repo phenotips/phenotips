@@ -251,7 +251,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         else if (!isDrag) {
             if(handleType == "partnerR" || handleType == "partnerL") {
                 this.removeHandles();                
-                var preferLeft = (handleType == "partnerL");          
+                var preferLeft = (this.getNode().getGender() == 'F') || (handleType == "partnerL");
                 var event = { "personID": this.getNode().getID(), "preferLeft": preferLeft };
                 document.fire("pedigree:person:newpartnerandchild", event);
             }
