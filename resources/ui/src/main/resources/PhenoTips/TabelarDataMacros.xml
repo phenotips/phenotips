@@ -468,7 +468,7 @@ $xwiki.ssx.use('PhenoTips.TabelarDataMacros')##
 
       #end## foreach object
     #else
-      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
+      (% class="extradata-list#if ("$!{options.labels}" == 'true') withLabel#end#if ("$!{options.counter}" == 'true') withCounter#end $!{options.cssClass}" id="extradata-list-${dataClassName}#if("$!{options.propertyName}" != '')-$!{options.propertyValue}#end" %)
       #if ("$!{options.counter}" == 'true')|=(% class="col-label" %)# #end#foreach($prop in $dataClass.properties)|=(% class="col-label $prop.name#if ($prop.name == $options.propertyName) hidden#end" %)$prop.prettyName#end#if ($options.mode == 'edit')|=(% class="actions" %)
       #else
 

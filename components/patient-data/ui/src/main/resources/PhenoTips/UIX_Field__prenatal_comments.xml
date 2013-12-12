@@ -128,7 +128,7 @@
       <parameters>title=Additional notes
 enabled=true
 required=
-order=4
+order=5
 fields=prenatal_comments</parameters>
     </property>
     <property>

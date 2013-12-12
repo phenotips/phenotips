@@ -119,7 +119,7 @@
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.patient-info</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.medical-history</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.patientSheet.field.age_of_onset</name>
@@ -127,7 +127,7 @@
     <property>
       <parameters>title=Global age of onset
 enabled=true
-order=9
+order=2
 required=
 fields=age_of_onset</parameters>
     </property>

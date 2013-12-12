@@ -2149,6 +2149,7 @@ document.observe('xwiki:dom:loaded', function() {
        hand : {
          evaluation : row.down('td.hand_evaluation'),
          valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0004279'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001176')
          }
        },
@@ -2168,6 +2169,7 @@ document.observe('xwiki:dom:loaded', function() {
        hand_right : {
          evaluation : row.down('td.hand_right_evaluation'),
          valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0004279'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001176')
          }
        },
@@ -2241,11 +2243,48 @@ document.observe('xwiki:dom:loaded', function() {
      updateCharts(event);
   });
 
+
+  // ------------------------------------------------------------------------------------------
   // Also attach the measurement switcher
   var configuredUnitSystem = $('measurementUnitSystem');
   // this element will exist iff the imerial system is enabled
   if (configuredUnitSystem) {
     new PhenoTips.widgets.UnitConverter($('extradata-list-PhenoTips.MeasurementsClass'), 'input[type="text"]:not([name$="date"])', $('extradata-list-PhenoTips.MeasurementsClass'), 'before', configuredUnitSystem.value || '');
+  }
+
+  // ------------------------------------------------------------------------------------------
+  // And one more thing (not exactly related to measurements directly:
+  // If we're collecting data about gestational age, select premature birth for low gestational ages
+  var gaInput = $$('input[type="text"][name$="_gestation"]');
+  gaInput = gaInput.size() &gt; 0 &amp;&amp; gaInput[0] || '';
+  var pbInput = findFormElementForPhenotype('HP:0001622');
+  if (gaInput &amp;&amp; pbInput) {
+    gaInput.observe('blur', function (event) {
+      var ga = parseInt(gaInput.value);
+      var targetElt = pbInput;
+      if (!isNaN(ga)) {
+        if (ga &lt; 37) {
+          if (!targetElt.checked) {
+            if (targetElt._ynpicker) {
+              targetElt._ynpicker._onYes();
+            } else {
+              targetElt.checked = true;
+            }
+            highlightChecked(targetElt);
+          }
+        } else {
+          if (targetElt._ynpicker) {
+            targetElt._ynpicker._onNo();
+            highlightChecked(targetElt);
+          }
+        }
+      } else {
+          if (targetElt._ynpicker) {
+            targetElt._ynpicker._onNA();
+            highlightChecked(targetElt);
+          }
+      }
+    });
   }
 });</code>
     </property>
@@ -3777,7 +3816,7 @@ hr {
       <code>#template('colorThemeInit.vm')
 /** ----------------------------------------------------------- */
 /** Default style fixes **/
-#mainContentArea, #mainEditArea {
+.space-data #mainContentArea, #mainEditArea {
     background-color: #F9F9F9;
     border: 1px solid #FFFFFF;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
@@ -3785,17 +3824,17 @@ hr {
     padding: 0.5em 10px;
     text-shadow: 1px 1px 0 #FFFFFF;
 }
-.bottombuttons {
+.space-data .bottombuttons {
    margin: 3em -10px -3em;
 }
-#document-head {
+.space-data #document-head {
   border-bottom: .4em solid $theme.buttonPrimaryBackgroundColor;
   margin: -2.7em -12px 0;
 }
-#document-head #document-title {
+.space-data #document-head #document-title {
   display: inline-block;
 }
-#document-head h1 {
+.space-data #document-head h1 {
     background-color: $theme.buttonPrimaryBackgroundColor;
     border-bottom: 0 none;
     border-radius: 8px 8px 0 0;
@@ -4083,20 +4122,16 @@ label.selected input[type="checkbox"] {
 }
 /** ----------------------------------------------------------- */
 /** Patient info zone **/
-.patient-info .fieldset {
-  margin: .3em 0 !important;
+.clinical-info .fieldset {
+  margin: 1em 0 !important;
 }
-.editbody .patient-info .family_study {
+.editbody .family_study {
   margin-top: 1.2em ! important;
 }
-.patient-info .side {
+.clinical-info .side {
   padding-top: .3em;
 }
-.editbody .patient-info label.section {
-  font-weight: bold;
-}
-.viewbody .patient-info .label, .viewbody .patient-info label {
-  color: $theme.linkColor;
+.viewbody .clinical-info .label, .viewbody .clinical-info label {
   font-weight: bold;
   display: inline-block;
   width: 33%;
@@ -4203,6 +4238,10 @@ label.selected input[type="checkbox"] {
 /** edit mode **/
 .editbody .clinical-info label.section {
   line-height: 1.4em;
+  font-weight: bold;
+}
+.editbody .clinical-info .predefined-entries label.section {
+  font-weight: normal;
 }
 .editbody .clinical-info .phenotypes-main label.section:before {
   content: "\25bc";

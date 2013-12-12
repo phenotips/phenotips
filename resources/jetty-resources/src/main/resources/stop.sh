@@ -52,7 +52,7 @@ else
 fi
 
 # Specify port and key to stop a running Jetty instance
-START_OPTS="$START_OPTS -DSTOP.KEY=solrjettystop -DSTOP.PORT=$JETTY_STOPPORT"
+START_OPTS="$START_OPTS -DSTOP.KEY=phenotipsstop -DSTOP.PORT=$JETTY_STOPPORT"
 
 # Specify Jetty's home directory
 START_OPTS="$START_OPTS -Djetty.home=$JETTY_HOME"

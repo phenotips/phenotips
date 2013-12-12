@@ -212,6 +212,11 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release 1.0-milestone-10 -->
+            <difference>
+              <className>**/configuration/RecordConfiguration</className>
+              <differenceType>7012</differenceType>
+              <method>org.xwiki.model.reference.DocumentReference getPhenotypeMapping()</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

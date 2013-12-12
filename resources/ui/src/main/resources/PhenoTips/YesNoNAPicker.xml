@@ -43,6 +43,30 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <attachment>
+    <filename>minus-b.png</filename>
+    <filesize>169</filesize>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1350052841000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
+WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoLEhsIjNbd4gAAADZJREFUOMtjYBgFwwAwovH/o0gy
+IqT//4dIMTMzM/z9+5cRqwGMjIz/0TUgG4Ykxjga9sMKAAApLQ4Dg4FoCAAAAABJRU5ErkJggg==
+</content>
+  </attachment>
+  <attachment>
+    <filename>minus-r.png</filename>
+    <filesize>149</filesize>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1350052841000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
+WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoLEhoMkqAougAAACJJREFUOMtjYBgFwwAwInOeMDD8
+J0aTDJI+ptEwHAUMDAwAex0CBGzZMBAAAAAASUVORK5CYII=
+</content>
+  </attachment>
+  <attachment>
     <filename>no-b.png</filename>
     <filesize>244</filesize>
     <author>xwiki:XWiki.Admin</author>
@@ -72,39 +96,51 @@ MsNwuwAAAABJRU5ErkJggg==
 </content>
   </attachment>
   <attachment>
-    <filename>yesno-b.png</filename>
-    <filesize>425</filesize>
+    <filename>no.png</filename>
+    <filesize>636</filesize>
     <author>xwiki:XWiki.Admin</author>
     <date>1350052841000</date>
     <version>1.1</version>
     <comment/>
-    <content>iVBORw0KGgoAAAANSUhEUgAAADAAAAAQCAYAAABQrvyxAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoLEQkyMGjK2gAAATZJREFUSMftlrFKA0EQhr85xCCk
-VcFGQQOxCyq+gL6Kte+R/jrPN7CwTmlvY5fGxtImjWXWZgfGY/Fm904hkB+2WGZ2mH/235mFLTYc
-IiIDhmviKrW78SYiAXgaOPkQ49YJey0iai8mMTFB6g7fEXAOXAFTYNdJYJ2Ir8mvgWICt1ohEXl2
-+E+BI6ACjoFTx5m6RWIOzDV5Z+HSyWvlReTd4V8BM0Dfx17ck0tiiOQnRpuhUHrjDALEygdDQG8j
-WSnFA/AJ3LS6zNJsrwsJHAKr0ocXgq9uL4btB3AJvHZ0Bg/2Y/V3vBKyssmV0KJ9dXGterTHWZRQ
-dvL6iH/pTkksTRA9dFKYfAWcZc6BZBtt2Trb6JeRzuM/DfWmY8ZkDbID49wHI+Aik0TTw/4D98Dd
-9rf3x/gGiMB4LIkF3R8AAAAASUVORK5CYII=
+    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
+WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoKEwwC0P69OAAAAglJREFUOMudU79r20AYfXeyrDtZ
+xkMga4dMxf4bCu4e/xcFU5zQNVN+DNkCNcVbhkyyIZ4yxOCh/SeUvaMXywKrkozu+9SlElJJhvbB
+wd3HvffdvXeHoijwL2O5XLr1tUQN6/X63Xq97uMNLJfLPhF98n3/Q1mTdbKU8qcQIlitVv3XyEKI
+wHGcr0T0+eHh4T0AiKIoKrJlWQCAw+GAPM8Hp6enLwDw+PjYF0IEWmtorRGGIaIo+kJE30oBxcy/
+bNuWjuMgyzKkaYo8zwfGGEgpA6UUtNbY7XaIooiMMXo8HueiKAoAwPPzs2Lm2LZtSymFNE2RJAmI
+CEopuK5bdiYi8sbjcVZdocTT05Miorjdbluu6zbcL8nMXJEbJgLAaDTKiMiL45iZGVEUYbfb4c+c
+651fFQAAY8yJEEIyM4gIzAxmhpRSGmNO/t7fEFgsFn0hRNBut8HM6Ha76Ha7YGZ0Oh1YlhXc3d01
+Iq48mM/nZc5wXbdym4iE53ny6OgIYRgiDEOkaTq4uLh4qU7g+35FruVMxhiPiDrb7ZY2mw16vR56
+vR5s2w5ubm76lQARHTNzw21jjDeZTLLz8/OMiLxSREoJIQSY+bhxhfv7+2Gr1fqeJAkTUefs7Kzh
+9u3trWLmWGtt7ff7j1dXVz8AoJH1bDYbTqdT9dZPvL6+VpeXl8N6rfGQ/ge/AaGpntWjvnIiAAAA
+AElFTkSuQmCC
 </content>
   </attachment>
   <attachment>
-    <filename>yesno-c.png</filename>
-    <filesize>526</filesize>
+    <filename>plus-b.png</filename>
+    <filesize>206</filesize>
     <author>xwiki:XWiki.Admin</author>
     <date>1350052841000</date>
     <version>1.1</version>
     <comment/>
-    <content>iVBORw0KGgoAAAANSUhEUgAAADAAAAAQCAYAAABQrvyxAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoLESMyXwMG8gAAAZtJREFUSMft1r9qVEEUBvDfDWIQ
-DBaiNmMRMCaCqKjrC5i0a5E3CNjEwip5CFPvrVx8Aptt4xssiGIXFQJOkcLGELBzLe69MLlusndv
-soWQU83MmT/f9805Z4YL+88tkp3bZoNO36DTn8Y/1xL0l8go8j4wOjfwbGDDoNMb4+8l/n4rApGl
-WAC+jzywfsr0edzDU6zgcsNjRtg8RqJobxojVjYF+FXsVlsGXkxYsoJDHOA2LuH7hFtIgWbYKT1b
-yViuO3w1FYEa+P3A4oQlc3iAz+XBV7CMTw1CqU7CSeAbEYgsYa/qh3ZJexV3GhEoSLwpVU9tR3e4
-PU6pCujbyM/I89qcvaT9rGWK3sKvWVTBNImXcR0fIjHyJPIx8eeBYYszbmABPxqq30tiPk3srXHV
-KauFy64i3ut2GLjWUqRH+IajFvE/MYmPldHAGr4mrCsVHp7hho8agu/XwOe6w+0y7vNyrCqxJ78D
-gbv4XS7I8C6w35LAn1L9aezfalO088ZlP3KzfGnP+srO4/EsvxKnkXgdeXnx25ux/QXexoXJEWrB
-SwAAAABJRU5ErkJggg==
+    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
+WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoLEhsjIGokogAAAFtJREFUOMtjYBjygJmAfAsDA4MT
+AwPDZQYGhm/kWPAfijVwKWCi1AtM1A6TEiRn48JzqOoCRjS+MAMDgygS/zqU9mZgYLgHZX9kYGB4
+PnhigYWA/Foo/Zlh+AIAs5UVlIQmnVUAAAAASUVORK5CYII=
+</content>
+  </attachment>
+  <attachment>
+    <filename>plus-g.png</filename>
+    <filesize>255</filesize>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1350052841000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
+WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoLEhszPd00xgAAAIxJREFUOMtjYBjygBGv7EbjFgYG
+BgaGv78nMgRdeo1NCQt+45mqIQzmJQwMDFgNYKLUC0zUDYONJiUMjIzdeHX8/z+Xwf9MCtVcgBqI
+X//PZ+D4uwUhy3IdYus/b4a//+4xMDAwMPxk+Eh8NG4y/c/AwMDA8OePJkPQ+Rs0CUT86eA/w1oI
+zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
 </content>
   </attachment>
   <attachment>
@@ -174,24 +210,39 @@ xdhoNEwhxMFxHAghrnAYhvx3Ef/Sg1qtZiqlDpxzIYSwwjA8/akjjxapUqmYQgg5mUxOfytZ6tZ3
 </content>
   </attachment>
   <attachment>
-    <filename>no.png</filename>
-    <filesize>636</filesize>
+    <filename>yesno-b.png</filename>
+    <filesize>425</filesize>
     <author>xwiki:XWiki.Admin</author>
     <date>1350052841000</date>
     <version>1.1</version>
     <comment/>
-    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoKEwwC0P69OAAAAglJREFUOMudU79r20AYfXeyrDtZ
-xkMga4dMxf4bCu4e/xcFU5zQNVN+DNkCNcVbhkyyIZ4yxOCh/SeUvaMXywKrkozu+9SlElJJhvbB
-wd3HvffdvXeHoijwL2O5XLr1tUQN6/X63Xq97uMNLJfLPhF98n3/Q1mTdbKU8qcQIlitVv3XyEKI
-wHGcr0T0+eHh4T0AiKIoKrJlWQCAw+GAPM8Hp6enLwDw+PjYF0IEWmtorRGGIaIo+kJE30oBxcy/
-bNuWjuMgyzKkaYo8zwfGGEgpA6UUtNbY7XaIooiMMXo8HueiKAoAwPPzs2Lm2LZtSymFNE2RJAmI
-CEopuK5bdiYi8sbjcVZdocTT05Miorjdbluu6zbcL8nMXJEbJgLAaDTKiMiL45iZGVEUYbfb4c+c
-651fFQAAY8yJEEIyM4gIzAxmhpRSGmNO/t7fEFgsFn0hRNBut8HM6Ha76Ha7YGZ0Oh1YlhXc3d01
-Iq48mM/nZc5wXbdym4iE53ny6OgIYRgiDEOkaTq4uLh4qU7g+35FruVMxhiPiDrb7ZY2mw16vR56
-vR5s2w5ubm76lQARHTNzw21jjDeZTLLz8/OMiLxSREoJIQSY+bhxhfv7+2Gr1fqeJAkTUefs7Kzh
-9u3trWLmWGtt7ff7j1dXVz8AoJH1bDYbTqdT9dZPvL6+VpeXl8N6rfGQ/ge/AaGpntWjvnIiAAAA
-AElFTkSuQmCC
+    <content>iVBORw0KGgoAAAANSUhEUgAAADAAAAAQCAYAAABQrvyxAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBI
+WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoLEQkyMGjK2gAAATZJREFUSMftlrFKA0EQhr85xCCk
+VcFGQQOxCyq+gL6Kte+R/jrPN7CwTmlvY5fGxtImjWXWZgfGY/Fm904hkB+2WGZ2mH/235mFLTYc
+IiIDhmviKrW78SYiAXgaOPkQ49YJey0iai8mMTFB6g7fEXAOXAFTYNdJYJ2Ir8mvgWICt1ohEXl2
++E+BI6ACjoFTx5m6RWIOzDV5Z+HSyWvlReTd4V8BM0Dfx17ck0tiiOQnRpuhUHrjDALEygdDQG8j
+WSnFA/AJ3LS6zNJsrwsJHAKr0ocXgq9uL4btB3AJvHZ0Bg/2Y/V3vBKyssmV0KJ9dXGterTHWZRQ
+dvL6iH/pTkksTRA9dFKYfAWcZc6BZBtt2Trb6JeRzuM/DfWmY8ZkDbID49wHI+Aik0TTw/4D98Dd
+9rf3x/gGiMB4LIkF3R8AAAAASUVORK5CYII=
+</content>
+  </attachment>
+  <attachment>
+    <filename>yesno-c.png</filename>
+    <filesize>526</filesize>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1350052841000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAADAAAAAQCAYAAABQrvyxAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
+WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoLESMyXwMG8gAAAZtJREFUSMft1r9qVEEUBvDfDWIQ
+DBaiNmMRMCaCqKjrC5i0a5E3CNjEwip5CFPvrVx8Aptt4xssiGIXFQJOkcLGELBzLe69MLlusndv
+soWQU83MmT/f9805Z4YL+88tkp3bZoNO36DTn8Y/1xL0l8go8j4wOjfwbGDDoNMb4+8l/n4rApGl
+WAC+jzywfsr0edzDU6zgcsNjRtg8RqJobxojVjYF+FXsVlsGXkxYsoJDHOA2LuH7hFtIgWbYKT1b
+yViuO3w1FYEa+P3A4oQlc3iAz+XBV7CMTw1CqU7CSeAbEYgsYa/qh3ZJexV3GhEoSLwpVU9tR3e4
+PU6pCujbyM/I89qcvaT9rGWK3sKvWVTBNImXcR0fIjHyJPIx8eeBYYszbmABPxqq30tiPk3srXHV
+KauFy64i3ut2GLjWUqRH+IajFvE/MYmPldHAGr4mrCsVHp7hho8agu/XwOe6w+0y7vNyrCqxJ78D
+gbv4XS7I8C6w35LAn1L9aezfalO088ZlP3KzfGnP+srO4/EsvxKnkXgdeXnx25ux/QXexoXJEWrB
+SwAAAABJRU5ErkJggg==
 </content>
   </attachment>
   <attachment>
@@ -223,57 +274,6 @@ o4e2flri/LJ/eCiD8/EBxM/1I5UY1MIRc4W/UsyJWeR9vSYFaEI5k0O5kFfkCKvu26956PgxTkJY
 E5mMGhtIgjEGgzFopeqnReCK7t19u6mIig53pBTKOrnnx8t/4pH1AIhMvgUz6tIDq9uY231EjI0S
 CekPHftm2qVlrlvu1UpNzAsEXPzixRXh4cGjFQ+79aWbzVuev8HzT//Mjdx1T9vPt93hrTQ/3NTi
 HWoIt+H/pF8AnW4ntAVBMrwAAAAASUVORK5CYII=
-</content>
-  </attachment>
-  <attachment>
-    <filename>minus-b.png</filename>
-    <filesize>169</filesize>
-    <author>xwiki:XWiki.Admin</author>
-    <date>1350052841000</date>
-    <version>1.1</version>
-    <comment/>
-    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoLEhsIjNbd4gAAADZJREFUOMtjYBgFwwAwovH/o0gy
-IqT//4dIMTMzM/z9+5cRqwGMjIz/0TUgG4Ykxjga9sMKAAApLQ4Dg4FoCAAAAABJRU5ErkJggg==
-</content>
-  </attachment>
-  <attachment>
-    <filename>minus-r.png</filename>
-    <filesize>149</filesize>
-    <author>xwiki:XWiki.Admin</author>
-    <date>1350052841000</date>
-    <version>1.1</version>
-    <comment/>
-    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoLEhoMkqAougAAACJJREFUOMtjYBgFwwAwInOeMDD8
-J0aTDJI+ptEwHAUMDAwAex0CBGzZMBAAAAAASUVORK5CYII=
-</content>
-  </attachment>
-  <attachment>
-    <filename>plus-b.png</filename>
-    <filesize>206</filesize>
-    <author>xwiki:XWiki.Admin</author>
-    <date>1350052841000</date>
-    <version>1.1</version>
-    <comment/>
-    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoLEhsjIGokogAAAFtJREFUOMtjYBjygJmAfAsDA4MT
-AwPDZQYGhm/kWPAfijVwKWCi1AtM1A6TEiRn48JzqOoCRjS+MAMDgygS/zqU9mZgYLgHZX9kYGB4
-PnhigYWA/Foo/Zlh+AIAs5UVlIQmnVUAAAAASUVORK5CYII=
-</content>
-  </attachment>
-  <attachment>
-    <filename>plus-g.png</filename>
-    <filesize>255</filesize>
-    <author>xwiki:XWiki.Admin</author>
-    <date>1350052841000</date>
-    <version>1.1</version>
-    <comment/>
-    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoLEhszPd00xgAAAIxJREFUOMtjYBjygBGv7EbjFgYG
-BgaGv78nMgRdeo1NCQt+45mqIQzmJQwMDFgNYKLUC0zUDYONJiUMjIzdeHX8/z+Xwf9MCtVcgBqI
-X//PZ+D4uwUhy3IdYus/b4a//+4xMDAwMPxk+Eh8NG4y/c/AwMDA8OePJkPQ+Rs0CUT86eA/w1oI
-zfqZYfgCAGSZJAGIdEuaAAAAAElFTkSuQmCC
 </content>
   </attachment>
   <object>

@@ -26,10 +26,13 @@ import org.phenotips.configuration.internal.global.GlobalRecordConfiguration;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
@@ -61,6 +64,78 @@ public class DefaultRecordConfigurationManagerTest
     @Rule
     public final MockitoComponentMockingRule<RecordConfigurationManager> mocker =
         new MockitoComponentMockingRule<RecordConfigurationManager>(DefaultRecordConfigurationManager.class);
+
+    /**
+     * {@link RecordConfigurationManager#getActiveConfiguration()} returns a custom configuration when there's an
+     * explicit binding in the current document.
+     */
+    @Test
+    public void getActiveConfigurationWithBoundConfiguration() throws ComponentLookupException, XWikiException
+    {
+        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
+        DocumentReference currentDocument = new DocumentReference("xwiki", "data", "P0000001");
+        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "FormCustomizationBindingClass");
+        DocumentReference gr = new DocumentReference("xwiki", "Groups", "Dentists");
+        when(dab.getCurrentDocumentReference()).thenReturn(currentDocument);
+        DocumentReferenceResolver<EntityReference> resolver =
+            this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
+        when(resolver.resolve(DefaultRecordConfigurationManager.CUSTOMIZATION_BINDING_CLASS_REFERENCE))
+            .thenReturn(bindingClass);
+        when(dab.getProperty(currentDocument, bindingClass, "configReference")).thenReturn("Groups.Dentists");
+        DocumentReferenceResolver<String> referenceParser =
+            this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+        when(referenceParser.resolve("Groups.Dentists")).thenReturn(gr);
+        Execution e = this.mocker.getInstance(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument doc = mock(XWikiDocument.class);
+        when(x.getDocument(gr, context)).thenReturn(doc);
+        BaseObject o = mock(BaseObject.class);
+        when(doc.getXObject(RecordConfiguration.CUSTOM_PREFERENCES_CLASS)).thenReturn(o);
+        when(o.getListValue("sections")).thenReturn(Collections.singletonList("patient_info"));
+
+        RecordConfiguration result = this.mocker.getComponentUnderTest().getActiveConfiguration();
+        Assert.assertTrue(result instanceof ConfiguredRecordConfiguration);
+    }
+
+    /**
+     * {@link RecordConfigurationManager#getActiveConfiguration()} returns the global configuration when there's an
+     * explicit binding in the current document, but reading the custom configuration fails.
+     */
+    @Test
+    public void getActiveConfigurationWithBoundConfigurationAndExceptions() throws ComponentLookupException,
+        XWikiException
+    {
+        DocumentAccessBridge dab = this.mocker.getInstance(DocumentAccessBridge.class);
+        DocumentReference currentDocument = new DocumentReference("xwiki", "data", "P0000001");
+        DocumentReference bindingClass = new DocumentReference("xwiki", "PhenoTips", "FormCustomizationBindingClass");
+        DocumentReference gr = new DocumentReference("xwiki", "Groups", "Dentists");
+        when(dab.getCurrentDocumentReference()).thenReturn(currentDocument);
+        DocumentReferenceResolver<EntityReference> resolver =
+            this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
+        when(resolver.resolve(DefaultRecordConfigurationManager.CUSTOMIZATION_BINDING_CLASS_REFERENCE))
+            .thenReturn(bindingClass);
+        when(dab.getProperty(currentDocument, bindingClass, "configReference")).thenReturn("Groups.Dentists");
+        DocumentReferenceResolver<String> referenceParser =
+            this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+        when(referenceParser.resolve("Groups.Dentists")).thenReturn(gr);
+        Execution e = this.mocker.getInstance(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument doc = mock(XWikiDocument.class);
+        when(x.getDocument(gr, context)).thenThrow(new XWikiException());
+
+        RecordConfiguration result = this.mocker.getComponentUnderTest().getActiveConfiguration();
+        Assert.assertTrue(result instanceof GlobalRecordConfiguration);
+    }
 
     /**
      * {@link RecordConfigurationManager#getActiveConfiguration()} returns the global configuration when the user

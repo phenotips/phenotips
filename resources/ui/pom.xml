@@ -120,6 +120,9 @@
           </includes>
           <excludes>
             <exclude>**/Main/Welcome*.xml</exclude>
+            <exclude>**/ColorThemes/Dusk.xml</exclude>
+            <exclude>**/ColorThemes/DefaultColorTheme.xml</exclude>
+            <exclude>**/ColorThemes/Mint.xml</exclude>
           </excludes>
         </configuration>
       </plugin>

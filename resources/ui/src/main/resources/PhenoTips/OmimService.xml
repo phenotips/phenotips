@@ -68,6 +68,14 @@
     #end
     #set ($results = $_service.search("$!request.q", "$!request.sort", $rows, $start))
   #end
+  #foreach($item in $results)
+    #if ("$!item.id"!= '' &amp;&amp; "$!item.name" != '')
+      #set ($indexOfSeparator = $item.name.indexOf(';'))
+      #if ($indexOfSeparator &gt; 0)
+        #set($item.name = $item.name.substring(0, $indexOfSeparator))
+      #end
+    #end
+  #end
   #if ("$!{request.format}" == 'html')
 $response.setHeader("X-ReqNo", "$!request.reqNo")##
 {{html clean="false"  wiki="false"}}##

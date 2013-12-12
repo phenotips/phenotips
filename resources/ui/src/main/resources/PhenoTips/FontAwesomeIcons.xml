@@ -271,6 +271,7 @@
 #set ($aliases = {
   'public' : 'unlock',
   'private' : 'lock',
+  'hidden' : 'eye-close',
   'matchable' : 'search',
   'delete' : 'remove'
 })

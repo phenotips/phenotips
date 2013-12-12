@@ -65,24 +65,41 @@
 
 #macro (__displayIfNotEmpty $propName)
   #if ($xcontext.action == 'edit' || ($doc.display($propName) != ''))
-    #__label($propName '')
-    #__display($propName)
+    (% class="fieldset ${propName} %)(((
+      #__label($propName 'section group-title' '')
+      #__display($propName)
+    )))
   #end
 #end
 
 #macro (__displayIfTrue $propName $withLabel)
-  #if ($xcontext.action == 'edit' || $obj.getProperty($propertyName).value == 1)
-    #if ($withLabel)
-      #__label($propName '')
-    #end
-    #__display($propName)
+  #if ($xcontext.action == 'edit' || $obj.getProperty($propName).value == 1)
+    (% class="fieldset ${propName} %)(((
+      #if ($withLabel)
+        #__label($propName '' '')
+      #end
+      #__display($propName)
+    )))
+  #end
+#end
+
+#macro (__displayIfSet $propName $withLabel)
+  #if ($xcontext.action == 'edit' || $obj.getProperty($propName).value == 1 || $obj.getProperty($propName).value == 0)
+    (% class="fieldset ${propName} %)(((
+      #if ($withLabel)
+        #__label($propName '' '')
+      #end
+      #__display($propName)
+    )))
   #end
 #end
 
 #macro (__displayIfNotUnknown $propName)
-  #if ($xcontext.action == 'edit' || "$!obj.getProperty($propertyName).value" != 'Unknown')
-    #__label($propName '')
-    #__display($propName)
+  #if ($xcontext.action == 'edit' || "$!obj.getProperty($propName).value" != 'Unknown')
+    (% class="fieldset ${propName} %)(((
+      #__label($propName '' '')
+      #__display($propName)
+    )))
   #end
 #end
 
@@ -99,7 +116,7 @@
 #end
 
 #macro (__hasKnownDataToDisplay $propertyName $shouldDisplay)
-  #if ($xcontext.action == 'edit' || "$!obj.getProperty($propertyName).value" != 'Unknown')
+  #if ($xcontext.action == 'edit' || "$!obj.getProperty($propertyName).value.toLowerCase()" != 'unknown')
     #setVariable("$shouldDisplay", true)
   #end
 #end

@@ -56,7 +56,7 @@
 #if ($xcontext.action == 'edit' || $xcontext.action == 'admin')
 {{html wiki=false clean=false}}
 &lt;select name="$prefix$name" id="$prefix$iname"&gt;
-#foreach ($val in ['MM/dd/yyyy', 'dd/MM/yyyy', 'MM/yyyy', 'MMMM yyyy'])
+#foreach ($val in ['MM/dd/yyyy', 'dd/MM/yyyy', 'yyyyMMdd', 'MM/yyyy', 'MMMM yyyy'])
   &lt;option #if ($val == $value) selected="selected"#end value="$val"&gt;$val (e.g. $xwiki.formatDate($util.date, $val) for today)&lt;/option&gt;
 #end
 &lt;/select&gt;
@@ -90,19 +90,6 @@ $!value
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </enableImperialUnitSystem>
-    <idPrefix>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <name>idPrefix</name>
-      <number>3</number>
-      <picker>0</picker>
-      <prettyName>Database identifier prefix</prettyName>
-      <size>30</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </idPrefix>
     <livetableColumns>
       <cache>0</cache>
       <customDisplay>//Meta information: //
@@ -211,111 +198,31 @@ $!value
       <values>metric|imperial</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </measurementUnitSystem>
-    <patientClass>
-      <cache>0</cache>
-      <classname/>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <displayType>input</displayType>
-      <idField/>
-      <multiSelect>0</multiSelect>
-      <name>patientClass</name>
-      <number>1</number>
-      <picker>0</picker>
-      <prettyName>Patient class</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators/>
-      <size>1</size>
-      <sort>none</sort>
-      <sql/>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <valueField/>
-      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-    </patientClass>
-    <patientTemplate>
-      <cache>0</cache>
-      <classname/>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <displayType>input</displayType>
-      <idField>doc.fullName</idField>
-      <multiSelect>0</multiSelect>
-      <name>patientTemplate</name>
-      <number>2</number>
-      <picker>0</picker>
-      <prettyName>Patient template</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators/>
-      <size>30</size>
-      <sort>none</sort>
-      <sql/>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <valueField/>
-      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-    </patientTemplate>
     <phenotypeMapping>
       <cache>0</cache>
-      <classname/>
+      <classname>PhenoTips.PhenotypeMappingClass</classname>
       <customDisplay/>
       <disabled>0</disabled>
-      <displayType>input</displayType>
-      <idField/>
+      <displayType>radio</displayType>
+      <idField>doc.fullName</idField>
       <multiSelect>0</multiSelect>
       <name>phenotypeMapping</name>
       <number>4</number>
       <picker>0</picker>
-      <prettyName>Phenotype mapping document</prettyName>
+      <prettyName>Phenotype configuration document</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators/>
       <size>30</size>
       <sort>none</sort>
-      <sql/>
+      <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.PhenotypeMappingTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.PhenotypeMappingClass'</sql>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <valueField/>
+      <valueField>doc.name</valueField>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </phenotypeMapping>
   </class>
-  <object>
-    <class>
-      <name>XWiki.ClassSheetBinding</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <sheet>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <name>sheet</name>
-        <number>1</number>
-        <picker>0</picker>
-        <prettyName>Sheet</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </sheet>
-    </class>
-    <name>PhenoTips.DBConfigurationClass</name>
-    <number>0</number>
-    <className>XWiki.ClassSheetBinding</className>
-    <guid>7ad75ee4-4148-4ba7-b2a6-b1a2d7103071</guid>
-    <property>
-      <sheet>PhenoTips.DBWebHomeSheet</sheet>
-    </property>
-  </object>
   <object>
     <class>
       <name>XWiki.StyleSheetExtension</name>

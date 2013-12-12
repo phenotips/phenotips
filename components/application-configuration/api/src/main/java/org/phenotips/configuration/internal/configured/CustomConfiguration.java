@@ -73,4 +73,15 @@ public class CustomConfiguration
     {
         return this.configuration.getListValue("fields");
     }
+
+    /**
+     * The custom configuration can specify a different phenotype mapping to use, as a serialized reference to the
+     * mapping document.
+     * 
+     * @return a serialized document reference, possibly empty or {@code null}
+     */
+    public String getPhenotypeMapping()
+    {
+        return this.configuration.getStringValue("mapping");
+    }
 }

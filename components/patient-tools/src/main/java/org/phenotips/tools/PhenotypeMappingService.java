@@ -19,7 +19,7 @@
  */
 package org.phenotips.tools;
 
-import org.phenotips.Constants;
+import org.phenotips.configuration.RecordConfigurationManager;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.event.AbstractDocumentEvent;
@@ -118,6 +118,10 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
      */
     @Inject
     private DocumentAccessBridge bridge;
+
+    /** Used for getting the configured mapping. */
+    @Inject
+    private RecordConfigurationManager configurationManager;
 
     /**
      * Allows registering this object as an event listener.
@@ -313,7 +317,7 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
     {
         DocumentReference mapping = getCurrentUserConfiguration();
         if (mapping == null) {
-            mapping = getCurrentSpaceConfiguration();
+            mapping = this.configurationManager.getActiveConfiguration().getPhenotypeMapping();
         }
         return mapping;
     }
@@ -335,15 +339,5 @@ public class PhenotypeMappingService implements ScriptService, EventListener, In
             }
         }
         return null;
-    }
-
-    private DocumentReference getCurrentSpaceConfiguration()
-    {
-        DocumentReference currentDocRef = this.bridge.getCurrentDocumentReference();
-        DocumentReference homeDocRef = new DocumentReference("WebHome", currentDocRef.getLastSpaceReference());
-        DocumentReference classDocRef = new DocumentReference(currentDocRef.getWikiReference().getName(),
-            Constants.CODE_SPACE, "DBConfigurationClass");
-        String targetMappingName = (String) this.bridge.getProperty(homeDocRef, classDocRef, "phenotypeMapping");
-        return new DocumentReference(this.resolver.resolve(targetMappingName, EntityType.DOCUMENT));
     }
 }

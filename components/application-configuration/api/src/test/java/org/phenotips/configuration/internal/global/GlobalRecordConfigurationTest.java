@@ -19,14 +19,18 @@
  */
 package org.phenotips.configuration.internal.global;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.configuration.RecordConfiguration;
-import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.configuration.RecordSection;
 import org.phenotips.data.Patient;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.uiextension.UIExtension;
 import org.xwiki.uiextension.UIExtensionFilter;
@@ -37,6 +41,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,7 +65,7 @@ import static org.mockito.Mockito.when;
  */
 public class GlobalRecordConfigurationTest
 {
-    /** {@link RecordConfiguration#getEnabledSections()} lists only the enabled sections. */
+    /** {@link GlobalRecordConfiguration#getEnabledSections()} lists only the enabled sections. */
     @Test
     public void getEnabledSections() throws ComponentLookupException
     {
@@ -119,7 +125,7 @@ public class GlobalRecordConfigurationTest
         Assert.assertEquals("Prenatal history", result.get(2).getName());
     }
 
-    /** {@link RecordConfiguration#getAllSections()} lists all the sections, in order. */
+    /** {@link GlobalRecordConfiguration#getAllSections()} lists all the sections, in order. */
     @Test
     public void getAllSections() throws ComponentLookupException
     {
@@ -180,7 +186,7 @@ public class GlobalRecordConfigurationTest
         Assert.assertEquals("Prenatal history", result.get(3).getName());
     }
 
-    /** Basic tests for {@link RecordConfiguration#getEnabledFieldNames()}. */
+    /** Basic tests for {@link GlobalRecordConfiguration#getEnabledFieldNames()}. */
     @Test
     public void getEnabledFieldNames() throws ComponentLookupException
     {
@@ -194,30 +200,34 @@ public class GlobalRecordConfigurationTest
         Map<String, String> params;
         List<UIExtension> sections = new LinkedList<UIExtension>();
 
-        ex = mock(UIExtension.class);
+        ex = mock(UIExtension.class, "section1");
         when(ex.getId()).thenReturn("section1");
         params = new HashMap<String, String>();
         params.put("enabled", "true");
+        params.put("order", "1");
         when(ex.getParameters()).thenReturn(params);
         sections.add(ex);
 
-        ex = mock(UIExtension.class);
+        ex = mock(UIExtension.class, "disabled_section");
         when(ex.getId()).thenReturn("disabled_section");
         params = new HashMap<String, String>();
         params.put("enabled", "false");
+        params.put("order", "2");
         when(ex.getParameters()).thenReturn(params);
         sections.add(ex);
 
-        ex = mock(UIExtension.class);
+        ex = mock(UIExtension.class, "section3");
         when(ex.getId()).thenReturn("section3");
         params = new HashMap<String, String>();
         params.put("enabled", "");
+        params.put("order", "3");
         when(ex.getParameters()).thenReturn(params);
         sections.add(ex);
 
-        ex = mock(UIExtension.class);
+        ex = mock(UIExtension.class, "section4");
         when(ex.getId()).thenReturn("section4");
         params = new HashMap<String, String>();
+        params.put("order", "4");
         when(ex.getParameters()).thenReturn(params);
         sections.add(ex);
 
@@ -324,7 +334,7 @@ public class GlobalRecordConfigurationTest
         Assert.assertEquals(expectedFields, c.getEnabledFieldNames());
     }
 
-    /** Basic tests for {@link RecordConfigurationManager#getAllFieldNames()}. */
+    /** Basic tests for {@link GlobalRecordConfiguration#getAllFieldNames()}. */
     @Test
     public void getAllFieldNames() throws ComponentLookupException, XWikiException
     {
@@ -353,7 +363,7 @@ public class GlobalRecordConfigurationTest
         Assert.assertEquals(expectedFields, config.getAllFieldNames());
     }
 
-    /** {@link RecordConfigurationManager#getAllFieldNames()} catches exceptions. */
+    /** {@link GlobalRecordConfiguration#getAllFieldNames()} catches exceptions. */
     @Test
     public void getAllFieldNamesWithException() throws ComponentLookupException, XWikiException
     {
@@ -371,7 +381,107 @@ public class GlobalRecordConfigurationTest
         Assert.assertTrue(config.getAllFieldNames().isEmpty());
     }
 
-    /** Basic tests for {@link RecordConfigurationManager#getDateOfBirthFormat()}. */
+    /** Basic tests for {@link GlobalRecordConfiguration#getPhenotypeMapping()}. */
+    @Test
+    public void getPhenotypeMapping() throws ComponentLookupException, XWikiException
+    {
+        Execution e = mock(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument wh = mock(XWikiDocument.class);
+        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        BaseObject o = mock(BaseObject.class);
+        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        when(o.getStringValue("phenotypeMapping")).thenReturn("PhenoTips.XPhenotypeMapping");
+        ComponentManager cm = mock(ComponentManager.class);
+        @SuppressWarnings("unchecked")
+        Provider<ComponentManager> mockProvider = mock(Provider.class);
+        // This is a bit fragile, let's hope the field name doesn't change
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", mockProvider);
+        when(mockProvider.get()).thenReturn(cm);
+        @SuppressWarnings("unchecked")
+        DocumentReferenceResolver<String> resolver = mock(DocumentReferenceResolver.class);
+        when(cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenReturn(resolver);
+        DocumentReference expectedMapping = new DocumentReference("xwiki", "PhenoTips", "XPhenotypeMapping");
+        when(resolver.resolve("PhenoTips.XPhenotypeMapping")).thenReturn(expectedMapping);
+
+        RecordConfiguration config =
+            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+        Assert.assertEquals(expectedMapping, config.getPhenotypeMapping());
+    }
+
+    /** {@link GlobalRecordConfiguration#getPhenotypeMapping()} returns a default mapping with no configuration. */
+    @Test
+    public void getPhenotypeMappingWithNoConfiguration() throws ComponentLookupException, XWikiException
+    {
+        Execution e = mock(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument wh = mock(XWikiDocument.class);
+        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        BaseObject o = mock(BaseObject.class);
+        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        when(o.getStringValue("phenotypeMapping")).thenReturn(null);
+        ComponentManager cm = mock(ComponentManager.class);
+        @SuppressWarnings("unchecked")
+        Provider<ComponentManager> mockProvider = mock(Provider.class);
+        // This is a bit fragile, let's hope the field name doesn't change
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", mockProvider);
+        when(mockProvider.get()).thenReturn(cm);
+        @SuppressWarnings("unchecked")
+        DocumentReferenceResolver<String> resolver = mock(DocumentReferenceResolver.class);
+        when(cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenReturn(resolver);
+        DocumentReference expectedMapping = new DocumentReference("xwiki", "PhenoTips", "PhenotypeMapping");
+        when(resolver.resolve("PhenoTips.PhenotypeMapping")).thenReturn(expectedMapping);
+
+        RecordConfiguration config =
+            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+        Assert.assertEquals(expectedMapping, config.getPhenotypeMapping());
+    }
+
+    /** {@link GlobalRecordConfiguration#getPhenotypeMapping()} returns null when getting the actual mapping fails. */
+    @Test
+    public void getPhenotypeMappingWithExceptions() throws ComponentLookupException, XWikiException
+    {
+        Execution e = mock(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        XWikiContext context = mock(XWikiContext.class);
+        when(ec.getProperty("xwikicontext")).thenReturn(context);
+        XWiki x = mock(XWiki.class);
+        when(context.getWiki()).thenReturn(x);
+        XWikiDocument wh = mock(XWikiDocument.class);
+        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(null);
+        RecordConfiguration config =
+            new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+        Assert.assertNull(config.getPhenotypeMapping());
+
+        BaseObject o = mock(BaseObject.class);
+        when(o.getStringValue("phenotypeMapping")).thenReturn("PhenoTips.XPhenotypeMapping");
+        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        ComponentManager cm = mock(ComponentManager.class);
+        @SuppressWarnings("unchecked")
+        Provider<ComponentManager> mockProvider = mock(Provider.class);
+        // This is a bit fragile, let's hope the field name doesn't change
+        ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", mockProvider);
+        when(mockProvider.get()).thenReturn(cm);
+        when(cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "current")).thenThrow(
+            new ComponentLookupException("No such component"));
+
+        config = new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
+        Assert.assertNull(config.getPhenotypeMapping());
+    }
+
+    /** Basic tests for {@link GlobalRecordConfiguration#getDateOfBirthFormat()}. */
     @Test
     public void getDateOfBirthFormat() throws ComponentLookupException, XWikiException
     {
@@ -393,7 +503,7 @@ public class GlobalRecordConfigurationTest
         Assert.assertEquals("MMMM yyyy", config.getDateOfBirthFormat());
     }
 
-    /** {@link RecordConfigurationManager#getDateOfBirthFormat()} has a default format. */
+    /** {@link GlobalRecordConfiguration#getDateOfBirthFormat()} has a default format. */
     @Test
     public void getDateOfBirthFormatDefaultValue() throws ComponentLookupException, XWikiException
     {
@@ -415,7 +525,7 @@ public class GlobalRecordConfigurationTest
         Assert.assertEquals("dd/MM/yyyy", config.getDateOfBirthFormat());
     }
 
-    /** {@link RecordConfigurationManager#getDateOfBirthFormat()} catches exceptions. */
+    /** {@link GlobalRecordConfiguration#getDateOfBirthFormat()} catches exceptions. */
     @Test
     public void getDateOfBirthFormatWithException() throws ComponentLookupException, XWikiException
     {
@@ -433,7 +543,7 @@ public class GlobalRecordConfigurationTest
         Assert.assertEquals("dd/MM/yyyy", config.getDateOfBirthFormat());
     }
 
-    /** {@link RecordConfigurationManager#getDateOfBirthFormat()} has a default format when the config is missing. */
+    /** {@link GlobalRecordConfiguration#getDateOfBirthFormat()} has a default format when the config is missing. */
     @Test
     public void getDateOfBirthFormatWithMissingConfiguration() throws ComponentLookupException, XWikiException
     {
@@ -453,7 +563,7 @@ public class GlobalRecordConfigurationTest
         Assert.assertEquals("dd/MM/yyyy", config.getDateOfBirthFormat());
     }
 
-    /** {@link RecordConfiguration#toString()} lists all the enabled sections. */
+    /** {@link GlobalRecordConfiguration#toString()} lists all the enabled sections. */
     @Test
     public void toStringTest() throws ComponentLookupException
     {
@@ -596,9 +706,7 @@ public class GlobalRecordConfigurationTest
         sorted = realFilter.filter(fields, "order");
         when(filter.filter(fields, "order")).thenReturn(sorted);
 
-        Assert.assertEquals(
-            "Patient information [Identifier, Patient name, Pedigree, Sex], " +
-                "Clinical observations [Clinical symptoms], Prenatal history [Gestation at delivery]",
-            c.toString());
+        Assert.assertEquals("Patient information [Identifier, Patient name, Pedigree, Sex], "
+            + "Clinical observations [Clinical symptoms], Prenatal history [Gestation at delivery]", c.toString());
     }
 }

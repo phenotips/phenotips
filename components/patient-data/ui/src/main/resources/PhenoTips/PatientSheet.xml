@@ -61,7 +61,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 ##
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))
 #if ($config)
-#set($obj = $doc.getObject("$!{config.getProperty('patientClass').value}"))
+#set($obj = $doc.getObject('PhenoTips.PatientClass'))
 #set($class = $obj.xWikiClass)
 #set($discard = $doc.use($obj))
 #end
@@ -97,8 +97,12 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 ##
 ## Extensions displayed before the content
 #foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.before'))
+  #set ($hasExtensionsBefore = true)
   {{html wiki=false clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
 
+#end
+#if ($hasExtensionsBefore)
+----
 #end
 ##
 #if ($config.getProperty('no_pii_warning').value == 1)
