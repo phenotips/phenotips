@@ -108,7 +108,7 @@ var AbstractPerson = Class.create(AbstractNode, {
     
     // TODO: for automated setMethod -> getMethod used for undo/redo 
     getAdopted: function() {
-        console.log("GET ADOPTED: " + this.isAdopted()); 
+        //console.log("GET ADOPTED: " + this.isAdopted()); 
         return this.isAdopted();
     },
 

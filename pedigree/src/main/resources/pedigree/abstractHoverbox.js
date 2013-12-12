@@ -561,8 +561,8 @@ var AbstractHoverbox = Class.create({
      */
     animateDrawHoverZone: function() {     
         this._hidden = false;        
-        if (editor.getGraphicsSet().getCurrentDraggable() == this.getNode().getID()) return; // do not redraw when dragging
-        //console.log("show HB");
+        if (editor.getGraphicsSet().getCurrentDraggable() !== null) return; // do not redraw when dragging
+        //console.log("node: " + this.getNode().getID() + " -> show HB");
                 
         this.getNode().getGraphics().setSelected(true);
         this.getBoxOnHover().stop().animate({opacity:0.7}, 200);
@@ -586,11 +586,8 @@ var AbstractHoverbox = Class.create({
      */
     animateHideHoverZone: function() {
         this._hidden = true;        
-        if (editor.getGraphicsSet().getCurrentDraggable() == this.getNode().getID()) return; // do not hide when dragging
-        //console.log("hide HB");
-        
-        //this.removeHandles();
-        //this.removeButtons();
+        if (editor.getGraphicsSet().getCurrentDraggable() !== null) return; // do not hide when dragging
+        //console.log("node: " + this.getNode().getID() + " -> hide HB");
         
         this.getNode().getGraphics().setSelected(false);
         this.getBoxOnHover().stop().animate({opacity:0}, 200);

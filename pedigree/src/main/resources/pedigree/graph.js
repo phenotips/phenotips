@@ -651,7 +651,7 @@ var GraphicsSet = Class.create({
         // re-evaluate which buttons & handles are appropriate for the nodes (e.g. twin button appears/disappears)
         for (nodeID in this._nodeMap)
             if (this._nodeMap.hasOwnProperty(nodeID))
-                if (editor.getGraph().isPerson(nodeID)) {
+                if (editor.getGraph().isPerson(nodeID) && !this.getNode(nodeID).getGraphics().getHoverBox().isMenuToggled()) {
                     this.getNode(nodeID).getGraphics().getHoverBox().removeButtons();
                     this.getNode(nodeID).getGraphics().getHoverBox().removeHandles();
                 }
