@@ -66,6 +66,8 @@ var LineSet = Class.create({
     
     removeAllLinesByOwner: function(owner) {
         
+        //console.log("removing all lines by " + owner);
+        
         if (!this._lineCrossings.hasOwnProperty(owner)) return {};
         
         for (var i = this._lines.length - 1; i >= 0; i--) {
@@ -80,8 +82,9 @@ var LineSet = Class.create({
         for (ownerID in this._lineCrossings)
             if (this._lineCrossings.hasOwnProperty(ownerID)) {                
                 var crosses = this._lineCrossings[ownerID];
-                if (crosses.hasOwnProperty(owner))
-                    delete crosses.owner;
+                if (crosses.hasOwnProperty(owner)) {
+                    delete crosses[owner];
+                }
             }
         
         //console.log("Removing " + owner + ", affected: " + stringifyObject(affectedOwners)); 
@@ -114,6 +117,8 @@ var LineSet = Class.create({
             }
         }
         
+        //console.log("affected: " + stringifyObject(returnNewAffected));
+        //console.log("this: " + stringifyObject(this));
         return returnNewAffected;
     },    
         

@@ -550,6 +550,7 @@ var GraphicsSet = Class.create({
             if (idChanged)
                 this.changeNodeIds(changedIDs);
             
+            //console.log("Affected by line removal: " + stringifyObject(affectedByLineRemoval));
             //console.log("LineSet: " + stringifyObject(this._lineSet));
             
             for (node in affectedByLineRemoval)
