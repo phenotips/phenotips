@@ -195,8 +195,6 @@ function findXInterceptGivenLineAndY(crossY, x1, y1, x2, y2) {
     var a = (y1 - y2)/(x1 - x2);
     var b = y1 - a*x1;    
     var interceptX = (crossY - b)/a;
-    
-    console.log("x1: " + x1 + ", y1: " + y1 + ", x2: " + x2 + ", y2: " + y2 + ", crossY: " + crossY + ", X: " + interceptX + ", a: " + a + ", b: " + b); 
     return interceptX;
 }
 

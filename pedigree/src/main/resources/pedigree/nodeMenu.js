@@ -346,8 +346,8 @@ NodeMenu = Class.create({
         this.menuBox.style.top = 0;
         this.menuBox.style.height = this.canvas.getHeight() + 'px';
         this.menuBox.style.overflow = 'auto';
-      } else if (this.canvas.getHeight() < y + this.menuBox.getHeight()) {
-        var diff = y + this.menuBox.getHeight() - this.canvas.getHeight();
+      } else if (this.canvas.getHeight() < y + this.menuBox.getHeight() + 25) {   // fix a bug (?) in firefox & chrome where getHeight() is sligtly incorrect
+        var diff = y + this.menuBox.getHeight() - this.canvas.getHeight() + 25;
         this.menuBox.style.top = (y - diff) + 'px';
       } else {
         this.menuBox.style.top = y + 'px';

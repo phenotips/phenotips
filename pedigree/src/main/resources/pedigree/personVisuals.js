@@ -84,9 +84,6 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         if(this.getHoverBox()) {
             this._genderGraphics.flatten().insertAfter(this.getBackElements().flatten());
         }        
-        //else if (!this.getNode().isProband()) {
-        //    this._genderGraphics.flatten().insertAfter(editor.getGraphicsSet().getProband().getGraphics().getAllGraphics().flatten());
-        //}
         this.updateDisorderShapes();      
     },
     
@@ -251,7 +248,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 y2 = y - coeff * PedigreeEditor.attributes.radius;
             this._deadShape = editor.getPaper().path(["M", x1,y1,"L",x2, y2]).attr("stroke-width", strokeWidth);
         }
-        this._deadShape.insertAfter(this.getGenderGraphics().flatten());
+        this._deadShape.toFront();
+        this._deadShape.node.setAttribute("class", "no-mouse-interaction");
     },
 
     /**

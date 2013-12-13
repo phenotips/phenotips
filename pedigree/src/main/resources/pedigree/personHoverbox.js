@@ -94,7 +94,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
                 var path = [["M", x, vertPosForPartnerHandles],["L", x + PedigreeEditor.attributes.personHandleBreakX, vertPosForPartnerHandles]];
                 editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(nodeShapes);
                 this.generateHandle('partnerR', x + PedigreeEditor.attributes.personHandleBreakX - 2, vertPosForPartnerHandles, x + PedigreeEditor.attributes.personHandleLength, vertPosForPartnerHandles,
-                                    "Click to create a new partner node or drag to an existing node (valid choices will be highlighted in green). Prefer to place the new partner to the right of this person.", partnerGender);
+                                    "Click to create a new partner node or drag to an existing node (valid choices will be highlighted in green)", partnerGender);
             }
         }
         else {            

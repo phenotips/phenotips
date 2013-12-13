@@ -24,11 +24,10 @@ var PersonGroupHoverbox = Class.create(PersonHoverbox, {
     * @return {Raphael.st} A set of handles
     */
     generateHandles: function($super) {            
-        if (this._currentHandles !== null) return;
-        $super();
-        
+        if (this._currentHandles !== null) return;        
+                       
         if (PedigreeEditor.attributes.newHandles) {
-            // TODO: sibling handle
+            // TODO: singling handle for person groups?
         }
         // else: no handles
     },
