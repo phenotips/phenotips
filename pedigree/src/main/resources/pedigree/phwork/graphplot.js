@@ -772,21 +772,62 @@ PositionedGraph.prototype = {
                     // 4) restore in-edges for all nodes twin connects to to twin
 
                     //1
-                    for (var j = 0; j < this.GG.getOutEdges(twin).length; j++) {
-                        var rel = this.GG.getOutEdges(twin)[j];
+                    var outEdges = this.GG.getOutEdges(twin);
+                    for (var j = 0; j < outEdges.length; j++) {
+                        var rel = outEdges[j];
                         removeFirstOccurrenceByValue(this.GG.inedges[rel], v);
                         removeFirstOccurrenceByValue(this.GG.v[v], rel);
                         delete this.GG.weights[v][rel];
+                        this.GG.inedges[rel].push(twin);
                     }
                     //2
                     var insertOrder = this.findBestTwinInsertPosition(twin, this.GG.getOutEdges(twin), this.order);
                     this.order.insert(rank, insertOrder, twin);
                     //3 + 4
                     this.GG.v[childhub].push(twin);
+                }
+                
+                // handle special case of a relationship between two twins - best handle it after all twins have been reinserted
+                // tested by Testcase "3c"
+                for (var i = 0; i < allDisconnectedTwins.length; i++) {
+                    var twin    = allDisconnectedTwins[i];
+                    var groupID = this.GG.getTwinGroupId(twin); 
+                    var rank    = this.ranks[twin];
                     var outEdges = this.GG.getOutEdges(twin);
                     for (var j = 0; j < outEdges.length; j++) {
-                        var rel = outEdges[j];
-                        this.GG.inedges[rel].push(twin);
+                        var rel         = outEdges[j];
+                        if (this.GG.isVirtual(rel)) continue;
+                        var parents     = this.GG.getInEdges(rel);
+                        var otherParent = (parents[0] == twin) ? parents[1] : parents[0];
+                        if (this.GG.getTwinGroupId(otherParent) == groupID) {
+                            // ok, twins have a relationship
+                            console.log("RELAT between " + twin + " and " + otherParent);
+                            // TODO: can do a smarter thing and rearrange twins based on other relatiomnships.
+                            //       but since this is a rare case for now just do the simple improvement
+                            var orderRel   = this.order.vOrder[rel];
+                            var orderTwin1 = this.order.vOrder[twin];
+                            var orderTwin2 = this.order.vOrder[otherParent];
+                            if (Math.abs(orderTwin1 - orderTwin2) != 1) {
+                                if (this.GG.getOutEdges(twin).length == 1) {
+                                    if (orderTwin1 < orderTwin2)
+                                        this.order.moveVertexToOrder(rank, orderTwin1, orderTwin2);
+                                    else
+                                        this.order.moveVertexToOrder(rank, orderTwin1, orderTwin2+1);
+                                } else if (this.GG.getOutEdges(otherParent).length == 1) {
+                                        if (orderTwin2 < orderTwin1)
+                                            this.order.moveVertexToOrder(rank, orderTwin2, orderTwin1);
+                                        else
+                                            this.order.moveVertexToOrder(rank, orderTwin2, orderTwin1+1);
+                                } else                                    
+                                    continue; // twins are not next to each other and both have multiple relationships: TODO
+                            }
+                            // insert rel inbetween the twins (e.g. after leftmost of the twins and before rightmost
+                            console.log("order rel: " + orderRel + ", Twin1: " + orderTwin1 + ", Twin2: " + orderTwin2);
+                            if (orderTwin1 < orderTwin2)
+                                this.order.moveVertexToOrder(rank, orderRel, orderTwin2);
+                            else
+                                this.order.moveVertexToOrder(rank, orderRel, orderTwin1);
+                        }
                     }
                 }
             }
@@ -1742,8 +1783,6 @@ PositionedGraph.prototype = {
 
                 // 1. for each parent pick which side of the parent to use
                 // 2. pick which parent is a better target:
-                //    - prefer real over virtual nodes
-                //      - in case of a virtual node move it to right next to new location of relationship node
                 //    - prefer parent with no relationship node on the corect side
                 //    - somewhere in the middle if both parents have other nodes on the preferred side:
                 //      - try not to get inbetween well-placed relationships
@@ -1751,95 +1790,59 @@ PositionedGraph.prototype = {
 
                 var insertOrder = null;
 
-                /*
-                if (this.GG.isVirtual(parents[0])) {
-                    // parent 0 is virtual - use parent1
-                    var parent0order = this.order.vOrder[parents[0]];
-                    var intervalRight = this.order.vOrder[parents[1]];
-                    var intervalLeft  = parent0order+1;
-                    insertOrder = intervalRight;
-                    for (var o = intervalRight; o >= intervalLeft; o--) {
-                        var v = this.order.order[rank][o];
-                        if (!this.GG.hasEdge(parents[1],v)) {
-                            insertOrder = o+1;
-                            break;
-                        }
-                    }
-                    this.order.moveVertexToOrder(rank, parent0order, insertOrder);
-                }
-                else if (this.GG.isVirtual(parents[1])) {
-                    // parent 1 is virtual - use parent0
-                    var parent1order = this.order.vOrder[parents[1]];
-                    var intervalRight = parent1order;
-                    var intervalLeft  = this.order.vOrder[parents[0]] + 1;
-                    insertOrder = intervalRight;
-                    for (var o = intervalLeft; o <= intervalRight; o++) {
-                        var v = this.order.order[rank][o];
-                        if (!this.GG.hasEdge(parents[0],v)) {
-                            //console.log("---> order: " + o);
+                var order1 = this.order.vOrder[parents[0]];
+                var order2 = this.order.vOrder[parents[1]];
+
+                if (order2 == order1 + 1)
+                    throw "Assertion failed: all relationship with parents next to each other are already handled";
+
+                var rightOfParent0 = this.order.order[rank][order1+1];
+                var leftOfParent1  = this.order.order[rank][order2-1];
+                //console.log("o1: " + order1 + ", o2: " + order2 + ", rp0: " + rightOfParent0 + ", lp1: " + leftOfParent1 );
+                var p0busy = false;
+                var p1busy = false;
+                if (this.GG.hasEdge(parents[0],rightOfParent0))
+                    p0busy = true;
+                if (this.GG.hasEdge(parents[1],leftOfParent1))
+                    p1busy = true;
+                //console.log("p0busy: " + p0busy + ", p1busy: " + p1busy);
+
+                if (p1busy && p0busy) {
+                    // TODO: test this case
+                    // both busy: find position which does not disturb "nice" relationship nodes
+                    for (var o = order1+2; o <= order2-1; o++ ) {
+                        var next = this.order.order[rank][o];
+                        if (!this.GG.hasEdge(parents[0],next)) {
                             insertOrder = o;
                             break;
                         }
                     }
-                    this.order.moveVertexToOrder(rank, parent1order, insertOrder);
+                    if (insertOrder == null) {
+                        var parentsOfLeft = this.GG.getInEdges(leftOfParent1);
+                        var otherP1 = (parentsOfLeft[0] != parents[1]) ? parentsOfLeft[0] : parentsOfLeft[1];
+                        var orderP1 = this.order.vOrder[otherP1];
+                        if (orderP1 < order1)
+                            insertOrder = order2;
+                        else
+                            insertOrder = order1 + 1;
+                    }
                 }
-                else { */
-                    // both parents are real
-                    var order1 = this.order.vOrder[parents[0]];
-                    var order2 = this.order.vOrder[parents[1]];
-
-                    if (order2 == order1 + 1)
-                        throw "Assertion failed: all relationship with parents next to each other are already handled";
-
-                    var rightOfParent0 = this.order.order[rank][order1+1];
-                    var leftOfParent1  = this.order.order[rank][order2-1];
-                    //console.log("o1: " + order1 + ", o2: " + order2 + ", rp0: " + rightOfParent0 + ", lp1: " + leftOfParent1 );
-                    var p0busy = false;
-                    var p1busy = false;
-                    if (this.GG.hasEdge(parents[0],rightOfParent0))
-                        p0busy = true;
-                    if (this.GG.hasEdge(parents[1],leftOfParent1))
-                        p1busy = true;
-
-                    //console.log("p0busy: " + p0busy + ", p1busy: " + p1busy);
-
-                    if (p1busy && p0busy) {
-                        // TODO: test this case
-                        // both busy: find position which does not disturb "nice" relationship nodes
-                        for (var o = order1+2; o <= order2-1; o++ ) {
-                            var next = this.order.order[rank][o];
-                            if (!this.GG.hasEdge(parents[0],next)) {
-                                insertOrder = o;
-                                break;
-                            }
-                        }
-                        if (insertOrder == null) {
-                            var parentsOfLeft = this.GG.getInEdges(leftOfParent1);
-                            var otherP1 = (parentsOfLeft[0] != parents[1]) ? parentsOfLeft[0] : parentsOfLeft[1];
-                            var orderP1 = this.order.vOrder[otherP1];
-                            if (orderP1 < order1)
-                                insertOrder = order2;
-                            else
-                                insertOrder = order1 + 1;
-                        }
-                    }
-                    else if (p1busy) {
-                        // p0 is free, p1 already has a relationship node next to it
-                        insertOrder = order1+1;
-                    }
-                    else if (p0busy) {
-                        // p1 is free, p0 already has a relationship node next to it
-                        insertOrder = order2;
-                    }
-                    else {
-                        // both p0 and p1 can have the relationship node right next to them
-                        // for now arbitrarily pick p1
-                        // TODO: try both pick the one with less crossed edges. Need a testcase
-                        insertOrder = order2;
-                    }
-                /*}*/
+                else if (p1busy) {
+                    // p0 is free, p1 already has a relationship node next to it
+                    insertOrder = order1+1;
+                }
+                else if (p0busy) {
+                    // p1 is free, p0 already has a relationship node next to it
+                    insertOrder = order2;
+                }
+                else {
+                    // both p0 and p1 can have the relationship node right next to them
+                    // for now arbitrarily pick p1
+                    // TODO: try both pick the one with less crossed edges. Need a testcase
+                    insertOrder = order2;
+                }
                 //console.log("=== is relationship: " + i + ", insertOrder: " + insertOrder );
-
+                
                 this.moveVertexToRankAndOrder( i, rank, insertOrder );
             }
         }
@@ -2177,8 +2180,6 @@ PositionedGraph.prototype = {
 
                     var nextAttachL   = 0;      // attachment point of the line connecting the node and it's relationship
                     var nextVerticalL = 0;      // vertical level of the line
-                    var prevOrder     = Infinity;
-                    var prevRank      = Infinity;
                     for (var k = 0; k < leftEdges.length; k++) {
                         var u = this.GG.downTheChainUntilNonVirtual( leftEdges[k] );
 
@@ -2189,27 +2190,8 @@ PositionedGraph.prototype = {
                                 if (!this.GG.isVirtual(w) && !this.GG.isRelationship(w)) { nextVerticalL = 1; break; }
                             }
                         }
-                        console.log("attaching " + leftEdges[k] + " at level " + nextAttachL);
+                        console.log("attaching (L) " + u + "(" + leftEdges[k] + ") at level " + nextAttachL);
                         verticalLevels.outEdgeVerticalLevel[v][u] = { attachlevel: nextAttachL, verticalLevel: nextVerticalL };
-
-                        if (this.ranks[u] == r && prevRank == r && vOrder[u] == prevOrder - 1) {
-                            var prevU = this.GG.downTheChainUntilNonVirtual( leftEdges[k-1] );
-                            console.log("prevU: " + prevU);
-                            verticalLevels.outEdgeVerticalLevel[v][u]     = { attachlevel: nextAttachR-1, verticalLevel: nextVerticalR-1 };
-                            verticalLevels.outEdgeVerticalLevel[v][prevU] = { attachlevel: nextAttachR,   verticalLevel: nextVerticalR };
-                        }
-                        prevOrder = vOrder[u];
-                        prevRank  = this.ranks[u];
-
-                        var changed = true;
-                        while (changed) {
-                            changed = false;
-                            // search all nodes to the right and check if there is a node-to-relationship line
-                            // at the same level as this one intersecting with this one. If so:
-                            // 1) if that line goes from outside the (node, rel) interval to outside, move that other line up one level
-                            // 2) if that line goes from outside the (node, rel) interval to inside, move this line up one level
-                            // TODO
-                        };
 
                         nextAttachL++;
                         nextVerticalL++;
@@ -2227,6 +2209,7 @@ PositionedGraph.prototype = {
                             }
                         }
 
+                        console.log("attaching (R) " + u + "(" + rightEdges[k] + ") at level " + nextAttachR);
                         verticalLevels.outEdgeVerticalLevel[v][u] = { attachlevel: nextAttachR, verticalLevel: nextVerticalR };
 
                         nextAttachR++;
@@ -2294,7 +2277,7 @@ PositionedGraph.prototype = {
         for (var i = 0; i <= allTwins.length; i++)
             numEdgesAcross[i] = 0;
 
-        console.log("edges across: " + stringifyObject(numEdgesAcross));
+        //console.log("edges across: " + stringifyObject(numEdgesAcross));
 
         // for each position compute number of edge crossings due to new twin edges
         var leftMostTwinOrder = vOrder[allTwins[0]];
@@ -2310,7 +2293,7 @@ PositionedGraph.prototype = {
                     numEdgesAcross[j] += (allTwins.length - j);
         }
 
-        console.log("after self edges - edges across: " + stringifyObject(numEdgesAcross));
+        //console.log("after self edges - edges across: " + stringifyObject(numEdgesAcross));
 
         // for each position compute number of edge crossings due to existing twin edges
         for (var i = 0; i < allTwins.length; i++) {
@@ -2399,7 +2382,7 @@ PositionedGraph.prototype = {
 
     position: function()
     {
-        var xcoord = this.init_xcoord();
+        var xcoord = new XCoord(null, this);
         //printObject(xcoord.xcoord);
 
         //this.displayGraph(xcoord.xcoord, 'init');
@@ -2423,7 +2406,6 @@ PositionedGraph.prototype = {
             this.try_straighten_long_edges(xcoord);
 
             //this.displayGraph(xcoord.xcoord, 'Adj' + i);
-
             xcoord.normalize();
 
             var score = this.xcoord_score(xcoord);
@@ -2542,39 +2524,6 @@ PositionedGraph.prototype = {
         return coeff;
     },
 
-    init_xcoord: function()
-    {
-        var xinit = [];
-
-        // For each rank, the left-most node is assigned coordinate 0. The coordinate of the next
-        // node is then assigned a value sufficient to satisfy the minimal separation from the prev
-        // one, and so on. Thus, on each rank, nodes are initially packed as far left as possible.
-
-        for (var r = 0; r < this.order.order.length; r++) {
-            var xThisRank = 0;
-
-            for (var i = 0; i < this.order.order[r].length; i++) {
-                var v = this.order.order[r][i];
-
-                var vWidth = this.GG.getVertexHalfWidth(v);
-
-                xinit[v] = xThisRank + vWidth;
-
-                var horizSeparation = this.horizontalPersonSeparationDist;
-                if ( this.GG.isRelationship(v) )
-                    horizSeparation = this.horizontalRelSeparationDist;
-                if ( i < this.order.order[r].length-1 && this.GG.isRelationship(this.order.order[r][i+1]) )
-                    horizSeparation = this.horizontalRelSeparationDist;
-
-                xThisRank += vWidth*2 + horizSeparation;
-            }
-        }
-
-        var xcoord = new XCoord(xinit, this);
-
-        return xcoord;
-    },
-
     try_shift_right: function(xcoord, scoreQualityOfNodesBelow, scoreQualityOfNodesAbove)
     {
         // goes over all ranks (top to bottom or bottom to top, depending on iteration)
@@ -2587,7 +2536,6 @@ PositionedGraph.prototype = {
         // such as binary search might not work well.
 
         //this.displayGraph( xcoord.xcoord, "shiftright-start" );
-
         for (var rr = 0; rr <= this.maxRank; rr++) {
 
             // go from top to bottom or bottom to top depending on which ranks (above or below)

@@ -1,19 +1,27 @@
-XCoord = function(xinit, graph, halfWidth) {
-    this.xcoord = xinit; // coordinates of _center_ of every vertex
-
+/*
+ * xinit: coordinates of _center_ of every vertex, or null
+ */
+XCoord = function(xinit, graph)
+{        
     // local copies just for convenience & performance
-    this.halfWidth = halfWidth ? halfWidth : [];
-
-    if (!halfWidth)
+    this.halfWidth = [];
     for (var i = 0; i < graph.GG.vWidth.length; i++)
         this.halfWidth[i] = Math.floor(graph.GG.vWidth[i]/2);
 
     this.graph = graph;
+    
+    if (xinit)
+        this.xcoord = xinit; // coordinates of _center_ of every vertex    
+    else
+        this.xcoord = this.init_xcoord();
 };
 
 XCoord.prototype = {
 
     getSeparation: function (v1, v2) {
+        if (this.graph.GG.type[v1] == TYPE.RELATIONSHIP && this.graph.GG.type[v2] == TYPE.RELATIONSHIP)
+            return this.graph.horizontalTwinSeparationDist;
+        
         if (this.graph.GG.type[v1] == TYPE.RELATIONSHIP || this.graph.GG.type[v2] == TYPE.RELATIONSHIP)
             return this.graph.horizontalRelSeparationDist;
 
@@ -30,6 +38,28 @@ XCoord.prototype = {
         return this.graph.horizontalPersonSeparationDist;
     },
 
+    init_xcoord: function()
+    {
+        var xinit = [];
+        // For each rank, the left-most node is assigned coordinate 0 (actually, since xinit[v] is
+        // the coordinate of the center, not 0 but halfWidth[node]). The coordinate of the next
+        // node is then assigned a value sufficient to satisfy the minimal separation from the prev
+        // one, and so on. Thus, on each rank, nodes are initially packed as far left as possible.
+        for (var r = 0; r < this.graph.order.order.length; r++) {
+
+            xinit[this.graph.order.order[r][0]] = this.halfWidth[this.graph.order.order[r][0]];
+            
+            for (var i = 1; i < this.graph.order.order[r].length; i++) {
+                var vPrev      = this.graph.order.order[r][i-1];
+                var v          = this.graph.order.order[r][i];
+                var separation = this.getSeparation(vPrev,v);
+
+                xinit[v] = xinit[vPrev] + this.halfWidth[vPrev] + separation + this.halfWidth[v]; 
+            }
+        }
+        return xinit;
+    },    
+    
     getLeftMostNoDisturbPosition: function(v, allowNegative) {
         var leftBoundary = this.halfWidth[v];
 

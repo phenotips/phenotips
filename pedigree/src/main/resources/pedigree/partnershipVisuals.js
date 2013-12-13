@@ -325,6 +325,8 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 var positionR = editor.getGraphicsSet().getNode(allTwins[allTwins.length-1]).getX();
                 var positionY = editor.getGraphicsSet().getNode(allTwins[0]).getY();
                 currentTwinGroupCenterX = (positionL + positionR)/2;
+                if (allTwins.length == 3)
+                    currentTwinGroupCenterX = editor.getGraphicsSet().getNode(allTwins[1]).getX();
                 editor.getGraphicsSet().drawLineWithCrossings( id, currentTwinGroupCenterX, childlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, PedigreeEditor.attributes.partnershipLines);
                 
                 // draw the mponozygothinc line, if necessary

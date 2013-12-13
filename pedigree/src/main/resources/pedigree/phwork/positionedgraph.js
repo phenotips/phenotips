@@ -404,12 +404,12 @@ DynamicPositionedGraph.prototype = {
     _debugPrintAll: function( headerMessage )
     {
         console.log("========== " + headerMessage + " ==========");
-        console.log("== GG:");
-        console.log(stringifyObject(this.DG.GG));
-        console.log("== Ranks:");
-        console.log(stringifyObject(this.DG.ranks));
-        console.log("== Orders:");
-        console.log(stringifyObject(this.DG.order));
+        //console.log("== GG:");
+        //console.log(stringifyObject(this.DG.GG));
+        //console.log("== Ranks:");
+        //console.log(stringifyObject(this.DG.ranks));
+        //console.log("== Orders:");
+        //console.log(stringifyObject(this.DG.order));
         //console.log("== Positions:");
         //console.log(stringifyObject(this.DG.positions));
         //console.log("== RankY:");
