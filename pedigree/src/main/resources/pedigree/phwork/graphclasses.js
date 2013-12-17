@@ -137,7 +137,7 @@ BaseGraph.init_from_user_graph = function(inputG, defaultPersonNodeWidth, defaul
                 var target   = nextV.outedges[outE].to;
                 var targetID = nameToId[target] ? nameToId[target] : target;  // can specify target either by name or ID
 
-                if (!isInt(target) || !newG.isValidId(targetID))
+                if (!newG.isValidId(targetID))
                     throw "Invalid input: invalid edge target (" + target + ")";
 
                 var weight = 1;

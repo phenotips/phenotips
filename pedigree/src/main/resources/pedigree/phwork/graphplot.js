@@ -762,6 +762,15 @@ PositionedGraph.prototype = {
                 var childhub = this.GG.getInEdges(v)[0];
 
                 var allDisconnectedTwins = disconnectedTwins[v];
+                
+                // sort twins by number of reationships, so that twins with no relationships are inserted last
+                var GG = this.GG;
+                var byNumberOfRelationships = function(a,b) {
+                           var an = GG.getOutEdges(a).length;
+                           var bn = GG.getOutEdges(b).length;
+                           return bn - an;
+                        }
+                allDisconnectedTwins.sort( byNumberOfRelationships );
 
                 for (var i = 0; i < allDisconnectedTwins.length; i++) {
                     var twin = allDisconnectedTwins[i];
@@ -785,23 +794,20 @@ PositionedGraph.prototype = {
                     this.order.insert(rank, insertOrder, twin);
                     //3 + 4
                     this.GG.v[childhub].push(twin);
-                }
                 
-                // handle special case of a relationship between two twins - best handle it after all twins have been reinserted
-                // tested by Testcase "3c"
-                for (var i = 0; i < allDisconnectedTwins.length; i++) {
-                    var twin    = allDisconnectedTwins[i];
-                    var groupID = this.GG.getTwinGroupId(twin); 
-                    var rank    = this.ranks[twin];
+                    // handle special case of a relationship between two twins - best handle it after all twins have been reinserted
+                    // tested by Testcase "3c"
+                    var groupID  = this.GG.getTwinGroupId(twin); 
                     var outEdges = this.GG.getOutEdges(twin);
                     for (var j = 0; j < outEdges.length; j++) {
                         var rel         = outEdges[j];
                         if (this.GG.isVirtual(rel)) continue;
                         var parents     = this.GG.getInEdges(rel);
                         var otherParent = (parents[0] == twin) ? parents[1] : parents[0];
-                        if (this.GG.getTwinGroupId(otherParent) == groupID) {
-                            // ok, twins have a relationship
-                            console.log("RELAT between " + twin + " and " + otherParent);
+                        if (this.GG.getTwinGroupId(otherParent) == groupID &&     // the other partner is this twin's twin
+                            this.GG.hasEdge(childhub, otherParent)) {             // and both twins have been re-inserted already
+                            // the twin just re-inserted has a relationship with another twin (which has been re-inserted as well)
+                            //console.log("RELAT between " + twin + " and " + otherParent);
                             // TODO: can do a smarter thing and rearrange twins based on other relatiomnships.
                             //       but since this is a rare case for now just do the simple improvement
                             var orderRel   = this.order.vOrder[rel];
@@ -820,9 +826,14 @@ PositionedGraph.prototype = {
                                             this.order.moveVertexToOrder(rank, orderTwin2, orderTwin1+1);
                                 } else                                    
                                     continue; // twins are not next to each other and both have multiple relationships: TODO
-                            }
+                                
+                                // update orders after possible re-arrangement of nodes
+                                orderRel   = this.order.vOrder[rel];
+                                orderTwin1 = this.order.vOrder[twin];
+                                orderTwin2 = this.order.vOrder[otherParent];                                
+                            }                            
                             // insert rel inbetween the twins (e.g. after leftmost of the twins and before rightmost
-                            console.log("order rel: " + orderRel + ", Twin1: " + orderTwin1 + ", Twin2: " + orderTwin2);
+                            //console.log("order rel: " + orderRel + ", Twin1: " + orderTwin1 + ", Twin2: " + orderTwin2);
                             if (orderTwin1 < orderTwin2)
                                 this.order.moveVertexToOrder(rank, orderRel, orderTwin2);
                             else
@@ -2262,10 +2273,13 @@ PositionedGraph.prototype = {
     },
 
     // finds the bes tposition to insert a new twin of v which has the given set of relationships
-    findBestTwinInsertPosition: function(v, insertedTwinRelationships, useOrdering) {     // useOrdering is passed when thi sis called from the initial ordering procedure
+    findBestTwinInsertPosition: function(v, insertedTwinRelationships, useOrdering) {     // useOrdering is passed when this is called from the initial ordering procedure
         var allTwins = this.GG.getAllTwinsOf(v);
 
-        var vOrder = useOrdering ? useOrdering.vOrder : this.order.vOrder;
+        var rank      = this.ranks[v];
+        var rankOrder = useOrdering ? useOrdering.order[rank] : this.order.order[rank];        
+        var vOrder    = useOrdering ? useOrdering.vOrder      : this.order.vOrder;
+        
         var byOrder = function(a,b){ return vOrder[a] - vOrder[b]; };
         allTwins.sort( byOrder );
 
@@ -2310,10 +2324,18 @@ PositionedGraph.prototype = {
             console.log("after twin " + allTwins[i] + " (leftOf: " + numLeftOf + ", rightOf: " + numRightOf + ") -> edges across: " + stringifyObject(numEdgesAcross));
         }
 
-        //console.log("twin penalties: " + stringifyObject(numEdgesAcross));
+        console.log("twin penalties: " + stringifyObject(numEdgesAcross));
         var orderOfLeftMostTwin  = vOrder[allTwins[0]];
         var minEdgeCrossLocation = indexOfLastMinElementInArray(numEdgesAcross);   // (index == 0) => "insert before leftmost" => (order := orderOfLeftMostTwin)
+                
         var order = orderOfLeftMostTwin + minEdgeCrossLocation;
+        // increment the order by the number of relaitonship nodes found inbetween the twins,
+        // so that minEdgeCrossLocation corresponds to the gap between the expected two twins
+        for (var i = orderOfLeftMostTwin+1; i < order; i++) {
+            var nodeID = rankOrder[i];
+            if (this.GG.isRelationship(nodeID))
+                order++;
+        }
 
         console.log("edges across: " + stringifyObject(numEdgesAcross));
         console.log("BEST INSERT POSITION for a twin of " + v + " with edges to " + stringifyObject(insertedTwinRelationships) + " is " + order);
