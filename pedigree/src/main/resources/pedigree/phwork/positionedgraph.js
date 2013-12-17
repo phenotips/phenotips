@@ -837,7 +837,6 @@ DynamicPositionedGraph.prototype = {
         var ranksBefore      = this.DG.ranks.slice(0);
         var vertLevelsBefore = this.DG.vertLevel.copy();
         var rankYBefore      = this.DG.rankY.slice(0);
-        var consangrBefore   = this.DG.consangr;
         var numNodesBefore   = this.DG.GG.getMaxRealVertexId();
 
         var parentRel = this.DG.GG.getProducingRelationship(personId);
@@ -962,11 +961,21 @@ DynamicPositionedGraph.prototype = {
         return {"removed": removed, "removedInternally": nodeList, "moved": moved };
     },
 
-    repositionAll: function ()
+    improvePosition: function ()
     {
-        this.DG.positions = this.DG.position(this.DG.horizontalPersonSeparationDist, this.DG.horizontalRelSeparationDist);
+        //this.DG.positions = this.DG.position(this.DG.horizontalPersonSeparationDist, this.DG.horizontalRelSeparationDist);
+        //var movedNodes = this._getAllNodes();
+        //return {"moved": movedNodes};
+        var positionsBefore  = this.DG.positions.slice(0);
+        var ranksBefore      = this.DG.ranks.slice(0);
+        var vertLevelsBefore = this.DG.vertLevel.copy();
+        var numNodesBefore   = this.DG.GG.getMaxRealVertexId();
 
-        var movedNodes = this._getAllNodes();
+        // fix common layout mistakes (e.g. relationship not right above the only child)
+        this._heuristics.improvePositioning();
+
+        var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore );
+
         return {"moved": movedNodes};
     },
 
@@ -1203,7 +1212,7 @@ DynamicPositionedGraph.prototype = {
                 //    this._addNodeAndAssociatedRelationships(i, result, maxOldID);
                 //    continue;
                 //}
-                if (this.DG.rankY[rank] != rankYBefore[ranksBefore[i]]) {
+                if (rankYBefore && this.DG.rankY[rank] != rankYBefore[ranksBefore[i]]) {
                     this._addNodeAndAssociatedRelationships(i, result, maxOldID);
                     continue;
                 }
@@ -2119,6 +2128,37 @@ Heuristics.prototype = {
         // 2) fix some common layout imperfections
         var xcoord = new XCoord(this.DG.positions, this.DG);
 
+
+        // search for gaps between children (which may happen due to deletions) and close them by moving chldren closer to each other
+        for (var v = 0; v <= this.DG.GG.getMaxRealVertexId(); v++) {
+            if (!this.DG.GG.isChildhub(v)) continue;
+            var children = this.DG.GG.getOutEdges(v);
+            if (children.length < 2) continue;
+
+            var vorders = this.DG.order.vOrder;
+            var orderedChildren = children.slice(0);
+            orderedChildren.sort(function(x, y){ return vorders[x] > vorders[y] });
+
+            // compress rightmost children towards leftmost child, only moving childen withoout relationships
+            for (var i = orderedChildren.length-1; i >= 0; i--) {
+                if (i == 0 || this.DG.GG.getOutEdges(orderedChildren[i]).length > 0) {
+                    for (var j = i+1; j < orderedChildren.length; j++) {
+                        xcoord.shiftLeftOneVertex(orderedChildren[j], Infinity);
+                    }
+                    break;
+                }
+            }
+            // compress leftmost children towards rightmodt child, only moving childen withoout relationships
+            for (var i = 0; i < orderedChildren.length; i++) {
+                if (i == (orderedChildren.length-1) || this.DG.GG.getOutEdges(orderedChildren[i]).length > 0) {
+                    for (var j = i-1; j >= 0; j--) {
+                        xcoord.shiftRightOneVertex(orderedChildren[j], Infinity);
+                    }
+                    break;
+                }
+            }
+        }
+
         var iter = 0;
         var improved = true;
         while (improved && iter < 100) {
@@ -2137,7 +2177,7 @@ Heuristics.prototype = {
                 var childhubX = xcoord.xcoord[childhub];
 
                 if (childhubX != relX) {
-                    improved = xcoord.moveNodeAsCloseToXAsPossible(childhub, relX, true);
+                    improved = xcoord.moveNodeAsCloseToXAsPossible(childhub, relX);
                     childhubX = xcoord.xcoord[childhub];
                     //console.log("moving " + childhub + " to " + xcoord.xcoord[childhub]);
                 }
@@ -2152,7 +2192,7 @@ Heuristics.prototype = {
                     var childId = childInfo.orderedChildren[0];
                     if (xcoord.xcoord[childId] == childhubX) continue;
 
-                    improved = xcoord.moveNodeAsCloseToXAsPossible(childId, childhubX, true);
+                    improved = xcoord.moveNodeAsCloseToXAsPossible(childId, childhubX);
                     //console.log("moving " + childId + " to " + xcoord.xcoord[childId]);
 
                     if (xcoord.xcoord[childId] == childhubX) continue;
@@ -2170,9 +2210,9 @@ Heuristics.prototype = {
                     var middle = (leftX + rightX)/2;
                     var median = (childInfo.orderedChildren.length == 3) ? xcoord.xcoord[childInfo.orderedChildren[1]] : middle;
 
-                    if (v == 5) {
-                        console.log("childhubx: " + childhubX + ", leftX: " + leftX + ", rightX: " + rightX + ", middle: " + middle + ", median: " + median);
-                    }
+                    //if (v == 25) {
+                    //    console.log("childhubx: " + childhubX + ", leftX: " + leftX + ", rightX: " + rightX + ", middle: " + middle + ", median: " + median);
+                    //}
 
                     // looks good when parent line is either above the mid-point between th eleftmost and rightmost child
                     // or above the middle child of the three
@@ -2187,7 +2227,7 @@ Heuristics.prototype = {
                     if (childInfo.numWithPartners == 0) {
                         // can shift children easily
                         if (needToShift < 0) {  // need to shift children left
-                            var leftMostOkPosition = xcoord.getLeftMostNoDisturbPosition(leftMost, true);
+                            var leftMostOkPosition = xcoord.getLeftMostNoDisturbPosition(leftMost);
                             var haveSlack = Math.min(Math.abs(needToShift), leftX - leftMostOkPosition);
                             if (haveSlack > 0) {
                                 for (var i = 0; i < childInfo.orderedChildren.length; i++)
@@ -2198,7 +2238,7 @@ Heuristics.prototype = {
                         }
                         else {  // need to shift children right
                             var rightMostOkPosition = xcoord.getRightMostNoDisturbPosition(rightMost);
-                            var haveSlack = Math.min(Math.abs(needToShift), leftMostOkPosition - rightX);
+                            var haveSlack = Math.min(Math.abs(needToShift), rightMostOkPosition - rightX);
                             if (haveSlack > 0) {
                                 for (var i = 0; i < childInfo.orderedChildren.length; i++)
                                     xcoord.xcoord[childInfo.orderedChildren[i]] += haveSlack;
@@ -2221,9 +2261,9 @@ Heuristics.prototype = {
                     var willShift = Math.min(xcoord.getSlackOnTheLeft(childhub), xcoord.getSlackOnTheLeft(parent), -needShiftParents);
                     improved = improved || (willShift != 0);
                     //console.log("will shift " + parent + " by " + willShift);
-                    xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   - willShift, true);
-                    xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        - willShift, true);
-                    xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] - willShift, true);
+                    xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   - willShift);
+                    xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        - willShift);
+                    xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] - willShift);
                 }
                 else {
                     var parent = (xcoord.xcoord[parents[0]] > xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
@@ -2231,9 +2271,9 @@ Heuristics.prototype = {
                     var willShift = Math.min(xcoord.getSlackOnTheRight(childhub), xcoord.getSlackOnTheRight(parent), needShiftParents);
                     improved = improved || (willShift != 0);
                     //console.log("will shift " + parent + " by " + willShift);
-                    xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   + willShift, true);
-                    xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        + willShift, true);
-                    xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] + willShift, true);
+                    xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   + willShift);
+                    xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        + willShift);
+                    xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] + willShift);
                 }
                 //----------------------------------------------------------------
             }
@@ -2322,7 +2362,7 @@ Heuristics.prototype = {
         console.log("Orders at insertion rank: " + stringifyObject(this.DG.order.order[this.DG.ranks[newNodeId]]));
         //console.log("Positions of nodes: " + stringifyObject(xcoord.xcoord));
 
-        var leftBoundary  = xcoord.getLeftMostNoDisturbPosition(newNodeId, true);   // true: allow negative coordinates: will be normalized
+        var leftBoundary  = xcoord.getLeftMostNoDisturbPosition(newNodeId);
         var rightBoundary = xcoord.getRightMostNoDisturbPosition(newNodeId);
 
         var desiredPosition = this.DG.positions[nodeToKeepEdgeStraightTo];             // insert right above or right below

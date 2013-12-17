@@ -60,7 +60,7 @@ XCoord.prototype = {
         return xinit;
     },    
     
-    getLeftMostNoDisturbPosition: function(v, allowNegative) {
+    getLeftMostNoDisturbPosition: function(v) {
         var leftBoundary = this.halfWidth[v];
 
         var order = this.graph.order.vOrder[v];
@@ -71,14 +71,14 @@ XCoord.prototype = {
 
             //console.log("leftNeighbour: " + leftNeighbour + ", rightEdge: " + this.getRightEdge(leftNeighbour) + ", separation: " + this.getSeparation(v, leftNeighbour));
         }
-        else if (allowNegative)
+        else
             return -Infinity;
 
         return leftBoundary;
     },
 
     getSlackOnTheLeft: function(v) {
-        return this.xcoord[v] - this.getLeftMostNoDisturbPosition(v,true);
+        return this.xcoord[v] - this.getLeftMostNoDisturbPosition(v);
     },
 
     getRightMostNoDisturbPosition: function(v, alsoMoveRelationship) {
@@ -113,7 +113,7 @@ XCoord.prototype = {
 
     shiftLeftOneVertex: function (v, amount) {
         // attempts to move vertex v to the left by ``amount``, but stops
-        // as soon as it hits it's left neighbour
+        // as soon as it get as close as allowed to it's left neighbour
 
         var leftBoundary = this.getLeftMostNoDisturbPosition(v);
 
@@ -123,6 +123,19 @@ XCoord.prototype = {
 
         return actualShift;
     },
+    
+    shiftRightOneVertex: function (v, amount) {
+        // attempts to move vertex v to the right by ``amount``, but stops
+        // as soon as it get as close as allowed to it's right neighbour
+
+        var rightBoundary = this.getRightMostNoDisturbPosition(v);
+
+        var actualShift = Math.min( amount, rightBoundary - this.xcoord[v] );
+
+        this.xcoord[v] += actualShift;
+
+        return actualShift;
+    },    
 
     shiftRightAndShiftOtherIfNecessary: function (v, amount) {
         // shifts a vertext to the right by the given ``amount``, and shifts
@@ -151,10 +164,10 @@ XCoord.prototype = {
         return amount;
     },
 
-    moveNodeAsCloseToXAsPossible: function (v, targetX, allowNegative) {
+    moveNodeAsCloseToXAsPossible: function (v, targetX) {
         var x = this.xcoord[v];
         if (x > targetX) {
-            var leftMostOK = this.getLeftMostNoDisturbPosition(v, allowNegative);
+            var leftMostOK = this.getLeftMostNoDisturbPosition(v);
             if (leftMostOK <= targetX)
                 this.xcoord[v] = targetX;
             else
