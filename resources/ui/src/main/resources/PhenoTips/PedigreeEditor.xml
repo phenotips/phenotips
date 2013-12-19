@@ -53,10 +53,11 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.jsfx.use('uicomponents/pedigree/phwork/helpers.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/phwork/queues.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/phwork/graphclasses.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/phwork/xcoordclass.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/phwork/graphplot.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/phwork/positionedgraph.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/phwork/ordering.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/phwork/baseGraph.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/phwork/positionedGraph.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/phwork/dynamicGraph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/nodeMenu.js', true)##
 $xwiki.jsfx.use('uicomponents/pedigree/nodetypeSelectionBubble.js')##
 $xwiki.ssfx.use('uicomponents/pedigree/editor.css', true)##
