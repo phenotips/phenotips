@@ -216,8 +216,6 @@ var ChildlessBehaviorVisuals = {
         this._childlessShape && this._childlessShape.remove();
         
         if(status) {
-            console.log("childless shape!");
-            
 	        var x    = this.getX();
 	        var y    = this.getY();
 	        var r    = PedigreeEditor.attributes.partnershipRadius * 1.25;
@@ -225,11 +223,12 @@ var ChildlessBehaviorVisuals = {
 	        
 	        var childlessPath = [["M", x, y],["L", x, lowY],["M", x - r, lowY], ["l", 2 * r, 0]];
 	        if(status == 'infertile')
-	            childlessPath.push(["M", x - r, lowY + 4], ["l", 2 * r, 0]);
+	            childlessPath.push(["M", x - r, lowY + 5], ["l", 2 * r, 0]);
 
+	        var strokeWidth = 2; //editor.getWorkspace().getSizeNormalizedToDefaultZoom(2);
             this._childlessShape = editor.getPaper().path(childlessPath);
-            this._childlessShape.attr({"stroke-width": 2.5, stroke: "#3C3C3C"});
-            this._childlessShape.insertAfter(this.getHoverBox().getBackElements().flatten());            
+            this._childlessShape.attr({"stroke-width": strokeWidth, stroke: "#3C3C3C"});
+            this._childlessShape.toBack();            
         }
     },
 
@@ -246,9 +245,9 @@ var ChildlessBehaviorVisuals = {
         this.getNode().getChildlessReason() && (text += this.getNode().getChildlessReason());
         
         if(text.strip() != '') {
-            this._childlessStatusLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius + PedigreeEditor.attributes.childlessLength + 15, "(" + text.slice(0, 14) +")" );
+            this._childlessStatusLabel = editor.getPaper().text(this.getX(), this.getBottomY() + 18, "(" + text.slice(0, 15) +")" );
             this._childlessStatusLabel.attr({'font-size': 18, 'font-family': 'Cambria'});
-            this._childlessStatusLabel.insertAfter(this.getChildlessShape().flatten());
+            this._childlessStatusLabel.toBack();
         }        
         
         this.drawLabels();

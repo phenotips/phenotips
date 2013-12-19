@@ -39,8 +39,8 @@ PositionedGraph.prototype = {
     horizontalPersonSeparationDist: 10,
     horizontalTwinSeparationDist:    8,
     horizontalRelSeparationDist:     6,
-    yDistanceNodeToChildhub:        16,
-    yDistanceChildhubToNode:        16,
+    yDistanceNodeToChildhub:        17,
+    yDistanceChildhubToNode:        17,
     yExtraPerHorizontalLine:         4,
 
     initialize: function( baseG,
@@ -622,10 +622,10 @@ PositionedGraph.prototype = {
             if (children.length > 1) {
                 leafSiblings[childHubNode] = [];
 
-                var keepChild = v;  // need ot keep at least one leaf per childhub that has on so that
+                var keepChild = v;  // need to keep at least one leaf per childhub so that
                                     // bottom-to-top ordering has an option of juggling with this leaf/childhub
 
-                for (var j = 1; j < children.length; j++) {
+                for (var j = 0; j < children.length; j++) {
                     var child  = children[j];
                     var outNum = this.GG.getOutEdges(child).length;
 

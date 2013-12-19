@@ -231,7 +231,8 @@ var AbstractHoverbox = Class.create({
     regenerateHandles: function() {
         if (!this._currentHandles) return;
         this.removeHandles();
-        this.generateHandles();
+        if (!this._hidden || this.isMenuToggled())
+            this.generateHandles();
     },
 
     /**
@@ -554,6 +555,16 @@ var AbstractHoverbox = Class.create({
         return handle;
     },
 
+    /**
+     * Returns true if the menu for this node is open
+     *
+     * @method isMenuToggled
+     * @return {Boolean}
+     */
+    isMenuToggled: function() {
+        return false;
+    },
+    
     /*
      * Fades the hoverbox graphics in
      *
