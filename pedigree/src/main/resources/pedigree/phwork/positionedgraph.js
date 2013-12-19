@@ -2012,7 +2012,7 @@ Heuristics.prototype = {
         //       a) moving relationship + both partners, if possible without disturbiung other nodes
         //    C) not nice long edge crossings (example pending) - TODO
         //    D) a relationship edge can be made shorter and bring two parts of the graph separated by the edge closer together
-
+        //    E) after everything else try to center relationships between the partners (and move children accordingly)
 
         // 1) improve layout of multi-rank relationships:
         //    relationship lines should always going to the right or left first before going down
@@ -2256,24 +2256,30 @@ Heuristics.prototype = {
                 //console.log("v = " + v + ", needShiftParents = " + needShiftParents);
 
                 if (needShiftParents < 0) { // need to shift childhub + relationship + one parent to the left
-                    var parent = (xcoord.xcoord[parents[0]] < xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
-                    if (this.DG.GG.getInEdges(parent) != 0) continue;
+                    var parent  = (xcoord.xcoord[parents[0]] < xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
+                    if (this.DG.GG.getInEdges(parent).length != 0) continue;
                     var willShift = Math.min(xcoord.getSlackOnTheLeft(childhub), xcoord.getSlackOnTheLeft(parent), -needShiftParents);
                     improved = improved || (willShift != 0);
                     //console.log("will shift " + parent + " by " + willShift);
                     xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   - willShift);
                     xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        - willShift);
                     xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] - willShift);
+                    var parent2 = (parent == parents[0]) ? parents[1] : parents[0];
+                    if (this.DG.GG.getOutEdges(parent2).length == 1 && this.DG.GG.getInEdges(parent2).length == 0)
+                        xcoord.moveNodeAsCloseToXAsPossible(parent2, xcoord.xcoord[parent2] - willShift);
                 }
                 else {
                     var parent = (xcoord.xcoord[parents[0]] > xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
-                    if (this.DG.GG.getInEdges(parent) != 0) continue;
+                    if (this.DG.GG.getInEdges(parent).length != 0) continue;
                     var willShift = Math.min(xcoord.getSlackOnTheRight(childhub), xcoord.getSlackOnTheRight(parent), needShiftParents);
                     improved = improved || (willShift != 0);
                     //console.log("will shift " + parent + " by " + willShift);
                     xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   + willShift);
                     xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        + willShift);
                     xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] + willShift);
+                    var parent2 = (parent == parents[0]) ? parents[1] : parents[0];
+                    if (this.DG.GG.getOutEdges(parent2).length == 1 && this.DG.GG.getInEdges(parent2).length == 0)
+                        xcoord.moveNodeAsCloseToXAsPossible(parent2, xcoord.xcoord[parent2] + willShift);
                 }
                 //----------------------------------------------------------------
             }
@@ -2289,6 +2295,71 @@ Heuristics.prototype = {
         //           - #4E: nodes a & b cna bemoved right a bit until a's parent edge is straight
         //           - #5C: node "A" should be move left a bit
 
+
+        // 2E) center relationships between partners. Only do it if children-to-relationship positioning does not get worse
+        //     (e.g. if it was centrered then if children can be shifted to stay centered, and if it was off-center if
+        //     it get smore centered now, or children cen be moved ot be more centered)
+        var iter = 0;
+        var improved = true;
+        while (improved && iter < 100) {
+            improved = false;
+            iter++;
+            for (var v = 0; v <= this.DG.GG.getMaxRealVertexId(); v++) {
+                if (!this.DG.GG.isRelationship(v)) continue;
+
+                var parents = this.DG.GG.getInEdges(v);
+
+                // only shift rel if partners are next to each other with only this relationship in between
+                if (Math.abs(this.DG.order.vOrder[parents[0]] - this.DG.order.vOrder[parents[1]]) != 2) continue;
+
+                var relX      = xcoord.xcoord[v];
+                var parent1X  = xcoord.xcoord[parents[0]];
+                var parent2X  = xcoord.xcoord[parents[1]];
+                var midX      = (parent1X + parent2X)/2;
+
+                if (relX == midX) continue;
+
+                var childhub  = this.DG.GG.getRelationshipChildhub(v);
+                var childInfo = this.analizeChildren(childhub);
+                if (childInfo.numWithPartners > 0) continue;
+
+                var leftMost  = childInfo.leftMostChildId;
+                var rightMost = childInfo.rightMostChildId;
+                var leftX     = xcoord.xcoord[leftMost];
+                var rightX    = xcoord.xcoord[rightMost];
+                var middle    = (leftX + rightX)/2;
+
+                var needShiftRel = midX - relX;
+
+                var slackInChildrenR  = xcoord.getSlackOnTheRight(rightMost);
+                var slackInChildrenL  = xcoord.getSlackOnTheLeft(leftMost);
+                var desiredChildLineX = middle;
+
+                if (needShiftRel > 0) {
+                    var mostRightPosition = desiredChildLineX + slackInChildrenR;  // more right and child line will be not nice
+                    var shiftTo = Math.min(midX, mostRightPosition);
+                    if (shiftTo < relX) continue; // can't improve
+                }
+                else {
+                    var mostLeftPosition = desiredChildLineX - slackInChildrenL;  // more left and child line will be not nice
+                    var shiftTo = Math.max(midX, mostLeftPosition);
+                    if (shiftTo > relX) continue; // can't improve
+                }
+
+                xcoord.xcoord[v]        = shiftTo;
+                xcoord.xcoord[childhub] = shiftTo;
+
+                var shiftChildren = shiftTo - desiredChildLineX;
+                if (shiftChildren > 0 && shiftChildren > slackInChildrenR)
+                    shiftChildren = slackInChildrenR;
+                if (shiftChildren < 0 && shiftChildren < -slackInChildrenL)
+                    shiftChildren = -slackInChildrenL;
+                if (shiftChildren != 0) {
+                    for (var i = 0; i < childInfo.orderedChildren.length; i++)
+                        xcoord.xcoord[childInfo.orderedChildren[i]] += shiftChildren;
+                }
+            }
+        }
 
         this.DG.try_straighten_long_edges(xcoord);
 
