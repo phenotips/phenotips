@@ -26,8 +26,8 @@ var GraphicsSet = Class.create({
     },
 
     /**
-     * Pre-generates shapes which are commonly used in the graph. Raphael is slow and
-     * re-buuilding each shape from a path for every node is noticeable slow
+     * Pre-generates paths and pre-computes bounding boxes for shapes which are commonly used in the graph.
+     * Raphael is slow and re-computing each path/box for every node is noticeably slow
      * 
      * @method preGenerateGraphics
      */
@@ -50,8 +50,8 @@ var GraphicsSet = Class.create({
         this.__deleteButton_BBox    = Raphael.pathBBox(this.__deleteButton_svgPath);
                 
         // 3) twins button
-        this.__twinsButton_svgPath = "M0,15L8,0L16,15";
-        this.__twinsButton_BBox    = Raphael.pathBBox(this.__twinsButton_svgPath);
+        //this.__twinsButton_svgPath = "M0,15L8,0L16,15";
+        //this.__twinsButton_BBox    = Raphael.pathBBox(this.__twinsButton_svgPath);
         
         // 4) proband arrow
         this.__probandArrowPath = Raphael.transformPath("M7.589,20.935l-6.87,6.869l2.476,2.476l6.869-6.869l1.858,1.857l2.258-8.428l-8.428,2.258L7.589,20.935z", ["s", 1.1, 1.1, 0, 0]);

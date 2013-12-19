@@ -128,31 +128,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         // proband can't be removed
         if (!this.getNode().isProband())
             this.generateDeleteBtn();
-        
-        // noparents => no twin button
-        if (editor.getGraph().getParentRelationship(this.getNode().getID()) !== null)
-            this.generateAddTwinButton();        
     },
-
-    /**
-     * Creates and returns a "create a twin" button
-     *
-     * @method generateAddTwinButton
-     * @return {Raphael.st} the generated button
-     */    
-    generateAddTwinButton: function() {        
-        var me = this;        
-        var action = function() {
-            var id = me.getNode().getID(); // may chnage since graphics was created
-            var event = { "nodeID": id, "modifications": { "addTwin": 1 } };
-            document.fire("pedigree:node:modify", event);             
-        };
-        var attributes = {}; //PedigreeEditor.attributes.menuBtnIcon;        
-        var x = this.getX() + this.getWidth()*0.5 - 7.75;
-        var y = this.getY() + this.getHeight()/70;
-        this.createButton(x, y, editor.getGraphicsSet().__twinsButton_svgPath, editor.getGraphicsSet().__twinsButton_BBox,
-                          attributes, action, "twin", "add a twin");        
-    },    
 
     /**
      * Returns true if the menu for this node is open

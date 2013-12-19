@@ -39,12 +39,16 @@ var Controller = Class.create({
     
     handleAutoLayout: function(event)
     {
-        console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
-        var changeSet = editor.getGraph().redrawAll();
-        editor.getGraphicsSet().applyChanges(changeSet, true);
-        
-        if (!event.memo.noUndoRedo)
-            editor.getActionStack().addState( event );        
+        try {        
+            console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
+            var changeSet = editor.getGraph().redrawAll();
+            editor.getGraphicsSet().applyChanges(changeSet, true);
+            
+            if (!event.memo.noUndoRedo)
+                editor.getActionStack().addState( event );
+        } catch(err) {
+            console.log("Autolayout error: " + err);
+        }              
     },
     
     handleClearGraph: function(event)
@@ -93,13 +97,16 @@ var Controller = Class.create({
             
             if (changeSet) {
                 editor.getGraphicsSet().applyChanges(changeSet, true);
-                        
+             
+                changeSet = editor.getGraph().improvePosition();
+                editor.getGraphicsSet().applyChanges(changeSet, true);
+                
                 if (!event.memo.noUndoRedo)
                     editor.getActionStack().addState( event );
-            }
+            }                        
             
         } catch(err) {
-            console.log("err: " + err);
+            console.log("Remove error: " + err);
         }          
     },
     
@@ -209,7 +216,7 @@ var Controller = Class.create({
         
         for (modificationType in modifications)
             if (modifications.hasOwnProperty(modificationType)) {
-                var modValue = modifications[modificationType];  
+                var modValue = modifications[modificationType] - 1;  // current node is the first twin  
                                                
                 if (modificationType == "addTwin") {                    
                     for (var i = 0; i < modValue; i++ ) {
@@ -224,8 +231,6 @@ var Controller = Class.create({
                     // TODO
                 }                
             }                                     
-        
-        editor.getNodeMenu().update(editor.getNode(nodeID));
         
         if (!event.memo.noUndoRedo)
             editor.getActionStack().addState( event );        
@@ -295,13 +300,18 @@ var Controller = Class.create({
             parentRelationship = editor.getController().handlePersonNewParents( { "memo": { "personID": personID, "noUndoRedo": true } } );
         }
         
-        var nextEvent = { "partnershipID": parentRelationship, "childParams": childParams, "noUndoRedo": true };
-        if (event.memo.twins)
-            nextEvent["twins"] = event.memo.twins;           
-        if (event.memo.groupSize)
-            nextEvent["groupSize"] = event.memo.groupSize;        
-        
-        editor.getController().handleRelationshipNewChild( { "memo": nextEvent } );
+        if (event.memo.twins) {
+            var nextEvent = { "nodeID": personID, "modifications": { "addTwin": event.memo.twins }, "noUndoRedo": true };
+            editor.getController().handleModification( { "memo": nextEvent } );
+        }
+        else
+        {
+            var nextEvent = { "partnershipID": parentRelationship, "childParams": childParams, "noUndoRedo": true };
+            if (event.memo.groupSize)
+                nextEvent["groupSize"] = event.memo.groupSize;        
+            
+            editor.getController().handleRelationshipNewChild( { "memo": nextEvent } );
+        }
         
         if (!event.memo.noUndoRedo)
             editor.getActionStack().addState( event );        
