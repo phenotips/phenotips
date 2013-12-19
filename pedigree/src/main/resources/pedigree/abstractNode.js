@@ -36,7 +36,8 @@ var AbstractNode = Class.create( {
      * @method setID
      */
     setID: function(id) {
-        console.log("Updating ID " + this._id + " to " + id); 
+        if (id == this._id) return;
+        console.log("Updating ID " + this._id + " to " + id);
         this._id = id;
         this._graphics.onSetID(id);
     },
