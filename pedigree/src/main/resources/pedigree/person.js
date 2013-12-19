@@ -31,6 +31,7 @@ var Person = Class.create(AbstractPerson, {
     _setDefault: function() {
         this._firstName = "";
         this._lastName = "";
+        this._lastNameAtBirth = "";
         this._birthDate = "";
         this._deathDate = "";
         this._conceptionDate = "";
@@ -100,6 +101,42 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
+     * Replaces the last name of this Person with lastName, and displays the label
+     *
+     * @method setLastName
+     * @param lastName
+     */
+    setLastName: function(lastName) {
+        lastName && (lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1));
+        this._lastName = lastName;
+        this.getGraphics().updateNameLabel();
+        return lastName;
+    },
+    
+    /**
+     * Returns the last name at birth of this Person
+     *
+     * @method getLastNameAtBirth
+     * @return {String}
+     */
+    getLastNameAtBirth: function() {
+        return this._lastNameAtBirth;
+    },
+
+    /**
+     * Replaces the last name at birth of this Person with the given name, and updates the label
+     *
+     * @method setLastNameAtBirth
+     * @param lastNameAtBirth
+     */
+    setLastNameAtBirth: function(lastNameAtBirth) {
+        lastNameAtBirth && (lastNameAtBirth = lastNameAtBirth.charAt(0).toUpperCase() + lastNameAtBirth.slice(1));
+        this._lastNameAtBirth = lastNameAtBirth;
+        this.getGraphics().updateNameLabel();
+        return lastNameAtBirth;
+    },    
+
+    /**
      * Sets the type of twin
      *
      * @method setMonozygotic
@@ -120,19 +157,6 @@ var Person = Class.create(AbstractPerson, {
         return this._monozygotic;
     },
 
-    /**
-     * Replaces the last name of this Person with lastName, and displays the label
-     *
-     * @method setLastName
-     * @param lastName
-     */
-    setLastName: function(lastName) {
-        lastName && (lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1));
-        this._lastName = lastName;
-        this.getGraphics().updateNameLabel();
-        return lastName;
-    },
-    
     /**
      * Assigns this node to the given twin group
      * (a twin group is all the twins from a given pregnancy)
@@ -453,6 +477,7 @@ var Person = Class.create(AbstractPerson, {
             identifier:    {value : this.getID()},
             first_name:    {value : this.getFirstName()},
             last_name:     {value : this.getLastName()},
+            last_name_birth: {value: this.getLastNameAtBirth()}, //, inactive: (this.getGender() != 'F')},
             gender:        {value : this.getGender(), inactive: inactiveGenders},
             date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus()},
             disorders:     {value : disorders},
@@ -484,6 +509,8 @@ var Person = Class.create(AbstractPerson, {
         info['fName']           = this.getFirstName();
         if (this.getLastName() != "")
             info['lName']       = this.getLastName();
+        if (this.getLastNameAtBirth() != "")
+            info['lNameAtB']    = this.getLastNameAtBirth();
         if (this.getBirthDate() != "") 
             info['dob']         = this.getBirthDate();
         if (this.isAdopted())
@@ -523,6 +550,9 @@ var Person = Class.create(AbstractPerson, {
             }
             if(info.lName && this.getLastName() != info.lName) {
                 this.setLastName(info.lName);
+            }
+            if(info.lNameAtB && this.getLastNameAtBirth() != info.lNameAtB) {
+                this.setLastNameAtBirth(info.lNameAtB);
             }
             if(info.dob && this.getBirthDate() != info.dob) {
                 this.setBirthDate(info.dob);

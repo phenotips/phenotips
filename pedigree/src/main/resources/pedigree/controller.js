@@ -216,10 +216,11 @@ var Controller = Class.create({
         
         for (modificationType in modifications)
             if (modifications.hasOwnProperty(modificationType)) {
-                var modValue = modifications[modificationType] - 1;  // current node is the first twin  
+                var modValue = modifications[modificationType];  
                                                
-                if (modificationType == "addTwin") {                    
-                    for (var i = 0; i < modValue; i++ ) {
+                if (modificationType == "addTwin") {           
+                    var numNewTwins = modValue - 1; // current node is one of the twins, so need to create one less
+                    for (var i = 0; i < numNewTwins; i++ ) {
                         var twinProperty = { "gender": node.getGender() };
                         var changeSet = editor.getGraph().addTwin( nodeID, twinProperty );        
                         editor.getGraphicsSet().applyChanges(changeSet, true);

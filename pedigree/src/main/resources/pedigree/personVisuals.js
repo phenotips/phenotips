@@ -112,7 +112,14 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._nameLabel && this._nameLabel.remove();
         var text =  "";
         this.getNode().getFirstName() && (text = this.getNode().getFirstName());
-        this.getNode().getLastName() && (text += ' ' + this.getNode().getLastName());
+                
+        if (this.getNode().getLastName()) {
+            text += ' ' + this.getNode().getLastName();
+            this.getNode().getLastNameAtBirth() && (text += ' (' + this.getNode().getLastNameAtBirth() + ')');
+        }
+        else
+            this.getNode().getLastNameAtBirth() && (text += ' ' + this.getNode().getLastNameAtBirth());
+        
         this._nameLabel && this._nameLabel.remove();
         if(text.strip() != '') {
             this._nameLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius, text).attr(PedigreeEditor.attributes.nameLabels);
