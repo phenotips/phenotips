@@ -122,7 +122,7 @@
       (% class="tool show" %)Show(%%) (% class="tool hide" %)Hide(%%)
     )))
     (% class="ncbi-search-box-content"%)(((
-      (% class="hint"%)The following terms are extracted from the phenotypic description and used automatically in searches. You can disable or re-enable their contribution in OMIM and PubMed search results by clicking on them.(%%)
+      (% class="hint"%)The following terms are extracted from the phenotypic description and used automatically in searches. You can disable or re-enable their contribution in the search results by clicking on them.(%%)
       {{html wiki=false clean=false}}&lt;input type="hidden" id="defaultSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="defaultSearchTermIDsInput" value="" /&gt;{{/html}}
       (% id="defaultSearchTerms" %)((()))
       ##(% class="hint"%)Include the following custom terms in your search:(%%)
