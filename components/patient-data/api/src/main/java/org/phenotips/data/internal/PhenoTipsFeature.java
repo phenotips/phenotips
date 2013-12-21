@@ -92,9 +92,9 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
             BaseObject metadataObject = findMetadataObject(doc);
             if (metadataObject != null) {
                 for (FeatureMetadatum.Type metadataType : FeatureMetadatum.Type.values()) {
-                    if (metadataObject.get(metadataType.toString()) != null) {
-                        this.metadata.put(metadataType.toString(), new PhenoTipsFeatureMetadatum(
-                            (StringProperty) metadataObject.get(metadataType.toString())));
+                    StringProperty metadataProp = (StringProperty) metadataObject.get(metadataType.toString());
+                    if (metadataProp != null && StringUtils.isNotBlank(metadataProp.getValue())) {
+                        this.metadata.put(metadataType.toString(), new PhenoTipsFeatureMetadatum(metadataProp));
                     }
                 }
             }
