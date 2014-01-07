@@ -114,7 +114,8 @@ public class RightsUpdateEventListener implements EventListener
 
     private boolean isPatient(XWikiDocument doc)
     {
-        return (doc.getXObject(Patient.CLASS_REFERENCE) != null);
+        return (doc.getXObject(Patient.CLASS_REFERENCE) != null)
+            && !"PatientTemplate".equals(doc.getDocumentReference().getName());
     }
 
     private void clearRights(XWikiDocument doc)
