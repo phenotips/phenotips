@@ -82,7 +82,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             this.getGenderShape().attr("stroke-width", 5);
         }
         if(this.getHoverBox()) {
-            this._genderGraphics.flatten().insertAfter(this.getBackElements().flatten());
+            this._genderGraphics.flatten().insertBefore(this.getFrontElements().flatten());
         }        
         this.updateDisorderShapes();      
     },
@@ -101,6 +101,16 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     getBackElements: function() {
         return this.getHoverBox().getBackElements().concat(editor.getPaper().set(this.getChildlessStatusLabel(), this.getChildlessShape()));
+    },
+
+    /**
+     * Returns all graphical elements that should receive mouse focus/clicks
+     *
+     * @method getFrontElements
+     * @return {Raphael.st}
+     */    
+    getFrontElements: function() {
+        return this.getHoverBox().getFrontElements();
     },
 
     /**
@@ -449,7 +459,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         var labels = this.getLabels();
         var selectionOffset = this._labelSelectionOffset();
         var childlessOffset = this.getChildlessStatusLabel() ? PedigreeEditor.attributes.label['font-size'] : 0;
-        childlessOffset += ((this.getNode().getChildlessStatus() == 'infertile') ? 4 : 0);
+        childlessOffset += ((this.getNode().getChildlessStatus() == 'infertile') ? (PedigreeEditor.attributes.infertileMarkerHeight) : 0);
                     
         var lowerBound = PedigreeEditor.attributes.radius * (this.getNode().isPersonGroup() ? PedigreeEditor.attributes.groupNodesScale : 1.0);
         var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset;
