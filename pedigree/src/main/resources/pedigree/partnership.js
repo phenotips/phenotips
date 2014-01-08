@@ -54,9 +54,10 @@ var Partnership = Class.create(AbstractNode, {
             this._childlessStatus = status;
             this.setChildlessReason(null);
             this.getGraphics().updateChildlessShapes();
-            this.getGraphics().updateChildhubConnection(); 
+            this.getGraphics().updateChildhubConnection();
+            this.getGraphics().getHoverBox().regenerateHandles();
         }
-        
+                
         return this.getChildlessStatus();
     },
     

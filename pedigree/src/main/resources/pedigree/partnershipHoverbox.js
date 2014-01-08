@@ -29,6 +29,8 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
     generateHandles: function($super) {
         if (this._currentHandles !== null) return;
         $super();        
+
+        if (this.getNode().getChildlessStatus() !== null) return;
         
         var x = this.getNodeX();
         var y = this.getNodeY();     
@@ -124,8 +126,8 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
             }
         }
         else if (!isDrag && handleType == "child") {
-            var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.partnershipHandleLength + 15));
-            editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
+            var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.partnershipHandleLength + 15));            
+            editor.getSiblingSelectionBubble().show(this.getNode(), position.x, position.y);
             // if user selects anything the bubble will fire an even on its own
         }
         this.animateHideHoverZone();        
