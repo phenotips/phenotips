@@ -478,6 +478,8 @@ PedigreeEditor.attributes = {
     handleStrokeWidth: 5,
     groupNodesScale: 0.85,
     childlessLength: 14,
+    infertileMarkerHeight: 3,
+    infertileMarkerWidth: 10,
     twinCommonVerticalLength: 6,
     twinMonozygothicLineShiftY: 21,
     curvedLinesCornerRadius: 25,

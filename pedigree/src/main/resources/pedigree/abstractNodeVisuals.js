@@ -218,8 +218,8 @@ var ChildlessBehaviorVisuals = {
         if(status) {
 	        var x    = this.getX();
 	        var y    = this.getY();
-	        var r    = PedigreeEditor.attributes.partnershipRadius * 1.25;
-	        var lowY = this.getBottomY();
+	        var r    = PedigreeEditor.attributes.infertileMarkerWidth;
+	        var lowY = this.getBottomY() + PedigreeEditor.attributes.infertileMarkerHeight;
 	        
 	        var childlessPath = [["M", x, y],["L", x, lowY],["M", x - r, lowY], ["l", 2 * r, 0]];
 	        if(status == 'infertile')

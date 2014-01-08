@@ -36,7 +36,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         var x = this.getX();
         var y = this.getY();
         this._idLabel && this._idLabel.remove();
-        this._idLabel = editor.getPaper().text(x, y,  editor.DEBUG_MODE ? this.getNode().getID() : "").attr(PedigreeEditor.attributes.dragMeLabel).insertAfter(this.getGenderGraphics().flatten());
+        this._idLabel = editor.getPaper().text(x, y,  editor.DEBUG_MODE ? this.getNode().getID() : "").attr(PedigreeEditor.attributes.dragMeLabel).toFront();
         this._idLabel.node.setAttribute("class", "no-mouse-interaction");
     },
     
