@@ -439,12 +439,12 @@ var AbstractHoverbox = Class.create({
         var orbRadius     = PedigreeEditor.attributes.radius/7;
         var orbHue        = PedigreeEditor.attributes.orbHue;
         
-        var normalOrbAttr   = (orbShapeGender == "M") ? {fill: "0-hsb(" + orbHue + ", 1, .75)-hsb(" + orbHue + ", .5, .25)", stroke: "#555", "stroke-width": "0.75"}
+        var normalOrbAttr   = (orbShapeGender != "F") ? {fill: "0-hsb(" + orbHue + ", 1, .75)-hsb(" + orbHue + ", .5, .25)", stroke: "#555", "stroke-width": "0.75"}
                                                       : {fill: "r(.5,.9)hsb(" + orbHue + ", 1, .75)-hsb(" + orbHue + ", .5, .25)", stroke: "none"};
-        var selectedOrbAttr = (orbShapeGender == "M") ? {fill: "0-hsb(" + (orbHue + .36) + ", 1, .75)-hsb(" + (orbHue + .36) + ", .5, .25)"}
+        var selectedOrbAttr = (orbShapeGender != "F") ? {fill: "0-hsb(" + (orbHue + .36) + ", 1, .75)-hsb(" + (orbHue + .36) + ", .5, .25)"}
                                                       : {fill: "r(.5,.9)hsb(" + (orbHue + .36) + ", 1, .75)-hsb(" + (orbHue + .36) + ", .5, .25)"};
-        var orbAttrX        = (orbShapeGender == "M") ? "x" : "cx";
-        var orbAttrY        = (orbShapeGender == "M") ? "y" : "cy";
+        var orbAttrX        = (orbShapeGender != "F") ? "x" : "cx";
+        var orbAttrY        = (orbShapeGender != "F") ? "y" : "cy";
                 
         var orb = generateOrb(editor.getPaper(), orbX, orbY, orbRadius*1.1, orbShapeGender).attr("cursor", "pointer");        
         orb[0].attr(normalOrbAttr);
@@ -476,6 +476,7 @@ var AbstractHoverbox = Class.create({
             me.getFrontElements().toFront();
             orb.ox = orb[0].attr(orbAttrX);
             orb.oy = orb[0].attr(orbAttrY);
+            orb.ot = orb[0].transform();
             connection.ox = connection.oPath[1][1];
             connection.oy = connection.oPath[1][2];            
             handle.isDragged = false;
@@ -488,8 +489,10 @@ var AbstractHoverbox = Class.create({
             onDragHandle();
             dx = dx/editor.getWorkspace().zoomCoefficient;
             dy = dy/editor.getWorkspace().zoomCoefficient;
+            (orb.ot.length > 0) && orb.transform("");            
             orb.attr(orbAttrX, orb.ox + dx);
             orb.attr(orbAttrY, orb.oy + dy);
+            (orb.ot.length > 0) && orb.transform(orb.ot);            
             connection.oPath[1][1] = connection.ox + dx;
             connection.oPath[1][2] = connection.oy + dy;
             connection.attr("path", connection.oPath);
@@ -506,10 +509,23 @@ var AbstractHoverbox = Class.create({
             editor.getGraphicsSet().exitHoverMode();            
             
             if(handle.isDragged) {
-                var finalPosition = {};
-                finalPosition[orbAttrX] = orb.ox;
-                finalPosition[orbAttrY] = orb.oy;                
-                orb.animate(finalPosition, 1000, "elastic", function() {});
+                if (orb.ot.length == 0) {
+                    var finalPosition = {};
+                    finalPosition[orbAttrX] = orb.ox;
+                    finalPosition[orbAttrY] = orb.oy;                
+                    orb.animate(finalPosition, 1000, "elastic", function() {});
+                }
+                else {                    
+                    // animation for shapes with transformations (movement and animation via transform() could have been
+                    // used in all cases, but works noticeably slower than plain coordinate manipulation in some browsers)
+                    var dx = orb.ox - orb[0].attr(orbAttrX);
+                    var dy = orb.oy - orb[0].attr(orbAttrY);                    
+                    orb.animate( {"transform": "T" + dx + "," + dy + "R45"}, 1000, "elastic", function() { 
+                        orb.transform("");
+                        orb.attr(orbAttrX, orb.ox);
+                        orb.attr(orbAttrY, orb.oy);
+                        orb.transform(orb.ot); });
+                }
             }
                                    
             console.log("handle.isDragged: " + handle.isDragged + ", currentHover: " + curHoveredId);                       
