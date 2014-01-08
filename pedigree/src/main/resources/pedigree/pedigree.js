@@ -13,7 +13,7 @@ var PedigreeEditor = Class.create({
         window.editor = this;
 
         // initialize main data structure which holds the graph structure        
-        this._mainGraph = DynamicPositionedGraph.makeEmpty(PedigreeEditor.attributes.layoutRelativePersonWidth, PedigreeEditor.attributes.layoutRelativeOtherWidth);                
+        this._mainGraph = DynamicPositionedGraph.makeEmpty(PedigreeEditor.attributes.layoutRelativePersonWidth, PedigreeEditor.attributes.layoutRelativeOtherWidth);
 
         //initialize the elements of the app
         this._workspace = new Workspace();
@@ -44,13 +44,13 @@ var PedigreeEditor = Class.create({
         });
         var redoButton = $('action-redo');
         redoButton && redoButton.on("click", function(event) {
-            document.fire("pedigree:redo");            
+            document.fire("pedigree:redo");
         });
 
         var autolayoutButton = $('action-layout');
         autolayoutButton && autolayoutButton.on("click", function(event) {
             document.fire("pedigree:autolayout");
-        });        
+        });
         var clearButton = $('action-clear');
         clearButton && clearButton.on("click", function(event) {
             document.fire("pedigree:graph:clear");
@@ -88,7 +88,7 @@ var PedigreeEditor = Class.create({
     getNode: function(nodeID) {
         return this.getGraphicsSet().getNode(nodeID);
     },
- 
+
     /**
      * @method getGraphicsGraph
      * @return {Graph} (responsible for managing graphical representations of nodes in the editor)
@@ -102,17 +102,17 @@ var PedigreeEditor = Class.create({
      * @return {PositionedGraph} (responsible for managing nodes and their positions)
      */
     getGraph: function() {
-        return this._mainGraph;
+    	return this._mainGraph;
     },
 
     /**
      * @method getController
      * @return {Controller} (responsible for managing data changes)
-     */
+     */        
     getController: function() {
         return this._controller;
     },
-
+    
     /**
      * @method getActionStack
      * @return {ActionStack} (responsible undoing and redoing actions)
@@ -135,8 +135,8 @@ var PedigreeEditor = Class.create({
      */
     getSiblingSelectionBubble: function() {
         return this._siblingSelectionBubble;
-    },    
-    
+    },
+
     /**
      * @method getWorkspace
      * @return {Workspace}
@@ -191,7 +191,7 @@ var PedigreeEditor = Class.create({
      * @method generateNodeMenu
      * @return {NodeMenu}
      */
-    generateNodeMenu: function() {    	
+    generateNodeMenu: function() {
         var _this = this;
         return new NodeMenu([
             {
@@ -228,7 +228,7 @@ var PedigreeEditor = Class.create({
                 'label': 'Last name at birth',
                 'type' : 'text',
                 'function' : 'setLastNameAtBirth'
-            },
+            },            
             {
                 'name' : 'date_of_birth',
                 'label' : 'Date of birth',
@@ -270,7 +270,7 @@ var PedigreeEditor = Class.create({
                 ],
                 'default' : 'alive',
                 'function' : 'setLifeStatus'
-            },
+            },           
             {
                 'label' : 'Heredity options',
                 'name' : 'childlessSelect',
@@ -296,13 +296,13 @@ var PedigreeEditor = Class.create({
                 'label' : 'Monozygotic twin',
                 'type' : 'checkbox',
                 'function' : 'setMonozygotic'
-            },
+            },            
             {
                 'name' : 'placeholder',
                 'label' : 'Placeholder node',
                 'type' : 'checkbox',
                 'function' : 'makePlaceholder'
-            }
+            }          
         ]);
     },
 
@@ -320,7 +320,7 @@ var PedigreeEditor = Class.create({
      * @method generateNodeGroupMenu
      * @return {NodeMenu}
      */
-    generateNodeGroupMenu: function() {
+    generateNodeGroupMenu: function() {        
         var _this = this;
         return new NodeMenu([
             {
@@ -353,8 +353,8 @@ var PedigreeEditor = Class.create({
                 'values' : [{'actual': 1, displayed: 'N'}, {'actual': 2, displayed: '2'}, {'actual': 3, displayed: '3'},
                             {'actual': 4, displayed: '4'}, {'actual': 5, displayed: '5'}, {'actual': 6, displayed: '6'},
                             {'actual': 7, displayed: '7'}, {'actual': 8, displayed: '8'}, {'actual': 9, displayed: '9'}],                
-                'function' : 'setNumPersons'
-            },
+                'function' : 'setNumPersons'                
+            },            
             {
                 'name' : 'disorders',
                 'label' : 'Known disorders common to all individuals in the group',
@@ -372,7 +372,7 @@ var PedigreeEditor = Class.create({
                 ],
                 'default' : 'alive',
                 'function' : 'setLifeStatus'
-            },
+            },           
             {
                 'name' : 'adopted',
                 'label' : 'Adopted',
@@ -466,7 +466,7 @@ var editor;
 
 //attributes for graphical elements in the editor
 PedigreeEditor.attributes = {
-    radius: 40,    
+    radius: 40,
     personHoverBoxRadius: 90,  // 80    for old handles, 90 for new
     newHandles: true,          // false for old handles
     personHandleLength: 75,    // 60    for old handles, 75 for new
@@ -475,7 +475,7 @@ PedigreeEditor.attributes = {
     personSiblingHandleLengthX: 65,
     personSiblingHandleLengthY: 30,
     enableHandleHintImages: true,
-    handleStrokeWidth: 4,
+    handleStrokeWidth: 5,
     groupNodesScale: 0.85,
     childlessLength: 14,
     twinCommonVerticalLength: 6,

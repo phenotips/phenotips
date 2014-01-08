@@ -243,9 +243,10 @@ var Workspace = Class.create({
      * Returns the pixel value to be used in stoke-width
      */
     getSizeNormalizedToDefaultZoom: function(pixelSizeAtDefaultZoom) {
-        var zoomValue = 0.25 + this.__zoom.__crtValue;
+        return pixelSizeAtDefaultZoom;
         
-        return pixelSizeAtDefaultZoom * zoomValue / 0.75; 
+        //var zoomValue = 0.25 + this.__zoom.__crtValue;        
+        //return pixelSizeAtDefaultZoom * zoomValue / 0.75; 
     },
 
     /**

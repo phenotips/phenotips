@@ -78,7 +78,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         
         if(this.getNode().isProband()) {
             this._genderGraphics.push(this.generateProbandArrow());
-            this.getGenderShape().transform(["...s", 1.07]);
+            this.getGenderShape().transform(["...s", 1.08]);
             this.getGenderShape().attr("stroke-width", 5);
         }
         if(this.getHoverBox()) {
