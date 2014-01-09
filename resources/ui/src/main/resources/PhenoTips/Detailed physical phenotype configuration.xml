@@ -191,22 +191,25 @@
   },
   {
     "type"       : "section",
-    "title"      : "Eyes",
-    "categories" : ["HP:0000478"],
+    "title"      : "Eyelashes",
+    "categories" : ["HP:0000499"],
     "data"       : [
-      {"id": "HP:0000653", "title" : "Sparse eyelashes"},
-      {"id": "HP:0011231", "title" : "Thick eyelashes"},
-      {"id": "HP:0009743", "title" : "Distichiasis"}
+      {"id": "HP:0000561"},
+      {"id": "HP:0000653"},
+      {"id": "HP:0011231"},
+      {"id": "HP:0008496"}
     ]
   },
   {
     "type"       : "section",
-    "title"      : "Eyes",
-    "categories" : ["HP:0000478"],
+    "title"      : "Eyelids",
+    "categories" : ["HP:0000492"],
     "data"       : [
-      {"id": "HP:0000508", "title" : "Ptosis"},
+      {"id": "HP:0000506"},
+      {"id": "HP:0000508"},
+      {"id": "HP:0000286"},
+      {"id": "HP:0000537"},
       {"id": "_c_euryblepharon", "title" : "Euryblepharon"},
-      {"id": "HP:0001140", "title" : "Epibulbar dermoid"},
       {
         "type"       : "subsection",
         "title"      : "Eyelid coloboma",
@@ -222,20 +225,18 @@
     "title"      : "Eyes",
     "categories" : ["HP:0000478"],
     "data"       : [
-      {"id": "HP:0000506", "title" : "Telecanthus"},
-      {"id": "HP:0000316", "title" : "Hypertelorism"},
-      {"id": "HP:0000601", "title" : "Hypotelorism"},
-      {"id": "HP:0000582", "title" : "Upslanted PFs"},
-      {"id": "HP:0000494", "title" : "Downslanted PFs"},
-      {"id": "HP:0100876", "title" : "Infraorbital creases"},
-      {"id": "HP:0000286", "title" : "Epicanthus"},
-      {"id": "HP:0000537", "title" : "Epicanthus inversus"},
-      {"id": "HP:0000612", "title" : "Iris coloboma"},
-      {"id": "HP:0200032", "title" : "Kayser-Fleischer ring"},
-      {"id": "HP:0001088", "title" : "Brushfield spots"},
-      {"id": "HP:0000515", "title" : "Corneal clouding"},
-      {"id": "HP:0000485", "title" : "Megalocornea"},
-      {"id": "HP:0000524", "title" : "Conjunctival telangiectasia"}
+      {"id": "HP:0000316"},
+      {"id": "HP:0000601"},
+      {"id": "HP:0000582"},
+      {"id": "HP:0000494"},
+      {"id": "HP:0100876"},
+      {"id": "HP:0000612"},
+      {"id": "HP:0200032"},
+      {"id": "HP:0001088"},
+      {"id": "HP:0007759", "title" : "Corneal clouding"},
+      {"id": "HP:0000485"},
+      {"id": "HP:0001140"},
+      {"id": "HP:0000524"}
     ]
   },
   {
