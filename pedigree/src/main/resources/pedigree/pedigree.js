@@ -481,7 +481,7 @@ PedigreeEditor.attributes = {
     infertileMarkerHeight: 4,
     infertileMarkerWidth: 14,
     twinCommonVerticalLength: 6,
-    twinMonozygothicLineShiftY: 21,
+    twinMonozygothicLineShiftY: 24,
     curvedLinesCornerRadius: 25,
     unbornShape: {'font-size': 50, 'font-family': 'Cambria'},
     nodeShape:     {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},    

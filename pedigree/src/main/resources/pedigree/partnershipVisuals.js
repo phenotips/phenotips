@@ -307,6 +307,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         
         var currentTwinGroup        = null;
         var currentTwinGroupCenterX = null;
+        var currentIsMonozygothic   = false;
                 
         var numPregnancies = 0;
         
@@ -329,16 +330,20 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                     currentTwinGroupCenterX = editor.getGraphicsSet().getNode(allTwins[1]).getX();
                 editor.getGraphicsSet().drawLineWithCrossings( id, currentTwinGroupCenterX, childlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, PedigreeEditor.attributes.partnershipLines);
                 
-                // draw the mponozygothinc line, if necessary
-                if (editor.getGraphicsSet().getNode(allTwins[0]).getMonozygotic()) {
+                currentIsMonozygothic = editor.getGraphicsSet().getNode(allTwins[0]).getMonozygotic();
+                
+                // draw the monozygothinc line, if necessary
+                if (currentIsMonozygothic) {
                     var twinlineY   = childlineY+PedigreeEditor.attributes.twinMonozygothicLineShiftY;
                     var xIntercept1 = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, positionL, positionY);
                     var xIntercept2 = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, positionR, positionY);
                     editor.getGraphicsSet().drawLineWithCrossings( id, xIntercept1, twinlineY, xIntercept2, twinlineY, PedigreeEditor.attributes.partnershipLines); 
                 }
             }
-            else if (twinGroupId == null)
+            else if (twinGroupId == null) {
                 numPregnancies++;
+                currentIsMonozygothic = false;
+            }
             
             var childX = editor.getGraphicsSet().getNode(child).getX();
             var childY = editor.getGraphicsSet().getNode(child).getY();
@@ -349,10 +354,17 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             if (topLineX > rightmostX)
                 rightmostX = topLineX;
             if (topLineX < leftmostX)
-                leftmostX = topLineX;            
-            //console.log("childX: " + childX);
+                leftmostX = topLineX;
 
-            editor.getGraphicsSet().drawLineWithCrossings( id, topLineX, topLineY, childX, childY, PedigreeEditor.attributes.partnershipLines);
+            // draw regular child line - for all nodes which ar enot monozygothic twins and for the
+            // rightmost and leftmost monozygothic twin
+            if (!currentIsMonozygothic || childX == positionL || childX == positionR ) { 
+                editor.getGraphicsSet().drawLineWithCrossings( id, topLineX, topLineY, childX, childY, PedigreeEditor.attributes.partnershipLines);
+            }
+            else {                
+                var xIntercept = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, childX, childY);
+                editor.getGraphicsSet().drawLineWithCrossings( id, xIntercept, twinlineY, childX, childY, PedigreeEditor.attributes.partnershipLines);
+            }
         }
 
         editor.getGraphicsSet().drawLineWithCrossings( id, leftmostX, childlineY, rightmostX, childlineY, PedigreeEditor.attributes.partnershipLines);        
