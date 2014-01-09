@@ -106,7 +106,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   #end
   #foreach ($group in $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
     #if ($group.getObject('PhenoTips.PhenoTipsGroupClass'))
-      #set ($discard = $groups.add($group.documentReference.toString()))
+      #set ($discard = $groups.add($escapetool.sql($group.documentReference.toString())))
     #end
   #end
   #set ($groups = "('${stringtool.join($groups, ""','"")}')")

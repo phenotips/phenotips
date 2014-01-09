@@ -2743,14 +2743,13 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
 #set ($groups = [])
 #foreach ($group in $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
   #if ($group.getObject('PhenoTips.PhenoTipsGroupClass'))
-    #set ($discard = $groups.add($group.documentReference.toString()))
-    #set ($discard = $groupsAndSelf.add($group.documentReference.toString()))
-    #set ($paramsMarker = $groups.add($group.documentReference.toString()))
+    #set ($discard = $groups.add($escapetool.sql($group.documentReference.toString())))
+    #set ($discard = $groupsAndSelf.add($escapetool.sql($group.documentReference.toString())))
   #end
 #end
 #set ($groupsString = "('${stringtool.join($groups, ""','"")}')")
-#set ($query = "from BaseObject accessObj, StringProperty accessProp, BaseObject patientObj where patientObj.name = doc.fullName and doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and patientObj.className = 'PhenoTips.PatientClass' and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and ((accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ('${stringtool.join($groups, ""','"")}')) or (accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}')))")
-#set ($availableData = $services.query.xwql($query).count())
+#set ($query = ", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj where patientObj.name = doc.fullName and doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and patientObj.className = 'PhenoTips.PatientClass' and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and ((accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ('${stringtool.join($groups, ""','"")}')) or (accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}')))")
+#set ($availableData = $services.query.hql($query).count())
 #if ($availableData &gt; 0)
 $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
 $xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
