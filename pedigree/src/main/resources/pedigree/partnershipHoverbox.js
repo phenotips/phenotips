@@ -126,8 +126,12 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
             }
         }
         else if (!isDrag && handleType == "child") {
-            var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.partnershipHandleLength + 15));            
-            editor.getSiblingSelectionBubble().show(this.getNode(), position.x, position.y);
+            var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.partnershipHandleLength + 15));
+            var canBeChildless = !editor.getGraph().hasNonPlaceholderNonAdoptedChildren(this.getNode().getID());
+            if (canBeChildless)
+                editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
+            else
+                editor.getSiblingSelectionBubble().show(this.getNode(), position.x, position.y);
             // if user selects anything the bubble will fire an even on its own
         }
         this.animateHideHoverZone();        

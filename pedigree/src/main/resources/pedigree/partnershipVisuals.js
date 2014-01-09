@@ -276,7 +276,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 editor.getGraphicsSet().drawCurvedLineWithCrossings( id, xFrom, yFrom, yTop, xTo, finalYTo, lastBend, lineAttr, consangr, goesLeft );
         }
         
-        this._partnerConnections = editor.getPaper().setFinish();
+        this._partnerConnections = editor.getPaper().setFinish().toBack();
     },
 
     /**
