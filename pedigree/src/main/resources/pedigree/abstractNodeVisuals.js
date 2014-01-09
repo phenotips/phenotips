@@ -225,7 +225,7 @@ var ChildlessBehaviorVisuals = {
 	        if(status == 'infertile')
 	            childlessPath.push(["M", x - r, lowY + 5], ["l", 2 * r, 0]);
 
-	        var strokeWidth = 2; //editor.getWorkspace().getSizeNormalizedToDefaultZoom(2);
+	        var strokeWidth = 2.5; //editor.getWorkspace().getSizeNormalizedToDefaultZoom(2);
             this._childlessShape = editor.getPaper().path(childlessPath);
             this._childlessShape.attr({"stroke-width": strokeWidth, stroke: "#3C3C3C"});
             this._childlessShape.toBack();            

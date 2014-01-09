@@ -459,7 +459,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         var labels = this.getLabels();
         var selectionOffset = this._labelSelectionOffset();
         var childlessOffset = this.getChildlessStatusLabel() ? PedigreeEditor.attributes.label['font-size'] : 0;
-        childlessOffset += ((this.getNode().getChildlessStatus() == 'infertile') ? (PedigreeEditor.attributes.infertileMarkerHeight) : 0);
+        childlessOffset += ((this.getNode().getChildlessStatus() !== null) ? (PedigreeEditor.attributes.infertileMarkerHeight + 2) : 0);
                     
         var lowerBound = PedigreeEditor.attributes.radius * (this.getNode().isPersonGroup() ? PedigreeEditor.attributes.groupNodesScale : 1.0);
         var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset;
