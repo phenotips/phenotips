@@ -99,7 +99,10 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   'topFilters'        : $topFilters,
   'resultPage'        : 'PhenoTips.LiveTableResults'
 })
-#if (!$hasAdmin)
+#if ($isGuest)
+  #set ($filterWhere = "and doc.creator = 'XWiki.XWikiGuest' and not exists (from BaseObject accessObj where accessObj.name = doc.fullName and accessObj.className = 'PhenoTips.OwnerClass')")
+  #set ($discard = $options.put('extraParams', "&amp;filterWhere=${escapetool.url($filterWhere)}"))
+#elseif (!$hasAdmin)
   #set ($groups = [])
   #if ($xcontext.userReference)
     #set ($discard = $groups.add($xcontext.userReference))

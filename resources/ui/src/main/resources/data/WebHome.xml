@@ -2621,8 +2621,11 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
     <guid>1662b049-1db2-42d1-8093-8cfcace7069c</guid>
     <property>
       <content>{{velocity}}
-#if (!$isGuest)
+#if ($isGuest)
+#set ($availableData = $services.query.hql(", BaseObject pat where pat.name = doc.fullName and doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and pat.className = 'PhenoTips.PatientClass' and doc.creator = 'XWiki.XWikiGuest' and not exists (from BaseObject accessObj where accessObj.name = doc.fullName and accessObj.className = 'PhenoTips.OwnerClass')").count())
+#else
 #set ($availableData = $services.query.hql(", BaseObject pat where pat.name = doc.fullName and doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and pat.className = 'PhenoTips.PatientClass' and (doc.creator in (:o, :os) and (not exists (from BaseObject own where own.className = 'PhenoTips.OwnerClass' and own.name = doc.fullName)) or exists (from BaseObject own, StringProperty owner where own.className = 'PhenoTips.OwnerClass' and own.name = doc.fullName and owner.id.id = own.id and owner.value = :o))").bindValue('o', $xcontext.userReference.toString()).bindValue('os', $services.model.serialize($xcontext.userReference, 'compactwiki')).count())
+#end
 #if ($availableData &gt; 0)
 $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
 $xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
@@ -2658,9 +2661,13 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   'defaultOrder'      : 'asc',
   'resultPage'        : 'PhenoTips.LiveTableResults'
 })
-#set ($o = $services.model.serialize($xcontext.userReference, 'default'))
-#set ($os = $services.model.serialize($xcontext.userReference, 'compactwiki'))
-#set ($filterWhere = "and (doc.creator in ('${o}', '${os}') and (not exists (from BaseObject own where own.className = 'PhenoTips.OwnerClass' and own.name = doc.fullName)) or exists (from BaseObject own, StringProperty owner where own.className = 'PhenoTips.OwnerClass' and own.name = doc.fullName and owner.id.id = own.id and owner.value = '${o}'))")
+#if ($isGuest)
+  #set ($filterWhere = "and doc.creator = 'XWiki.XWikiGuest' and not exists (from BaseObject accessObj where accessObj.name = doc.fullName and accessObj.className = 'PhenoTips.OwnerClass')")
+#else
+  #set ($o = $services.model.serialize($xcontext.userReference, 'default'))
+  #set ($os = $services.model.serialize($xcontext.userReference, 'compactwiki'))
+  #set ($filterWhere = "and (doc.creator in ('${o}', '${os}') and (not exists (from BaseObject own where own.className = 'PhenoTips.OwnerClass' and own.name = doc.fullName)) or exists (from BaseObject own, StringProperty owner where own.className = 'PhenoTips.OwnerClass' and own.name = doc.fullName and owner.id.id = own.id and owner.value = '${o}'))")
+#end
 #set ($discard = $options.put('extraParams', "&amp;filterWhere=${escapetool.url($filterWhere)}"))
 #if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
   #set ($options.rowCount = $config.getProperty('livetableRows').value)
@@ -2672,7 +2679,6 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
 #end
 #else
 {{info}}You are not the owner of any data.{{/info}}
-#end
 #end
 {{/velocity}}</content>
     </property>
@@ -2804,6 +2810,8 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
 #else
 {{info}}No data has been shared with you.{{/info}}
 #end
+#else
+{{info}}No data has been shared with you.{{/info}}
 #end
 {{/velocity}}</content>
     </property>
