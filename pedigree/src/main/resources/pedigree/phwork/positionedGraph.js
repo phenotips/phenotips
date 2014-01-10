@@ -738,7 +738,11 @@ PositionedGraph.prototype = {
                     var rel = outEdges[j];
                     replaceInArray(this.GG.inedges[rel], twin, v);
                     this.GG.v[v].push(rel);
-                    this.GG.weights[v][rel] = this.GG.weights[twin][rel];
+                    // need to keep in mind the special case of two twins in a relationship
+                    if (this.GG.weights[v].hasOwnProperty(rel))
+                        this.GG.weights[v][rel] += this.GG.weights[twin][rel];    // sum the weights
+                    else
+                        this.GG.weights[v][rel] = this.GG.weights[twin][rel];     // use the other twin's weight
                 }
                 // 4
                 disconnectedTwins[v].push(twin);
@@ -786,7 +790,15 @@ PositionedGraph.prototype = {
                         var rel = outEdges[j];
                         removeFirstOccurrenceByValue(this.GG.inedges[rel], v);
                         removeFirstOccurrenceByValue(this.GG.v[v], rel);
-                        delete this.GG.weights[v][rel];
+
+                        // need to keep in mind the spcial case of two twins in a relationship; if
+                        // there is no relationship => weight[v][rel] == weight[twin][rel]
+                        if (this.GG.weights[v][rel] == this.GG.weights[twin][rel])
+                            delete this.GG.weights[v][rel];
+                        else
+                            // otherwise it is twice as big and need to cut in half to get back to original value
+                            this.GG.weights[v][rel] -= this.GG.weights[twin][rel];
+
                         this.GG.inedges[rel].push(twin);
                     }
                     //2
@@ -2523,6 +2535,7 @@ PositionedGraph.prototype = {
                     //if (mostCompact) thisScore *= dist;  // place higher value on shorter edges
 
                     score.add(thisScore);
+
                     score.addEdge(v, u, dist);
                 }
             }
@@ -2587,6 +2600,9 @@ PositionedGraph.prototype = {
 
                 var median = this.compute_median(v, xcoord, considerEdgesFromAbove, considerEdgesToBelow);
 
+                //if (v == 28)
+                //    console.log("[28] median: " + median);
+
                 if (median != median)
                     median = xcoord.xcoord[v];
 
@@ -2597,7 +2613,7 @@ PositionedGraph.prototype = {
                 var noDisturbMax = xcoord.getRightMostNoDisturbPosition(v);
                 var maxSafeShift = (noDisturbMax < median) ? noDisturbMax - xcoord.xcoord[v] : maxShift;
 
-                //if (v==31 || v == 32)
+                //if (v==28)
                 //    console.log("shiftright-rank-" + r + "-v-" + v + "  -->  DesiredShift: " + maxShift + ", maxSafe: " + maxSafeShift);
 
                 if (maxShift <= 0) continue;
@@ -2606,6 +2622,8 @@ PositionedGraph.prototype = {
                 var bestScore = this.xcoord_score(xcoord, r, considerEdgesFromAbove, considerEdgesToBelow, i);
                 var shiftAmount = maxShift;
 
+                //if (v==28)
+                //    console.log("InitScore: " + stringifyObject(bestScore));
                 //if ( r == 7 ) this.displayGraph( xcoord.xcoord, "shiftright-rank-" + r + "-v-" + v + "(before)");
 
                 do

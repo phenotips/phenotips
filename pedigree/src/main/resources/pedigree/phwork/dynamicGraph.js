@@ -2121,9 +2121,8 @@ Heuristics.prototype = {
                 modified = true;
             }
         }
-        if (modified)
-            this.DG.vertLevel = this.DG.positionVertically();
-
+        //if (modified)
+        //    this.DG.vertLevel = this.DG.positionVertically();
 
         // 2) fix some common layout imperfections
         var xcoord = new XCoord(this.DG.positions, this.DG);
@@ -2366,6 +2365,8 @@ Heuristics.prototype = {
         //xcoord.normalize();
 
         this.DG.positions = xcoord.xcoord;
+
+        this.DG.vertLevel = this.DG.positionVertically();
     },
 
 
