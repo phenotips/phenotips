@@ -49,7 +49,7 @@
 #if ($request.getParameter('eid') &amp;&amp; $request.getParameter('id'))
   #set ($externalIdentifier = "$!{request.eid}")
   #set ($identifier = "$!{request.id}")
-  #if ($externalIdentifier == $xwiki.getDocument($identifier).getObject('PhenoTips.PatientClass').getProperty('external_id').value)
+  #if ($externalIdentifier == $xwiki.getDocument($services.model.resolveDocument($identifier, $services.model.resolveSpace('data'))).getObject('PhenoTips.PatientClass').getProperty('external_id').value)
     Self
     #break
   #end
