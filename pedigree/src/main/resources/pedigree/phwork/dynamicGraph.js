@@ -1498,26 +1498,28 @@ DynamicPositionedGraph.prototype = {
         var isTwin = (this.DG.GG.getTwinGroupId(v) != null);
         var vOrder = this.DG.order.vOrder[v];
 
+        var penaltyBelow    = [];
+        var penaltySameRank = [];        
+        for (var o = 0; o <= orderR.length; o++) {
+            penaltyBelow[o]    = 0;
+            penaltySameRank[o] = 0;
+        }
+        
         // for each order on "rank" compute heuristic penalty for inserting a node before that order
-        // based on the structure of nodes below
-        var penaltyBelow = [0];
+        // based on the structure of nodes below            
         for (var o = 0; o < orderR.length; o++) {
-            penaltyBelow[o+1] = 0;
-
             var node = orderR[o];
             if (!this.isRelationship(node)) continue;
             var childrenInfo = this._heuristics.analizeChildren(node);
 
-            if (childrenInfo.leftMostHasLParner)  penaltyBelow[o]   += 1;
-            if (childrenInfo.rightMostHasRParner) penaltyBelow[o+1] += 1;
+            // TODO: do a complete analysis without any heuristics
+            if (childrenInfo.leftMostHasLParner)  { penaltyBelow[o]   += 1; penaltyBelow[o-1] += 0.25; }   // 0.25 is just a heuristic estimation of how busy the level below is. 
+            if (childrenInfo.rightMostHasRParner) { penaltyBelow[o+1] += 1; penaltyBelow[o+2] += 0.25; } 
         }
 
         // for each order on "rank" compute heuristic penalty for inserting a node before that order
         // based on the edges on that rank
-        var penaltySameRank = [0];
-        for (var o = 0; o < orderR.length; o++) {
-            penaltySameRank[o+1] = 0;
-
+        for (var o = 0; o < orderR.length; o++) {            
             var node = orderR[o];
             if (!this.isRelationship(node)) continue;
 
@@ -1527,7 +1529,7 @@ DynamicPositionedGraph.prototype = {
 
             for (var p = 0; p < parents.length; p++) {
                 var parent = parents[p];
-                if (parent != v && this.DG.ranks[parent] == rank) {
+                if (parent != v && this.DG.ranks[parent] == rank && parent != u) {
                     var parentOrder = this.DG.order.vOrder[parent];
 
                     var from = (parentOrder > relOrder) ? relOrder + 1 : parentOrder + 1;
@@ -1600,7 +1602,7 @@ DynamicPositionedGraph.prototype = {
                     penalty += numRightOf + (o - vOrder - 1);   // o == (order+1) => insert immediately to the right of, distance penalty = 0
                 }
 
-                console.log("order: " + o + ", penalty: " + penalty);
+                //console.log("order: " + o + ", penalty: " + penalty);
                 if (penalty < bestPenalty) {
                     bestPenalty  = penalty;
                     bestPosition = o;
@@ -1641,6 +1643,8 @@ DynamicPositionedGraph.prototype = {
                 if (o > this.DG.order.vOrder[partner]) penalty++;
             }
 
+            //console.log("order: " + o + ", penalty: " + penalty);
+            
             if (penalty < bestPenalty) {
                 bestPenalty  = penalty;
                 bestPosition = o;
@@ -2123,7 +2127,7 @@ Heuristics.prototype = {
         }
         //if (modified)
         //    this.DG.vertLevel = this.DG.positionVertically();
-
+        
         // 2) fix some common layout imperfections
         var xcoord = new XCoord(this.DG.positions, this.DG);
 
@@ -2157,7 +2161,7 @@ Heuristics.prototype = {
                 }
             }
         }
-
+        
         var iter = 0;
         var improved = true;
         while (improved && iter < 100) {
@@ -2251,16 +2255,24 @@ Heuristics.prototype = {
                 }
 
                 if (needShiftParents == 0) continue;
-
+                
                 //console.log("v = " + v + ", needShiftParents = " + needShiftParents);
 
                 if (needShiftParents < 0) { // need to shift childhub + relationship + one parent to the left
                     var parent  = (xcoord.xcoord[parents[0]] < xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
-                    if (this.DG.GG.getInEdges(parent).length != 0) continue;
-                    var willShift = Math.min(xcoord.getSlackOnTheLeft(childhub), xcoord.getSlackOnTheLeft(parent), -needShiftParents);
+                    
+                    // if relationship node and parent node ar enext to each other we can move them together, and
+                    // only need to check that parent has enough slack (rel will move after the parent is moved
+                    // Otherwise can only move the relationship node
+                    var nodeToCheckNeighbours =  (this.DG.order.vOrder[parent] == this.DG.order.vOrder[v] - 1) ? parent : v;                     
+                    if (nodeToCheckNeighbours == parent)
+                        if (this.DG.GG.getInEdges(parent).length != 0) continue;
+                    
+                    var willShift = Math.min(xcoord.getSlackOnTheLeft(childhub), xcoord.getSlackOnTheLeft(nodeToCheckNeighbours), -needShiftParents);
                     improved = improved || (willShift != 0);
-                    //console.log("will shift " + parent + " by " + willShift);
-                    xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   - willShift);
+                    //console.log("[L] will shift " + parent + " by " + willShift);
+                    if (nodeToCheckNeighbours == parent)
+                        xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   - willShift);
                     xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        - willShift);
                     xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] - willShift);
                     var parent2 = (parent == parents[0]) ? parents[1] : parents[0];
@@ -2269,11 +2281,16 @@ Heuristics.prototype = {
                 }
                 else {
                     var parent = (xcoord.xcoord[parents[0]] > xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
-                    if (this.DG.GG.getInEdges(parent).length != 0) continue;
-                    var willShift = Math.min(xcoord.getSlackOnTheRight(childhub), xcoord.getSlackOnTheRight(parent), needShiftParents);
+                    
+                    var nodeToCheckNeighbours = (this.DG.order.vOrder[parent] == this.DG.order.vOrder[v] + 1) ? parent : v;
+                    if (nodeToCheckNeighbours == parent)
+                        if (this.DG.GG.getInEdges(parent).length != 0) continue;
+                    
+                    var willShift = Math.min(xcoord.getSlackOnTheRight(childhub), xcoord.getSlackOnTheRight(nodeToCheckNeighbours), needShiftParents);
                     improved = improved || (willShift != 0);
-                    //console.log("will shift " + parent + " by " + willShift);
-                    xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   + willShift);
+                    //console.log("[R] will shift " + parent + " by " + willShift);
+                    if (nodeToCheckNeighbours == parent)
+                        xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   + willShift);
                     xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        + willShift);
                     xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] + willShift);
                     var parent2 = (parent == parents[0]) ? parents[1] : parents[0];
@@ -2283,7 +2300,7 @@ Heuristics.prototype = {
                 //----------------------------------------------------------------
             }
         }
-
+        
         // 2D) check if there is any extra whitespace in the graph, e.g. if a subgraph can be
         //     moved closer to the rest of the graph by shortening some edges (this may be
         //     the case after some imperfect insertion heuristics move stuff too far).
