@@ -1394,6 +1394,9 @@ PositionedGraph.prototype = {
             }
         }
 
+        if (crossings > 0 && this.GG.isPerson(v) && this.GG.isVirtual(targetV))       // we prefer long edges to cross other edges at the point they originate from
+            crossings -= 0.1;
+
         return crossings;
     },
 
@@ -1557,7 +1560,6 @@ PositionedGraph.prototype = {
 
             for (var r = 1; r <= this.maxRank; r++)
             {
-                try {
                 var v0 = order.order[r][0];
                 var GG = this.GG;
                 if (this.GG.isChildhub(v0)) {
@@ -1574,10 +1576,6 @@ PositionedGraph.prototype = {
 
                     continue;
                 }
-                } catch(err)
-                {
-                    console.log("Err: " + err);
-                }
 
                 var numEdgeCrossings = this.edge_crossing(order, r);
 
@@ -1593,8 +1591,8 @@ PositionedGraph.prototype = {
                     var v1 = order.order[r][i];
                     var v2 = order.order[r][i+1];
 
-                    //if (v1 == 12 && v2 == 20)
-                    //if (!doMinorImprovements)
+                    //if (v1 == 23 && v2 == 20)
+                    //if (doMinorImprovements)
                     //    console.log("trying: " + v1 + "  <-> " + v2);
 
                     order.exchange(r, i, i+1);
@@ -1721,6 +1719,10 @@ PositionedGraph.prototype = {
                                     bestScore = newCross;
                                     bestOrder = [rank1, ord1, move1, rank2, ord2, move2, rank3, ord3, move3];
                                 }
+
+                                //if (move1 == 1 && move2 == 0 && move3 == 0)
+                                //    console.log("New Score: " + newCross + ", best: " + bestScore );
+
                             }
                         }
                     }
@@ -1754,23 +1756,33 @@ PositionedGraph.prototype = {
         //        (see removeRelationshipRanks())
 
         //console.log("GG: "  + stringifyObject(this.GG));
+        console.log("Orders: " + stringifyObject(this.order));
 
         if (this.maxRank === undefined || this.GG.v.length == 0) return;
 
         var handled = {};
 
-        // pass1: simple cases: parents are next to each other.
-        //        looks better when all such cases are processed before more complicated cases
-        //        (otherwise in case of say 3 relationship nodes may end up with two
-        //         ugly placements (#2 and #3) instead of one (#2) when #2 becomes ugly)
-        for (var i = 0; i < this.GG.getNumVertices(); i++) {
-            if (this.GG.isRelationship(i)) {
+        var initialOrdering = this.order.copy();
+
+        for (var r = 2; r <= this.maxRank; r+=3) {
+
+            // pass1: simple cases: parents are next to each other.
+            //        looks better when all such cases are processed before more complicated cases
+            //        (otherwise in case of say 3 relationship nodes may end up with two
+            //         ugly placements (#2 and #3) instead of only one (#2) when #2 becomes ugly)
+            for (var oo = 0; oo < initialOrdering.order[r].length; oo++) {
+                var i = initialOrdering.order[r][oo];   // i is the relationship ID
+                if (this.GG.isVirtual(i)) continue;
+                if (!this.GG.isRelationship(i)) throw "[1] Unexpected node " +i + " at rank " + r;
+
+                console.log("==> [1] Handling: " + i);
+
     		    var parents = this.GG.getInEdges(i);
 
                 // note: each "relationship" node is guaranteed to have exactly two "parent" nodes (validate() checks that)
 
-		        if (this.ranks[parent[0]] != this.ranks[parent[1]])
-		            throw "Assertion failed: edges betwen neighbouring ranks only";
+	            if (this.ranks[parent[0]] != this.ranks[parent[1]])
+	                throw "Assertion failed: edges betwen neighbouring ranks only";
 
                 var order1 = this.order.vOrder[parents[0]];
                 var order2 = this.order.vOrder[parents[1]];
@@ -1780,19 +1792,22 @@ PositionedGraph.prototype = {
 
                 // if parents are next to each other in the ordering
                 if ( maxOrder == minOrder + 1 ) {
-                    //console.log("=== is relationship: " + i + ", minOrder: " + minOrder + ", maxOrder: " + maxOrder );
+                    console.log("=== is relationship: " + i + ", minOrder: " + minOrder + ", maxOrder: " + maxOrder );
                     this.moveVertexToRankAndOrder( i, this.ranks[parents[0]], maxOrder );
                     handled[i] = true;
                 }
             }
-        }
 
-        // pass2: parents are not next to each other on the same rank
-        for (var i = 0; i < this.GG.getNumVertices(); i++) {
-            if (this.GG.isRelationship(i)) {
+            // pass2: parents are not next to each other on the same rank
+            for (var oo = 0; oo < initialOrdering.order[r].length; oo++) {
+                var i = initialOrdering.order[r][oo];   // i is the relationship ID
+                if (this.GG.isVirtual(i)) continue;
+                if (!this.GG.isRelationship(i)) throw "[2] Unexpected node " +i + " at rank " + r;
 
                 if ( handled.hasOwnProperty(i) )
                     continue; // this node has already been handled
+
+                console.log("==> [2] Handling: " + i);
 
                 var parents = this.GG.getInEdges(i);
 
@@ -1811,13 +1826,13 @@ PositionedGraph.prototype = {
                 //      - try not to get inbetween well-placed relationships
                 //      - count edge crossings (TODO)
 
-                var insertOrder = null;
-
                 var order1 = this.order.vOrder[parents[0]];
                 var order2 = this.order.vOrder[parents[1]];
 
                 if (order2 == order1 + 1)
-                    throw "Assertion failed: all relationship with parents next to each other are already handled";
+                    throw "Assertion failed: all relationship with parents next to each other are already handled (for parents: " + stringifyObject(parents) + ")";
+
+                var insertOrder = order1 + 1;   // set some default in case all other heuroistics fail
 
                 var rightOfParent0 = this.order.order[rank][order1+1];
                 var leftOfParent1  = this.order.order[rank][order2-1];
@@ -1866,18 +1881,54 @@ PositionedGraph.prototype = {
                 }
                 //console.log("=== is relationship: " + i + ", insertOrder: " + insertOrder );
 
+                console.log("==> inserting: " + i + " on order " + insertOrder + " (after " + this.order.order[rank][insertOrder-1] + " and before " + this.order.order[rank][insertOrder] + ")");
                 this.moveVertexToRankAndOrder( i, rank, insertOrder );
+
+                //-----
+                // fix the problem described in issue #664
+                var oldOrder = initialOrdering.vOrder[i];
+                if (oldOrder > 0) {
+                    var oldNeighbourLeft = initialOrdering.order[r][oldOrder-1];
+                    if (this.GG.isRelationship(oldNeighbourLeft) && this.order.vOrder[oldNeighbourLeft] > this.order.vOrder[i] && this.ranks[oldNeighbourLeft] == this.ranks[i]) {
+                        console.log("L: " + oldNeighbourLeft);
+                        // fix the case when two relationships switched order during re-ranking - we may want to change the order of children as well
+                        this.swapChildrenIfAllAToTheLeftOfB( oldNeighbourLeft, i );
+
+                        // TODO: remove
+                        // Also make sure childhubs are in the correct order
+                        var chHubL = this.GG.getOutEdges(oldNeighbourLeft)[0];
+                        var chHubR = this.GG.getOutEdges(i)[0];
+                        if (this.order.vOrder[chHubL] < this.order.vOrder[chHubR])
+                            this.order.exchange(this.ranks[chHubL], this.order.vOrder[chHubL], this.order.vOrder[chHubR]);
+                    }
+                }
+                if (oldOrder < initialOrdering.order[rank+1].length - 1) {
+                    var oldNeighbourRight = initialOrdering.order[r][oldOrder+1];
+                    if (this.GG.isRelationship(oldNeighbourRight) && this.order.vOrder[oldNeighbourRight] < this.order.vOrder[i] && this.ranks[oldNeighbourRight] == this.ranks[i]) {
+                        console.log("R: " + oldNeighbourRight);
+                        // same as above, but switch right-to-left instead of left-to-right
+                        this.swapChildrenIfAllAToTheLeftOfB( i, oldNeighbourRight );
+
+                        // TODO: remove
+                        // Also make sure childhubs are in the correct order
+                        var chHubL = this.GG.getOutEdges(i)[0];
+                        var chHubR = this.GG.getOutEdges(oldNeighbourRight)[0];
+                        if (this.order.vOrder[chHubL] < this.order.vOrder[chHubR])
+                            this.order.exchange(this.ranks[chHubL], this.order.vOrder[chHubL], this.order.vOrder[chHubR]);
+                    }
+                }
+                //-----
             }
         }
 
         this.removeRelationshipRanks();
 
-        // TODO
+        // TODO: come up with heuristics which can be applied at this poinbt
         // after re-ranking there may be some orderings which are equivalent in terms
         // of the number of edge crossings, but more or less visually pleasing
         // depending on what kinds of edges are crossing.
         // Until re-ordering is done it is computationally harder to make these tests,
-        // but once reordering is complete it is easy
+        // but once reordering is complete it is easier in some cases
         // (e.g: testcase 5A, relationship with both a parent and parent's child)
         //this.improveOrdering();
 
@@ -1895,6 +1946,75 @@ PositionedGraph.prototype = {
 
         this.order.moveVertexToRankAndOrder( oldRank, oldOrder, newRank, newOrder );
         this.ranks[v] = newRank;
+    },
+
+    swapChildrenIfAllAToTheLeftOfB: function ( leftRel, rightRel ) {
+        // we assume that during re-ordering relationship `leftRel` which used ot be to the left or relationship `rightRel`
+        // is now to the right of `rightRel`. This may have introduced some unnecessary crossed edges. Fix those by swapping
+        // the order of relationship children as well, if it clearly wont break other things, e.g.
+        // - if there are no nodes which are not children of `leftRel` of `rightRel` between the leftmost and rightmost child of either leftR or rightR
+        // - all children of `leftRel` are to the left of all children of `rightRel`
+        // - there are no relationships between `leftRel` children and any nodes to the left of `leftRel` OR on any other rank
+        // - there are no relationships between `rightRel` children and any nodes to the right of `rightRel` OR on any other rank
+        console.log("Attempting to swap children of " + leftRel + " and " + rightRel + " (due to change of order during re-ranking)");
+
+        var chHubL = this.GG.getOutEdges(leftRel)[0];
+        var chHubR = this.GG.getOutEdges(rightRel)[0];
+
+        var childrenL   = this.GG.getOutEdges(chHubL);
+        var childrenR   = this.GG.getOutEdges(chHubR);
+        var allChildren = childrenL.concat(childrenR);
+
+        var order   = this.order;
+        var byOrder = function(a,b) { return order.vOrder[a] - order.vOrder[b]; }
+        allChildren.sort(byOrder);
+        console.log("all children sorted by order: " + stringifyObject(allChildren));
+
+        var childRank = this.ranks[allChildren[0]];
+
+        var leftMostOrder  = order.vOrder[allChildren[0]];
+        var rightMostOrder = order.vOrder[allChildren[allChildren.length-1]];
+        // we only swap orders if there are no other nodes inbetween the children of leftRel and rightRel
+        if (rightMostOrder - leftMostOrder + 1 != childrenL.length + childrenR.length) return;
+
+        for (var i = 0; i < allChildren.length; i++) {
+            var nextInOrder = allChildren[i];
+
+            var shouldBeLeftRelChild = (i < childrenL.length);
+
+            if (shouldBeLeftRelChild && this.GG.getInEdges(nextInOrder)[0] != chHubL)    // a child of `rightRel` must be to the left of one of the children of `leftRel` => quit
+                return;
+
+            // makre sure there are no relationships which will resulty in extra edge crossings if we swap order of children
+            var outEdges = this.GG.getOutEdges(nextInOrder);
+            if (outEdges.length > 0) {
+                for (var j = 0; j < outEdges.length; j++) {
+                    var rel     = outEdges[j];
+                    var parents = this.GG.getParents(rel);
+
+                    for (var k = 0; k < parents.length; k++) {
+                        if (this.ranks[parents[k]] != childRank) return;   // relationship with a node on another rank - no swaps
+
+                        if (shouldBeLeftRelChild && order.vOrder[parents[k]] < leftMostOrder) return;    // leftRel children in relationship with nodes to the left
+                                                                                                         // ->after swap there will be many crossed edges
+                        if (!shouldBeLeftRelChild && order.vOrder[parents[k]] > rightMostOrder) return;  // rightRel children in rel. with nodes to the right
+                    }
+                }
+            }
+        }
+
+        // swap by inverting the order
+        console.log("Performing swap");
+        var middle = Math.floor((leftMostOrder + rightMostOrder)/2);
+
+        for (var i = leftMostOrder; i <= middle; i++) {
+            var tmp = this.order.order[childRank][i];
+            this.order.order[childRank][i] = this.order.order[childRank][leftMostOrder + rightMostOrder - i];
+            this.order.order[childRank][leftMostOrder + rightMostOrder - i] = tmp;
+
+            this.order.vOrder[this.order.order[childRank][i]]                = i;
+            this.order.vOrder[this.order.order[childRank][leftMostOrder + rightMostOrder-i]] = leftMostOrder + rightMostOrder - i;
+        }
     },
 
     removeRelationshipRanks: function () {
