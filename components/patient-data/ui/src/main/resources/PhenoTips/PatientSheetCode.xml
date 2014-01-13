@@ -3998,12 +3998,14 @@ h1, h2, h3, h4 {
   border-bottom: 1px solid $theme.linkColor;
   ####color: $theme.linkColor;
   border-bottom: 1px solid $theme.titleColor;
-  cursor: pointer;
+  cursor: default;
   font-family: Georgia,serif;
   font-size: 1.5em;
   margin: -1.5em -10px 0;
   padding-left: 10px;
-
+}
+.editbody .chapter h2 {
+  cursor: pointer;
 }
 .chapter h2+.hint {
   margin: 1em 0;
