@@ -86,3 +86,10 @@ nbproject
 /pedigree/src/main/resources/pedigree/out/index.html
 /pedigree/src/main/resources/pedigree/out/modules/index.html
 /hardlinks.sh
+
+#Other. Personal.
+NOTES.txt
+*~
+
+#Weird build
+distribution/solr-war/overlays
