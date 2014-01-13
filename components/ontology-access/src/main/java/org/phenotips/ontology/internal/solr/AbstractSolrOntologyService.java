@@ -142,9 +142,15 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     @Override
     public Set<OntologyTerm> search(Map<String, ?> fieldValues)
     {
+        return search(fieldValues, null);
+    }
+
+    @Override
+    public Set<OntologyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
+    {
         Set<OntologyTerm> result = new HashSet<OntologyTerm>();
         for (SolrDocument doc : this
-            .search(SolrQueryUtils.transformQueryToSolrParams(generateLuceneQuery(fieldValues)))) {
+            .search(SolrQueryUtils.transformQueryToSolrParams(generateLuceneQuery(fieldValues)), queryOptions)) {
             result.add(new SolrOntologyTerm(doc, this));
         }
         return result;
@@ -193,8 +199,22 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
      */
     protected SolrDocumentList search(SolrParams params)
     {
+        return search(params, null);
+    }
+
+    /**
+     * Perform a search, falling back on the suggested spellchecked query if the original query fails to return any
+     * results.
+     * 
+     * @param params the Solr parameters to use, should contain at least a value for the "q" parameter
+     * @param queryOptions extra options to include in the query; these override the default values, but don't override
+     *            values already set in the query
+     * @return the list of matching documents, empty if there are no matching terms
+     */
+    protected SolrDocumentList search(SolrParams params, Map<String, String> queryOptions)
+    {
         try {
-            SolrParams enhancedParams = SolrQueryUtils.enhanceParams(params);
+            SolrParams enhancedParams = SolrQueryUtils.enhanceParams(params, queryOptions);
             QueryResponse response = this.server.query(enhancedParams);
             SolrDocumentList results = response.getResults();
             if (response.getSpellCheckResponse() != null && !response.getSpellCheckResponse().isCorrectlySpelled()
@@ -260,7 +280,12 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
                     query.append(' ');
                 }
             } else {
-                query.append(ClientUtils.escapeQueryChars(String.valueOf(field.getValue())));
+                String value = String.valueOf(field.getValue());
+                if ("*".equals(value)) {
+                    query.append(value);
+                } else {
+                    query.append(ClientUtils.escapeQueryChars(value));
+                }
             }
             query.append(')');
         }

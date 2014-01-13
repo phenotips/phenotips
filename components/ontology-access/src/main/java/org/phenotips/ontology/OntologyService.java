@@ -64,6 +64,18 @@ public interface OntologyService
     Set<OntologyTerm> search(Map<String, ?> fieldValues);
 
     /**
+     * Generic search method, which looks for terms that match the specified meta-properties.
+     * 
+     * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
+     *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
+     *            single value, or a collection of values that can (OR) be matched by the term;
+     * @param queryOptions a map with additional query options, such as maximum number of terms to return or a different
+     *            sort order
+     * @return a set with the matching terms that were found in the ontology, an empty set if no terms were found
+     */
+    Set<OntologyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions);
+
+    /**
      * Get the number of entries that match a specific query.
      * 
      * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are

@@ -20,6 +20,7 @@
 package org.phenotips.ontology.internal.solr;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,21 +72,42 @@ public final class SolrQueryUtils
      */
     public static SolrParams enhanceParams(SolrParams originalParams)
     {
+        return enhanceParams(originalParams, null);
+    }
+
+    /**
+     * Adds extra parameters to a Solr query for better term searches, including custom options. More specifically, adds
+     * parameters for requesting the score to be included in the results, for requesting a spellcheck result, and sets
+     * the {@code start} and {@code rows} parameters when missing.
+     * 
+     * @param originalParams the original Solr parameters to enhance
+     * @param queryOptions extra options to include in the query; these override the default values, but don't override
+     *            values already set in the query
+     * @return the enhanced parameters
+     */
+    public static SolrParams enhanceParams(SolrParams originalParams, Map<String, String> queryOptions)
+    {
         if (originalParams == null) {
             return null;
         }
-        ModifiableSolrParams newParams = new ModifiableSolrParams(originalParams);
-        if (newParams.get(CommonParams.START) == null) {
-            newParams.set(CommonParams.START, 0);
+        ModifiableSolrParams newParams = new ModifiableSolrParams();
+        newParams.set(CommonParams.START, "0");
+        newParams.set(CommonParams.ROWS, "1000");
+        newParams.set(CommonParams.FL, "* score");
+        if (queryOptions != null) {
+            for (Map.Entry<String, String> item : queryOptions.entrySet()) {
+                newParams.set(item.getKey(), item.getValue());
+            }
         }
-        if (newParams.get(CommonParams.ROWS) == null) {
-            newParams.set(CommonParams.ROWS, 1000);
+        for (Map.Entry<String, Object> item : originalParams.toNamedList()) {
+            if (item.getValue() != null && item.getValue() instanceof String[]) {
+                newParams.set(item.getKey(), (String[]) item.getValue());
+            } else {
+                newParams.set(item.getKey(), String.valueOf(item.getValue()));
+            }
         }
         newParams.set("spellcheck", Boolean.toString(true));
         newParams.set(SpellingParams.SPELLCHECK_COLLATE, Boolean.toString(true));
-        if (newParams.get(CommonParams.FL) == null) {
-            newParams.set(CommonParams.FL, "* score");
-        }
         return newParams;
     }
 
