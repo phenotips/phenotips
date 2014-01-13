@@ -216,15 +216,9 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
   font-size: 20px;
   text-anchor: middle;
 }
-tspan.boy {
-  fill: #1059A0;
-}
 .chart-percentile.chart-background {
   stroke: none;
   fill: white;
-}
-tspan.girl {
-  fill: #D05;
 }
   &lt;/style&gt;
   &lt;defs&gt;
