@@ -4639,6 +4639,9 @@ form .extradata-list tr:hover td {
 .growth-charts-section.collapsed .expand-tools .show {
   display: inline;
 }
+.growth-charts-section .h3 {
+  cursor: pointer;
+}
 
 .extradata-list .head-group label {
   font-weight: bold;
