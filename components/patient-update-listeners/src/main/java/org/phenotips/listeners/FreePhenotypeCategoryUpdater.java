@@ -153,7 +153,8 @@ public class FreePhenotypeCategoryUpdater implements EventListener
             List<BaseObject> existingObjects = doc.getXObjects(CATEGORY_CLASS_REFERENCE);
             if (existingObjects != null) {
                 for (BaseObject mappingObject : existingObjects) {
-                    if (targetPropertyName.equals(mappingObject.getStringValue(NAME_PROPETY_NAME))
+                    if (mappingObject != null
+                        && targetPropertyName.equals(mappingObject.getStringValue(NAME_PROPETY_NAME))
                         && phenotype.equals(mappingObject.getStringValue(VALUE_PROPETY_NAME))) {
                         targetMappingObject = mappingObject;
                         break;
