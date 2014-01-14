@@ -130,7 +130,6 @@ public class DefaultRecordConfigurationManagerTest
         when(ec.getProperty("xwikicontext")).thenReturn(context);
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
-        XWikiDocument doc = mock(XWikiDocument.class);
         when(x.getDocument(gr, context)).thenThrow(new XWikiException());
 
         RecordConfiguration result = this.mocker.getComponentUnderTest().getActiveConfiguration();

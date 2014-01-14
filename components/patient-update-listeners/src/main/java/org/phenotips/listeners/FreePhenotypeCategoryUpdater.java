@@ -104,7 +104,9 @@ public class FreePhenotypeCategoryUpdater implements EventListener
             if (!targetPropertyName.contains("phenotype")) {
                 continue;
             }
-            for (String phenotype : (List<String>) patientRecordObj.getListValue(targetPropertyName)) {
+            @SuppressWarnings("unchecked")
+            List<String> phenotypes = patientRecordObj.getListValue(targetPropertyName);
+            for (String phenotype : phenotypes) {
                 if (!phenotype.matches("HP:[0-9]+")) {
                     List<String> category =
                         getParameter(targetPropertyName + "__" + phenotype.replaceAll("[^a-zA-Z0-9_]+", "_")

@@ -222,6 +222,10 @@
               <differenceType>7012</differenceType>
               <method>java.util.Set search(java.util.Map, java.util.Map)</method>
             </difference>
+            <difference>
+              <className>**/hpoa/main/Main</className>
+              <differenceType>8001</differenceType>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

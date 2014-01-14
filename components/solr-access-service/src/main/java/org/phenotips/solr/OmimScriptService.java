@@ -19,6 +19,12 @@
  */
 package org.phenotips.solr;
 
+import org.phenotips.obo2solr.maps.CounterMap;
+import org.phenotips.obo2solr.maps.SumMap;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.script.service.ScriptService;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,11 +46,6 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.MapSolrParams;
 import org.apache.solr.common.util.SimpleOrderedMap;
-import org.phenotips.obo2solr.maps.CounterMap;
-import org.phenotips.obo2solr.maps.SumMap;
-import org.xwiki.component.annotation.Component;
-import org.xwiki.script.service.ScriptService;
-
 
 /**
  * Provides access to the Solr server, with the main purpose of providing access to the OMIM ontology.
@@ -106,7 +107,7 @@ public class OmimScriptService extends AbstractSolrScriptService
             return result;
         }
         SolrDocumentList matchingDisorders = response.getResults();
-        Map< ? , ? > explanations = response.getExplainMap();
+        Map<?, ?> explanations = response.getExplainMap();
         SumMap<String> cummulativeScore = new SumMap<String>();
         CounterMap<String> matchCounter = new CounterMap<String>();
         Set<String> allAncestors = new HashSet<String>();
@@ -115,7 +116,9 @@ public class OmimScriptService extends AbstractSolrScriptService
         }
         for (SolrDocument disorder : matchingDisorders) {
             String omimId = (String) disorder.getFieldValue(ID_FIELD_NAME);
-            float score = ((SimpleOrderedMap<Float>) explanations.get(omimId)).get("value");
+            @SuppressWarnings("unchecked")
+            SimpleOrderedMap<Float> omimTerm = (SimpleOrderedMap<Float>) explanations.get(omimId);
+            float score = omimTerm.get("value");
             for (Object hpoId : disorder.getFieldValues("actual_symptom")) {
                 if (allAncestors.contains(hpoId) || nphenotypes.contains(hpoId)) {
                     continue;

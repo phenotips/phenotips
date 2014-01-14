@@ -20,6 +20,8 @@
 
 package org.phenotips.measurements.internal;
 
+import org.xwiki.component.annotation.Component;
+
 import java.util.List;
 
 import javax.inject.Named;
@@ -28,7 +30,6 @@ import javax.inject.Singleton;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.xwiki.component.annotation.Component;
 
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.objects.FloatProperty;
@@ -71,6 +72,7 @@ public class R45190PhenoTips362DataMigration extends AbstractHibernateDataMigrat
                     session.createQuery("select hc from BaseObject o, FloatProperty hc"
                         + " where o.className = 'PhenoTips.MeasurementsClass'"
                         + " and hc.id.id = o.id and hc.id.name = 'head_circumference'");
+                @SuppressWarnings("unchecked")
                 List<FloatProperty> properties = q.list();
                 for (FloatProperty property : properties) {
                     FloatProperty updated = (FloatProperty) property.clone();

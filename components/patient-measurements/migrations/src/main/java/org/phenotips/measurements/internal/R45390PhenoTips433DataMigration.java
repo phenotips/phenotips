@@ -45,7 +45,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.BaseProperty;
+import com.xpn.xwiki.objects.NumberProperty;
 import com.xpn.xwiki.store.XWikiHibernateBaseStore.HibernateCallback;
 import com.xpn.xwiki.store.XWikiHibernateStore;
 import com.xpn.xwiki.store.migration.DataMigrationException;
@@ -124,6 +124,7 @@ public class R45390PhenoTips433DataMigration extends AbstractHibernateDataMigrat
             Query q =
                 session.createQuery("select distinct o.name from BaseObject o where o.className = '"
                     + R45390PhenoTips433DataMigration.this.serializer.serialize(oldClassReference) + "'");
+            @SuppressWarnings("unchecked")
             List<String> documents = q.list();
             for (String docName : documents) {
                 XWikiDocument doc =
@@ -133,7 +134,7 @@ public class R45390PhenoTips433DataMigration extends AbstractHibernateDataMigrat
                     newObject.setXClassReference(newClassReference);
                     doc.addXObject(newObject);
                     // "head_circumference" has been renamed to "hc"
-                    BaseProperty hc = (BaseProperty) newObject.get("head_circumference");
+                    NumberProperty hc = (NumberProperty) newObject.get("head_circumference");
                     if (hc != null && hc.getValue() != null) {
                         newObject.removeField(hc.getName());
                         newObject.setFieldsToRemove(Collections.emptyList());

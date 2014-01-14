@@ -19,6 +19,11 @@
  */
 package org.phenotips.hpoa.ontology;
 
+import org.phenotips.hpoa.utils.graph.DAG;
+import org.phenotips.hpoa.utils.graph.DAGNode;
+import org.phenotips.hpoa.utils.graph.IDAGNode;
+import org.phenotips.solr.AbstractSolrScriptService;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,11 +36,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.phenotips.hpoa.utils.graph.DAG;
-import org.phenotips.hpoa.utils.graph.DAGNode;
-import org.phenotips.hpoa.utils.graph.IDAGNode;
-import org.phenotips.solr.AbstractSolrScriptService;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -74,7 +74,9 @@ public abstract class AbstractOntology extends DAG<OntologyTerm> implements Onto
             for (String name : result.getFieldNames()) {
                 Object val = result.get(name);
                 if (val instanceof Collection<?>) {
-                    data.put(name, (Collection<String>) val);
+                    @SuppressWarnings("unchecked")
+                    Collection<String> stringVal = (Collection<String>) val;
+                    data.put(name, stringVal);
                 } else {
                     data.addTo(name, (String) val);
                 }
