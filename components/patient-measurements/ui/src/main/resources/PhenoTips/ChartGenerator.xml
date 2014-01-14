@@ -216,15 +216,9 @@ preserveAspectRatio="xMinYMin meet" style="overflow: hidden;" text-rendering="op
   font-size: 20px;
   text-anchor: middle;
 }
-tspan.boy {
-  fill: #1059A0;
-}
 .chart-percentile.chart-background {
   stroke: none;
   fill: white;
-}
-tspan.girl {
-  fill: #D05;
 }
   &lt;/style&gt;
   &lt;defs&gt;
@@ -376,7 +370,7 @@ tspan.girl {
   #end
   &lt;/g&gt;
   &lt;rect x="0" y="0" width="$graphWidth" height="$graphHeight" class="chart-border" /&gt;
-  &lt;text x="$mathtool.div($graphWidth, 2)" y="-55" class="chart-title"&gt;${chartConfiguration.chartTitle}, &lt;tspan class="#if ($sex)boy#{else}girl#end"&gt;#if ($sex)boys#{else}girls#end&lt;/tspan&gt;&lt;/text&gt;
+  &lt;text x="$mathtool.div($graphWidth, 2)" y="-55" class="chart-title"&gt;${chartConfiguration.chartTitle}, #if ($sex)boys#{else}girls#end&lt;/text&gt;
   &lt;text y="$mathtool.div($graphHeight, 2)" x="-33" class="left side chart-label" transform="rotate(270 -33 $mathtool.div($graphHeight, 2))"&gt;${chartConfiguration.leftLabel}&lt;/text&gt;
   &lt;text y="$mathtool.div($graphHeight, 2)" x="$mathtool.add($graphWidth, 33)" class="right side chart-label" transform="rotate(90 $mathtool.add($graphWidth, 33) $mathtool.div($graphHeight, 2))"&gt;${chartConfiguration.rightLabel}&lt;/text&gt;
   &lt;text y="-20" x="$mathtool.div($graphWidth, 2)" class="top side chart-label"&gt;${chartConfiguration.topLabel}&lt;/text&gt;
