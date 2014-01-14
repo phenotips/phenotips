@@ -4639,7 +4639,7 @@ form .extradata-list tr:hover td {
 .growth-charts-section.collapsed .expand-tools .show {
   display: inline;
 }
-.growth-charts-section .h3 {
+.growth-charts-section h3 {
   cursor: pointer;
 }
 
