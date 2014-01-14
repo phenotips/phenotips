@@ -132,7 +132,7 @@ public class FreePhenotypeCategoryUpdater implements EventListener
         BaseObject targetMappingObject = findCategoryObject(phenotype, targetPropertyName, doc, context);
         targetMappingObject.setStringValue(NAME_PROPETY_NAME, targetPropertyName);
         targetMappingObject.setStringValue(VALUE_PROPETY_NAME, phenotype);
-        targetMappingObject.setStringListValue(CATEGORY_PROPETY_NAME, category);
+        targetMappingObject.setDBStringListValue(CATEGORY_PROPETY_NAME, category);
     }
 
     /**
