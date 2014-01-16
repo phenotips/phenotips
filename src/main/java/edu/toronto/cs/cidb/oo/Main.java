@@ -2,6 +2,7 @@ package edu.toronto.cs.cidb.oo;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class Main
@@ -15,6 +16,19 @@ public class Main
         OOSaxParser omimMappingDataSource = new OOSaxParser(args[0]);
         OOSaxParser prelevanceDataSource = new OOSaxParser(args[1]);
 
+        OmimSourceParser omimDataSource = new OmimSourceParser(args[2], new HashSet<String>());
+        TSVParser geneMappingDataSource = new TSVParser(args[3]);
+        Map<String, RecordData> omimData = omimDataSource.getData();
+        Map<String, String> geneData = geneMappingDataSource.getData();
+        for (String key : geneData.keySet()) {
+            RecordData d = omimData.get(key);
+            if (d != null) {
+                d.addTo("GENE", geneData.get(key));
+            }
+        }
+
+        System.out.println(omimData.size() + " " + geneData.size());
+
         Map<String, Double> omimPrelevanceData = new HashMap<String, Double>();
 
         for (String k : omimMappingDataSource.keySet()) {
@@ -24,7 +38,8 @@ public class Main
                 omimPrelevanceData.put(omimID, interpretPrelevance(prelevance));
             }
         }
-        new DisorderDataBuilder(args[2], args[3], omimPrelevanceData).generate(new File(args[4]));
+        new DisorderDataBuilder(omimDataSource.getData(), omimPrelevanceData, args[4], args[5]).generate(new File(
+            args[6]));
     }
 
     private static double interpretPrelevance(String text)

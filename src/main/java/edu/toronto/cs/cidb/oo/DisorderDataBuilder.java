@@ -21,6 +21,7 @@ import edu.toronto.cs.cidb.obo2solr.ParameterPreparer;
 import edu.toronto.cs.cidb.obo2solr.SolrUpdateGenerator;
 import edu.toronto.cs.cidb.obo2solr.TermData;
 
+@SuppressWarnings("deprecation")
 public class DisorderDataBuilder
 {
     private static final int ID_IDX = 1;
@@ -53,8 +54,14 @@ public class DisorderDataBuilder
 
     private final static double DEFAULT_BOOST = 1.0;
 
-    DisorderDataBuilder(String symptomsSource, String negativePhenotypeSource, Map<String, Double> prelevanceData)
+    DisorderDataBuilder(Map<String, RecordData> omimData, Map<String, Double> prelevanceData, String symptomsSource,
+        String negativePhenotypeSource)
     {
+        for (String key : omimData.keySet()) {
+            RecordData omimDisorder = omimData.get(key);
+            DisorderData d = new DisorderData(omimDisorder.getId(), omimDisorder.getName());
+            updateDisorder(key, omimDisorder, prelevanceData.get(key));
+        }
         prepareOboData();
         BufferedReader in;
         try {
@@ -68,7 +75,7 @@ public class DisorderDataBuilder
                 if (pieces.length < EXPECTED_COUNT) {
                     continue;
                 }
-                updateDisorder(pieces, prelevanceData, true);
+                updateDisorder(pieces, true);
             }
             in.close();
             in = new BufferedReader(new FileReader(negativePhenotypeSource));
@@ -80,7 +87,7 @@ public class DisorderDataBuilder
                 if (pieces.length < EXPECTED_COUNT) {
                     continue;
                 }
-                updateDisorder(pieces, prelevanceData, false);
+                updateDisorder(pieces, false);
             }
             in.close();
         } catch (FileNotFoundException e) {
@@ -100,20 +107,28 @@ public class DisorderDataBuilder
                 fieldSelection);
     }
 
-    private void updateDisorder(String data[], Map<String, Double> prelevanceData, boolean isSymptom)
+    private void updateDisorder(String data[], boolean isSymptom)
     {
         DisorderData d = this.data.get(data[ID_IDX]);
         if (d == null) {
-            d = new DisorderData(data[ID_IDX], data[NAME_IDX]);
-            this.data.put(d.getId(), d);
-            Double p = prelevanceData.get(d.getId());
-            d.setPrelevance(p != null ? p : 1);
+            return;
         }
         if (isSymptom) {
             d.addSymptom(data[SYMPTOM_ID_IDX], data[SYMPTOM_PRELEVANCE_IDX]);
         } else {
             d.addNegativePhenotype(data[SYMPTOM_ID_IDX], data[SYMPTOM_PRELEVANCE_IDX]);
         }
+    }
+
+    private void updateDisorder(String dID, RecordData r, Double prelevance)
+    {
+        DisorderData d = this.data.get(dID);
+        if (d == null) {
+            d = new DisorderData(r.getId(), r.getName());
+            this.data.put(d.getId(), d);
+            d.setPrelevance(prelevance != null ? prelevance : 1);
+        }
+        d.setMeta(r);
     }
 
     public void generate(File output)
@@ -211,6 +226,11 @@ public class DisorderDataBuilder
         writeField("keywords", keywords.toString());
         if (negativeKeywords.length() > 0) {
             writeField("not_keywords", negativeKeywords.toString());
+        }
+        for (String key : d.getMeta().keySet()) {
+            for (String value : d.getMeta().get(key)) {
+                writeField(key, value);
+            }
         }
         endElement(DOC_ELEMENT_NAME);
     }

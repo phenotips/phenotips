@@ -13,7 +13,9 @@ public class DisorderData
 
     private Map<String, Double> negativePhenotypes = new HashMap<String, Double>();
 
-    private double prelevance;
+    private RecordData meta;
+
+    private double prelevance = 1;
 
     protected DisorderData(String id, String name)
     {
@@ -49,6 +51,11 @@ public class DisorderData
     public String getName()
     {
         return this.name;
+    }
+
+    protected void setName(String name)
+    {
+        this.name = name;
     }
 
     public Map<String, Double> getSymptoms()
@@ -121,5 +128,15 @@ public class DisorderData
         // "round" the result
         result = Math.round(result * 20);
         return result;
+    }
+
+    public RecordData getMeta()
+    {
+        return this.meta;
+    }
+
+    public void setMeta(RecordData meta)
+    {
+        this.meta = meta;
     }
 }
