@@ -853,7 +853,7 @@ $xwiki.jsx.use($groupClassName, {'minify' : false})
   &lt;input type="hidden" name="classTemplate" value="$groupTemplateName" /&gt;
   &lt;input type="hidden" name="space" value="$xwiki.getDocument(${groupsHome}).space" /&gt;
   &lt;input type="hidden" name="parent" value="${groupsHome}" /&gt;
-  &lt;label&gt;&lt;span class="icon-plus-sign"&gt; &lt;/span&gt;New group: &lt;input type="text" name="name" placeholder="Name" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="Create"/&gt;
+  &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;New group: &lt;input type="text" name="name" placeholder="Name" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="Create"/&gt;
 &lt;/div&gt;&lt;/form&gt;
 {{/html}}
 #if ($errorMessage != '')

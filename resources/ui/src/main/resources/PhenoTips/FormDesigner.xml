@@ -912,7 +912,7 @@ document.observe("xwiki:dom:loaded", function(){
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')
 $xwiki.ssx.use('PhenoTips.FormDesigner')
 $xwiki.jsx.use('PhenoTips.FormDesigner')
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})
 
 ## ----------------------------------------------------------------------
 ## Initialize the form parameters
@@ -944,7 +944,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 ## ----------------------------------------------------------------------
 ## One tool for handling an extension
 ## ----------------------------------------------------------------------
-#macro(_formDesigner__displayExtensionTool $name $icon $hint $url $attrs)&lt;a href="$url" title="$!{hint}" class="extension-tool ${name}" $!{attrs}&gt;&lt;i class="icon-${icon}"&gt;&lt;/i&gt;&lt;/a&gt;#end
+#macro(_formDesigner__displayExtensionTool $name $icon $hint $url $attrs)&lt;a href="$url" title="$!{hint}" class="extension-tool ${name}" $!{attrs}&gt;&lt;i class="fa fa-${icon}"&gt;&lt;/i&gt;&lt;/a&gt;#end
 
 ## ----------------------------------------------------------------------
 ## Toolbox for handling an extension
@@ -952,11 +952,11 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 #macro(_formDesigner__displayExtensionTools $extension $tools)
 {{html wiki=false clean=false}}&lt;div class="extension-tools"&gt;
 #if ($globalConfig)
-#if ($tools.required)&lt;label class="extension-tool flag" title="Required?"&gt;&lt;i class="icon-asterisk"&gt;&lt;/i&gt;&lt;input type="checkbox" class="uix-required" name="${prefix}${extension.type}s_${extension.id}_required" value="true" #if ($extension.required) checked="true" #end/&gt;&lt;/label&gt;#end
+#if ($tools.required)&lt;label class="extension-tool flag" title="Required?"&gt;&lt;i class="fa fa-asterisk"&gt;&lt;/i&gt;&lt;input type="checkbox" class="uix-required" name="${prefix}${extension.type}s_${extension.id}_required" value="true" #if ($extension.required) checked="true" #end/&gt;&lt;/label&gt;#end
 #if ($tools.edit)#_formDesigner__displayExtensionTool('edit' 'pencil' 'Modify this extension' $extension.doc.getURL('edit', 'editor=object') 'target="_blank"')#end
-#if ($tools.delete)#_formDesigner__displayExtensionTool('delete' 'remove' 'Delete this extension' $extension.doc.getURL('delete') 'target="_blank"')#end
+#if ($tools.delete)#_formDesigner__displayExtensionTool('delete' 'times' 'Delete this extension' $extension.doc.getURL('delete') 'target="_blank"')#end
 #end
-#if ($tools.move)#_formDesigner__displayExtensionTool('move' 'move' 'Drag and drop to reorganize' '#')#end
+#if ($tools.move)#_formDesigner__displayExtensionTool('move' 'arrows' 'Drag and drop to reorganize' '#')#end
 &lt;/div&gt;{{/html}}
 #end
 

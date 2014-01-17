@@ -257,7 +257,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('PhenoTips.ImageDisplayer')##
 $xwiki.ssx.use('PhenoTips.ImageDisplayer')##
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
 #if ($xcontext.action == 'edit')
 (% class="xform" %)(((
 ; {{html}}&lt;label&gt;Name&lt;/label&gt;{{/html}}
@@ -294,7 +294,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 #if ($xcontext.action == 'view')
 #set ($obj = $doc.getObject('PhenoTips.PhenoTipsGroupClass'))
 #set ($sections = [
-  {'id' : 'members', 'name' : "Group members", 'icon' : 'group',       'content' : '{{include reference="XWiki.XWikiGroupSheet"/}}'},
+  {'id' : 'members', 'name' : "Group members", 'icon' : 'users',       'content' : '{{include reference="XWiki.XWikiGroupSheet"/}}'},
   {'id' : 'cases',   'name' : "Cases",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.GroupCases"/}}'},
   {'id' : 'form' ,   'name' : "Patient form",  'icon' : 'cogs',        'content' : '{{include reference="PhenoTips.FormDesigner"/}}'}
 ])
@@ -304,7 +304,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
   #if ($isMyGroup || $hasAdmin || $obj.getProperty('public_sections').value.contains($s.id))
     #set ($discard = $menu.add({
       'id' : $s.id,
-      'name' : "&lt;i class='icon-$s.icon'&gt;&lt;/i&gt; $s.name",
+      'name' : "&lt;i class='fa fa-$s.icon'&gt;&lt;/i&gt; $s.name",
       'url' : "?s=${s.id}#content-${s.id}"
     }))
     #set ($discard = $contents.put($s.id, $s.content))

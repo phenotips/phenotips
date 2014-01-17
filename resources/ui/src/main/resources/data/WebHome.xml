@@ -2686,7 +2686,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
       <position>2,1</position>
     </property>
     <property>
-      <title>My Data#if ($hasCreatePage) {{html clean=false}}&lt;label for="create-patient-record" style="float:right;cursor:pointer;color:$theme.linkColor;"&gt;&lt;span class="icon-plus-sign"&gt; &lt;/span&gt;New patient record&lt;/label&gt;{{/html}}#end</title>
+      <title>My Data#if ($hasCreatePage) {{html clean=false}}&lt;label for="create-patient-record" style="float:right;cursor:pointer;color:$theme.linkColor;"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;New patient record&lt;/label&gt;{{/html}}#end</title>
     </property>
   </object>
   <object>

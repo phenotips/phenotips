@@ -206,7 +206,8 @@
     <guid>0ef25957-6611-47a0-b5d7-8c377a914766</guid>
     <property>
       <content>{{velocity}}{{html clean=false}}
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 &lt;div id="phenotips-mainmenu" class="layoutsubsection actionmenu"&gt;
 &lt;strong id="xwikimenutitle" class="hidden"&gt;$services.localization.render('core.menu.main.title')&lt;/strong&gt;
 &lt;div class="rightmenu"&gt;
@@ -220,23 +221,23 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 #if (!$xcontext.action.startsWith('login'))
   #if ($isGuest)
     #set ($loginurl = $xwiki.getURL('XWiki.XWikiLogin', 'login', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
-    #xwikitopmenuentry($!loginurl $!services.localization.render('login') 'tmLogin' 'icon-signin')
+    #xwikitopmenuentry($!loginurl $!services.localization.render('login') 'tmLogin' 'fa fa-sign-in')
   #else
     #set ($logouturl = $xwiki.getURL('XWiki.XWikiLogout', 'logout', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
-    #xwikitopmenuentry($!logouturl $!services.localization.render('logout') 'tmLogout' 'icon-signout')
+    #xwikitopmenuentry($!logouturl $!services.localization.render('logout') 'tmLogout' 'fa fa-sign-out')
   #end
 #end
 #if ($isGuest &amp;&amp; $xwiki.hasAccessLevel('register', 'XWiki.XWikiPreferences'))
   #set ($regurl = $xwiki.getURL('XWiki.Register', 'register'))
-  #xwikitopmenuentry($!regurl $!services.localization.render('core.register') 'tmRegister' 'icon-plus-sign-alt')
+  #xwikitopmenuentry($!regurl $!services.localization.render('core.register') 'tmRegister' 'fa fa-plus-square')
 #end
 ##
 ##
 #if (!$isGuest)
 #if ($isSuperAdmin)
-  #xwikitopmenuentry('#' $!services.localization.render('superadmin') 'tmUser' 'icon-user')
+  #xwikitopmenuentry('#' $!services.localization.render('superadmin') 'tmUser' 'fa fa-user')
 #else
-  #xwikitopmenuentry("$!xwiki.getURL($xcontext.user)" "$!xwiki.getUserName($xcontext.user, false)" 'tmUser' 'icon-user')
+  #xwikitopmenuentry("$!xwiki.getURL($xcontext.user)" "$!xwiki.getUserName($xcontext.user, false)" 'tmUser' 'fa fa-user')
 #end
 #end
 &lt;/div&gt;
@@ -247,7 +248,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 #set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
 #if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
   #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
-  #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'icon-cogs')
+  #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'fa fa-cogs')
 #end
 &lt;/div&gt;
 &lt;/div&gt;
@@ -428,14 +429,15 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
     <guid>e90fed84-04a2-48f8-bbae-c6f2b1ad8a60</guid>
     <property>
       <content>{{velocity}}{{html clean=false}}
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 &lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
   &lt;div class="rightmenu"&gt;
     &lt;div class="topmenuentry search"&gt;
       #if ($displayQuickSearch &amp;&amp; ($xwiki.exists('Main.Search') || $xwiki.exists('Main.WebSearch')))
       &lt;form action="#if($xwiki.exists('Main.Search'))$xwiki.getURL('Main.Search')#else$xwiki.getURL('Main.WebSearch')#end"&gt;
         &lt;div class="globalsearch"&gt;&lt;input type="hidden" name="space" value="$!{doc.space}"/&gt;
-          &lt;label for="headerglobalsearchinput"&gt;&lt;span class="icon-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="Quick search patient" size="20"/&gt;&lt;input class="button hidden" type="submit" value="$services.localization.render('panels.search.submit')" alt="$services.localization.render('panels.search.submit')"/&gt;
+          &lt;label for="headerglobalsearchinput"&gt;&lt;span class="fa fa-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="Quick search patient" size="20"/&gt;&lt;input class="button hidden" type="submit" value="$services.localization.render('panels.search.submit')" alt="$services.localization.render('panels.search.submit')"/&gt;
         &lt;/div&gt;
       &lt;/form&gt;
       #end
@@ -443,7 +445,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
     &lt;div class="topmenuentry add"&gt;{{/html}}{{include reference="PhenoTips.CreatePatientRecordForm" /}}{{html clean=false}}&lt;/div&gt;
   &lt;/div&gt;
   &lt;div class="breadcrumbs leftmenu"&gt;
-    &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;&lt;span class="icon-home icon-large"&gt;&lt;/span&gt;&lt;/a&gt; &amp;raquo;
+    &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;&lt;span class="fa fa-home fa-lg"&gt;&lt;/span&gt;&lt;/a&gt; &amp;raquo;
     &lt;a href="$!xwiki.getURL("${doc.space}.WebHome")" &gt;$!{doc.space}&lt;/a&gt;
     #if ($doc.name != 'WebHome')
       &amp;raquo; &lt;a href="$doc.getURL()"&gt;$doc.displayTitle&lt;/a&gt;
@@ -1084,7 +1086,8 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
     <guid>283864d3-9e9b-451f-9f6c-45248884af1a</guid>
     <property>
       <content>{{velocity}}{{html clean=false}}
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 &lt;div id="phenotips-mainmenu" class="layoutsubsection actionmenu"&gt;
 &lt;strong id="xwikimenutitle" class="hidden"&gt;$services.localization.render('core.menu.main.title')&lt;/strong&gt;
 &lt;div class="rightmenu"&gt;
@@ -1098,23 +1101,23 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 #if (!$xcontext.action.startsWith('login'))
   #if ($isGuest)
     #set ($loginurl = $xwiki.getURL('XWiki.XWikiLogin', 'login', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
-    #xwikitopmenuentry($!loginurl $!services.localization.render('login') 'tmLogin' 'icon-signin')
+    #xwikitopmenuentry($!loginurl $!services.localization.render('login') 'tmLogin' 'fa fa-sign-in')
   #else
     #set ($logouturl = $xwiki.getURL('XWiki.XWikiLogout', 'logout', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
-    #xwikitopmenuentry($!logouturl $!services.localization.render('logout') 'tmLogout' 'icon-signout')
+    #xwikitopmenuentry($!logouturl $!services.localization.render('logout') 'tmLogout' 'fa fa-sign-out')
   #end
 #end
 #if ($isGuest &amp;&amp; $xwiki.hasAccessLevel('register', 'XWiki.XWikiPreferences'))
   #set ($regurl = $xwiki.getURL('XWiki.Register', 'register'))
-  #xwikitopmenuentry($!regurl $!services.localization.render('core.register') 'tmRegister' 'icon-plus-sign-alt')
+  #xwikitopmenuentry($!regurl $!services.localization.render('core.register') 'tmRegister' 'fa fa-plus-square')
 #end
 ##
 ##
 #if (!$isGuest)
 #if ($isSuperAdmin)
-  #xwikitopmenuentry('#' $!services.localization.render('superadmin') 'tmUser' 'icon-user')
+  #xwikitopmenuentry('#' $!services.localization.render('superadmin') 'tmUser' 'fa fa-user')
 #else
-  #xwikitopmenuentry("$!xwiki.getURL($xcontext.user)" "$!xwiki.getUserName($xcontext.user, false)" 'tmUser' 'icon-user')
+  #xwikitopmenuentry("$!xwiki.getURL($xcontext.user)" "$!xwiki.getUserName($xcontext.user, false)" 'tmUser' 'fa fa-user')
 #end
 #end
 &lt;/div&gt;
@@ -1125,7 +1128,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 #set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
 #if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
   #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
-  #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'icon-cogs')
+  #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'fa fa-cogs')
 #end
 &lt;/div&gt;
 &lt;/div&gt;
@@ -1215,12 +1218,13 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
     <guid>885cbc76-bfb3-4756-9671-a2f718b814fe</guid>
     <property>
       <content>{{velocity}}{{html clean=false}}
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 &lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
   &lt;div class="rightmenu"&gt;
   &lt;/div&gt;
   &lt;div class="breadcrumbs leftmenu"&gt;
-    &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;&lt;span class="icon-home icon-large"&gt;&lt;/span&gt;&lt;/a&gt; &amp;raquo;
+    &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;&lt;span class="fa fa-home fa-lg"&gt;&lt;/span&gt;&lt;/a&gt; &amp;raquo;
     &lt;a href="$!xwiki.getURL("${doc.space}.WebHome")" &gt;$!{doc.space}&lt;/a&gt;
     #if ($doc.name != 'WebHome')
       &amp;raquo; &lt;a href="$doc.getURL()"&gt;$doc.displayTitle&lt;/a&gt;
@@ -1313,7 +1317,8 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
     <guid>667461d1-6cae-4458-8c2c-27c2bd313800</guid>
     <property>
       <content>{{velocity}}{{html clean=false}}
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 &lt;div id="phenotips-mainmenu" class="layoutsubsection actionmenu"&gt;
 &lt;strong id="xwikimenutitle" class="hidden"&gt;$services.localization.render('core.menu.main.title')&lt;/strong&gt;
 &lt;div class="rightmenu"&gt;
@@ -1327,23 +1332,23 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 #if (!$xcontext.action.startsWith('login'))
   #if ($isGuest)
     #set ($loginurl = $xwiki.getURL('XWiki.XWikiLogin', 'login', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
-    #xwikitopmenuentry($!loginurl $!services.localization.render('login') 'tmLogin' 'icon-signin')
+    #xwikitopmenuentry($!loginurl $!services.localization.render('login') 'tmLogin' 'fa fa-sign-in')
   #else
     #set ($logouturl = $xwiki.getURL('XWiki.XWikiLogout', 'logout', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
-    #xwikitopmenuentry($!logouturl $!services.localization.render('logout') 'tmLogout' 'icon-signout')
+    #xwikitopmenuentry($!logouturl $!services.localization.render('logout') 'tmLogout' 'fa fa-sign-out')
   #end
 #end
 #if ($isGuest &amp;&amp; $xwiki.hasAccessLevel('register', 'XWiki.XWikiPreferences'))
   #set ($regurl = $xwiki.getURL('XWiki.Register', 'register'))
-  #xwikitopmenuentry($!regurl $!services.localization.render('core.register') 'tmRegister' 'icon-plus-sign-alt')
+  #xwikitopmenuentry($!regurl $!services.localization.render('core.register') 'tmRegister' 'fa fa-plus-square')
 #end
 ##
 ##
 #if (!$isGuest)
 #if ($isSuperAdmin)
-  #xwikitopmenuentry('#' $!services.localization.render('superadmin') 'tmUser' 'icon-user')
+  #xwikitopmenuentry('#' $!services.localization.render('superadmin') 'tmUser' 'fa fa-user')
 #else
-  #xwikitopmenuentry("$!xwiki.getURL($xcontext.user)" "$!xwiki.getUserName($xcontext.user, false)" 'tmUser' 'icon-user')
+  #xwikitopmenuentry("$!xwiki.getURL($xcontext.user)" "$!xwiki.getUserName($xcontext.user, false)" 'tmUser' 'fa fa-user')
 #end
 #end
 &lt;/div&gt;
@@ -1354,7 +1359,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
 #set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
 #if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
   #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
-  #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'icon-cogs')
+  #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'fa fa-cogs')
 #end
 &lt;/div&gt;
 &lt;/div&gt;
@@ -1444,12 +1449,13 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.
     <guid>625ee288-0cf6-4dd3-b094-ed6f1aea6987</guid>
     <property>
       <content>{{velocity}}{{html clean=false}}
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 &lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
   &lt;div class="rightmenu"&gt;
   &lt;/div&gt;
   &lt;div class="breadcrumbs leftmenu"&gt;
-    &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;&lt;span class="icon-home icon-large"&gt;&lt;/span&gt;&lt;/a&gt;
+    &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;&lt;span class="fa fa-home fa-lg"&gt;&lt;/span&gt;&lt;/a&gt;
     #if ($doc.name != 'WebHome' &amp;&amp; $xwiki.hasAccessLevel('view', $xcontext.user, "$!{doc.space}.WebHome"))  &amp;raquo; &lt;a href="$!xwiki.getURL("${doc.space}.WebHome")" &gt;$xwiki.getDocument("$!{doc.space}.WebHome").displayTitle&lt;/a&gt;#end
     #if ($xcontext.action == 'edit')
       &amp;raquo; &lt;a href="$doc.getURL()"&gt;$doc.displayTitle&lt;/a&gt;

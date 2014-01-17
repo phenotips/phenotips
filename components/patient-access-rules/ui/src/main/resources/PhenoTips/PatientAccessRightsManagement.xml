@@ -168,7 +168,7 @@
     _initAccessLevels : function() {
       var levels = {'access-level' : [], 'visibility' : []};
       this._element.select('input[name="access-level"], input[name="visibility"]').each(function (item) {
-        levels[item.name].push({id : item.value, name : item.alt, title : item.title, icon: item.next('span[class^="icon-"]') || ''});
+        levels[item.name].push({id : item.value, name : item.alt, title : item.title, icon: item.next('span.fa') || ''});
       
       });
       this.ACCESS_LEVELS = levels['access-level'];
@@ -221,7 +221,7 @@
                trigger.up('tr').down('.controlled-element input, .controlled-element select').disabled = false;
              }
            });
-           optionWrapper.insert(new Element('span', {'class' : 'icon-' + type}).wrap('td'))
+           optionWrapper.insert(new Element('span', {'class' : 'fa fa-' + type}).wrap('td'))
                         .insert(label.wrap('td'))
                         .insert(controlledElement.wrap('td', {'class' : 'controlled-element'}));
            return optionWrapper;
@@ -406,14 +406,14 @@
     /* Expected format for the collaborator object c : {id : 'string', 'type' : 'string', name : 'string', 'accessLevel' : 'string' } */
     _addCollaborator : function (c, highlight) {
       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
-      row.insert(new Element('td').insert(new Element('span', {'class' : 'icon-' + c.type}).update(' ')));
+      row.insert(new Element('td').insert(new Element('span', {'class' : 'fa fa-' + c.type}).update(' ')));
       row.insert(new Element('td')
               .insert(c.name)
               .insert(new Element('input', {'type': 'hidden', 'name' : 'collaborator', 'value' : c.id}))
       );
       var rights = this._generateCollaborationOptions('accessLevel', c.accessLevel)
       row.insert(rights.wrap('td'));
-      var deleteTool = new Element('span', {'class' : 'tool delete icon-remove', title : 'Remove this collaborator'});
+      var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times', title : 'Remove this collaborator'});
       row.insert(deleteTool.wrap('td'));
       deleteTool.observe('click', function(event) {
         event.findElement('tr').remove();

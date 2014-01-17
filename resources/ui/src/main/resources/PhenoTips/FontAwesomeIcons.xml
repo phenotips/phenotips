@@ -122,25 +122,28 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>[class^="icon-"], [class*=" icon-"] {
+      <code>.fa {
+  display: inline;
   font-family: inherit;
 }
-[class^="icon-"]:before, [class*=" icon-"]:before {
+.fa:before {
+  display: inline-block;
   font-family: FontAwesome;
 }
-.icon-spin:before {
+.fa-spinner {
+  -moz-animation: none;
+  -o-animation: none;
+  -webkit-animation: none;
+  animation: none;
+}
+.fa-spinner:before {
   display: inline-block;
   -moz-animation: spin 2s infinite linear;
   -o-animation: spin 2s infinite linear;
   -webkit-animation: spin 2s infinite linear;
   animation: spin 2s infinite linear;
 }
-.icon-spin {
-  -moz-animation: none;
-  -o-animation: none;
-  -webkit-animation: none;
-  animation: none;
-}</code>
+</code>
     </property>
     <property>
       <name>FontAwesome text font override</name>
@@ -271,18 +274,21 @@
 #set ($aliases = {
   'public' : 'unlock',
   'private' : 'lock',
-  'hidden' : 'eye-close',
+  'hidden' : 'eye-slash',
   'matchable' : 'search',
-  'delete' : 'remove'
+  'delete' : 'times'
 })
 #set ($iconName = $xcontext.macro.params.name)
 #if ($aliases.containsKey($iconName))
   #set ($iconName = $aliases.get($iconName))
 #end
-#set ($supportedSizes = ['large', '2x', '3x', '4x'])
+#set ($supportedSizes = ['lg', '2x', '3x', '4x'])
 #set ($iconSize = $xcontext.macro.params.size)
+#if ($iconSize == 'large')
+  #set ($iconSize = 'lg')
+#end
 #if ($supportedSizes.contains($iconSize))
-  #set ($iconSize = "icon-${iconSize}")
+  #set ($iconSize = "fa-${iconSize}")
 #else
   #set ($iconSize = '')
 #end
@@ -290,10 +296,10 @@
 #set ($text = " $!{xcontext.macro.content}")
 ##
 ## Pull the Font Awesome style
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', {'rel': 'stylesheet'})
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})
 $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
 ##
-{{/velocity}}{{velocity}}(% class="icon-$!iconName $!iconSize $!cssClass" title="$!{xcontext.macro.params.title}"%)$!{text}(%%){{/velocity}}</code>
+{{/velocity}}{{velocity}}(% class="fa fa-$!iconName $!iconSize $!cssClass" title="$!{xcontext.macro.params.title}"%)$!{text}(%%){{/velocity}}</code>
     </property>
     <property>
       <contentDescription>The text to display next to the icon (optional)</contentDescription>
