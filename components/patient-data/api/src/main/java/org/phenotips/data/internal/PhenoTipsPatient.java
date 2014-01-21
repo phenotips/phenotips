@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,13 +98,17 @@ public class PhenoTipsPatient implements Patient
                     continue;
                 }
                 for (String value : values.getList()) {
-                    this.features.add(new PhenoTipsFeature(doc, values, value));
+                    if (StringUtils.isNotBlank(value)) {
+                        this.features.add(new PhenoTipsFeature(doc, values, value));
+                    }
                 }
             }
             DBStringListProperty values = (DBStringListProperty) data.get("omim_id");
             if (values != null) {
                 for (String value : values.getList()) {
-                    this.disorders.add(new PhenoTipsDisorder(values, value));
+                    if (StringUtils.isNotBlank(value)) {
+                        this.disorders.add(new PhenoTipsDisorder(values, value));
+                    }
                 }
             }
         } catch (XWikiException ex) {
