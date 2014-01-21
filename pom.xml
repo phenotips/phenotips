@@ -226,6 +226,23 @@
               <className>**/hpoa/main/Main</className>
               <differenceType>8001</differenceType>
             </difference>
+            <difference>
+              <className>**/ontology/OntologyService</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getDefaultOntologyLocation()</method>
+            </difference>
+            <difference>
+              <className>**/ontology/OntologyService</className>
+              <differenceType>7004</differenceType>
+              <method>void reindex()</method>
+            </difference>
+            <difference>
+              <className>**/ontology/OntologyService</className>
+              <differenceType>7006</differenceType>
+              <method>void reindex()</method>
+              <from>void</from>
+              <to>int</to>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

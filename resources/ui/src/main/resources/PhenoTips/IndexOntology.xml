@@ -390,7 +390,7 @@
   </object>
   <content>{{velocity}}
 #if ("$!{request.url}" != '')
-  #set($result = $services.hpo.index("$!{request.url}", "$!{request.fields}"))
+  #set($result = $services.ontologies.hpo.reindex("$!{request.url}"))
   #if ("$!{request.ajax}" == '1')
     #if ($result == 0)
       (% class='xnotification xnotification-done' %)Indexing succeeded.
@@ -405,22 +405,6 @@
       #set ($indexMessage = "{{error}}Indexing of $!{request.url} failed.{{/error}}")
     #end
   #end
-#elseif ("$!{request.clear}" != '')
-  #set($result = $services.hpo.clear())
-  #if ("$!{request.ajax}" == '1')
-    #if ($result == 0)
-      (% class='xnotification xnotification-done' %)Clearing the index succeeded.
-    #else
-      (% class='xnotification xnotification-error' %)Clearing the index failed.
-    #end
-
-  #else
-    #if ($result == 0)
-      #set ($clearMessage = "{{info}}Clearing the index succeeded.{{/info}}")
-    #else
-      #set ($clearMessage = "{{error}}Clearing the index failed.{{/error}}")
-    #end
-  #end
 #end
 #if ("$!{request.ajax}" != '1')
 $xwiki.jsx.use('PhenoTips.IndexOntology')##
@@ -433,37 +417,16 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 &lt;label for="ontology-url"&gt;Ontology&lt;/label&gt;
 &lt;span class="xHint"&gt;The URL of a file containing the ontology you wish to index in &lt;a href="http://www.bioontology.org/wiki/index.php/OboInOwl:Main_Page" rel="_blank"&gt;OBO format&lt;/a&gt;.&lt;/span&gt;
 &lt;/dt&gt;
-&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-url" value="http://compbio.charite.de/hudson/job/hpo/lastStableBuild/artifact/ontology/release/hp.obo"/&gt;&lt;/dd&gt;
-&lt;dt&gt;
-&lt;label for="ontology-fields"&gt;Fields to index&lt;/label&gt;
-&lt;span class="xHint"&gt;A comma separated list on fields to be indexed for this term (e.g. "id,name,def,synonym,is_a"). Alternatively, you can choose to boost the weight of some fields, as follows: "id:50,name,def,synonym,is_a:0.1". If no fields are specified, all the fields in each term will be indexed, with the default weight 1.&lt;/span&gt;
-&lt;/dt&gt;
-&lt;dd&gt;&lt;input type="text" name="fields" id="ontology-fields" value=""/&gt;&lt;/dd&gt;
+&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-url" value="$services.ontologies.hpo.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
 &lt;/dl&gt;
 &lt;div&gt;
-&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="Start indexing"/&gt;&lt;/span&gt;
+&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="Start reindexing"/&gt;&lt;/span&gt;
 &lt;/div&gt;
 &lt;/form&gt;
 {{/html}}
 
 {{warning}}Indexing may take a while, please be patient.{{/warning}}
 
-)))
-
-
-== Clear the current index ==
-(% class="half" %)(((
-
-**This action removes EVERYTHING from the current index and cannot be reverted.**
-
-{{html wiki=false clean=false}}
-&lt;form class="xform solr-admin" action='' method="post"&gt;
-&lt;div&gt;
-&lt;input type="hidden" name="clear" value="1"/&gt;
-&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionclear" value="I'm sure, clear the index"/&gt;&lt;/span&gt;
-&lt;/div&gt;
-&lt;/form&gt;
-{{/html}}
 )))
 #end
 {{/velocity}}</content>
