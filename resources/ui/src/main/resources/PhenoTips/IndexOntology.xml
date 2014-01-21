@@ -417,7 +417,7 @@ $xwiki.jsx.use('PhenoTips.IndexOntology')##
 &lt;label for="ontology-url"&gt;Ontology&lt;/label&gt;
 &lt;span class="xHint"&gt;The URL of a file containing the ontology you wish to index in &lt;a href="http://www.bioontology.org/wiki/index.php/OboInOwl:Main_Page" rel="_blank"&gt;OBO format&lt;/a&gt;.&lt;/span&gt;
 &lt;/dt&gt;
-&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-url" value="http://compbio.charite.de/hudson/job/hpo/lastStableBuild/artifact/ontology/release/hp.obo"/&gt;&lt;/dd&gt;
+&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-url" value="$services.ontologies.hpo.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
 &lt;/dl&gt;
 &lt;div&gt;
 &lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="Start reindexing"/&gt;&lt;/span&gt;
