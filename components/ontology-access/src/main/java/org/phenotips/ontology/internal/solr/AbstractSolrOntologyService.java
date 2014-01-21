@@ -169,7 +169,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     }
 
     @Override
-    public void reindex()
+    public int reindex(String ontologyUrl)
     {
         // FIXME Not implemented yet
         throw new UnsupportedOperationException();

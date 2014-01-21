@@ -125,6 +125,17 @@ public interface OntologyService
 
     /**
      * Reindex the whole ontology, fetching the latest version from the source.
+     *
+     * @param ontologyUrl the url to be indexed
+     * @return {@code 0} if the indexing succeeded, {@code 1} if writing to the Solr server failed, {@code 2} if the
+     * specified URL is invalid
      */
-    void reindex();
+    int reindex(String ontologyUrl);
+
+    /**
+     * Get the defaults ontology access string (url to the data).
+     *
+     * @return the string containing the default url for the ontology service
+     */
+    String getDefaultOntologyLocation();
 }

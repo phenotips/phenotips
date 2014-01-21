@@ -19,10 +19,15 @@
  */
 package org.phenotips.ontology.internal.solr;
 
+import org.phenotips.obo2solr.ParameterPreparer;
+import org.phenotips.obo2solr.SolrUpdateGenerator;
+import org.phenotips.obo2solr.TermData;
 import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.component.annotation.Component;
 
+import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,6 +35,10 @@ import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.common.SolrInputDocument;
 
 /**
  * Provides access to the Human Phenotype Ontology (HPO). The ontology prefix is {@code HP}.
@@ -51,6 +60,12 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
     protected String getName()
     {
         return "hpo";
+    }
+
+    @Override
+    public String getDefaultOntologyLocation()
+    {
+        return "http://compbio.charite.de/hudson/job/hpo/lastStableBuild/artifact/ontology/release/hp.obo";
     }
 
     @Override
@@ -76,5 +91,72 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
         result.add("HP");
         result.add("HPO");
         return result;
+    }
+
+    @Override
+    public int reindex(String ontologyUrl)
+    {
+        this.clear();
+        return this.index(ontologyUrl);
+    }
+
+    /**
+     * Add an ontology to the index.
+     *
+     * @param ontologyUrl the address from where to get the ontology file
+     * @return {@code 0} if the indexing succeeded, {@code 1} if writing to the Solr server failed, {@code 2} if the
+     * specified URL is invalid
+     */
+    protected int index(String ontologyUrl)
+    {
+        String realOntologyUrl = StringUtils.defaultIfBlank(ontologyUrl, getDefaultOntologyLocation());
+
+        SolrUpdateGenerator generator = new SolrUpdateGenerator();
+        Map<String, Double> fieldSelection = new HashMap<String, Double>();
+        Map<String, TermData> data = generator.transform(realOntologyUrl, fieldSelection);
+        if (data == null) {
+            return 2;
+        }
+        Collection<SolrInputDocument> allTerms = new HashSet<SolrInputDocument>();
+        for (Map.Entry<String, TermData> item : data.entrySet()) {
+            SolrInputDocument doc = new SolrInputDocument();
+            for (Map.Entry<String, Collection<String>> property : item.getValue().entrySet()) {
+                String name = property.getKey();
+                for (String value : property.getValue()) {
+                    doc.addField(name, value, ParameterPreparer.DEFAULT_BOOST.floatValue());
+                }
+            }
+            allTerms.add(doc);
+        }
+        try {
+            this.server.add(allTerms);
+            this.server.commit();
+            this.cache.removeAll();
+            return 0;
+        } catch (SolrServerException ex) {
+            this.logger.warn("Failed to index ontology: {}", ex.getMessage());
+        } catch (IOException ex) {
+            this.logger.warn("Failed to communicate with the Solr server while indexing ontology: {}", ex.getMessage());
+        }
+        return 1;
+    }
+
+    /**
+     * Delete all the data in the Solr index.
+     *
+     * @return {@code 0} if the command was successful, {@code 1} otherwise
+     */
+    protected int clear()
+    {
+        try {
+            this.server.deleteByQuery("*:*");
+            //If used standalone  - commit and clean the cache
+            return 0;
+        } catch (SolrServerException ex) {
+            this.logger.error("SolrServerException while clearing the Solr index", ex);
+        } catch (IOException ex) {
+            this.logger.error("IOException while clearing the Solr index", ex);
+        }
+        return 1;
     }
 }

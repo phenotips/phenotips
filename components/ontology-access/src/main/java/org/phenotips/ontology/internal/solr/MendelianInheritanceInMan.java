@@ -73,4 +73,11 @@ public class MendelianInheritanceInMan extends AbstractSolrOntologyService
         result.add("OMIM");
         return result;
     }
+
+    @Override
+    public String getDefaultOntologyLocation()
+    {
+        //FIX ME. For now returns just an empty string.
+        return "";
+    }
 }
