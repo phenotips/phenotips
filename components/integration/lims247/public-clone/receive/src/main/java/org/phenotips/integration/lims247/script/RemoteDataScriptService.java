@@ -25,7 +25,6 @@ import org.xwiki.context.Execution;
 import org.xwiki.script.service.ScriptService;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -37,7 +36,6 @@ import org.slf4j.Logger;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.web.Utils;
 
 /**
  * Script service that accepts document modification requests from a trusted remote service.
@@ -58,6 +56,10 @@ public class RemoteDataScriptService implements ScriptService
     @Inject
     private Execution execution;
 
+    @Inject
+    @Named("xwikiproperties")
+    private ConfigurationSource configuration;
+
     /**
      * Check that the token received in the request is valid. The expected token is configured in the
      * {@code xwiki.properties} configuration file, under the {@code phenotips.remoteAuthentication.trustedToken} key.
@@ -67,9 +69,7 @@ public class RemoteDataScriptService implements ScriptService
     public boolean isTrusted()
     {
         String token = getXContext().getRequest().getParameter("token");
-        @SuppressWarnings("deprecation")
-        ConfigurationSource configuration = Utils.getComponent((Type) ConfigurationSource.class, "xwikiproperties");
-        String expected = configuration.getProperty("phenotips.remoteAuthentication.trustedToken");
+        String expected = this.configuration.getProperty("phenotips.remoteAuthentication.trustedToken");
         return StringUtils.equals(expected, token);
     }
 

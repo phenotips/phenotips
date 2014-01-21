@@ -33,6 +33,7 @@
 
   <modules>
     <module>api</module>
+    <module>public-clone</module>
     <module>ui</module>
   </modules>
 </project>
