@@ -25,6 +25,7 @@ import org.xwiki.bridge.event.DocumentCreatingEvent;
 import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
+import org.xwiki.container.Request;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
@@ -110,7 +111,11 @@ public class PatientBirthdateUpdater implements EventListener
     private int getParameter(String propertyName, int objectNumber)
     {
         String parameterName = Constants.CODE_SPACE + ".PatientClass_" + objectNumber + "_" + propertyName;
-        String value = (String) this.container.getRequest().getProperty(parameterName);
+        Request request = this.container.getRequest();
+        if (request == null) {
+            return -1;
+        }
+        String value = (String) request.getProperty(parameterName);
         if (StringUtils.isEmpty(value)) {
             return -1;
         }
