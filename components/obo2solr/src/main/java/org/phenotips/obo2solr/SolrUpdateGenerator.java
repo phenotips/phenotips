@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -140,16 +141,29 @@ public class SolrUpdateGenerator
 
     public Map<String, TermData> transform(URL input, Map<String, Double> fieldSelection)
     {
+        Collection<String> dateVersion = null;
         this.fieldSelection = fieldSelection;
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(input.openConnection().getInputStream()));
             this.atts = new AttributesImpl();
-
             String line;
             this.counter = 0;
+
             while ((line = in.readLine()) != null) {
                 if (line.trim().equalsIgnoreCase(TERM_MARKER)) {
+                    //If the first term, check if date was found in the head of the file.
+                    //If other fields are to be stored from the header write better mechanism for storing them.
+                    if (this.counter == 0) {
+                        Boolean dateVersionNotEmpty = this.crtTerm.get("date").isEmpty();
+                        if (!dateVersionNotEmpty) {
+                            dateVersion = this.crtTerm.get("date");
+                        } else {
+                            dateVersion = null;
+                        }
+                        //FIXME Is the first term supposed to consist of the header info?
+                    }
                     if (this.counter > 0) {
+                        this.crtTerm.addTo("version", dateVersion);
                         storeCrtTerm();
                     }
                     ++this.counter;
@@ -162,6 +176,7 @@ public class SolrUpdateGenerator
                 loadField(pieces[0], pieces[1]);
             }
             if (this.counter > 0) {
+                this.crtTerm.addTo("version", dateVersion);
                 storeCrtTerm();
             }
             if (isFieldSelected(TermData.TERM_CATEGORY_FIELD_NAME)) {

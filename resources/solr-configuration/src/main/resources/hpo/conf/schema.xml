@@ -164,6 +164,7 @@
   </types>
 
   <fields>
+    <field name="version" type="string" indexed="false" stored="true" />
     <field name="id" type="string" indexed="true" stored="true" required="true" />
     <field name="alt_id" type="string" indexed="true" stored="true" multiValued="true" />
     <field name="name" type="text_general" indexed="true" stored="true"/>

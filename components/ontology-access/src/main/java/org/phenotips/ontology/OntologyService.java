@@ -138,4 +138,11 @@ public interface OntologyService
      * @return the string containing the default url for the ontology service
      */
     String getDefaultOntologyLocation();
+
+    /**
+     * Get the current version of the database indexed by Solr.
+     *
+     * @return the string containing the version
+     */
+    String getVersion();
 }
