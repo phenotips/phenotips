@@ -36,12 +36,17 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 /**
  * Tests for the HPO implementation of the {@link org.phenotips.ontology.OntologyService}, {@link
  * org.phenotips.ontology.internal.solr.HumanPhenotypeOntology}.
@@ -65,10 +70,9 @@ public class HumanPhenotypeOntologyTest
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
         CacheManager cacheManager = mocker.getInstance(CacheManager.class);
-        cache = Mockito.mock(Cache.class);
-        Mockito.when(cacheManager.<OntologyTerm>createNewLocalCache(Mockito.any(CacheConfiguration.class))).thenReturn(
-            cache);
-        server = Mockito.mock(SolrServer.class);
+        cache = mock(Cache.class);
+        when(cacheManager.<OntologyTerm>createNewLocalCache(Mockito.any(CacheConfiguration.class))).thenReturn(cache);
+        server = mock(SolrServer.class);
         ontologyService = mocker.getComponentUnderTest();
         ReflectionUtils.setFieldValue(ontologyService, "server", server);
         ontologyServiceResult = ontologyService.reindex(null);
@@ -89,8 +93,14 @@ public class HumanPhenotypeOntologyTest
     @Test
     public void testHumanPhenotypeOntologyVersion() throws SolrServerException
     {
-        QueryResponse response = Mockito.mock(QueryResponse.class);
-        Mockito.when(server.query(Mockito.any(SolrQuery.class))).thenReturn(response);
-        ontologyService.getVersion();
+        QueryResponse response = mock(QueryResponse.class);
+        when(server.query(any(SolrQuery.class))).thenReturn(response);
+        SolrDocumentList results = mock(SolrDocumentList.class);
+        when(response.getResults()).thenReturn(results);
+        when(results.isEmpty()).thenReturn(false);
+        SolrDocument versionDoc = mock(SolrDocument.class);
+        when(results.get(0)).thenReturn(versionDoc);
+        when(versionDoc.getFieldValue("version")).thenReturn("2014:01:01");
+        Assert.assertEquals("2014:01:01", ontologyService.getVersion());
     }
 }

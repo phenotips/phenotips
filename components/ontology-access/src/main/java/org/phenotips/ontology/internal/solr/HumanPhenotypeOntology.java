@@ -60,6 +60,8 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
      */
     protected static final String ALTERNATIVE_ID_FIELD_NAME = "alt_id";
 
+    protected static final String VERSION_FIELD_NAME = "version";
+
     @Override
     protected String getName()
     {
@@ -180,7 +182,7 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
 
             if (!termList.isEmpty()) {
                 firstDoc = termList.get(0);
-                return firstDoc.getFieldValue("version").toString();
+                return firstDoc.getFieldValue(VERSION_FIELD_NAME).toString();
             }
         } catch (SolrServerException ex) {
             this.logger.warn("Failed to query ontology version {}", ex.getMessage());
