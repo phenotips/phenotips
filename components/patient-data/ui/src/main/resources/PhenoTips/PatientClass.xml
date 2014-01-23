@@ -752,7 +752,7 @@
       <name>negative_prenatal_phenotype</name>
       <number>24</number>
       <picker>0</picker>
-      <prettyName>negative_prenatal_phenotype</prettyName>
+      <prettyName>Prenatal symptoms NOT observed in this patient</prettyName>
       <relationalStorage>1</relationalStorage>
       <separator> </separator>
       <separators/>
