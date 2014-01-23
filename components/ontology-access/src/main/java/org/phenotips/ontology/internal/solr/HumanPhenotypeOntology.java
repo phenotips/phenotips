@@ -174,7 +174,7 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
         SolrDocumentList termList;
         SolrDocument firstDoc;
 
-        query.set("version", "*");
+        query.setQuery("version:*");
         query.set("rows", "1");
         try {
             response = this.server.query(query);
