@@ -84,6 +84,13 @@
       <type>xar</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ontology-access-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <build>
     <pluginManagement>

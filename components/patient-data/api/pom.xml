@@ -81,7 +81,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-access</artifactId>
+      <artifactId>ontology-access-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
