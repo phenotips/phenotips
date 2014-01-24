@@ -151,21 +151,7 @@ public class SolrUpdateGenerator
 
             while ((line = in.readLine()) != null) {
                 if (line.trim().equalsIgnoreCase(TERM_MARKER)) {
-                    //If the first term, check if date was found in the head of the file.
-                    //If other fields are to be stored from the header write better mechanism for storing them.
-                    if (this.counter == 0) {
-                        Boolean dateVersionNotEmpty = this.crtTerm.get("date").isEmpty();
-                        if (!dateVersionNotEmpty) {
-                            dateVersion = this.crtTerm.get("date");
-                        } else {
-                            dateVersion = null;
-                        }
-                        //FIXME Is the first term supposed to consist of the header info?
-                    }
-                    if (this.counter > 0) {
-                        this.crtTerm.addTo("version", dateVersion);
-                        storeCrtTerm();
-                    }
+                    storeCrtTerm();
                     ++this.counter;
                     continue;
                 }
@@ -173,10 +159,13 @@ public class SolrUpdateGenerator
                 if (pieces.length != 2) {
                     continue;
                 }
+                if (pieces[0].trim().equals("date")){
+                    this.crtTerm.addTo("version", pieces[1]);
+                    this.crtTerm.addTo(TermData.ID_FIELD_NAME, "HEADER_INFO");
+                }
                 loadField(pieces[0], pieces[1]);
             }
             if (this.counter > 0) {
-                this.crtTerm.addTo("version", dateVersion);
                 storeCrtTerm();
             }
             if (isFieldSelected(TermData.TERM_CATEGORY_FIELD_NAME)) {
