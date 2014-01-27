@@ -37,12 +37,16 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
 /**
  * Provides access to the Human Phenotype Ontology (HPO). The ontology prefix is {@code HP}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -55,6 +59,8 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
      * The name of the Alternative ID field, used for older aliases of updated HPO terms.
      */
     protected static final String ALTERNATIVE_ID_FIELD_NAME = "alt_id";
+
+    protected static final String VERSION_FIELD_NAME = "version";
 
     @Override
     protected String getName()
@@ -158,5 +164,29 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
             this.logger.error("IOException while clearing the Solr index", ex);
         }
         return 1;
+    }
+
+    @Override
+    public String getVersion()
+    {
+        QueryResponse response;
+        SolrQuery query = new SolrQuery();
+        SolrDocumentList termList;
+        SolrDocument firstDoc;
+
+        query.setQuery("version:*");
+        query.set("rows", "1");
+        try {
+            response = this.server.query(query);
+            termList = response.getResults();
+
+            if (!termList.isEmpty()) {
+                firstDoc = termList.get(0);
+                return firstDoc.getFieldValue(VERSION_FIELD_NAME).toString();
+            }
+        } catch (SolrServerException ex) {
+            this.logger.warn("Failed to query ontology version {}", ex.getMessage());
+        }
+        return null;
     }
 }

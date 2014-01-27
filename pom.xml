@@ -243,6 +243,11 @@
               <from>void</from>
               <to>int</to>
             </difference>
+            <difference>
+              <className>**/ontology/OntologyService</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getVersion()</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

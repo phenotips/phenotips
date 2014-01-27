@@ -176,6 +176,13 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     }
 
     @Override
+    public String getVersion()
+    {
+        // FIXME Not implemented yet
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public long getDistance(String fromTermId, String toTermId)
     {
         return getDistance(getTerm(fromTermId), getTerm(toTermId));

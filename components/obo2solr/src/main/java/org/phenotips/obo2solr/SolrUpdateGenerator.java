@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -140,24 +141,27 @@ public class SolrUpdateGenerator
 
     public Map<String, TermData> transform(URL input, Map<String, Double> fieldSelection)
     {
+        Collection<String> dateVersion = null;
         this.fieldSelection = fieldSelection;
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(input.openConnection().getInputStream()));
             this.atts = new AttributesImpl();
-
             String line;
             this.counter = 0;
+
             while ((line = in.readLine()) != null) {
                 if (line.trim().equalsIgnoreCase(TERM_MARKER)) {
-                    if (this.counter > 0) {
-                        storeCrtTerm();
-                    }
+                    storeCrtTerm();
                     ++this.counter;
                     continue;
                 }
                 String[] pieces = line.split(FIELD_NAME_VALUE_SEPARATOR, 2);
                 if (pieces.length != 2) {
                     continue;
+                }
+                if (pieces[0].trim().equals("date")){
+                    this.crtTerm.addTo("version", pieces[1]);
+                    this.crtTerm.addTo(TermData.ID_FIELD_NAME, "HEADER_INFO");
                 }
                 loadField(pieces[0], pieces[1]);
             }
