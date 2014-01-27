@@ -19,7 +19,7 @@
  */
 package org.phenotips.ontology.internal.solr;
 
-import org.phenotips.ontology.OntologyServiceInitializer;
+import org.phenotips.ontology.SolrOntologyServiceInitializable;
 import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.cache.Cache;
@@ -47,9 +47,8 @@ import org.slf4j.Logger;
  * @since FIXME and version
  */
 @Component
-@Named("solr")
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public class SolrOntologyServiceInitializer implements OntologyServiceInitializer
+public class SolrOntologyServiceInitializer implements SolrOntologyServiceInitializable
 {
     protected static final String HTTP_DELIMITER = "/";
 
@@ -92,7 +91,7 @@ public class SolrOntologyServiceInitializer implements OntologyServiceInitialize
      *
      * @return String URL for the Solr server
      */
-    public String getSolrLocation()
+    protected String getSolrLocation()
     {
         String wikiSolrUrl = configuration.getProperty("solr.remote.url", String.class);
         String[] urlParts = wikiSolrUrl.trim().split(HTTP_DELIMITER);

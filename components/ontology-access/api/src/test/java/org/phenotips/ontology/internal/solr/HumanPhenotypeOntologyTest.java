@@ -20,7 +20,7 @@
 package org.phenotips.ontology.internal.solr;
 
 import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyServiceInitializer;
+import org.phenotips.ontology.SolrOntologyServiceInitializable;
 import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.cache.Cache;
@@ -68,8 +68,8 @@ public class HumanPhenotypeOntologyTest
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
         cache = mock(Cache.class);
-        OntologyServiceInitializer externalServicesAccess =
-            mocker.getInstance(OntologyServiceInitializer.class, "solr");
+        SolrOntologyServiceInitializable externalServicesAccess =
+            mocker.getInstance(SolrOntologyServiceInitializable.class);
         when(externalServicesAccess.getCache()).thenReturn(cache);
         server = mock(SolrServer.class);
         when(externalServicesAccess.getServer()).thenReturn(server);
