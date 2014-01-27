@@ -57,11 +57,4 @@ public interface OntologyServiceInitializer
      * @return server instance
      */
     SolrServer getServer();
-
-    /**
-     * Gets the string URL to the Solr server.
-     *
-     * @return String URL for the Solr server
-     */
-    String getSolrLocation();
 }

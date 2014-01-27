@@ -87,7 +87,11 @@ public class SolrOntologyServiceInitializer implements OntologyServiceInitialize
         }
     }
 
-    @Override
+    /**
+     * Gets the string URL to the Solr server.
+     *
+     * @return String URL for the Solr server
+     */
     public String getSolrLocation()
     {
         String wikiSolrUrl = configuration.getProperty("solr.remote.url", String.class);
