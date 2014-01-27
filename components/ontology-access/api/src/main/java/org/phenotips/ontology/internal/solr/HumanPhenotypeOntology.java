@@ -135,9 +135,9 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
             allTerms.add(doc);
         }
         try {
-            this.server.add(allTerms);
-            this.server.commit();
-            this.cache.removeAll();
+            externalServicesAccess.getServer().add(allTerms);
+            externalServicesAccess.getServer().commit();
+            externalServicesAccess.getCache().removeAll();
             return 0;
         } catch (SolrServerException ex) {
             this.logger.warn("Failed to index ontology: {}", ex.getMessage());
@@ -155,7 +155,7 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
     protected int clear()
     {
         try {
-            this.server.deleteByQuery("*:*");
+            externalServicesAccess.getServer().deleteByQuery("*:*");
             //If used standalone  - commit and clean the cache
             return 0;
         } catch (SolrServerException ex) {
@@ -177,7 +177,7 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
         query.setQuery("version:*");
         query.set("rows", "1");
         try {
-            response = this.server.query(query);
+            response = externalServicesAccess.getServer().query(query);
             termList = response.getResults();
 
             if (!termList.isEmpty()) {

@@ -20,14 +20,12 @@
 package org.phenotips.ontology.internal.solr;
 
 import org.phenotips.ontology.OntologyService;
+import org.phenotips.ontology.OntologyServiceInitializer;
 import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
-import org.xwiki.cache.CacheManager;
-import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.io.IOException;
@@ -69,12 +67,13 @@ public class HumanPhenotypeOntologyTest
     public void setUpOntology()
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
-        CacheManager cacheManager = mocker.getInstance(CacheManager.class);
         cache = mock(Cache.class);
-        when(cacheManager.<OntologyTerm>createNewLocalCache(Mockito.any(CacheConfiguration.class))).thenReturn(cache);
+        OntologyServiceInitializer externalServicesAccess =
+            mocker.getInstance(OntologyServiceInitializer.class, "solr");
+        when(externalServicesAccess.getCache()).thenReturn(cache);
         server = mock(SolrServer.class);
+        when(externalServicesAccess.getServer()).thenReturn(server);
         ontologyService = mocker.getComponentUnderTest();
-        ReflectionUtils.setFieldValue(ontologyService, "server", server);
         ontologyServiceResult = ontologyService.reindex(null);
     }
 
@@ -102,5 +101,13 @@ public class HumanPhenotypeOntologyTest
         when(results.get(0)).thenReturn(versionDoc);
         when(versionDoc.getFieldValue("version")).thenReturn("2014:01:01");
         Assert.assertEquals("2014:01:01", ontologyService.getVersion());
+    }
+
+    @Test
+    public void testHumanPhenotypeOntologyDefaultLocation()
+    {
+        String location = ontologyService.getDefaultOntologyLocation();
+        String expected = "http://compbio.charite.de/hudson/job/hpo/lastStableBuild/artifact/ontology/release/hp.obo";
+        Assert.assertTrue(location.equalsIgnoreCase(expected));
     }
 }
