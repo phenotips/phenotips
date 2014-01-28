@@ -40,15 +40,15 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * Store versions (in the form name:String, verstion:String) in the patient record.
- *
- * FIXME - version.
+ * Store versions (in the form name:String, version:String) in the patient record.
  *
  * @version $Id$
  */
@@ -58,10 +58,11 @@ import com.xpn.xwiki.objects.BaseObject;
 public class PatientOntologyVersionRecorder implements EventListener
 {
     /** The name of the class where version info (name, version) is stored. */
-    private static final EntityReference VERSION_RECORDER_REFERENCE = new EntityReference("PatientVersionRecorder",
+    private static final EntityReference VERSION_RECORDER_REFERENCE = new EntityReference("OntologyVersionClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private static final String NAME_FIELD = "name";
+    private static final String VERSION_FIELD = "version";
 
     /** Access to services that are needed to get the ontology version. */
     @Inject
@@ -93,15 +94,16 @@ public class PatientOntologyVersionRecorder implements EventListener
         if (patientRecordObj == null) {
             return;
         }
-        //BaseClass patientRecordClass = patientRecordObj.getXClass(context);
+
         List<BaseObject> existingVersionObjects = doc.getXObjects(VERSION_RECORDER_REFERENCE);
         try {
-            for (Map.Entry<String, String> versionType : this.versionTypes().entrySet()) {
+            for (Map.Entry<String, String> versionType : this.getOntologiesVersions().entrySet()) {
                 boolean skip = false;
                 if (existingVersionObjects != null) {
                     for (BaseObject existingVersionObject : existingVersionObjects) {
-                        String name = existingVersionObject.getField(NAME_FIELD).toFormString();
-                        if (name.equalsIgnoreCase(versionType.getKey())) {
+                        String name = existingVersionObject.getStringValue(NAME_FIELD);
+                        if (StringUtils.equalsIgnoreCase(name, versionType.getKey())) {
+                            existingVersionObject.set(VERSION_FIELD, versionType.getValue(), context);
                             skip = true;
                             break;
                         }
@@ -112,7 +114,7 @@ public class PatientOntologyVersionRecorder implements EventListener
                 }
                 BaseObject versionObject = doc.newXObject(VERSION_RECORDER_REFERENCE, context);
                 versionObject.set(NAME_FIELD, versionType.getKey(), context);
-                versionObject.set("version", versionType.getValue(), context);
+                versionObject.set(VERSION_FIELD, versionType.getValue(), context);
             }
         } catch (XWikiException ex) {
             //Storage Error. Shouldn't happen.
@@ -124,7 +126,7 @@ public class PatientOntologyVersionRecorder implements EventListener
      *
      * @return Map of all the version types. Each entry becomes an object in the patient record.
      */
-    public Map<String, String> versionTypes()
+    public Map<String, String> getOntologiesVersions()
     {
         Map<String, String> result = new HashMap();
 
