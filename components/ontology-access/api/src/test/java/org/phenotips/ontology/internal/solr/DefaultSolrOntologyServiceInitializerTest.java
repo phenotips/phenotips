@@ -19,15 +19,10 @@
  */
 package org.phenotips.ontology.internal.solr;
 
-import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.OntologyTerm;
-
-import org.xwiki.cache.Cache;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import org.apache.solr.client.solrj.SolrServer;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,21 +30,11 @@ import org.junit.Test;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the HPO implementation of the {@link org.phenotips.ontology.OntologyService}, {@link
- * org.phenotips.ontology.internal.solr.HumanPhenotypeOntology}.
+ * Test for the implementation of DefaultSolrOntologyServiceInitializer. It is the class that creates a connection
+ * to the Solr server and creates a cache.
  */
 public class DefaultSolrOntologyServiceInitializerTest
 {
-    public int ontologyServiceResult;
-
-    public Cache<OntologyTerm> cache;
-
-    public SolrServer server;
-
-    public OntologyService ontologyService;
-
-    DefaultSolrOntologyServiceInitializer externalServicesAccess;
-
     @Rule
     public final MockitoComponentMockingRule<DefaultSolrOntologyServiceInitializer> mocker =
         new MockitoComponentMockingRule<DefaultSolrOntologyServiceInitializer>
