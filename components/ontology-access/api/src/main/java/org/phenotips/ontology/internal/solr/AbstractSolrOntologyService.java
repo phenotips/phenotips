@@ -20,12 +20,9 @@
 package org.phenotips.ontology.internal.solr;
 
 import org.phenotips.ontology.OntologyService;
+import org.phenotips.ontology.SolrOntologyServiceInitializer;
 import org.phenotips.ontology.OntologyTerm;
 
-import org.xwiki.cache.Cache;
-import org.xwiki.cache.CacheException;
-import org.xwiki.cache.CacheManager;
-import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 
@@ -37,8 +34,6 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
@@ -71,31 +66,19 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     @Inject
     protected Logger logger;
 
-    /** The Solr server instance used. */
-    protected SolrServer server;
-
-    /**
-     * Cache for the recently accessed terms; useful since the ontology rarely changes, so a search should always return
-     * the same thing.
-     */
-    protected Cache<OntologyTerm> cache;
-
-    /** Cache factory needed for creating the term cache. */
+    /** The object used for initializing server connection and cache. */
     @Inject
-    protected CacheManager cacheFactory;
+    protected SolrOntologyServiceInitializer externalServicesAccess;
 
     @Override
     public void initialize() throws InitializationException
     {
-        try {
-            this.server = new HttpSolrServer("http://localhost:8080/solr/" + this.getName() + "/");
-            this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
-        } catch (RuntimeException ex) {
-            throw new InitializationException("Invalid URL specified for the Solr server: {}");
-        } catch (final CacheException ex) {
-            throw new InitializationException("Cannot create cache: " + ex.getMessage());
-        }
+        externalServicesAccess.initialize(this.getName());
     }
+
+    //Dilemma:
+    //In an ideal world there should be a getter methods for server and cache instances.
+    //However the point of splitting up the server was to lessen the number of imports
 
     /**
      * Get the name of the Solr "core" to be used by this service instance.
@@ -110,14 +93,14 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
         ModifiableSolrParams params = new ModifiableSolrParams();
         params.set(CommonParams.Q, ID_FIELD_NAME + ':' + ClientUtils.escapeQueryChars(id));
         String cacheKey = SolrQueryUtils.getCacheKey(params);
-        OntologyTerm result = this.cache.get(cacheKey);
+        OntologyTerm result = externalServicesAccess.getCache().get(cacheKey);
         if (result == null) {
             SolrDocumentList allResults = this.search(params);
             if (allResults != null && !allResults.isEmpty()) {
                 result = new SolrOntologyTerm(allResults.get(0), this);
-                this.cache.set(cacheKey, result);
+                externalServicesAccess.getCache().set(cacheKey, result);
             } else {
-                this.cache.set(cacheKey, EMPTY_MARKER);
+                externalServicesAccess.getCache().set(cacheKey, EMPTY_MARKER);
             }
         }
         return (result == EMPTY_MARKER) ? null : result;
@@ -222,14 +205,15 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     {
         try {
             SolrParams enhancedParams = SolrQueryUtils.enhanceParams(params, queryOptions);
-            QueryResponse response = this.server.query(enhancedParams);
+            QueryResponse response = externalServicesAccess.getServer().query(enhancedParams);
             SolrDocumentList results = response.getResults();
             if (response.getSpellCheckResponse() != null && !response.getSpellCheckResponse().isCorrectlySpelled()
                 && StringUtils.isNotEmpty(response.getSpellCheckResponse().getCollatedResult())) {
                 enhancedParams =
                     SolrQueryUtils.applySpellcheckSuggestion(enhancedParams, response.getSpellCheckResponse()
                         .getCollatedResult());
-                SolrDocumentList spellcheckResults = this.server.query(enhancedParams).getResults();
+                SolrDocumentList spellcheckResults = externalServicesAccess.getServer()
+                    .query(enhancedParams).getResults();
                 if (results.getMaxScore() < spellcheckResults.getMaxScore()) {
                     results = spellcheckResults;
                 }
@@ -255,7 +239,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
         params.set(CommonParams.ROWS, "0");
         SolrDocumentList results;
         try {
-            results = this.server.query(params).getResults();
+            results = externalServicesAccess.getServer().query(params).getResults();
             return results.getNumFound();
         } catch (Exception ex) {
             this.logger.error("Failed to count ontology terms: {}", ex.getMessage(), ex);
