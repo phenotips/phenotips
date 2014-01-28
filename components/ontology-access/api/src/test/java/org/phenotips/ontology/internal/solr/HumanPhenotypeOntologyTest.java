@@ -107,7 +107,8 @@ public class HumanPhenotypeOntologyTest
     public void testHumanPhenotypeOntologyDefaultLocation()
     {
         String location = ontologyService.getDefaultOntologyLocation();
-        String expected = "http://compbio.charite.de/hudson/job/hpo/lastStableBuild/artifact/ontology/release/hp.obo";
-        Assert.assertTrue(location.equalsIgnoreCase(expected));
+        Assert.assertNotNull(location);
+        Assert.assertTrue(location.endsWith("hp.obo"));
+        Assert.assertTrue(location.startsWith("http"));
     }
 }
