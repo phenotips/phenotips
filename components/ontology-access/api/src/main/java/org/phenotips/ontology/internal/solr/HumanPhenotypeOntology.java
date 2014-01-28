@@ -71,7 +71,7 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
     @Override
     public String getDefaultOntologyLocation()
     {
-        return "http://compbio.charite.de/hudson/job/hpo/lastStableBuild/artifact/ontology/release/hp.obo";
+        return "http://purl.obolibrary.org/obo/hp.obo";
     }
 
     @Override
