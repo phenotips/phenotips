@@ -20,7 +20,7 @@
 package org.phenotips.ontology.internal.solr;
 
 import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.SolrOntologyServiceInitializable;
+import org.phenotips.ontology.SolrOntologyServiceInitializer;
 import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.component.phase.Initializable;
@@ -68,7 +68,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
 
     /** The object used for initializing server connection and cache. */
     @Inject
-    protected SolrOntologyServiceInitializable externalServicesAccess;
+    protected SolrOntologyServiceInitializer externalServicesAccess;
 
     @Override
     public void initialize() throws InitializationException

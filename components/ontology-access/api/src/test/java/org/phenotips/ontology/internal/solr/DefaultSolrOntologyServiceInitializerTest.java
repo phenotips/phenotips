@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
  * Tests for the HPO implementation of the {@link org.phenotips.ontology.OntologyService}, {@link
  * org.phenotips.ontology.internal.solr.HumanPhenotypeOntology}.
  */
-public class SolrOntologyServiceInitializerTest
+public class DefaultSolrOntologyServiceInitializerTest
 {
     public int ontologyServiceResult;
 
@@ -48,12 +48,12 @@ public class SolrOntologyServiceInitializerTest
 
     public OntologyService ontologyService;
 
-    SolrOntologyServiceInitializer externalServicesAccess;
+    DefaultSolrOntologyServiceInitializer externalServicesAccess;
 
     @Rule
-    public final MockitoComponentMockingRule<SolrOntologyServiceInitializer> mocker =
-        new MockitoComponentMockingRule<SolrOntologyServiceInitializer>
-            (SolrOntologyServiceInitializer.class);
+    public final MockitoComponentMockingRule<DefaultSolrOntologyServiceInitializer> mocker =
+        new MockitoComponentMockingRule<DefaultSolrOntologyServiceInitializer>
+            (DefaultSolrOntologyServiceInitializer.class);
 
     @Test
     public void testGetSolrLocation() throws ComponentLookupException
@@ -62,7 +62,7 @@ public class SolrOntologyServiceInitializerTest
             .getInstance(ConfigurationSource.class, "xwikiproperties");
         when(configuration.getProperty("solr.remote.url", String.class))
             .thenReturn("http://localhost:8080/solr/wiki/");
-        SolrOntologyServiceInitializer initializer = mocker.getComponentUnderTest();
+        DefaultSolrOntologyServiceInitializer initializer = mocker.getComponentUnderTest();
         String location = initializer.getSolrLocation();
         Assert.assertTrue(location.equalsIgnoreCase("http://localhost:8080/solr/"));
     }

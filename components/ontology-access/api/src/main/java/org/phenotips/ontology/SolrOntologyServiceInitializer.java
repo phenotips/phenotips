@@ -34,7 +34,7 @@ import org.apache.solr.client.solrj.SolrServer;
  */
 @Unstable
 @Role
-public interface SolrOntologyServiceInitializable
+public interface SolrOntologyServiceInitializer
 {
     /**
      * Initializes connection to the Solr server and new cache.

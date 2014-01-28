@@ -19,7 +19,7 @@
  */
 package org.phenotips.ontology.internal.solr;
 
-import org.phenotips.ontology.SolrOntologyServiceInitializable;
+import org.phenotips.ontology.SolrOntologyServiceInitializer;
 import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.cache.Cache;
@@ -48,7 +48,7 @@ import org.slf4j.Logger;
  */
 @Component
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public class SolrOntologyServiceInitializer implements SolrOntologyServiceInitializable
+public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServiceInitializer
 {
     protected static final String HTTP_DELIMITER = "/";
 

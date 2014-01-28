@@ -2,4 +2,4 @@ org.phenotips.ontology.internal.DefaultOntologyManager
 org.phenotips.ontology.internal.solr.HumanPhenotypeOntology
 org.phenotips.ontology.internal.solr.MendelianInheritanceInMan
 org.phenotips.ontology.script.OtologyScriptService
-org.phenotips.ontology.internal.solr.SolrOntologyServiceInitializer
+org.phenotips.ontology.internal.solr.DefaultSolrOntologyServiceInitializer
