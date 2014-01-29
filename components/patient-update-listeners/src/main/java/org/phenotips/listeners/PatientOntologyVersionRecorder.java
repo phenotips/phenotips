@@ -130,7 +130,10 @@ public class PatientOntologyVersionRecorder implements EventListener
     {
         Map<String, String> result = new HashMap();
 
-        result.put("hpo", humanPhenotypeOntology.getVersion());
+        String hpoVersion = humanPhenotypeOntology.getVersion();
+        if (StringUtils.isNotBlank(hpoVersion)) {
+            result.put("hpo", hpoVersion);
+        }
         return result;
     }
 }

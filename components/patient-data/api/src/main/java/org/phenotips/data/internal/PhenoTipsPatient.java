@@ -20,11 +20,13 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.Constants;
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 
-import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.extension.distribution.internal.DistributionManager;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -35,9 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -69,11 +68,6 @@ public class PhenoTipsPatient implements Patient
 
     /** Known phenotype properties. */
     private static final String[] PHENOTYPE_PROPERTIES = new String[] {"phenotype", "negative_phenotype"};
-
-    /** The configuration from which the current phenotips version is extracted. */
-    @Inject
-    @Named("xwikiproperties")
-    private ConfigurationSource configuration;
 
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
@@ -143,7 +137,9 @@ public class PhenoTipsPatient implements Patient
         for (BaseObject versionObject : ontologyVersionObjects) {
             String versionType = versionObject.getStringValue("name");
             String versionString = versionObject.getStringValue("version");
-            this.versions.put(versionType, versionString);
+            if (StringUtils.isNotEmpty(versionString)) {
+                this.versions.put(versionType, versionString);
+            }
         }
     }
 
@@ -199,13 +195,18 @@ public class PhenoTipsPatient implements Patient
             }
             result.element("disorders", diseasesJSON);
         }
-        if (!this.versions.isEmpty()) {
+        try {
+            DistributionManager distribution =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(DistributionManager.class);
             JSONObject versionsJSON = new JSONObject();
-            this.versions.put("phenotips_version", configuration.getProperty("phenotips.version", String.class));
+            this.versions.put("phenotips_version",
+                distribution.getDistributionExtension().getId().getVersion().toString());
             for (Map.Entry<String, String> version : this.versions.entrySet()) {
                 versionsJSON.element(version.getKey(), version.getValue());
             }
             result.element("versioning", versionsJSON);
+        } catch (ComponentLookupException ex) {
+            // Shouldn't happen, no worries.
         }
         return result;
     }
