@@ -140,7 +140,7 @@ public class PhenoTipsPatient implements Patient
         for (BaseObject versionObject : ontologyVersionObjects) {
             String versionType = versionObject.getStringValue("name");
             String versionString = versionObject.getStringValue("version");
-            if (StringUtils.isNotEmpty(versionString)) {
+            if (StringUtils.isNotEmpty(versionType) && StringUtils.isNotEmpty(versionString)) {
                 this.versions.put(versionType, versionString);
             }
         }
@@ -205,11 +205,12 @@ public class PhenoTipsPatient implements Patient
             this.versions.put("phenotips_version",
                 distribution.getDistributionExtension().getId().getVersion().toString());
             for (Map.Entry<String, String> version : this.versions.entrySet()) {
-                versionsJSON.element(version.getKey(), version.getValue());
+                versionsJSON.element(version.getKey() + "_version", version.getValue());
             }
             result.element("versioning", versionsJSON);
         } catch (ComponentLookupException ex) {
             // Shouldn't happen, no worries.
+            this.logger.debug("Failed to access the DistributionManager component: {}", ex.getMessage(), ex);
         }
         return result;
     }
