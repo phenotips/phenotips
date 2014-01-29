@@ -20,15 +20,21 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.Constants;
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.extension.distribution.internal.DistributionManager;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -78,6 +84,9 @@ public class PhenoTipsPatient implements Patient
     /** @see #getDisorders() */
     private Set<Disorder> disorders = new TreeSet<Disorder>();
 
+    /** Holds the list of all ontology versions. */
+    private Map<String, String> versions = new HashMap<String, String>();
+
     /**
      * Constructor that copies the data from an XDocument.
      * 
@@ -118,6 +127,20 @@ public class PhenoTipsPatient implements Patient
         // Readonly from now on
         this.features = Collections.unmodifiableSet(this.features);
         this.disorders = Collections.unmodifiableSet(this.disorders);
+
+        this.setOntologiesVersions(doc);
+    }
+
+    private void setOntologiesVersions(XWikiDocument doc)
+    {
+        List<BaseObject> ontologyVersionObjects = doc.getXObjects(VERSION_REFERENCE);
+        for (BaseObject versionObject : ontologyVersionObjects) {
+            String versionType = versionObject.getStringValue("name");
+            String versionString = versionObject.getStringValue("version");
+            if (StringUtils.isNotEmpty(versionString)) {
+                this.versions.put(versionType, versionString);
+            }
+        }
     }
 
     @Override
@@ -171,6 +194,19 @@ public class PhenoTipsPatient implements Patient
                 diseasesJSON.add(disease.toJSON());
             }
             result.element("disorders", diseasesJSON);
+        }
+        try {
+            DistributionManager distribution =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(DistributionManager.class);
+            JSONObject versionsJSON = new JSONObject();
+            this.versions.put("phenotips_version",
+                distribution.getDistributionExtension().getId().getVersion().toString());
+            for (Map.Entry<String, String> version : this.versions.entrySet()) {
+                versionsJSON.element(version.getKey(), version.getValue());
+            }
+            result.element("versioning", versionsJSON);
+        } catch (ComponentLookupException ex) {
+            // Shouldn't happen, no worries.
         }
         return result;
     }
