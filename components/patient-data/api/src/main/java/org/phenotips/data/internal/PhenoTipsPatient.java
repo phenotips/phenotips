@@ -134,6 +134,9 @@ public class PhenoTipsPatient implements Patient
     private void setOntologiesVersions(XWikiDocument doc)
     {
         List<BaseObject> ontologyVersionObjects = doc.getXObjects(VERSION_REFERENCE);
+        if (ontologyVersionObjects == null) {
+            return;
+        }
         for (BaseObject versionObject : ontologyVersionObjects) {
             String versionType = versionObject.getStringValue("name");
             String versionString = versionObject.getStringValue("version");
