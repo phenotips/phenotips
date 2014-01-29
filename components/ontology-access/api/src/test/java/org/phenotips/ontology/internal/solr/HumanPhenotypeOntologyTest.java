@@ -20,8 +20,8 @@
 package org.phenotips.ontology.internal.solr;
 
 import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.SolrOntologyServiceInitializer;
 import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.ontology.SolrOntologyServiceInitializer;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -36,6 +36,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,9 +46,10 @@ import org.mockito.Mockito;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 /**
- * Tests for the HPO implementation of the {@link org.phenotips.ontology.OntologyService}, {@link
- * org.phenotips.ontology.internal.solr.HumanPhenotypeOntology}.
+ * Tests for the HPO implementation of the {@link org.phenotips.ontology.OntologyService},
+ * {@link org.phenotips.ontology.internal.solr.HumanPhenotypeOntology}.
  */
 public class HumanPhenotypeOntologyTest
 {
@@ -63,50 +65,51 @@ public class HumanPhenotypeOntologyTest
     public final MockitoComponentMockingRule<OntologyService> mocker =
         new MockitoComponentMockingRule<OntologyService>(HumanPhenotypeOntology.class);
 
+    @SuppressWarnings("unchecked")
     @Before
     public void setUpOntology()
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
-        cache = mock(Cache.class);
+        this.cache = mock(Cache.class);
         SolrOntologyServiceInitializer externalServicesAccess =
-            mocker.getInstance(SolrOntologyServiceInitializer.class);
-        when(externalServicesAccess.getCache()).thenReturn(cache);
-        server = mock(SolrServer.class);
-        when(externalServicesAccess.getServer()).thenReturn(server);
-        ontologyService = mocker.getComponentUnderTest();
-        ontologyServiceResult = ontologyService.reindex(null);
+            this.mocker.getInstance(SolrOntologyServiceInitializer.class);
+        when(externalServicesAccess.getCache()).thenReturn(this.cache);
+        this.server = mock(SolrServer.class);
+        when(externalServicesAccess.getServer()).thenReturn(this.server);
+        this.ontologyService = this.mocker.getComponentUnderTest();
+        this.ontologyServiceResult = this.ontologyService.reindex(null);
     }
 
     @Test
     public void testHumanPhenotypeOntologyReindex()
         throws ComponentLookupException, IOException, SolrServerException, CacheException
     {
-        Mockito.verify(server).deleteByQuery("*:*");
-        Mockito.verify(server).commit();
-        Mockito.verify(server).add(Mockito.anyCollection());
-        Mockito.verify(cache).removeAll();
-        Mockito.verifyNoMoreInteractions(cache, server);
-        Assert.assertTrue(ontologyServiceResult == 0);
+        Mockito.verify(this.server).deleteByQuery("*:*");
+        Mockito.verify(this.server).commit();
+        Mockito.verify(this.server).add(Mockito.anyCollectionOf(SolrInputDocument.class));
+        Mockito.verify(this.cache).removeAll();
+        Mockito.verifyNoMoreInteractions(this.cache, this.server);
+        Assert.assertTrue(this.ontologyServiceResult == 0);
     }
 
     @Test
     public void testHumanPhenotypeOntologyVersion() throws SolrServerException
     {
         QueryResponse response = mock(QueryResponse.class);
-        when(server.query(any(SolrQuery.class))).thenReturn(response);
+        when(this.server.query(any(SolrQuery.class))).thenReturn(response);
         SolrDocumentList results = mock(SolrDocumentList.class);
         when(response.getResults()).thenReturn(results);
         when(results.isEmpty()).thenReturn(false);
         SolrDocument versionDoc = mock(SolrDocument.class);
         when(results.get(0)).thenReturn(versionDoc);
         when(versionDoc.getFieldValue("version")).thenReturn("2014:01:01");
-        Assert.assertEquals("2014:01:01", ontologyService.getVersion());
+        Assert.assertEquals("2014:01:01", this.ontologyService.getVersion());
     }
 
     @Test
     public void testHumanPhenotypeOntologyDefaultLocation()
     {
-        String location = ontologyService.getDefaultOntologyLocation();
+        String location = this.ontologyService.getDefaultOntologyLocation();
         Assert.assertNotNull(location);
         Assert.assertTrue(location.endsWith("hp.obo"));
         Assert.assertTrue(location.startsWith("http"));

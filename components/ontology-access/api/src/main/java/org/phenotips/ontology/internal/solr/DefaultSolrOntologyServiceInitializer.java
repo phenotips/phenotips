@@ -19,8 +19,8 @@
  */
 package org.phenotips.ontology.internal.solr;
 
-import org.phenotips.ontology.SolrOntologyServiceInitializer;
 import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.ontology.SolrOntologyServiceInitializer;
 
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -38,7 +38,6 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.slf4j.Logger;
 
 /**
  * Initializes cache and server connection for starting a Solr ontology service.
@@ -69,9 +68,6 @@ public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServic
     @Named("xwikiproperties")
     protected ConfigurationSource configuration;
 
-    @Inject
-    private Logger logger;
-
     @Override
     public void initialize(String serverName) throws InitializationException
     {
@@ -93,7 +89,7 @@ public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServic
      */
     protected String getSolrLocation()
     {
-        String wikiSolrUrl = configuration.getProperty("solr.remote.url", String.class);
+        String wikiSolrUrl = this.configuration.getProperty("solr.remote.url", String.class);
         String[] urlParts = wikiSolrUrl.trim().split(HTTP_DELIMITER);
         int length = urlParts.length;
         String[] newUrlParts = new String[length - 1];
