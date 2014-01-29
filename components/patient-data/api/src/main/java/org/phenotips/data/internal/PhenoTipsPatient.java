@@ -24,13 +24,20 @@ import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -63,6 +70,11 @@ public class PhenoTipsPatient implements Patient
     /** Known phenotype properties. */
     private static final String[] PHENOTYPE_PROPERTIES = new String[] {"phenotype", "negative_phenotype"};
 
+    /** The configuration from which the current phenotips version is extracted. */
+    @Inject
+    @Named("xwikiproperties")
+    private ConfigurationSource configuration;
+
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
 
@@ -77,6 +89,9 @@ public class PhenoTipsPatient implements Patient
 
     /** @see #getDisorders() */
     private Set<Disorder> disorders = new TreeSet<Disorder>();
+
+    /** Holds the list of all ontology versions. */
+    private Map<String, String> versions = new HashMap<String, String>();
 
     /**
      * Constructor that copies the data from an XDocument.
@@ -118,6 +133,18 @@ public class PhenoTipsPatient implements Patient
         // Readonly from now on
         this.features = Collections.unmodifiableSet(this.features);
         this.disorders = Collections.unmodifiableSet(this.disorders);
+
+        this.setOntologiesVersions(doc);
+    }
+
+    private void setOntologiesVersions(XWikiDocument doc)
+    {
+        List<BaseObject> ontologyVersionObjects = doc.getXObjects(VERSION_REFERENCE);
+        for (BaseObject versionObject : ontologyVersionObjects) {
+            String versionType = versionObject.getStringValue("name");
+            String versionString = versionObject.getStringValue("version");
+            this.versions.put(versionType, versionString);
+        }
     }
 
     @Override
@@ -171,6 +198,14 @@ public class PhenoTipsPatient implements Patient
                 diseasesJSON.add(disease.toJSON());
             }
             result.element("disorders", diseasesJSON);
+        }
+        if (!this.versions.isEmpty()) {
+            JSONObject versionsJSON = new JSONObject();
+            this.versions.put("phenotips_version", configuration.getProperty("phenotips.version", String.class));
+            for (Map.Entry<String, String> version : this.versions.entrySet()) {
+                versionsJSON.element(version.getKey(), version.getValue());
+            }
+            result.element("versioning", versionsJSON);
         }
         return result;
     }

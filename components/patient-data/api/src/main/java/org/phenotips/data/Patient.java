@@ -43,6 +43,10 @@ public interface Patient
     EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
+    /** The XClass used for storing version data of different ontologies. */
+    EntityReference VERSION_REFERENCE = new EntityReference("OntologyVersionClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
+
     /**
      * Returns a reference to the document where the patient data is stored.
      * 
