@@ -29,7 +29,7 @@
   </parent>
   <artifactId>ontology-hpo-access</artifactId>
   <packaging>pom</packaging>
-  <name>PhenoTips - HPO Ontology Access</name>
+  <name>PhenoTips - Ontologies - Human Phenotype Ontology integration</name>
 
   <modules>
     <module>api</module>

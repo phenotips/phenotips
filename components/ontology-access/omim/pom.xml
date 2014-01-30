@@ -29,7 +29,7 @@
   </parent>
   <artifactId>ontology-omim-access</artifactId>
   <packaging>pom</packaging>
-  <name>PhenoTips - OMIM Ontology Access</name>
+  <name>PhenoTips - Ontologies - Online Mendelian Inheritance in Man integration</name>
 
   <modules>
     <module>api</module>
