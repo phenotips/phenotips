@@ -19,12 +19,22 @@
  */
 package org.phenotips.solr;
 
+import org.xwiki.cache.Cache;
+import org.xwiki.cache.CacheException;
+import org.xwiki.cache.CacheManager;
+import org.xwiki.cache.config.CacheConfiguration;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
+import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.script.service.ScriptService;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServer;
@@ -38,13 +48,6 @@ import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.MapSolrParams;
 import org.apache.solr.common.util.NamedList;
 import org.slf4j.Logger;
-import org.xwiki.cache.Cache;
-import org.xwiki.cache.CacheException;
-import org.xwiki.cache.CacheManager;
-import org.xwiki.cache.config.CacheConfiguration;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
-import org.xwiki.script.service.ScriptService;
 
 /**
  * Provides access to the Solr server, with the main purpose of providing access to an indexed ontology. There are two
@@ -71,6 +74,8 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
      */
     private static final SolrDocument EMPTY_MARKER = new SolrDocument();
 
+    private static final String HTTP_DELIMITER = "/";
+
     /** Logging helper object. */
     @Inject
     protected Logger logger;
@@ -88,19 +93,40 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     @Inject
     protected CacheManager cacheFactory;
 
+    @Inject
+    @Named("xwikiproperties")
+    protected ConfigurationSource configuration;
+
     @Override
     public void initialize() throws InitializationException
     {
         try {
-            this.server = new HttpSolrServer("http://localhost:8080/solr/" + this.getName() + "/");
+            this.server = new HttpSolrServer(this.getSolrLocation() + this.getName() + HTTP_DELIMITER);
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
 
         } catch (RuntimeException ex) {
             throw new InitializationException("Invalid URL specified for the Solr server: {}");
         } catch (final CacheException ex) {
             throw new InitializationException("Cannot create cache: " + ex.getMessage());
-
         }
+    }
+
+    /**
+     * Gets the string URL to the Solr server.
+     *
+     * @return String URL for the Solr server
+     */
+    protected String getSolrLocation()
+    {
+        String wikiSolrUrl = this.configuration.getProperty("solr.remote.url", String.class);
+        String[] urlParts = wikiSolrUrl.trim().split(HTTP_DELIMITER);
+        int length = urlParts.length;
+        String[] newUrlParts = new String[length - 1];
+        for (int i = 0; i < length - 1; i++) {
+            newUrlParts[i] = (urlParts[i]);
+        }
+        String solrUrl = StringUtils.join(newUrlParts, HTTP_DELIMITER);
+        return solrUrl + HTTP_DELIMITER;
     }
 
     /**

@@ -71,7 +71,6 @@ public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServic
     @Override
     public void initialize(String serverName) throws InitializationException
     {
-        this.getSolrLocation();
         try {
             this.server = new HttpSolrServer(this.getSolrLocation() + serverName + HTTP_DELIMITER);
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
