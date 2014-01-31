@@ -24,15 +24,16 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientDataSerializer;
 
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.extension.distribution.internal.DistributionManager;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +54,7 @@ import net.sf.json.JSONObject;
 /**
  * Implementation of patient data based on the XWiki data model, where patient data is represented by properties in
  * objects of type {@code PhenoTips.PatientClass}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -67,7 +68,7 @@ public class PhenoTipsPatient implements Patient
     public static final EntityReference DEFAULT_DATA_SPACE = new EntityReference("data", EntityType.SPACE);
 
     /** Known phenotype properties. */
-    private static final String[] PHENOTYPE_PROPERTIES = new String[] {"phenotype", "negative_phenotype"};
+    private static final String[] PHENOTYPE_PROPERTIES = new String[]{"phenotype", "negative_phenotype"};
 
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
@@ -87,19 +88,27 @@ public class PhenoTipsPatient implements Patient
     /** Holds the list of all ontology versions. */
     private Map<String, String> versions = new HashMap<String, String>();
 
+    /** The list of all the initialized data holders (PatientDataSerializer). */
+    private Set<PatientDataSerializer> patientDataSerializerList;
+
     /**
      * Constructor that copies the data from an XDocument.
-     * 
+     *
      * @param doc the XDocument representing this patient in XWiki
      */
     public PhenoTipsPatient(XWikiDocument doc)
     {
         this.document = doc.getDocumentReference();
         this.reporter = doc.getCreatorReference();
+
         BaseObject data = doc.getXObject(CLASS_REFERENCE);
         if (data == null) {
             return;
         }
+
+        patientDataSerializerList = new HashSet<PatientDataSerializer>();
+        initializeAllPatientDataSerializers(this.document);
+
         try {
             for (String property : PHENOTYPE_PROPERTIES) {
                 DBStringListProperty values = (DBStringListProperty) data.get(property);
@@ -127,21 +136,26 @@ public class PhenoTipsPatient implements Patient
         // Readonly from now on
         this.features = Collections.unmodifiableSet(this.features);
         this.disorders = Collections.unmodifiableSet(this.disorders);
-
-        this.setOntologiesVersions(doc);
     }
 
-    private void setOntologiesVersions(XWikiDocument doc)
+    /**
+     * Parses through the list of all the PatientDataSerializers and initializes them one by one. Then stores all of the
+     * instances in a patientDataSerializer list.
+     */
+    private void initializeAllPatientDataSerializers(DocumentReference documentReference)
     {
-        List<BaseObject> ontologyVersionObjects = doc.getXObjects(VERSION_REFERENCE);
-        if (ontologyVersionObjects == null) {
-            return;
+//        MetaSerializer metaSerializer;
+        List<PatientDataSerializer> serializers = null;
+        try {
+            serializers =
+                ComponentManagerRegistry.getContextComponentManager().getInstanceList(PatientDataSerializer.class);
+        } catch (ComponentLookupException e) {
+            e.printStackTrace();
         }
-        for (BaseObject versionObject : ontologyVersionObjects) {
-            String versionType = versionObject.getStringValue("name");
-            String versionString = versionObject.getStringValue("version");
-            if (StringUtils.isNotEmpty(versionType) && StringUtils.isNotEmpty(versionString)) {
-                this.versions.put(versionType, versionString);
+        if (serializers != null) {
+            for (PatientDataSerializer serializer : serializers) {
+                serializer.readDocument(documentReference);
+                patientDataSerializerList.add(serializer);
             }
         }
     }
@@ -180,7 +194,9 @@ public class PhenoTipsPatient implements Patient
     public JSONObject toJSON()
     {
         JSONObject result = new JSONObject();
-        result.element("id", getDocument().getName());
+        result.element("id",
+            getDocument().getName());
+
         if (getReporter() != null) {
             result.element("reporter", getReporter().getName());
         }
@@ -198,20 +214,11 @@ public class PhenoTipsPatient implements Patient
             }
             result.element("disorders", diseasesJSON);
         }
-        try {
-            DistributionManager distribution =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(DistributionManager.class);
-            JSONObject versionsJSON = new JSONObject();
-            this.versions.put("phenotips_version",
-                distribution.getDistributionExtension().getId().getVersion().toString());
-            for (Map.Entry<String, String> version : this.versions.entrySet()) {
-                versionsJSON.element(version.getKey() + "_version", version.getValue());
-            }
-            result.element("versioning", versionsJSON);
-        } catch (ComponentLookupException ex) {
-            // Shouldn't happen, no worries.
-            this.logger.debug("Failed to access the DistributionManager component: {}", ex.getMessage(), ex);
+
+        for (PatientDataSerializer serializer : patientDataSerializerList) {
+            serializer.writeJSON(result);
         }
+
         return result;
     }
 }
