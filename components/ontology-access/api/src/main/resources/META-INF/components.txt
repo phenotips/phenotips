@@ -1,3 +1,5 @@
 org.phenotips.ontology.internal.DefaultOntologyManager
 org.phenotips.ontology.script.OtologyScriptService
 org.phenotips.ontology.internal.solr.DefaultSolrOntologyServiceInitializer
+org.phenotips.ontology.listeners.PatientOntologyVersionRecorder
+
