@@ -65,10 +65,6 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-constants</artifactId>
       <version>${project.version}</version>
@@ -79,6 +75,7 @@
       <version>${project.version}</version>
     </dependency>
     <!-- Test dependencies -->
+    <!-- XWiki test dependencies are not used. Consider removing (30.01.14) -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-test-component</artifactId>
