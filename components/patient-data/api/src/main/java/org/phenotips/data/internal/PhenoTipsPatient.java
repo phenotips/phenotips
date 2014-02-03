@@ -33,7 +33,6 @@ import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -89,7 +88,7 @@ public class PhenoTipsPatient implements Patient
     private Map<String, String> versions = new HashMap<String, String>();
 
     /** The list of all the initialized data holders (PatientDataSerializer). */
-    private Set<PatientDataSerializer> patientDataSerializerList;
+    private List<PatientDataSerializer> serializers;
 
     /**
      * Constructor that copies the data from an XDocument.
@@ -106,8 +105,8 @@ public class PhenoTipsPatient implements Patient
             return;
         }
 
-        patientDataSerializerList = new HashSet<PatientDataSerializer>();
-        initializeAllPatientDataSerializers(this.document);
+        loadSerializers();
+        readPatientData(this.document);
 
         try {
             for (String property : PHENOTYPE_PROPERTIES) {
@@ -138,25 +137,24 @@ public class PhenoTipsPatient implements Patient
         this.disorders = Collections.unmodifiableSet(this.disorders);
     }
 
-    /**
-     * Parses through the list of all the PatientDataSerializers and initializes them one by one. Then stores all of the
-     * instances in a patientDataSerializer list.
-     */
-    private void initializeAllPatientDataSerializers(DocumentReference documentReference)
+    private void loadSerializers()
     {
-//        MetaSerializer metaSerializer;
-        List<PatientDataSerializer> serializers = null;
         try {
             serializers =
                 ComponentManagerRegistry.getContextComponentManager().getInstanceList(PatientDataSerializer.class);
         } catch (ComponentLookupException e) {
-            e.printStackTrace();
+            logger.error("Failed to find component", e);
         }
-        if (serializers != null) {
-            for (PatientDataSerializer serializer : serializers) {
-                serializer.readDocument(documentReference);
-                patientDataSerializerList.add(serializer);
-            }
+    }
+
+    /**
+     * Parses through the list of all the PatientDataSerializers and initializes them one by one. Then stores all of the
+     * instances in a patientDataSerializer list.
+     */
+    private void readPatientData(DocumentReference documentReference)
+    {
+        for (PatientDataSerializer serializer : this.serializers) {
+            serializer.readDocument(documentReference);
         }
     }
 
@@ -194,8 +192,7 @@ public class PhenoTipsPatient implements Patient
     public JSONObject toJSON()
     {
         JSONObject result = new JSONObject();
-        result.element("id",
-            getDocument().getName());
+        result.element("id", getDocument().getName());
 
         if (getReporter() != null) {
             result.element("reporter", getReporter().getName());
@@ -215,7 +212,7 @@ public class PhenoTipsPatient implements Patient
             result.element("disorders", diseasesJSON);
         }
 
-        for (PatientDataSerializer serializer : patientDataSerializerList) {
+        for (PatientDataSerializer serializer : serializers) {
             serializer.writeJSON(result);
         }
 

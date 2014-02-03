@@ -26,11 +26,11 @@ import org.xwiki.stability.Unstable;
 import net.sf.json.JSONObject;
 
 /**
- * API that provides access to patient data. No access rights are checked here.
- * Make sure any component that extends this class is instantiated per lookup.
+ * Interface for objects that hold patient data.
+ * Make sure that any component that extends this class is instantiated per lookup.
  * 
  * @version $Id$
- * @since 1.0M8
+ * @since 1.0M10
  */
 @Unstable
 @Role
@@ -38,23 +38,23 @@ public interface PatientDataSerializer
 {
     /**
      * Plays the role of initialization function.
-     * Given an XWiki document reference, extracts data and stores it in itself.
+     * Given a document reference, extracts data and stores it in itself.
      *
-     * @param documentReference The XWiki document reference object pointing the the patient object of interest.
+     * @param documentReference document reference pointing the the patient of interest
      */
     void readDocument(DocumentReference documentReference);
 
     /**
      * Creates json from internal objects.
      *
-     * @param json Existing json object to which the data will be appended.
+     * @param json existing json object to which the data will be appended
      */
     void writeJSON(JSONObject json);
 
     /**
      * Reads json and stores it in the internal class schema.
      *
-     * @param json The json that is to be imported.
+     * @param json the json that is to be imported
      */
     void readJSON(JSONObject json);
 }

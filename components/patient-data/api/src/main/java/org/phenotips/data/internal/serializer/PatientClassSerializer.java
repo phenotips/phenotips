@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -44,11 +45,11 @@ import com.xpn.xwiki.objects.BaseObject;
 import net.sf.json.JSONObject;
 
 /**
- * Has 3 main functions: parse data from XWiki doc (PatientClass only), export and import JSON.
+ * Deals with patient data stored in the XWiki class PatientClass.
  *
  * @version $Id$
+ * @since 1.0M10
  */
-
 @Component
 @Named("patient-class-serializer")
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
@@ -76,12 +77,26 @@ public class PatientClassSerializer implements PatientDataSerializer
 
     private static final String MODE_OF_INHERITANCE = "mode_of_inheritance";
 
-    //Skipping notes section for now
+    //Notes section
+    private static final String INDICATION_FOR_REFERRAL = "indication_for_referral";
+
+    private static final String PRENATAL_COMMENTS = "prenatal_comments";
+
+    private static final String FAMILY_COMMENTS = "family_comments";
+
+    private static final String MEDICAL_HISOTRY_NOTES = "medical_developmental_history";
+
+    private static final String GLOBAL_PREFIX = "global_";
 
     @Inject
     private DocumentAccessBridge documentAccessBridge;
 
+    @Inject
+    private Logger logger;
+
     private Map<String, Object> patientClass;
+
+    private BaseObject data;
 
     @Override
     public void readDocument(DocumentReference documentReference)
@@ -90,20 +105,18 @@ public class PatientClassSerializer implements PatientDataSerializer
             XWikiDocument doc = (XWikiDocument) documentAccessBridge.getDocument(documentReference);
             readXWikiPatient(doc);
         } catch (Exception e) {
-            //todo
+            logger.error("Could not find requested document");
         }
     }
 
     /**
      * Reads the PatientClass object of an XWiki document and extracts data.
      *
-     * @param doc XWiki patient document
-     * @return Map of all the fields of interest from PatientClass. Could contain Maps as values.
+     * @param doc patient document
      */
-//    public Map<String, Object> readXWikiPatient(XWikiDocument doc)
     private void readXWikiPatient(XWikiDocument doc)
     {
-        BaseObject data = doc.getXObject(CLASS_REFERENCE);
+        data = doc.getXObject(CLASS_REFERENCE);
         if (data == null) {
             throw new NullPointerException("The patient does not have a PatientClass");
         }
@@ -130,7 +143,6 @@ public class PatientClassSerializer implements PatientDataSerializer
 
         String dateOfBirth = data.getStringValue(DATE_OF_BIRTH);
         //JSONoptional
-
         String examDate = data.getStringValue(EXAM_DATE);
         //JSONoptional
 
@@ -146,11 +158,27 @@ public class PatientClassSerializer implements PatientDataSerializer
         patientClass.put(GENDER, gender);
         patientClass.put(DATE_OF_BIRTH, dateOfBirth);
         patientClass.put(EXAM_DATE, examDate);
-        patientClass.put(AGE_OF_ONSET, ageOfOnset);
-        patientClass.put(MODE_OF_INHERITANCE, modeOfInheritance);
+        patientClass.put(GLOBAL_PREFIX + AGE_OF_ONSET, ageOfOnset);
+        patientClass.put(GLOBAL_PREFIX + MODE_OF_INHERITANCE, modeOfInheritance);
+        patientClass.put("notes", parseNotesSection());
     }
 
-    //These need to be rewritten as static and return write[json] and read[map]
+    private Map<String, String> parseNotesSection()
+    {
+        //Notes. All are JSON optional
+        String indicationForReferral = data.getStringValue(INDICATION_FOR_REFERRAL);
+        String prenatalComments = data.getStringValue(PRENATAL_COMMENTS);
+        String familyComments = data.getStringValue(FAMILY_COMMENTS);
+        String medicalHistoryNotes = data.getStringValue(MEDICAL_HISOTRY_NOTES);
+        Map<String, String> notes = new HashMap<String, String>();
+        notes.put(INDICATION_FOR_REFERRAL, indicationForReferral);
+        notes.put(PRENATAL_COMMENTS, prenatalComments);
+        notes.put(FAMILY_COMMENTS, familyComments);
+        notes.put(MEDICAL_HISOTRY_NOTES, medicalHistoryNotes);
+
+        return notes;
+    }
+
     @Override
     public void writeJSON(JSONObject json)
     {

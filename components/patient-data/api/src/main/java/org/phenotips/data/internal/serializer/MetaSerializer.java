@@ -41,6 +41,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -48,9 +49,11 @@ import com.xpn.xwiki.objects.BaseObject;
 import net.sf.json.JSONObject;
 
 /**
- * Deals with the meta element of JSON.
+ * Handles metadata associated with the patient record.
+ * Such as ontologies and PhenoTips versioning, record creation and modification date, authorship, etc.
  *
  * @version $Id$
+ * @since 1.0M10
  */
 @Component
 @Named("meta-serializer")
@@ -66,6 +69,9 @@ public class MetaSerializer implements PatientDataSerializer
     @Inject
     private DocumentAccessBridge documentAccessBridge;
 
+    @Inject
+    private Logger logger;
+
     private Map<String, String> ontologyVersions = new HashMap<String, String>();
 
     private Map<String, String> phenotipsVersion = new HashMap<String, String>();
@@ -78,12 +84,14 @@ public class MetaSerializer implements PatientDataSerializer
             readOntologyVersionClass(doc);
             readPhenoTipsVerison();
         } catch (Exception e) {
-            //todo
+            logger.error("Could not find requested document");
         }
     }
 
     /**
-     * Reads all the OntologyVersionClass object from the XWiki patient document.
+     * Reads all the OntologyVersionClass objects from the XWiki patient document.
+     *
+     * @param doc the document which should be looked in for OntologyVersionClass objects
      */
     private void readOntologyVersionClass(XWikiDocument doc)
     {
