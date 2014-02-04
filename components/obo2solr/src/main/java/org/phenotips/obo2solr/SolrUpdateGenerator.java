@@ -211,7 +211,7 @@ public class SolrUpdateGenerator
         addAttribute(FIELD_ATTRIBUTE_BOOST, this.fieldSelection.get(name) == null ? ParameterPreparer.DEFAULT_BOOST
             : this.fieldSelection.get(name));
         startElement(FIELD_ELEMENT_NAME);
-        characters(value.replaceAll("\"([^\"]+)\".*", "$1"));
+        characters(value);
         endElement(FIELD_ELEMENT_NAME);
     }
 
@@ -225,7 +225,7 @@ public class SolrUpdateGenerator
         if (!(isFieldSelected(name))) {
             return;
         }
-        this.crtTerm.addTo(name, value.replaceAll("\"([^\"]+)\".*", "$1"));
+        this.crtTerm.addTo(name, value.replaceFirst("\"(.+)\".*", "$1").replace("\\\"", "\""));
     }
 
     private void propagateAncestors()
