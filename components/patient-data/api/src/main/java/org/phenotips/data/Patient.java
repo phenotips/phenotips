@@ -39,7 +39,6 @@ import net.sf.json.JSONObject;
 @Unstable
 public interface Patient
 {
-    //todo Marking this for possible removal
     /** The XClass used for storing patient data. */
     EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);

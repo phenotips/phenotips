@@ -21,6 +21,8 @@ package org.phenotips.data.internal.serializer;
 
 import org.phenotips.Constants;
 import org.phenotips.data.PatientDataSerializer;
+import org.phenotips.ontology.OntologyManager;
+import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -92,6 +94,9 @@ public class PatientClassSerializer implements PatientDataSerializer
     private DocumentAccessBridge documentAccessBridge;
 
     @Inject
+    private OntologyManager ontologyManager;
+
+    @Inject
     private Logger logger;
 
     private Map<String, Object> patientClass;
@@ -158,14 +163,36 @@ public class PatientClassSerializer implements PatientDataSerializer
         patientClass.put(GENDER, gender);
         patientClass.put(DATE_OF_BIRTH, dateOfBirth);
         patientClass.put(EXAM_DATE, examDate);
-        patientClass.put(GLOBAL_PREFIX + AGE_OF_ONSET, ageOfOnset);
-        patientClass.put(GLOBAL_PREFIX + MODE_OF_INHERITANCE, modeOfInheritance);
-        patientClass.put("notes", parseNotesSection());
+        insertOntologyTerm(GLOBAL_PREFIX + AGE_OF_ONSET, ageOfOnset);
+        insertOntologyTerm(GLOBAL_PREFIX + MODE_OF_INHERITANCE, modeOfInheritance);
+        insertNotesSection("notes");
     }
 
-    private Map<String, String> parseNotesSection()
+    /**
+     * This function is used when a field from PatientClass contains an ontology term,
+     * and it is needed to convert it into a human readable form. The function adds a map to the patientClass map
+     * with keys {id, label}.
+     *
+     * @param elementName the key under which the {id, label} will be inserted into patientClass
+     * @param ontologyTerm the string containing the id of an ontology term to lookup
+     */
+    private void insertOntologyTerm(String elementName, String ontologyTerm)
     {
-        //Notes. All are JSON optional
+        OntologyTerm term = ontologyManager.resolveTerm(ontologyTerm);
+        String label = term.getName();
+        Map<String, String> element = new HashMap<String, String>();
+        element.put("id", ontologyTerm);
+        element.put("label", label);
+        patientClass.put(elementName, element);
+    }
+
+    /**
+     * The function used to extract notes from the PatientClass document and add them into patientClass map.
+     *
+     * @param elementName the key under which the notes section will be inserted into patientClass
+     */
+    private void insertNotesSection(String elementName)
+    {
         String indicationForReferral = data.getStringValue(INDICATION_FOR_REFERRAL);
         String prenatalComments = data.getStringValue(PRENATAL_COMMENTS);
         String familyComments = data.getStringValue(FAMILY_COMMENTS);
@@ -176,7 +203,7 @@ public class PatientClassSerializer implements PatientDataSerializer
         notes.put(FAMILY_COMMENTS, familyComments);
         notes.put(MEDICAL_HISOTRY_NOTES, medicalHistoryNotes);
 
-        return notes;
+        patientClass.put(elementName, notes);
     }
 
     @Override

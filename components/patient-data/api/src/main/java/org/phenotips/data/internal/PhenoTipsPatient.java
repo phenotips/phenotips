@@ -148,8 +148,7 @@ public class PhenoTipsPatient implements Patient
     }
 
     /**
-     * Parses through the list of all the PatientDataSerializers and initializes them one by one. Then stores all of the
-     * instances in a patientDataSerializer list.
+     * Loops through all the available serializers and passes each a document reference.
      */
     private void readPatientData(DocumentReference documentReference)
     {
