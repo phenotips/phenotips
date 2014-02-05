@@ -51,7 +51,7 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <age_of_onset>
+    <global_age_of_onset>
       <cache>0</cache>
       <classname/>
       <customDisplay>{{velocity}}
@@ -77,10 +77,10 @@
       <displayType>select</displayType>
       <idField/>
       <multiSelect>0</multiSelect>
-      <name>age_of_onset</name>
+      <name>global_age_of_onset</name>
       <number>8</number>
       <picker>0</picker>
-      <prettyName>Age of onset</prettyName>
+      <prettyName>Global age of onset</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators/>
@@ -92,7 +92,7 @@
       <validationRegExp/>
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-    </age_of_onset>
+    </global_age_of_onset>
     <apgar1>
       <cache>0</cache>
       <customDisplay/>
