@@ -19,11 +19,14 @@
  */
 package org.phenotips.data.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
+import org.phenotips.data.PatientRecordInitializer;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -150,7 +153,19 @@ public class PhenoTipsPatientData implements PatientData
             doc.getXObject(PhenoTipsPatient.CLASS_REFERENCE).setLongValue("identifier", crtMaxID);
             doc.setCreatorReference(this.bridge.getCurrentUserReference());
             context.getWiki().saveDocument(doc, context);
-            return new PhenoTipsPatient(doc);
+
+            Patient patient = new PhenoTipsPatient(doc);
+            try {
+                for (Object initializer : ComponentManagerRegistry.getContextComponentManager()
+                    .getInstanceList(PatientRecordInitializer.class))
+                {
+                    ((PatientRecordInitializer) initializer).initialize(patient);
+                }
+            } catch (ComponentLookupException e) {
+                logger.error("Failed to find component", e);
+            }
+
+            return patient;
         } catch (Exception ex) {
             this.logger.warn("Failed to create patient: {}", ex.getMessage(), ex);
             return null;
