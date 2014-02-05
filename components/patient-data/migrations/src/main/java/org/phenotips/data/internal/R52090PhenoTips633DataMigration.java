@@ -73,7 +73,7 @@ public class R52090PhenoTips633DataMigration extends AbstractHibernateDataMigrat
     @Override
     public String getDescription()
     {
-        return "Migrate existing onset values to the new age_of_onset field";
+        return "Migrate existing in_vitro values to the new ivf field";
     }
 
     @Override
