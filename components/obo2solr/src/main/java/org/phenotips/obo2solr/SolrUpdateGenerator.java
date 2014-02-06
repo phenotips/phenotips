@@ -225,7 +225,7 @@ public class SolrUpdateGenerator
         if (!(isFieldSelected(name))) {
             return;
         }
-        this.crtTerm.addTo(name, value.replaceFirst("\"(.+)\".*", "$1").replace("\\\"", "\""));
+        this.crtTerm.addTo(name, value.replaceFirst("^\"(.+)\"\\s*?(?:[A-Z]+|\\[).*", "$1").replace("\\\"", "\""));
     }
 
     private void propagateAncestors()
