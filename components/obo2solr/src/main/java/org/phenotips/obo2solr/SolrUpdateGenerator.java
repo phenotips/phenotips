@@ -159,7 +159,7 @@ public class SolrUpdateGenerator
                 if (pieces.length != 2) {
                     continue;
                 }
-                if (pieces[0].trim().equals("date")){
+                if (pieces[0].trim().equals("date")) {
                     this.crtTerm.addTo("version", pieces[1]);
                     this.crtTerm.addTo(TermData.ID_FIELD_NAME, "HEADER_INFO");
                 }
