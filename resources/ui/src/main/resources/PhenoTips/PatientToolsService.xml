@@ -41,7 +41,7 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden>true</hidden>
   <content>{{velocity}}
 #if ($xcontext.action == 'get')
   #macro (dashIfEmpty $val)#if ("$!val" == '' || ($val.class.getName().endsWith('Integer') &amp;&amp; $val &lt; 0) || ($val.class.getName().endsWith('Double') &amp;&amp; $val.isNaN($val)))-#elseif ($val.class.getName().endsWith('Integer'))$val#else$mathtool.roundTo(2, $val)#end#end
