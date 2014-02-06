@@ -99,7 +99,7 @@ public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServic
      *
      * @return an URL as a String
      */
-    private String getSolrLocation()
+    protected String getSolrLocation()
     {
         String wikiSolrUrl = this.configuration.getProperty("solr.remote.url", String.class);
         if (StringUtils.isBlank(wikiSolrUrl)) {

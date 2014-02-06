@@ -41,7 +41,7 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden>true</hidden>
   <content>#macro (getPercentileValue $age $p)
   #set ($v = $services.measurements.get($chartConfiguration.measurementType).percentileToValue($sex, $age, $p))
 #end
