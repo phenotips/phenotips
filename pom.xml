@@ -248,6 +248,13 @@
               <differenceType>7012</differenceType>
               <method>java.lang.String getVersion()</method>
             </difference>
+            <difference>
+              <className>**/tools/PropertyDisplayer</className>
+              <differenceType>6004</differenceType>
+              <field>ontologyService</field>
+              <from>org.phenotips.solr.HPOScriptService</from>
+              <to>org.phenotips.ontology.OntologyService</to>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
