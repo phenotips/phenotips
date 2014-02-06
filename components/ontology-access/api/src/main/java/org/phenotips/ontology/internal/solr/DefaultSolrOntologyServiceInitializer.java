@@ -49,7 +49,8 @@ import org.apache.solr.client.solrj.impl.HttpSolrServer;
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServiceInitializer
 {
-    protected static final String HTTP_DELIMITER = "/";
+    /** Character used in URLs to delimit path segments. */
+    private static final String URL_PATH_SEPARATOR = "/";
 
     /** The Solr server instance used. */
     protected SolrServer server;
@@ -72,31 +73,13 @@ public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServic
     public void initialize(String serverName) throws InitializationException
     {
         try {
-            this.server = new HttpSolrServer(this.getSolrLocation() + serverName + HTTP_DELIMITER);
+            this.server = new HttpSolrServer(this.getSolrLocation() + serverName + URL_PATH_SEPARATOR);
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
         } catch (RuntimeException ex) {
             throw new InitializationException("Invalid URL specified for the Solr server: {}");
         } catch (final CacheException ex) {
             throw new InitializationException("Cannot create cache: " + ex.getMessage());
         }
-    }
-
-    /**
-     * Gets the string URL to the Solr server.
-     *
-     * @return String URL for the Solr server
-     */
-    protected String getSolrLocation()
-    {
-        String wikiSolrUrl = this.configuration.getProperty("solr.remote.url", String.class);
-        String[] urlParts = wikiSolrUrl.trim().split(HTTP_DELIMITER);
-        int length = urlParts.length;
-        String[] newUrlParts = new String[length - 1];
-        for (int i = 0; i < length - 1; i++) {
-            newUrlParts[i] = (urlParts[i]);
-        }
-        String solrUrl = StringUtils.join(newUrlParts, HTTP_DELIMITER);
-        return solrUrl + HTTP_DELIMITER;
     }
 
     @Override
@@ -109,5 +92,20 @@ public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServic
     public SolrServer getServer()
     {
         return this.server;
+    }
+
+    /**
+     * Get the URL where the Solr server can be reached, without any core name.
+     *
+     * @return an URL as a String
+     */
+    private String getSolrLocation()
+    {
+        String wikiSolrUrl = this.configuration.getProperty("solr.remote.url", String.class);
+        if (StringUtils.isBlank(wikiSolrUrl)) {
+            return "http://localhost:8080/solr/";
+        }
+        return StringUtils.substringBeforeLast(StringUtils.removeEnd(wikiSolrUrl, URL_PATH_SEPARATOR),
+            URL_PATH_SEPARATOR) + URL_PATH_SEPARATOR;
     }
 }

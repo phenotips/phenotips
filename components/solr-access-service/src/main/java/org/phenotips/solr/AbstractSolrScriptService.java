@@ -68,13 +68,14 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
      */
     protected static final String ID_FIELD_NAME = "id";
 
+    /** Character used in URLs to delimit path segments. */
+    private static final String URL_PATH_SEPARATOR = "/";
+
     /**
      * Object used to mark in the cache that a document doesn't exist, since null means that the cache doesn't contain
      * the requested entry.
      */
     private static final SolrDocument EMPTY_MARKER = new SolrDocument();
-
-    private static final String HTTP_DELIMITER = "/";
 
     /** Logging helper object. */
     @Inject
@@ -101,7 +102,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     public void initialize() throws InitializationException
     {
         try {
-            this.server = new HttpSolrServer(this.getSolrLocation() + this.getName() + HTTP_DELIMITER);
+            this.server = new HttpSolrServer(this.getSolrLocation() + this.getName() + URL_PATH_SEPARATOR);
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
 
         } catch (RuntimeException ex) {
@@ -112,21 +113,18 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     }
 
     /**
-     * Gets the string URL to the Solr server.
+     * Get the URL where the Solr server can be reached, without any core name.
      *
-     * @return String URL for the Solr server
+     * @return an URL as a String
      */
     protected String getSolrLocation()
     {
         String wikiSolrUrl = this.configuration.getProperty("solr.remote.url", String.class);
-        String[] urlParts = wikiSolrUrl.trim().split(HTTP_DELIMITER);
-        int length = urlParts.length;
-        String[] newUrlParts = new String[length - 1];
-        for (int i = 0; i < length - 1; i++) {
-            newUrlParts[i] = (urlParts[i]);
+        if (StringUtils.isBlank(wikiSolrUrl)) {
+            return "http://localhost:8080/solr/";
         }
-        String solrUrl = StringUtils.join(newUrlParts, HTTP_DELIMITER);
-        return solrUrl + HTTP_DELIMITER;
+        return StringUtils.substringBeforeLast(StringUtils.removeEnd(wikiSolrUrl, URL_PATH_SEPARATOR),
+            URL_PATH_SEPARATOR) + URL_PATH_SEPARATOR;
     }
 
     /**
