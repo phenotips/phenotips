@@ -41,7 +41,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.NumberProperty;
+import com.xpn.xwiki.objects.StringProperty;
 import com.xpn.xwiki.store.XWikiHibernateBaseStore;
 import com.xpn.xwiki.store.XWikiHibernateStore;
 import com.xpn.xwiki.store.migration.DataMigrationException;
@@ -85,14 +85,14 @@ public class R54090PhenoTips713DataMigration extends AbstractHibernateDataMigrat
     @Override
     public void hibernateMigrate() throws DataMigrationException, XWikiException
     {
-        getStore().executeWrite(getXWikiContext(), new MigrateIVFCallback());
+        getStore().executeWrite(getXWikiContext(), new MigrateMoICallback());
     }
 
     /**
      * Searches for all documents containing values for the {@code mode_of_inheritance} property,
      * and for each such document and for each such object, sets the value for {@code global_mode_of_inheritance}.
      */
-    private class MigrateIVFCallback implements XWikiHibernateBaseStore.HibernateCallback<Object>
+    private class MigrateMoICallback implements XWikiHibernateBaseStore.HibernateCallback<Object>
     {
         /** The name of the old property. */
         private static final String OLD_NAME = "mode_of_inheritance";
@@ -108,7 +108,7 @@ public class R54090PhenoTips713DataMigration extends AbstractHibernateDataMigrat
             DocumentReference classReference =
                 new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "PatientClass");
             Query q =
-                session.createQuery("select distinct o.name from BaseObject o, IntegerProperty p where o.className = '"
+                session.createQuery("select distinct o.name from BaseObject o, StringProperty p where o.className = '"
                     + R54090PhenoTips713DataMigration.this.serializer.serialize(classReference)
                     + "' and p.id.id = o.id and p.id.name = '" + OLD_NAME + "' and p.value IS NOT NULL");
             @SuppressWarnings("unchecked")
@@ -117,12 +117,12 @@ public class R54090PhenoTips713DataMigration extends AbstractHibernateDataMigrat
                 XWikiDocument doc =
                     xwiki.getDocument(R54090PhenoTips713DataMigration.this.resolver.resolve(docName), context);
                 BaseObject object = doc.getXObject(classReference);
-                NumberProperty oldProperty = (NumberProperty) object.get(OLD_NAME);
+                StringProperty oldProperty = (StringProperty) object.get(OLD_NAME);
                 if (oldProperty == null) {
                     continue;
                 }
                 object.removeField(OLD_NAME);
-                NumberProperty newProperty = oldProperty.clone();
+                StringProperty newProperty = (StringProperty) oldProperty.clone();
                 newProperty.setName(NEW_NAME);
                 object.addField(NEW_NAME, newProperty);
                 doc.setComment("Migrated mode_of_inheritance to global_mode_of_inheritance");
