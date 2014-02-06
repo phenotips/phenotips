@@ -668,7 +668,7 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </miscarriages>
-      <mode_of_inheritance>
+      <global_mode_of_inheritance>
         <cache>0</cache>
         <classname/>
         <customDisplay>{{velocity}}
@@ -702,10 +702,10 @@
         <displayType>select</displayType>
         <idField/>
         <multiSelect>0</multiSelect>
-        <name>mode_of_inheritance</name>
+        <name>global_mode_of_inheritance</name>
         <number>9</number>
         <picker>0</picker>
-        <prettyName>Mode of inheritance</prettyName>
+        <prettyName>Global mode of inheritance</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
         <separators/>
@@ -717,7 +717,7 @@
         <validationRegExp/>
         <valueField/>
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-      </mode_of_inheritance>
+      </global_mode_of_inheritance>
       <negative_phenotype>
         <cache>0</cache>
         <classname/>
