@@ -721,7 +721,12 @@ $xwiki.ssx.use($serviceDocName)
           #set ($groups = $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
           #set ($phgroups = [])
           #foreach ($group in $groups)
-            #if ($group.getObject('PhenoTips.PhenoTipsGroupClass'))
+            #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+            #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
+              #set ($group = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)))
+              #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+            #end
+            #if ($groupObj)
               #set ($discard = $phgroups.add($group))
             #end
           #end
