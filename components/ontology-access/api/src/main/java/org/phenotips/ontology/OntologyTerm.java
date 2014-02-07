@@ -72,6 +72,13 @@ public interface OntologyTerm
     Set<OntologyTerm> getAncestors();
 
     /**
+     * Returns the ancestors (both direct and indirect ancestors) of this term <em>and</em> the term itself.
+     *
+     * @return a set of ontology terms, or a set with one term if the term doesn't have any ancestors in the ontology
+     */
+    Set<OntologyTerm> getAncestorsAndSelf();
+
+    /**
      * Find the distance to another term in the ontology structure.
      * 
      * @param other the term to which the distance should be computed

@@ -22,9 +22,11 @@ package org.phenotips.ontology.internal.solr;
 import org.phenotips.ontology.OntologyService;
 import org.phenotips.ontology.OntologyTerm;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,6 +41,8 @@ import org.apache.solr.common.SolrDocument;
  */
 public class SolrOntologyTerm implements OntologyTerm
 {
+    private static final String TERM_CATEGORY = "term_category";
+
     /** The Solr document representing this term. */
     private SolrDocument doc;
 
@@ -74,9 +78,25 @@ public class SolrOntologyTerm implements OntologyTerm
         this.doc = doc;
         this.ontology = ontology;
         if (doc != null) {
+            this.removeSelfDuplicate();
             this.parents = new LazySolrTermSet(doc.getFieldValues("is_a"), ontology);
-            this.ancestors = new LazySolrTermSet(doc.getFieldValues("term_category"), ontology);
+            this.ancestors = new LazySolrTermSet(doc.getFieldValues(TERM_CATEGORY), ontology);
         }
+    }
+
+    /**
+     * The field "term_category" in {@code this.doc} can contain the term itself. It appears that this only happens with
+     * HPO. To avoid this problem, and to avoid writing a separate implementation for HPO specifically, this method
+     * checks for existence of the term in the term_category and takes it out.
+     */
+    private void removeSelfDuplicate()
+    {
+        Object value = this.doc.getFieldValue(TERM_CATEGORY);
+        if (!(value instanceof List)) {
+            return;
+        }
+        List listValue = (List) value;
+        listValue.remove(this.getId());
     }
 
     @Override
@@ -107,6 +127,15 @@ public class SolrOntologyTerm implements OntologyTerm
     public Set<OntologyTerm> getAncestors()
     {
         return this.ancestors != null ? this.ancestors : Collections.<OntologyTerm> emptySet();
+    }
+
+    @Override
+    public Set<OntologyTerm> getAncestorsAndSelf()
+    {
+        Collection<Object> termSet = new HashSet<Object>();
+        termSet.add(this.getId());
+        termSet.addAll(doc.getFieldValues(TERM_CATEGORY));
+        return new LazySolrTermSet(termSet, this.ontology);
     }
 
     @Override
