@@ -27,13 +27,13 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -68,11 +68,6 @@ public class DefaultGroupManager implements GroupManager
     @Inject
     private QueryManager qm;
 
-    /** Serializes references without the wiki prefix. */
-    @Inject
-    @Named("compactwiki")
-    private EntityReferenceSerializer<String> localSerializer;
-
     /** Solves partial group references in the current wiki. */
     @Inject
     @Named("current")
@@ -90,12 +85,34 @@ public class DefaultGroupManager implements GroupManager
         Set<Group> result = new LinkedHashSet<Group>();
         try {
             Query q =
-                this.qm.createQuery("from doc.object(XWiki.XWikiGroups) grp, doc.object(PhenoTips.PhenoTipsGroupClass)"
-                    + " phgrp where grp.member in (:usr, :shortusr)", Query.XWQL);
-            q.bindValue("usr", profile.toString()).bindValue("shortusr", this.localSerializer.serialize(profile));
-            List<String> groups = q.execute();
-            for (String groupName : groups) {
-                result.add(getGroup(groupName));
+                this.qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:usr)", Query.XWQL);
+            q.bindValue("usr", profile.toString());
+            List<Object> groups = q.execute();
+            List<Object> nestedGroups = new ArrayList<Object>(groups);
+            while (!nestedGroups.isEmpty()) {
+                StringBuilder qs = new StringBuilder("from doc.object(XWiki.XWikiGroups) grp where grp.member in (");
+                for (int i = 0; i < nestedGroups.size(); ++i) {
+                    if (i > 0) {
+                        qs.append(",");
+                    }
+                    qs.append("?").append(i + 1);
+                }
+                qs.append(")");
+                q = this.qm.createQuery(qs.toString(), Query.XWQL);
+                for (int i = 0; i < nestedGroups.size(); ++i) {
+                    String formalGroupName =
+                        this.resolver.resolve(String.valueOf(nestedGroups.get(i)), GROUP_SPACE).toString();
+                    q.bindValue(i + 1, formalGroupName);
+                }
+                nestedGroups = q.execute();
+                nestedGroups.removeAll(groups);
+                groups.addAll(nestedGroups);
+            }
+            q = this.qm.createQuery(
+                "from doc.object(XWiki.XWikiGroups) grp, doc.object(PhenoTips.PhenoTipsGroupClass) phgrp", Query.XWQL);
+            groups.retainAll(q.execute());
+            for (Object groupName : groups) {
+                result.add(getGroup(String.valueOf(groupName)));
             }
         } catch (QueryException ex) {
             this.logger.warn("Failed to search for user's groups: {}", ex.getMessage());

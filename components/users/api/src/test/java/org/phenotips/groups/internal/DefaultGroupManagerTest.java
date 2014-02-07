@@ -33,6 +33,7 @@ import org.xwiki.query.QueryManager;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,19 +71,45 @@ public class DefaultGroupManagerTest
 
         QueryManager qm = this.mocker.getInstance(QueryManager.class);
         Query q = mock(Query.class);
-        when(q.bindValue(any(String.class), any(String.class))).thenReturn(q);
-        when(qm.createQuery(any(String.class), any(String.class))).thenReturn(q);
-        List<String> groupNames = new LinkedList<String>();
+        when(q.bindValue("usr", "xwiki:XWiki.Admin")).thenReturn(q);
+        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:usr)", Query.XWQL))
+            .thenReturn(q);
+        List<Object> groupNames = new LinkedList<Object>();
         groupNames.add("Groups.Group A");
-        groupNames.add("Group B");
-        when(q.<String> execute()).thenReturn(groupNames);
+        groupNames.add("Group B Administrators");
+        when(q.<Object> execute()).thenReturn(groupNames);
 
         DocumentReferenceResolver<String> resolver =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
         DocumentReference a = new DocumentReference("xwiki", "Groups", "Group A");
         when(resolver.resolve(eq("Groups.Group A"), eq(GROUP_SPACE))).thenReturn(a);
+        DocumentReference ba = new DocumentReference("xwiki", "Groups", "Group B Administrators");
+        when(resolver.resolve(eq("Group B Administrators"), eq(GROUP_SPACE))).thenReturn(ba);
+
+        q = mock(Query.class);
+        when(q.bindValue(1, "xwiki:Groups.Group A")).thenReturn(q);
+        when(q.bindValue(2, "xwiki:Groups.Group B Administrators")).thenReturn(q);
+        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (?1,?2)", Query.XWQL))
+            .thenReturn(q);
+        groupNames = new LinkedList<Object>();
+        groupNames.add("Groups.Group B");
+        when(q.<Object> execute()).thenReturn(groupNames);
+
+        q = mock(Query.class);
         DocumentReference b = new DocumentReference("xwiki", "Groups", "Group B");
-        when(resolver.resolve(eq("Group B"), eq(GROUP_SPACE))).thenReturn(b);
+        when(resolver.resolve(eq("Groups.Group B"), eq(GROUP_SPACE))).thenReturn(b);
+        when(q.bindValue(1, "xwiki:Groups.Group B")).thenReturn(q);
+        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (?1)", Query.XWQL))
+            .thenReturn(q);
+        when(q.<Object> execute()).thenReturn(Collections.emptyList());
+
+        q = mock(Query.class);
+        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp, doc.object(PhenoTips.PhenoTipsGroupClass) phgrp",
+            Query.XWQL)).thenReturn(q);
+        groupNames = new LinkedList<Object>();
+        groupNames.add("Groups.Group A");
+        groupNames.add("Groups.Group B");
+        when(q.<Object> execute()).thenReturn(groupNames);
 
         Set<Group> result = this.mocker.getComponentUnderTest().getGroupsForUser(u);
         Assert.assertEquals(2, result.size());
