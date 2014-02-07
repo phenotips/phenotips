@@ -82,7 +82,7 @@
   ##
   #macro (__build_clinical_data $propertyname $value)
     #if ("$!value" != '')
-      #set ($hpoTerm = $services.hpo.get($value))
+      #set ($hpoTerm = $services.ontologies.resolveTerm($value))
       #if (!$hpoTerm)
         #set ($id = '')
         #set($text = $value)
@@ -107,7 +107,7 @@
       #set ($onsetId = "$!meta.getProperty('age_of_onset').value")
       #if ($onsetId != '')
         #set ($discard = $result.put('onset_HP_id', $onsetId))
-        #set ($onsetText = "$!escapetool.javascript($services.hpo.get($onsetId).name)")
+        #set ($onsetText = "$!escapetool.javascript($services.ontologies.resolveTerm($onsetId).name)")
         #if ($onsetText != '')
           #set ($discard = $result.put('onset_name', $onsetText))
         #end
@@ -115,7 +115,7 @@
       #set ($progressionId = "$!meta.getProperty('pace_of_progression').value")
       #if ($progressionId != '')
         #set ($discard = $result.put('progression_HP_id', $progressionId))
-        #set ($progressionText = "$!escapetool.javascript($!services.hpo.get($progressionId).name)")
+        #set ($progressionText = "$!escapetool.javascript($!services.ontologies.resolveTerm($progressionId).name)")
         #if ($progressionText != '')
           #set ($discard = $result.put('progression_name', $progressionText))
         #end

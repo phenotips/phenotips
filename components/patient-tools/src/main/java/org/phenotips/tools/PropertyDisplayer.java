@@ -19,7 +19,8 @@
  */
 package org.phenotips.tools;
 
-import org.phenotips.solr.HPOScriptService;
+import org.phenotips.ontology.OntologyService;
+import org.phenotips.ontology.OntologyTerm;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
 
 import com.xpn.xwiki.api.Property;
 
@@ -59,7 +59,7 @@ public class PropertyDisplayer
 
     private static final String INDEXED_PARENT_KEY = "is_a";
 
-    protected HPOScriptService ontologyService;
+    protected OntologyService ontologyService;
 
     private final FormData data;
 
@@ -71,7 +71,7 @@ public class PropertyDisplayer
 
     private List<FormSection> sections = new LinkedList<FormSection>();
 
-    PropertyDisplayer(Collection<Map<String, ?>> template, FormData data, HPOScriptService ontologyService)
+    PropertyDisplayer(Collection<Map<String, ?>> template, FormData data, OntologyService ontologyService)
     {
         this.data = data;
         this.ontologyService = ontologyService;
@@ -255,9 +255,9 @@ public class PropertyDisplayer
         if (!id.startsWith("HP:")) {
             return id;
         }
-        SolrDocument phObj = this.ontologyService.get(id);
+        OntologyTerm phObj = this.ontologyService.getTerm(id);
         if (phObj != null) {
-            return (String) phObj.get(INDEXED_NAME_KEY);
+            return phObj.getName();
         }
         return id;
     }
@@ -269,7 +269,7 @@ public class PropertyDisplayer
         }
         Map<String, String> params = new HashMap<String, String>();
         params.put(INDEXED_PARENT_KEY, id);
-        return (this.ontologyService.get(params) != null);
+        return (this.ontologyService.count(params) > 0);
     }
 
     @SuppressWarnings("unchecked")
@@ -278,7 +278,7 @@ public class PropertyDisplayer
         if (!value.startsWith("HP:")) {
             return Collections.emptyList();
         }
-        SolrDocument termObj = this.ontologyService.get(value);
+        OntologyTerm termObj = this.ontologyService.getTerm(value);
         if (termObj != null && termObj.get(INDEXED_CATEGORY_KEY) != null
             && List.class.isAssignableFrom(termObj.get(INDEXED_CATEGORY_KEY).getClass())) {
             return (List<String>) termObj.get(INDEXED_CATEGORY_KEY);

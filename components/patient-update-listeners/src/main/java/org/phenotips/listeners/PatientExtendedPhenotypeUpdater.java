@@ -20,19 +20,18 @@
 package org.phenotips.listeners;
 
 import org.phenotips.Constants;
-import org.phenotips.solr.HPOScriptService;
+import org.phenotips.ontology.OntologyManager;
+import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.bridge.event.DocumentCreatingEvent;
 import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
-import org.xwiki.script.service.ScriptService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,18 +63,14 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
     private ComponentManager cm;
 
     /**
-     * Needed for accessing the HPO ontology.
+     * Needed for accessing the HPO ontology though indirect means.
      */
-    private HPOScriptService solr;
+    @Inject
+    private OntologyManager ontologyManager;
 
     @Override
     public void initialize() throws InitializationException
     {
-        try {
-            this.solr = (HPOScriptService) this.cm.getInstance(ScriptService.class, "hpo");
-        } catch (ComponentLookupException ex) {
-            throw new InitializationException("Needed component SolrScriptService wasn't available!");
-        }
     }
 
     @Override
@@ -88,7 +83,7 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
     public List<Event> getEvents()
     {
         // The list of events this listener listens to
-        return Arrays.<Event> asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
+        return Arrays.<Event>asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
     }
 
     @Override
@@ -120,7 +115,10 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
         List<String> phenotypes = patientRecordObj.getListValue(baseFieldName);
         Set<String> extendedPhenotypes = new HashSet<String>();
         for (String phenotype : phenotypes) {
-            extendedPhenotypes.addAll(this.solr.getAllAncestorsAndSelfIDs(phenotype));
+            OntologyTerm phenotypeTerm = ontologyManager.resolveTerm(phenotype);
+            for (OntologyTerm term : phenotypeTerm.getAncestorsAndSelf()) {
+                extendedPhenotypes.add(term.getId());
+            }
         }
         patientRecordObj.setDBStringListValue(extendedFieldName, new ArrayList<String>(extendedPhenotypes));
     }

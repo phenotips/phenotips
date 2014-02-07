@@ -19,7 +19,7 @@
  */
 package org.phenotips.tools;
 
-import org.phenotips.solr.HPOScriptService;
+import org.phenotips.ontology.OntologyService;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
@@ -55,7 +55,7 @@ public class PhenotypeDisplayTools implements ScriptService
 
     @Inject
     @Named("hpo")
-    private ScriptService ontologyService;
+    private OntologyService ontologyService;
 
     public void use(String prefix, String name)
     {
@@ -113,7 +113,7 @@ public class PhenotypeDisplayTools implements ScriptService
 
     public String display(Collection<Map<String, ?>> template)
     {
-        return new PropertyDisplayer(template, getFormData(), (HPOScriptService) this.ontologyService).display();
+        return new PropertyDisplayer(template, getFormData(), this.ontologyService).display();
     }
 
     public void clear()
