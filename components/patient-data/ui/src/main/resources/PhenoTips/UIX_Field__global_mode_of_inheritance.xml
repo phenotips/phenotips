@@ -114,9 +114,9 @@
     <property>
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
-        {{velocity}}
-        #__displayIfNotEmpty('global_mode_of_inheritance')
-        {{/velocity}}
+{{velocity}}
+#__displayIfNotEmpty('global_mode_of_inheritance')
+{{/velocity}}
       </content>
     </property>
     <property>
@@ -127,10 +127,10 @@
     </property>
     <property>
       <parameters>title=Mode of inheritance
-        enabled=true
-        required=
-        order=12
-        fields=global_mode_of_inheritance
+enabled=true
+required=
+order=12
+fields=global_mode_of_inheritance
       </parameters>
     </property>
     <property>
