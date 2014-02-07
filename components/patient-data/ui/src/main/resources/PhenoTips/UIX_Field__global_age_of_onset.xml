@@ -22,7 +22,7 @@
 
 <xwikidoc>
   <web>PhenoTips</web>
-  <name>UIX_Field__age_of_onset</name>
+  <name>UIX_Field__global_age_of_onset</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -107,7 +107,7 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.UIX_Field__age_of_onset</name>
+    <name>PhenoTips.UIX_Field__global_age_of_onset</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>f477f684-d0b4-4eb8-ad38-b47d47f3c7bd</guid>
@@ -115,21 +115,21 @@
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#__displayIfNotEmpty('age_of_onset')
+#__displayIfNotEmpty('global_age_of_onset')
 {{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>org.phenotips.patientSheet.section.medical-history</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.age_of_onset</name>
+      <name>org.phenotips.patientSheet.field.global_age_of_onset</name>
     </property>
     <property>
       <parameters>title=Global age of onset
 enabled=true
 order=2
 required=
-fields=age_of_onset</parameters>
+fields=global_age_of_onset</parameters>
     </property>
     <property>
       <scope>wiki</scope>
