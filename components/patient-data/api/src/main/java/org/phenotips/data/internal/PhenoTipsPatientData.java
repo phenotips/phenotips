@@ -159,7 +159,14 @@ public class PhenoTipsPatientData implements PatientData
                 for (PatientRecordInitializer initializer : ComponentManagerRegistry.getContextComponentManager()
                     .<PatientRecordInitializer> getInstanceList(PatientRecordInitializer.class))
                 {
-                    initializer.initialize(patient);
+                    try {
+                        initializer.initialize(patient);
+                    } catch (Exception ex) {
+                        // Initializers shouldn't block the creation of a new patient, especially since the new patient
+                        // has already been saved...
+                        this.logger.warn("Patient initializer [{}] failed: {}", initializer.getClass().getName(),
+                            ex.getMessage(), ex);
+                    }
                 }
             } catch (ComponentLookupException e) {
                 this.logger.error("Failed to find component", e);
