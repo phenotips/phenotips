@@ -21,7 +21,6 @@ package org.phenotips.listeners;
 
 import org.phenotips.Constants;
 import org.phenotips.ontology.OntologyManager;
-import org.phenotips.ontology.OntologyService;
 import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.bridge.event.DocumentCreatingEvent;
@@ -69,12 +68,9 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
     @Inject
     private OntologyManager ontologyManager;
 
-    private OntologyService hpo;
-
     @Override
     public void initialize() throws InitializationException
     {
-        this.hpo = ontologyManager.getOntology("HP");
     }
 
     @Override
@@ -119,10 +115,8 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
         List<String> phenotypes = patientRecordObj.getListValue(baseFieldName);
         Set<String> extendedPhenotypes = new HashSet<String>();
         for (String phenotype : phenotypes) {
-            OntologyTerm phenotypeTerm = this.hpo.getTerm(phenotype);
-//            extendedPhenotypes.add(phenotypeTerm.getId());
-            //TODO Read issue #679. Once the getAncestorsAndSelf is implemented
-            for (OntologyTerm term : phenotypeTerm.getAncestors()) {
+            OntologyTerm phenotypeTerm = ontologyManager.resolveTerm(phenotype);
+            for (OntologyTerm term : phenotypeTerm.getAncestorsAndSelf()) {
                 extendedPhenotypes.add(term.getId());
             }
         }
