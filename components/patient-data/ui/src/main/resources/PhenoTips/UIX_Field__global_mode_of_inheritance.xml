@@ -35,7 +35,7 @@
   <date>1377392996000</date>
   <contentUpdateDate>1377144298000</contentUpdateDate>
   <version>1.1</version>
-  <title>Mode of inheritance</title>
+  <title>Global mode of inheritance</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -126,7 +126,7 @@
       <name>org.phenotips.patientSheet.field.global_mode_of_inheritance</name>
     </property>
     <property>
-      <parameters>title=Mode of inheritance
+      <parameters>title=Global mode of inheritance
 enabled=true
 required=
 order=12
