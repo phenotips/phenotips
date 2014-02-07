@@ -156,13 +156,13 @@ public class PhenoTipsPatientData implements PatientData
 
             Patient patient = new PhenoTipsPatient(doc);
             try {
-                for (Object initializer : ComponentManagerRegistry.getContextComponentManager()
-                    .getInstanceList(PatientRecordInitializer.class))
+                for (PatientRecordInitializer initializer : ComponentManagerRegistry.getContextComponentManager()
+                    .<PatientRecordInitializer> getInstanceList(PatientRecordInitializer.class))
                 {
-                    ((PatientRecordInitializer) initializer).initialize(patient);
+                    initializer.initialize(patient);
                 }
             } catch (ComponentLookupException e) {
-                logger.error("Failed to find component", e);
+                this.logger.error("Failed to find component", e);
             }
 
             return patient;
