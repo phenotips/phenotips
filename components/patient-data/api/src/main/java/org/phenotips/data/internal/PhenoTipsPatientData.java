@@ -36,6 +36,7 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -155,21 +156,24 @@ public class PhenoTipsPatientData implements PatientData
             context.getWiki().saveDocument(doc, context);
 
             Patient patient = new PhenoTipsPatient(doc);
+            List<PatientRecordInitializer> initializers = Collections.emptyList();
             try {
-                for (PatientRecordInitializer initializer : ComponentManagerRegistry.getContextComponentManager()
-                    .<PatientRecordInitializer> getInstanceList(PatientRecordInitializer.class))
-                {
-                    try {
-                        initializer.initialize(patient);
-                    } catch (Exception ex) {
-                        // Initializers shouldn't block the creation of a new patient, especially since the new patient
-                        // has already been saved...
-                        this.logger.warn("Patient initializer [{}] failed: {}", initializer.getClass().getName(),
-                            ex.getMessage(), ex);
-                    }
-                }
+                initializers = ComponentManagerRegistry.getContextComponentManager()
+                    .<PatientRecordInitializer> getInstanceList(PatientRecordInitializer.class);
             } catch (ComponentLookupException e) {
-                this.logger.error("Failed to find component", e);
+                this.logger.error("Failed to get initializers", e);
+            }
+
+            for (PatientRecordInitializer initializer : initializers)
+            {
+                try {
+                    initializer.initialize(patient);
+                } catch (Exception ex) {
+                    // Initializers shouldn't block the creation of a new patient, especially since the new patient
+                    // has already been saved...
+                    this.logger.warn("Patient initializer [{}] failed: {}", initializer.getClass().getName(),
+                        ex.getMessage(), ex);
+                }
             }
 
             return patient;
