@@ -45,4 +45,12 @@ public class DefaultGroupTest
         DocumentReference a = new DocumentReference("xwiki", "Groups", "Group A");
         Assert.assertEquals(a, new DefaultGroup(a).getReference());
     }
+
+    /** There's a nicer toString implementation showing the group name. */
+    @Test
+    public void toStringTest()
+    {
+        DocumentReference a = new DocumentReference("xwiki", "Groups", "Group A");
+        Assert.assertTrue(new DefaultGroup(a).toString().contains("Group A"));
+    }
 }

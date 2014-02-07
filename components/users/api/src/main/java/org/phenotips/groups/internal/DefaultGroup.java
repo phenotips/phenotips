@@ -49,4 +49,10 @@ public class DefaultGroup implements Group
     {
         return this.reference;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Group " + getReference().getName();
+    }
 }
