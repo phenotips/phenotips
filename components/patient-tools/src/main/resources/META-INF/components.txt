@@ -1,2 +1,3 @@
 org.phenotips.tools.PhenotypeDisplayTools
 org.phenotips.tools.PhenotypeMappingService
+org.phenotips.tools.listeners.PhenotypeSaveListener
