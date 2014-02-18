@@ -570,7 +570,7 @@ document.observe('xwiki:dom:loaded', function() {
   if (summary) {
     var container = summary.up();//alert(container);
     summary.addClassName('absolute');
-    var sSticky  = new StickyBox(summary, container, {shadowSize : 40, resize: true, isSticky : function(element) {return element.hasClassName('half-width') &amp;&amp; element.getHeight() &lt; element.previous().getHeight()}});
+    var sSticky  = new StickyBox(summary, container, {shadowSize : qsBox &amp;&amp; (qsBox.getHeight() + 3) || 0, resize: true, isSticky : function(element) {return element.hasClassName('half-width') &amp;&amp; element.getHeight() &lt; element.previous().getHeight()}});
     summary.observe('size:changed', function(event) {
       if (!event.memo) {
          summaryContent.style.height = '';
