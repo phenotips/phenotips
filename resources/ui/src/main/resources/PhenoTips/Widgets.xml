@@ -457,7 +457,7 @@
         onFailure: function (response) {
           //new MS.widgets.Notification("Failed to retrieve suggestions : ')" + response.statusText, "error", {timeout: 5});
           alert("Failed to retrieve suggestions : " + response.statusText);
-        }},
+        },
         onComplete : function () {
           if (requestId &lt; this.latestRequest) {
             return;
