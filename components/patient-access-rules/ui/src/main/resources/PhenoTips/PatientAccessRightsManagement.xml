@@ -206,7 +206,7 @@
       var newOwnerGroupSelect = $('new-owner-group-select') || '';
       var canTransferOwnership = newOwnerInput || newOwnerGroupSelect;
       if (canTransferOwnership) {
-        info.insert("You can transfer ownership:")
+        info.insert("You can:")
         var transfer = new Element('table', {id : 'transfer'});
         var _getTransferOption = function (type, text, controlledElement) {
            var optionWrapper = new Element('tr');
@@ -217,20 +217,23 @@
              transfer.select('.controlled-element input, .controlled-element select').each(function (item) {
                 item.disabled = true;
              });
-             if (trigger.checked) {
+             if (trigger.checked &amp;&amp; controlledElement) {
                trigger.up('tr').down('.controlled-element input, .controlled-element select').disabled = false;
              }
            });
            optionWrapper.insert(new Element('span', {'class' : 'fa fa-' + type}).wrap('td'))
                         .insert(label.wrap('td'))
-                        .insert(controlledElement.wrap('td', {'class' : 'controlled-element'}));
+                        .insert(controlledElement &amp;&amp; controlledElement.wrap('td', {'class' : 'controlled-element'}) || '');
            return optionWrapper;
         }
+        var defaultOption = _getTransferOption("check", "Keep current owner", "");
+        transfer.insert(defaultOption);
+        defaultOption.down('input').checked = true;
         if (newOwnerGroupSelect) {
-          transfer.insert(_getTransferOption("group", "to one of your groups", newOwnerGroupSelect));
+          transfer.insert(_getTransferOption("group", "Transfer ownership to one of your groups", newOwnerGroupSelect));
         }
         if (newOwnerInput) {
-          transfer.insert(_getTransferOption("user", "to another user", newOwnerInput));
+          transfer.insert(_getTransferOption("user", "Transfer ownership to another user", newOwnerInput));
         }
         transfer.select('.controlled-element input, .controlled-element select').each(function (item) {
           item.disabled = true;
