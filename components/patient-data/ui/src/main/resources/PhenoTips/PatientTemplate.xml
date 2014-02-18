@@ -986,6 +986,18 @@
     <className>PhenoTips.PatientClass</className>
     <guid>a8a20625-bade-443d-bbd4-56dbdb830e1c</guid>
     <property>
+      <negative_phenotype/>
+    </property>
+    <property>
+      <negative_prenatal_phenotype/>
+    </property>
+    <property>
+      <phenotype/>
+    </property>
+    <property>
+      <prenatal_phenotype/>
+    </property>
+    <property>
       <proband>1</proband>
     </property>
     <property>
