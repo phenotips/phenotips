@@ -27,6 +27,7 @@
     <core name="hpo" instanceDir="hpo" />
     <core name="omim" instanceDir="omim" />
     <core name="patients" instanceDir="patients" />
+    <core name="ethnicity" instanceDir="ethnicity" />
     <core name="xwiki" instanceDir="xwiki" />
   </cores>
 </solr>
