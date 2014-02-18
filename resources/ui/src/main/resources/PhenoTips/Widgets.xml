@@ -450,11 +450,20 @@
         method: method,
         parameters: parameters,
         requestHeaders: headers,
+        onCreate : function () {
+          this.fld.addClassName("loading");
+        }.bind(this),
         onSuccess: this.setSuggestions.bindAsEventListener(this, source, requestId),
         onFailure: function (response) {
           //new MS.widgets.Notification("Failed to retrieve suggestions : ')" + response.statusText, "error", {timeout: 5});
           alert("Failed to retrieve suggestions : " + response.statusText);
-        }
+        }},
+        onComplete : function () {
+          if (requestId &lt; this.latestRequest) {
+            return;
+          }
+          this.fld.removeClassName("loading");
+        }.bind(this)
       });
     }
   },
