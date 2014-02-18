@@ -8,3 +8,4 @@ dd => developmental delay
 df => dysmorphic facies
 coartation => coarctation
 gerd => gastroesophageal reflux
+halluces => hallux
