@@ -550,8 +550,14 @@ document.observe("xwiki:dom:loaded", function() {
 #access-rights-summary .tool.edit a.button{
   cursor: pointer;
 }
+
+#access-levels-manager h2 {
+  margin-top: 0;
+}
+
 #manage-visibility label {
   margin-right: 1em;
+  white-space: nowrap;
 }
 
 #access-levels-manager td {
