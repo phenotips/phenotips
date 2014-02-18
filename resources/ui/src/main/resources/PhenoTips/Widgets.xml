@@ -1405,7 +1405,7 @@
     if (input) {
       input.checked = true;
       Event.fire(input, 'suggest:change');
-      this.ensureVisible(input.up(), true);
+      //this.ensureVisible(input.up(), true);
       this.synchronizeSelection(input);
       return false;
     }
@@ -1482,7 +1482,7 @@
     }
     this.list.insert(listItem);
     var newItem = $(id);
-    this.ensureVisible(newItem);
+    //this.ensureVisible(newItem);
     this.synchronizeSelection(newItem);
     newItem.observe('change', this.synchronizeSelection.bind(this, newItem));
     this.updateListTools();
