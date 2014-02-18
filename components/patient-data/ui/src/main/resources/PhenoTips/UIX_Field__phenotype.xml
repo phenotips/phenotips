@@ -122,7 +122,8 @@
     &lt;fieldset&gt;
       ##&lt;h3 class="section"&gt;Quick phenotype search&lt;/h3&gt;
       &lt;table&gt;&lt;tbody&gt;&lt;tr&gt;
-      &lt;td&gt;&lt;label for="quick-phenotype-search"&gt;Quick phenotype search:&lt;/label&gt;&lt;/td&gt;&lt;td class="input"&gt;
+      &lt;td class="icon"&gt;&lt;label for="quick-phenotype-search"&gt;&lt;span class="fa fa-search fa-3x"&gt; &lt;/span&gt;&lt;/label&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;label for="quick-phenotype-search"&gt;Quick phenotype search:&lt;/label&gt;
       &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip generateYesNo' placeholder='Enter keywords and choose among suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
       &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
     &lt;/fieldset&gt;
