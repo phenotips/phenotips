@@ -4177,11 +4177,14 @@ label.selected input[type="checkbox"] {
 .quick-search-box table label{
   color: $theme.buttonPrimaryTextColor;
   text-shadow: none;
-  text-transform: uppercase;
   font-weight: bold;
 }
+.quick-search-box table td.icon {
+  max-width: 1.5em;
+  vertical-align: middle;
+  opacity: .7;
+}
 .quick-search-box input {
-  background-image: url("$xwiki.getSkinFile('icons/xwiki/search.png')");
   background-position: right center;
   background-repeat: no-repeat;
 }
