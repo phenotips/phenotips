@@ -64,9 +64,6 @@ public class PhenoTipsPatient implements Patient
     public static final EntityReference TEMPLATE_REFERENCE = new EntityReference("PatientTemplate",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
-    /** The default space where patient data is stored. */
-    public static final EntityReference DEFAULT_DATA_SPACE = new EntityReference("data", EntityType.SPACE);
-
     /** Known phenotype properties. */
     private static final String[] PHENOTYPE_PROPERTIES = new String[]{"phenotype", "negative_phenotype"};
 
