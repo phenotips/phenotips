@@ -74,6 +74,11 @@
       <artifactId>ontology-access-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-data-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Test dependencies -->
     <!-- XWiki test dependencies are not used. Consider removing (30.01.14) -->
     <dependency>

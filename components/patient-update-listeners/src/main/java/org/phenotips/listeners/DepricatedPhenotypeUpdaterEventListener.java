@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.phenotips.tools.listeners;
+package org.phenotips.listeners;
 
 import org.phenotips.data.Patient;
 import org.phenotips.ontology.OntologyManager;
@@ -49,23 +49,24 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.DBStringListProperty;
 
 /**
- * Wrong DOC
+ * Listens for document being created or updated, and before the action takes place, iterates over all the HPO terms and
+ * replaces the deprecated ones.
  *
  * @version $Id$
  */
 @Component
-@Named("phenotype-saver")
+@Named("depricated-phenotype-updater")
 @Singleton
-public class PhenotypeSaveListener implements EventListener
+public class DepricatedPhenotypeUpdaterEventListener implements EventListener
 {
     /** The XClass used for storing patient data. */
-    EntityReference CLASS_REFERENCE = Patient.CLASS_REFERENCE;
+    private static final EntityReference CLASS_REFERENCE = Patient.CLASS_REFERENCE;
 
     @Inject
-    OntologyManager ontologyManager;
+    private OntologyManager ontologyManager;
 
     @Inject
-    Execution execution;
+    private Execution execution;
 
     @Override
     public String getName()
