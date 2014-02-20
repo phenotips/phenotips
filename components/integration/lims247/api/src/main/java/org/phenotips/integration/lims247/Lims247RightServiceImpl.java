@@ -19,7 +19,7 @@
  */
 package org.phenotips.integration.lims247;
 
-import org.phenotips.data.internal.PhenoTipsPatient;
+import org.phenotips.data.Patient;
 
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -65,7 +65,7 @@ public class Lims247RightServiceImpl extends XWikiCachingRightService implements
             LimsAuthentication limsAuth =
                 (LimsAuthentication) context.getRequest().getSession().getAttribute(Lims247AuthServiceImpl.SESSION_KEY);
             String access = (String) context.getRequest().getSession().getAttribute(Lims247AuthServiceImpl.ACCESS_KEY);
-            if (doc.getXObject(PhenoTipsPatient.CLASS_REFERENCE) != null && limsAuth != null
+            if (doc.getXObject(Patient.CLASS_REFERENCE) != null && limsAuth != null
                 && StringUtils.isNotEmpty(access)) {
                 Right requested = actionToRight(action);
                 Right granted = actionToRight(access);
@@ -86,7 +86,7 @@ public class Lims247RightServiceImpl extends XWikiCachingRightService implements
             @SuppressWarnings("deprecation")
             XWikiDocument doc = context.getWiki().getDocument(docname, context);
             String access = (String) context.getRequest().getSession().getAttribute(Lims247AuthServiceImpl.ACCESS_KEY);
-            if (doc.getXObject(PhenoTipsPatient.CLASS_REFERENCE) != null && limsAuth != null
+            if (doc.getXObject(Patient.CLASS_REFERENCE) != null && limsAuth != null
                 && StringUtils.equals(limsAuth.getUser().getUser(), username) && StringUtils.isNotEmpty(access)) {
                 Right requested = actionToRight(right);
                 Right granted = actionToRight(access);

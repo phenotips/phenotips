@@ -111,7 +111,7 @@ public class PatientDataScriptService implements ScriptService
     public Patient createNewPatient()
     {
         if (this.access.hasAccess(Right.EDIT, this.bridge.getCurrentUserReference(),
-            this.currentResolver.resolve(PhenoTipsPatient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
+            this.currentResolver.resolve(Patient.DEFAULT_DATA_SPACE, EntityType.SPACE))) {
             return this.internalService.createNewPatient();
         }
         return null;

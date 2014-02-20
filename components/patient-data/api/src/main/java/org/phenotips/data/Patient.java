@@ -43,6 +43,9 @@ public interface Patient
     EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
+    /** The default space where patient data is stored. */
+    EntityReference DEFAULT_DATA_SPACE = new EntityReference("data", EntityType.SPACE);
+
     /**
      * Returns a reference to the document where the patient data is stored.
      * 
