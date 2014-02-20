@@ -1,4 +1,4 @@
-org.phenotips.data.internal.PhenoTipsPatientData
+org.phenotips.data.internal.PhenoTipsPatientRepository
 org.phenotips.data.internal.serializer.PatientClassSerializer
 org.phenotips.data.internal.serializer.MetaSerializer
 org.phenotips.data.script.PatientDataScriptService

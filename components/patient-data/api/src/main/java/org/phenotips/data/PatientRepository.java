@@ -26,11 +26,11 @@ import org.xwiki.stability.Unstable;
  * API that provides access to patient data. No access rights are checked here.
  * 
  * @version $Id$
- * @since 1.0M8
+ * @since 1.0M10 (was named PatientData since 1.0M8)
  */
 @Unstable
 @Role
-public interface PatientData
+public interface PatientRepository
 {
     /**
      * Retrieve a {@link Patient patient} by it's PhenoTips identifier.

@@ -22,7 +22,7 @@ package org.phenotips.data.indexing.internal;
 import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientData;
+import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
 
 import org.xwiki.bridge.DocumentModelBridge;
@@ -114,7 +114,7 @@ public class PatientEventListener implements EventListener
 
     /** Transforms raw documents into patient data. */
     @Inject
-    private PatientData patients;
+    private PatientRepository patients;
 
     @Override
     public String getName()

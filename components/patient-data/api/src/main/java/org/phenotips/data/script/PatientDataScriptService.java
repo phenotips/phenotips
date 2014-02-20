@@ -20,8 +20,7 @@
 package org.phenotips.data.script;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientData;
-import org.phenotips.data.internal.PhenoTipsPatient;
+import org.phenotips.data.PatientRepository;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -59,7 +58,7 @@ public class PatientDataScriptService implements ScriptService
 
     /** Wrapped trusted API, doing the actual work. */
     @Inject
-    private PatientData internalService;
+    private PatientRepository internalService;
 
     /** Fills in missing reference fields with those from the current context document to create a full reference. */
     @Inject

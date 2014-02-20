@@ -21,8 +21,8 @@ package org.phenotips.data.internal;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRecordInitializer;
+import org.phenotips.data.PatientRepository;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -57,7 +57,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
  */
 @Component
 @Singleton
-public class PhenoTipsPatientData implements PatientData
+public class PhenoTipsPatientRepository implements PatientRepository
 {
     /** Logging helper object. */
     @Inject
@@ -88,10 +88,10 @@ public class PhenoTipsPatientData implements PatientData
     @Override
     public Patient getPatientById(String id)
     {
-        DocumentReference reference = this.stringResolver.resolve(id, PhenoTipsPatient.DEFAULT_DATA_SPACE);
+        DocumentReference reference = this.stringResolver.resolve(id, Patient.DEFAULT_DATA_SPACE);
         try {
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(reference);
-            if (doc != null && doc.getXObject(PhenoTipsPatient.CLASS_REFERENCE) != null) {
+            if (doc != null && doc.getXObject(Patient.CLASS_REFERENCE) != null) {
                 return new PhenoTipsPatient(doc);
             }
         } catch (Exception ex) {
@@ -106,10 +106,10 @@ public class PhenoTipsPatientData implements PatientData
         try {
             Query q = this.qm.createQuery("where doc.object(PhenoTips.PatientClass).external_id = :eid", Query.XWQL);
             q.bindValue("eid", externalId);
-            List<String> results = q.<String> execute();
+            List<String> results = q.<String>execute();
             if (results.size() == 1) {
                 DocumentReference reference =
-                    this.stringResolver.resolve(results.get(0), PhenoTipsPatient.DEFAULT_DATA_SPACE);
+                    this.stringResolver.resolve(results.get(0), Patient.DEFAULT_DATA_SPACE);
                 return new PhenoTipsPatient((XWikiDocument) this.bridge.getDocument(reference));
             }
         } catch (QueryException ex) {
@@ -151,7 +151,7 @@ public class PhenoTipsPatientData implements PatientData
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(newDoc);
             doc.readFromTemplate(this.referenceResolver.resolve(PhenoTipsPatient.TEMPLATE_REFERENCE), context);
             doc.setTitle(newDoc.getName());
-            doc.getXObject(PhenoTipsPatient.CLASS_REFERENCE).setLongValue("identifier", crtMaxID);
+            doc.getXObject(Patient.CLASS_REFERENCE).setLongValue("identifier", crtMaxID);
             doc.setCreatorReference(this.bridge.getCurrentUserReference());
             context.getWiki().saveDocument(doc, context);
 
@@ -159,7 +159,7 @@ public class PhenoTipsPatientData implements PatientData
             List<PatientRecordInitializer> initializers = Collections.emptyList();
             try {
                 initializers = ComponentManagerRegistry.getContextComponentManager()
-                    .<PatientRecordInitializer> getInstanceList(PatientRecordInitializer.class);
+                    .<PatientRecordInitializer>getInstanceList(PatientRecordInitializer.class);
             } catch (ComponentLookupException e) {
                 this.logger.error("Failed to get initializers", e);
             }
