@@ -77,29 +77,42 @@
               <artifactId>hsqldb</artifactId>
               <version>2.2.9</version>
             </dependency>
+            <!-- Add dependencies that have their own set of migrators, so that a new database doesn't trigger migrators. -->
             <dependency>
               <groupId>org.xwiki.platform</groupId>
               <artifactId>xwiki-platform-activitystream-api</artifactId>
               <version>${xwiki.version}</version>
-              <scope>compile</scope>
             </dependency>
             <dependency>
               <groupId>org.xwiki.platform</groupId>
               <artifactId>xwiki-platform-annotation-io</artifactId>
               <version>${xwiki.version}</version>
-              <scope>compile</scope>
             </dependency>
+            <dependency>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>application-configuration-migrations</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>patient-data-migrations</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>patient-measurements-migrations</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+            <!-- WikiMacro classes are automatically generated. -->
             <dependency>
               <groupId>org.xwiki.platform</groupId>
               <artifactId>xwiki-platform-rendering-wikimacro-store</artifactId>
               <version>${xwiki.version}</version>
-              <scope>compile</scope>
             </dependency>
             <dependency>
               <groupId>javax.servlet</groupId>
               <artifactId>servlet-api</artifactId>
               <version>2.4</version>
-              <scope>compile</scope>
             </dependency>
           </dependencies>
           <executions>
