@@ -22,6 +22,7 @@ package org.phenotips.data.indexing.internal;
 import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
 
@@ -103,6 +104,12 @@ public class PatientEventListener implements EventListener
 
         @Override
         public Set<? extends Disorder> getDisorders()
+        {
+            return null;
+        }
+
+        @Override
+        public <T> PatientData<T> getData(String name)
         {
             return null;
         }

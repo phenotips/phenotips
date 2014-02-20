@@ -255,6 +255,11 @@
               <from>org.phenotips.solr.HPOScriptService</from>
               <to>org.phenotips.ontology.OntologyService</to>
             </difference>
+            <difference>
+              <className>**/data/Patient</className>
+              <differenceType>7012</differenceType>
+              <method>org.phenotips.data.PatientData getData(java.lang.String)</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

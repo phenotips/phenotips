@@ -19,42 +19,22 @@
  */
 package org.phenotips.data;
 
-import org.xwiki.component.annotation.Role;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.stability.Unstable;
-
-import net.sf.json.JSONObject;
+import java.util.List;
 
 /**
- * Interface for objects that hold patient data.
- * Make sure that any component that extends this class is instantiated per lookup.
- * 
+ * Non-essential pieces of custom patient data that can be part of the patient record.
+ *
+ * @param <T> the type of data being represented; usually a key-value pair, where the {@code key} is a String (name)
+ * @see PatientDataController
  * @version $Id$
  * @since 1.0M10
  */
-@Unstable
-@Role
-public interface PatientDataSerializer
+public interface PatientData<T> extends List<T>
 {
     /**
-     * Plays the role of initialization function.
-     * Given a document reference, extracts data and stores it in itself.
+     * The name of this custom data.
      *
-     * @param documentReference document reference pointing the the patient of interest
+     * @return a short string
      */
-    void readDocument(DocumentReference documentReference);
-
-    /**
-     * Creates json from internal objects.
-     *
-     * @param json existing json object to which the data will be appended
-     */
-    void writeJSON(JSONObject json);
-
-    /**
-     * Reads json and stores it in the internal class schema.
-     *
-     * @param json the json that is to be imported
-     */
-    void readJSON(JSONObject json);
+    String getName();
 }

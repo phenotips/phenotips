@@ -24,7 +24,8 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientDataSerializer;
+import org.phenotips.data.PatientData;
+import org.phenotips.data.PatientDataController;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.EntityType;
@@ -84,11 +85,11 @@ public class PhenoTipsPatient implements Patient
     /** @see #getDisorders() */
     private Set<Disorder> disorders = new TreeSet<Disorder>();
 
-    /** Holds the list of all ontology versions. */
-    private Map<String, String> versions = new HashMap<String, String>();
-
     /** The list of all the initialized data holders (PatientDataSerializer). */
-    private List<PatientDataSerializer> serializers;
+    private List<PatientDataController<?>> serializers;
+
+    /** Extra data that can be plugged into the patient record. */
+    private Map<String, PatientData<?>> extraData = new HashMap<String, PatientData<?>>();
 
     /**
      * Constructor that copies the data from an XDocument.
@@ -106,7 +107,7 @@ public class PhenoTipsPatient implements Patient
         }
 
         loadSerializers();
-        readPatientData(this.document);
+        readPatientData();
 
         try {
             for (String property : PHENOTYPE_PROPERTIES) {
@@ -140,20 +141,21 @@ public class PhenoTipsPatient implements Patient
     private void loadSerializers()
     {
         try {
-            serializers =
-                ComponentManagerRegistry.getContextComponentManager().getInstanceList(PatientDataSerializer.class);
+            this.serializers =
+                ComponentManagerRegistry.getContextComponentManager().getInstanceList(PatientDataController.class);
         } catch (ComponentLookupException e) {
-            logger.error("Failed to find component", e);
+            this.logger.error("Failed to find component", e);
         }
     }
 
     /**
      * Loops through all the available serializers and passes each a document reference.
      */
-    private void readPatientData(DocumentReference documentReference)
+    private void readPatientData()
     {
-        for (PatientDataSerializer serializer : this.serializers) {
-            serializer.readDocument(documentReference);
+        for (PatientDataController<?> serializer : this.serializers) {
+            PatientData<?> data = serializer.load(this);
+            this.extraData.put(data.getName(), data);
         }
     }
 
@@ -181,10 +183,11 @@ public class PhenoTipsPatient implements Patient
         return this.disorders;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public String toString()
+    public <T> PatientData<T> getData(String name)
     {
-        return toJSON().toString(2);
+        return (PatientData<T>) this.extraData.get(name);
     }
 
     @Override
@@ -211,10 +214,16 @@ public class PhenoTipsPatient implements Patient
             result.element("disorders", diseasesJSON);
         }
 
-        for (PatientDataSerializer serializer : serializers) {
-            serializer.writeJSON(result);
+        for (PatientDataController<?> serializer : this.serializers) {
+            serializer.writeJSON(this, result);
         }
 
         return result;
+    }
+
+    @Override
+    public String toString()
+    {
+        return toJSON().toString(2);
     }
 }

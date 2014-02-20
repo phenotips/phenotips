@@ -17,85 +17,76 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.phenotips.data.internal.serializer;
+package org.phenotips.data.internal.controller;
 
 import org.phenotips.Constants;
 import org.phenotips.components.ComponentManagerRegistry;
-import org.phenotips.data.PatientDataSerializer;
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
+import org.phenotips.data.PatientDataController;
 
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.InstantiationStrategy;
-import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.distribution.internal.DistributionManager;
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
-import net.sf.json.JSONObject;
-
 /**
- * Handles metadata associated with the patient record.
- * Such as ontologies and PhenoTips versioning, record creation and modification date, authorship, etc.
- *
+ * Exposes the version of the ontologies used for creating the patient record, as well as the current PhenoTips version.
+ * 
  * @version $Id$
  * @since 1.0M10
  */
-@Component
-@Named("meta-serializer")
-@InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public class MetaSerializer implements PatientDataSerializer
+@Component(roles = { PatientDataController.class })
+@Named("versions")
+@Singleton
+public class VersionsController extends AbstractSimpleController
+    implements PatientDataController<ImmutablePair<String, String>>
 {
     /** The XClass used for storing version data of different ontologies. */
-    private static final EntityReference VERSION_REFERENCE =
+    private static final EntityReference ONTOLOGY_VERSION_CLASS_REFERENCE =
         new EntityReference("OntologyVersionClass", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
-    private static final String JSON_ELEMENT_NAME = "meta";
-
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
 
     @Inject
     private Logger logger;
 
-    private Map<String, String> ontologyVersions = new HashMap<String, String>();
-
-    private Map<String, String> phenotipsVersion = new HashMap<String, String>();
-
     @Override
-    public void readDocument(DocumentReference documentReference)
+    public PatientData<ImmutablePair<String, String>> load(Patient patient)
     {
+        List<ImmutablePair<String, String>> versions = new LinkedList<ImmutablePair<String, String>>();
+
         try {
-            XWikiDocument doc = (XWikiDocument) documentAccessBridge.getDocument(documentReference);
-            readOntologyVersionClass(doc);
-            readPhenoTipsVerison();
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
+            addOntologyVersions(doc, versions);
+            addPhenoTipsVersion(versions);
         } catch (Exception e) {
-            logger.error("Could not find requested document");
+            this.logger.error("Could not find requested document");
         }
+        return new SimpleNamedData<String>(getName(), versions);
     }
 
     /**
-     * Reads all the OntologyVersionClass objects from the XWiki patient document.
-     *
-     * @param doc the document which should be looked in for OntologyVersionClass objects
+     * Reads all the {@code PhenoTips.OntologyVersionClass} objects from the patient document.
+     * 
+     * @param doc the document storing the patient data
      */
-    private void readOntologyVersionClass(XWikiDocument doc)
+    private void addOntologyVersions(XWikiDocument doc, List<ImmutablePair<String, String>> versions)
     {
-        List<BaseObject> ontologyVersionObjects = doc.getXObjects(VERSION_REFERENCE);
+        List<BaseObject> ontologyVersionObjects = doc.getXObjects(ONTOLOGY_VERSION_CLASS_REFERENCE);
         if (ontologyVersionObjects == null) {
             return;
         }
@@ -104,38 +95,44 @@ public class MetaSerializer implements PatientDataSerializer
             String versionType = versionObject.getStringValue("name");
             String versionString = versionObject.getStringValue("version");
             if (StringUtils.isNotEmpty(versionType) && StringUtils.isNotEmpty(versionString)) {
-                this.ontologyVersions.put(versionType, versionString);
+                versions.add(new ImmutablePair<String, String>(versionType + "_version", versionString));
             }
         }
     }
 
     /**
-     * Gets the phenotips version from the XWiki Distribution Manager.
+     * Gets the PhenoTips version from the XWiki Distribution Manager and adds it to the patient data being loaded.
+     * 
+     * @param versions the list of version data being constructed
      */
-    private void readPhenoTipsVerison()
+    private void addPhenoTipsVersion(List<ImmutablePair<String, String>> versions)
     {
         try {
             DistributionManager distribution =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(DistributionManager.class);
-            phenotipsVersion.put("phenotips_version",
-                distribution.getDistributionExtension().getId().getVersion().toString());
+            versions.add(new ImmutablePair<String, String>("phenotips_version",
+                distribution.getDistributionExtension().getId().getVersion().toString()));
         } catch (ComponentLookupException ex) {
-            //Shouldn't happen
+            // Shouldn't happen
         }
     }
 
     @Override
-    public void writeJSON(JSONObject json)
+    protected List<String> getProperties()
     {
-        JSONObject metaJSON = new JSONObject();
-        metaJSON.putAll(phenotipsVersion);
-        metaJSON.putAll(ontologyVersions);
-        json.element(JSON_ELEMENT_NAME, metaJSON);
+        // Not used, since there's a custom load method
+        return null;
     }
 
     @Override
-    public void readJSON(JSONObject json)
+    protected String getName()
     {
-        throw new UnsupportedOperationException();
+        return "versions";
+    }
+
+    @Override
+    protected String getJsonPropertyName()
+    {
+        return "meta";
     }
 }

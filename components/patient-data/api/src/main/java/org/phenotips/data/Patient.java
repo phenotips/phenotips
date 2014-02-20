@@ -77,6 +77,18 @@ public interface Patient
     Set<? extends Disorder> getDisorders();
 
     /**
+     * Returns other custom data enabled in this PhenoTips instance. The returned data is a list, potentially empty, or
+     * with a single item, or with many different entries, or it may be {@code null} if the type of data requested isn't
+     * available/enabled on the system. The format of each entry is not fixed and depends on the type of data requested.
+     *
+     * @param name the name of the custom data to access; this is a label for a category
+     * @param <T> the type of data expected
+     * @return the requested data, may be {@code null}
+     * @since 1.0M10
+     */
+    <T> PatientData<T> getData(String name);
+
+    /**
      * Retrieve all the patient data in a JSON format. For example:
      * 
      * <pre>
