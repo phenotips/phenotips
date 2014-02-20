@@ -134,7 +134,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>patient-data-api</artifactId>
+      <artifactId>patient-data-default-impl</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <!-- Transitive dependencies that have a different version in the actual WAR but aren't visible through the war dependency -->

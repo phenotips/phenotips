@@ -33,6 +33,7 @@
 
   <modules>
     <module>api</module>
+    <module>impl</module>
     <module>migrations</module>
     <module>indexing</module>
     <module>ui</module>

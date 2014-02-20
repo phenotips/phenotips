@@ -1,0 +1,3 @@
+org.phenotips.data.internal.PhenoTipsPatientRepository
+org.phenotips.data.internal.serializer.PatientClassSerializer
+org.phenotips.data.internal.serializer.MetaSerializer
