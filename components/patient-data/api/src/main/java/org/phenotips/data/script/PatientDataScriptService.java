@@ -35,8 +35,7 @@ import org.xwiki.stability.Unstable;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import groovy.lang.Singleton;
+import javax.inject.Singleton;
 
 /**
  * API that provides access to patient data.
