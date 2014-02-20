@@ -34,7 +34,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.user.api.XWikiAuthService;
 import com.xpn.xwiki.user.api.XWikiUser;
-import com.xpn.xwiki.user.impl.xwiki.XWikiAuthServiceImpl;
+import com.xpn.xwiki.user.impl.LDAP.XWikiLDAPAuthServiceImpl;
 import com.xpn.xwiki.web.Utils;
 import com.xpn.xwiki.web.XWikiRequest;
 
@@ -60,7 +60,7 @@ import com.xpn.xwiki.web.XWikiRequest;
  * @version $Id$
  * @since 1.0M8
  */
-public class Lims247AuthServiceImpl extends XWikiAuthServiceImpl implements XWikiAuthService
+public class Lims247AuthServiceImpl extends XWikiLDAPAuthServiceImpl implements XWikiAuthService
 {
     /** Key used for storing the logged in user in the session. */
     public static final String SESSION_KEY = "lims247_user";
