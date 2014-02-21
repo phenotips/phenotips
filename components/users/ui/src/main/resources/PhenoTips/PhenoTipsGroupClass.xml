@@ -337,7 +337,40 @@
       <categoryPriority>0</categoryPriority>
     </property>
     <property>
-      <codeToExecute>{{include reference="Groups.WebHome" /}}</codeToExecute>
+      <codeToExecute>#set ($errorMessage = '')
+#if ($request.doCreate == '1' &amp;&amp; $services.csrf.isTokenValid($request.form_token))
+  #if ("$!{request.name.trim()}" == '')
+    #set ($errorMessage = 'Please enter a group name')
+  #else
+    #set ($targetDocument = $services.model.createDocumentReference($xcontext.database, $request.space, $request.name.trim()))
+    #if ($xwiki.exists($targetDocument))
+      #set ($errorMessage = "A group named //${request.name}// already exists. Please choose a different name")
+    #else
+      $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)"))
+      #break
+    #end
+  #end
+#end
+#if ($errorMessage != '')
+{{error}}$errorMessage{{/error}}
+
+#end
+#set ($groupClassName = 'PhenoTips.PhenoTipsGroupClass')
+#set ($groupTemplateName = 'PhenoTips.PhenoTipsGroupTemplate')
+#set ($groupsHome = 'Groups.WebHome')
+
+{{html}}
+&lt;form id="group-creation-form" class="xformInline" action="$doc.getURL($xcontext.action, $request.queryString)" method="post"&gt;&lt;div&gt;
+  &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+  &lt;input type="hidden" name="doCreate" value="1" /&gt;
+  &lt;input type="hidden" name="classTemplate" value="$groupTemplateName" /&gt;
+  &lt;input type="hidden" name="space" value="$xwiki.getDocument(${groupsHome}).space" /&gt;
+  &lt;input type="hidden" name="parent" value="${groupsHome}" /&gt;
+  &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;New group: &lt;input type="text" name="name" placeholder="Name" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="Create"/&gt;
+&lt;/div&gt;&lt;/form&gt;
+{{/html}}
+
+{{include reference="Groups.WebHome" /}}</codeToExecute>
     </property>
     <property>
       <configurationClass/>
@@ -761,21 +794,6 @@
     <guid>dbcd4ec8-4a94-4634-80c7-839729f02690</guid>
     <property>
       <code>{{velocity output="false"}}
-#set ($errorMessage = '')
-#if ($request.doCreate == '1' &amp;&amp; $services.csrf.isTokenValid($request.form_token))
-  #if ("$!{request.name.trim()}" == '')
-    #set ($errorMessage = 'Please enter a group name')
-  #else
-    #set ($targetDocument = $services.model.createDocumentReference($xcontext.database, $request.space, $request.name.trim()))
-    #if ($xwiki.exists($targetDocument))
-      #set ($errorMessage = "A group named //${request.name}// already exists. Please choose a different name")
-    #else
-      $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)"))
-      #break
-    #end
-  #end
-#end
-
 #set ($groupClassName = 'PhenoTips.PhenoTipsGroupClass')
 #set ($groupTemplateName = 'PhenoTips.PhenoTipsGroupTemplate')
 #set ($groupsHome = 'Groups.WebHome')
@@ -831,7 +849,7 @@ $xwiki.jsx.use($groupClassName, {'minify' : false})
 (% id="groups-directory" %)
 #if ($groupSortedData.size() == 0)
 
-{{info}}No groups have been defined yet.#if($hasAdmin &amp;&amp; !($xcontext.macro.params.tools == 'true')) [[Manage groups »&gt;&gt;${groupsHome}]]#end{{/info}}
+{{info}}No groups have been defined yet.#if($hasAdmin) [[Manage groups »&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=workgroups')}]]#end{{/info}}
 
 #else
 #foreach ($groupDatum in $groupSortedData)#if ($foreach.index &lt; $max)
@@ -843,23 +861,6 @@ $xwiki.jsx.use($groupClassName, {'minify' : false})
   [[{{icon name="times" title="Delete this group"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'delete')||class="tool delete"]]##
 )))#end\\
 #end#end
-#end
-#if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)
-
-{{html}}
-&lt;form id="group-creation-form" class="xformInline" action="$xwiki.getURL(${groupsHome}).concat('#group-creation-form')" method="post"&gt;&lt;div&gt;
-  &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-  &lt;input type="hidden" name="doCreate" value="1" /&gt;
-  &lt;input type="hidden" name="classTemplate" value="$groupTemplateName" /&gt;
-  &lt;input type="hidden" name="space" value="$xwiki.getDocument(${groupsHome}).space" /&gt;
-  &lt;input type="hidden" name="parent" value="${groupsHome}" /&gt;
-  &lt;label&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;New group: &lt;input type="text" name="name" placeholder="Name" value="" size="30"/&gt;&lt;/label&gt; &lt;input type="submit" class="button" value="Create"/&gt;
-&lt;/div&gt;&lt;/form&gt;
-{{/html}}
-#if ($errorMessage != '')
-
-{{error}}$errorMessage{{/error}}
-#end
 #end
 {{/velocity}}</code>
     </property>
