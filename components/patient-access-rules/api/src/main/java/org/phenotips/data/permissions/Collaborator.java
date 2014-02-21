@@ -26,8 +26,8 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
 /**
- * A collaborat on a patient record, either a user or a group that has been granted a specific {@link AccessLevel access
- * level}.
+ * A collaborator on a patient record, either a user or a group that has been granted a specific {@link AccessLevel
+ * access level}.
  * 
  * @version $Id$
  * @since 1.0M9
