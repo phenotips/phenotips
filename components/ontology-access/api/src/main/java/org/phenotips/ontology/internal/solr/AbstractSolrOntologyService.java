@@ -28,6 +28,7 @@ import org.xwiki.component.phase.InitializationException;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -131,7 +132,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     @Override
     public Set<OntologyTerm> search(Map<String, ?> fieldValues, Map<String, String> queryOptions)
     {
-        Set<OntologyTerm> result = new HashSet<OntologyTerm>();
+        Set<OntologyTerm> result = new LinkedHashSet<OntologyTerm>();
         for (SolrDocument doc : this
             .search(SolrQueryUtils.transformQueryToSolrParams(generateLuceneQuery(fieldValues)), queryOptions)) {
             result.add(new SolrOntologyTerm(doc, this));
