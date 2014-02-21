@@ -835,12 +835,12 @@ $xwiki.jsx.use($groupClassName, {'minify' : false})
 
 #else
 #foreach ($groupDatum in $groupSortedData)#if ($foreach.index &lt; $max)
-|(% class="logo" %) #if ("$!{groupDatum.get('logo')}" != '')[[[[image:${groupDatum.get('logo')}|| width="80px"]]&gt;&gt;$groupDatum.get('doc.fullName')]]#end ##
-|(% class="name" %) [[$groupDatum.get('name')&gt;&gt;$groupDatum.get('doc.fullName')]] \\(% class="members"%)$groupDatum.get('members') member#if($groupDatum.get('members') != 1)s#end(%%) \\(% class="patients"%)$groupDatum.get('cases') case#if($groupDatum.get('cases') != 1)s#end(%%) ##
+|(% class="logo" %) #if ("$!{groupDatum.get('logo')}" != '')[[[[image:${groupDatum.get('logo')}|| width="80px"]]&gt;&gt;$groupDatum.get('doc.fullName')]]#end##
+|(% class="name" %) [[$groupDatum.get('name')&gt;&gt;$groupDatum.get('doc.fullName')]] \\(% class="members"%)$groupDatum.get('members') member#if($groupDatum.get('members') != 1)s#end(%%) \\(% class="patients"%)$groupDatum.get('cases') case#if($groupDatum.get('cases') != 1)s#end(%%)##
 #if ($xcontext.macro.params.fullinfo == 'true')|#if ("$!{groupDatum.get('obj').getProperty('description').value.trim()}" != '')(% class="desc" %) ((($groupDatum.get('doc').display('description'))))#end#end
 #if ($xcontext.macro.params.tools == 'true' &amp;&amp; $hasAdmin)|(% class="tools" %) (((##
-  [[{{icon name="pencil" title="Edit this group"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'edit')||class="tool edit"]] ##
-  [[{{icon name="remove" title="Delete this group"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'delete')||class="tool delete"]] ##
+  [[{{icon name="pencil" title="Edit this group"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'edit')||class="tool edit"]]##
+  [[{{icon name="times" title="Delete this group"/}}&gt;&gt;path:$xwiki.getURL($groupDatum.get('doc.fullName'), 'delete')||class="tool delete"]]##
 )))#end\\
 #end#end
 #end
