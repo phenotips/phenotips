@@ -70,7 +70,7 @@
     <fieldType name="text_general_edge_ngram" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.LowerCaseTokenizerFactory"/>
-        <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" side="front"/>
+        <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="10" side="front"/>
       </analyzer>
       <analyzer type="query">
         <tokenizer class="solr.LowerCaseTokenizerFactory"/>
@@ -119,8 +119,8 @@
 
   <fields>
     <field name="id" type="string" indexed="true" stored="true" required="true"/>
-    <field name="name" type="text_general" indexed="true" stored="true" omitNorms="false"/>
-    <field name="nameGram" type="text_general_edge_ngram" indexed="true" stored="true" omitNorms="false"/>
+    <field name="name" type="text_general" indexed="false" stored="true"/>
+    <field name="nameGram" type="text_general_edge_ngram" indexed="true" stored="false" omitNorms="false"/>
     <field name="nameSpell" type="text_spell" indexed="true" stored="false"/>
     <field name="nameSort" type="string" indexed="true" stored="false"/>
 

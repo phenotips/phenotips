@@ -33,6 +33,8 @@ import java.util.Set;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.solr.common.params.CommonParams;
+
 /**
  * Provides access to searching ethnicity Solr index. Currently the implementation is very basic, but will be extended
  * upon the index becoming a full-fledged ontology.
@@ -45,9 +47,6 @@ import javax.inject.Singleton;
 @Singleton
 public class EthnicityOntology extends AbstractSolrOntologyService
 {
-    /** The field that contains the full name of ethnicities. */
-    private static final String SEARCH_FIELD = "nameGram";
-
     /**
      * @param stringSearch part of full ethnicity name
      * @return set of strings that are full ethnicity names that match the partial string
@@ -56,10 +55,12 @@ public class EthnicityOntology extends AbstractSolrOntologyService
     {
         List<String> returnList = new LinkedList<String>();
         Map<String, String> searchMap = new HashMap<String, String>();
-        searchMap.put(SEARCH_FIELD, stringSearch);
-        Set<OntologyTerm> resultsList = search(searchMap);
+        Map<String, String> optionsMap = new HashMap<String, String>();
+        searchMap.put("nameGram", stringSearch);
+        optionsMap.put(CommonParams.ROWS, "10");
+        Set<OntologyTerm> resultsList = search(searchMap, optionsMap);
         for (OntologyTerm result : resultsList) {
-            returnList.add(result.get(SEARCH_FIELD).toString());
+            returnList.add(result.get("name").toString());
         }
         return returnList;
     }
