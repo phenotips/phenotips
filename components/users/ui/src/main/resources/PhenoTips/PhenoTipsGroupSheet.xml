@@ -314,9 +314,9 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.
     #set ($discard = $contents.put($s.id, $s.content))
   #end
 #end
-
+##
 #set ($crtContent = '')
-
+##
 #if ($menu.size() &gt; 0)
   #set ($crtItem = "$!request.s")
   #if ("$!contents.get($crtItem)" == '')
