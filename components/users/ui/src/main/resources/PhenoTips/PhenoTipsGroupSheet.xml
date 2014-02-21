@@ -236,7 +236,9 @@
     <className>XWiki.UIExtensionClass</className>
     <guid>f501f9c0-0ee3-4ec1-8a7e-cb81db0ab52b</guid>
     <property>
-      <content>{{velocity}}#if ($xcontext.action == 'view' &amp;&amp; $hasEdit &amp;&amp; $doc.getObject('PhenoTips.PhenoTipsGroupClass'))(% class="doc-tools buttonwrapper" %)((([[ {{icon name="pencil"/}}&gt;&gt;path:$doc.getURL('edit') || title="Edit" class="doc-tool edit button"]])))#end{{/velocity}}</content>
+      <content>{{velocity}}
+$xwiki.ssx.use('PhenoTips.PhenoTipsGroupSheet')##
+#if ($xcontext.action == 'view' &amp;&amp; $hasEdit &amp;&amp; ($doc.getObject('PhenoTips.PhenoTipsGroupClass') || $doc.getObject('XWiki.XWikiGroups') &amp;&amp; $doc.space == 'Groups'))(% class="doc-tools buttonwrapper" %)((([[ {{icon name="pencil"/}}&gt;&gt;path:$doc.getURL('edit') || title="Edit" class="doc-tool edit button"]])))#end{{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>org.xwiki.platform.content.top</extensionPointId>
@@ -279,6 +281,8 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.
 )))
 (% class="xform" %)(((
 == Manage group members ==
+
+(% class="buttonwrapper" %)[[{{icon name="wrench" /}} Manage group administrators&gt;&gt;path:$xwiki.getURL("${doc.fullName} Administrators", 'edit')||rel="__blank" class="button" style="float: right"]]
 
 {{include reference='XWiki.XWikiGroupSheet'/}}
 
