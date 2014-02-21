@@ -302,7 +302,7 @@ td input[type="text"]:focus {
       <parse>1</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <content>{{include reference="PhenoTips.TabelarDataMacros"/}}

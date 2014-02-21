@@ -145,7 +145,7 @@
       <parse/>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <content>{{velocity}}
