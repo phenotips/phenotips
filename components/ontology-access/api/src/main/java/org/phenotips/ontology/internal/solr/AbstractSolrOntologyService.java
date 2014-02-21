@@ -20,14 +20,13 @@
 package org.phenotips.ontology.internal.solr;
 
 import org.phenotips.ontology.OntologyService;
-import org.phenotips.ontology.SolrOntologyServiceInitializer;
 import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.ontology.SolrOntologyServiceInitializer;
 
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -116,7 +115,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
             query.append(' ');
         }
         query.append(')');
-        Set<OntologyTerm> result = new HashSet<OntologyTerm>();
+        Set<OntologyTerm> result = new LinkedHashSet<OntologyTerm>();
         for (SolrDocument doc : this.search(SolrQueryUtils.transformQueryToSolrParams(query.toString()))) {
             result.add(new SolrOntologyTerm(doc, this));
         }
