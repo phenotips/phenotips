@@ -46,7 +46,7 @@ import javax.inject.Singleton;
 public class EthnicityOntology extends AbstractSolrOntologyService
 {
     /** The field that contains the full name of ethnicities. */
-    private static final String SEARCH_FIELD = "name";
+    private static final String SEARCH_FIELD = "nameGram";
 
     /**
      * @param stringSearch part of full ethnicity name
@@ -56,7 +56,7 @@ public class EthnicityOntology extends AbstractSolrOntologyService
     {
         List<String> returnList = new LinkedList<String>();
         Map<String, String> searchMap = new HashMap<String, String>();
-        searchMap.put(SEARCH_FIELD, stringSearch + "*");
+        searchMap.put(SEARCH_FIELD, stringSearch);
         Set<OntologyTerm> resultsList = search(searchMap);
         for (OntologyTerm result : resultsList) {
             returnList.add(result.get(SEARCH_FIELD).toString());
@@ -80,7 +80,7 @@ public class EthnicityOntology extends AbstractSolrOntologyService
     public Set<String> getAliases()
     {
         Set<String> aliases = new HashSet<String>();
-        aliases.add("ethnicity");
+        aliases.add(getName());
         return aliases;
     }
 }

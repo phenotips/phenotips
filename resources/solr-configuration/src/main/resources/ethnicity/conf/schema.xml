@@ -37,7 +37,7 @@
     that avoids logging every request
 -->
 
-<schema name="ethnicity" version="1.5">
+<schema name="omim" version="1.5">
   <types>
     <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
@@ -64,6 +64,16 @@
         <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.EnglishPossessiveFilterFactory"/>
         <filter class="solr.PorterStemFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
+    <fieldType name="text_general_edge_ngram" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+        <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" side="front"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.LowerCaseTokenizerFactory"/>
       </analyzer>
     </fieldType>
 
@@ -108,8 +118,9 @@
   </types>
 
   <fields>
-    <field name="id" type="string" indexed="true" stored="true" required="true" />
-    <field name="name" type="text_general" indexed="true" stored="true"/>
+    <field name="id" type="string" indexed="true" stored="true" required="true"/>
+    <field name="name" type="text_general" indexed="true" stored="true" omitNorms="false"/>
+    <field name="nameGram" type="text_general_edge_ngram" indexed="true" stored="true" omitNorms="false"/>
     <field name="nameSpell" type="text_spell" indexed="true" stored="false"/>
     <field name="nameSort" type="string" indexed="true" stored="false"/>
 
@@ -122,7 +133,7 @@
          leading wildcard queries. -->
     <field name="text_rev" type="text_general_rev" indexed="true" stored="false" multiValued="true"/>
 
-    <dynamicField name="*" type="ignored" multiValued="true" />
+    <dynamicField name="*" type="ignored" multiValued="true" omitNorms="false"/>
   </fields>
 
   <!-- Field to use to determine and enforce document uniqueness.
@@ -132,6 +143,7 @@
 
   <copyField source="name" dest="nameSort"/>
   <copyField source="name" dest="nameSpell"/>
+  <copyField source="name" dest="nameGram"/>
   <copyField source="*" dest="text"/>
   <copyField source="*" dest="textSpell"/>
 </schema>
