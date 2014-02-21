@@ -19,47 +19,43 @@
  */
 package org.phenotips.data.permissions;
 
-import org.phenotips.data.Patient;
+import org.phenotips.Constants;
 
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
-
-import java.util.Collection;
+import org.xwiki.stability.Unstable;
 
 /**
+ * The owner of a patient record, either a user or a group that has full control on the patient record. Only one owner
+ * can be set for a patient record at a time, but ownership can be transfered.
+ * 
  * @version $Id$
- * @since 1.0M9
+ * @since 1.0M10
  */
-public interface PatientAccess
+@Unstable
+public interface Owner
 {
-    Patient getPatient();
+    /** The XClass used to store the owner in the patient record. */
+    EntityReference CLASS_REFERENCE = new EntityReference("OwnerClass", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
 
-    Owner getOwner();
+    String getType();
 
-    boolean isOwner();
+    boolean isUser();
 
-    boolean isOwner(EntityReference user);
+    boolean isGroup();
 
-    boolean setOwner(EntityReference userOrGroup);
+    /**
+     * The user or group that has been set as collaborator.
+     * 
+     * @return a reference to the user's or group's profile
+     */
+    EntityReference getUser();
 
-    Visibility getVisibility();
-
-    boolean setVisibility(Visibility newVisibility);
-
-    Collection<Collaborator> getCollaborators();
-
-    boolean updateCollaborators(Collection<Collaborator> newCollaborators);
-
-    boolean addCollaborator(EntityReference user, AccessLevel access);
-
-    boolean removeCollaborator(EntityReference user);
-
-    boolean removeCollaborator(Collaborator collaborator);
-
-    AccessLevel getAccessLevel();
-
-    AccessLevel getAccessLevel(EntityReference user);
-
-    boolean hasAccessLevel(AccessLevel access);
-
-    boolean hasAccessLevel(EntityReference user, AccessLevel access);
+    /**
+     * The username or group name.
+     * 
+     * @return the name of the document holding the user or group (just the name without the space or instance name)
+     */
+    String getUsername();
 }

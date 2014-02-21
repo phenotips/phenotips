@@ -260,6 +260,23 @@
               <differenceType>7012</differenceType>
               <method>org.phenotips.data.PatientData getData(java.lang.String)</method>
             </difference>
+            <difference>
+              <className>**/data/permissions/PatientAccess</className>
+              <differenceType>7006</differenceType>
+              <method>org.xwiki.model.reference.EntityReference getOwner()</method>
+              <to>org.phenotips.data.permissions.Owner</to>
+            </difference>
+            <difference>
+              <className>**/data/permissions/PatientAccess</className>
+              <differenceType>6001</differenceType>
+              <field>OWNER_CLASS_REFERENCE</field>
+            </difference>
+            <difference>
+              <className>**/data/permissions/script/SecurePatientAccess</className>
+              <differenceType>7006</differenceType>
+              <method>org.xwiki.model.reference.EntityReference getOwner()</method>
+              <to>org.phenotips.data.permissions.Owner</to>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

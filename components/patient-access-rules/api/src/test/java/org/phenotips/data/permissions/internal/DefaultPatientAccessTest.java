@@ -22,6 +22,7 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
@@ -54,6 +55,9 @@ public class DefaultPatientAccessTest
     /** The user used as the owner of the patient. */
     private static final DocumentReference OWNER = new DocumentReference("xwiki", "XWiki", "padams");
 
+    /** The user used as the owner of the patient. */
+    private static final Owner OWNER_OBJECT = new DefaultOwner(OWNER, mock(PatientAccessHelper.class));
+
     /** The user used as a collaborator. */
     private static final DocumentReference COLLABORATOR = new DocumentReference("xwiki", "XWiki", "hmccoy");
 
@@ -76,9 +80,10 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         PatientAccessHelper h = mock(PatientAccessHelper.class);
-        when(h.getOwner(p)).thenReturn(OWNER);
+        when(h.getOwner(p)).thenReturn(OWNER_OBJECT);
         PatientAccess pa = new DefaultPatientAccess(p, h, mock(PermissionsManager.class));
-        Assert.assertSame(OWNER, pa.getOwner());
+        Assert.assertSame(OWNER_OBJECT, pa.getOwner());
+        Assert.assertSame(OWNER, pa.getOwner().getUser());
     }
 
     /** Basic tests for {@link PatientAccess#isOwner()}. */
@@ -87,7 +92,7 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         PatientAccessHelper h = mock(PatientAccessHelper.class);
-        when(h.getOwner(p)).thenReturn(OWNER);
+        when(h.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(h.getCurrentUser()).thenReturn(OWNER);
         PatientAccess pa = new DefaultPatientAccess(p, h, mock(PermissionsManager.class));
         Assert.assertTrue(pa.isOwner());
@@ -102,7 +107,7 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         PatientAccessHelper h = mock(PatientAccessHelper.class);
-        when(h.getOwner(p)).thenReturn(OWNER);
+        when(h.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(h.getCurrentUser()).thenReturn(null);
         PatientAccess pa = new DefaultPatientAccess(p, h, mock(PermissionsManager.class));
         Assert.assertFalse(pa.isOwner());
@@ -118,7 +123,7 @@ public class DefaultPatientAccessTest
     {
         Patient p = mock(Patient.class);
         PatientAccessHelper h = mock(PatientAccessHelper.class);
-        when(h.getOwner(p)).thenReturn(OWNER);
+        when(h.getOwner(p)).thenReturn(OWNER_OBJECT);
         PatientAccess pa = new DefaultPatientAccess(p, h, mock(PermissionsManager.class));
         Assert.assertTrue(pa.isOwner(OWNER));
         Assert.assertFalse(pa.isOwner(OTHER_USER));
@@ -267,7 +272,7 @@ public class DefaultPatientAccessTest
         PatientAccessHelper helper = mock(PatientAccessHelper.class);
         PermissionsManager manager = mock(PermissionsManager.class);
         PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER);
+        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(OWNER);
         AccessLevel owner = new OwnerAccessLevel();
         when(manager.resolveAccessLevel("owner")).thenReturn(owner);
@@ -282,7 +287,7 @@ public class DefaultPatientAccessTest
         PatientAccessHelper helper = mock(PatientAccessHelper.class);
         PermissionsManager manager = mock(PermissionsManager.class);
         PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER);
+        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(OTHER_USER);
         when(helper.isAdministrator(p)).thenReturn(true);
         AccessLevel owner = new OwnerAccessLevel();
@@ -298,7 +303,7 @@ public class DefaultPatientAccessTest
         PatientAccessHelper helper = mock(PatientAccessHelper.class);
         PermissionsManager manager = mock(PermissionsManager.class);
         PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER);
+        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
         AccessLevel edit = new EditAccessLevel();
         when(helper.isAdministrator(p)).thenReturn(false);
         when(helper.getCurrentUser()).thenReturn(COLLABORATOR);
@@ -318,7 +323,7 @@ public class DefaultPatientAccessTest
         PatientAccessHelper helper = mock(PatientAccessHelper.class);
         PermissionsManager manager = mock(PermissionsManager.class);
         PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER);
+        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
         AccessLevel none = new NoAccessLevel();
         when(helper.isAdministrator(p)).thenReturn(false);
         when(helper.getCurrentUser()).thenReturn(OTHER_USER);
@@ -341,7 +346,7 @@ public class DefaultPatientAccessTest
         PatientAccessHelper helper = mock(PatientAccessHelper.class);
         PermissionsManager manager = mock(PermissionsManager.class);
         PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER);
+        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
         when(helper.getCurrentUser()).thenReturn(COLLABORATOR);
         AccessLevel edit = new EditAccessLevel();
         when(helper.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
@@ -366,7 +371,7 @@ public class DefaultPatientAccessTest
         PatientAccessHelper helper = mock(PatientAccessHelper.class);
         PermissionsManager manager = mock(PermissionsManager.class);
         PatientAccess pa = new DefaultPatientAccess(p, helper, manager);
-        when(helper.getOwner(p)).thenReturn(OWNER);
+        when(helper.getOwner(p)).thenReturn(OWNER_OBJECT);
         AccessLevel edit = new EditAccessLevel();
         when(helper.getAccessLevel(p, COLLABORATOR)).thenReturn(edit);
         Visibility publicV = mock(Visibility.class);

@@ -22,6 +22,7 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.Visibility;
 
 import org.xwiki.component.annotation.Role;
@@ -40,7 +41,7 @@ public interface PatientAccessHelper
 
     boolean isAdministrator(Patient patient);
 
-    DocumentReference getOwner(Patient patient);
+    Owner getOwner(Patient patient);
 
     boolean setOwner(Patient patient, EntityReference userOrGroup);
 

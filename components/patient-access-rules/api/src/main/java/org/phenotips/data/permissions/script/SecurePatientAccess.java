@@ -22,6 +22,7 @@ package org.phenotips.data.permissions.script;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
@@ -52,7 +53,7 @@ public class SecurePatientAccess implements PatientAccess
     }
 
     @Override
-    public EntityReference getOwner()
+    public Owner getOwner()
     {
         return this.internalService.getOwner();
     }

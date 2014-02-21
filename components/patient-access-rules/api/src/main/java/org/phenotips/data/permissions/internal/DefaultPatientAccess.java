@@ -22,6 +22,7 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
@@ -55,7 +56,7 @@ public class DefaultPatientAccess implements PatientAccess
     }
 
     @Override
-    public EntityReference getOwner()
+    public Owner getOwner()
     {
         return this.helper.getOwner(this.patient);
     }
@@ -69,11 +70,12 @@ public class DefaultPatientAccess implements PatientAccess
     @Override
     public boolean isOwner(EntityReference user)
     {
-        if (user == null) {
+        Owner owner = this.helper.getOwner(this.patient);
+        if (user == null || owner == null) {
             return false;
         }
 
-        return user.equals(this.helper.getOwner(this.patient));
+        return user.equals(owner.getUser());
     }
 
     @Override

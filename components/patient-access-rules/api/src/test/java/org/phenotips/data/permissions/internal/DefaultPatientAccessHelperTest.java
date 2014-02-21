@@ -22,6 +22,7 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
+import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
@@ -135,7 +136,7 @@ public class DefaultPatientAccessHelperTest
         this.stringEntityResolver = this.mocker.getInstance(this.stringResolverType);
         this.stringEntitySerializer = this.mocker.getInstance(this.stringSerializerType);
 
-        when(this.partialEntityResolver.resolve(PatientAccess.OWNER_CLASS_REFERENCE, PATIENT_REFERENCE)).thenReturn(
+        when(this.partialEntityResolver.resolve(Owner.CLASS_REFERENCE, PATIENT_REFERENCE)).thenReturn(
             OWNER_CLASS);
         when(this.partialEntityResolver.resolve(Visibility.CLASS_REFERENCE, PATIENT_REFERENCE)).thenReturn(
             VISIBILITY_CLASS);
@@ -182,7 +183,7 @@ public class DefaultPatientAccessHelperTest
     @Test
     public void getOwner() throws ComponentLookupException
     {
-        Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getOwner(this.patient));
+        Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
     }
 
     /** {@link PatientAccessHelper#getOwner(Patient)} returns the referrer when the owner isn't specified. */
@@ -191,10 +192,10 @@ public class DefaultPatientAccessHelperTest
     {
         when(this.patient.getReporter()).thenReturn(OWNER);
         when(this.bridge.getProperty(PATIENT_REFERENCE, OWNER_CLASS, "owner")).thenReturn(null);
-        Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getOwner(this.patient));
+        Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
 
         when(this.bridge.getProperty(PATIENT_REFERENCE, OWNER_CLASS, "owner")).thenReturn("");
-        Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getOwner(this.patient));
+        Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
     }
 
     /** {@link PatientAccessHelper#getOwner(Patient)} returns null when the owner and the referrer aren't specified. */

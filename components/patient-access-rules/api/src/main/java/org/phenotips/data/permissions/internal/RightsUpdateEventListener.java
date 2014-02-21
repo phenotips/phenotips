@@ -22,7 +22,7 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 
@@ -206,7 +206,7 @@ public class RightsUpdateEventListener implements EventListener
     private DocumentReference getOwner(XWikiDocument doc)
     {
         String owner = null;
-        BaseObject ownerObj = doc.getXObject(PatientAccess.OWNER_CLASS_REFERENCE);
+        BaseObject ownerObj = doc.getXObject(Owner.CLASS_REFERENCE);
         if (ownerObj != null) {
             owner = ownerObj.getStringValue("owner");
         }

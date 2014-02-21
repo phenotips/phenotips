@@ -22,7 +22,7 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
-import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 
@@ -112,18 +112,18 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     }
 
     @Override
-    public DocumentReference getOwner(Patient patient)
+    public Owner getOwner(Patient patient)
     {
         if (patient == null || patient.getDocument() == null) {
             return null;
         }
         DocumentReference classReference =
-            this.partialEntityResolver.resolve(PatientAccess.OWNER_CLASS_REFERENCE, patient.getDocument());
+            this.partialEntityResolver.resolve(Owner.CLASS_REFERENCE, patient.getDocument());
         String owner = String.valueOf(this.bridge.getProperty(patient.getDocument(), classReference, "owner"));
         if (StringUtils.isNotBlank(owner) && !"null".equals(owner)) {
-            return this.stringEntityResolver.resolve(owner, patient.getDocument());
+            return new DefaultOwner(this.stringEntityResolver.resolve(owner, patient.getDocument()), this);
         } else if (patient.getReporter() != null) {
-            return patient.getReporter();
+            return new DefaultOwner(patient.getReporter(), this);
         }
         return null;
     }
@@ -132,9 +132,9 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     public boolean setOwner(Patient patient, EntityReference userOrGroup)
     {
         DocumentReference classReference =
-            this.partialEntityResolver.resolve(PatientAccess.OWNER_CLASS_REFERENCE, patient.getDocument());
+            this.partialEntityResolver.resolve(Owner.CLASS_REFERENCE, patient.getDocument());
         try {
-            DocumentReference previousOwner = getOwner(patient);
+            EntityReference previousOwner = getOwner(patient).getUser();
             this.bridge.setProperty(patient.getDocument(), classReference, "owner", String.valueOf(userOrGroup));
             if (!previousOwner.equals(userOrGroup)) {
                 addCollaborator(patient,
@@ -181,7 +181,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
             return result;
         }
         try {
-            DocumentReference owner = getOwner(patient);
+            EntityReference owner = getOwner(patient).getUser();
             Collection<Collaborator> collaborators = getCollaborators(patient);
             Set<DocumentReference> processedEntities = new HashSet<DocumentReference>();
             Queue<DocumentReference> entitiesToCheck = new LinkedList<DocumentReference>();
@@ -331,7 +331,7 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
         return "unknown";
     }
 
-    private AccessLevel getAccessLevel(DocumentReference userOrGroup, DocumentReference owner,
+    private AccessLevel getAccessLevel(EntityReference userOrGroup, EntityReference owner,
         Collection<Collaborator> collaborators)
     {
         if (userOrGroup.equals(owner)) {
