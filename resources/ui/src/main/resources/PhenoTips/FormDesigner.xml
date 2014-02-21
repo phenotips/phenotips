@@ -918,9 +918,9 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.
 ## Initialize the form parameters
 ## ----------------------------------------------------------------------
 #if ($hasEdit)
-  #set ($groupConfig = $doc.getObject('PhenoTips.FormCustomizationClass'))
+  #set ($studyConfig = $doc.getObject('PhenoTips.StudyClass'))
 #end
-#if ("$!{groupConfig}" == '')
+#if ("$!{studyConfig}" == '')
   #set ($globalConfig = $hasAdmin)
   #set ($prefix = '')
   #set ($formAction = "$doc.getURL($xcontext.action, $!request.queryString)")
@@ -930,7 +930,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.
     "sections" : "" 
   })
 #else
-  #set ($prefix = "${groupConfig.xWikiClass.name}_${groupConfig.number}_")
+  #set ($prefix = "${studyConfig.xWikiClass.name}_${studyConfig.number}_")
   #set ($formAction = $doc.getURL('save'))
   #set ($formSubmit = "action_save")
   #set ($formParams = {
@@ -1017,7 +1017,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.
 ## ---------------------------------------------------------------------- 
 #macro (_formDesigner__displaySectionWithId $id)
   #set ($sectionsData = [])
-  #_formDesigner__getExtensionsData('section', 'name', "${sectionExtensionIdPrefix}${id}", $sectionExtensionPointId, $!groupConfig.getProperty('sections').value, $sectionsData)
+  #_formDesigner__getExtensionsData('section', 'name', "${sectionExtensionIdPrefix}${id}", $sectionExtensionPointId, $!studyConfig.getProperty('sections').value, $sectionsData)
   #foreach ($section in $sectionsData)
     #_formDesigner__displaySection($section true)
   #end
@@ -1050,7 +1050,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.
 ## =====================================================================
 ## SHOW FORM DESIGNER
 ## =====================================================================
-#if ($globalConfig || $groupConfig)
+#if ($globalConfig || $studyConfig)
 ## ----------------------------------------------------------------------
 ## Display the configuration form if the user has permissions
 ## ----------------------------------------------------------------------
@@ -1080,7 +1080,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.
 })
 #_formDesigner__displaySection($defaultSectionData false)
 )))
-#elseif ($groupConfig)
+#elseif ($studyConfig)
 ##
 ## Enable mapping configuration as well
 ##
@@ -1090,7 +1090,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.
 {{info}}The phenotype categories and phenotypes that are displayed by default in the patient form, on the in the left side of the "Clinical symptoms &amp; physical findings" section, are defined in a separate configuration document. Choose below the configuration document to use.{{/info}}
 ; Phenotype configuration document
 : (((
-{{html clean=false wiki=false}}&lt;label class="xwiki-form-listclass default" for="xwiki-form-mapping-0-default"&gt;&lt;input id="xwiki-form-mapping-0-default" type="radio" name="${prefix}mapping" value="" #if ("$!{groupConfig.getProperty('mapping').value}" == '') checked="checked" #end/&gt;None (use the global default)&lt;/label&gt;{{/html}}
+{{html clean=false wiki=false}}&lt;label class="xwiki-form-listclass default" for="xwiki-form-mapping-0-default"&gt;&lt;input id="xwiki-form-mapping-0-default" type="radio" name="${prefix}mapping" value="" #if ("$!{studyConfig.getProperty('mapping').value}" == '') checked="checked" #end/&gt;None (use the global default)&lt;/label&gt;{{/html}}
 $doc.display('mapping', 'edit')
 )))
 

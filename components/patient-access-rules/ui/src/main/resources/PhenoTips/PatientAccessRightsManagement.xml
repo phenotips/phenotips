@@ -540,7 +540,7 @@ document.observe("xwiki:dom:loaded", function() {
       <code>#template("colorThemeInit.vm")
 
 #access-rights-summary {
-  text-align: right;
+  float: right;
 }
 #access-rights-summary .access-rights-info {
   border: 1px solid #fff;

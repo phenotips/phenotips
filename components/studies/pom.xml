@@ -24,30 +24,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-parent</artifactId>
+    <artifactId>phenotips-components</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-components</artifactId>
+  <artifactId>studies</artifactId>
   <packaging>pom</packaging>
-  <name>PhenoTips - Various Java components</name>
+  <name>PhenoTips - Studies</name>
 
   <modules>
-    <module>constants</module>
-    <module>component-registry</module>
-    <module>obo2solr</module>
-    <module>solr-access-service</module>
-    <module>ontology-access</module>
-    <module>patient-update-listeners</module>
-    <module>patient-data</module>
-    <module>patient-access-rules</module>
-    <module>patient-measurements</module>
-    <module>xwiki-platform-users</module>
-    <module>studies</module>
-    <module>users</module>
-    <module>application-configuration</module>
-    <module>patient-tools</module>
-    <module>ncbieutils-services</module>
-    <module>phenotype-mapping-service</module>
-    <module>integration</module>
+    <module>ui</module>
   </modules>
 </project>

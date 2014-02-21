@@ -229,94 +229,6 @@ j3Lx8f8RHtX3u+7mGAAAAABJRU5ErkJggg==
   </attachment>
   <object>
     <class>
-      <name>PhenoTips.FormCustomizationClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <fields>
-        <cache>0</cache>
-        <classname/>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <displayType>checkbox</displayType>
-        <idField/>
-        <multiSelect>1</multiSelect>
-        <name>fields</name>
-        <number>2</number>
-        <picker>0</picker>
-        <prettyName>fields</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators/>
-        <size>1</size>
-        <sort>none</sort>
-        <sql/>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <valueField/>
-        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-      </fields>
-      <mapping>
-        <cache>0</cache>
-        <classname>PhenoTips.PhenotypeMappingClass</classname>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <displayType>radio</displayType>
-        <idField>doc.fullName</idField>
-        <multiSelect>0</multiSelect>
-        <name>mapping</name>
-        <number>2</number>
-        <picker>0</picker>
-        <prettyName>mapping</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators/>
-        <size>1</size>
-        <sort>none</sort>
-        <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where obj.name = doc.fullName and obj.className = 'PhenoTips.PhenotypeMappingClass'</sql>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <valueField>doc.name</valueField>
-        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-      </mapping>
-      <sections>
-        <cache>0</cache>
-        <classname/>
-        <customDisplay/>
-        <disabled>0</disabled>
-        <displayType>checkbox</displayType>
-        <idField/>
-        <multiSelect>1</multiSelect>
-        <name>sections</name>
-        <number>1</number>
-        <picker>0</picker>
-        <prettyName>sections</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators/>
-        <size>1</size>
-        <sort>none</sort>
-        <sql/>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <valueField/>
-        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-      </sections>
-    </class>
-    <name>PhenoTips.PhenoTipsGroupTemplate</name>
-    <number>0</number>
-    <className>PhenoTips.FormCustomizationClass</className>
-    <guid>a00c416a-f4b9-4d0e-8fc2-f752c2a269f6</guid>
-  </object>
-  <object>
-    <class>
       <name>PhenoTips.PhenoTipsGroupClass</name>
       <customClass/>
       <customMapping/>
@@ -388,6 +300,30 @@ j3Lx8f8RHtX3u+7mGAAAAABJRU5ErkJggg==
         <values>members=Show member list to non-members|cases=Show list of public cases to non-members</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </public_sections>
+      <studies>
+        <cache>0</cache>
+        <classname/>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <idField/>
+        <multiSelect>1</multiSelect>
+        <name>studies</name>
+        <number>5</number>
+        <picker>0</picker>
+        <prettyName>studies</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>1</size>
+        <sort>none</sort>
+        <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.StudyTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.StudyClass'</sql>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+      </studies>
     </class>
     <name>PhenoTips.PhenoTipsGroupTemplate</name>
     <number>0</number>

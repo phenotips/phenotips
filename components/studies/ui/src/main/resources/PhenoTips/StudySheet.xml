@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc>
+  <web>PhenoTips</web>
+  <name>StudySheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>PhenoTips.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1392932649000</creationDate>
+  <date>1392933900000</date>
+  <contentUpdateDate>1392933900000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <object>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.StudySheet</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>615ece93-e9ae-4b28-bf12-bf6f9f6a4139</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template("colorThemeInit.vm")
+
+.doc-tools {
+  float: right;
+  font-size: 1.5em;
+}
+
+.doc-tools a.doc-tool.edit {
+  margin: -1.2em -0.3em 0 0 !important;
+  padding: 0.1em 0 0 0.3em !important;
+}
+.group-logo {
+  float: left;
+  max-width: 30%;
+  margin: 0 10px 10px 0;
+}
+.vertical-menu a {
+  color: $theme.textColor !important;
+  text-transform: uppercase;
+  padding-left: .5em;
+}
+.vertical-menu i {
+  font-size: 1.2em;
+}
+.menu-section {
+  margin-left: 16em;
+}
+.menu-section h2 {
+  margin-top: 0;
+}
+.menu-section input[name="action_save"] {
+    background-image: none !important;
+}</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <content>{{velocity}}
+$xwiki.ssx.use('PhenoTips.StudySheet')##
+#set ($groups = $services.query.xwql('from doc.object(PhenoTips.PhenoTipsGroupClass) as g where :study member of g.studies').bindValue('study', $services.model.serialize($doc.documentReference, 'local')))
+#set ($groupsCount = $groups.count())
+#set ($casesCount = $services.query.xwql('from doc.object(PhenoTips.PatientClass) as p, doc.object(PhenoTips.StudyBindingClass) as o where o.studyReference = :study').bindValue('study', $services.model.serialize($doc.documentReference, 'default')).count())
+
+#if ($xcontext.action == 'edit')
+(% class="xform" %)(((
+; {{html}}&lt;label&gt;Name&lt;/label&gt;{{/html}}
+: (% class="xHint" %)The study's name, as it should appear on the presentation page and anywhere else this study is referenced.
+: {{html}}&lt;input type="text" name="title" value="$!doc.title"/&gt;{{/html}}
+; {{html}}&lt;label&gt;Description&lt;/label&gt;{{/html}}
+: (% class="xHint" %)A short presentation to inform visitors what this study's purpose is (optional).
+: {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="20" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
+
+(% class="buttonwrapper" %)[[{{icon name="wrench" /}} Patient form configuration&gt;&gt;path:$xwiki.getURL("${doc.fullName}", 'view')?s=form#content-form||target="_blank" class="button"]]
+
+)))
+#else
+$!doc.content
+#if ($xcontext.action == 'view')
+#set ($sections = [
+  {'id' : 'members', 'name' : "Participating groups ($groupsCount)", 'icon' : 'group',       'content' : "((({{phenotips-groups filterby='studies' filterval='$doc.fullName' /}})))"},
+  {'id' : 'cases',   'name' : "Cases ($casesCount)",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.StudyCases"/}}'},
+  {'id' : 'form' ,   'name' : "Form configuration",  'icon' : 'cog',        'content' : "{{include reference='PhenoTips.FormDesigner' /}}"}
+])
+#set ($menu = [])
+#set ($contents = {})
+#foreach ($s in $sections)
+  #set ($discard = $menu.add({
+      'id' : $s.id,
+      'name' : "&lt;i class='fa fa-$s.icon'&gt;&lt;/i&gt; $s.name",
+      'url' : "?s=${s.id}#content-${s.id}"
+  }))
+  #set ($discard = $contents.put($s.id, $s.content))
+#end
+#set ($crtContent = '')
+#if ($menu.size() &gt; 0)
+  #set ($crtItem = "$!request.s")
+  #if ("$!contents.get($crtItem)" == '')
+    #set ($crtItem = "$!menu.get(0).id")
+  #end
+  #set ($crtContent = "$!contents.get($crtItem)")
+#end
+#if ($menu.size() &gt; 1)
+(% class="vertical-menu $!{options.cssClass}" %)(((
+#foreach ($i in $menu)
+* {{html clean=false wiki=false}}&lt;a href="$i.url" id="group-section-$i.id" #if ($i.id == $crtItem) class="current" #end&gt;$i.name&lt;/a&gt;{{/html}}
+#end
+)))
+(% class="menu-section" id="content-${crtItem}" %)#end((($crtContent)))
+#else
+
+{{info}}There #if($groupsCount == 1)is#{else}are#{end} #if($groupsCount == 0)no#{else}$groupsCount#end group#if($groupsCount != 1)s#end participating in this study and #if($casesCount == 0)no#{else}$casesCount#end case#if($casesCount != 1)s#end #if($casesCount == 1)has#{else}have#{end} been entered.{{/info}}
+
+#end
+#end
+{{/velocity}}</content>
+</xwikidoc>

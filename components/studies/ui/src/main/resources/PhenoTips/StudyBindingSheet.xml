@@ -22,11 +22,11 @@
 
 <xwikidoc>
   <web>PhenoTips</web>
-  <name>FormCustomizationBindingSheet</name>
+  <name>StudyBindingSheet</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.FormCustomizationBindingClass</parent>
+  <parent>PhenoTips.StudyBindingClass</parent>
   <creator>xwiki:XWiki.Admin</creator>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
@@ -41,13 +41,13 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden>true</hidden>
   <content>{{velocity}}
-; Please select one of the available form templates
-#if ($doc.getObject('PhenoTips.FormCustomizationBindingClass'))
-: $doc.getObject('PhenoTips.FormCustomizationBindingClass').configReference
+; Please select one of the available studies
+#if ($doc.getObject('PhenoTips.StudyBindingClass'))
+: $doc.getObject('PhenoTips.StudyBindingClass').studyReference
 #else
-: {{include reference="PhenoTips.FormCustomizationBindingClass" /}}
+: {{include reference="PhenoTips.StudyBindingClass" /}}
 #end
 {{/velocity}}
 </content>

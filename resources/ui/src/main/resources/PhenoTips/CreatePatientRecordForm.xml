@@ -43,8 +43,10 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}{{html clean=false}}
-$xwiki.jsx.use('PhenoTips.FormCustomizationBindingClass')##
-$xwiki.ssx.use('PhenoTips.FormCustomizationBindingClass')##
+$xwiki.ssx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('PhenoTips.StudyBindingClass')##
+$xwiki.ssx.use('PhenoTips.StudyBindingClass')##
 #if($hasCreatePage)
   &lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
@@ -53,14 +55,18 @@ $xwiki.ssx.use('PhenoTips.FormCustomizationBindingClass')##
     ## Is there more than one sheet option?
     ## Check out all the groups this user is part of
     #set ($groups = $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
-    #set ($phgroups = [])
+    #set ($studies = [])
     #foreach ($group in $groups)
-      #if ($group.getObject('PhenoTips.PhenoTipsGroupClass') &amp;&amp; $group.getObject('PhenoTips.FormCustomizationClass') &amp;&amp; !$group.getObject('PhenoTips.FormCustomizationClass').getProperty('fields').value.isEmpty())
-        #set ($discard = $phgroups.add($group))
+      #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+      #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
+        #set ($groupObj = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)).getObject('PhenoTips.PhenoTipsGroupClass'))
+      #end
+      #if ($groupObj.getProperty('studies').value.isEmpty() == false)
+        #set ($discard = $studies.addAll($groupObj.getProperty('studies').value))
       #end
     #end
-    #if ($phgroups.size() &gt; 0)
-      &lt;input type="hidden" name="sheet" value="PhenoTips.FormCustomizationBindingSheet" /&gt;
+    #if ($studies.size() &gt; 0)
+      &lt;input type="hidden" name="sheet" value="PhenoTips.StudyBindingSheet" /&gt;
     #end
     ## Extensions displayed before the content
     #foreach ($e in $services.uix.getExtensions('org.phenotips.newPatientForm'))
