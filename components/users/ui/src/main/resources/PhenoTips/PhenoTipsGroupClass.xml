@@ -816,15 +816,20 @@
 
 #foreach ($groupDoc in $groupDocs)
   #set ($groupObj = $groupDoc.getObject($groupClassName))
-  #set ($memberObjs = $groupDoc.getObjects('XWiki.XWikiGroups'))
-  #set ($phantomMemberObjs = $groupDoc.getObjects('XWiki.XWikiGroups', 'member', ''))
-  #set ($logo = "$!groupObj.getProperty('image').value")
-  #if ("$!logo" != '')
-    #set ($logo = "${groupDoc.fullName}@${logo}")
-  #else
-    #set ($logo = $defaultLogo)
-  #end
-  #set ($discard = $groupData.add({
+  #set ($filterby = "$!{xcontext.macro.params.filterby}")
+  #set ($filterbyprop = $groupObj.getProperty($filterby))
+  #set ($filterval = "$!{xcontext.macro.params.filterval}")
+  #set ($isFilterActive = ($filterby != '' &amp;&amp; ("$!filterbyprop" != '' || $filterby == 'member')))
+  #if ($filterby == '' || "$!filterbyprop" != '' &amp;&amp; ($filterbyprop.value == $filterval || $filterbyprop.value.contains($filterval)) || $filterby == 'member' &amp;&amp; $groupDoc.getObjects('XWiki.XWikiGroups', 'member', $filterval))
+    #set ($memberObjs = $groupDoc.getObjects('XWiki.XWikiGroups'))
+    #set ($phantomMemberObjs = $groupDoc.getObjects('XWiki.XWikiGroups', 'member', ''))
+    #set ($logo = "$!groupObj.getProperty('image').value")
+    #if ("$!logo" != '')
+      #set ($logo = "${groupDoc.fullName}@${logo}")
+    #else
+      #set ($logo = $defaultLogo)
+    #end
+    #set ($discard = $groupData.add({
       'doc' : $groupDoc,
       'obj' : $groupObj,
       'doc.fullName' : $groupDoc.fullName,
@@ -832,8 +837,9 @@
       'logo' : $logo,
       'members' : $mathtool.sub($memberObjs.size(), $phantomMemberObjs.size()),
       'cases' : $services.query.xwql('from doc.object(PhenoTips.PatientClass) as p, doc.object(PhenoTips.OwnerClass) as o where o.owner = :grp').bindValue('grp', $groupDoc.documentReference.toString()).count()
-  }))
+    }))
   #end
+#end
 #set ($groupSortedData = $sorttool.sort($groupData, ["${order}:${orders.get($order)}"]))
 
 #set ($max = $mathtool.toInteger($xcontext.macro.params.max))
@@ -848,9 +854,15 @@ $xwiki.jsx.use($groupClassName, {'minify' : false})
 {{velocity}}
 (% id="groups-directory" %)
 #if ($groupSortedData.size() == 0)
+#if ($isFilterActive)
+
+{{info}}No matching groups{{/info}}
+
+#else
 
 {{info}}No groups have been defined yet.#if($hasAdmin) [[Manage groups »&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=workgroups')}]]#end{{/info}}
 
+#end
 #else
 #foreach ($groupDatum in $groupSortedData)#if ($foreach.index &lt; $max)
 |(% class="logo" %) #if ("$!{groupDatum.get('logo')}" != '')[[[[image:${groupDatum.get('logo')}|| width="80px"]]&gt;&gt;$groupDatum.get('doc.fullName')]]#end##
@@ -1151,6 +1163,138 @@ $xwiki.jsx.use($groupClassName, {'minify' : false})
     </property>
     <property>
       <name>max</name>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.WikiMacroParameterClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <defaultValue>
+        <disabled>0</disabled>
+        <name>defaultValue</name>
+        <number>4</number>
+        <prettyName>Parameter default value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </defaultValue>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>2</number>
+        <prettyName>Parameter description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <mandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>mandatory</name>
+        <number>3</number>
+        <prettyName>Parameter mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </mandatory>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Parameter name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupClass</name>
+    <number>4</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>80597b3a-ed61-4421-9f27-2bb7358ee023</guid>
+    <property>
+      <defaultValue/>
+    </property>
+    <property>
+      <description/>
+    </property>
+    <property>
+      <mandatory>0</mandatory>
+    </property>
+    <property>
+      <name>filterby</name>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.WikiMacroParameterClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <defaultValue>
+        <disabled>0</disabled>
+        <name>defaultValue</name>
+        <number>4</number>
+        <prettyName>Parameter default value</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </defaultValue>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>2</number>
+        <prettyName>Parameter description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <mandatory>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>mandatory</name>
+        <number>3</number>
+        <prettyName>Parameter mandatory</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </mandatory>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Parameter name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+    </class>
+    <name>PhenoTips.PhenoTipsGroupClass</name>
+    <number>5</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>4e897e5e-0179-4c74-9241-d01b8b020573</guid>
+    <property>
+      <defaultValue/>
+    </property>
+    <property>
+      <description/>
+    </property>
+    <property>
+      <mandatory>0</mandatory>
+    </property>
+    <property>
+      <name>filterval</name>
     </property>
   </object>
   <content/>
