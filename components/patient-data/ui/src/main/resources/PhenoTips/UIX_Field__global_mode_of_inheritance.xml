@@ -99,8 +99,8 @@
         <number>5</number>
         <prettyName>Extension Scope</prettyName>
         <relationalStorage>0</relationalStorage>
-        <separator></separator>
-        <separators>,|</separators>
+        <separator> </separator>
+        <separators> ,|</separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>wiki=Current Wiki|user=Current User|global=Global</values>
@@ -116,8 +116,7 @@
 
 {{velocity}}
 #__displayIfNotEmpty('global_mode_of_inheritance')
-{{/velocity}}
-      </content>
+{{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>org.phenotips.patientSheet.section.family-info</extensionPointId>
@@ -130,8 +129,7 @@
 enabled=true
 required=
 order=12
-fields=global_mode_of_inheritance
-      </parameters>
+fields=global_mode_of_inheritance</parameters>
     </property>
     <property>
       <scope>wiki</scope>
