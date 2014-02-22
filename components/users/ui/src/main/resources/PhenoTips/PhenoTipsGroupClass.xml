@@ -884,7 +884,7 @@ $xwiki.jsx.use($groupClassName, {'minify' : false})
 
 #else
 
-{{info}}No groups have been defined yet.#if($hasAdmin) [[Manage groups »&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=workgroups')}]]#end{{/info}}
+{{info}}No groups have been defined yet.#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[Manage groups »&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=workgroups')}]]#end{{/info}}
 
 #end
 #else

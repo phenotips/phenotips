@@ -858,7 +858,7 @@ $xwiki.jsx.use($studyClassName, {'minify' : false})
 
 #else
 
-{{info}}No studies have been defined yet.#if($hasAdmin) [[Manage studies »&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=studies')}]]#end{{/info}}
+{{info}}No studies have been defined yet.#if($hasAdmin &amp;&amp; $doc.documentReference.name != 'XWikiPreferences') [[Manage studies »&gt;&gt;path:${xwiki.getDocument('XWiki.XWikiPreferences').getURL('admin', 'editor=globaladmin&amp;section=studies')}]]#end{{/info}}
 
 #end
 #else
