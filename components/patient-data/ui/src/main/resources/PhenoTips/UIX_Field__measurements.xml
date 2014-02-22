@@ -120,10 +120,12 @@
   $xwiki.ssx.use('XWiki.DateTimePicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
   $xwiki.jsx.use('XWiki.DateTimePicker')##
   #if ($config &amp;&amp; "$!{config.getProperty('enableImperialUnitSystem').value}" == '1')
-    {{html wiki=false clean=false}}&lt;input type="hidden" id="measurementUnitSystem" value="$!{config.getProperty('measurementUnitSystem').value}" /&gt;{{/html}}
+    #set ($measurementUnitInfo = "enable-unit-switch $!{config.getProperty('measurementUnitSystem').value}")
+  #else
+    #set ($measurementUnitInfo = '')
   #end
 
-  #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true, 'mode' : $xcontext.action})
+  #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true, 'mode' : $xcontext.action, 'cssClass' : "measurements full $!{measurementUnitInfo}"})
 #elseif ($doc.getObject($targetClassName))
   #set($dataClass = $xwiki.getDocument('PhenoTips.MeasurementsClass').xWikiClass)
   #if ($dataClass)

@@ -1850,41 +1850,89 @@ document.observe('xwiki:dom:loaded', function() {
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe('xwiki:dom:loaded', function() {
+      <code>var PhenoTips = (function(PhenoTips) {
+  // Start PhenoTips augmentation
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
 
-  var chartContainer = $('charts');
+  //  ========================================================================
+  /**
+   * Measurement processor
+   * */
+  widgets.MeasurementProcessor = Class.create({
+    /**
+     * Initialization
+     * */
+    initialize : function(dataTable) {
+      /** Measurement evaluation service */
+      this.measurementsService = new XWiki.Document('PatientToolsService', 'PhenoTips').getURL('get');
 
-  var chartsZone = chartContainer &amp;&amp; chartContainer.up('.growth-charts-section');
-  if (chartsZone) {
-    chartsZone.select('h3, .expand-tools .tool').invoke('observe', 'click', function(event) {
-      event.element().up('.growth-charts-section').toggleClassName('collapsed');
-    });
-  }
-  // ----------------------------------------------------------------------------
-  // Workaround for webkit bug https://bugs.webkit.org/show_bug.cgi?id=68995
-  // Inspired by http://www.brichards.co.uk/blog/webkit-svg-height-bug-workaround
-  // (adapted from jQuery to Prototype.js)
-  var __adjustSVGHeight = function(svgElt) {
-     // Original width/height of the svg graphic: 952 X 1225
-     svgElt.setStyle({ 'height' : (1225 / 952 * svgElt.getWidth()) + 'px'});
+      this.dataTable = dataTable;
+      this.dataTable._processor = this;
+      this.dataType = this.dataTable.hasClassName('at-birth') ? 'at-birth' : 'postnatal';
 
-  }
-  var __adjustAllSVGHeights = function() {
-     chartContainer &amp;&amp; chartContainer.select('.chart-wrapper').each(__adjustSVGHeight);
-  }
-  __adjustAllSVGHeights();
-  Event.observe(window, 'resize', __adjustAllSVGHeights);
-  // ----------------------------------------------------------------------------
+      // Track requests to the measurement evaluation service:
+      this.lastRequestID = 0;
+      // Reorganize the rows of large tables
+      if (dataTable.hasClassName('full')) {
+        this._reorganizeRow = this._reorganizeRow.bind(this);
+        this.dataTable.select('tr').each(this._reorganizeRow);
+      } else {
+        this.dataTable.select('tr').invoke('addClassName', 'data-row');
+      }
+      // Attach event listeners to inputs
+      this._valueChanged = this._valueChanged.bindAsEventListener(this);
+      this._updateDataRow = this._updateDataRow.bind(this);
+      this._handleInputValueChanged(this.dataTable.select('input[type=text]'));
+      this._handleInputValueChanged($$('input[name$=date_of_birth], input[name$=gender]'));
+      this._handleRowAdded();
+      this._handleRowDeleted();
+      // Attach a measurement unit switcher (imperila|metric) if enabled
+      var configuredUnitSystem = this.dataTable.hasClassName('enable-unit-switch');
+      //   - this element will exist iff switching to imeprial system is enabled
+      if (configuredUnitSystem) {
+        var unitSwitchContainer = this.dataTable.down('.unit-switch-container');
+        new PhenoTips.widgets.UnitConverter(
+           this.dataTable,
+           'input[type="text"]:not([name$="date"])',
+           unitSwitchContainer || this.dataTable,
+           unitSwitchContainer &amp;&amp; 'top' || 'before',
+           this.dataTable.hasClassName('imperial') &amp;&amp; 'imperial' || ''
+        );
+      }
+    },
+    /**
+     * Reorganize data rows for large tables
+     * */
+    _reorganizeRow : function(row) {
+      // Skip table headers
+      if (row.down('th')) {return;}
+      // each row becomes a new table
+      var table = new Element('table');
+      var tbody = new Element('tbody');
+      table.update(tbody);
 
-  var dataTable = $('extradata-list-PhenoTips.MeasurementsClass');
-  if (!dataTable) {return;}
-
-  var reorganizeRow = function(row) {
-    if (row.down('th')) {return;}
-    var table = new Element('table');
-    var tbody = new Element('tbody');
-    table.update(tbody);
-    var rowMapping = [
+      // Start building the table
+      this._rowMapping.each(function (data) {
+        var newRow = new Element('tr', {'class' : data.name + '-group'});
+        newRow.insert(new Element('td', {'class' : 'icon'}))
+        data.values.each(function (className) {
+          var element = row.down('td.' + className);
+          if (element) {
+            newRow.insert(element);
+            if (className == 'age') { element.setAttribute('colspan', 6);}
+          }
+        });
+        if (newRow.down('td')) {
+          tbody.insert(newRow);
+        }
+      });
+      row.update(table.wrap('td'));
+      row.addClassName('data-row');
+    },
+    /**
+     * Reorganization of rows for large table: this is how the rows should be split:
+     * */
+    _rowMapping : [
       {
         name : 'head',
         values : ['date', 'age', 'actions']
@@ -1907,143 +1955,215 @@ document.observe('xwiki:dom:loaded', function() {
         name : 'right-side',
         values : ['hand_right', 'hand_right_evaluation', 'palm_right', 'palm_right_evaluation', 'foot_right', 'foot_right_evaluation']
       }
-    ];
-    rowMapping.each(function (data) {
-      var newRow = new Element('tr', {'class' : data.name + '-group'});
-      newRow.insert(new Element('td', {'class' : 'icon'}))
-      data.values.each(function (className) {
-        var element = row.down('td.' + className);
-        if (element) {
-          newRow.insert(element);
-          if (className == 'age') { element.setAttribute('colspan', 6);}
+    ],
+    /*
+     * Prepare to re-evaluate when measurement or measurement context has changed
+     * */
+    _handleInputValueChanged : function(elementsList) {
+      var dataTable = this.dataTable;
+      // TODO: make sure events work on all browsers
+      ['blur', 'keypress', 'keyup', 'phenotips:measurement-updated', 'xwiki:date:changed'].each(function (eventName) {
+        elementsList.invoke('observe', eventName, this._valueChanged);
+      }.bind(this));
+      ['blur', 'phenotips:measurement-updated', 'xwiki:date:changed'].each(function (eventName) {
+        elementsList.invoke('observe', eventName, function(event) {
+           Event.fire(dataTable, 'phenotips:measurement-info:updated');
+        });
+      });
+    },
+    /**
+     * When a new row is added, attach all the listeners that will enable evaluating the data in it
+     * */
+    _handleRowAdded : function() {
+      var _this = this;
+      this.dataTable.observe('extradata:added', function (event) {
+        var elements = event &amp;&amp; event.memo &amp;&amp; event.memo.element &amp;&amp; event.memo.element.select('input[type=text]');
+        if (elements) {
+          _this._reorganizeRow(event.memo.element);
+          _this._handleInputValueChanged(elements);
+          if (window.dateTimePicker) {
+            window.dateTimePicker.attachPickers(event.memo.element);
+          } else {
+            var crtYear = new Date().getFullYear();
+            window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
+          }
         }
       });
-      if (newRow.down('td')) {
-        tbody.insert(newRow);
-      }
-    });
-    row.update(table.wrap('td'));
-    row.addClassName('data-row');
-  };
-  dataTable.select('tr').each(reorganizeRow);
-  if (!dataTable.down('.actions')) {return;}
+    },
 
-  var measurementsService = "$xwiki.getURL('PhenoTips.PatientToolsService', 'get')";
-  var chartService = "$xwiki.getURL('PhenoTips.ChartService', 'get')";
-  var chartContainer = $('charts')
-
-  var createRowQueryString = function (row, forceParam) {
-    var date = row.down('td.date input');
-    //if (!date) {return '';}
-    var birthDate = $(document.documentElement).down('input[name$=date_of_birth]');
-
-    return createReqParam('weight', row.down('td.weight input'), forceParam) +
-           createReqParam('height', row.down('td.height input'), forceParam) +
-           createReqParam('bmi', row.down('td.bmi input'), forceParam) +
-           createReqParam('hc', row.down('td.hc input'), forceParam) +
-           createReqParam('ocd', row.down('td.ocd input'), forceParam) +
-           createReqParam('icd', row.down('td.icd input'), forceParam) +
-           createReqParam('pfl', row.down('td.pfl input'), forceParam) +
-           createReqParam('ipd', row.down('td.ipd input'), forceParam) +
-           createReqParam('ear', row.down('td.ear input'), forceParam) +
-           createReqParam('hand', row.down('td.hand input'), forceParam) +
-           createReqParam('palm', row.down('td.palm input'), forceParam) +
-           createReqParam('foot', row.down('td.foot input'), forceParam) +
-           createReqParam('ear_right', row.down('td.ear_right input'), forceParam) +
-           createReqParam('hand_right', row.down('td.hand_right input'), forceParam) +
-           createReqParam('palm_right', row.down('td.palm_right input'), forceParam) +
-           createReqParam('foot_right', row.down('td.foot_right input'), forceParam) +
-           createReqParam('philtrum', row.down('td.philtrum input'), forceParam) +
-           createReqParam('armspan', row.down('td.armspan input'), forceParam) +
-           createReqParam('sitting', row.down('td.sitting input'), forceParam) +
-           createReqParamAge('a', date, birthDate, forceParam);
-  }
-
-  var createReqParam = function (name, sourceInput, forceParam) {
-    var value = sourceInput &amp;&amp; sourceInput.value != '' &amp;&amp; parseFloat(sourceInput.value);
-    if (value) {
-      return '&amp;' + name + '=' + encodeURIComponent(value);
-    }
-    return forceParam &amp;&amp; ('&amp;' + name + '=') || '';
-  }
-  var createReqParamAge = function (name, crtDate, birthDate, forceParam) {
-    if (!birthDate || !crtDate) {return ''}
-    var bDateObj = Date.parseISO_8601(birthDate.alt || '');
-    var cDateObj = Date.parseISO_8601(crtDate.alt || '');
-    if (!bDateObj || !cDateObj) {return ''}
-    var age = (cDateObj.getFullYear() - bDateObj.getFullYear()) * 12 + (cDateObj.getMonth() - bDateObj.getMonth()) + (cDateObj.getDate() &lt; bDateObj.getDate() ? -1 : 0);
-    if (age &gt;= 0) {
-      var displayedAge = '';
-      if (age == 0) {
-        displayedAge = '0';
-      }
-      var y = Math.floor(age / 12);
-      var m = age % 12;
-      if (y &gt; 0) {
-        displayedAge = y + 'y ';
-      }
-      if (m &gt; 0) {
-        displayedAge += m + 'm ';
-      }
-      var target = crtDate.up('tr') &amp;&amp; crtDate.up('tr').down('td.age');
-      if (target) {
-        if (target.down('input')) {
-          target.down('input').value = age;
-        }
-        if (target.down('.displayed-value')) {
-          target.down('.displayed-value').update(displayedAge);
-        }
-      }
-    }
-    return (age &gt;= 0) &amp;&amp; ('&amp;' + name + '=' + encodeURIComponent(age)) || forceParam &amp;&amp; ('&amp;' + name + '=') || '';
-  }
-  var createReqParamSex = function (name, sourceInput) {
-    return (sourceInput &amp;&amp; sourceInput.value &amp;&amp; ('&amp;' + name + '=' + encodeURIComponent(sourceInput.value))) || '';
-  }
-
-  var getMostRecentEntry = function() {
-    var mostRecentEntry;
-    var mostRecentDate;
-    dataTable.select('tr input.xwiki-date').each(function(element) {
-      var date = Date.parseISO_8601(element.alt.strip());
-      if (!mostRecentDate || mostRecentDate &lt; date) {
-         mostRecentDate = date;
-         mostRecentEntry = element.up('tr.data-row');
-      }
-    })
-    return mostRecentEntry;
-  }
-
-  var updateValue = function (target, value, fuzzyValue) {
-    var input = target.down('input[type=hidden]');
-    var displayed = target.down('.displayed-value');
-    input &amp;&amp; (input.value = value);
-    displayed.update(value || '-');
-    if (fuzzyValue) {
-      ['extreme-below-normal', 'below-normal', 'normal', 'above-normal', 'extreme-above-normal'].each(function (cssClass) {
-        displayed.removeClassName(cssClass);
+    /**
+     * When a row is deleted:
+     * */
+    _handleRowDeleted : function() {
+      var _this = this;
+      this.dataTable.observe('extradata:deleted', function (event) {
+        _this.dataTable.select('tr.data-row').each(function (row) {
+          _this._updateDataRow(row);
+        });
+        Event.fire(_this.dataTable, 'phenotips:measurement-info:updated');
       });
-      displayed.addClassName(fuzzyValue);
-    }
-  }
+    },
 
-  var updateDependentValues = function (targets, values) {
-    for (var p in values) {
-      ['value', 'evaluation'].each( function (value) {
-        if (values[p] &amp;&amp; values[p][value] &amp;&amp; targets[p] &amp;&amp; targets[p][value]) {
-           updateValue(targets[p][value], values[p][value], (value == 'evaluation') &amp;&amp; values[p]['valCategory']);
-           var target = targets[p];
-           if (value == 'evaluation' &amp;&amp; target['valueHooks'] &amp;&amp; getMostRecentEntry() == targets[p][value].up('tr.data-row')) {
-             var targetElt = values[p]['valCategory'] &amp;&amp; target['valueHooks'][values[p]['valCategory']];
-             if (targetElt &amp;&amp; !targetElt.checked) {
-                 if (targetElt._ynpicker) {
-                   targetElt._ynpicker._onYes();
-                 } else {
-                   targetElt.checked = true;
-                 }
-                 highlightChecked(targetElt);
-             }
-             ['extreme-below-normal', 'extreme-above-normal'].without(values[p]['valCategory'] || '').each(function(val) {
+    /**
+     * A value affecting measurement evaluation has changed. It can be an actual measurement, in which case only
+     * the current measurement set needs to be updated, or it can be a value affecting the context of all measurements
+     * (e.g. gender or date of birth), in which case all measurements need to be evaluated.
+     * */
+    _valueChanged : function(event) {
+      // Get inputs holding the values needed for computing the dependent values
+      var row = event &amp;&amp; event.element &amp;&amp; event.element() &amp;&amp; event.element().up('tr.data-row');
+      if (row) {
+        this._updateDataRow(row);
+      } else {
+         this.dataTable.select('tr.data-row').each(this._updateDataRow);
+      }
+    },
+
+    /**
+     * Request the re-evaluation of all measurements on a row ans display the results
+     * */
+    _updateDataRow : function(row) {
+      // Generate the query string to pass to the measurement evaluation service
+      var qs = this._createRowQueryString(row);
+      if (qs == '') {return;}
+
+      var sex = $(document.documentElement).down('input[name$=gender]:checked');
+      var requestID = ++this.lastRequestID;
+
+      var ajx = new Ajax.Request(this.measurementsService, {
+        method: 'post',
+        parameters:  qs + this._createReqParamSex('s', sex) + '&amp;outputSyntax=plain',
+        requestHeaders: {Accept : "application/json"},
+        onSuccess: function(response) {
+          if (requestID &lt; this.lastRequestID) {return;}
+          this._updateDependentValues(row, response.responseJSON)
+        }.bind(this),
+        onFailure: function (response) {}
+      });
+    },
+
+     /**
+     * Generate query string for all data
+     * */
+    _createQueryString : function () {
+      var _this = this;
+      var qs = '';
+      this.dataTable.select('tr.data-row').each(function(row) {
+        qs += _this._createRowQueryString(row, true);
+      })
+      if (qs != '') {
+        var sex = $(document.documentElement).down('input[name$=gender]:checked');
+        qs += this._createReqParamSex('s', sex);
+      }
+      return qs;
+    },
+
+    /**
+     * Generate querry string for updating the evaluations on a data row
+     * */
+    _createRowQueryString : function (row, forceParam) {
+      return this._createReqParam('weight', row.down('td.weight input'), forceParam) +
+             this._createReqParam('height', row.down('td.height input'), forceParam) +
+             this._createReqParam('bmi', row.down('td.bmi input'), forceParam) +
+             this._createReqParam('hc', row.down('td.hc input'), forceParam) +
+             this._createReqParam('ocd', row.down('td.ocd input'), forceParam) +
+             this._createReqParam('icd', row.down('td.icd input'), forceParam) +
+             this._createReqParam('pfl', row.down('td.pfl input'), forceParam) +
+             this._createReqParam('ipd', row.down('td.ipd input'), forceParam) +
+             this._createReqParam('ear', row.down('td.ear input'), forceParam) +
+             this._createReqParam('hand', row.down('td.hand input'), forceParam) +
+             this._createReqParam('palm', row.down('td.palm input'), forceParam) +
+             this._createReqParam('foot', row.down('td.foot input'), forceParam) +
+             this._createReqParam('ear_right', row.down('td.ear_right input'), forceParam) +
+             this._createReqParam('hand_right', row.down('td.hand_right input'), forceParam) +
+             this._createReqParam('palm_right', row.down('td.palm_right input'), forceParam) +
+             this._createReqParam('foot_right', row.down('td.foot_right input'), forceParam) +
+             this._createReqParam('philtrum', row.down('td.philtrum input'), forceParam) +
+             this._createReqParam('armspan', row.down('td.armspan input'), forceParam) +
+             this._createReqParam('sitting', row.down('td.sitting input'), forceParam) +
+             (this.dataType == 'at-birth' ? '&amp;a=0' : this._createReqParamAge('a', row.down('td.date input'), forceParam));
+    },
+
+    /**
+     * Generate the query string fragment corresponding to a specific measurement
+     * */
+    _createReqParam : function (name, sourceInput, forceParam) {
+      var value = sourceInput &amp;&amp; sourceInput.value != '' &amp;&amp; parseFloat(sourceInput.value);
+      if (value) {
+        return '&amp;' + name + '=' + encodeURIComponent(value);
+      }
+      return forceParam &amp;&amp; ('&amp;' + name + '=') || '';
+    },
+
+    /**
+     * Generate the query string fragment corresponding to the age
+     * */
+    _createReqParamAge : function (name, crtDate, forceParam) {
+      var birthDate = $(document.documentElement).down('input[name$=date_of_birth]');
+      if (!birthDate || !crtDate) {return ''}
+      var bDateObj = Date.parseISO_8601(birthDate.alt || '');
+      var cDateObj = Date.parseISO_8601(crtDate.alt || '');
+      if (!bDateObj || !cDateObj) {return ''}
+      var age = (cDateObj.getFullYear() - bDateObj.getFullYear()) * 12 + (cDateObj.getMonth() - bDateObj.getMonth()) + (cDateObj.getDate() &lt; bDateObj.getDate() ? -1 : 0);
+      if (age &gt;= 0) {
+        var displayedAge = '';
+        if (age == 0) {
+          displayedAge = '0';
+        }
+        var y = Math.floor(age / 12);
+        var m = age % 12;
+        if (y &gt; 0) {
+          displayedAge = y + 'y ';
+        }
+        if (m &gt; 0) {
+          displayedAge += m + 'm ';
+        }
+        var target = crtDate.up('tr') &amp;&amp; crtDate.up('tr').down('td.age');
+        if (target) {
+          if (target.down('input')) {
+            target.down('input').value = age;
+          }
+          if (target.down('.displayed-value')) {
+            target.down('.displayed-value').update(displayedAge);
+          }
+        }
+      }
+      return (age &gt;= 0) &amp;&amp; ('&amp;' + name + '=' + encodeURIComponent(age)) || forceParam &amp;&amp; ('&amp;' + name + '=') || '';
+    },
+
+    /**
+     * Generate the query string fragment corresponding to the gender
+     * */
+    _createReqParamSex : function (name, sourceInput) {
+      return (sourceInput &amp;&amp; sourceInput.value &amp;&amp; ('&amp;' + name + '=' + encodeURIComponent(sourceInput.value))) || '';
+    },
+
+    /**
+     * Perform the actual update of all the measurement evals in a data row and select phenotypes corresponding to abnormal measurements
+     * */
+    _updateDependentValues : function (row, values) {
+      var _this = this;
+      var _info = this._measurementEvaluationInfo;
+      for (var p in values) {
+        ['value', 'evaluation'].each( function (value) {
+          if (values[p] &amp;&amp; values[p][value] &amp;&amp; _info[p] &amp;&amp; _info[p][value]) {
+            var cell = row.down(_info[p][value]);
+            if (!cell) {
+              return;
+            }
+            _this._updateValue(cell, values[p][value], (value == 'evaluation') &amp;&amp; values[p]['valCategory']);
+            var target = _info[p];
+            if (value == 'evaluation' &amp;&amp; target['valueHooks'] &amp;&amp; _this._getMostRecentEntry() == cell.up('tr.data-row')) {
+              var targetElt = values[p]['valCategory'] &amp;&amp; target['valueHooks'][values[p]['valCategory']];
+              if (targetElt &amp;&amp; !targetElt.checked) {
+                if (targetElt._ynpicker) {
+                  targetElt._ynpicker._onYes();
+                } else {
+                  targetElt.checked = true;
+                }
+                highlightChecked(targetElt);
+              }
+              ['extreme-below-normal', 'extreme-above-normal'].without(values[p]['valCategory'] || '').each(function(val) {
                 var elt = target['valueHooks'][val];
                 if (elt &amp;&amp; elt.checked) {
                   if (elt._ynpicker) {
@@ -2052,241 +2172,293 @@ document.observe('xwiki:dom:loaded', function() {
                     elt.checked = false;
                   }
                 }
-             });
-           }
-        }
-      });
-    }
-  }
+              });
+            }
+          }
+        });
+      }
+    },
 
-  var lastRequestID = 0;
-  var lastChartRequestID = 0;
-
-  var updateCharts = function(event) {
-    var qs = '';
-    dataTable.select('tr.data-row').each(function(row) {
-      qs += createRowQueryString(row, true);
-    })
-    if (qs == '') {return;}
-    var sex = $(document.documentElement).down('input[name$=gender]:checked');
-    var url = chartService + "?" + qs + createReqParamSex('s', sex) + "&amp;width=" + chartContainer.getDimensions()['width'];
-
-    var requestID = ++lastChartRequestID;
-
-    var ajx = new Ajax.Request(url, {
-       method: 'get',
-       onSuccess: function(response) {
-          if (requestID &lt; lastChartRequestID) {return;}
-          chartContainer.update(response.responseText);
-          __adjustAllSVGHeights();
-       },
-       onFailure: function (response) {}
-    });
-  }
-
-  var valueChanged = function(event) {
-    // Get inputs holding the values needed for computing the dependent values
-    var row = event &amp;&amp; event.element &amp;&amp; event.element() &amp;&amp; event.element().up('tr.data-row');
-    if (row) {
-       updateDataRow(row);
-    } else {
-       dataTable.select('tr.data-row').each(updateDataRow);
-    }
-  }
-
-  var updateDataRow = function(row) {
-    var qs = createRowQueryString(row);
-    if (qs == '') {return;}
-    var sex = $(document.documentElement).down('input[name$=gender]:checked');
-
-    var url = measurementsService;
-
-    var targets = {
+    /**
+     * Information about how to handle each measurement:
+     * - where to find the value (selector to be used using the current data row as root)
+     * - where to put the evaluation (selector to be used using the current data row as root)
+     * - what phenotype elements to select when an abnormal value is found (optional)
+     * */
+    _measurementEvaluationInfo : {
        bmi : {
-         value : row.down('td.bmi'),
-         evaluation : row.down('td.bmi_evaluation')
+         value : 'td.bmi',
+         evaluation : 'td.bmi_evaluation'
        },
        weight : {
-         evaluation : row.down('td.weight_evaluation'),
+         evaluation : 'td.weight_evaluation',
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0004325'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001513')
          }
        },
        height : {
-         evaluation : row.down('td.height_evaluation'),
+         evaluation : 'td.height_evaluation',
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0004322'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0000098')
          }
        },
        hc : {
-         evaluation : row.down('td.hc_evaluation'),
+         evaluation : 'td.hc_evaluation',
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0000252'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0000256')
          }
        },
        ocd : {
-         evaluation : row.down('td.ocd_evaluation')
+         evaluation : 'td.ocd_evaluation'
        },
        icd : {
-         evaluation : row.down('td.icd_evaluation')
+         evaluation : 'td.icd_evaluation'
        },
        pfl : {
-         evaluation : row.down('td.pfl_evaluation')
+         evaluation : 'td.pfl_evaluation'
        },
        ipd : {
-         evaluation : row.down('td.ipd_evaluation'),
+         evaluation : 'td.ipd_evaluation',
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0000601'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0000316')
          }
        },
        ear : {
-         evaluation : row.down('td.ear_evaluation')
+         evaluation : 'td.ear_evaluation'
        },
        hand : {
-         evaluation : row.down('td.hand_evaluation'),
+         evaluation : 'td.hand_evaluation',
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0004279'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001176')
          }
        },
        palm : {
-         evaluation : row.down('td.palm_evaluation')
+         evaluation : 'td.palm_evaluation'
        },
        foot : {
-         evaluation : row.down('td.foot_evaluation'),
+         evaluation : 'td.foot_evaluation',
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0001764'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001833')
          }
        },
        ear_right : {
-         evaluation : row.down('td.ear_right_evaluation')
+         evaluation : 'td.ear_right_evaluation'
        },
        hand_right : {
-         evaluation : row.down('td.hand_right_evaluation'),
+         evaluation : 'td.hand_right_evaluation',
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0004279'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001176')
          }
        },
        palm_right : {
-         evaluation : row.down('td.palm_right_evaluation')
+         evaluation : 'td.palm_right_evaluation'
        },
        foot_right : {
-         evaluation : row.down('td.foot_right_evaluation'),
+         evaluation : 'td.foot_right_evaluation',
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0001764'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001833')
          }
        },
        philtrum : {
-         evaluation : row.down('td.philtrum_evaluation')
+         evaluation : 'td.philtrum_evaluation'
        },
        armspan : {
-         evaluation : row.down('td.armspan_evaluation')
+         evaluation : 'td.armspan_evaluation'
        },
        sitting : {
-         evaluation : row.down('td.sitting_evaluation')
+         evaluation : 'td.sitting_evaluation'
        }
-    };
+    },
 
-    var requestID = ++lastRequestID;
+    /**
+     * Perform the actual update of a specific measurement eval
+     * */
+    _updateValue : function (target, value, fuzzyValue) {
+      var input = target.down('input[type=hidden]');
+      var displayed = target.down('.displayed-value');
+      input &amp;&amp; (input.value = value);
+      displayed.update(value || '-');
+      if (fuzzyValue) {
+        ['extreme-below-normal', 'below-normal', 'normal', 'above-normal', 'extreme-above-normal'].each(function (cssClass) {
+          displayed.removeClassName(cssClass);
+        });
+        displayed.addClassName(fuzzyValue);
+      }
+    },
 
-    var ajx = new Ajax.Request(url, {
-       method: 'post',
-       parameters:  qs + createReqParamSex('s', sex) + '&amp;outputSyntax=plain',
-       requestHeaders: {Accept : "application/json"},
-       onSuccess: function(response) {
-          if (requestID &lt; lastRequestID) {return;}
-          updateDependentValues(targets, response.responseJSON)
-       },
-       onFailure: function (response) {}
-    });
-  }
-
-  // TODO: make sure events work on all browsers
-  var handleValueChanged = function (elementsList) {
-    ['blur', 'keypress', 'keyup', 'phenotips:measurement-updated', 'xwiki:date:changed'].each(function (eventName) {
-      elementsList.invoke('observe', eventName, valueChanged);
-    })
-    if (chartContainer) {
-      ['blur', 'phenotips:measurement-updated', 'xwiki:date:changed'].each(function (eventName) {
-        elementsList.invoke('observe', eventName, updateCharts);
+    /**
+     * Find the latest measurements entered in the data table
+     * */
+    _getMostRecentEntry : function() {
+      var mostRecentEntry;
+      var mostRecentDate;
+      this.dataTable.select('tr input.xwiki-date').each(function(element) {
+        var date = Date.parseISO_8601(element.alt.strip());
+        if (!mostRecentDate || mostRecentDate &lt; date) {
+          mostRecentDate = date;
+          mostRecentEntry = element.up('tr.data-row');
+        }
       })
+      return mostRecentEntry;
     }
-  };
-
-  // Attach all listeners
-  handleValueChanged(dataTable.select('input[type=text]'));
-  handleValueChanged($$('input[name$=date_of_birth], input[name$=gender]'));
-  dataTable.observe('extradata:added', function (event) {
-     var elements = event &amp;&amp; event.memo &amp;&amp; event.memo.element &amp;&amp; event.memo.element.select('input[type=text]');
-     if (elements) {
-       reorganizeRow(event.memo.element);
-       handleValueChanged(elements);
-       if (window.dateTimePicker) {
-         window.dateTimePicker.attachPickers(event.memo.element);
-       } else {
-         var crtYear = new Date().getFullYear();
-         window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
-       }
-     }
-  });
-  dataTable.observe('extradata:deleted', function (event) {
-     dataTable.select('tr.data-row').each(function (row) {
-       updateDataRow(row);
-     });
-     updateCharts(event);
   });
 
+  //  ========================================================================
+  /**
+   * Chart generator
+   * */
+  widgets.ChartGenerator = Class.create({
+    /**
+     * Initialization
+     * */
+    initialize : function(container, dataSources) {
+      // Check that there is a container where the charts are to be displayed and at least one data source
+      if (!container || dataSources.size() == 0) {
+        return;
+      }
+      this.chartContainer = container;
+      this.dataSources = dataSources;
+      /** Chart update service */
+      this.chartService = new XWiki.Document('ChartService', 'PhenoTips').getURL('get');
+      // Track requests to the chart update service
+      this.lastRequestID = 0;
+      // Initialize the element: enable expand/collapse, adjust sizes, etc
+      this.initChartsWidget();
+      // Listen to changes in the data sources
+      this._updateCharts = this._updateCharts.bindAsEventListener(this);
+      this.dataSources.invoke('observe', 'phenotips:measurement-info:updated', this._updateCharts);
+    },
+     /**
+     * Initialize the element: enable expand/collapse, adjust sizes, etc
+     * */
+    initChartsWidget : function() {
+      // If the charts are not enabled or if they're already initialized, nothing more to do here
+      if (!this.chartContainer || this.chartContainer.hasClassName('initialized')) {
+        return;
+      }
+      // Enable expand/collapse
+      var chartsZone = this.chartContainer.up('.growth-charts-section');
+      if (chartsZone) {
+        chartsZone.select('h3, .expand-tools .tool').invoke('observe', 'click', function(event) {
+           event.element().up('.growth-charts-section').toggleClassName('collapsed');
+        });
+      }
+      this.__adjustAllSVGHeights();
+      Event.observe(window, 'resize', this.__adjustAllSVGHeights.bindAsEventListener(this));
 
-  // ------------------------------------------------------------------------------------------
-  // Also attach the measurement switcher
-  var configuredUnitSystem = $('measurementUnitSystem');
-  // this element will exist iff the imerial system is enabled
-  if (configuredUnitSystem) {
-    new PhenoTips.widgets.UnitConverter($('extradata-list-PhenoTips.MeasurementsClass'), 'input[type="text"]:not([name$="date"])', $('extradata-list-PhenoTips.MeasurementsClass'), 'before', configuredUnitSystem.value || '');
-  }
+      // Mark the chart widget as initialized
+      this.chartContainer.addClassName('initialized');
+    },
+    /**----------------------------------------------------------------------------
+     * Workaround for webkit bug https://bugs.webkit.org/show_bug.cgi?id=68995
+     * Inspired by http://www.brichards.co.uk/blog/webkit-svg-height-bug-workaround
+     * (adapted from jQuery to Prototype.js)
+     * */
+    __adjustSVGHeight : function(svgElt) {
+       // Original width/height of the svg graphic: 952 X 1225
+       svgElt.setStyle({ 'height' : (1225 / 952 * svgElt.getWidth()) + 'px'});
+    },
+    __adjustAllSVGHeights : function() {
+       this.chartContainer &amp;&amp; this.chartContainer.select('.chart-wrapper').each(this.__adjustSVGHeight.bind(this));
+    },
+    /**
+     * Request to re-generate growth charts
+     * */
+    _updateCharts : function(event) {
+      if (!this.chartContainer) {
+        return;
+      }
+      var _this = this;
+      // Generate the query string to pass to the chart service
+      var qs = '';
+      this.dataSources.each(function (item) {
+        qs += item._processor._createQueryString();
+      });
+      if (qs == '') {return;}
 
-  // ------------------------------------------------------------------------------------------
-  // And one more thing (not exactly related to measurements directly:
-  // If we're collecting data about gestational age, select premature birth for low gestational ages
-  var gaInput = $$('input[type="text"][name$="_gestation"]');
-  gaInput = gaInput.size() &gt; 0 &amp;&amp; gaInput[0] || '';
-  var pbInput = findFormElementForPhenotype('HP:0001622');
-  if (gaInput &amp;&amp; pbInput) {
-    gaInput.observe('blur', function (event) {
-      var ga = parseInt(gaInput.value);
-      var targetElt = pbInput;
-      if (!isNaN(ga)) {
-        if (ga &lt; 37) {
-          if (!targetElt.checked) {
-            if (targetElt._ynpicker) {
-              targetElt._ynpicker._onYes();
-            } else {
-              targetElt.checked = true;
+      var requestID = ++this.lastRequestID;
+      var ajx = new Ajax.Request(this.chartService, {
+        method: 'get',
+        parameters : qs + "&amp;width=" + this.chartContainer.getDimensions()['width'],
+        onSuccess: function(response) {
+          if (requestID &lt; this.lastRequestID) {return;}
+          this.chartContainer.update(response.responseText);
+          this.__adjustAllSVGHeights();
+        }.bind(this),
+        onFailure: function (response) {}
+      });
+    }
+  });
+
+
+  //  ========================================================================
+  /**
+   * Attach the behaviors that will allow evaluating measurements and generating charts in real time
+   * */
+
+  var init = function(event) {
+    // Enamble the MeasurementProcessor for each measurements table (e.g. at birth, postnatal)
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      var chartDataSources = [];
+      element.select('table.measurements').each(function(dataTable) {
+        new PhenoTips.widgets.MeasurementProcessor(dataTable);
+        chartDataSources.push(dataTable);
+      });
+      new PhenoTips.widgets.ChartGenerator($('charts'), chartDataSources);
+    });
+
+    // ------------------------------------------------------------------------------------------
+    // And one more thing (not exactly related to measurements directly:
+    // If we're collecting data about gestational age, select premature birth for low gestational ages
+    var gaInput = $$('input[type="text"][name$="_gestation"]');
+    gaInput = gaInput.size() &gt; 0 &amp;&amp; gaInput[0] || '';
+    var pbInput = findFormElementForPhenotype('HP:0001622');
+    if (gaInput &amp;&amp; pbInput) {
+      gaInput.observe('blur', function (event) {
+        var ga = parseInt(gaInput.value);
+        var targetElt = pbInput;
+        if (!isNaN(ga)) {
+          if (ga &lt; 37) {
+            if (!targetElt.checked) {
+              if (targetElt._ynpicker) {
+                targetElt._ynpicker._onYes();
+              } else {
+                targetElt.checked = true;
+              }
+              highlightChecked(targetElt);
             }
-            highlightChecked(targetElt);
+          } else {
+            if (targetElt._ynpicker) {
+              targetElt._ynpicker._onNo();
+              highlightChecked(targetElt);
+            }
           }
         } else {
-          if (targetElt._ynpicker) {
-            targetElt._ynpicker._onNo();
-            highlightChecked(targetElt);
-          }
-        }
-      } else {
           if (targetElt._ynpicker) {
             targetElt._ynpicker._onNA();
             highlightChecked(targetElt);
           }
-      }
-    });
-  }
-});</code>
+        }
+      });
+    }
+
+    return true;
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  document.observe('xwiki:dom:updated', init);
+
+  // End PhenoTips augmentation.
+  return PhenoTips;
+}(PhenoTips || {}));</code>
     </property>
     <property>
       <name>Automatic computation of growth parameters</name>
@@ -4591,36 +4763,36 @@ label.selected input[type="checkbox"] {
 form .extradata-list tr:hover td {
   background-color: $theme.highlightColor;
 }
-#extradata-list-PhenoTips\.MeasurementsClass {
+.extradata-list.measurements {
   border-collapse: separate;
   border-spacing: 0 0;
 }
-#extradata-list-PhenoTips\.MeasurementsClass td {
+.extradata-list.measurements td {
   text-align: left;
 }
-#extradata-list-PhenoTips\.MeasurementsClass .displayed-value {
+.extradata-list.measurements .displayed-value {
   white-space: nowrap;
 }
-#extradata-list-PhenoTips\.MeasurementsClass table {
+.extradata-list.measurements table {
   width: 100% !important;
 }
-#extradata-list-PhenoTips\.MeasurementsClass td.date label.hint,
-#extradata-list-PhenoTips\.MeasurementsClass td.age label.hint {
+.extradata-list.measurements td.date label.hint,
+.extradata-list.measurements td.age label.hint {
   font-size: 1em;
   color: $theme.textColor;
   font-weight: bold;
 }
-#extradata-list-PhenoTips\.MeasurementsClass td input {
+.extradata-list.measurements td input {
   width: auto;
 }
-#extradata-list-PhenoTips\.MeasurementsClass td.date input {
+.extradata-list.measurements td.date input {
   width: 10em;
   margin: 0 0 0 .7em;
 }
-#extradata-list-PhenoTips\.MeasurementsClass td.age .displayed-value {
+.extradata-list.measurements td.age .displayed-value {
   display: inline;
 }
-#extradata-list-PhenoTips\.MeasurementsClass td.actions a.delete{
+.extradata-list.measurements td.actions a.delete{
   margin: 0;
   background-image: none;
   width: 1em;
