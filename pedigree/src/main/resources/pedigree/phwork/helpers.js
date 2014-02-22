@@ -72,6 +72,16 @@ function indexOfLastMinElementInArray(array) {
     return minIndex;
 }
 
+function filterUnique(array) {
+    var result = [];
+
+    for (var i = 0; i < array.length; i++)
+        if (i == arrayIndexOf(array, array[i]))
+            result.push(array[i]);
+
+    return result;
+}
+
 // Replaces the first occurence of `value` in `array` by `newValue`. Does nothing if `value` is not in `array`
 function replaceInArray(array, value, newValue) {
     for (var i = 0, len = array.length; i < len; ++i) {

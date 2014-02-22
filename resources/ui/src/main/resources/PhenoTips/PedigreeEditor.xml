@@ -55,6 +55,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/phwork/helpers.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/phwork/queues.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/phwork/xcoordclass.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/phwork/ordering.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/phwork/edgeOptimization.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/phwork/baseGraph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/phwork/positionedGraph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/phwork/dynamicGraph.js')##

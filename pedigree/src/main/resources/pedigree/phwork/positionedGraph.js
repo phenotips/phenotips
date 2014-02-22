@@ -6,7 +6,8 @@ PositionedGraph = function( baseG,                          // mandatory, BaseGr
                             horizontalRelSeparationDist,    // mandatory, int
                             maxInitOrderingBuckets,         // optional,  int
                             maxOrderingIterations,          // optional,  int
-                            maxXcoordIterations )           // optional,  int
+                            maxXcoordIterations,            // optional,  int
+                            performVerticalPositioning )    // optional,  bool  (DynamicGraph does its own vertical positioning, so can save some time)
 {
     this.GG = undefined;         // graph without any positioning info (of type BaseGraph);
                                  // same as baseG, but with multi-rank edges replaced by virtual vertices/edges
@@ -26,7 +27,7 @@ PositionedGraph = function( baseG,                          // mandatory, BaseGr
 
     this.initialize( baseG,
                      horizontalPersonSeparationDist, horizontalRelSeparationDist,
-                     maxInitOrderingBuckets, maxOrderingIterations, maxXcoordIterations );
+                     maxInitOrderingBuckets, maxOrderingIterations, maxXcoordIterations, performVerticalPositioning );
 };
 
 PositionedGraph.prototype = {
@@ -48,7 +49,8 @@ PositionedGraph.prototype = {
                           horizontalRelSeparationDist,
                           maxInitOrderingBuckets,
                           maxOrderingIterations,
-                          maxXcoordIterations )
+                          maxXcoordIterations,
+                          performVerticalPositioning )
     {
         if (horizontalPersonSeparationDist) this.horizontalPersonSeparationDist = horizontalPersonSeparationDist;
         if (horizontalRelSeparationDist)    this.horizontalRelSeparationDist    = horizontalRelSeparationDist;
@@ -113,10 +115,11 @@ PositionedGraph.prototype = {
         timer.printSinceLast("=== Positioning runtime: ");
 
         // 4)
-        this.vertLevel = this.positionVertically();
-        this.rankY     = this.computeRankY();
-
-        timer.printSinceLast("=== Vertical spacing runtime: ");
+        if (performVerticalPositioning) {
+            this.vertLevel = this.positionVertically();
+            this.rankY     = this.computeRankY();
+            timer.printSinceLast("=== Vertical spacing runtime: ");
+        }
     },
 
     //=[rank]============================================================================
@@ -1775,7 +1778,7 @@ PositionedGraph.prototype = {
                 if (this.GG.isVirtual(i)) continue;
                 if (!this.GG.isRelationship(i)) throw "[1] Unexpected node " +i + " at rank " + r;
 
-                console.log("==> [1] Handling: " + i);
+                //console.log("==> [1] Handling: " + i);
 
     		    var parents = this.GG.getInEdges(i);
 
@@ -1792,7 +1795,7 @@ PositionedGraph.prototype = {
 
                 // if parents are next to each other in the ordering
                 if ( maxOrder == minOrder + 1 ) {
-                    console.log("=== is relationship: " + i + ", minOrder: " + minOrder + ", maxOrder: " + maxOrder );
+                    //console.log("=== is relationship: " + i + ", minOrder: " + minOrder + ", maxOrder: " + maxOrder );
                     this.moveVertexToRankAndOrder( i, this.ranks[parents[0]], maxOrder );
                     handled[i] = true;
                 }
@@ -1807,7 +1810,7 @@ PositionedGraph.prototype = {
                 if ( handled.hasOwnProperty(i) )
                     continue; // this node has already been handled
 
-                console.log("==> [2] Handling: " + i);
+                //console.log("==> [2] Handling: " + i);
 
                 var parents = this.GG.getInEdges(i);
 
@@ -1879,9 +1882,8 @@ PositionedGraph.prototype = {
                     // TODO: try both pick the one with less crossed edges. Need a testcase
                     insertOrder = order2;
                 }
-                //console.log("=== is relationship: " + i + ", insertOrder: " + insertOrder );
 
-                console.log("==> inserting: " + i + " on order " + insertOrder + " (after " + this.order.order[rank][insertOrder-1] + " and before " + this.order.order[rank][insertOrder] + ")");
+                //console.log("==> inserting: " + i + " on order " + insertOrder + " (after " + this.order.order[rank][insertOrder-1] + " and before " + this.order.order[rank][insertOrder] + ")");
                 this.moveVertexToRankAndOrder( i, rank, insertOrder );
 
                 //-----
@@ -2143,21 +2145,19 @@ PositionedGraph.prototype = {
 
         if (this.GG.v.length <= 1) return verticalLevels;
 
-        // for each rank:
-        // 1) if rank has childhub nodes:
-        //    a) for each vertex on the rank, in the ordering order
-        //    b) check if any edges cross any edges of the vertices earlier in the order
-        //    c) if yes, add that level to the set of forbidden levels
-        //    d) pick minimum level which is not forbidden
+        // for all ranks:
         //
-        // 2) for all person which has a relationship vertically position all outgoing relationship
-        //    lines as to avoid their crossings between each other and relationship lines from othernodes
+        // 1) if rank has childhub nodes:
+        //    pick vertical position (within the rank, as a discrete integer "level") for the horizontal part of the child edge
+        //    (in a way which minimizes crossings between vertical and horizontal parts of different relationship-to-child lines)
+        //
+        // 2) if rank has person nodes:
+        //    for all person which has a relationship vertically position all outgoing relationship edges
+        //    (within the rank, as a discrete integer "level") in a way to avoid overlaps between different relationship edges
 
-        // note: using very inefficient O(childnodes^2 * childnode_outedges^2) algorithm, which runs very fast though
-
-        /// TODO: hack for debugging when reRankRelationships() may be omitted
+        /// TODO: computations below are to accomodate debugging when reRankRelationships() may be omitted
         var _startRank = 2;
-        var _rankStep = 2;
+        var _rankStep  = 2;
         for (var i = 0; i<this.order.order[_startRank].length; i++)
             if ( !this.GG.isVirtual(this.order.order[_startRank][i]) && !this.GG.isChildhub( this.order.order[_startRank][i] ) )
             {
@@ -2167,138 +2167,118 @@ PositionedGraph.prototype = {
             }
 
         for (var r = 1; r <= this.maxRank; r+=1)
-            verticalLevels.rankVerticalLevels[r] = 1;    // number of levels between rank r and r+1. Start with 1
-
-        var shiftBelowNodes = {};
+            verticalLevels.rankVerticalLevels[r] = 1;    // number of "vertical levels" (i.e. parallel horizontal edges) between rank r and r+1. Start with 1 for all ranks
 
         //console.log("GG: " + stringifyObject(this.GG));
         //console.log("Order: " + stringifyObject(this.order));
 
         // 1) go over childnode ranks.
+        //    a) for each vertex on the rank, in the ordering order
+        //    b) check if any edges cross any edges of the vertices earlier in the order
+        //    c) if yes, add that level to the set of forbidden levels
+        //    d) pick minimum level which is not forbidden
         for (var r = _startRank; r <= this.maxRank; r+=_rankStep) {
+
+            var initLevels = [];
+            var edgeInfo   = [];
 
             var len = this.order.order[r].length;
             for (var i = 0; i < len; i++) {
-                var v   = this.order.order[r][i];
+                var v = this.order.order[r][i];
 
                 if (this.GG.isVirtual(v)) continue;
                 if (!this.GG.isChildhub(v)) throw "Assertion failed: childhub nodes at every other rank ("+v+")";
 
-                var v_x = this.positions[v];
+                var realationship = this.GG.getInEdges(v)[0];
+                var top_x         = this.positions[realationship];  // x cooordinate of the line going up
+                var left_x        = top_x;                          // the leftmost edge of the horizontal part
+                var right_x       = top_x;                          // the rightmost edge of the horizontal part
+                var childCoords   = [];
 
-                //console.log("in[" + v + "] @ r = " + r);
-                var parent   = this.GG.getInEdges(v)[0];
-                var parent_x = this.positions[parent];
-
-                var forbiddenLevels = {};                // levels which can't be used by v. Initially none
-
-                var doShift = false;
-                shiftBelowNodes[v] = {};                // nodes to the left which need to be shifted below to avoid
-                                                        // crossings between their (right end of) child lines and our parent-to-childhub
                 var outEdges = this.GG.getOutEdges(v);
+
                 for (var j = 0; j < outEdges.length; j++) {
-                    var target      = outEdges[j];
-                    var targetOrder = this.order.vOrder[target];
-                    var targetX     = this.positions[target];
+                    var child_x = this.positions[outEdges[j]];
+                    childCoords.push(child_x);
 
-                    var minX = Math.min( v_x, targetX, parent_x );
-                    var maxX = Math.max( v_x, targetX, parent_x );
-
-                    // check if this edge {v,targetV} crosses any edges of the vertices earlier in the order
-
-                    for (var ord = 0; ord < i; ord++) {
-                        var u     = this.order.order[r][ord];
-                        var edges = this.GG.getOutEdges(u);
-                        var u_x   = this.positions[u];
-
-                        //console.log("u = " + u);
-                        var parent_u   = this.GG.getInEdges(u)[0];
-                        var parent_u_x = this.positions[parent_u];
-
-                        for (var k = 0; k < edges.length; k++) {
-                            var otherTarget = edges[k];
-                            var otherOrder  = this.order.vOrder[otherTarget];
-
-                            if (otherOrder > targetOrder) {
-                                // crossing detected
-                                forbiddenLevels[verticalLevels.childEdgeLevel[u]] = true;
-                            }
-
-                            // also a crossing occurs when other children are under the node, in which
-                            // case the horizontal childline crosses the other horizontal child line (even though
-                            // the direct edges do not cross) - as in testcase "ms_004"
-                            var otherX = this.positions[otherTarget];
-                            var minOtherX = Math.min( u_x, otherX, parent_u_x );
-                            var maxOtherX = Math.max( u_x, otherX, parent_u_x );
-
-                            if ( (minOtherX >= minX && minOtherX <= maxX) ||
-                                 (maxOtherX >= minX && maxOtherX <= maxX) ) {
-                                for (var l = 1; l <= verticalLevels.childEdgeLevel[u]; l++)
-                                    forbiddenLevels[l] = true;
-                            }
-
-                            if ( parent_x <= maxOtherX ) {
-                                shiftBelowNodes[v][u] = true;
-                                doShift = true;
-                                delete forbiddenLevels[verticalLevels.childEdgeLevel[u]];
-                            }
-                        }
-                    }
+                    left_x  = Math.min( left_x,  child_x );
+                    right_x = Math.max( right_x, child_x );
                 }
 
-                //find the minimum level not in forbiddenLevels
-                var useLevel = 1;
-                while ( forbiddenLevels.hasOwnProperty(useLevel) )
-                    useLevel++;
+                edgeInfo.push( { "childhub": v, "top_x": top_x, "left_x": left_x, "right_x": right_x, "childCoords": childCoords} );
+                initLevels.push(1);
+            }
+            //console.log("EdgeInfo: " + stringifyObject(edgeInfo));
 
-                verticalLevels.childEdgeLevel[v] = useLevel;
+            // compose the "crossing score" function which, given edgeInfo + which horizontal line is higher,
+            // can tell the number of crossings between two childhub-to-children sets of edges
+            var pairScoreFunc = function( edge1, edge2, edge1level, edge2level ) {
+                //
+                // general form of a displayed edges is like:
+                //                                                             relationship_a    relationship_b
+                //              top_x                                                       |    |
+                //                |                                                         |    +-----+-------+---+   <--- level1
+                //  left_x   +----+-----+   right_x , multiple edges may be arranged like:  +------+---|---+   |   |   <--- level2
+                //           |  |    |  |                                                          |   |   |   |   |
+                //        (one or more childX)                                                    a1  b1  a2  b2  b3
+                //
+                // This function computes the number of intersections of two shapes like the ones
+                // draw above given their vertical "levels", i.e. which one is above the other.
 
-                if (useLevel > verticalLevels.rankVerticalLevels[r])
-                    verticalLevels.rankVerticalLevels[r] = useLevel;
+                if ( edgeInfo[edge1].right_x < edgeInfo[edge2].left_x ||
+                     edgeInfo[edge1].left_x  > edgeInfo[edge2].right_x )
+                     return 0;                                              // edges do not intersect/overlap => no penalty for any level assignment
 
-                if (doShift) {
-                    var maxShiftRank = Infinity;
-                    for (var adjNode in shiftBelowNodes[v])
-                        if (shiftBelowNodes[v].hasOwnProperty(adjNode))
-                            maxShiftRank = Math.min(verticalLevels.childEdgeLevel[adjNode], maxShiftRank);
+                if (edge1level == edge2level) return Infinity;              // intersect and at the same level => forbidden => (penalty == Infinity)
 
-                    // shift all affected nodes AND all nodes that they affect etc
-                    var shiftAmount = (useLevel+1) - maxShiftRank;
-
-                    //console.log("------- Processing: " + v);
-                    //printObject(shiftBelowNodes);
-                    //console.log("Shift amount: " + shiftAmount);
-
-                    var doneProcessing = {};
-
-                    var shiftNodes = new Queue();
-                    shiftNodes.push(v)
-
-                    while ( shiftNodes.size() > 0 ) {
-                        var nextToShift = shiftNodes.pop();
-
-                        if (doneProcessing.hasOwnProperty(nextToShift)) continue;  // to avoid infinite mutual dependency loop
-                        doneProcessing[nextToShift] = true;
-
-                        for (var adjNode in shiftBelowNodes[nextToShift]) {
-                            if (shiftBelowNodes[nextToShift].hasOwnProperty(adjNode)) {
-                                verticalLevels.childEdgeLevel[adjNode] += shiftAmount;
-
-                                if ( verticalLevels.childEdgeLevel[adjNode] > verticalLevels.rankVerticalLevels[r] )
-                                    verticalLevels.rankVerticalLevels[r] = verticalLevels.childEdgeLevel[adjNode];
-
-                                shiftNodes.push(adjNode);
-                            }
-                        }
-                        //console.log(stringifyObject(verticalLevels.childEdgeLevel));
-                    }
+                if (edge1level > edge2level) {
+                    var tmpEdge  = edge1;
+                    var tmpLevel = edge1level;
+                    edge1        = edge2;
+                    edge1level   = edge2level;
+                    edge2        = tmpEdge;
+                    edge2level   = tmpLevel;
                 }
+
+                // compute number of intersections
+                var intersections = 0;
+                // potentially childhub-to-horizontal segment of edge2 may cross horizontal segment of edge1
+                if (edgeInfo[edge2].top_x >= edgeInfo[edge1].left_x && edgeInfo[edge2].top_x <= edgeInfo[edge1].right_x)
+                    intersections++;
+                // potentially horizontal-to-child vertical lines of edge1 may cross horizontal segment of edge2
+                for (var j = 0; j < edgeInfo[edge1].childCoords.length; j++) {
+                    var childX = edgeInfo[edge1].childCoords[j];
+                    if (childX >= edgeInfo[edge2].left_x && childX <= edgeInfo[edge2].right_x)
+                        intersections++;
+                }
+                return intersections;
+            };
+
+            var optimizer = new VerticalPosIntOptimizer( pairScoreFunc, initLevels );
+
+            var edgeLevels = optimizer.computeVerticalPositions( 5, 400 );    // - full exhaustive search when up to 5 edges cross other edges on this rank
+                                                                              // - heuristic with up to 200 steps is used otherwise
+                                                                              //
+                                                                              //   max full search running time: ~    f(numEdgesThatCross) * scoreFuncTime  (*)
+                                                                              //   max heuristic running time:   ~  bigConstant * numSteps * scoreFuncTime
+                                                                              //
+                                                                              //   (*) where f(numEdgesThatCross) is the number of combinations without gaps
+                                                                              //       (e.g. 3,2,1 is OK but 3,1,1 is not);  f(6) = 8646, f(5) = 962
+
+            console.log("[rank " + r + "] Final vertical childedge levels: " +  stringifyObject(edgeLevels));
+
+            for (var v = 0; v < edgeInfo.length; v++) {
+                verticalLevels.childEdgeLevel[edgeInfo[v]["childhub"]] = edgeLevels[v];
+                if (edgeLevels[v] > verticalLevels.rankVerticalLevels[r])
+                    verticalLevels.rankVerticalLevels[r] = edgeLevels[v];
             }
         }
 
-
         // 2) vertical positioning of person-relationship edges:
         for (var r = 1; r <= this.maxRank; r++) {
+            
+            var maxLevel = 1;
+            
             var len = this.order.order[r].length;
             for (var i = 0; i < len; i++) {
                 var v = this.order.order[r][i];
@@ -2359,15 +2339,14 @@ PositionedGraph.prototype = {
                         nextVerticalR++;
                     }
 
-                    var maxLevel = Math.max(nextVerticalR, nextVerticalL);
-                    verticalLevels.rankVerticalLevels[r-1] += (maxLevel - 1);
-
+                    maxLevel = Math.max(maxLevel, Math.max(nextVerticalR, nextVerticalL));                    
                     //console.log("Vert levels @ rank " + r + ": " + verticalLevels.rankVerticalLevels[r-1]);
                 }
             }
+            
+            verticalLevels.rankVerticalLevels[r-1] += (maxLevel - 1);
         }
         console.log("Vert pos: " + stringifyObject(verticalLevels.outEdgeVerticalLevel));
-
 
         return verticalLevels;
     },
