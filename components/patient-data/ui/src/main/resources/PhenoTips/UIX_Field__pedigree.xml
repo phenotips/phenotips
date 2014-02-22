@@ -256,7 +256,7 @@
     </property>
     <property>
       <parameters>title=Pedigree (interactive)
-enabled=false
+enabled=true
 required=
 order=14
 fields=</parameters>
