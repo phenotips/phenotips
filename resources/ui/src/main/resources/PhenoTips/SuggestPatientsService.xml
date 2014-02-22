@@ -57,10 +57,12 @@
 ## Query execution, results formatting
 ## -----------------------------------
 #if ($input != '')
-  #set ($query = $services.query.xwql('from doc.object(PhenoTips.PatientClass) as patient where lower(doc.name) like :name or lower(patient.external_id) like :eid or lower(patient.first_name) like :fn or lower(patient.last_name) like :ln'))
-  #foreach ($i in ['name', 'eid', 'fn', 'ln'])
-    #set ($discard = $query.bindValue($i, "%${input}%"))
+  #set ($query = 'from doc.object(PhenoTips.PatientClass) as patient where lower(doc.name) like :input or lower(patient.external_id) like :input')
+  #if ($services.recordConfiguration.activeConfiguration.enabledFieldNames.contains('first_name'))
+    #set ($query = $query.concat(' or lower(patient.first_name) like :input or lower(patient.last_name) like :input'))
   #end
+  #set ($query = $services.query.xwql($query))
+  #set ($discard = $query.bindValue('input', "%${input}%"))
   #set ($discard = $response.setContentType("text/xml"))
   &lt;?xml version="1.0" encoding="UTF-8"?&gt;
   #set ($results = $query.execute())
