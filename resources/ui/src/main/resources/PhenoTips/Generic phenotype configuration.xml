@@ -76,7 +76,7 @@
   {
     "type"       : "section",
     "title"      : "Growth parameters",
-    "categories" : ["HP:0001507"],
+    "categories" : ["HP:0001507", "HP:0000240"],
     "data"       : [
         {
            "type"  : "subsection",
@@ -164,7 +164,7 @@
   {
     "type"       : "section",
     "title"      : "Cutaneous",
-    "categories" : ["HP:0000951"],
+    "categories" : ["HP:0001574"],
     "data"       : [
         {"id" : "HP:0000953"},
         {"id" : "HP:0001010"},
@@ -175,7 +175,7 @@
   {
     "type"       : "section",
     "title"      : "Cardiac",
-    "categories" : ["HP:0001627"],
+    "categories" : ["HP:0001626"],
     "data"       : [
         {"id" : "HP:0001631"},
         {"id" : "HP:0001629"},
@@ -198,7 +198,7 @@
   {
     "type"       : "section",
     "title"      : "Musculoskeletal",
-    "categories" : ["HP:0000924"],
+    "categories" : ["HP:0000924", "HP:0003011"],
     "data"       : [
         {"id" : "HP:0002652"},
         {"id" : "HP:0002659"},
