@@ -745,7 +745,7 @@ document.observe("xwiki:dom:loaded", function(){
   ## Get extension objects
   #set ($uixs = $services.uix.getExtensions($extensionPointId, {'sortByParameter' : 'order'}))
   ## Get uix documents
-  #set ($uixDocs = $xwiki.wrapDocs($xwiki.searchDocuments($extensionsQuery, [$uixClass, $filterPropertyName, $filterPropertyValue])))
+  #set ($uixDocs = $xwiki.wrapDocs($services.query.hql($extensionsQuery).bindValues([$uixClass, $filterPropertyName, $filterPropertyValue]).execute()))
   ## Map extension id to document for easy access
   #set ($uixDocsMap = {})
   #foreach ($uixDoc in $uixDocs)
@@ -871,7 +871,7 @@ document.observe("xwiki:dom:loaded", function(){
   #end
 #end
 
-#if ($services.csrf.isTokenValid("$!{request.form_token}"))
+#if ($request.form_token &amp;&amp; $services.csrf.isTokenValid("$!{request.form_token}"))
   ## =====================================================================
   ## PROCESS SUBMITTED DATA
   ## =====================================================================
