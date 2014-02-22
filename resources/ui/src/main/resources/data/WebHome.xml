@@ -2647,7 +2647,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   '_actions' : {'actions': ['edit', 'delete']}
 })
 #foreach ($column in $columns)
-  #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0))
+  #set ($isFilterable = ($column == 'external_id'))
   #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true  }))
 #end
 ##
@@ -2777,7 +2777,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   '_actions' : {'actions': ['edit', 'delete']}
 })
 #foreach ($column in $columns)
-  #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0))
+  #set ($isFilterable = ($column == 'external_id'))
   #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true  }))
 #end
 ##

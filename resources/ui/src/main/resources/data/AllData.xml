@@ -75,7 +75,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   '_actions' : {'actions': ['edit', 'delete']}
 })
 #foreach ($column in $columns)
-  #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0))
+  #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0) &amp;&amp; ($column != 'doc.creator') &amp;&amp; ($column != 'doc.author'))
   #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true, 'html': true }))
 #end
 #foreach ($filterableColumn in ['date_of_birth', 'omim_id', 'phenotype'])
