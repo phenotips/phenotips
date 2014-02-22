@@ -833,11 +833,8 @@ $xwiki.ssx.use($serviceDocName)
     The request is malformed: could not match each collaborator with exactly one level of access.
   #else
     #set ($patientAccess = $_service.getPatientAccess($patient))
-    #set ($last = $mathtool.sub($collaborators.size(), 1))
-    #if ($last &gt;= 0)
-      #foreach ($i in [0..$last])
-        #set ($discard = $data.put($services.model.resolveDocument($collaborators.get($i)), $_service.resolveAccessLevel($accessLevels.get($i))))
-      #end
+    #foreach ($collaborator in $collaborators)
+      #set ($discard = $data.put($services.model.resolveDocument($collaborator), $_service.resolveAccessLevel($accessLevels.get($foreach.index))))
     #end
     #set ($result = $result &amp;&amp; $patientAccess.updateCollaborators($data))
     #if ($visibility)
