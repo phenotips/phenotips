@@ -20,13 +20,14 @@
  */
 NodeMenu = Class.create({
     initialize : function(data) {
+        console.log("nodeMenu initialize");
         this.canvas = editor.getWorkspace().canvas || $('body');
         this.menuBox = new Element('div', {'class' : 'menu-box'});
 
         this.closeButton = new Element('span', {'class' : 'close-button'}).update('×');
         this.menuBox.insert({'top': this.closeButton});
         this.closeButton.observe('click', this.hide.bindAsEventListener(this));
-
+        
         this.form = new Element('form', {'method' : 'get', 'action' : ''});
         this.menuBox.insert({'bottom' : this.form});
 
@@ -42,6 +43,8 @@ NodeMenu = Class.create({
         // Insert in document
         this.hide();
         editor.getWorkspace().getWorkArea().insert(this.menuBox);
+        
+        this._onClickOutside = this._onClickOutside.bindAsEventListener(this);
 
         // Attach pickers
         // date
@@ -84,6 +87,11 @@ NodeMenu = Class.create({
                     });
                 }
                 item.addClassName('initialized');
+                document.observe('ms:suggest:containerCreated', function(event) {
+                    if (event.memo && event.memo.suggest === item._suggest) {
+                        item._suggest.container.setStyle({'overflow': 'auto', 'maxHeight': document.viewport.getHeight() - item._suggest.container.cumulativeOffset().top + 'px'})
+                    }
+                });
             }
         });
         // Update disorder colors
@@ -122,21 +130,48 @@ NodeMenu = Class.create({
         return result;
     },
 
-    _attachFieldEventListeners : function (field, eventNames, values) {
+    _attachFieldEventListeners : function (field, eventNames, values) {        
       var _this = this;
       eventNames.each(function(eventName) {
         field.observe(eventName, function(event) {
+          if (_this._updating) return; // otherwise a field change triggers an update which triggers field change etc
           var target = _this.targetNode;
+          if (!target) return;
           _this.fieldMap[field.name].crtValue = field._getValue && field._getValue()[0];
           var method = _this.fieldMap[field.name]['function'];
-          if (target && typeof(target[method]) == 'function') {
-            target[method].apply(target, field._getValue && field._getValue());
-          }
+          
+          if (target.getSummary()[field.name].value == _this.fieldMap[field.name].crtValue)
+              return;
+                                           
+          if (method.indexOf("set") == 0 && typeof(target[method]) == 'function') {
+              var properties = {};
+              properties[method] = _this.fieldMap[field.name].crtValue;
+              var event = { "nodeID": target.getID(), "properties": properties };
+              document.fire("pedigree:node:setproperty", event);
+          }          
+          else {
+              var properties = {};
+              properties[method] = _this.fieldMap[field.name].crtValue;
+              var event = { "nodeID": target.getID(), "modifications": properties };
+              document.fire("pedigree:node:modify", event);              
+          }          
           field.fire('pedigree:change');
         });
       });
     },
-
+    
+    update: function(newTarget) {
+        console.log("Node menu: update");
+        if (newTarget)
+            this.targetNode = newTarget;
+        
+        if (this.targetNode) {
+            this._updating = true;   // needed to avoid infinite loop: update -> _attachFieldEventListeners -> update -> ...
+            this._setCrtData(this.targetNode.getSummary());
+            delete this._updating;
+        }        
+    },    
+    
     _attachDependencyBehavior : function(field, data) {
         if (data.dependency) {
             var dependency = data.dependency.split(' ', 3);
@@ -148,6 +183,7 @@ NodeMenu = Class.create({
             dependency[0].observe('pedigree:change', function() {
                 this._updatedDependency(field, dependency);
                 field.value = '';
+                //console.log("dependency observed: " + field + ", dep: " + dependency);
             }.bindAsEventListener(this));
         }
     },
@@ -268,22 +304,56 @@ NodeMenu = Class.create({
         }
     },
 
-    isActive : function() {
-      return !!this.targetNode;
+    show : function(node, x, y) {
+        this._onscreen = true;
+        //console.log("nodeMenu show");
+        this.targetNode = node;
+        this._setCrtData(node.getSummary());
+        this.menuBox.show();
+        this.reposition(x, y);
+        document.observe('mousedown', this._onClickOutside);
     },
+        
     hide : function() {
-      if (this.isActive()) {
-          if (this.targetNode) {
-              this.targetNode.onWidgetHide();
-              delete this.targetNode;
-          }
+        this._onscreen = false;
+        //console.log("nodeMenu hide");
+        document.stopObserving('mousedown', this._onClickOutside);
+        if (this.targetNode) {
+            this.targetNode.onWidgetHide();
+            delete this.targetNode;
+        }
         this.menuBox.hide();
         this._clearCrtData();
-        this.menuBox.style.height = '';
-        this.menuBox.style.overflow = '';
-        delete this._x; delete this._y;
+    },
+    
+    isVisible: function() {
+        return this._onscreen;
+    },
+
+    _onClickOutside: function (event) {
+        //console.log("nodeMenu clickoutside");
+        if (!event.findElement('.menu-box') && !event.findElement('.calendar_date_select') && !event.findElement('.suggestItems')) {
+            this.hide();
+        }
+    },
+
+    reposition : function(x, y) {
+      this.menuBox.style.height = '';
+      this.menuBox.style.overflow = '';
+      this.menuBox.style.left = x + 'px';
+      // Make sure the menu fits inside the screen
+      if (this.canvas && this.menuBox.getHeight() >= this.canvas.getHeight()) {
+        this.menuBox.style.top = 0;
+        this.menuBox.style.height = this.canvas.getHeight() + 'px';
+        this.menuBox.style.overflow = 'auto';
+      } else if (this.canvas.getHeight() < y + this.menuBox.getHeight() + 25) {   // fix a bug (?) in firefox & chrome where getHeight() is sligtly incorrect
+        var diff = y + this.menuBox.getHeight() - this.canvas.getHeight() + 25;
+        this.menuBox.style.top = (y - diff) + 'px';
+      } else {
+        this.menuBox.style.top = y + 'px';
       }
     },
+    
     _clearCrtData : function () {
         var _this = this;
         Object.keys(this.fieldMap).each(function (name) {
@@ -291,44 +361,12 @@ NodeMenu = Class.create({
             _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
             _this.fieldMap[name].inactive = false;
         });
-    },
-    reposition : function() {
-      if (typeof(this._x) == 'undefined') {
-        return;
-      }
-      this.menuBox.style.height = '';
-      this.menuBox.style.overflow = '';
-      this.menuBox.style.left = this._x + 'px';
-      // Make sure the menu fits inside the screen
-      if (this.canvas && this.menuBox.getHeight() >= this.canvas.getHeight()) {
-        this.menuBox.style.top = 0;
-        this.menuBox.style.height = this.canvas.getHeight() + 'px';
-        this.menuBox.style.overflow = 'auto';
-      } else if (this.canvas.getHeight() < this._y + this.menuBox.getHeight()) {
-        var diff = this._y + this.menuBox.getHeight() - this.canvas.getHeight();
-        this.menuBox.style.top = (this._y - diff) + 'px';
-      } else {
-        this.menuBox.style.top = this._y + 'px';
-      }
-    },
-    show : function(node, x, y) {
-        this.targetNode = node;
-        this._setCrtData(node.getSummary());
-        this.menuBox.show();
-        this._x = x; this._y = y;
-        this.reposition();
-    },
-
-    update : function (node, data) {
-        if (this.targetNode === node) {
-           this._setCrtData(data);
-        }
-        this.reposition();
-    },
-
+    },    
+    
     _setCrtData : function (data) {
         var _this = this;
-        Object.keys(this.fieldMap).each(function (name) {
+        Object.keys(this.fieldMap).each(function (name) {            
+            
             _this.fieldMap[name].crtValue = data && data[name] && typeof(data[name].value) != "undefined" ? data[name].value : _this.fieldMap[name].crtValue || _this.fieldMap[name]["default"];
             _this.fieldMap[name].inactive = (data && data[name] && (typeof(data[name].inactive) == 'boolean' || typeof(data[name].inactive) == 'object')) ? data[name].inactive : _this.fieldMap[name].inactive;
             _this.fieldMap[name].disabled = (data && data[name] && (typeof(data[name].disabled) == 'boolean' || typeof(data[name].disabled) == 'object')) ? data[name].disabled : _this.fieldMap[name].disabled;
@@ -336,8 +374,11 @@ NodeMenu = Class.create({
             _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
             _this._setFieldDisabled[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].disabled);
             //_this._updatedDependency(_this.fieldMap[name].element, _this.fieldMap[name].element);
+            
+            //console.log("name = " + name + ", data = " + stringifyObject(data[name]) + ", inactive: " + stringifyObject(_this.fieldMap[name].inactive));            
         });
     },
+    
     _setFieldValue : {
         'radio' : function (container, value) {
             var target = container.down('input[type=radio][value=' + value + ']');
@@ -362,7 +403,7 @@ NodeMenu = Class.create({
             if (target) {
                 target.value = value && value.toFormattedString({'format_mask' : target.title}) || '';
                 target.alt = value && value.toISO8601() || '';
-                Event.fire(target, 'xwiki:date:changed');
+                //Event.fire(target, 'xwiki:date:changed');
             }
         },
         'disease-picker' : function (container, values) {
@@ -374,7 +415,7 @@ NodeMenu = Class.create({
                 if (values) {
                     values.each(function(v) {
                         target._suggestPicker.addItem(v.id, v.value, '');
-                        _this._updateDisorderColor(v.id, editor.getLegend().getDisorderColor(v.id));
+                        _this._updateDisorderColor(v.id, editor.getDisorderLegend().getDisorderColor(v.id));
                     })
                 }
                 target._silent = false;
@@ -393,6 +434,7 @@ NodeMenu = Class.create({
             }
         }
     },
+    
     _toggleFieldVisibility : function(container, doHide) {
         if (doHide) {
           container.addClassName('hidden');
@@ -400,16 +442,19 @@ NodeMenu = Class.create({
           container.removeClassName('hidden');
         }
     },
+    
     _setFieldInactive : {
         'radio' : function (container, inactive) {
             if (inactive === true) {
-              container.addClassName('hidden');
+                container.addClassName('hidden');
             } else {
-              container.removeClassName('hidden');
-              var hasInactiveList = inactive && (typeof(inactive.indexOf) == 'function');
-              container.select('input[type=radio]').each(function(item) {
-                  item.disabled = hasInactiveList && (inactive.indexOf(item.value) >= 0);
-              });
+                container.removeClassName('hidden');
+                container.select('input[type=radio]').each(function(item) {                    
+                    if (inactive && Object.prototype.toString.call(inactive) === '[object Array]')                        
+                        item.disabled = (inactive.indexOf(item.value) >= 0);
+                    if (!inactive)
+                        item.disabled = false;
+                });
             }
         },
         'checkbox' : function (container, inactive) {

@@ -13,37 +13,45 @@
 var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
 
     initialize: function($super, node, x, y) {
-        this._icon = null;
+    	$super(node, x, y);
+    	
         this._radius = PedigreeEditor.attributes.radius;
-        $super(node, x, y);
-        this._width = PedigreeEditor.attributes.radius * 4;
-        this._adoptedShape = null;
-        this.setIcon();
-        this._highlightBox = editor.getPaper().rect(this.getX()-(this._width/2), this.getY()-(this._width/2),
-            this._width, this._width, 5).attr(PedigreeEditor.attributes.boxOnHover);
-        this._highlightBox.attr({fill: 'black', opacity: 0, 'fill-opacity': 0});
-        this._highlightBox.insertBefore(this.getIcon().flatten());
-        this._idLabel = editor.getPaper().text(x, y,  editor.DEBUG_MODE ? node.getID() : "").attr(PedigreeEditor.attributes.dragMeLabel).insertAfter(this._icon.flatten());
+        this._width  = PedigreeEditor.attributes.radius * 4;
+                
+        this._highlightBox   = null;        
+        this._adoptedShape   = null;
+        this._genderShape    = null;                        
+        this._genderGraphics = null;  // == set(_genderShape, shadow)
+                     
+        this.setGenderGraphics();
+        
+        this.setHighlightBox();
+        
+        this.updateIDLabel();
+        
+        this._hoverBox = this.generateHoverbox(x, y);
     },
-
-    /**
-     * Returns the Raphael element representing the gender of the node.
-     *
-     * @method getIcon
-     * @return {Raphael.st | Raphael.el} Raphael element
-     */
-    getIcon: function() {
-        return this._icon;
+    
+    updateIDLabel: function() {
+        var x = this.getX();
+        var y = this.getY();
+        this._idLabel && this._idLabel.remove();
+        this._idLabel = editor.getPaper().text(x, y,  editor.DEBUG_MODE ? this.getNode().getID() : "").attr(PedigreeEditor.attributes.dragMeLabel).toFront();
+        this._idLabel.node.setAttribute("class", "no-mouse-interaction");
     },
-
+    
+    generateHoverbox: function(x, y) {
+        return null;
+    },
+    
     /**
-     * Updates the icon representing the gender of the node
+     * Updates whatever needs to change when node id changes (e.g. id label) 
      *
-     * @method setIcon
-     * @param [$super]
-     */
-    setIcon: function($super) {
-        this.setGenderSymbol();
+     * @method onSetID
+     */        
+    onSetID: function($super, id) {
+        $super(id);
+        this.updateIDLabel();
     },
 
     /**
@@ -55,67 +63,116 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * @param {Boolean} animate Set to true if you want to animate the transition
      * @param {Function} callback The function called at the end of the animation
      */
-    setPos: function(x, y, animate, callback) {
-        var me = this;
-        this.getNode().getPartnerships().each(function(partnership) {
-            partnership.getGraphics().updatePartnerConnection(me.getNode(), x, y, partnership.getX(), partnership.getY(), animate);
-        });
-        var p = this.getNode().getParentPregnancy();
-        p && p.getGraphics().updateChildConnection(this.getNode(), x, y, p.getX(), p.getY(), animate);
+    setPos: function($super, x, y, animate, callback) {
 
-        if(animate && (this.getX() != x || this.getY() != y)) {
-            this.getAllGraphics().stop().animate({'transform': "t " + (x-this.getX()) + "," +(y-this.getY()) + "..."},
-                1000, "easeInOut", function() { me._updatePositionData(x, y);callback && callback();});
+        this.getHoverBox().removeHandles();
+        this.getHoverBox().removeButtons();
+        
+        var moveX = x - this.getX();
+        var moveY = y - this.getY();
+        
+        if (moveX == 0 && moveY == 0) return; 
+            
+        // need to set X and Y before animation finishes or other
+        // stuff will be drawn incorrectly
+        $super(x, y, animate);
+                
+        
+        if(animate) {
+            var me = this;
+            this._callback = function() { if (me._toMark) {
+                                              me.markPermanently();
+                                              delete me._toMark;
+                                           }
+                                           delete me._callback;
+                                           callback && callback(); } 
+                                
+            this.getAllGraphics().animate( {'transform': "t " + moveX + "," + moveY + "..."},
+                900, "linear", me._callback ); //easeInOut
+            
+            //this.getAllGraphics().transform("t " + moveX + "," + moveY + "...");
+            //callback && callback();
         }
         else {
-            this.getAllGraphics().transform("t " + (x-this.getX()) + "," +(y-this.getY()) + "...");
-            me._updatePositionData(x, y);
+            this.getAllGraphics().transform("t " + moveX + "," + moveY + "...");
+            callback && callback();
+        }                
+    },
+    
+    /**
+     * Expands the partnership circle
+     *
+     * @method grow
+     */
+    grow: function($super) {
+        $super();
+        if (this._callback)
+            throw "Assertion failed: grow() during animation";
+        if (this.glow) return;
+        this.glow = this._genderShape.glow({width: 11, fill: true, opacity: 0.4, color: "green"});
+        if (this.marked) this.marked.hide();        
+    },
+    
+    /**
+     * Shrinks node graphics to the original size
+     *
+     * @method shrink
+     */    
+    shrink: function($super) {
+        this.glow && this.glow.remove();
+        delete this.glow;
+        if (this.marked) this.marked.show();
+        $super();
+    },      
+    
+    /**
+     * Marks the node in  away different from glow
+     *
+     * @method grow
+     */
+    markPermanently: function() {
+        //console.log("marking " + this.getNode().getID());
+        if (this._callback && !this._toMark) {
+            // trying to mark during animation - need ot wait until animation finishes to mark @ the final location
+            this._toMark = true;
+            return;
         }
+        if (this.marked) return;
+        this.marked = this._genderShape.glow({width: 11, fill: true, opacity: 0.6, color: "#ee8d00"});
     },
-
+    
     /**
-     * Saves the x and y values as current coordinates and updates connections with the new position
+     * Unmarks the node
      *
-     * @method _updatePositionData
-     * @param {Number} x The new x coordinate
-     * @param {Number} y The new y coordinate
-     * @private
-     */
-    _updatePositionData: function(x, y) {
-        var me = this;
-        me._absoluteX = x;
-        me._absoluteY = y;
-    },
-
+     * @method shrink
+     */    
+    unmark: function() {
+        this.marked && this.marked.remove();
+        delete this.marked;
+    },  
+    
     /**
-     * Returns the distance from the center of the genderSymbol to the rightmost point of the shape.
+     * Returns true if this node's graphic representation covers coordinates (x,y)
      *
-     * @method getRadius
-     * @return {Number}
-     */
-    getRadius: function() {
-        return this._radius;
+     * @method containsXY
+     */    
+    containsXY: function(x,y) {
+        if ( Math.abs(x - this.getX()) <= this._radius &&
+             Math.abs(y - this.getY()) <= this._radius )
+            return true;
+        return false;
     },
-
+    
     /**
-     * Returns the box around the element that appears when the node is highlighted
+     * Returns the Y coordinate of the lowest part of this node's graphic on the canvas
      *
-     * @method getHighlightBox
-     * @return {Raphael.rect} Raphael rectangle element
-     */
-    getHighlightBox: function() {
-        return this._highlightBox;
+     * @method getY
+     * @return {Number} The y coordinate
+     */    
+    getBottomY: function() {
+        return this._absoluteY + this._radius + PedigreeEditor.attributes.childlessLength;
     },
-
-    /**
-     * Displays the highlightBox around the node
-     *
-     * @method highlight
-     */
-    highlight: function() {
-        this.getHighlightBox().attr({"opacity": .5, 'fill-opacity':.5});
-    },
-
+    
     /**
      * Draws brackets around the node icon to show that this node is adopted
      *
@@ -126,13 +183,13 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         var r = PedigreeEditor.attributes.radius,
             x1 = this.getX() - ((0.8) * r),
             x2 = this.getX() + ((0.8) * r),
-            y = this.getY() - ((1.3) * r),
+            y = this.getY() - ((1.3) * r) + 1,
             brackets = "M" + x1 + " " + y + "l" + r/(-2) +
-                " " + 0 + "l0 " + (2.6 * r) + "l" + (r)/2 + " 0M" + x2 +
-                " " + y + "l" + (r)/2 + " 0" + "l0 " + (2.6 * r) + "l" +
+                " " + 0 + "l0 " + (2.6 * r - 2) + "l" + (r)/2 + " 0M" + x2 +
+                " " + y + "l" + (r)/2 + " 0" + "l0 " + (2.6 * r - 2) + "l" +
                 (r)/(-2) + " 0";
-        this._adoptedShape = editor.getPaper().path(brackets).attr("stroke-width", 3);
-        this._adoptedShape.insertBefore(this.getGenderShape().flatten());
+        this._adoptedShape = editor.getPaper().path(brackets).attr("stroke-width", 2.5);
+        this._adoptedShape.toBack();
     },
 
     /**
@@ -154,14 +211,6 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         return this._adoptedShape;
     },
 
-    /**
-     * Hides the highlightBox around the node
-     *
-     * @method unHighlight
-     */
-    unHighlight: function() {
-        this.getHighlightBox().attr({"opacity": 0, 'fill-opacity':0});
-    },
 
     /**
      * Returns a Raphael set or element that contains the graphics associated with this node, excluding the labels.
@@ -169,7 +218,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * @method getShapes
      */
     getShapes: function($super) {
-        var shapes = $super().push(this.getIcon());
+        var shapes = $super().push(this.getGenderGraphics());
         this.getAdoptedShape() && shapes.push(this.getAdoptedShape());
         return shapes;
     },
@@ -181,21 +230,21 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * @return {Raphael.st}
      */
     getAllGraphics: function($super) {
-        return editor.getPaper().set(this.getHighlightBox(), this._idLabel).concat($super());
+        return editor.getPaper().set(this.getHighlightBox(), this._idLabel).concat($super());        
     },
 
     /**
      * Returns the Raphael element representing the gender of the node.
      *
-     * @method getGenderSymbol
+     * @method getGenderGraphics
      * @return {Raphael.st|Raphael.el} Raphael set or Raphael element
      */
-    getGenderSymbol: function() {
-        return this._genderSymbol;
+    getGenderGraphics: function() {
+        return this._genderGraphics;
     },
 
     /**
-     * Returns only the shape element from the genderSymbol
+     * Returns only the shape element from the genderGraphics (i.e. no shadow)
      *
      * @method getGenderShape
      * @return {Raphael.st|Raphael.el}
@@ -205,41 +254,94 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     /**
-     * Sets/replaces the gender symbol with the symbol appropriate for the gender.s
+     * Sets/replaces the gender graphics with graphics appropriate for the gender
      *
-     * @method setGenderSymbol
+     * @method setGenderGraphics
      */
-    setGenderSymbol: function() {
-        this._genderSymbol && this._genderSymbol.remove();
-        var shape,
-            x = this.getX(),
-            y = this.getY(),
-            radius = this._radius = (this.getNode().getGender() == 'U') ? PedigreeEditor.attributes.radius * (Math.sqrt(3)/2) : PedigreeEditor.attributes.radius;
+    setGenderGraphics: function() {
+        this._genderGraphics && this._genderGraphics.remove();
+
+        this._shapeRadius = (this.getNode().getGender() == 'U') ? PedigreeEditor.attributes.radius * 1.1 / Math.sqrt(2) : PedigreeEditor.attributes.radius;            
+        if (this.getNode().isPersonGroup())
+            this._shapeRadius *= PedigreeEditor.attributes.groupNodesScale;            
+        
+        var shape;
+        var x      = this.getX(),
+            y      = this.getY(),
+            radius = this._shapeRadius;        
 
         if (this.getNode().getGender() == 'F') {
-            shape = editor.getPaper().circle(x, y, PedigreeEditor.attributes.radius);
+            shape = editor.getPaper().circle(x, y, radius);
         }
         else {
+            //console.log("x: " + x + ", y: " + y + ", rad: " + radius + ", shape: " + this._genderShape);
             shape = editor.getPaper().rect(x - radius, y - radius, radius * 2, radius * 2);
+            //if (this.getNode().getGender() == 'M') {
+            //    shape.node.setAttribute("shape-rendering","crispEdges");
+            //}
+        }        
+                
+        if (this.getNode().getGender() == 'U') {
+            shape.attr(PedigreeEditor.attributes.nodeShapeDiag);
+            shape.attr({transform: "...R45"});            
+        } else {
+            shape.attr(PedigreeEditor.attributes.nodeShape);
         }
-        shape.attr(PedigreeEditor.attributes.nodeShape);
-        shape = (this.getNode().getGender() == 'U') ? shape.transform("...r45") : shape;
-        this._genderShape = shape;
-
+        
         //var shadow = shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3);
         var shadow = shape.clone().attr({stroke: 'none', fill: 'gray', opacity: .3});
         shadow.translate(3,3);
         shadow.insertBefore(shape);
-        this.getGenderSymbol() && this.getGenderSymbol().remove();
-        this._genderSymbol = editor.getPaper().set(shadow, shape);
+        
+        this._genderShape = shape;
+        
+        this._genderGraphics = editor.getPaper().set(shadow, shape);
+    },
+    
+    /**
+     * Sets/replaces the current highlight box
+     *
+     * @method setGenderGraphics
+     */    
+    setHighlightBox: function() {
+        this._highlightBox && this._highlightBox.remove();
+        
+        this._highlightBox = editor.getPaper().rect(this.getX()-(this._width/2), this.getY()-(this._width/2),
+                                                    this._width, this._width, 5).attr(PedigreeEditor.attributes.boxOnHover);
+        this._highlightBox.attr({fill: 'black', opacity: 0, 'fill-opacity': 0});
+        this._highlightBox.insertBefore(this.getGenderGraphics().flatten());        
+    },
+    
+    /**
+     * Returns the box around the element that appears when the node is highlighted
+     *
+     * @method getHighlightBox
+     * @return {Raphael.rect} Raphael rectangle element
+     */
+    getHighlightBox: function() {
+        return this._highlightBox;
+    },
 
-        var p = this.getNode().getParentPregnancy();
-        p && p.getGraphics().updateChildConnection(this.getNode(), this.getX(), this.getY(), p.getX(), p.getY());
-
-        var me = this;
-        this.getNode().getPartnerships().each(function(partnership) {
-            partnership.getGraphics().updatePartnerConnection(me.getNode(), me.getX(), me.getY(), partnership.getX(), partnership.getY());
-        });
-        this._icon = this._genderSymbol;
+    /**
+     * Displays the highlightBox around the node
+     *
+     * @method highlight
+     */
+    highlight: function() {
+        this.getHighlightBox().attr({"opacity": .5, 'fill-opacity':.5});
+    },
+    
+    /**
+     * Hides the highlightBox around the node
+     *
+     * @method unHighlight
+     */
+    unHighlight: function() {
+        this.getHighlightBox().attr({"opacity": 0, 'fill-opacity':0});
+    },    
+    
+    remove: function($super) {
+        this.marked && this.marked.remove();
+        $super();
     }
 });

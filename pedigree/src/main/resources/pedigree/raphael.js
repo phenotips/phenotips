@@ -486,12 +486,15 @@
     };
 
     function clone(obj) {
-        if (Object(obj) !== obj) {
+        if (Object(obj) !== obj || typeof obj === 'function') {
             return obj;
         }
         var res = new obj.constructor;
         for (var key in obj) if (obj[has](key)) {
-            res[key] = clone(obj[key]);
+            if (typeof obj[key] === 'object')
+                res[key] = clone(obj[key]);
+            else
+                res[key] = obj[key];
         }
         return res;
     }
@@ -3859,8 +3862,8 @@ window.Raphael.svg && function (R) {
                     x1: vector[0],
                     y1: vector[1],
                     x2: vector[2],
-                    y2: vector[3],
-                    gradientTransform: element.matrix.invert()
+                    y2: vector[3]
+                    //gradientTransform: element.matrix.invert()
                 });
                 SVG.defs.appendChild(el);
                 for (var i = 0, ii = dots.length; i < ii; i++) {
@@ -4194,9 +4197,9 @@ window.Raphael.svg && function (R) {
                         if (o._.sx != 1 || o._.sy != 1) {
                             value /= mmax(abs(o._.sx), abs(o._.sy)) || 1;
                         }
-                        if (o.paper._vbSize) {
-                            value *= o.paper._vbSize;
-                        }
+                        //if (o.paper._vbSize) {
+                        //    value *= o.paper._vbSize;
+                        //}
                         node.setAttribute(att, value);
                         if (attrs["stroke-dasharray"]) {
                             addDashes(o, attrs["stroke-dasharray"], params);

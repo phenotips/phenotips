@@ -14,10 +14,10 @@
 
 var PartnershipHoverbox = Class.create(AbstractHoverbox, {
 
-    initialize: function($super, partnership, junctionX, junctionY, shapes) {
-        var radius = PedigreeEditor.attributes.radius;
+    initialize: function($super, partnership, junctionX, junctionY, nodeShapes) {
+        var radius = PedigreeEditor.attributes.radius;        
+        $super(partnership, -radius/1.5, -radius/1.5, radius*(4/3), radius*2.1, junctionX, junctionY, nodeShapes);
         this._isMenuToggled = false;
-        $super(partnership, junctionX - radius/1.5, junctionY - radius/2, radius*(4/3), radius*1.7, junctionX, junctionY, shapes);
     },
 
     /**
@@ -27,41 +27,34 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      * @return {Raphael.st} A set of handles
      */
     generateHandles: function($super) {
-        this._downHandle = this.generateHandle('child', this.getNodeX(), this.getNodeY() + (PedigreeEditor.attributes.radius *.8));
-        return $super().push(this._downHandle);
+        if (this._currentHandles !== null) return;
+        $super();        
+
+        if (this.getNode().getChildlessStatus() !== null) return;
+        
+        var x = this.getNodeX();
+        var y = this.getNodeY();     
+        var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(4);
+
+        editor.getPaper().setStart();        
+        //static part (going right below the node)            
+        var path = [["M", x, y],["L", x, y+PedigreeEditor.attributes.partnershipHandleBreakY]];
+        editor.getPaper().path(path).attr({"stroke-width": strokeWidth, stroke: "gray"}).insertBefore(this.getNode().getGraphics().getJunctionShape());            
+        this.generateHandle('child', x, y+PedigreeEditor.attributes.partnershipHandleBreakY, x, y+PedigreeEditor.attributes.partnershipHandleLength);
+                
+        this._currentHandles.push( editor.getPaper().setFinish() );
     },
 
     /**
      * Creates the buttons used in this hoverbox
      *
      * @method generateButtons
-     * @return {Raphael.st} A set of buttons
      */
     generateButtons: function($super) {
-        var deleteButton = this.generateDeleteBtn();
-        var menuButton = this.generateMenuBtn();
-        return $super().push(deleteButton, menuButton);
-    },
-
-    /**
-     * Hides the child handle
-     *
-     * @method hideChildHandle
-     */
-    hideChildHandle: function() {
-        this.getCurrentHandles().exclude(this._downHandle.hide());
-    },
-
-    /**
-     * Unhides the child handle
-     *
-     * @method unhideChildHandle
-     */
-    unhideChildHandle: function() {
-        if(this.isHovered() || this.isMenuToggled()) {
-            this._downHandle.show();
-        }
-        (!this.getCurrentHandles().contains(this._downHandle)) && this.getCurrentHandles().push(this._downHandle);
+        if (this._currentButtons !== null) return;
+        $super();
+        this.generateDeleteBtn();
+        this.generateMenuBtn();        
     },
 
     /**
@@ -73,7 +66,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
     isMenuToggled: function() {
         return this._isMenuToggled;
     },
-
+    
     /**
      * Shows/hides the menu for this partnership node
      *
@@ -83,7 +76,6 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
     toggleMenu: function(isMenuToggled) {
         this._isMenuToggled = isMenuToggled;
         if(isMenuToggled) {
-            this.disable();
             var optBBox = this.getBoxOnHover().getBBox();
             var x = optBBox.x2;
             var y = optBBox.y;
@@ -94,7 +86,31 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
             editor.getPartnershipMenu().hide();
         }
     },
+    
+    /**
+     * Hides the hoverbox with a fade out animation
+     *
+     * @method animateHideHoverZone
+     */
+    animateHideHoverZone: function($super) {
+        this._hidden = true;
+        if(!this.isMenuToggled()){
+            $super();
+        }
+    },    
 
+    /**
+     * Displays the hoverbox with a fade in animation
+     *
+     * @method animateDrawHoverZone
+     */
+    animateDrawHoverZone: function($super) {
+        this._hidden = false;
+        if(!this.isMenuToggled()){
+            $super();
+        }
+    },
+    
     /**
      * Performs the appropriate action for clicking on the handle of type handleType
      *
@@ -102,20 +118,22 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      * @param {String} handleType Can be either "child", "partner" or "parent"
      * @param {Boolean} isDrag Set to True if the handle is being dragged at the time of the action
      */
-    handleAction : function(handleType, isDrag) {
-        var curHovered = editor.getGraph().getCurrentHoveredNode();
-        if(isDrag && curHovered && curHovered.validChildSelected) {
-            curHovered.validChildSelected = false;
-            this.getNode().addChildAction(curHovered);
+    handleAction : function(handleType, isDrag, curHoveredId) {
+        if(isDrag && curHoveredId) {            
+            if(handleType == "child") { 
+                var event = { "personID": curHoveredId, "parentID": this.getNode().getID() };
+                document.fire("pedigree:person:drag:newparent", event);
+            }
         }
         else if (!isDrag && handleType == "child") {
-            //this.getNode().createChild();
-            var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.radius * 2.3));
-            editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
-            this.disable();
-            curHovered && curHovered.getGraphics().getHoverBox().getBoxOnHover().attr(PedigreeEditor.attributes.boxOnHover);
+            var position = editor.getWorkspace().canvasToDiv(this.getNodeX(), (this.getNodeY() + PedigreeEditor.attributes.partnershipHandleLength + 15));
+            var canBeChildless = !editor.getGraph().hasNonPlaceholderNonAdoptedChildren(this.getNode().getID());
+            if (canBeChildless)
+                editor.getNodetypeSelectionBubble().show(this.getNode(), position.x, position.y);
+            else
+                editor.getSiblingSelectionBubble().show(this.getNode(), position.x, position.y);
+            // if user selects anything the bubble will fire an even on its own
         }
-        editor.getGraph().setCurrentHoveredNode(null);
-        editor.getGraph().setCurrentDraggable(null);
+        this.animateHideHoverZone();        
     }
 });

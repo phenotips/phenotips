@@ -9,39 +9,58 @@
  */
 var PedigreeEditor = Class.create({
     initialize: function() {
-        this.DEBUG_MODE = false;
+        //this.DEBUG_MODE = true;
         window.editor = this;
+
+        // initialize main data structure which holds the graph structure        
+        this._mainGraph = DynamicPositionedGraph.makeEmpty(PedigreeEditor.attributes.layoutRelativePersonWidth, PedigreeEditor.attributes.layoutRelativeOtherWidth);
 
         //initialize the elements of the app
         this._workspace = new Workspace();
         this._nodeMenu = this.generateNodeMenu();
+        this._nodeGroupMenu = this.generateNodeGroupMenu();
         this._partnershipMenu = this.generatePartnershipMenu();
-        this._nodetypeSelectionBubble = new NodetypeSelectionBubble();
-        this._legend = new Legend();
-        this._nodeIndex = new NodeIndex();
-        this._graph = new Graph();
+        this._nodetypeSelectionBubble = new NodetypeSelectionBubble(false);
+        this._siblingSelectionBubble  = new NodetypeSelectionBubble(true);
+        this._disorderLegend = new DisorgerLegend();
+
+        this._graphicsSet = new GraphicsSet();
+
         this._actionStack = new ActionStack();
-        this._saveLoadEngine = new SaveLoadEngine();
-        this._saveLoadIndicator = new SaveLoadIndicator();
         this._templateSelector = new TemplateSelector();
-        this._saveLoadEngine.load();
+        this._saveLoadIndicator = new SaveLoadIndicator();
+        this._saveLoadEngine = new SaveLoadEngine();
+        this._probandData = new ProbandDataLoader();
+
+        // load proband data and load the graph after proband data is available
+        this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
+
+        this._controller = new Controller();
 
         //attach actions to buttons on the top bar
         var undoButton = $('action-undo');
         undoButton && undoButton.on("click", function(event) {
-            editor.getActionStack().undo();
+            document.fire("pedigree:undo");
         });
         var redoButton = $('action-redo');
         redoButton && redoButton.on("click", function(event) {
-            editor.getActionStack().redo();
+            document.fire("pedigree:redo");
+        });
+
+        var autolayoutButton = $('action-layout');
+        autolayoutButton && autolayoutButton.on("click", function(event) {
+            document.fire("pedigree:autolayout");
+        });
+        var clearButton = $('action-clear');
+        clearButton && clearButton.on("click", function(event) {
+            document.fire("pedigree:graph:clear");
         });
 
         var saveButton = $('action-save');
         saveButton && saveButton.on("click", function(event) {
-            editor.getSaveLoadEngine().serialize();
+            editor.getSaveLoadEngine().save();
         });
-
-        var loadButton = $('action-load');
+        var loadButton = $('action-reload');
         loadButton && loadButton.on("click", function(event) {
             editor.getSaveLoadEngine().load();
         });
@@ -50,6 +69,14 @@ var PedigreeEditor = Class.create({
         templatesButton && templatesButton.on("click", function(event) {
             editor.getTemplateSelector().show();
         });
+
+        var closeButton = $('action-close');
+        closeButton && closeButton.on("click", function(event) {
+            //editor.getSaveLoadEngine().save();
+            window.location=XWiki.currentDocument.getURL('edit');
+        });
+
+        //this.startAutoSave(30);
     },
 
     /**
@@ -59,17 +86,33 @@ var PedigreeEditor = Class.create({
      * @return {AbstractNode} the node whose id is nodeID
      */
     getNode: function(nodeID) {
-        return editor.getGraph().getNodeMap()[nodeID];
+        return this.getGraphicsSet().getNode(nodeID);
+    },
+
+    /**
+     * @method getGraphicsGraph
+     * @return {Graph} (responsible for managing graphical representations of nodes in the editor)
+     */
+    getGraphicsSet: function() {
+        return this._graphicsSet;
     },
 
     /**
      * @method getGraph
-     * @return {Graph} (responsible for managing nodes in the editor)
+     * @return {PositionedGraph} (responsible for managing nodes and their positions)
      */
     getGraph: function() {
-        return this._graph;
+    	return this._mainGraph;
     },
 
+    /**
+     * @method getController
+     * @return {Controller} (responsible for managing data changes)
+     */        
+    getController: function() {
+        return this._controller;
+    },
+    
     /**
      * @method getActionStack
      * @return {ActionStack} (responsible undoing and redoing actions)
@@ -87,11 +130,11 @@ var PedigreeEditor = Class.create({
     },
 
     /**
-     * @method getNodeIndex
-     * @return {NodeIndex} (indexes nodes and arranges the layout)
+     * @method getSiblingSelectionBubble
+     * @return {NodetypeSelectionBubble} (floating window with initialization options for new sibling nodes)
      */
-    getNodeIndex: function() {
-        return this._nodeIndex;
+    getSiblingSelectionBubble: function() {
+        return this._siblingSelectionBubble;
     },
 
     /**
@@ -103,11 +146,11 @@ var PedigreeEditor = Class.create({
     },
 
     /**
-     * @method getLegend
+     * @method getDisorderLegend
      * @return {Legend} Responsible for managing and displaying the disorder legend
      */
-    getLegend: function() {
-        return this._legend;
+    getDisorderLegend: function() {
+        return this._disorderLegend;
     },
 
     /**
@@ -127,6 +170,14 @@ var PedigreeEditor = Class.create({
     },
 
     /**
+     * @method getProbandDataFromPhenotips
+     * @return {firstName: "...", lastName: "..."}
+     */
+    getProbandDataFromPhenotips: function() {
+        return this._probandData.probandData;
+    },
+
+    /**
      * @method getTemplateSelector
      * @return {TemplateSelector}
      */
@@ -142,14 +193,6 @@ var PedigreeEditor = Class.create({
      */
     generateNodeMenu: function() {
         var _this = this;
-        document.observe('mousedown', function(event) {
-            if (_this.getNodeMenu() && _this.getNodeMenu().isActive()) {
-                if (event.element().getAttribute('class') != 'menu-trigger' &&
-                    (!event.element().up || !event.element().up('.menu-box, .calendar_date_select, .suggestItems') && event.element().up('body'))) {
-                    _this.getNodeMenu().hide();
-                }
-            }
-        });
         return new NodeMenu([
             {
                 'name' : 'identifier',
@@ -166,39 +209,45 @@ var PedigreeEditor = Class.create({
                     { 'actual' : 'U', 'displayed' : 'Unknown' }
                 ],
                 'default' : 'U',
-                'function' : 'setGenderAction'
+                'function' : 'setGender'
             },
             {
                 'name' : 'first_name',
                 'label': 'First name',
                 'type' : 'text',
-                'function' : 'setFirstNameAction'
+                'function' : 'setFirstName'
             },
             {
                 'name' : 'last_name',
                 'label': 'Last name',
                 'type' : 'text',
-                'function' : 'setLastNameAction'
+                'function' : 'setLastName'
             },
+            {
+                'name' : 'last_name_birth',
+                'label': 'Last name at birth',
+                'type' : 'text',
+                'function' : 'setLastNameAtBirth'
+            },            
             {
                 'name' : 'date_of_birth',
                 'label' : 'Date of birth',
                 'type' : 'date-picker',
                 'format' : 'dd/MM/yyyy',
-                'function' : 'setBirthDateAction'
+                'function' : 'setBirthDate'
             },
             {
                 'name' : 'date_of_death',
                 'label' : 'Date of death',
                 'type' : 'date-picker',
                 'format' : 'dd/MM/yyyy',
-                'function' : 'setDeathDateAction'
+                'function' : 'setDeathDate'
             },
             {
                 'name' : 'disorders',
                 'label' : 'Known disorders of this individual',
                 'type' : 'disease-picker',
-                'function' : 'setDisordersAction'
+                'function' : 'setDisorders'
             },
             {
                 'name' : 'gestation_age',
@@ -206,7 +255,7 @@ var PedigreeEditor = Class.create({
                 'type' : 'select',
                 'range' : {'start': 0, 'end': 50, 'item' : ['week', 'weeks']},
                 'nullValue' : true,
-                'function' : 'setGestationAgeAction'
+                'function' : 'setGestationAge'
             },
             {
                 'name' : 'state',
@@ -220,28 +269,40 @@ var PedigreeEditor = Class.create({
                     { 'actual' : 'unborn', 'displayed' : 'Unborn' }
                 ],
                 'default' : 'alive',
-                'function' : 'setLifeStatusAction'
-            },
+                'function' : 'setLifeStatus'
+            },           
             {
                 'label' : 'Heredity options',
                 'name' : 'childlessSelect',
                 'values' : [{'actual': 'none', displayed: 'None'},{'actual': 'childless', displayed: 'Childless'},{'actual': 'infertile', displayed: 'Infertile'}],
                 'type' : 'select',
-                'function' : 'setChildlessStatusAction'
+                'function' : 'setChildlessStatus'
             },
             {
                 'name' : 'childlessText',
                 'type' : 'text',
                 'dependency' : 'childlessSelect != none',
                 'tip' : 'Reason',
-                'function' : 'setChildlessReasonAction'
+                'function' : 'setChildlessReason'
             },
             {
                 'name' : 'adopted',
                 'label' : 'Adopted',
                 'type' : 'checkbox',
-                'function' : 'setAdoptedAction'
-            }
+                'function' : 'setAdopted'
+            },
+            {
+                'name' : 'monozygotic',
+                'label' : 'Monozygotic twin',
+                'type' : 'checkbox',
+                'function' : 'setMonozygotic'
+            },            
+            {
+                'name' : 'placeholder',
+                'label' : 'Placeholder node',
+                'type' : 'checkbox',
+                'function' : 'makePlaceholder'
+            }          
         ]);
     },
 
@@ -254,6 +315,82 @@ var PedigreeEditor = Class.create({
     },
 
     /**
+     * Creates the context menu for PersonGroup nodes
+     *
+     * @method generateNodeGroupMenu
+     * @return {NodeMenu}
+     */
+    generateNodeGroupMenu: function() {        
+        var _this = this;
+        return new NodeMenu([
+            {
+                'name' : 'identifier',
+                'label' : '',
+                'type'  : 'hidden'
+            },
+            {
+                'name' : 'gender',
+                'label' : 'Gender',
+                'type' : 'radio',
+                'values' : [
+                    { 'actual' : 'M', 'displayed' : 'Male' },
+                    { 'actual' : 'F', 'displayed' : 'Female' },
+                    { 'actual' : 'U', 'displayed' : 'Unknown' }
+                ],
+                'default' : 'U',
+                'function' : 'setGender'
+            },
+            {
+                'name' : 'comment',
+                'label': 'Comment',
+                'type' : 'text',
+                'function' : 'setFirstName'
+            },
+            {
+                'name' : 'numInGroup',
+                'label': 'Number of persons in this group',
+                'type' : 'select',
+                'values' : [{'actual': 1, displayed: 'N'}, {'actual': 2, displayed: '2'}, {'actual': 3, displayed: '3'},
+                            {'actual': 4, displayed: '4'}, {'actual': 5, displayed: '5'}, {'actual': 6, displayed: '6'},
+                            {'actual': 7, displayed: '7'}, {'actual': 8, displayed: '8'}, {'actual': 9, displayed: '9'}],                
+                'function' : 'setNumPersons'                
+            },            
+            {
+                'name' : 'disorders',
+                'label' : 'Known disorders common to all individuals in the group',
+                'type' : 'disease-picker',
+                'function' : 'setDisorders'
+            },
+            {
+                'name' : 'state',
+                'label' : 'All individuals in the group are',
+                'type' : 'radio',
+                'values' : [
+                    { 'actual' : 'alive', 'displayed' : 'Alive' },
+                    { 'actual' : 'deceased', 'displayed' : 'Deceased' },
+                    { 'actual' : 'aborted', 'displayed' : 'Aborted' }
+                ],
+                'default' : 'alive',
+                'function' : 'setLifeStatus'
+            },           
+            {
+                'name' : 'adopted',
+                'label' : 'Adopted',
+                'type' : 'checkbox',
+                'function' : 'setAdopted'
+            }
+        ]);
+    },
+
+    /**
+     * @method getNodeGroupMenu
+     * @return {NodeMenu} Context menu for nodes
+     */
+    getNodeGroupMenu: function() {
+        return this._nodeGroupMenu;
+    },
+    
+    /**
      * Creates the context menu for Partnership nodes
      *
      * @method generatePartnershipMenu
@@ -261,28 +398,38 @@ var PedigreeEditor = Class.create({
      */
     generatePartnershipMenu: function() {
         var _this = this;
-        document.observe('mousedown', function(event) {
-            if (_this.getPartnershipMenu() && _this.getPartnershipMenu().isActive()) {
-                if (event.element().getAttribute('class') != 'menu-trigger' &&
-                    (!event.element().up || !event.element().up('.menu-box, .calendar_date_select, .suggestItems') && event.element().up('body'))) {
-                    _this.getPartnershipMenu().hide();
-                }
-            }
-        });
         return new NodeMenu([
             {
                 'label' : 'Heredity options',
                 'name' : 'childlessSelect',
                 'values' : [{'actual': 'none', displayed: 'None'},{'actual': 'childless', displayed: 'Childless'},{'actual': 'infertile', displayed: 'Infertile'}],
                 'type' : 'select',
-                'function' : 'setChildlessStatusAction'
+                'function' : 'setChildlessStatus'
             },
             {
                 'name' : 'childlessText',
                 'type' : 'text',
                 'dependency' : 'childlessSelect != none',
                 'tip' : 'Reason',
-                'function' : 'setChildlessReasonAction'
+                'function' : 'setChildlessReason'
+            },
+            {
+                'name' : 'consangr',
+                'label' : 'Consanguinity of this relationship',
+                'type' : 'radio',
+                'values' : [
+                    { 'actual' : 'A', 'displayed' : 'Automatic' },
+                    { 'actual' : 'Y', 'displayed' : 'Yes' },
+                    { 'actual' : 'N', 'displayed' : 'No' }
+                ],
+                'default' : 'A',
+                'function' : 'setConsanguinity'
+            },
+            {
+                'name' : 'broken',
+                'label' : 'Separated',
+                'type' : 'checkbox',
+                'function' : 'setBrokenStatus'
             }
         ]);
     },
@@ -296,25 +443,22 @@ var PedigreeEditor = Class.create({
     },
 
     /**
+     * @method convertGraphCoordToCanvasCoord
+     * @return [x,y] coordinates on the canvas
+     */
+    convertGraphCoordToCanvasCoord: function(x, y) {
+        var scale = PedigreeEditor.attributes.layoutScale;
+        return { x: x * scale.xscale,
+                 y: y * scale.yscale };
+    },
+
+    /**
      * Starts a timer to save the application state every 30 seconds
      *
      * @method initializeSave
      */
-    initializeSave: function() {
-        setInterval(function(){editor.getGraph().serialize()},30000);
-    },
-
-    /**
-     * Find the best position to insert one or more new neighbors for an existing node
-     *
-     * @method findPosition
-     * @param relativePosition an object with one field, which can be either 'above', 'below', 'side', or 'join', whose value indicated the id of a node
-     * @param identifiers an array of new ids for which positions must be found
-     *
-     * @return an object where each field is one of the ids given as input, and the value is the point where that node should be placed
-     */
-    findPosition : function (relativePosition, identifiers) {
-      return this.getNodeIndex().findPosition(relativePosition, identifiers);
+    startAutoSave: function(intervalInSeconds) {
+        setInterval(function(){editor.getGraphicsSet().save()}, intervalInSeconds*1000);
     }
 });
 
@@ -323,9 +467,26 @@ var editor;
 //attributes for graphical elements in the editor
 PedigreeEditor.attributes = {
     radius: 40,
+    personHoverBoxRadius: 90,  // 80    for old handles, 90 for new
+    newHandles: true,          // false for old handles
+    personHandleLength: 75,    // 60    for old handles, 75 for new
+    personHandleBreakX: 55,
+    personHandleBreakY: 53,
+    personSiblingHandleLengthX: 65,
+    personSiblingHandleLengthY: 30,
+    enableHandleHintImages: true,
+    handleStrokeWidth: 5,
+    groupNodesScale: 0.85,
+    childlessLength: 14,
+    infertileMarkerHeight: 4,
+    infertileMarkerWidth: 14,
+    twinCommonVerticalLength: 6,
+    twinMonozygothicLineShiftY: 24,
+    curvedLinesCornerRadius: 25,
     unbornShape: {'font-size': 50, 'font-family': 'Cambria'},
-    nodeShape: {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
-    boxOnHover : {fill: "gray", stroke: "none",opacity: 1, "fill-opacity":.25},
+    nodeShape:     {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},    
+    nodeShapeDiag: {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
+    boxOnHover : {fill: "gray", stroke: "none", opacity: 1, "fill-opacity":.35},
     menuBtnIcon : {fill: "#1F1F1F", stroke: "none"},
     deleteBtnIcon : {fill: "#990000", stroke: "none"},
     btnMaskHoverOn : {opacity:.6, stroke: 'none'},
@@ -334,11 +495,19 @@ PedigreeEditor.attributes = {
     orbHue : .53,
         phShape: {fill: "white","fill-opacity": 0, "stroke": 'black', "stroke-dasharray": "- "},
     dragMeLabel: {'font-size': 14, 'font-family': 'Tahoma'},
-    descendantGroupLabel: {'font-size': 20, 'font-family': 'Tahoma'},
-    label: {'font-size': 18, 'font-family': 'Cambria'},
+    descendantGroupLabel: {'font-size': 21, 'font-family': 'Tahoma'},
+    label: {'font-size': 20, 'font-family': 'Arial'},
+    nameLabels: {'font-size': 20, 'font-family': 'Arial'},    
     disorderShapes: {},
     partnershipRadius: 6,
-        partnershipLines : {"stroke-width": 2, stroke : '#2E2E56'}
+        partnershipLines :         {"stroke-width": 1.25, stroke : '#303058'},
+        consangrPartnershipLines : {"stroke-width": 1.25, stroke : '#402058'},
+        partnershipHandleBreakY: 15,
+        partnershipHandleLength: 36,
+    graphToCanvasScale: 12,    
+    layoutRelativePersonWidth: 10,
+    layoutRelativeOtherWidth: 2,
+    layoutScale: { xscale: 12.0, yscale: 8 }
 };
 
 document.observe("xwiki:dom:loaded",function() {

@@ -12,9 +12,13 @@
 var AbstractNodeVisuals = Class.create({
 
     initialize: function(node, x, y) {
+    	//console.log("abstract node visuals");
         this._node = node;
         this._absoluteX = x;
         this._absoluteY = y;
+        this._hoverBox  = null;
+        this._isGrown   = false;
+        //console.log("abstract node visuals end");
     },
 
     /**
@@ -36,17 +40,13 @@ var AbstractNodeVisuals = Class.create({
     getX: function() {
         return this._absoluteX;
     },
-
+    
     /**
-     * Changes the X coordinate of the node
+     * Updates whatever needs to change when node id changes (e.g. id label) 
      *
-     * @method setX
-     * @param {Number} x The target x coordinate on the canvas
-     * @param {Boolean} [animate] Set to true if you want to animate the transition
-     * @param {Function} [callback] The function called at the end of the animation
-     */
-    setX: function(x, animate, callback) {
-        this.setPos(x, this.getY(), animate, callback);
+     * @method onSetID
+     */    
+    onSetID: function(id) {
     },
 
     /**
@@ -58,27 +58,67 @@ var AbstractNodeVisuals = Class.create({
     getY: function() {
         return this._absoluteY;
     },
-
+      
     /**
-     * Changes the Y coordinate of the node
+     * Returns the Y coordinate of the lowest part of this node's graphic on the canvas
      *
-     * @method setY
-     * @param {Number} y The target y coordinate on the canvas
-     * @param {Boolean} [animate] Set to true if you want to animate the transition
-     * @param {Function} [callback] The function called at the end of the animation
-     */
-    setY: function(y, animate, callback) {
-        this.setPos(this.getX(), y, animate, callback);
+     * @method getY
+     * @return {Number} The y coordinate
+     */    
+    getBottomY: function() {
+    	return this._absoluteY;
     },
 
     /**
-     * Returns an array containing the x and y coordinates of the node on canvas.
+     * Changes the position of the node to (X,Y)
      *
-     * @method getPos
-     * @return {Array} in the form [x, y]
+     * @method setPos
+     * @param {Number} x The x coordinate
+     * @param {Number} y The y coordinate
+     * @param {Boolean} animate Set to true if you want to animate the transition
+     * @param {Function} callback The function called at the end of the animation
      */
-    getPos: function() {
-        return [this.getX(), this.getY()];
+    setPos: function(x, y, animate, callback) {
+        //console.log("Node " + this.getNode().getID() + ", xy: " + x + "/" + y);
+        this._absoluteX = x;
+        this._absoluteY = y; 
+        callback && callback();
+    },
+    
+    /**
+     * Expands the node graphics a bit
+     *
+     * @method grow
+     */
+    grow: function() {
+        this._isGrown = true;
+    },    
+
+    /**
+     * Shrinks node graphics to the original size
+     *
+     * @method shrink
+     */
+    shrink: function() {
+        this._isGrown = false;
+    },
+
+    /**
+     * Returns current growth status of the node (true if grown, false if not)
+     *
+     * @method isGrown
+     */    
+    isGrown: function() { 
+        return this._isGrown;
+    },
+
+    /**
+     * Returns true if this node's graphic representation covers coordinates (x,y)
+     *
+     * @method containsXY
+     */    
+    containsXY: function(x,y) {
+        return false;
     },
 
     /**
@@ -143,6 +183,7 @@ var AbstractNodeVisuals = Class.create({
     }
 });
 
+
 var ChildlessBehaviorVisuals = {
 
     /**
@@ -156,40 +197,38 @@ var ChildlessBehaviorVisuals = {
     },
 
     /**
-     * Updates the childless status icon for this Person based on the childless/infertility status.
+     * Returns the Raphaël element for this Person's childless status reason label
+     *
+     * @method getChildlessStatusLabel
+     * @return {Raphael.el}
+     */
+    getChildlessStatusLabel: function() {
+        return this._childlessStatusLabel;
+    },
+    
+    /**
+     * Updates the childless status icon for this Node based on the childless/infertility status.
      *
      * @method updateChildlessShapes
      */
     updateChildlessShapes: function() {
         var status = this.getNode().getChildlessStatus();
-        this.getChildlessShape() && this.getChildlessShape().remove();
-
-        var x = this.getX(),
-            y = this.getY(),
-            r, lowY;
-        if(this.getNode().getType() == "Partnership") {
-            r = PedigreeEditor.attributes.partnershipRadius;
-            lowY = 2 * r + y;
-        } else {
-            r = PedigreeEditor.attributes.radius;
-            lowY = 1.6 * r + y;
-        }
-
-        var childlessPath = [["M", x, y],["L", x, lowY],["M", x - r, lowY], ["l", 2 * r, 0]];
-        if(status == 'infertile') {
-            childlessPath.push(["M", x - r, lowY + 4], ["l", 2 * r, 0]);
-        }
-
+        this._childlessShape && this._childlessShape.remove();
+        
         if(status) {
+	        var x    = this.getX();
+	        var y    = this.getY();
+	        var r    = PedigreeEditor.attributes.infertileMarkerWidth;
+	        var lowY = this.getBottomY() + PedigreeEditor.attributes.infertileMarkerHeight;
+	        
+	        var childlessPath = [["M", x, y],["L", x, lowY],["M", x - r, lowY], ["l", 2 * r, 0]];
+	        if(status == 'infertile')
+	            childlessPath.push(["M", x - r, lowY + 5], ["l", 2 * r, 0]);
+
+	        var strokeWidth = 2.5; //editor.getWorkspace().getSizeNormalizedToDefaultZoom(2);
             this._childlessShape = editor.getPaper().path(childlessPath);
-            this._childlessShape.attr({"stroke-width": 2.5, stroke: "#3C3C3C"});
-            this._childlessShape.insertAfter(this.getHoverBox().getBackElements().flatten());
-            this.getHoverBox().hideChildHandle();
-        }
-        else {
-            this._childlessShape && this._childlessShape.remove();
-            if(this.getNode().getType() != "Person" || this.getNode().getPartnerships().length == 0)
-            this.getHoverBox().unhideChildHandle();
+            this._childlessShape.attr({"stroke-width": strokeWidth, stroke: "#3C3C3C"});
+            this._childlessShape.toBack();            
         }
     },
 
@@ -200,26 +239,17 @@ var ChildlessBehaviorVisuals = {
      */
     updateChildlessStatusLabel: function() {
         this._childlessStatusLabel && this._childlessStatusLabel.remove();
-        var text =  "";
+        this._childlessStatusLabel = null;
+        
+        var text = "";
         this.getNode().getChildlessReason() && (text += this.getNode().getChildlessReason());
+        
         if(text.strip() != '') {
-            this._childlessStatusLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius * 2, "(" + text.slice(0, 14) +")" );
+            this._childlessStatusLabel = editor.getPaper().text(this.getX(), this.getBottomY() + 18, "(" + text.slice(0, 15) +")" );
             this._childlessStatusLabel.attr({'font-size': 18, 'font-family': 'Cambria'});
-        }
-        else {
-            this._childlessStatusLabel = null;
-        }
-        this._childlessStatusLabel && this._childlessStatusLabel.insertAfter(this.getChildlessShape().flatten());
-        this.getNode().getType() == "Person" && this.drawLabels();
-    },
-
-    /**
-     * Returns the Raphaël element for this Person's childless status reason label
-     *
-     * @method getChildlessStatusLabel
-     * @return {Raphael.el}
-     */
-    getChildlessStatusLabel: function() {
-        return this._childlessStatusLabel;
+            this._childlessStatusLabel.toBack();
+        }        
+        
+        this.drawLabels();
     }
 };

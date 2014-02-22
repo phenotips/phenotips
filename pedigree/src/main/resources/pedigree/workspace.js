@@ -33,17 +33,17 @@ var Workspace = Class.create({
         var start = function() {
             me.background.ox = me.background.attr("x");
             me.background.oy = me.background.attr("y");
-            me.background.attr({cursor: 'url(https://mail.google.com/mail/images/2/closedhand.cur)'});
+            //me.background.attr({cursor: 'url(https://mail.google.com/mail/images/2/closedhand.cur)'});
+            me.background.attr({cursor: 'move'});
         };
         var move = function(dx, dy) {
-            var  deltax = me.viewBoxX - dx/me.zoomCoefficient;
+            var deltax = me.viewBoxX - dx/me.zoomCoefficient;
             var deltay = me.viewBoxY - dy/me.zoomCoefficient;
 
-            me.background.attr({x: me.background.ox - dx/me.zoomCoefficient, y: me.background.oy - dy/me.zoomCoefficient});
             me.getPaper().setViewBox(deltax, deltay, me.width/me.zoomCoefficient, me.height/me.zoomCoefficient);
             me.background.ox = deltax;
             me.background.oy = deltay;
-            me.background.attr({x: me.background.ox, y: me.background.oy });
+            me.background.attr({x: deltax, y: deltay });
         };
         var end = function() {
             me.viewBoxX = me.background.ox;
@@ -94,23 +94,6 @@ var Workspace = Class.create({
     },
 
     /**
-     * Adjusts the canvas viewbox to the given zoom coefficient
-     *
-     * @method zoom
-     * @param {Number} zoomCoefficient The zooming ratio
-     */
-    zoom: function(zoomCoefficient) {
-        zoomCoefficient += .6;
-        var newWidth = this.width/zoomCoefficient;
-        var newHeight = this.height/zoomCoefficient;
-        this.viewBoxX = this.viewBoxX + (this.width/this.zoomCoefficient - newWidth)/2;
-        this.viewBoxY = this.viewBoxY + (this.height/this.zoomCoefficient - newHeight)/2;
-        this.getPaper().setViewBox(this.viewBoxX, this.viewBoxY, newWidth, newHeight);
-        this.zoomCoefficient = zoomCoefficient;
-        this.background.attr({x: this.viewBoxX, y: this.viewBoxY, width: newWidth, height: newHeight});
-    },
-
-    /**
      * Creates the menu on the top
      *
      * @method generateTopMenu
@@ -123,17 +106,17 @@ var Workspace = Class.create({
             items: [
                 { key : 'undo',   label : 'Undo'},
                 { key : 'redo',   label : 'Redo'},
-                { key : 'layout', label : 'Adjust layout'},
+                { key : 'layout', label : 'Automatic layout'},
                 { key : 'clear',  label : 'Clear all'}
             ]
         }, {
             name : 'external',
             items: [
-                { key : 'save', label : 'Save'},
-                { key : 'reaload', label : 'Reload'},
+                { key : 'save',      label : 'Save'},
+                { key : 'reload',    label : 'Reload'},
                 { key : 'templates', label : 'Templates'},
-                { key : 'print',  label : 'Printable version'},
-                { key : 'close',  label : 'Close'}
+                //{ key : 'print',     label : 'Printable version'},
+                { key : 'close',     label : 'Close'}
             ]
         }];
         var _createSubmenu = function(data) {
@@ -155,6 +138,25 @@ var Workspace = Class.create({
         submenus.each(_createSubmenu);
     },
 
+    /**
+     * Adjusts the canvas viewbox to the given zoom coefficient
+     *
+     * @method zoom
+     * @param {Number} zoomCoefficient The zooming ratio
+     */
+    zoom: function(zoomCoefficient) {        
+        if (zoomCoefficient < 0.25) zoomCoefficient = 0.25;     
+        zoomCoefficient = Math.round(zoomCoefficient/0.05)/20;
+        //console.log("zoom: " + zoomCoefficient);
+        var newWidth  = this.width/zoomCoefficient;
+        var newHeight = this.height/zoomCoefficient;
+        this.viewBoxX = this.viewBoxX + (this.width/this.zoomCoefficient - newWidth)/2;
+        this.viewBoxY = this.viewBoxY + (this.height/this.zoomCoefficient - newHeight)/2;
+        this.getPaper().setViewBox(this.viewBoxX, this.viewBoxY, newWidth, newHeight);
+        this.zoomCoefficient = zoomCoefficient;
+        this.background.attr({x: this.viewBoxX, y: this.viewBoxY, width: newWidth, height: newHeight});
+    },
+    
     /**
      * Creates the controls for panning and zooming
      *
@@ -188,11 +190,11 @@ var Workspace = Class.create({
         var trackLength = 200;
         this.__zoom = new Element('div', {'class' : 'view-controls-zoom', title : 'Zoom'});
         this.__controls.insert(this.__zoom);
-        this.__zoom.track = new Element('div', {'class' : 'zoom-track'});
+        this.__zoom.track  = new Element('div', {'class' : 'zoom-track'});
         this.__zoom.handle = new Element('div', {'class' : 'zoom-handle', title : 'Drag to zoom'});
-        this.__zoom['in'] = new Element('div', {'class' : 'zoom-button zoom-in', title : 'Zoom in'});
-        this.__zoom.out = new Element('div', {'class' : 'zoom-button zoom-out', title : 'Zoom out'});
-        this.__zoom.label = new Element('div', {'class' : 'zoom-crt-value'});
+        this.__zoom['in']  = new Element('div', {'class' : 'zoom-button zoom-in', title : 'Zoom in'});
+        this.__zoom['out'] = new Element('div', {'class' : 'zoom-button zoom-out', title : 'Zoom out'});
+        this.__zoom.label  = new Element('div', {'class' : 'zoom-crt-value'});
         this.__zoom.insert(this.__zoom['in']);
         this.__zoom.insert(this.__zoom.track);
         this.__zoom.track.insert(this.__zoom.handle);
@@ -204,35 +206,54 @@ var Workspace = Class.create({
         this.__zoom.__crtValue = 0;
         this.zoomSlider = new Control.Slider(this.__zoom.handle, this.__zoom.track, {
             axis:'vertical',
-            minimum: 60,
-            maximum: trackLength + 60,
-            increment : trackLength / 100,
+            minimum: 0,
+            maximum: trackLength,
+            increment : 1,
             alignY: 6,
             onSlide : function (value) {
                 // Called whenever the Slider is moved by dragging.
                 // The called function gets the slider value (or array if slider has multiple handles) as its parameter.
+                //console.log("val: " + value);
                 _this.__zoom.__crtValue = 1 - value;
-                var zoomValue = (_this.__zoom.__crtValue  * 2);
-                _this.zoom(zoomValue);
+                _this.zoom(0.25 + _this.__zoom.__crtValue);
             },
             onChange : function (value) {
                 // Called whenever the Slider has finished moving or has had its value changed via the setSlider Value function.
                 // The called function gets the slider value (or array if slider has multiple handles) as its parameter.
-
+                //console.log("val: " + value);
                 _this.__zoom.__crtValue = 1 - value;
-                var zoomValue = (_this.__zoom.__crtValue  * 2);
-                _this.zoom(zoomValue)
+                _this.zoom(0.25 + _this.__zoom.__crtValue)
             }
         });
-        this.zoomSlider.setValue(.70); // TODO : set initial value
+        this.zoomSlider.setValue(0.5); // TODO : set initial value
         this.__zoom['in'].observe('click', function(event) {
-            _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue + .2))
+            _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue + .25))
         });
-        this.__zoom.out.observe('click', function(event) {
-            _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue - .2))
+        this.__zoom['out'].observe('click', function(event) {
+            _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue - .25))
         });
         // Insert all controls in the document
         this.getWorkArea().insert(this.__controls);
+    },    
+    
+    /* To work around a bug in Raphael or Raphaelzpd (?) which creates differently sized lines
+     * @ different zoom levels given the same "stroke-width" in pixels this function computes
+     * the pixel size to be used at this zoom level to create a line of the correct size.
+     * 
+     * Returns the pixel value to be used in stoke-width
+     */
+    getSizeNormalizedToDefaultZoom: function(pixelSizeAtDefaultZoom) {
+        return pixelSizeAtDefaultZoom;
+        
+        //var zoomValue = 0.25 + this.__zoom.__crtValue;        
+        //return pixelSizeAtDefaultZoom * zoomValue / 0.75; 
+    },
+
+    /**
+     * Returns the current zoom level (not normalized to any value, larger numbers mean deeper zoom-in)
+     */
+    getCurrentZoomLevel: function(pixelSizeAtDefaultZoom) {
+        return this.__zoom.__crtValue;
     },
 
     /**
@@ -290,27 +311,30 @@ var Workspace = Class.create({
      * @param {Number} x The x coordinate relative to the Raphael canvas
      * @param {Number} y The y coordinate relative to the Raphael canvas
      */
-    panTo: function(x, y) {
+    panTo: function(x, y, instant) {
         var me = this,
             oX = this.viewBoxX,
             oY = this.viewBoxY,
             xDisplacement = x - oX,
-            yDisplacement = y - oY,
-            numSeconds = .5,
-            fps = 50,
-            xStep = xDisplacement/(fps*numSeconds),
-            yStep = yDisplacement/(fps*numSeconds);
+            yDisplacement = y - oY;
+        
+        var numSeconds = instant ? 0 : .5;
+        var frames     = instant ? 1 : 25;
+        
+        var xStep = xDisplacement/frames,
+            yStep = yDisplacement/frames;
+        
         var progress = 0;
 
         (function draw() {
             setTimeout(function() {
-                if(progress++ < fps * numSeconds) {
+                if(progress++ < frames) {
                     me.viewBoxX += xStep;
                     me.viewBoxY += yStep;
                     me.getPaper().setViewBox(me.viewBoxX, me.viewBoxY, me.width/me.zoomCoefficient, me.height/me.zoomCoefficient);
                     draw();
                 }
-            }, 1000 / fps);
+            }, 1000 * numSeconds / frames);
         })();
     },
 
@@ -333,28 +357,40 @@ var Workspace = Class.create({
 
     /**
      * Pans the canvas to put the node with the given id at the center.
-     *
-     * @method adjustSizeToScreen
+     * 
+     * When (xCenterShift, yCenterShift) are given positions the node with the given shift relative
+     * to the center instead of exact center of the screen
+     * 
+     * @method centerAroundNode
      * @param {Number} nodeID The id of the node
      */
-    centerAroundNode: function(nodeID) {
-        var node = editor.getGraph().getNodeMap()[nodeID];
+    centerAroundNode: function(nodeID, instant, xCenterShift, yCenterShift) {
+        var node = editor.getGraphicsSet().getNodeMap()[nodeID];
         if(node) {
             var x = node.getX(),
                 y = node.getY();
+            if (!xCenterShift) xCenterShift = 0;
+            if (!yCenterShift) yCenterShift = 0;
             var xOffset = this.getWidth()/this.zoomCoefficient;
             var yOffset = this.getHeight()/this.zoomCoefficient;
-            this.panTo(x - xOffset/2, y - yOffset/2);
+            this.panTo(x - xOffset/2 - xCenterShift, y - yOffset/2 - yCenterShift, instant);
         }
     },
 
     /**
-     * Centers the canvas around the proband and resets the zoom to the original value.
+     * Returns the current screen coordinates of the node with the given id
      *
-     * @method resetZoomPan
-     */
-    resetZoomPan: function() {
-        this.centerAroundNode(1);
-        this.zoom(1.2000000000000002-.6);
-    }
+     * @method getCurrentNodeLocation
+     * @param {Number} nodeID The id of the node
+     *    
+    getNodeShiftFromCenterOfScreen: function(nodeID) {
+        var node = editor.getGraphicsSet().getNodeMap()[nodeID];
+        if(node) {
+            var x = node.getX(),
+                y = node.getY();
+            ...
+            return {"x": xShift, "y": yShift}; 
+        }   
+        return {};
+    }*/
 });

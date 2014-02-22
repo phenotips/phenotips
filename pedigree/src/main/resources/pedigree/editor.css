@@ -422,7 +422,9 @@
   text-align: center;
   line-height: 24px;
 }
-
+.expand-arrow {
+  cursor: pointer;
+}
 .node-type-options .expandable-node-type-option {
     background: transparent none center center no-repeat;
     border: 1px solid #F5F5F5;
@@ -450,6 +452,29 @@
     vertical-align: middle;
 }
 
+.value-control-button {
+  border: 1px solid #FFF;
+  border-radius: 3px;
+  box-shadow: 0 0 5px #DDD inset;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1.1em;
+  font-weight: bold;
+  height: 1em;
+  line-height: 1em;
+  margin: 3px;
+  padding: 3px;
+  text-align: center;
+  width: 1em;
+}
+.minus-button {
+  color: #C00;
+}
+
+.plus-button {
+  color: #080;
+}
+
 .msdialog-modal-container .pedigree-template-chooser {
     width: 500px;
 }
@@ -469,6 +494,9 @@
 }
 .msdialog-box .content {
     text-align: center;
+}
+.no-mouse-interaction {
+    pointer-events: none;
 }
 
 /* TODO: add icons to each option type:

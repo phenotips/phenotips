@@ -1,7 +1,6 @@
 /*
- * Disorder is a class for managing visual representation and information regarding any
- * genetic disorder that is found in the OMIM database, and that can be attributed to
- * an individual in the Pedigree.
+ * Disorder is a class for storing genetic disorder info and loading it from the
+ * the OMIM database. These disorders can be attributed to an individual in the Pedigree.
  *
  * @param disorderID the id number for the disorder, taken from the OMIM database
  * @param name a string representing the name of the disorder e.g. "Down Syndrome"
@@ -9,9 +8,17 @@
 
 var Disorder = Class.create( {
 
-    initialize: function(disorderID, name, color, affectedNodes) {
-        this._disorderID = disorderID;
-        this._name = name;
+    initialize: function(disorderID, name, callWhenReady) {
+        // user-defined disorders
+        if (name == null && !isInt(disorderID)) {
+            name = disorderID.replace("___", " ");            
+        }
+        
+        this._disorderID = disorderID;                        
+        this._name       = name ? name : "loading...";
+        
+        if (!name)
+            this.load(callWhenReady);
     },
 
     /*
@@ -22,34 +29,33 @@ var Disorder = Class.create( {
     },
 
     /*
-     * Replaces the ID of the disorder with the disorder ID passed. Does not update Legend!
-     *
-     * @param disorderID the id number for the disorder, taken from the OMIM database
-     */
-    setDisorderID: function(disorderID) {
-        this._disorderID = disorderID;
-    },
-
-    /*
      * Returns the name of the disorder
      */
     getName: function() {
         return this._name;
     },
-
-    /*
-     * Replaces the name of the disorder with the name passed. Does not update Legend!
-     *
-     * @param name a string representing the name of the disorder e.g. "Down Syndrome"
-     */
-    setName: function(name) {
-        this._name = name;
+    
+    load: function(callWhenReady) {       
+        var URL = "/bin/get/PhenoTips/OmimService?outputSyntax=plain&q=id:" + this._disorderID;      
+        console.log("URL: " + URL);
+        //var complete = function() { console.log("complete " + this._disorderID); }
+        //var complete = function() { try { callWhenReady(); } catch (err) { console.log("ERR: " + err); } };
+        new Ajax.Request(URL, {
+            method: "GET",
+            onSuccess: this.onDataReady.bind(this),
+            //onComplete: complete.bind(this)
+            onComplete: callWhenReady ? callWhenReady : {}
+        });
     },
-
-    /*
-     * Returns the number of registered individuals carrying the disorder.
-     */
-    getNumAffected: function() {
-        return this.getAffectedNodes().length;
-    }
+    
+    onDataReady : function(response) {
+        try {
+            var parsed = JSON.parse(response.responseText);
+            //console.log(stringifyObject(parsed));
+            console.log("RESPONSE: disorder id = " + this._disorderID + ", name = " + parsed.rows[0].name);
+            this._name = parsed.rows[0].name;
+        } catch (err) {
+            console.log("Error: " +  err);
+        }
+    }    
 });

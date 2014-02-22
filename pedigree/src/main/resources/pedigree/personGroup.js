@@ -12,14 +12,15 @@
  * @param {Number} id Unique ID number
  */
 
-var PersonGroup = Class.create(AbstractPerson, {
+var PersonGroup = Class.create(Person, {
 
-    initialize: function($super, x, y, gender, id) {
-        this._type = "PersonGroup";
-        $super(x, y, gender, id);
-        this._numPersons = 1;
+    initialize: function($super, x, y, gender, id, numPersons) {
+        this._numPersons = numPersons;
+        this._comment    = "";
+        $super(x, y, "U", id);        
+        this._type = "PersonGroup";        
     },
-
+    
     /**
      * Initializes the object responsible for creating graphics for this PersonGroup
      *
@@ -31,27 +32,16 @@ var PersonGroup = Class.create(AbstractPerson, {
     _generateGraphics: function(x, y) {
         return new PersonGroupVisuals(this, x, y);
     },
-
+    
     /**
-     * Deletes this node, it's placeholder partners and children and optionally
-     * removes all the other nodes that are unrelated to the proband node.
+     * Always returns False - needed for compatibility with personHowerBox which uses this
      *
-     * @method remove
-     * @param [$super]
-     * @param {boolean} isRecursive Set to true if you want to remove related nodes that are
-     * not connected to the proband
-     * @param {boolean} skipConfirmation If true, will not display a confirmation pop-up
+     * @method isProband
      */
-    remove: function($super, isRecursive, skipConfirmation) {
-        var parents = this.getParentPartnership();
-        if(!isRecursive && parents && parents.getChildren().length == 1) {
-            var placeholder = editor.getGraph().addPlaceHolder(this.getX(), this.getY(), "U");
-            parents.removeChild(this);
-            parents.addChild(placeholder);
-        }
-        return $super(isRecursive, skipConfirmation);
-    },
-
+    isProband: function() {
+        return false;
+    },    
+    
     /**
      * Changes the number of people who are in this PersonGroup
      *
@@ -74,21 +64,28 @@ var PersonGroup = Class.create(AbstractPerson, {
     },
 
     /**
-     * Returns an object containing all the information about this node.
+     * Changes the life status of this Person to newStatus
      *
-     * @method getInfo
+     * @method setLifeStatus
+     * @param {String} newStatus "alive", "deceased", "stillborn", "unborn" or "aborted"
+     */
+    setLifeStatus: function($super, newStatus) {
+        $super(newStatus);
+        this.getGraphics().setNumPersons(this._numPersons); // force redraw N in the new ocation
+    },
+        
+    /**
+     * Returns an object containing all the properties of this node
+     * except id, x, y & type 
+     *
+     * @method getProperties
      * @return {Object} in the form
      *
      {
-     type: // (type of the node),
-     x:  // (x coordinate)
-     y:  // (y coordinate)
-     id: // id of the node
-     gender: //gender of the node
-     numPersons: //number of people in this grouping
+       property: value
      }
-     */
-    getInfo: function($super) {
+     */    
+    getProperties: function($super) {    
         var info = $super();
         info['numPersons'] = this.getNumPersons();
         return info;
@@ -97,27 +94,43 @@ var PersonGroup = Class.create(AbstractPerson, {
     /**
      * Applies the properties found in info to this node.
      *
-     * @method loadInfo
-     * @param [$super]
-     * @param info Object in the form
-     *
-     {
-     type: // (type of the node),
-     x:  // (x coordinate)
-     y:  // (y coordinate)
-     id: // id of the node
-     gender: //gender of the node
-     numPersons: //number of people in this grouping
-     }
-     * @return {Boolean} true if info was successfully loaded
+     * @method loadProperties
+     * @param properties Object
+     * @return {Boolean} True if info was successfully assigned
      */
-    loadInfo: function($super, info) {
+    assignProperties: function($super, info) {
         if($super(info) && info.numPersons) {
-            if(this.getNumPersons() != info.numPersons) {
+            if (this.getNumPersons() != info.numPersons) {
                 this.setNumPersons(info.numPersons);
             }
             return true;
         }
         return false;
-    }
+    },
+    
+    /**
+     * Returns an object (to be accepted by the menu) with information about this Person
+     *
+     * @method getSummary
+     * @return {Object} Summary object for the menu
+     */
+    getSummary: function() {
+        var disorders = [];
+        this.getDisorders().forEach(function(disorder) {
+            var disorderName = editor.getDisorderLegend().getDisorderName(disorder);
+            disorders.push({id: disorder, value: disorderName});
+        });
+        
+        var cantChangeAdopted = this.isFetus() || editor.getGraph().hasToBeAdopted(this.getID());
+        
+        return {
+            identifier:    {value : this.getID()},
+            comment:       {value : this.getFirstName()},
+            gender:        {value : this.getGender()},
+            disorders:     {value : disorders},
+            adopted:       {value : this.isAdopted(), inactive: cantChangeAdopted},
+            state:         {value : this.getLifeStatus()},
+            numInGroup:    {value : this.getNumPersons()}
+        };
+    }    
 });

@@ -17,20 +17,32 @@
 var Person = Class.create(AbstractPerson, {
 
     initialize: function($super, x, y, gender, id) {
+        //var timer = new Timer();
+    	//console.log("person");            
+        this._isProband = (id == 0);
+        this._type = "Person";
+        this._setDefault();
+        $super(x, y, gender, id);   // called after all the other variables are initialized because
+                                    // one of the classes initializes graphics, which uses some of those
+        //console.log("person end");
+        //timer.printSinceLast("=== new person runtime: ");
+    },
+    
+    _setDefault: function() {
         this._firstName = "";
         this._lastName = "";
+        this._lastNameAtBirth = "";
         this._birthDate = "";
         this._deathDate = "";
         this._conceptionDate = "";
         this._isAdopted = false;
         this._lifeStatus = 'alive';
-        this._isProband = (id == 1);
         this._childlessStatus = null;
         this._childlessReason = "";
         this._disorders = [];
-        this._evaluations = [];
-        this._type = "Person";
-        $super(x, y, gender, id);
+        this._evaluations = [];    
+        this._twinGroup = null;
+        this._monozygotic = false;
     },
 
     /**
@@ -55,368 +67,7 @@ var Person = Class.create(AbstractPerson, {
     isProband: function() {
         return this._isProband;
     },
-
-    /**
-     * Creates a new partnership between this Person and partner
-     *
-     * @method addPartner
-     * @param [$super]
-     * @param {AbstractPerson} partner
-     * @param {Boolean} [noChild=false] Set to True if the partnership should not have a PlaceHolder child
-     * @return {Partnership}
-     */
-    addPartner: function($super, partner, noChild) {
-        noChild || (noChild = false); //default value
-        var partnership = $super(partner, noChild);
-        if(partnership) {
-            var status = partner.getType() == "Person" && partner.getChildlessStatus();
-            !status && (status = this.getChildlessStatus());
-            partnership.setChildlessStatus(status);
-        }
-        return partnership;
-    },
-
-    /**
-     * Creates a Partnership with a new Placeholder and adds a new Person child to this Partnership. Adds
-     * entry in the action stack for this action.
-     *
-     * @method createNodeAction
-     * @param {String} type The type for the new child. (eg. "Person", "PlaceHolder", "PersonGroup")
-     * @param {String} gender "M", "F" or "U".
-     * @return {AbstractPerson} The created partner
-     */
-    createNodeAction: function(type, gender) {
-        var child = this.createChild(type, gender);
-        var childless = this.getChildlessStatus();
-
-        if(child && child.getParentPregnancy()) {
-            var childInfo = child.getInfo(),
-                nodeID = this.getID(),
-                preg = child.getParentPregnancy(),
-                pregInfo = preg ? preg.getInfo() : null,
-                part = preg.getPartnership(),
-                partInfo = part.getInfo(),
-                partnerInfo = part.getPartnerOf(this).getInfo();
-
-            var undoFunct = function() {
-                var pregnancy = editor.getGraph().getNodeMap()[pregInfo.id];
-                pregnancy && pregnancy.remove(false);
-                var partnership = editor.getGraph().getNodeMap()[partInfo.id];
-                partnership && partnership.remove(false);
-                var partner = editor.getGraph().getNodeMap()[partnerInfo.id];
-                partner && partner.remove(false);
-                var target = editor.getGraph().getNodeMap()[childInfo.id];
-                target && target.remove(false);
-            };
-
-            var redoFunct = function() {
-                var existingChild = editor.getGraph().getNodeMap()[childInfo.id],
-                    existingPreg = editor.getGraph().getNodeMap()[pregInfo.id],
-                    existingPart = editor.getGraph().getNodeMap()[partInfo.id],
-                    existingPartner = editor.getGraph().getNodeMap()[partnerInfo.id],
-                    me = editor.getGraph().getNodeMap()[nodeID];
-                if(me && !(existingChild || existingPreg || existingPart || existingPartner )) {
-                    var target = editor.getGraph()["add" + type](childInfo.x, childInfo.y, gender, childInfo.id);
-                    var partner = editor.getGraph().addPlaceHolder(partnerInfo.x, partnerInfo.y, gender, partnerInfo.id);
-                    var partnership = editor.getGraph().addPartnership(partInfo.x, partInfo.y, me, partner, partInfo.id);
-                    var pregnancy = editor.getGraph().addPregnancy(pregInfo.x, pregInfo.y, partnership, pregInfo.id);
-                    pregnancy.addChild(target);
-                    childless && partnership.setChildlessStatus(childless);
-                }
-            };
-            editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
-        }
-        return child;
-    },
-
-    /**
-     * Creates a new partnership with a new Person node. Creates an action stack entry
-     * for the action.
-     *
-     * @method createPartnerAction
-     * @return {Null|Person} The newly created partner. Null in case partner could not be created.
-     */
-    createPartnerAction: function() {
-        var partnership = this.createPartner(false);
-        if(partnership){
-            var nodeID = this.getID(),
-                part = partnership.getInfo(),
-                partner = partnership.getPartnerOf(this).getInfo(),
-                preg = (partnership.getPregnancies()[0]) ? partnership.getPregnancies()[0].getInfo() : null,
-                ph = preg ? partnership.getPregnancies()[0].getChildren()[0].getInfo() : null;
-
-            var redoFunct = function() {
-                var source = editor.getGraph().getNodeMap()[nodeID];
-                if(source) {
-                    var person = editor.getGraph().addPerson(partner.x, partner.y, partner.gender, partner.id);
-                    var newPartnership = editor.getGraph().addPartnership(part.x, part.y, source, person, part.id);
-                    if(preg) {
-                        var pr = editor.getGraph().addPregnancy(preg.x, preg.y, newPartnership, preg.id);
-                        var child = editor.getGraph().addPlaceHolder(ph.x, ph.y, ph.gender, ph.id);
-                        pr.addChild(child);
-                    }
-                    newPartnership.setChildlessStatus(part.childlessStatus);
-                }
-            };
-
-            var undoFunct = function() {
-                if(preg) {
-                    var placeholder = editor.getGraph().getNodeMap()[ph.id];
-                    placeholder && placeholder.remove(false);
-                }
-                var thePartner = editor.getGraph().getNodeMap()[partner.id];
-                thePartner && thePartner.remove(false);
-            };
-            editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
-            return partnership.getPartnerOf(this);
-        }
-        return null;
-    },
-
-    /**
-     * Creates a new partnership with a new Person node and returns the partner. Creates an action stack entry
-     * for the action.
-     *
-     * @method addPartnerAction
-     * @return {Null|Person} The added partner. Null in case the partnership could not be created
-     */
-    addPartnerAction: function(partner) {
-        var partnership = this.addPartner(partner);
-        if(partnership) {
-            var part = partnership.getInfo(),
-                preg = (partnership.getPregnancies()[0]) ? partnership.getPregnancies()[0].getInfo() : null,
-                ph = preg ? partnership.getPregnancies()[0].getChildren()[0].getInfo() : null,
-                nodeID = this.getID(),
-                partnerID = partner.getID();
-
-            var redoFunct = function() {
-                var source = editor.getGraph().getNodeMap()[nodeID];
-                var person = editor.getGraph().getNodeMap()[partnerID];
-                if(source && person) {
-                    var p = editor.getGraph().addPartnership(part.x, part.y, source, person, part.id);
-                    if(preg) {
-                        var pr = editor.getGraph().addPregnancy(preg.x, preg.y, p, preg.id);
-                        var child = editor.getGraph().addPlaceHolder(ph.x, ph.y, ph.gender, ph.id);
-                        pr.addChild(child);
-                    }
-                    p.setChildlessStatus(part.childlessStatus)
-                }
-            };
-
-            var undoFunct = function() {
-                if(preg) {
-                    var placeHolder = editor.getGraph().getNodeMap()[ph.id];
-                    placeHolder && placeHolder.remove(false);
-                }
-                var partner = editor.getGraph().getNodeMap()[part.id];
-                partner && partner.remove(false);
-            };
-            editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
-            return partnership.getPartnerOf(this);
-        }
-        return null;
-    },
-
-    /**
-     * Makes child the child of this Person. Creates an action stack entry for the action.
-     *
-     * @method addChildAction
-     * @return {Null|Person} The added child. Null if the child could not be added
-     */
-    addChildAction: function(child) {
-        if(child = this.addChild(child)) {
-            var childID = child.getID(),
-                nodeID = this.getID(),
-                p = child.getParentPregnancy(),
-                pa = p.getPartnership(),
-                preg = p.getInfo(),
-                part = pa.getInfo(),
-                parent = pa.getPartnerOf(this).getInfo();
-
-            var redoFunct = function() {
-                var source = editor.getGraph().getNodeMap()[nodeID];
-                var theChild = editor.getGraph().getNodeMap()[childID];
-                if(source && theChild) {
-                    var ph = editor.getGraph().addPlaceHolder(parent.x, parent.y, parent.gender, parent.id);
-                    var partnership = editor.getGraph().addPartnership(part.x, part.y, source, ph, part.id);
-                    var pregnancy = editor.getGraph().addPregnancy(preg.x, preg.y, partnership, preg.id);
-                    pregnancy.addChild(theChild);
-                }
-            };
-            var undoFunct = function() {
-                var partnership = editor.getGraph().getNodeMap()[part.id];
-                partnership && partnership.remove(false);
-                var par = editor.getGraph().getNodeMap()[parent.id];
-                par && par.remove(false);
-            };
-            editor.getActionStack().push({undo: undoFunct, redo: redoFunct});
-        }
-        return child;
-    },
-
-    /**
-     * Creates a set of parents for this Person. Adds an action stack entry for the action
-     *
-     * @method createParentsAction
-     * @return {Null|Partnership} The partnership between the new parent nodes. Null if parents could not be added
-     */
-    createParentsAction: function() {
-        var partnership;
-        if(partnership = this.createParents()) {
-            var nodeID = this.getID(),
-                part = partnership.getInfo(),
-                preg = partnership.getPregnancies()[0].getInfo(),
-                parent1 = partnership.getPartners()[0].getInfo(),
-                parent2 = partnership.getPartners()[1].getInfo();
-
-            var redoFunct = function() {
-                var child = editor.getGraph().getNodeMap()[nodeID];
-                if(child) {
-                    var par1 = editor.getGraph().addPerson(parent1.x, parent1.y, parent1.gender, parent1.id);
-                    var par2 = editor.getGraph().addPerson(parent2.x, parent2.y, parent2.gender, parent2.id);
-                    var partn = editor.getGraph().addPartnership(part.x, part.y, par1, par2, part.id);
-                    var pregnancy = editor.getGraph().addPregnancy(preg.x, preg.y, partn, preg.id);
-                    pregnancy.addChild(child);
-                }
-            };
-            var undoFunct = function() {
-                var par1 = editor.getGraph().getNodeMap()[parent1.id];
-                var par2 = editor.getGraph().getNodeMap()[parent2.id];
-                var partn = editor.getGraph().getNodeMap()[part.id];
-                partn && partn.remove(false);
-                par1 && par1.remove(false);
-                par2 && par2.remove(false);
-            };
-            editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
-        }
-        return partnership;
-    },
-
-    /**
-     * Sets partnership as this Person's parent partnership
-     *
-     * @method addParents
-     * @param [$super]
-     * @param {Partnership} partnership
-     * @return {Null|Partnership} The added partnership or null if it couldn't be added
-     */
-    addParents: function($super, partnership) {
-        var returnValue = $super(partnership);
-        partnership.getChildlessStatus() && this.setAdopted(true);
-        return returnValue;
-    },
-
-    /**
-     * Sets partnership as this Person's parent partnership. Creates entry in action stack for the action.
-     *
-     * @method addParentsAction
-     * @param {Partnership} partnership
-     * @return {Null|Partnership} The added partnership or null if it couldn't be added
-     */
-    addParentsAction: function(partnership) {
-        var parentPartnership;
-        if(parentPartnership = this.addParents(partnership)) {
-            var nodeID = this.getID(),
-                partID = partnership.getID(),
-                preg = this.getParentPregnancy().getInfo();
-
-            var redoFunct = function() {
-                var child = editor.getGraph().getNodeMap()[nodeID];
-                var partn  = editor.getGraph().getNodeMap()[partID];
-                if(child && partn) {
-                    var pregnancy = editor.getGraph().addPregnancy(preg.x, preg.y, partn, preg.id);
-                    pregnancy.addChild(child);
-                }
-            };
-            var undoFunct = function() {
-                var pregnancy = editor.getGraph().getNodeMap()[preg.id];
-                pregnancy && pregnancy.remove();
-            };
-            editor.getActionStack().push({undo: undoFunct, redo: redoFunct})
-        }
-        return parentPartnership;
-    },
-
-    /**
-     * Sets parent as this Person's parent. Creates entry in action stack for the action.
-     *
-     * @method addParentAction
-     * @param {AbstractPerson} parent
-     * @return {Null|Partnership} The parent partnership or null if parent couldn't be added
-     */
-    addParentAction: function(parent) {
-        var partnership;
-        if(partnership = this.addParent(parent)) {
-            var parentID = parent.getID(),
-                nodeID = this.getID(),
-                part = partnership.getInfo(),
-                partner = partnership.getPartnerOf(parent).getInfo(),
-                preg = partnership.getPregnancies()[0].getInfo();
-
-            var redoFunct = function() {
-                var child = editor.getGraph().getNodeMap()[nodeID];
-                var par = editor.getGraph().getNodeMap()[parentID];
-                if(child && par) {
-                    var ph =  editor.getGraph().addPlaceHolder(partner.x, partner.y, partner.gender, partner.id);
-                    var partnership = editor.getGraph().addPartnership(part.x, part.y, par, ph, part.id);
-                    var pregnancy = editor.getGraph().addPregnancy(preg.x, preg.y, partnership, preg.id);
-                    pregnancy.addChild(child);
-                }
-            };
-            var undoFunct = function() {
-                var partnership = editor.getGraph().getNodeMap()[part.id];
-                partnership && partnership.remove();
-                var ph = editor.getGraph().getNodeMap()[partner.id];
-                ph && ph.remove(false);
-
-            };
-            editor.getActionStack().push({undo: undoFunct, redo: redoFunct});
-        }
-        return partnership;
-    },
-
-    /**
-     * Adds a new partnership to the list of partnerships of this node
-     *
-     * @method addPartnership
-     * @param [$super]
-     * @param {Partnership} partnership Partnership with this node as one of the partners
-     * @return {null|Partnership} The added Partnership or null if it couldn't be added
-     */
-    addPartnership: function($super, partnership) {
-        this.getGraphics().getHoverBox().hideChildHandle();
-        return $super(partnership);
-    },
-
-    /**
-     * Removes partnership from the list of partnerships
-     *
-     * @method removePartnership
-     * @param [$super]
-     * @param {Partnership} partnership Partnership with this node as one of the partners
-     */
-    removePartnership: function($super, partnership) {
-        this.getGraphics().getHoverBox().unhideChildHandle();
-        return $super(partnership);
-    },
-
-    /**
-     * Replaces the parent Pregnancy
-     *
-     * @method setParentPregnancy
-     * @param [$super]
-     * @param {Pregnancy} pregnancy
-     */
-    setParentPregnancy: function($super, pregnancy) {
-        $super(pregnancy);
-        if(pregnancy) {
-            this.getGraphics().getHoverBox().hideParentHandle();
-        }
-        else {
-            this.getGraphics().getHoverBox().unHideParentHandle();
-        }
-    },
-
+    
     /**
      * Returns the first name of this Person
      *
@@ -437,31 +88,6 @@ var Person = Class.create(AbstractPerson, {
         firstName && (firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1));
         this._firstName = firstName;
         this.getGraphics().updateNameLabel();
-    },
-
-    /**
-     * Replaces the first name of this Person with firstName, and displays the label. Creates an entry in action stack.
-     *
-     * @method setFirstNameAction
-     * @param {String} firstName
-     */
-    setFirstNameAction: function(firstName) {
-        var oldName = this.getFirstName();
-        var nodeID = this.getID();
-        this.setFirstName(firstName);
-        var actionElement = editor.getActionStack().peek();
-        if (actionElement && actionElement.nodeID == nodeID && actionElement.property == 'FirstName') {
-            actionElement.newValue = firstName;
-        } else {
-            editor.getActionStack().push({
-                undo: AbstractNode.setPropertyActionUndo,
-                redo: AbstractNode.setPropertyActionRedo,
-                nodeID: nodeID,
-                property: 'FirstName',
-                oldValue: oldName,
-                newValue: firstName
-            });
-        }
     },
 
     /**
@@ -486,31 +112,59 @@ var Person = Class.create(AbstractPerson, {
         this.getGraphics().updateNameLabel();
         return lastName;
     },
+    
+    /**
+     * Returns the last name at birth of this Person
+     *
+     * @method getLastNameAtBirth
+     * @return {String}
+     */
+    getLastNameAtBirth: function() {
+        return this._lastNameAtBirth;
+    },
 
     /**
-     * Replaces the last name of this Person with lastName, and displays the label. Creates an entry in action stack.
+     * Replaces the last name at birth of this Person with the given name, and updates the label
      *
-     * @method setLastName
-     * @param lastName
+     * @method setLastNameAtBirth
+     * @param lastNameAtBirth
      */
-    setLastNameAction: function(lastName) {
-        var oldName = this.getLastName();
-        var nodeID = this.getID();
-        this.setLastName(lastName);
-        var actionElement = editor.getActionStack().peek();
-        if (actionElement && actionElement.nodeID == nodeID && actionElement.property == 'LastName') {
-            actionElement.newValue = lastName;
-        } else {
-            editor.getActionStack().push({
-                undo: AbstractNode.setPropertyActionUndo,
-                redo: AbstractNode.setPropertyActionRedo,
-                nodeID: nodeID,
-                property: 'LastName',
-                oldValue: oldName,
-                newValue: lastName
-            });
-        }
-        return lastName;
+    setLastNameAtBirth: function(lastNameAtBirth) {
+        lastNameAtBirth && (lastNameAtBirth = lastNameAtBirth.charAt(0).toUpperCase() + lastNameAtBirth.slice(1));
+        this._lastNameAtBirth = lastNameAtBirth;
+        this.getGraphics().updateNameLabel();
+        return lastNameAtBirth;
+    },    
+
+    /**
+     * Sets the type of twin
+     *
+     * @method setMonozygotic
+     */
+    setMonozygotic: function(monozygotic) {
+        if (monozygotic == this._monozygotic) return; 
+        this._monozygotic = monozygotic;
+    },
+    
+    /**
+     * Returns the type of twin: monozygotic or not
+     * (always false for non-twins)
+     *
+     * @method getMonozygotic
+     * @return {Boolean}
+     */
+    getMonozygotic: function() {
+        return this._monozygotic;
+    },
+
+    /**
+     * Assigns this node to the given twin group
+     * (a twin group is all the twins from a given pregnancy)
+     *
+     * @method setTwinGroup
+     */    
+    setTwinGroup: function(groupId) {
+        this._twinGroup = groupId;
     },
 
     /**
@@ -566,37 +220,7 @@ var Person = Class.create(AbstractPerson, {
                 this.setChildlessStatus(null);
             }
             this.getGraphics().updateLifeStatusShapes();
-            editor.getNodeMenu().update(this,
-                {
-                    'gestation_age': {value : this.getGestationAge(), inactive : !this.isFetus()},
-                    'date_of_birth': {value : this.getBirthDate(), inactive : this.isFetus()},
-                    'adopted':       {value : this.isAdopted(), inactive: this.isFetus()},
-                    'date_of_death': {value : this.getDeathDate(), inactive: newStatus != 'deceased'},
-                    childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive : this.isFetus()},
-                    childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : 'none', inactive : this.isFetus()}
-                });
-        }
-    },
-
-    /**
-     * Changes the life status of this Person to newStatus and creates an entry in action stack.
-     *
-     * @method setLifeStatusAction
-     * @param {String} newStatus "alive", "deceased", "stillborn", "unborn" or "aborted"
-     */
-    setLifeStatusAction: function(newStatus) {
-        var prevStatus = this.getLifeStatus();
-        var nodeID = this.getID();
-        if(prevStatus != newStatus && this._isValidLifeStatus(newStatus)) {
-            this.setLifeStatus(newStatus);
-            editor.getActionStack().push({
-                undo: AbstractNode.setPropertyActionUndo,
-                redo: AbstractNode.setPropertyActionRedo,
-                nodeID: nodeID,
-                property: 'LifeStatus',
-                oldValue: prevStatus,
-                newValue: newStatus
-            });
+            this.getGraphics().getHoverBox().regenerateHandles();
         }
     },
 
@@ -661,29 +285,6 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
-     * Updates the conception age of the Person given the number of weeks passed since conception.
-     * Creates entry in action stack
-     *
-     * @method setGestationAgeAction
-     * @param {Number} numWeeks Greater than or equal to 0
-     */
-    setGestationAgeAction: function(numWeeks) {
-        var oldDate = this.getGestationAge();
-        var nodeID = this.getID();
-        if(oldDate != numWeeks) {
-            this.setGestationAge(numWeeks);
-            editor.getActionStack().push({
-                undo: AbstractNode.setPropertyActionUndo,
-                redo: AbstractNode.setPropertyActionRedo,
-                nodeID: nodeID,
-                property: 'GestationAge',
-                oldValue: oldDate,
-                newValue: numWeeks
-            });
-        }
-    },
-
-    /**
      * Returns the the birth date of this Person
      *
      * @method getBirthDate
@@ -704,29 +305,6 @@ var Person = Class.create(AbstractPerson, {
         if (!newDate || newDate && !this.getDeathDate() || newDate.getDate() < this.getDeathDate()) {
             this._birthDate = newDate;
             this.getGraphics().updateAgeLabel();
-        }
-    },
-
-    /**
-     * Replaces the birth date with newDate
-     * Creates entry in action stack
-     *
-     * @method setBirthDate
-     * @param {Date} newDate Must be earlier date than deathDate and a later than conception date
-     */
-    setBirthDateAction: function(newDate) {
-        var oldDate = this.getBirthDate();
-        var nodeID = this.getID();
-        if(oldDate != newDate) {
-            this.setBirthDate(newDate);
-            editor.getActionStack().push({
-                undo: AbstractNode.setPropertyActionUndo,
-                redo: AbstractNode.setPropertyActionRedo,
-                nodeID: nodeID,
-                property: 'BirthDate',
-                oldValue: oldDate,
-                newValue: newDate
-            });
         }
     },
 
@@ -758,29 +336,6 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
-     * Replaces the death date with newDate
-     * Creates entry in action stack
-     *
-     * @method setDeathDate
-     * @param {Date} newDate Must be a later date than birthDate
-     */
-    setDeathDateAction: function(newDate) {
-        var oldDate = this.getDeathDate();
-        var nodeID = this.getID();
-        if(oldDate != newDate) {
-            this.setDeathDate(newDate);
-            editor.getActionStack().push({
-                undo: AbstractNode.setPropertyActionUndo,
-                redo: AbstractNode.setPropertyActionRedo,
-                nodeID: nodeID,
-                property: 'DeathDate',
-                oldValue: oldDate,
-                newValue: newDate
-            });
-        }
-    },
-
-    /**
      * Returns a list of disorders of this person.
      *
      * @method getDisorders
@@ -795,57 +350,32 @@ var Person = Class.create(AbstractPerson, {
      *
      * @method addDisorder
      * @param {Disorder} disorder Disorder object
-     * @param [forceDisplay] True if you want to display the change on the canvas
      */
-    addDisorder: function(disorder, forceDisplay) {
-        if(!this.getDisorderByID(disorder.getDisorderID())) {
-            editor.getLegend().addCase(disorder.getDisorderID(), disorder.getName(), this.getID());
-            this.getDisorders().push(disorder);
+    addDisorder: function(disorder) {
+        if(!this.hasDisorder(disorder.getDisorderID())) {
+            editor.getDisorderLegend().addCase(disorder.getDisorderID(), disorder.getName(), this.getID());
+            this.getDisorders().push(disorder.getDisorderID());
         }
-        forceDisplay && this.getGraphics().updateDisorderShapes();
+        else {
+            alert("This person already has the specified disorder");
+        }        
     },
 
     /**
-     * Adds disorder to the list of this node's disorders and updates the Legend.
-     * Creates entry in action stack.
-     *
-     * @method addDisorderAction
-     * @param {Disorder} disorder
-     */
-    addDisorderAction: function(disorder) {
-        if(!this.getDisorderByID(disorder.getDisorderID())) {
-            var nodeID = this.getID();
-            this.addDisorder(disorder, true);
-            editor.getActionStack().push({
-                undo: function() {
-                    var node = editor.getGraph().getNodeMap()[nodeID];
-                    node && node.removeDisorder(disorder, true);
-                },
-                redo: function() {
-                    var node = editor.getGraph().getNodeMap()[nodeID];
-                    node && node.addDisorder(disorder, true);
-                }
-            })
-        }
-    },
-
-    /**
-     * Removes disorder to the list of this node's disorders and updates the Legend.
+     * Removes disorder from the list of this node's disorders and updates the Legend.
      *
      * @method removeDisorder
-     * @param {Disorder} disorder
-     * @param forceDisplay True if you want to display the change on the canvas
+     * @param {Number} disorderID id of the disorder to be removed 
      */
-    removeDisorder: function(disorder, forceDisplay) {
+    removeDisorder: function(disorderID) {
         var personsDisorder = null;
-        if(personsDisorder = this.getDisorderByID(disorder.getDisorderID())) {
-            editor.getLegend().removeCase(disorder.getDisorderID(), this.getID());
-            this._disorders = this.getDisorders().without(personsDisorder);
+        if(this.hasDisorder(disorderID)) {
+            editor.getDisorderLegend().removeCase(disorderID, this.getID());
+            this._disorders = this.getDisorders().without(disorderID);
         }
         else {
             alert("This person doesn't have the specified disorder");
         }
-        forceDisplay && this.getGraphics().updateDisorderShapes();
     },
 
     /**
@@ -856,43 +386,32 @@ var Person = Class.create(AbstractPerson, {
      * @param {Array} disorders List of Disorder objects
      */
     setDisorders: function(disorders) {
-        var me = this;
-        this.getDisorders().each(function(disorder) {
-            var found = false;
-            disorders.each(function(newDisorder) {
-                disorder.getDisorderID() == newDisorder.getDisorderID() && (found = true);
-            });
-            !found && me.removeDisorder(disorder, false);
-        });
-        disorders.each(function(newDisorder) {
-            if (!me.getDisorderByID(newDisorder.getDisorderID())) {
-                me.addDisorder(newDisorder);
+        console.log("Set disorders: " + stringifyObject(disorders));
+        
+        for(var i = this.getDisorders().length-1; i >= 0; i--) {
+            this.removeDisorder( this.getDisorders()[i] );
+        }
+        for(var i = 0; i < disorders.length; i++) {
+            var disorder = disorders[i];
+            if (typeof disorder != 'object') {
+                disorder = editor.getDisorderLegend().getDisorder(disorder);
             }
-        });
+            this.addDisorder( disorder );
+        }        
         this.getGraphics().updateDisorderShapes();
     },
 
     /**
-     * Given a list of disorders, adds and removes the disorders of this node to match
-     * the new list. Adds entry in action stack.
+     * Removes the node and its visuals.
      *
-     * @method setDisorders
-     * @param {Array} disorders List of Disorder objects
+     * @method remove
+     * @param [skipConfirmation=false] {Boolean} if true, no confirmation box will pop up
      */
-    setDisordersAction: function(disorders) {
-        var prevDisorders = this.getDisorders().clone();
-        var nodeID = this.getID();
-        this.setDisorders(disorders);
-        editor.getActionStack().push({
-            undo: AbstractNode.setPropertyActionUndo,
-            redo: AbstractNode.setPropertyActionRedo,
-            nodeID: nodeID,
-            property: 'Disorders',
-            oldValue: prevDisorders,
-            newValue: disorders
-        });
+    remove: function($super) {
+        this.setDisorders([]);  // remove disorders form the legend
+        $super();                   
     },
-
+    
     /**
      * Returns disorder with given id if this person has it. Returns null otherwise.
      *
@@ -900,57 +419,8 @@ var Person = Class.create(AbstractPerson, {
      * @param {Number} id Disorder ID, taken from the OMIM database
      * @return {Disorder}
      */
-    getDisorderByID: function(id) {
-        for(var i = 0; i < this.getDisorders().length; i++) {
-            if(this.getDisorders()[i].getDisorderID() == id) {
-                return this.getDisorders()[i];
-            }
-        }
-        return null;
-    },
-
-    /**
-     * Returns True if this Person can be a parent of otherNode
-     *
-     * @method canBeParentOf
-     * @param [$super]
-     * @param {Person} otherNode
-     * @return {Boolean}
-     */
-    canBeParentOf: function($super, otherNode) {
-        var preliminary = $super(otherNode);
-        if(otherNode.getBirthDate) {
-            var incompatibleBirthDate = this.getBirthDate() && otherNode.getBirthDate() && this.getBirthDate() < otherNode.getBirthDate();
-            var incompatibleDeathDate = this.getDeathDate() && otherNode.getBirthDate() && this.getDeathDate() < otherNode.getBirthDate().clone().setDate(otherNode.getBirthDate().getDate()-700);
-        }
-        return preliminary && !incompatibleBirthDate && !incompatibleDeathDate && !this.isFetus();
-    },
-
-    /**
-     * Replaces this Person with a placeholder without breaking any the connections.
-     *
-     * @method convertToPlaceholder
-     * @return {PlaceHolder}
-     */
-    convertToPlaceholder: function() {
-        var me = this;
-        var gender = (this.getPartnerships().length == 0) ? "U" : this.getGender();
-        var placeholder = editor.getGraph().addPlaceHolder(this.getX(), this.getY(), this.getGender());
-        var parents = this.getUpperNeighbors()[0];
-        if(parents) {
-            parents.addChild(placeholder);
-            parents.removeChild(me);
-            placeholder.setGender(gender);
-        }
-        this.getPartnerships().each(function(partnership) {
-            var newPartnership = editor.getGraph().addPartnership(partnership.getX(), partnership.getY(), partnership.getPartnerOf(me), placeholder);
-            partnership.getChildren().each(function(child) {
-                partnership.removeChild(child);
-                newPartnership.addChild(child);
-            });
-        });
-        me.remove(false);
-        return placeholder;
+    hasDisorder: function(id) {
+        return (this.getDisorders().indexOf(id) != -1);
     },
 
     /**
@@ -962,127 +432,16 @@ var Person = Class.create(AbstractPerson, {
      * @param {Boolean} ignoreOthers If True, changing the status will not modify partnerships's statuses or
      * detach any children
      */
-    setChildlessStatus: function(status, ignoreOthers) {
+    setChildlessStatus: function(status) {
         if(!this.isValidChildlessStatus(status))
             status = null;
         if(status != this.getChildlessStatus()) {
             this._childlessStatus = status;
             this.setChildlessReason(null);
             this.getGraphics().updateChildlessShapes();
-            if(!ignoreOthers) {
-                this.getPartnerships().each(function(partnership) {
-                    if(!partnership.getChildlessReason())
-                        partnership.setChildlessStatus(status);
-                });
-            }
+            this.getGraphics().getHoverBox().regenerateHandles();
         }
         return this.getChildlessStatus();
-    },
-
-    /**
-     * Changes the childless status of this Person. Nullifies the status if the given status is not
-     * "childless" or "infertile". Modifies the status of the partnerships as well.
-     * Creates a an entry in action stack.
-     *
-     * @method setChildlessStatusAction
-     * @param {String} status Can be "childless", "infertile" or null
-     */
-    setChildlessStatusAction: function(status) {
-        if(status != this.getChildlessStatus()) {
-            var me = this;
-            var prevStatus = this.getChildlessStatus();
-            var nodeID = this.getID();
-            var markerID = editor.getActionStack().pushStartMarker();
-
-            this.getPartnerships().each(function(partnership) {
-                partnership.setChildlessStatusAction(status);
-            });
-
-            this.setChildlessStatus(status, true);
-            var undo = function() {
-                var node = editor.getGraph().getNodeMap()[nodeID];
-                    node && node.setChildlessStatus(prevStatus, true);
-            };
-
-            var redo = function() {
-                var node = editor.getGraph().getNodeMap()[nodeID];
-                node && node.setChildlessStatus(status, true);
-            };
-            editor.getActionStack().push({undo: undo, redo: redo});
-            editor.getActionStack().pushEndMarker(markerID);
-        }
-        return this.getChildlessStatus();
-    },
-
-    /**
-     * Deletes this node, it's placeholder partners and children and optionally
-     * removes all the other nodes that are unrelated to the proband node.
-     *
-     * @method remove
-     * @param [$super]
-     * @param {Boolean} isRecursive set to true if you want to remove related nodes that are
-     * not connected to the proband
-     * @param {Boolean} skipConfirmation If True, will not display confirmation alert box
-     * @return {Object} in the form
-     *
-     {
-        confirmed: true/false,
-        affected: {
-            PersonNodes : [Person1, Person2, ...],
-            PartnershipNodes : [Partnership1, Partnership2, ...],
-            PregnancyNodes : [Pregnancy1, Pregnancy2, ...],
-            PersonGroupNodes : [PersonGroup1, PersonGroup2, ...],
-            PlaceHolderNodes : [PlaceHolder1, PlaceHolder2, ...]
-        },
-        created: [PlaceHolder1, PlaceHolder2, ...]
-     }
-     */
-    remove: function($super, isRecursive, skipConfirmation) {
-        var me = this;
-        if(!isRecursive) {
-            this.getPartners().each(function(partner) {
-                if(partner.getType() == 'PlaceHolder') {
-                    partner.remove(false);
-                }
-            });
-            var parents = this.getParentPartnership();
-            var singleChild = parents && parents.getChildren().length == 1;
-            var hasChildren = this.getChildren("Person").concat(this.getChildren("PersonGroup")).length != 0;
-            var hasTwoKnownParents = parents && parents.getPartners()[0].getType() == "Person" && parents.getPartners()[1].getType() == "Person";
-            var childlessParents = parents && parents.getChildlessStatus();
-            if(hasTwoKnownParents && singleChild && !childlessParents || hasChildren) {
-                var phInfo = this.convertToPlaceholder().getInfo();
-                var returnValue = $super(isRecursive, skipConfirmation);
-                returnValue.created && returnValue.created.push(phInfo);
-                return returnValue;
-            }
-            else {
-                this.getDisorders().each(function(disorder) {
-                    editor.getLegend().removeCase(disorder.getDisorderID(), me.getID());
-                });
-                this.getGraphics().getHoverBox().remove();
-                return $super(isRecursive, skipConfirmation);
-            }
-        }
-        else {
-            return $super(isRecursive, skipConfirmation);
-        }
-    },
-
-    /**
-     * Adds a placeholder child to all partnerships that are missing it.
-     *
-     * @method restorePlaceholders
-     */
-    restorePlaceholders: function() {
-        var me = this;
-        this.getPartnerships().each(function(partnership) {
-            if(!me.getChildlessStatus() && !partnership.getChildlessStatus() &&
-                !partnership.getPartnerOf(me).getChildlessStatus() &&
-                partnership.getChildren().length == 0) {
-                partnership.createChild('PlaceHolder', 'U')
-            }
-        });
     },
 
     /**
@@ -1092,60 +451,99 @@ var Person = Class.create(AbstractPerson, {
      * @return {Object} Summary object for the menu
      */
     getSummary: function() {
-        var childlessInactive = this.isFetus() || this.hasNonAdoptedChildren();
+        var onceAlive = editor.getGraph().hasRelationships(this.getID());
+        var inactiveStates = onceAlive ? ['unborn','aborted','stillborn'] : false;
+
+        var inactiveGenders = false;        
+        var genderSet = editor.getGraph().getPossibleGenders(this.getID());
+        for (gender in genderSet)
+            if (genderSet.hasOwnProperty(gender))
+                if (!genderSet[gender])
+                    inactiveGenders = [ gender ];
+        
+        var childlessInactive = this.isFetus();  // TODO: can a person which already has children become childless?
+                                                 // maybe: use editor.getGraph().hasNonPlaceholderNonAdoptedChildren() ?
         var disorders = [];
         this.getDisorders().forEach(function(disorder) {
-            disorders.push({id: disorder.getDisorderID(), value: disorder.getName()});
+            var disorderName = editor.getDisorderLegend().getDisorderName(disorder);
+            disorders.push({id: disorder, value: disorderName});
         });
+        
+        var cantChangeAdopted = this.isFetus() || editor.getGraph().hasToBeAdopted(this.getID());
+        
+        var ignoreTwinOptions = (this._twinGroup == null);
+            
         return {
             identifier:    {value : this.getID()},
             first_name:    {value : this.getFirstName()},
             last_name:     {value : this.getLastName()},
-            gender:        {value : this.getGender(), inactive: (this.getGender() != 'U' && this.getPartners().length > 0)},
+            last_name_birth: {value: this.getLastNameAtBirth()}, //, inactive: (this.getGender() != 'F')},
+            gender:        {value : this.getGender(), inactive: inactiveGenders},
             date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus()},
             disorders:     {value : disorders},
-            adopted:       {value : this.isAdopted(), inactive: (this.isFetus() || (this.getParentPartnership() && this.getParentPartnership().getChildren("Person").length > 1))},
-            state:         {value : this.getLifeStatus(), inactive: [(this.getPartnerships().length > 0) ? ['unborn','aborted','stillborn'] : ''].flatten()},
+            adopted:       {value : this.isAdopted(), inactive: cantChangeAdopted},
+            state:         {value : this.getLifeStatus(), inactive: inactiveStates},
             date_of_death: {value : this.getDeathDate(), inactive: this.getLifeStatus() != 'deceased'},
             gestation_age: {value : this.getGestationAge(), inactive : !this.isFetus()},
             childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive : childlessInactive},
-            childlessText : {value : this.getChildlessReason() ? this.getChildlessReason() : undefined, inactive : childlessInactive, disabled : !this.getChildlessStatus()}
+            childlessText :   {value : this.getChildlessReason() ? this.getChildlessReason() : undefined, inactive : childlessInactive, disabled : !this.getChildlessStatus()},
+            placeholder:   {value : false, inactive: true },
+            monozygotic:   {value : this.getMonozygotic(), inactive: ignoreTwinOptions }
         };
     },
 
     /**
-     * Returns object with serialization data
+     * Returns an object containing all the properties of this node
+     * except id, x, y & type 
      *
-     * @method getInfo
-     * @param [$super]
-     * @return {Object}
-     */
-    getInfo: function($super) {
+     * @method getProperties
+     * @return {Object} in the form
+     *
+     {
+       property: value
+     }
+     */    
+    getProperties: function($super) {
+        // note: properties equivalent to default are not set
         var info = $super();
-        info['fName'] = this.getFirstName();
-        info['lName'] = this.getLastName();
-        info['dob'] = this.getBirthDate();
-        info['isAdopted'] = this.isAdopted();
-        info['lifeStatus'] = this.getLifeStatus();
-        info['dod'] = this.getDeathDate();
-        info['gestationAge'] = this.getGestationAge();
-        info['childlessStatus'] = this.getChildlessStatus();
-        info['childlessReason'] = this.getChildlessReason();
-        info['disorders'] = [];
-        this.getDisorders().forEach(function(disorder) {
-            info['disorders'].push({id: disorder.getDisorderID(), name: disorder.getName()})
-        });
+        info['fName']           = this.getFirstName();
+        if (this.getLastName() != "")
+            info['lName']       = this.getLastName();
+        if (this.getLastNameAtBirth() != "")
+            info['lNameAtB']    = this.getLastNameAtBirth();
+        if (this.getBirthDate() != "") 
+            info['dob']         = this.getBirthDate();
+        if (this.isAdopted())
+            info['isAdopted']   = this.isAdopted();
+        if (this.getLifeStatus() != 'alive')
+            info['lifeStatus']  = this.getLifeStatus();
+        if (this.getDeathDate() != "")
+            info['dod']         = this.getDeathDate();
+        if (this.getGestationAge() != null)
+            info['gestationAge'] = this.getGestationAge();
+        if (this.getChildlessStatus() != null) {
+            info['childlessStatus'] = this.getChildlessStatus();
+            info['childlessReason'] = this.getChildlessReason();
+        }
+        if (this.getDisorders().length > 0)
+            info['disorders'] = this.getDisorders();
+        if (this._twinGroup !== null)
+            info['twinGroup'] = this._twinGroup;
+        if (this._monozygotic)
+            info['monozygotic'] = this._monozygotic;        
         return info;
      },
 
-    /**
-     * Applies properties found in info to this Person
-     *
-     * @method loadInfo
-     * @param [$super]
-     * @param info Serialization data object
-     */
-    loadInfo: function($super, info) {
+     /**
+      * Applies the properties found in info to this node.
+      *
+      * @method loadProperties
+      * @param properties Object
+      * @return {Boolean} True if info was successfully assigned
+      */
+     assignProperties: function($super, info) {
+        this._setDefault();
+        
         if($super(info)) {
             if(info.fName && this.getFirstName() != info.fName) {
                 this.setFirstName(info.fName);
@@ -1153,20 +551,19 @@ var Person = Class.create(AbstractPerson, {
             if(info.lName && this.getLastName() != info.lName) {
                 this.setLastName(info.lName);
             }
+            if(info.lNameAtB && this.getLastNameAtBirth() != info.lNameAtB) {
+                this.setLastNameAtBirth(info.lNameAtB);
+            }
             if(info.dob && this.getBirthDate() != info.dob) {
                 this.setBirthDate(info.dob);
             }
             if(info.disorders) {
-                var disorders = [];
-                info.disorders.forEach(function(disorder) {
-                    disorders.push(new Disorder(disorder.id, disorder.name))
-                });
-                this.setDisorders(disorders);
+                this.setDisorders(info.disorders);
             }
-            if(info.isAdopted && this.isAdopted() != info.isAdopted) {
+            if(info.hasOwnProperty("isAdopted") && this.isAdopted() != info.isAdopted) {
                 this.setAdopted(info.isAdopted);
             }
-            if(info.lifeStatus && this.getLifeStatus() != info.lifeStatus) {
+            if(info.hasOwnProperty("lifeStatus") && this.getLifeStatus() != info.lifeStatus) {
                 this.setLifeStatus(info.lifeStatus);
             }
             if(info.dod && this.getDeathDate() != info.dod) {
@@ -1181,7 +578,15 @@ var Person = Class.create(AbstractPerson, {
             if(info.childlessReason && this.getChildlessReason() != info.childlessReason) {
                 this.setChildlessReason(info.childlessReason);
             }
+            if(info.hasOwnProperty("twinGroup") && this._twinGroup != info.twinGroup) {
+                this.setTwinGroup(info.twinGroup);
+            }
+            if(info.hasOwnProperty("monozygotic") && this._monozygotic != info.monozygotic) {
+                this.setMonozygotic(info.monozygotic);
+            }
+            return true;
         }
+        return false;
     }
 });
 
