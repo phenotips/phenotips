@@ -127,7 +127,7 @@ public class PhenoTipsPatientRepository implements PatientRepository
         try {
             // FIXME Take these from the configuration
             String prefix = "P";
-            String targetSpace = "data";
+            String targetSpace = Patient.DEFAULT_DATA_SPACE.getName();
 
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
             long crtMaxID;
