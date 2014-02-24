@@ -55,9 +55,9 @@ import com.xpn.xwiki.objects.DBStringListProperty;
  * @version $Id$
  */
 @Component
-@Named("depricated-phenotype-updater")
+@Named("deprecated-phenotype-updater")
 @Singleton
-public class DepricatedPhenotypeUpdaterEventListener implements EventListener
+public class DeprecatedPhenotypeUpdaterEventListener implements EventListener
 {
     /** The XClass used for storing patient data. */
     private static final EntityReference CLASS_REFERENCE = Patient.CLASS_REFERENCE;
