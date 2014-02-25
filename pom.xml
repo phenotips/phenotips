@@ -211,79 +211,12 @@
                See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
           <ignored>
-            <!-- Remove the following ignores after we release 1.0-milestone-10 -->
-            <difference>
-              <className>**/configuration/RecordConfiguration</className>
-              <differenceType>7012</differenceType>
-              <method>org.xwiki.model.reference.DocumentReference getPhenotypeMapping()</method>
-            </difference>
-            <difference>
-              <className>**/ontology/OntologyService</className>
-              <differenceType>7012</differenceType>
-              <method>java.util.Set search(java.util.Map, java.util.Map)</method>
-            </difference>
-            <difference>
-              <className>**/hpoa/main/Main</className>
-              <differenceType>8001</differenceType>
-            </difference>
-            <difference>
-              <className>**/ontology/OntologyService</className>
-              <differenceType>7012</differenceType>
-              <method>java.lang.String getDefaultOntologyLocation()</method>
-            </difference>
-            <difference>
-              <className>**/ontology/OntologyService</className>
-              <differenceType>7004</differenceType>
-              <method>void reindex()</method>
-            </difference>
-            <difference>
-              <className>**/ontology/OntologyService</className>
-              <differenceType>7006</differenceType>
-              <method>void reindex()</method>
-              <from>void</from>
-              <to>int</to>
-            </difference>
-            <difference>
-              <className>**/ontology/OntologyService</className>
-              <differenceType>7012</differenceType>
-              <method>java.lang.String getVersion()</method>
-            </difference>
-            <difference>
-              <className>**/tools/PropertyDisplayer</className>
-              <differenceType>6004</differenceType>
-              <field>ontologyService</field>
-              <from>org.phenotips.solr.HPOScriptService</from>
-              <to>org.phenotips.ontology.OntologyService</to>
-            </difference>
-            <difference>
-              <className>**/data/Patient</className>
-              <differenceType>7012</differenceType>
-              <method>org.phenotips.data.PatientData getData(java.lang.String)</method>
-            </difference>
-            <difference>
-              <className>**/data/permissions/PatientAccess</className>
-              <differenceType>7006</differenceType>
-              <method>org.xwiki.model.reference.EntityReference getOwner()</method>
-              <to>org.phenotips.data.permissions.Owner</to>
-            </difference>
-            <difference>
-              <className>**/data/permissions/PatientAccess</className>
-              <differenceType>6001</differenceType>
-              <field>OWNER_CLASS_REFERENCE</field>
-            </difference>
-            <difference>
-              <className>**/data/permissions/script/SecurePatientAccess</className>
-              <differenceType>7006</differenceType>
-              <method>org.xwiki.model.reference.EntityReference getOwner()</method>
-              <to>org.phenotips.data.permissions.Owner</to>
-            </difference>
+            <!-- Remove the following ignores after we release 1.0-milestone-11 -->
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
             <exclude>**/test/**</exclude>
             <!-- Remove the following excludes after we release the current version as final -->
-            <!-- Changed to org.phenotips.data.PatientRepository, while PatientData is a different interface. -->
-            <exclude>**/org/phenotips/data/PatientData</exclude>
           </excludes>
         </configuration>
       </plugin>
