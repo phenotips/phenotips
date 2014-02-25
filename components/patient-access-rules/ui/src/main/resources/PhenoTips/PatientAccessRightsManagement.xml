@@ -177,9 +177,9 @@
     _initManagerUI : function() {
       this._container = new Element('form', {'id' : 'access-levels-manager', 'class' : 'xform', 'method' : 'post', 'action' : this._serviceURL});
       //this._element.insert({'after' : this._container});
-      this._container.insert(this._generateSection('manage-ownership', 'Ownership', ''))
-                     .insert(this._generateSection('manage-visibility', 'Global visibility', 'Global visibility refers to how registered users can access this case.'))
-                     .insert(this._generateSection('manage-collaborators', 'Collaborators', 'You can allow specific users advanced privileges on this case:'))
+      this._container.insert(this._generateSection('manage-ownership', 'Ownership', 'The owner has full editing and managing capabilities for a case.'))
+                     .insert(this._generateSection('manage-visibility', 'Global visibility', 'Global visibility refers to how registered users can VIEW this case. Visibility levels do not change editing or managing permissions.'))
+                     .insert(this._generateSection('manage-collaborators', 'Collaborators', 'Collaborators can be given access to view, edit or share specific cases, regardless of the case\'s visibility setting. The type of advanced privileges can be established by the owner when selecting a collaborator:'))
                      .insert(new Element('div', {id : 'manager-messages'}));
       this._ownershipManager = this._container.down('#manage-ownership .section-contents');
       this._visibilityManager = this._container.down('#manage-visibility .section-contents');
