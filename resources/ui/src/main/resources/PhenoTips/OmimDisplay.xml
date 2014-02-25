@@ -56,7 +56,7 @@
   &lt;input type="text" name="${prefix}${name}" id="${prefix}${name}" value="" class="suggested suggest-omim multi generateShortList"/&gt;
   &lt;input type="hidden" name="${prefix}${name}" value=""/&gt;
   {{/html}}
-#elseif ($value.size() &gt; 0 &amp;&amp; "${value.get(0)}" != '')
+#elseif ($value &amp;&amp; $value.size() &gt; 0 &amp;&amp; "${value.get(0)}" != '')
   #foreach ($val in $value)
     #set ($name = $!services.omim.get($val).name)
     #if ("$!{name}" == '')

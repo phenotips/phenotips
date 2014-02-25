@@ -557,7 +557,7 @@ $xwiki.ssx.use($className)
   #if (!$groupObj &amp;&amp; $group.name.endsWith(' Administrators'))
     #set ($groupObj = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)).getObject('PhenoTips.PhenoTipsGroupClass'))
   #end
-  #if ("$!groupObj" != '' &amp;&amp; !$groupObj.getProperty('studies').value.isEmpty())
+  #if ($groupObj.getProperty('studies').value.isEmpty() == false)
     #set ($discard = $studies.addAll($groupObj.getProperty('studies').value))
   #end
 #end
@@ -621,7 +621,7 @@ $xwiki.ssx.use($className)
   #if (!$groupObj &amp;&amp; $group.name.endsWith(' Administrators'))
     #set ($groupObj = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)).getObject('PhenoTips.PhenoTipsGroupClass'))
   #end
-  #if ($groupObj &amp;&amp; !$groupObj.getProperty('studies').value.isEmpty())
+  #if ($groupObj.getProperty('studies').value.isEmpty() == false)
     #set ($discard = $studies.addAll($groupObj.getProperty('studies').value))
   #end
 #end
