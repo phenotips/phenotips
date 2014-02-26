@@ -169,7 +169,6 @@
       var levels = {'access-level' : [], 'visibility' : []};
       this._element.select('input[name="access-level"], input[name="visibility"]').each(function (item) {
         levels[item.name].push({id : item.value, name : item.alt, title : item.title, icon: item.next('span.fa') || ''});
-      
       });
       this.ACCESS_LEVELS = levels['access-level'];
       this.VISIBILITY = levels['visibility'];
@@ -350,7 +349,7 @@
             var collaboratorsCount = formData.collaborator ? (formData.collaborator.size &amp;&amp; formData.collaborator.size() || 1) : 0;
             if (collaborators) {
               collaborators.update(collaboratorsCount + ' collaborator' + (collaboratorsCount != 1 ? 's' : ''));
-            } 
+            }
             _this._dialog.closeDialog();
           },
           onFailure : function(response) {
@@ -850,6 +849,6 @@ $xwiki.ssx.use($serviceDocName)
       Unable to perform the update.
     #end
   #end## Patient exists and user/level parameters match
-#end 
+#end
 {{/velocity}}</content>
 </xwikidoc>
