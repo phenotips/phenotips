@@ -50,9 +50,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiException;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -69,6 +66,8 @@ import net.sf.json.JsonConfig;
 @Singleton
 public class JsonMedSavantServer implements MedSavantServer, Initializable
 {
+    private static final String ENCODING = "UTF-8";
+
     private static final double POLIPHEN_THRESHOLD = 0.2;
 
     private static final double QUALITY_THRESHOLD = 30;
@@ -137,9 +136,9 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             parameters.add(ids);
             for (Integer refID : this.referenceIDs) {
                 parameters.set(1, refID);
-                String body = "json=" + URLEncoder.encode(parameters.toString(), XWiki.DEFAULT_ENCODING);
+                String body = "json=" + URLEncoder.encode(parameters.toString(), ENCODING);
                 method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                    XWiki.DEFAULT_ENCODING));
+                    ENCODING));
                 this.client.executeMethod(method);
                 String response = method.getResponseBodyAsString();
                 Integer count = Integer.valueOf(response);
@@ -190,17 +189,16 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             for (Integer refID : this.referenceIDs) {
                 parameters.set(1, refID);
                 parameters.getJSONArray(2).getJSONArray(0).getJSONObject(0).put("refId", refID);
-                String body = "json=" + URLEncoder.encode(parameters.toString(), XWiki.DEFAULT_ENCODING);
+                String body = "json=" + URLEncoder.encode(parameters.toString(), ENCODING);
                 method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                    XWiki.DEFAULT_ENCODING));
+                    ENCODING));
                 this.client.executeMethod(method);
                 String response = method.getResponseBodyAsString();
                 JSONArray results = (JSONArray) JSONSerializer.toJSON(response);
                 result.addAll(results);
             }
         } catch (Exception ex) {
-            this.logger.warn("Failed to get the number of variants for patient [{}]: {}", patient.getDocument(),
-                ex.getMessage(), ex);
+            this.logger.warn("Failed to get variants for patient [{}]: {}", patient.getDocument(), ex.getMessage(), ex);
         } finally {
             if (method != null) {
                 method.releaseConnection();
@@ -248,17 +246,17 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
 
                 parameters.add(-1); // Start at
                 parameters.add(-1); // Max number of results -> all
-                String body = "json=" + URLEncoder.encode(parameters.toString(), XWiki.DEFAULT_ENCODING);
+                String body = "json=" + URLEncoder.encode(parameters.toString(), ENCODING);
                 this.logger.error(body);
                 method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                    XWiki.DEFAULT_ENCODING));
+                    ENCODING));
                 this.client.executeMethod(method);
                 String response = method.getResponseBodyAsString();
                 JSONArray results = (JSONArray) JSONSerializer.toJSON(response);
                 result.addAll(results);
             }
         } catch (Exception ex) {
-            this.logger.warn("Failed to get the number of variants for patient [{}]: {}", patient.getDocument(),
+            this.logger.warn("Failed to get filtered variants for patient [{}]: {}", patient.getDocument(),
                 ex.getMessage(), ex);
         } finally {
             if (method != null) {
@@ -275,9 +273,8 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
      * @param context the current request context
      * @return the configured URL, in the format {@code http://lims.host.name}, or {@code null} if the LIMS instance
      *         isn't registered in the PhenoTips configuration
-     * @throws XWikiException if accessing the configuration fails
      */
-    private String getMethodURL(String service, String method) throws XWikiException
+    private String getMethodURL(String service, String method)
     {
         String result = this.configuration.getProperty("phenotips.medsavant.baseUrl",
             "http://localhost:8080/medsavant-json-client/");
@@ -293,9 +290,9 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             method = new PostMethod(url);
             JSONArray parameters = new JSONArray();
             parameters.add(projectName);
-            String body = "json=" + URLEncoder.encode(parameters.toString(), XWiki.DEFAULT_ENCODING);
+            String body = "json=" + URLEncoder.encode(parameters.toString(), ENCODING);
             method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                XWiki.DEFAULT_ENCODING));
+                ENCODING));
             this.client.executeMethod(method);
             String response = method.getResponseBodyAsString();
             Integer id = Integer.valueOf(response);
@@ -319,9 +316,9 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             method = new PostMethod(url);
             JSONArray parameters = new JSONArray();
             parameters.add(this.projectID);
-            String body = "json=" + URLEncoder.encode(parameters.toString(), XWiki.DEFAULT_ENCODING);
+            String body = "json=" + URLEncoder.encode(parameters.toString(), ENCODING);
             method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                XWiki.DEFAULT_ENCODING));
+                ENCODING));
             this.client.executeMethod(method);
             String response = method.getResponseBodyAsString();
             JSONArray ids = (JSONArray) JSONSerializer.toJSON(response);
@@ -351,9 +348,9 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             JSONArray parameters = new JSONArray();
             parameters.add(this.projectID);
             parameters.add(refID);
-            String body = "json=" + URLEncoder.encode(parameters.toString(), XWiki.DEFAULT_ENCODING);
+            String body = "json=" + URLEncoder.encode(parameters.toString(), ENCODING);
             method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                XWiki.DEFAULT_ENCODING));
+                ENCODING));
             this.client.executeMethod(method);
             String response = method.getResponseBodyAsString();
             JSONArray annotations = (JSONArray) JSONSerializer.toJSON(response);
