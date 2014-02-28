@@ -247,7 +247,6 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
                 parameters.add(-1); // Start at
                 parameters.add(-1); // Max number of results -> all
                 String body = "json=" + URLEncoder.encode(parameters.toString(), ENCODING);
-                this.logger.error(body);
                 method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
                     ENCODING));
                 this.client.executeMethod(method);
