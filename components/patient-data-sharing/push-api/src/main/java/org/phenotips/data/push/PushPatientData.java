@@ -31,7 +31,9 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 /**
- * API that allows pushing patient data to a remote PhenoTips instance.
+ * API that allows pushing patient data to a remote PhenoTips instance.<p>
+ *
+ * Note: this API does not check any permisions and assumes the caller has the right to push the patient.
  *
  * @version $Id$
  * @since 1.0M11

@@ -189,7 +189,8 @@ public class DefaultSecureStorageManager implements SecureStorageManager
     }
 
     @Override
-    public void storePatientPushInfo(String localPatientID, String remoteServerName)
+    public void storePatientPushInfo(String localPatientID, String remoteServerName,
+                                     String remotePatientGUID, String remotePatientID, String remotePatientURL)
     {
         if (localPatientID == null || remoteServerName == null) return;
 
@@ -201,14 +202,17 @@ public class DefaultSecureStorageManager implements SecureStorageManager
 
         if (existing != null)
         {
-            this.logger.warn("DEBUG: Updating push info");
+            this.logger.warn("DEBUG: Updating patient push info");
             existing.setLastPushTimeToNow();
+            existing.setRemotePatientGUID(remotePatientGUID);
+            existing.setRemotePatientURL(remotePatientURL);
             session.update(existing);
         }
         else
         {
-            this.logger.warn("DEBUG: Saving new push info [{}]-[{}]", localPatientID, remoteServerName);
-            session.save(new PatientPushedToInfo(localPatientID, remoteServerName));
+            this.logger.warn("DEBUG: Saving new patient push info [{}] -> [{}] @ [{}]", localPatientID, remotePatientURL, remoteServerName);
+            session.save(new PatientPushedToInfo(localPatientID, remoteServerName,
+                                                 remotePatientGUID, remotePatientID, remotePatientURL));
         }
         t.commit();
     }
@@ -233,15 +237,5 @@ public class DefaultSecureStorageManager implements SecureStorageManager
 
         this.logger.warn("DEBUG: Previous push info found");
         return data;
-    }
-
-    @Override
-    public long getLastPushAgeInDays(String localPatientID, String remoteServerName)
-    {
-        PatientPushedToInfo info = getPatientPushInfo(localPatientID, remoteServerName);
-        if (info == null) {
-            return -1;
-        }
-        return info.getLastPushAgeInDays();
     }
 }

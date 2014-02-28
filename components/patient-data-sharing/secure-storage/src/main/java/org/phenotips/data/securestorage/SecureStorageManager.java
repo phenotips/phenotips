@@ -55,9 +55,8 @@ public interface SecureStorageManager
     // null if local
     PatientSourceServerInfo getPatientSourceServerInfo(String patientGUID);
 
-    void storePatientPushInfo(String localPatientID, String remoteServerName);
+    void storePatientPushInfo(String localPatientID, String remoteServerName,
+                              String remotePatientGUID, String remotePatientID, String remotePatientURL);
     // null if never pushed to the given server
     PatientPushedToInfo getPatientPushInfo(String localPatientID, String remoteServerName);
-    // -1 if never
-    long getLastPushAgeInDays(String localPatientID, String remoteServerName);
 }

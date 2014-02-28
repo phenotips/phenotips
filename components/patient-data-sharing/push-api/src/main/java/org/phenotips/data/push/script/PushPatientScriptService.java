@@ -28,6 +28,8 @@ import org.phenotips.data.push.PushServerSendPatientResponse;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
+import org.phenotips.data.push.PushServerInfo;
+import org.phenotips.data.push.PatientPushHistory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -54,14 +56,14 @@ public class PushPatientScriptService implements ScriptService
     @Inject
     private PushPatientService internalService;
 
-    public Set<String> getAvailablePushTargets()
+    public Set<PushServerInfo> getAvailablePushTargets()
     {
         return this.internalService.getAvailablePushTargets();
     }
 
-    public Map<String, Long> getAvailablePushTargets(String patientID)
+    public Map<PushServerInfo, PatientPushHistory> getPushTargetsWithHistory(String localPatientID)
     {
-        return this.internalService.getAvailablePushTargets(patientID);
+        return this.internalService.getPushTargetsWithHistory(localPatientID);
     }
 
     public JSONObject getLocalPatientJSON(String patientID, String exportFieldListJSON)

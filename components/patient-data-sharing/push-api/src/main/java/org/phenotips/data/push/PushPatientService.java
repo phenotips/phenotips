@@ -25,6 +25,8 @@ import net.sf.json.JSONObject;
 import org.phenotips.data.push.PushServerConfigurationResponse;
 import org.phenotips.data.push.PushServerGetPatientIDResponse;
 import org.phenotips.data.push.PushServerSendPatientResponse;
+import org.phenotips.data.push.PushServerInfo;
+import org.phenotips.data.push.PatientPushHistory;
 
 import java.util.Set;
 import java.util.Map;
@@ -34,7 +36,10 @@ import org.xwiki.stability.Unstable;
 
 /**
  * A wrapper around PushPatientData which deals with saving and retrieval of remote user names and tokens
- * and provides methods for reading the list of push targets.
+ * and provides methods for reading the list of push targets.<p>
+ *
+ * Note: unlike {@code PushPatientData} this service checks that the currently logged in user has
+ * permisions to push the patient or view the patient representation in JSON.
  *
  * @version $Id$
  * @since 1.0M11
@@ -46,13 +51,13 @@ public interface PushPatientService
     /**
      * @return The list of configured phenotips servers which can be used as patient push targets.
      */
-    Set<String> getAvailablePushTargets();
+    Set<PushServerInfo> getAvailablePushTargets();
 
     /**
-     * @return The list of configured phenotips servers which can be used as patient push targets,
-     * and for each the age in date the given patient was last pushed to the server (-1 if never).
+     * @return For each configured phenotips server which can be used as patient push target
+     *  information about the last push of the same patient to the server.
      */
-    Map<String, Long> getAvailablePushTargets(String patientID);
+    Map<PushServerInfo, PatientPushHistory> getPushTargetsWithHistory(String localPatientID);
 
     /**
      * Returns the (specified subset of) patient data in JSON format.<b>

@@ -27,10 +27,12 @@ import javax.persistence.GeneratedValue;
 import java.sql.Timestamp;
 
 /**
- * Stores information about previous pushes of the same patient data to a given remote server.
+ * Stores information about previous pushes of patient data to a given remote server.<p>
+ *
+ * Stored data includes the last know patient URL on the remote server (for quick linking in UI)
  *
  * @version $Id$
- * @since 1.0M10
+ * @since 1.0M11
  */
 @Entity
 public class PatientPushedToInfo
@@ -45,8 +47,16 @@ public class PatientPushedToInfo
     @Column(nullable=false)
     private String remoteServerName;
 
-    //@Column(nullable=false)
-    private Timestamp lastTimePushed;   // last time this patient was pushed to this server;
+    @Column(nullable=false)
+    private Timestamp lastTimePushed;   // last time this patient was pushed to this server
+
+    @Column(nullable=false)
+    private String remotePatientID;     // ID as of last push (in theory may change - GUID should be used for updating)
+
+    private String remotePatientURL;    // URL as of last push. In practice can recostruct form ID, but stored
+                                        // to acount for possibly differently configured remote server
+
+    private String remotePatientGUID;   // supposedly never changes; nullable: in case remote server does not provide a GUID
 
     /** Default constructor used by Hibernate. */
     protected PatientPushedToInfo()
@@ -55,13 +65,17 @@ public class PatientPushedToInfo
     }
 
     /**
-     * TODO
+     * Used by the SecureStorageManager
      * @param
      */
-    public PatientPushedToInfo(String patientID, String remoteServerName)
+    public PatientPushedToInfo(String patientID, String remoteServerName,
+                               String remotePatientGUID, String remotePatientID, String remotePatientURL)
     {
-        this.localPatientID   = patientID;
-        this.remoteServerName = remoteServerName;
+        this.localPatientID    = patientID;
+        this.remoteServerName  = remoteServerName;
+        this.remotePatientGUID = remotePatientGUID;
+        this.remotePatientID   = remotePatientID;
+        this.remotePatientURL  = remotePatientURL;
         this.setLastPushTimeToNow();
     }
 
@@ -84,5 +98,35 @@ public class PatientPushedToInfo
     {
         long diffInMilliseconds = System.currentTimeMillis() - getLastPushTime().getTime();
         return (diffInMilliseconds / (1000 * 60 * 60 * 24));
+    }
+
+    public String getRemotePatientGUID()
+    {
+        return remotePatientGUID;
+    }
+
+    public void setRemotePatientGUID(String remotePatientGUID)
+    {
+        this.remotePatientGUID = remotePatientGUID;
+    }
+
+    public String getRemotePatientID()
+    {
+        return remotePatientID;
+    }
+
+    public void setRemotePatientID(String remotePatientID)
+    {
+        this.remotePatientID = remotePatientID;
+    }
+
+    public String getRemotePatientURL()
+    {
+        return remotePatientURL;
+    }
+
+    public void setRemotePatientURL(String remotePatientURL)
+    {
+        this.remotePatientURL = remotePatientURL;
     }
 }

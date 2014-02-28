@@ -27,7 +27,6 @@ import java.util.TreeSet;
 import java.util.TreeMap;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -35,16 +34,22 @@ import net.sf.json.JSONObject;
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.permissions.AccessLevel;
+import org.phenotips.data.permissions.PatientAccess;
+import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.push.PushPatientData;
 import org.phenotips.data.push.PushPatientService;
 import org.phenotips.data.push.PushServerConfigurationResponse;
 import org.phenotips.data.push.PushServerGetPatientIDResponse;
+import org.phenotips.data.push.PushServerInfo;
+import org.phenotips.data.push.PatientPushHistory;
 import org.phenotips.data.push.PushServerSendPatientResponse;
 import org.phenotips.data.push.internal.DefaultPushServerConfigurationResponse;
 import org.phenotips.data.push.internal.DefaultPushServerGetPatientIDResponse;
 import org.phenotips.data.push.internal.DefaultPushServerSendPatientResponse;
 import org.phenotips.data.securestorage.SecureStorageManager;
 import org.phenotips.data.securestorage.RemoteLoginData;
+import org.phenotips.data.securestorage.PatientPushedToInfo;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
@@ -52,6 +57,7 @@ import org.xwiki.context.Execution;
 import groovy.lang.Singleton;
 
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -87,6 +93,10 @@ public class DefaultPushPatientService implements PushPatientService
     @Inject
     private PatientRepository patientRepository;
 
+    /** Used to check user right to push a patient when pushig using a string */
+    @Inject
+    private PermissionsManager permisionManager;
+
 
     protected RemoteLoginData getStoredData(String remoteServerIdentifier)
     {
@@ -121,7 +131,7 @@ public class DefaultPushPatientService implements PushPatientService
     }
 
     @Override
-    public Set<String> getAvailablePushTargets()
+    public Set<PushServerInfo> getAvailablePushTargets()
     {
         try {
             XWikiContext context = getXContext();
@@ -131,10 +141,13 @@ public class DefaultPushPatientService implements PushPatientService
                 xwiki.getDocument(new DocumentReference(xwiki.getDatabase(), "XWiki", "XWikiPreferences"), context);
             List<BaseObject> servers = prefsDoc.getXObjects(new DocumentReference(xwiki.getDatabase(), Constants.CODE_SPACE, "PushPatientServer"));
 
-            Set<String> response = new TreeSet<String>();
+            Set<PushServerInfo> response = new TreeSet<PushServerInfo>();
             for (BaseObject serverConfiguration : servers) {
                 this.logger.warn("   ...available: [{}]", serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME));
-                response.add(serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME));
+                PushServerInfo info = new DefaultPushServerInfo(serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME),
+                                                                serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_URL_PROPERTY_NAME),
+                                                                serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME));
+                response.add(info);
             }
             return response;
         } catch (Exception ex) {
@@ -144,30 +157,43 @@ public class DefaultPushPatientService implements PushPatientService
     }
 
     @Override
-    public Map<String, Long> getAvailablePushTargets(String patientID)
+    public Map<PushServerInfo, PatientPushHistory> getPushTargetsWithHistory(String localPatientID)
     {
-        Set<String> servers = getAvailablePushTargets();
+        Set<PushServerInfo> servers = getAvailablePushTargets();
 
-        Map<String, Long> response = new TreeMap<String, Long>();
+        Map<PushServerInfo, PatientPushHistory> response = new TreeMap<PushServerInfo, PatientPushHistory>();
 
-        for (String server: servers) {
-            long ageInDays = this.storageManager.getLastPushAgeInDays(patientID, server);
-
-            response.put(server, ageInDays);
+        for (PushServerInfo server: servers) {
+            PatientPushedToInfo pushInfo = this.storageManager.getPatientPushInfo(localPatientID, server.getServerID());
+            PatientPushHistory history = (pushInfo == null) ? null :
+                                         new DefaultPatientPushHistory(pushInfo);
+            response.put(server, history);
         }
         return response;
     }
 
-    private Patient getPatientByID(String patientID)
+    private Patient getPatientByID(String patientID, String accessLevelName)
     {
         Patient patient = this.patientRepository.getPatientById(patientID);
+        if (patient == null) return null;
+
+        if (accessLevelName.equals("push"))
+            accessLevelName = "view";
+
+        PatientAccess access = this.permisionManager.getPatientAccess(patient);
+        AccessLevel requiredAccess = this.permisionManager.resolveAccessLevel(accessLevelName);
+        if (!access.hasAccessLevel(requiredAccess)) {
+            this.logger.warn("Can't access patient [{}] at level [{}]: access level violation", patientID, accessLevelName);
+            return null;
+        }
+
         return patient;
     }
 
     @Override
     public JSONObject getLocalPatientJSON(String patientID, String exportFieldListJSON)
     {
-        Patient patient = getPatientByID(patientID);
+        Patient patient = getPatientByID(patientID, "view");
         if (patient == null) {
             return null;
         }
@@ -217,7 +243,7 @@ public class DefaultPushPatientService implements PushPatientService
     public PushServerSendPatientResponse sendPatient(String patientID, Set<String> exportFields, String groupName,
                                                      String remoteGUID, String remoteServerIdentifier)
     {
-        Patient patient = getPatientByID(patientID);
+        Patient patient = getPatientByID(patientID, "push");
         if (patient == null) {
             return new DefaultPushServerSendPatientResponse(DefaultPushServerResponse.generateActionFailedJSON());
         }
@@ -229,7 +255,8 @@ public class DefaultPushPatientService implements PushPatientService
                                                                                    storedData.getRemoteUserName(), null, storedData.getLoginToken());
 
         if (response.isSuccessful()) {
-            this.storageManager.storePatientPushInfo(patient.getDocument().getName(), remoteServerIdentifier);
+            this.storageManager.storePatientPushInfo(patient.getDocument().getName(), remoteServerIdentifier,
+                                                     response.getRemotePatientGUID(), response.getRemotePatientID(), response.getRemotePatientURL());
         }
         return response;
     }
@@ -239,7 +266,7 @@ public class DefaultPushPatientService implements PushPatientService
                                                      String remoteGUID, String remoteServerIdentifier,
                                                      String remoteUserName, String password)
     {
-        Patient patient = getPatientByID(patientID);
+        Patient patient = getPatientByID(patientID, "push");
         if (patient == null) {
             return new DefaultPushServerSendPatientResponse(DefaultPushServerResponse.generateActionFailedJSON());
         }
@@ -248,7 +275,8 @@ public class DefaultPushPatientService implements PushPatientService
                                                                                   remoteUserName, password, null);
 
         if (response.isSuccessful()) {
-            this.storageManager.storePatientPushInfo(patient.getDocument().getName(), remoteServerIdentifier);
+            this.storageManager.storePatientPushInfo(patient.getDocument().getName(), remoteServerIdentifier,
+                                                     response.getRemotePatientGUID(), response.getRemotePatientID(), response.getRemotePatientURL());
         }
         return response;
     }

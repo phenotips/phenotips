@@ -46,6 +46,7 @@ import org.xwiki.context.Execution;
 import groovy.lang.Singleton;
 
 import org.xwiki.model.reference.DocumentReference;
+
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -87,6 +88,9 @@ public class DefaultPushPatientData implements PushPatientData
 
     /** Server configuration URL property name within the PushPatientServer class. */
     public static final String PUSH_SERVER_CONFIG_URL_PROPERTY_NAME = "url";
+
+    /** Server configuration Description property name within the PushPatientServer class. */
+    public static final String PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME = "description";
 
     /** Server configuration URL property name within the PushPatientServer class. */
     public static final String PUSH_SERVER_CONFIG_TOKEN_PROPERTY_NAME = "token";
