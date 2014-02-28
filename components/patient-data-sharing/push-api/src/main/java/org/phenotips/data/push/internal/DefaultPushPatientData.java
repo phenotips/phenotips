@@ -20,13 +20,9 @@
 package org.phenotips.data.push.internal;
 
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -43,19 +39,13 @@ import org.phenotips.data.push.PushServerConfigurationResponse;
 import org.phenotips.data.push.PushServerGetPatientIDResponse;
 import org.phenotips.data.push.PushServerSendPatientResponse;
 import org.phenotips.data.internal.controller.VersionsController;
-import org.phenotips.data.internal.PhenoTipsPatient;
 import org.slf4j.Logger;
-import org.xwiki.bridge.event.DocumentCreatedEvent;
-import org.xwiki.bridge.event.DocumentUpdatedEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 
 import groovy.lang.Singleton;
 
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.observation.EventListener;
-import org.xwiki.observation.event.Event;
-
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -70,8 +60,7 @@ import com.xpn.xwiki.objects.BaseObject;
  */
 @Component
 @Singleton
-@Named("pushPatientsEvent")  // TODO: remove with EvenListener
-public class DefaultPushPatientData implements PushPatientData, EventListener
+public class DefaultPushPatientData implements PushPatientData
 {
     /** Logging helper object. */
     @Inject
@@ -101,101 +90,6 @@ public class DefaultPushPatientData implements PushPatientData, EventListener
 
     /** Server configuration URL property name within the PushPatientServer class. */
     public static final String PUSH_SERVER_CONFIG_TOKEN_PROPERTY_NAME = "token";
-
-
-    //===========================================================================================
-    @Override
-    public String getName()
-    {
-        return "sharePatients";
-    }
-
-    @Override
-    public List<Event> getEvents()
-    {
-        this.logger.warn("[GET EVENTS] DefaultPushPatientDat");
-        return Arrays
-            .<Event> asList(new DocumentCreatedEvent(), new DocumentUpdatedEvent());
-    }
-
-    @Override
-    public void onEvent(Event event, Object source, Object data)
-    {
-        this.logger.warn("[ON EVENT] DefaultPushPatientData");
-
-        XWikiDocument doc = (XWikiDocument) source;
-
-        if (!isPatient(doc)) {
-            this.logger.warn("[HANDLE] not a patient");
-            return;
-        }
-
-        this.logger.warn("Pushing updated document [{}]", doc.getDocumentReference());
-
-        Patient patient = new PhenoTipsPatient(doc);
-
-        XWikiContext context = getXContext();
-        List<BaseObject> servers = getRegisteredServers(context);
-        if (servers != null && !servers.isEmpty()) {
-            for (BaseObject serverConfiguration : servers) {
-                this.logger.warn("   ...pushing to: {} [{}]", serverConfiguration.getStringValue(PUSH_SERVER_CONFIG_ID_PROPERTY_NAME), serverConfiguration.getStringValue("url"));
-                fakeSendPatient(patient, serverConfiguration.getStringValue(PUSH_SERVER_CONFIG_ID_PROPERTY_NAME));
-            }
-        }
-    }
-
-    /**
-     * Check if the modified document is a patient record.
-     *
-     * @param doc the modified document
-     * @return {@code true} if the document contains a PatientClass object and a non-empty external identifier,
-     *         {@code false} otherwise
-     */
-    private boolean isPatient(XWikiDocument doc)
-    {
-        BaseObject o = doc.getXObject(Patient.CLASS_REFERENCE);
-        return (o != null && !StringUtils.equals("PatientTemplate", doc.getDocumentReference().getName()));
-    }
-
-    /**
-     * Get all the trusted remote instances where data should be sent that are configured in the current instance.
-     *
-     * @param context the current request object
-     * @return a list of {@link BaseObject XObjects} with LIMS server configurations, may be {@code null}
-     */
-    private List<BaseObject> getRegisteredServers(XWikiContext context)
-    {
-        try {
-            XWiki xwiki = context.getWiki();
-            XWikiDocument prefsDoc =
-                xwiki.getDocument(new DocumentReference(xwiki.getDatabase(), "XWiki", "XWikiPreferences"), context);
-            return prefsDoc
-                .getXObjects(new DocumentReference(xwiki.getDatabase(), Constants.CODE_SPACE, "PushPatientServer"));
-        } catch (XWikiException ex) {
-            this.logger.error("Failed to get server info: {}", ex.getMessage());
-            return Collections.emptyList();
-        }
-    }
-
-    private void fakeSendPatient(Patient patient, String remoteServerIdentifier)
-    {
-        this.logger.warn("===> FAKE UI: Sending to server: {}", remoteServerIdentifier);
-
-        String userName   = "Zzz2";    // these should come from UI
-        String password   = "zzz123";
-        String user_token = null;
-        String groupName  = null;
-        String remoteGUID = null;
-
-        PushServerConfigurationResponse loginResponse = getRemoteConfiguration(remoteServerIdentifier, userName, password, user_token);
-
-        if (loginResponse == null || !loginResponse.isSuccessful()) return;
-
-        Set<String> exportFields = loginResponse.getPushableFields(groupName);
-
-        sendPatient(patient, exportFields, groupName, remoteGUID, remoteServerIdentifier, userName, password, user_token);
-    }
-    //===========================================================================================
 
     /**
      * Helper method for obtaining a valid xcontext from the execution context.
@@ -309,7 +203,7 @@ public class DefaultPushPatientData implements PushPatientData, EventListener
 
             String response = method.getResponseBodyAsString();
 
-            this.logger.warn("RESPONSE FROM SERVER: {}", response);
+            //this.logger.warn("RESPONSE FROM SERVER: {}", response);
 
             JSONObject responseJSON = (JSONObject)JSONSerializer.toJSON(response);
 
@@ -360,7 +254,7 @@ public class DefaultPushPatientData implements PushPatientData, EventListener
 
             String response = method.getResponseBodyAsString();
 
-            this.logger.warn("RESPONSE FROM SERVER: {}", response);
+            //this.logger.warn("RESPONSE FROM SERVER: {}", response);
 
             JSONObject responseJSON = (JSONObject)JSONSerializer.toJSON(response);
 

@@ -29,6 +29,7 @@ import java.util.TreeMap;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.phenotips.Constants;
@@ -77,7 +78,6 @@ public class DefaultPushPatientService implements PushPatientService
 
     /** Wrapped API, doing the actual client-server communication. */
     @Inject
-    @Named("pushPatientsEvent")
     private PushPatientData internalService;
 
     /** Used for login token storage in a way unavailable to web pages */
@@ -106,8 +106,6 @@ public class DefaultPushPatientService implements PushPatientService
 
         if (context.getUserReference() == null)
             return null;
-
-        this.logger.warn("Local username: [{}]", context.getUserReference().getName());
 
         return context.getUserReference().getName();
     }
@@ -167,13 +165,25 @@ public class DefaultPushPatientService implements PushPatientService
     }
 
     @Override
-    public JSONObject getLocalPatientJSON(String patientID, Set<String> exportFields)
+    public JSONObject getLocalPatientJSON(String patientID, String exportFieldListJSON)
     {
         Patient patient = getPatientByID(patientID);
         if (patient == null) {
             return null;
         }
-        return patient.toJSON(exportFields);
+
+        Set<String> fieldSet = null;
+        if (exportFieldListJSON != null) {
+            JSONArray fields = JSONArray.fromObject(exportFieldListJSON);
+            if (fields != null) {
+                fieldSet = new TreeSet<String>();
+                for (Object field: fields) {
+                    fieldSet.add(field.toString());
+                }
+            }
+        }
+
+        return patient.toJSON(fieldSet);
     }
 
     @Override

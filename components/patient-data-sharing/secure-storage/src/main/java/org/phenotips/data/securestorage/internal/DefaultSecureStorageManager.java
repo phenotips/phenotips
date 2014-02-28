@@ -65,14 +65,14 @@ public class DefaultSecureStorageManager implements SecureStorageManager
 
         if (existing != null)
         {
-            this.logger.warn("DEBUG: Updating token");
+            //this.logger.warn("DEBUG: Updating token");
             existing.setRemoteUserName(remoteUserName);
             existing.setLoginToken(remoteLoginToken);
             session.update(existing);
         }
         else
         {
-            this.logger.warn("DEBUG: Saving new token");
+            //this.logger.warn("DEBUG: Saving new token");
             session.save(new RemoteLoginData(localUserName, serverName, remoteUserName, remoteLoginToken));
         }
         t.commit();
@@ -89,13 +89,13 @@ public class DefaultSecureStorageManager implements SecureStorageManager
 
         if (existing != null)
         {
-            this.logger.warn("DEBUG: Updating token");
+            //this.logger.warn("DEBUG: Updating token");
             existing.setLoginToken(loginToken);
             session.update(existing);
         }
         else
         {
-            this.logger.warn("DEBUG: Saving new token: [{}]-[{}]-[{}]", userName, sourceServerName, loginToken);
+            //this.logger.warn("DEBUG: Saving new token: [{}]-[{}]-[{}]", userName, sourceServerName, loginToken);
             session.save(new LocalLoginToken(userName, sourceServerName, loginToken));
         }
         t.commit();
@@ -119,7 +119,7 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             return null;
         }
 
-        this.logger.warn("DEBUG: Token found");
+        //this.logger.warn("DEBUG: Token found");
         return data;
     }
 
@@ -141,7 +141,7 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             return null;
         }
 
-        this.logger.warn("DEBUG: Token found");
+        //this.logger.warn("DEBUG: Token found");
         return data;
     }
 
@@ -165,7 +165,7 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             Session session = this.sessionFactory.getSessionFactory().openSession();
             Transaction t = session.beginTransaction();
             t.begin();
-            this.logger.warn("DEBUG: Saving remote source sever for [{}] = [{}]", patientGUID, sourceServerName);
+            //this.logger.warn("DEBUG: Saving remote source sever for [{}] = [{}]", patientGUID, sourceServerName);
             session.save(new PatientSourceServerInfo(patientGUID, sourceServerName));
             t.commit();
         }

@@ -20,7 +20,6 @@
 package org.phenotips.data.receive.script;
 
 import org.phenotips.data.receive.ReceivePatientData;
-import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
@@ -47,43 +46,33 @@ public class ReceivePatientDataScriptService implements ScriptService
     @Inject
     private ReceivePatientData internalService;
 
-    /** Logging helper object. */
-    @Inject
-    private Logger logger;
-
     public boolean isServerTrusted()
     {
-    	this.logger.warn("[SCRIPTSERVICE1] Token check");
     	return this.internalService.isServerTrusted();
     }
 
     public JSONObject getConfiguration()
     {
-    	this.logger.warn("[SCRIPTSERVICE1] Remote login");
     	return this.internalService.getConfiguration();
     }
 
     public JSONObject receivePatient()
     {
-    	this.logger.warn("[SCRIPTSERVICE1] Receive patient");
         return this.internalService.receivePatient();
     }
 
     public JSONObject untrustedServerResponse()
     {
-    	this.logger.warn("[SCRIPTSERVICE1] untrustedServerResponse");
     	return this.internalService.untrustedServerResponse();
     }
 
     public JSONObject getPatientURL()
     {
-        this.logger.warn("[SCRIPTSERVICE1] getPatientURL");
         return this.internalService.getPatientURL();
     }
 
     public JSONObject unsupportedeActionResponse()
     {
-        this.logger.warn("[SCRIPTSERVICE1] unsupportedeActionResponse");
         return this.internalService.unsupportedeActionResponse();
     }
 }

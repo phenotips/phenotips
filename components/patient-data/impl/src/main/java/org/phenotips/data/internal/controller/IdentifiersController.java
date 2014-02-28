@@ -101,7 +101,7 @@ public class IdentifiersController implements PatientDataController<ImmutablePai
         if (selectedFieldNames != null && !selectedFieldNames.contains(EXTERNAL_IDENTIFIER_PROPERTY_NAME)) return;
 
         for (ImmutablePair<String, String> data : patient.<ImmutablePair<String, String>>getData(DATA_NAME)) {
-            if (data.getRight() != "") {
+            if (!data.getRight().equals("")) {
                 json.put(data.getKey(), data.getRight());
             }
         }

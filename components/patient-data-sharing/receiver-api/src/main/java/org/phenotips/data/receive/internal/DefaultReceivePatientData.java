@@ -153,8 +153,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
         String expected = serverConfig.getStringValue(SERVER_CONFIG_TOKEN_PROPERTY_NAME);
 
-        this.logger.warn("Received token: [{}]", token);
-        this.logger.warn("Expected token: [{}]", expected);
         return StringUtils.equals(expected, token);
     }
 
@@ -288,7 +286,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
             if (group.getReference().getName().equals(groupName))
                 return true;
         }
-        this.logger.warn("user {} is not in group {}", userName, groupName);
         return false;
     }
 
@@ -308,12 +305,11 @@ public class DefaultReceivePatientData implements ReceivePatientData
         LocalLoginToken storedToken = this.storageManager.getLocalLoginToken(userName, serverName);
 
         if (storedToken == null) {
-            this.logger.warn("No stored token found");
             return TokenStatus.INVALID;
         }
 
-        this.logger.debug("Expected token for user [{}]: [{}] aged [{}] out of [{}]",
-                         userName, storedToken.getLoginToken(), storedToken.getTokenAgeInDays(), tokenLifeTimeInDays);
+        //this.logger.debug("Expected token for user [{}]: [{}] aged [{}] out of [{}]",
+        //                 userName, storedToken.getLoginToken(), storedToken.getTokenAgeInDays(), tokenLifeTimeInDays);
 
         if (!token.equals(storedToken.getLoginToken())) {
             this.logger.warn("Stored token does not match provided token");
@@ -352,7 +348,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
 	    	String token    = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USER_TOKEN);
 
 	    	if (userName == null) {
-	    		this.logger.warn("no username provided");
 	    		return generateFailedCredentialsResponse();
 	    	}
 
@@ -360,11 +355,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
 	    		String password = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PASSWORD);
 
 	    		if (context.getWiki().getAuthService().authenticate(userName, password, context) == null) {
-	    			this.logger.warn("password login failed for user [{}]", userName);
 	    			return generateFailedCredentialsResponse();
 	    		}
-
-	    		this.logger.warn("password login is successful for user [{}]", userName);
 	    	} else {
 	    	    if (!userTokensEnabled(serverConfig)) {
                     this.logger.warn("user token provided by [{}] but tokens are disabled", userName);
@@ -377,14 +369,10 @@ public class DefaultReceivePatientData implements ReceivePatientData
 	    	    TokenStatus tokenStatus = checkUserToken(userName, serverName, token, tokenLifeTime);
 
 	    		if (tokenStatus == TokenStatus.INVALID) {
-	    			this.logger.warn("user_token is incorrect for user [{}]", userName);
 	    			return generateFailedCredentialsResponse();
 	    		} else if (tokenStatus == TokenStatus.EXPIRED) {
-	    			this.logger.warn("user_token is expired for user [{}]", userName);
 	    			return generateFailedCredentialsResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_EXPIREDUSERTOKEN);
 	    		}
-
-	    		this.logger.warn("user_token login is successful for user [{}]", userName);
 	    	}
        	} catch (Exception ex) {
             this.logger.error("Error during remote login [{}] {}", ex.getMessage(), ex);
@@ -419,10 +407,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
 				this.logger.error("No patient data provided by {})", request.getRemoteAddr());
 				return generateFailedActionResponse();
 			}
-			this.logger.warn("RAW JSON: <<{}>>", patientJSONRaw);
 
             String patientJSON = URLDecoder.decode(patientJSONRaw, XWiki.DEFAULT_ENCODING);
-            this.logger.warn("JSON: <<{}>>", patientJSON);
 
             Patient affectedPatient;
 
@@ -442,8 +428,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
                 if (!userCanAccessPatient(userName, affectedPatient)) {
                     return generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_GUIDACCESSDENIED);
                 }
-
-                this.logger.warn("Accessed existing patient [{}] successfully", affectedPatient.getDocument().getName());
+                this.logger.warn("Loaded existing patient [{}] successfully", affectedPatient.getDocument().getName());
             } else {
                 User user = this.userManager.getUser(userName);
 
@@ -507,7 +492,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
 	    	Set<Group> userGroups = groupManager.getGroupsForUser(userManager.getUser(userName));
 	    	JSONArray groupList = new JSONArray();
 		    for (Group g : userGroups) {
-		    	this.logger.warn("... group {}", g.getReference().getName());
 		    	groupList.add(g.getReference().getName());
 		    }
 
@@ -584,10 +568,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
             List<String> results = q.<String> execute();
 
-            this.logger.warn("num documents with GUID {} found: {}", guid, results.size());
-
             if (results.size() == 1) {
-                this.logger.warn("unique document with GUID {} found: {}", guid, results.get(0));
 
                 DocumentReference reference =
                     this.stringResolver.resolve(results.get(0), Patient.DEFAULT_DATA_SPACE);
@@ -605,13 +586,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(patient.getDocument());
-
-            this.logger.warn("Patient doc: {}", doc);
-
-            if (doc.getAuthorReference() != null)
-                this.logger.warn("Doc author: [{}]",  doc.getAuthorReference().getName());
-            if (doc.getCreatorReference() != null)
-                this.logger.warn("Doc creator: [{}]", doc.getCreatorReference().getName());
 
             if ((doc.getCreatorReference() == null || doc.getCreatorReference().getName() != userName) &&
                 (doc.getAuthorReference()  == null || doc.getAuthorReference() .getName() != userName)) {
@@ -665,7 +639,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             String domainName = InetAddress.getByName(serverIP).getHostName();
             return prefsDoc.getXObject(new DocumentReference(xwiki.getDatabase(), Constants.CODE_SPACE, "ReceivePatientServer"), SERVER_CONFIG_IP_PROPERTY_NAME, domainName);
         } catch (Exception ex) {
-            this.logger.warn("Failed to get server info: [{}] {}", ex.getMessage(), ex);
+            this.logger.error("Failed to get server info: [{}] {}", ex.getMessage(), ex);
             return null;
         }
     }

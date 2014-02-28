@@ -21,12 +21,10 @@ package org.phenotips.data.push.script;
 
 import net.sf.json.JSONObject;
 
-import org.phenotips.data.Patient;
 import org.phenotips.data.push.PushPatientService;
 import org.phenotips.data.push.PushServerConfigurationResponse;
 import org.phenotips.data.push.PushServerGetPatientIDResponse;
 import org.phenotips.data.push.PushServerSendPatientResponse;
-import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
@@ -40,7 +38,8 @@ import java.util.Set;
 import groovy.lang.Singleton;
 
 /**
- * API that allows pushing patient data to a remote PhenoTips instance.
+ * API that allows pushing patient data to a remote PhenoTips instance
+ * (plus helper methods useful for displaying push patient UI).
  *
  * @version $Id$
  * @since 1.0M11
@@ -55,51 +54,40 @@ public class PushPatientScriptService implements ScriptService
     @Inject
     private PushPatientService internalService;
 
-    /** Logging helper object. */
-    @Inject
-    private Logger logger;
-
     public Set<String> getAvailablePushTargets()
     {
-        this.logger.warn("[SCRIPTSERVICE0] Get available");
         return this.internalService.getAvailablePushTargets();
     }
 
     public Map<String, Long> getAvailablePushTargets(String patientID)
     {
-        this.logger.warn("[SCRIPTSERVICE0] Get available (patientID)");
         return this.internalService.getAvailablePushTargets(patientID);
     }
 
-    public JSONObject getLocalPatientJSON(String patientID, Set<String> exportFields)
+    public JSONObject getLocalPatientJSON(String patientID, String exportFieldListJSON)
     {
-        this.logger.warn("[SCRIPTSERVICE0] PATIENTJSON");
-        return this.internalService.getLocalPatientJSON(patientID, exportFields);
+        return this.internalService.getLocalPatientJSON(patientID, exportFieldListJSON);
     }
 
     public String getRemoteUsername(String remoteServerIdentifier)
     {
-        this.logger.warn("[SCRIPTSERVICE0] Get remote user");
         return this.internalService.getRemoteUsername(remoteServerIdentifier);
     }
 
     public PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier)
     {
-        this.logger.warn("[SCRIPTSERVICE0] Get config");
         return this.internalService.getRemoteConfiguration(remoteServerIdentifier);
     }
 
     public PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier,
                                                                   String remoteUserName, String password)
     {
-        this.logger.warn("[SCRIPTSERVICE0] Get config (user/pasword)");
         return this.internalService.getRemoteConfiguration(remoteServerIdentifier, remoteUserName, password);
     }
 
     public PushServerSendPatientResponse sendPatient(String patientID, Set<String> exportFields, String groupName,
                                                      String remoteGUID, String remoteServerIdentifier)
     {
-        this.logger.warn("[SCRIPTSERVICE0] Send");
         return this.internalService.sendPatient(patientID, exportFields, groupName, remoteGUID, remoteServerIdentifier);
     }
 
@@ -107,21 +95,18 @@ public class PushPatientScriptService implements ScriptService
                                                      String remoteGUID, String remoteServerIdentifier,
                                                      String remoteUserName, String password)
     {
-        this.logger.warn("[SCRIPTSERVICE0] Send (user/pasword)");
         return this.internalService.sendPatient(patientID, exportFields, groupName, remoteGUID, remoteServerIdentifier,
                                                 remoteUserName, password);
     }
 
     public PushServerGetPatientIDResponse getPatientURL(String remoteServerIdentifier, String remotePatientGUID)
     {
-        this.logger.warn("[SCRIPTSERVICE0] get patientID");
         return this.internalService.getPatientURL(remoteServerIdentifier, remotePatientGUID);
     }
 
     public PushServerGetPatientIDResponse getPatientURL(String remoteServerIdentifier, String remotePatientGUID,
                                                         String remoteUserName, String password)
     {
-        this.logger.warn("[SCRIPTSERVICE0] get patientID (user/pasword)");
         return this.internalService.getPatientURL(remoteServerIdentifier, remotePatientGUID, remoteUserName, password);
     }
 }

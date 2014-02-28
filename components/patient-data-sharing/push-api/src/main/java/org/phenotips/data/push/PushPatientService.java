@@ -56,13 +56,15 @@ public interface PushPatientService
 
     /**
      * Returns the (specified subset of) patient data in JSON format.<b>
-     * When exportFields is {@code null} all available data is returned.
+     * When exportFieldListJSON is {@code null} all available data is returned.
      *
-     * @param patient
-     * @param exportFields
+     * @param patientID PhenoTips Patient ID
+     * @param exportFieldListJSON a string in the JSON Array format with the list of fields
+     *                            which should be included in the output. When not {@code null}
+     *                            only those patient data fields listed will be serialized.
      * @return
      */
-    JSONObject getLocalPatientJSON(String patientID, Set<String> exportFields);
+    JSONObject getLocalPatientJSON(String patientID, String exportFieldListJSON);
 
     /**
      * Get the previously stored remote username associated with the current user and the given remote server
