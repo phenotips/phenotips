@@ -1,0 +1,2 @@
+org.phenotips.data.securestorage.internal.DefaultSecureStorageManager
+org.phenotips.data.securestorage.internal.SecureStorageRegistrationHandler

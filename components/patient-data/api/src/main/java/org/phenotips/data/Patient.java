@@ -20,13 +20,13 @@
 package org.phenotips.data;
 
 import org.phenotips.Constants;
-
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
 import java.util.Set;
+import java.util.Collection;
 
 import net.sf.json.JSONObject;
 
@@ -107,4 +107,13 @@ public interface Patient
      * @return the patient data, using the json-lib classes
      */
     JSONObject toJSON();
+    
+    /**
+     * Retrieve patient data in a JSON format, restricted to the {@link RecordConfiguration} fields listed in onlyFieldNames
+     * 
+     * @param onlyFieldNames list of fields which should be included in the resulting JSON.
+     *                       All available fields will be included if null (in which case this method is equivalent to {@link toJSON()})
+     * @return selected sub-set of patient data, using the json-lib classes
+     */
+    JSONObject toJSON(Collection<String> onlyFieldNames);    
 }

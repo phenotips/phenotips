@@ -55,6 +55,13 @@ public interface RecordElement
     boolean isEnabled();
 
     /**
+     * Whether this element contains any private indentifiable information (PII) about the patient or not.
+     * 
+     * @return {@code true} if this element contains PII, {@code false} otherwise
+     */    
+    boolean containsPrivateIdentifiableInformation();
+
+    /**
      * The list of fields displayed in the patient record by this element.
      * 
      * @return an unmodifiable ordered list of field names, empty if this element doesn't display patient fields

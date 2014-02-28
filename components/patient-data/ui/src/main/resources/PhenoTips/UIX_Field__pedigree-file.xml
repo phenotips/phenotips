@@ -133,7 +133,8 @@
 enabled=false
 required=
 order=15
-fields=pedigree</parameters>
+fields=pedigree
+contains_PII=true</parameters>
     </property>
     <property>
       <scope>wiki</scope>

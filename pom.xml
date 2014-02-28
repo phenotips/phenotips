@@ -212,6 +212,21 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release 1.0-milestone-11 -->
+            <difference>
+              <className>**/phenotips/data/Patient</className>
+              <differenceType>7012</differenceType>
+              <method>net.sf.json.JSONObject toJSON(java.util.Collection)</method>
+            </difference>
+            <difference>
+              <className>**/phenotips/configuration/RecordConfiguration</className>
+              <differenceType>7012</differenceType>
+              <method>java.util.List getEnabledNonIdentifiableFieldNames()</method>
+            </difference>
+            <difference>
+              <className>**/phenotips/configuration/RecordElement</className>
+              <differenceType>7012</differenceType>
+              <method>boolean containsPrivateIdentifiableInformation()</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

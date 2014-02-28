@@ -140,7 +140,8 @@
 enabled=true
 required=
 order=4
-fields=last_name,first_name</parameters>
+fields=last_name,first_name
+contains_PII=true</parameters>
     </property>
     <property>
       <scope>wiki</scope>

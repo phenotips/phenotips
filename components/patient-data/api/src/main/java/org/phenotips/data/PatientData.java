@@ -21,6 +21,10 @@ package org.phenotips.data;
 
 import java.util.List;
 
+import net.sf.json.JSONObject;
+
+import net.sf.json.JSONObject;
+
 /**
  * Non-essential pieces of custom patient data that can be part of the patient record.
  *

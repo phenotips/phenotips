@@ -129,7 +129,8 @@
 enabled=false
 required=
 order=7
-fields=health_card</parameters>
+fields=health_card
+contains_PII=true</parameters>
     </property>
     <property>
       <scope>wiki</scope>

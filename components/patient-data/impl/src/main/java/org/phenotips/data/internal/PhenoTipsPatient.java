@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -188,7 +189,7 @@ public class PhenoTipsPatient implements Patient
     }
 
     @Override
-    public JSONObject toJSON()
+    public JSONObject toJSON(Collection<String> onlyFieldNames)    
     {
         JSONObject result = new JSONObject();
         result.element("id", getDocument().getName());
