@@ -884,7 +884,7 @@ TXVppcEAAAAASUVORK5CYII=
   white-space: nowrap;
   width: auto;
 }
-#phenotips-globalTools .search .icon-search {
+#phenotips-globalTools .search .icon-search, #phenotips-globalTools .search .fa-search {
   color: $theme.textColor;
   display: inline-block;
   opacity: .2;
