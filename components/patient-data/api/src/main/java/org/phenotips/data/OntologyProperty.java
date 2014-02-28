@@ -25,7 +25,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Information about a specific {@link Patient patient} feature value, represented as a term from an ontology.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -34,7 +34,7 @@ public interface OntologyProperty
 {
     /**
      * The ontology term identifier associated to this value.
-     * 
+     *
      * @return an identifier, in the format {@code ONTOLOGY:termId}, or the empty string if this is a free text term,
      *         not from an ontology
      */
@@ -42,14 +42,14 @@ public interface OntologyProperty
 
     /**
      * The name associated to this term in the ontology.
-     * 
+     *
      * @return a user-friendly name for this term, or the term itself if this is not an ontology term
      */
     String getName();
 
     /**
      * Retrieve all information about this term and its associated metadata in a JSON format. For example:
-     * 
+     *
      * <pre>
      * {
      *   "id": "MIM:136140",
@@ -57,7 +57,7 @@ public interface OntologyProperty
      *   // plus any other specific information
      * }
      * </pre>
-     * 
+     *
      * @return the data about this value, using the json-lib classes
      */
     JSONObject toJSON();

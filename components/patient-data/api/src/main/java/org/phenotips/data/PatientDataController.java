@@ -19,6 +19,8 @@
  */
 package org.phenotips.data;
 
+import java.util.Collection;
+
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
@@ -43,7 +45,7 @@ import net.sf.json.JSONObject;
  * {@link #writeJSON(Patient, JSONObject)} method should not always create a new property, but first try to extend an
  * existing one.
  * </p>
- * 
+ *
  * @param <T> the type of data being managed by this component; usually a key-value pair, where the {@code key} is a
  *            String (name)
  * @version $Id$
@@ -56,7 +58,7 @@ public interface PatientDataController<T>
     /**
      * Plays the role of initialization function. Given a patient, extracts data from the underlying document and
      * returns it to the patient.
-     * 
+     *
      * @param patient the patient being loaded
      * @return the loaded data, if any, or {@code null}
      */
@@ -65,24 +67,41 @@ public interface PatientDataController<T>
     /**
      * Plays the role of a serialization function. Given a patient, saves the data that it {@link #load(Patient) loaded}
      * for this patient in the underlying document storing the patient record.
-     * 
+     *
      * @param patient the patient being saved
      */
     void save(Patient patient);
 
     /**
      * Exports the data being managed by this data controller into the patient JSON export.
-     * 
+     *
      * @param patient the patient being exported
      * @param json existing JSON object to which the data will be appended
      */
     void writeJSON(Patient patient, JSONObject json);
 
     /**
-     * Reads custom data back from a JSON into a patient record.
-     * 
+     * Exports the data being managed by this data controller into the patient JSON export.
+     *
+     * @param patient the patient being exported
+     * @param selectedFieldNames the list of Patient record fields which this controller should
+     * consider when writing to JSON. All other fields, even if supported by this controller, should be ignored.
+     * May contain extra fields not supported by this controller. May be {@code null}, in which case
+     * all available data should be written to JSON.
+     * @param json existing JSON object to which the data will be appended
+     */
+    void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames);
+
+    /**
+     * Given a JSON object, extracts data from it and returns it to the patient.
+     *
      * @param json the JSON that is to be imported
      * @return the loaded data, if any, or {@code null}
      */
     PatientData<T> readJSON(JSONObject json);
+
+    /**
+     * @return the name of the serializer
+     */
+    String getName();
 }

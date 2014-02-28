@@ -23,13 +23,13 @@ import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +48,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Handles the patient's date of birth and the exam date.
- * 
+ *
  * @version $Id$
  * @since 1.0M10
  */
@@ -102,10 +102,18 @@ public class DatesController implements PatientDataController<ImmutablePair<Stri
     @Override
     public void writeJSON(Patient patient, JSONObject json)
     {
+        writeJSON(patient, json, null);
+    }
+
+    @Override
+    public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
+    {
         DateFormat dateFormat =
             new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getDateOfBirthFormat());
         for (ImmutablePair<String, Date> data : patient.<ImmutablePair<String, Date>>getData(DATA_NAME)) {
-            json.put(data.getKey(), dateFormat.format(data.getRight()));
+            if (selectedFieldNames == null || selectedFieldNames.contains(data.getKey())) {
+                json.put(data.getKey(), dateFormat.format(data.getRight()));
+            }
         }
     }
 
@@ -113,6 +121,12 @@ public class DatesController implements PatientDataController<ImmutablePair<Stri
     public PatientData<ImmutablePair<String, Date>> readJSON(JSONObject json)
     {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getName()
+    {
+        return DATA_NAME;
     }
 
     protected List<String> getProperties()

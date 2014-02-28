@@ -23,11 +23,17 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Information about a specific disorder recorded for a {@link Patient patient}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
 @Unstable
 public interface Disorder extends OntologyProperty
 {
+    /**
+     * Returns the PhenoTips value of the feature
+     * TODO: move to OntologyProperty and or implement a OntologyProperty-to-PhenotipsPropertName mapping service
+     * @return
+     */
+    String getValue();
 }

@@ -45,7 +45,7 @@ import net.sf.json.JSONObject;
 /**
  * Implementation of patient data based on the XWiki data model, where feature data is represented by properties in
  * objects of type {@code PhenoTips.PatientClass}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -53,10 +53,15 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
 {
     /**
      * Prefix marking negative feature.
-     * 
+     *
      * @see #isPresent()
      */
     private static final Pattern NEGATIVE_PREFIX = Pattern.compile("^negative_");
+
+    /** Used for reading and writing Features to JSON */
+    private static final String TYPE_JSON_KEY_NAME     = "type";
+    private static final String OBSERVED_JSON_KEY_NAME = "observed";
+    private static final String METADATA_JSON_KEY_NAME = "qualifiers";
 
     /** Logging helper object. */
     private final Logger logger = LoggerFactory.getLogger(PhenoTipsFeature.class);
@@ -75,7 +80,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
 
     /**
      * Constructor that copies the data from an XProperty value.
-     * 
+     *
      * @param doc the XDocument representing the described patient in XWiki
      * @param property the feature category XProperty
      * @param value the specific value from the property represented by this object
@@ -106,6 +111,18 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
         this.metadata = Collections.unmodifiableMap(this.metadata);
     }
 
+    /**
+     * Constructor for initializeing form a JSON Object
+     * @param json JSON object describing this property
+     */
+    PhenoTipsFeature(JSONObject json)
+    {
+        super(json);
+        this.present      = (json.getString(OBSERVED_JSON_KEY_NAME).equals("yes"));
+        this.type         = json.getString(TYPE_JSON_KEY_NAME);
+        this.propertyName = null;
+    }
+
     @Override
     public String getType()
     {
@@ -119,6 +136,15 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
     }
 
     @Override
+    public String getValue()
+    {
+        if (getId().equals("")) {
+            return getName();
+        }
+        return getId();
+    }
+
+    @Override
     public Map<String, ? extends FeatureMetadatum> getMetadata()
     {
         return this.metadata;
@@ -128,21 +154,21 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
     public JSONObject toJSON()
     {
         JSONObject result = super.toJSON();
-        result.element("type", getType());
-        result.element("isPresent", this.present);
+        result.element(TYPE_JSON_KEY_NAME,     getType());
+        result.element(OBSERVED_JSON_KEY_NAME, (this.present ? "yes" : "no"));
         if (!this.metadata.isEmpty()) {
             JSONArray metadataList = new JSONArray();
             for (FeatureMetadatum metadatum : this.metadata.values()) {
                 metadataList.add(metadatum.toJSON());
             }
-            result.element("metadata", metadataList);
+            result.element(METADATA_JSON_KEY_NAME, metadataList);
         }
         return result;
     }
 
     /**
      * Find the XObject that contains metadata for this feature, if any.
-     * 
+     *
      * @param doc the patient's XDocument, where metadata objects are stored
      * @return the found object, or {@code null} if one wasn't found
      * @throws XWikiException if accessing the data fails

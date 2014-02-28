@@ -22,9 +22,9 @@ package org.phenotips.data.internal.controller;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-
 import org.xwiki.bridge.DocumentAccessBridge;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,7 +41,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Base class for handling a collection of simple string values.
- * 
+ *
  * @version $Id$
  * @since 1.0M10
  */
@@ -87,18 +87,28 @@ public abstract class AbstractSimpleController implements PatientDataController<
     @Override
     public void writeJSON(Patient patient, JSONObject json)
     {
+        writeJSON(patient, json, null);
+    }
+
+    @Override
+    public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
+    {
         PatientData<ImmutablePair<String, String>> data = patient.getData(getName());
         if (data == null || data.isEmpty()) {
             return;
         }
         JSONObject container = json.getJSONObject(getJsonPropertyName());
-        if (container == null || container.isNullObject()) {
-            json.put(getJsonPropertyName(), new JSONObject());
-            container = json.getJSONObject(getJsonPropertyName());
-        }
 
         for (ImmutablePair<String, String> item : data) {
-            container.put(item.getKey(), item.getValue());
+            if (selectedFieldNames == null || selectedFieldNames.contains(item.getKey())) {
+
+                if (container == null || container.isNullObject()) {
+                    json.put(getJsonPropertyName(), new JSONObject());       // only add it if at least one poroperty is enabled
+                    container = json.getJSONObject(getJsonPropertyName());
+                }
+
+                container.put(item.getKey(), item.getValue());
+            }
         }
     }
 
@@ -109,8 +119,6 @@ public abstract class AbstractSimpleController implements PatientDataController<
     }
 
     protected abstract List<String> getProperties();
-
-    protected abstract String getName();
 
     protected abstract String getJsonPropertyName();
 }

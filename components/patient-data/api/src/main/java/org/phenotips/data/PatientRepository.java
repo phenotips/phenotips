@@ -20,11 +20,12 @@
 package org.phenotips.data;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.stability.Unstable;
 
 /**
  * API that provides access to patient data. No access rights are checked here.
- * 
+ *
  * @version $Id$
  * @since 1.0M10 (was named PatientData since 1.0M8)
  */
@@ -34,7 +35,7 @@ public interface PatientRepository
 {
     /**
      * Retrieve a {@link Patient patient} by it's PhenoTips identifier.
-     * 
+     *
      * @param id the patient identifier, i.e. the serialized document reference
      * @return the patient data, or {@code null} if the requested patient does not exist or is not a valid patient
      */
@@ -43,16 +44,23 @@ public interface PatientRepository
     /**
      * Retrieve a {@link Patient patient} by it's clinical identifier. Only works if external identifiers are enabled
      * and used.
-     * 
+     *
      * @param externalId the patient's clinical identifier, as set by the patient's reporter
      * @return the patient data, or {@code null} if the requested patient does not exist or is not a valid patient
      */
     Patient getPatientByExternalId(String externalId);
 
     /**
-     * Create and return a new empty patient record.
-     * 
+     * Create and return a new empty patient record (owned by the currently logged in user).
+     *
      * @return the created patient record
      */
     Patient createNewPatient();
+
+    /**
+     * Create and return a new empty patient record (owned by the given entity).
+     *
+     * @return the created patient record
+     */
+    Patient createNewPatient(DocumentReference creator);
 }

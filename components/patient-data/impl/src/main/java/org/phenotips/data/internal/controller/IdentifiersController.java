@@ -22,10 +22,10 @@ package org.phenotips.data.internal.controller;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,7 +43,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Handles the patient's date of birth and the exam date.
- * 
+ *
  * @version $Id$
  * @since 1.0M10
  */
@@ -92,8 +92,18 @@ public class IdentifiersController implements PatientDataController<ImmutablePai
     @Override
     public void writeJSON(Patient patient, JSONObject json)
     {
+        writeJSON(patient, json, null);
+    }
+
+    @Override
+    public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
+    {
+        if (selectedFieldNames != null && !selectedFieldNames.contains(EXTERNAL_IDENTIFIER_PROPERTY_NAME)) return;
+
         for (ImmutablePair<String, String> data : patient.<ImmutablePair<String, String>>getData(DATA_NAME)) {
-            json.put(data.getKey(), data.getRight());
+            if (data.getRight() != "") {
+                json.put(data.getKey(), data.getRight());
+            }
         }
     }
 
@@ -101,5 +111,11 @@ public class IdentifiersController implements PatientDataController<ImmutablePai
     public PatientData<ImmutablePair<String, String>> readJSON(JSONObject json)
     {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getName()
+    {
+        return DATA_NAME;
     }
 }

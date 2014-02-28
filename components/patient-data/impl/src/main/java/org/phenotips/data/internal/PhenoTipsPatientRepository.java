@@ -48,13 +48,10 @@ import org.slf4j.Logger;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 /**
  * Implementation of patient data access service using XWiki as the storage backend, where patients in documents having
  * an object of type {@code PhenoTips.PatientClass}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -125,10 +122,8 @@ public class PhenoTipsPatientRepository implements PatientRepository
     }
 
     @Override
-    public synchronized Patient createNewPatient(JSONObject patientData)
+    public synchronized Patient createNewPatient(DocumentReference creator)
     {
-    	this.logger.debug("[CREATE NEW PATIENT] ----");
-    	
         try {
             // FIXME Take these from the configuration
             String prefix = "P";
@@ -157,10 +152,8 @@ public class PhenoTipsPatientRepository implements PatientRepository
             doc.readFromTemplate(this.referenceResolver.resolve(PhenoTipsPatient.TEMPLATE_REFERENCE), context);
             doc.setTitle(newDoc.getName());
             doc.getXObject(Patient.CLASS_REFERENCE).setLongValue("identifier", crtMaxID);
-            doc.setCreatorReference(this.bridge.getCurrentUserReference());
-            if (patientData != null)
-            {
-            	// create from JSON: TODO: merge with Anton's code before merging this in            	
+            if (creator != null) {
+                doc.setCreatorReference(creator);
             }
             context.getWiki().saveDocument(doc, context);
 
@@ -195,6 +188,7 @@ public class PhenoTipsPatientRepository implements PatientRepository
     @Override
     public synchronized Patient createNewPatient()
     {
-        return this.createNewPatient(null);
+        return createNewPatient(this.bridge.getCurrentUserReference());
     }
+
 }

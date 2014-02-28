@@ -31,7 +31,7 @@ import javax.inject.Singleton;
 
 /**
  * Handles textual notes, containing longer prose describing various aspects of the patient's information.
- * 
+ *
  * @version $Id$
  * @since 1.0M10
  */
@@ -48,7 +48,7 @@ public class TextNotesController extends AbstractSimpleController
     }
 
     @Override
-    protected String getName()
+    public String getName()
     {
         return "notes";
     }

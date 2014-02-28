@@ -27,7 +27,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Information about a specific feature recorded for a {@link Patient patient}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -37,7 +37,7 @@ public interface Feature extends OntologyProperty
     /**
      * The category of this feature: {@code phenotype}, {@code prenatal_phenotype}, {@code past_phenotype}, etc. This
      * does not include the {@code negative_} prefix for {@link #isPresent() negative observations}.
-     * 
+     *
      * @return the feature type, usually a string ending in {@code phenotype}
      */
     String getType();
@@ -45,14 +45,14 @@ public interface Feature extends OntologyProperty
     /**
      * Is this a positive or a negative observation. Positive observations indicate a feature that was observed in the
      * patient, while negative observations are pertinent features that were not observed in the patient.
-     * 
+     *
      * @return {@code true} for a positive observation, {@code false} for a negative one
      */
     boolean isPresent();
 
     /**
      * Return the list of associated metadata, like age of onset or pace of progression.
-     * 
+     *
      * @return an unmodifiable map with the {@link FeatureMetadatum#getType() metadatum type} as the key and the actual
      *         {@link FeatureMetadatum metadatum} as the value, or an empty map if no metadata is recorded
      */
@@ -60,7 +60,7 @@ public interface Feature extends OntologyProperty
 
     /**
      * Retrieve all information about this feature and its associated metadata in a JSON format. For example:
-     * 
+     *
      * <pre>
      * {
      *   "id": "HP:0100247",
@@ -72,9 +72,17 @@ public interface Feature extends OntologyProperty
      *   ]
      * }
      * </pre>
-     * 
+     *
      * @return the feature data, using the json-lib classes
      */
     @Override
     JSONObject toJSON();
+
+    /**
+     * Returns PhenoTips name of this feature.<p>
+     * In current implementation it is either the ID, or the name iff ID is null or empty.
+     * TODO: move to OntologyProperty and or implement a OntologyProperty-to-PhenotipsPropertName mapping service
+     * @return
+     */
+    String getValue();
 }

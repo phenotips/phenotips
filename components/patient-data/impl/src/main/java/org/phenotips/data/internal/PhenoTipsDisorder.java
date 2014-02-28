@@ -19,8 +19,9 @@
  */
 package org.phenotips.data.internal;
 
-import org.phenotips.data.Disorder;
+import net.sf.json.JSONObject;
 
+import org.phenotips.data.Disorder;
 import org.apache.commons.lang3.StringUtils;
 
 import com.xpn.xwiki.objects.DBStringListProperty;
@@ -28,7 +29,7 @@ import com.xpn.xwiki.objects.DBStringListProperty;
 /**
  * Implementation of patient data based on the XWiki data model, where disorder data is represented by properties in
  * objects of type {@code PhenoTips.PatientClass}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -36,12 +37,27 @@ public class PhenoTipsDisorder extends AbstractPhenoTipsOntologyProperty impleme
 {
     /**
      * Constructor that copies the data from an XProperty value.
-     * 
+     *
      * @param property the disorder XProperty
      * @param value the specific value from the property represented by this object
      */
     PhenoTipsDisorder(DBStringListProperty property, String value)
     {
         super(StringUtils.equals(property.getName(), "omim_id") ? "MIM:" + value : value);
+    }
+
+    PhenoTipsDisorder(JSONObject json)
+    {
+        super(json);
+    }
+
+    @Override
+    public String getValue()
+    {
+        if (getId().equals("")) {
+            return getName();
+        }
+        String id = StringUtils.removeStart(getId(), "MIM:");
+        return id;
     }
 }
