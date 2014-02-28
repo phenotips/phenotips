@@ -27,7 +27,7 @@
     <artifactId>phenotips-components</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>medavant-client-api</artifactId>
+  <artifactId>medsavant-client-api</artifactId>
   <name>PhenoTips - MedSavant Integration - Java APIs</name>
   <dependencies>
     <dependency>
