@@ -343,7 +343,8 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
   #foreach ($uix in $uixs)
     {{html clean=false}}$services.rendering.render($uix.execute(), 'xhtml/1.0'){{/html}}
   #end
-#end</content>
+#end
+{{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>org.xwiki.platform.header.bottom</extensionPointId>
@@ -429,9 +430,9 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     <guid>e90fed84-04a2-48f8-bbae-c6f2b1ad8a60</guid>
     <property>
       <content>{{velocity}}{{html clean=false}}
+&lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
 $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
 $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
-&lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
   &lt;div class="rightmenu"&gt;
     &lt;div class="topmenuentry search"&gt;
       #if ($displayQuickSearch &amp;&amp; ($xwiki.exists('Main.Search') || $xwiki.exists('Main.WebSearch')))
@@ -741,6 +742,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 #if ($uixs.size() &gt; 0)
   #foreach ($uix in $uixs)
     {{html clean=false}}$services.rendering.render($uix.execute(), 'xhtml/1.0'){{/html}}
+
   #end
 #else
   {{html clean=false}}
