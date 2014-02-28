@@ -24,7 +24,9 @@ import org.phenotips.data.Patient;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
-import java.util.Map;
+import java.util.List;
+
+import net.sf.json.JSONArray;
 
 /**
  * Communication with a MedSavant server.
@@ -36,11 +38,36 @@ import java.util.Map;
 @Role
 public interface MedSavantServer
 {
+    /**
+     * Upload the VCF files attached to a patient to MedSavant.
+     * 
+     * @param patient the patient to process
+     * @return {@code true} if the upload was successful, {@code false} otherwise
+     */
     boolean uploadVCF(Patient patient);
 
+    /**
+     * Check if there are any variants stored for a patient in MedSavant.
+     * 
+     * @param patient the patient to check
+     * @return {@code true} if there are variants for this patient, {@code false} otherwise
+     */
     boolean hasVCF(Patient patient);
 
-    boolean getPatientVariants(Patient patient);
+    /**
+     * Get all the variants stored for a patient.
+     * 
+     * @param patient the patient to process
+     * @return a list of raw variants, as obtained from MedSavant
+     */
+    List<JSONArray> getPatientVariants(Patient patient);
 
-    boolean getPatientVariants(Patient patient, Map<String, Object> options);
+    /**
+     * Get all the "interesting" variants stored for a patient, where "interesting" means that certain quality, rarity
+     * and harmfulness thresholds have been passed.
+     * 
+     * @param patient the patient to process
+     * @return a list of raw variants, as obtained from MedSavant
+     */
+    List<JSONArray> getFilteredVariants(Patient patient);
 }

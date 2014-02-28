@@ -29,8 +29,12 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +46,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
@@ -49,6 +54,7 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiException;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import net.sf.json.JsonConfig;
 
@@ -63,6 +69,17 @@ import net.sf.json.JsonConfig;
 @Singleton
 public class JsonMedSavantServer implements MedSavantServer, Initializable
 {
+    private static final double POLIPHEN_THRESHOLD = 0.2;
+
+    private static final double QUALITY_THRESHOLD = 30;
+
+    private static final double THOUSAND_GENOMES_THRESHOLD = 0.01;
+
+    private static final String PROJECT_MANAGER = "ProjectManager";
+
+    private static final List<String> IGNORED_EFFECTS = Arrays.asList("ncRNA_INTRONIC", "UPSTREAM", "DOWNSTREAM",
+        "INTERGENIC", "UTR3", "UTR5", "SYNONYMOUS", "INTRONIC");
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -84,14 +101,16 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
     /** The list of reference genomes available in the MedSavant database. */
     private Collection<Integer> referenceIDs;
 
+    private Map<String, String> annotationColumns = new HashMap<String, String>();
+
     @Override
     public void initialize() throws InitializationException
     {
         this.projectID = getProjectID();
         if (this.projectID == null) {
-            throw new InitializationException("Invalid project configured," +
-                " please make sure MedSavant is properly running and the right project name" +
-                " is specified in xwiki.properties under phenotips.medsavant.projectName");
+            throw new InitializationException("Invalid project configured,"
+                + " please make sure MedSavant is properly running and the right project name"
+                + " is specified in xwiki.properties under phenotips.medsavant.projectName");
         }
 
         this.referenceIDs = getReferenceIDs();
@@ -147,17 +166,106 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
     }
 
     @Override
-    public boolean getPatientVariants(Patient patient)
+    public List<JSONArray> getPatientVariants(Patient patient)
     {
-        // TODO Auto-generated method stub
-        return false;
+        PostMethod method = null;
+        List<JSONArray> result = new LinkedList<JSONArray>();
+        try {
+            PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
+            String eid = identifiers.get(0).getValue();
+            String url = getMethodURL("VariantManager", "getVariants");
+            method = new PostMethod(url);
+            JSONArray parameters = new JSONArray();
+            parameters.add(this.projectID); // Project ID
+            parameters.add(0); // Reference ID, will be filled in later, in the loop
+
+            JSONArray conditions = new JSONArray();
+            JSONArray dnaIDConditions = new JSONArray();
+            dnaIDConditions.add(makeCondition(0, "BinaryCondition", "equalTo", "dna_id", eid));
+            conditions.add(dnaIDConditions);
+            parameters.add(conditions); // Conditions
+
+            parameters.add(-1); // Start at
+            parameters.add(-1); // Max number of results -> all
+            for (Integer refID : this.referenceIDs) {
+                parameters.set(1, refID);
+                parameters.getJSONArray(2).getJSONArray(0).getJSONObject(0).put("refId", refID);
+                String body = "json=" + URLEncoder.encode(parameters.toString(), XWiki.DEFAULT_ENCODING);
+                method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
+                    XWiki.DEFAULT_ENCODING));
+                this.client.executeMethod(method);
+                String response = method.getResponseBodyAsString();
+                JSONArray results = (JSONArray) JSONSerializer.toJSON(response);
+                result.addAll(results);
+            }
+        } catch (Exception ex) {
+            this.logger.warn("Failed to get the number of variants for patient [{}]: {}", patient.getDocument(),
+                ex.getMessage(), ex);
+        } finally {
+            if (method != null) {
+                method.releaseConnection();
+            }
+        }
+        return result;
     }
 
     @Override
-    public boolean getPatientVariants(Patient patient, Map<String, Object> options)
+    public List<JSONArray> getFilteredVariants(Patient patient)
     {
-        // TODO Auto-generated method stub
-        return false;
+        PostMethod method = null;
+        List<JSONArray> result = new LinkedList<JSONArray>();
+        try {
+            for (Integer refID : this.referenceIDs) {
+                PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
+                String eid = identifiers.get(0).getValue();
+                String url = getMethodURL("VariantManager", "getVariants");
+                method = new PostMethod(url);
+                JSONArray parameters = new JSONArray();
+                parameters.add(this.projectID); // Project ID
+                parameters.add(refID); // Reference ID
+
+                Collection<JSONObject> poliphenConditions = new LinkedList<JSONObject>();
+                String poliphenColumn = getAnnotationColumnName(refID, "ljb2_pp2hvar", "Score");
+                String thousandGColumn = getAnnotationColumnName(refID, "1000g2012apr_all", "Score");
+                poliphenConditions.add(makeCondition(refID, "BinaryCondition", "greaterThan",
+                    poliphenColumn, POLIPHEN_THRESHOLD, true));
+                poliphenConditions.add(makeCondition(refID, "UnaryCondition", "isNull", poliphenColumn));
+                JSONArray conditions = new JSONArray();
+                for (JSONObject poliphenCondition : poliphenConditions) {
+                    JSONArray conditionsRow = new JSONArray();
+                    conditionsRow.add(makeCondition(refID, "BinaryCondition", "equalTo", "dna_id", eid));
+                    conditionsRow.add(makeCondition(refID, "BinaryCondition", "greaterThan", "qual", QUALITY_THRESHOLD,
+                        true));
+                    conditionsRow.add(makeCondition(refID, "BinaryCondition", "lessThan", thousandGColumn,
+                        THOUSAND_GENOMES_THRESHOLD, true));
+                    for (String effect : IGNORED_EFFECTS) {
+                        conditionsRow.add(makeCondition(refID, "BinaryCondition", "notEqualTo", "effect", effect));
+                    }
+                    conditionsRow.add(poliphenCondition);
+                    conditions.add(conditionsRow);
+                }
+                parameters.add(conditions); // Conditions
+
+                parameters.add(-1); // Start at
+                parameters.add(-1); // Max number of results -> all
+                String body = "json=" + URLEncoder.encode(parameters.toString(), XWiki.DEFAULT_ENCODING);
+                this.logger.error(body);
+                method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
+                    XWiki.DEFAULT_ENCODING));
+                this.client.executeMethod(method);
+                String response = method.getResponseBodyAsString();
+                JSONArray results = (JSONArray) JSONSerializer.toJSON(response);
+                result.addAll(results);
+            }
+        } catch (Exception ex) {
+            this.logger.warn("Failed to get the number of variants for patient [{}]: {}", patient.getDocument(),
+                ex.getMessage(), ex);
+        } finally {
+            if (method != null) {
+                method.releaseConnection();
+            }
+        }
+        return result;
     }
 
     /**
@@ -171,44 +279,9 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
      */
     private String getMethodURL(String service, String method) throws XWikiException
     {
-        String result =
-            this.configuration.getProperty("phenotips.medsavant.baseUrl",
-                "http://localhost:8080/medsavant-json-client/");
+        String result = this.configuration.getProperty("phenotips.medsavant.baseUrl",
+            "http://localhost:8080/medsavant-json-client/");
         return result + service + "/" + method;
-    }
-
-    public String getPatientId(Patient patient)
-    {
-        PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
-        String eid = identifiers.get(0).getValue();
-
-        PostMethod method = null;
-        try {
-            String url = getMethodURL("PatientManager", "getValuesFromField");
-            method = new PostMethod(url);
-            JSONArray parameters = new JSONArray();
-            parameters.add(this.projectID);
-            parameters.add("hospital_id");
-            parameters.add("patient_id");
-            JSONArray ids = new JSONArray();
-            ids.add(eid);
-            parameters.add(ids);
-            String body = "json=" + URLEncoder.encode(parameters.toString(), XWiki.DEFAULT_ENCODING);
-            method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                XWiki.DEFAULT_ENCODING));
-            this.client.executeMethod(method);
-            String response = method.getResponseBodyAsString();
-            JSONArray responseJSON = (JSONArray) JSONSerializer.toJSON(response);
-            return responseJSON.isEmpty() ? "" : responseJSON.getString(0);
-        } catch (Exception ex) {
-            this.logger.warn("Failed to get the number of variants for patient [{}]: {}", patient.getDocument(),
-                ex.getMessage(), ex);
-        } finally {
-            if (method != null) {
-                method.releaseConnection();
-            }
-        }
-        return "";
     }
 
     private Integer getProjectID()
@@ -216,7 +289,7 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
         PostMethod method = null;
         String projectName = this.configuration.getProperty("phenotips.medsavant.projectName", "pc");
         try {
-            String url = getMethodURL("ProjectManager", "getProjectID");
+            String url = getMethodURL(PROJECT_MANAGER, "getProjectID");
             method = new PostMethod(url);
             JSONArray parameters = new JSONArray();
             parameters.add(projectName);
@@ -242,7 +315,7 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
     {
         PostMethod method = null;
         try {
-            String url = getMethodURL("ProjectManager", "getReferenceIDsForProject");
+            String url = getMethodURL(PROJECT_MANAGER, "getReferenceIDsForProject");
             method = new PostMethod(url);
             JSONArray parameters = new JSONArray();
             parameters.add(this.projectID);
@@ -263,5 +336,65 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             }
         }
         return Collections.emptySet();
+    }
+
+    private String getAnnotationColumnName(Integer refID, String programName, String subtype)
+    {
+        String alias = programName + ", " + subtype;
+        if (this.annotationColumns.containsKey(alias)) {
+            return this.annotationColumns.get(alias);
+        }
+        PostMethod method = null;
+        try {
+            String url = getMethodURL("AnnotationManager", "getAnnotationFormats");
+            method = new PostMethod(url);
+            JSONArray parameters = new JSONArray();
+            parameters.add(this.projectID);
+            parameters.add(refID);
+            String body = "json=" + URLEncoder.encode(parameters.toString(), XWiki.DEFAULT_ENCODING);
+            method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
+                XWiki.DEFAULT_ENCODING));
+            this.client.executeMethod(method);
+            String response = method.getResponseBodyAsString();
+            JSONArray annotations = (JSONArray) JSONSerializer.toJSON(response);
+            for (int i = 0; i < annotations.size(); ++i) {
+                JSONObject annotation = annotations.getJSONObject(i);
+                String program = annotation.getString("program");
+                if (!program.startsWith(programName + " ")) {
+                    continue;
+                }
+                JSONArray fields = annotation.getJSONArray("fields");
+                for (int j = 0; j < fields.size(); ++j) {
+                    String currentAlias = fields.getJSONObject(j).getString("alias");
+                    if (StringUtils.equals(currentAlias, alias)) {
+                        String name = fields.getJSONObject(j).getString("name");
+                        this.annotationColumns.put(alias, name);
+                        return name;
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            this.logger.warn("Failed to get the annotation column for [{}]: {}", programName, ex.getMessage(), ex);
+        } finally {
+            if (method != null) {
+                method.releaseConnection();
+            }
+        }
+        return "";
+    }
+
+    private JSONObject makeCondition(Integer refID, String type, String method, Object... args)
+    {
+        JSONObject result = new JSONObject();
+        result.put("projectId", this.projectID);
+        result.put("refId", refID);
+        result.put("type", type);
+        result.put("method", method);
+        JSONArray values = new JSONArray();
+        for (Object arg : args) {
+            values.add(arg);
+        }
+        result.put("args", values);
+        return result;
     }
 }
