@@ -372,7 +372,7 @@
           _this._editorLauncher._disabled = true;
           _this._messages.update('');
           _this._dialog.showDialog();
-          _this._container.up('.msdialog-modal-container').style.zIndex = 1001;
+          _this._container.up('.msdialog-modal-container').style.zIndex = 3001;
           _this._collaboratorsList.update('&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;&lt;/td&gt;&lt;/tr&gt;');
         },
         onSuccess : function(response) {
@@ -532,6 +532,7 @@ document.observe("xwiki:dom:loaded", function() {
       <code>#template("colorThemeInit.vm")
 
 #access-rights-summary {
+  font-size: .87em;
   float: right;
 }
 #access-rights-summary .access-rights-info {
@@ -542,6 +543,11 @@ document.observe("xwiki:dom:loaded", function() {
   font-weight: bold;
   margin: 5px 5px 0 0;
   padding: 2px 3px;
+}
+#access-rights-summary a.button {
+  font-size: 1em;
+  text-transform: none;
+  font-weight: normal;
 }
 
 #access-levels-manager h2 {
@@ -703,7 +709,7 @@ $xwiki.ssx.use($serviceDocName)
     #if ($canManage),#else and#end it is (% class="access-rights-info visibility" title="$!{visibility.description}" %){{icon name="$visibility"/}}${visibility.label}(%%)##
     #if ($canManage) ##
       and it is shared with (% class="access-rights-info" %){{html wiki="true" clean="false"}}{{icon name="group"/}}&lt;span class="collaborators"&gt;$collaboratorsCount collaborator#if ($collaboratorsCount != 1)s#{end}&lt;/span&gt;{{/html}}. ##
-      (% class="buttonwrapper tool edit" %)[[ {{icon name="edit" title="Modify visibility and collaborations" /}}&gt;&gt;path:#||class="button"]]##
+      (% class="buttonwrapper tool edit" %)[[ {{icon name="edit" title="Modify visibility and collaborations" /}} Modify permissions&gt;&gt;path:#||class="button"]]##
       (% class="hidden" %)((({{html wiki="true" clean="false"}}
         &lt;input type="hidden" name="serviceURL" value="$serviceDoc.getURL('get', 'outputSyntax=plain')"/&gt;
         #foreach ($l in $_service.listAccessLevels())
