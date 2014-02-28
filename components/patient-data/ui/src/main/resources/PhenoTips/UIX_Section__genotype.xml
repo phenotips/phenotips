@@ -22,7 +22,7 @@
 
 <xwikidoc>
   <web>PhenoTips</web>
-  <name>UIX_Section__molecular-genetics-info</name>
+  <name>UIX_Section__genotype</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,17 +31,17 @@
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1377394334000</creationDate>
-  <date>1377275368000</date>
-  <contentUpdateDate>1377274065000</contentUpdateDate>
+  <creationDate>1393126311000</creationDate>
+  <date>1393126336000</date>
+  <contentUpdateDate>1393126311000</contentUpdateDate>
   <version>1.1</version>
-  <title>Molecular genetics</title>
+  <title>Genotype information</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>true</hidden>
+  <hidden>false</hidden>
   <object>
     <class>
       <name>XWiki.UIExtensionClass</name>
@@ -107,27 +107,21 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.UIX_Section__molecular-genetics-info</name>
+    <name>PhenoTips.UIX_Section__genotype</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>242c882c-9542-4e2d-8fd3-d37e743c8355</guid>
-    <property>
-      <content/>
-    </property>
+    <guid>f2e0c557-0a81-4574-bd9f-b45737678322</guid>
     <property>
       <extensionPointId>org.phenotips.patientSheet.content</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.section.molecular-genetics-info</name>
+      <name>org.phenotips.patientSheet.section.genotype</name>
     </property>
     <property>
-      <parameters>title=Molecular genetics
-enabled=false
-required=
-order=9</parameters>
-    </property>
-    <property>
-      <scope>wiki</scope>
+      <parameters>${prevParamsBlock}
+enabled=true
+order=11
+title=Genotype information</parameters>
     </property>
   </object>
   <content/>
