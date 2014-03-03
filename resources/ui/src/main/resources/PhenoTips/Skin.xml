@@ -919,7 +919,7 @@ TXVppcEAAAAASUVORK5CYII=
   padding: 3px 0;
   position: relative;
 }
-.general-tools label{
+.general-tools label {
   color: $theme.linkColor;
   cursor: pointer;
 }
