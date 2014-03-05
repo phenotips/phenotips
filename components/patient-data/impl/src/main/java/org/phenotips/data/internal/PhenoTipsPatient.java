@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -73,8 +74,8 @@ public class PhenoTipsPatient implements Patient
     private static final String PHENOTYPE_NEGATIVE_PROPERTY = "negative_phenotype";
     private static final String[] PHENOTYPE_PROPERTIES = new String[]{PHENOTYPE_POSITIVE_PROPERTY, PHENOTYPE_NEGATIVE_PROPERTY};
 
-    private static final String DISEASE_PROPERTIES_OMIMID = "omim_id";
-    private static final String[] DISEASE_PROPERTIES = new String[]{DISEASE_PROPERTIES_OMIMID};
+    private static final String DISORDER_PROPERTIES_OMIMID = "omim_id";
+    private static final String[] DISORDER_PROPERTIES = new String[]{DISORDER_PROPERTIES_OMIMID};
 
     /** used for generating JSON and reading from JSON */
     private static final String JSON_KEY_FEATURES  = "features";
@@ -130,7 +131,7 @@ public class PhenoTipsPatient implements Patient
                     }
                 }
             }
-            for (String property : DISEASE_PROPERTIES) {
+            for (String property : DISORDER_PROPERTIES) {
                 DBStringListProperty values = (DBStringListProperty) data.get(property);
                 if (values != null) {
                     for (String value : values.getList()) {
@@ -238,7 +239,7 @@ public class PhenoTipsPatient implements Patient
             result.element(JSON_KEY_FEATURES, featuresJSON);
         }
 
-        if (!this.disorders.isEmpty() && isFieldIncluded(onlyFieldNames, DISEASE_PROPERTIES)) {
+        if (!this.disorders.isEmpty() && isFieldIncluded(onlyFieldNames, DISORDER_PROPERTIES)) {
             JSONArray diseasesJSON = new JSONArray();
             for (Disorder disease : this.disorders) {
                 diseasesJSON.add(disease.toJSON());
@@ -273,10 +274,9 @@ public class PhenoTipsPatient implements Patient
 
             JSONArray features = json.optJSONArray(JSON_KEY_FEATURES);
             if (features != null) {
-                this.features = new TreeSet<Feature>();
-
-                DBStringListProperty positiveValues = (DBStringListProperty) data.get(PHENOTYPE_POSITIVE_PROPERTY);
-                DBStringListProperty negativeValues = (DBStringListProperty) data.get(PHENOTYPE_NEGATIVE_PROPERTY);
+                List<String> positiveValues = new LinkedList<String>();  // new features lists (for setting values in the Wiki document)
+                List<String> negativeValues = new LinkedList<String>();  // (note: will overwrite existing list, and it is ok for it to be empty)
+                this.features               = new TreeSet<Feature>();    // keep this instance of PhenotipsPatient in sync with the document
 
                 for (int i = 0; i < features.size(); i++) {
                     JSONObject featureInJSON = features.optJSONObject(i);
@@ -285,29 +285,24 @@ public class PhenoTipsPatient implements Patient
                     this.features.add(phenotipsFeature);
 
                     if (phenotipsFeature.isPresent()) {
-                        if (positiveValues == null) {
-                            positiveValues = new DBStringListProperty(); // only create if at least one positive disorder
-                            data.put(PHENOTYPE_POSITIVE_PROPERTY, positiveValues);
-                        }
-                        positiveValues.getList().add(phenotipsFeature.getValue());
+                        positiveValues.add(phenotipsFeature.getValue());
                     }
                     else {
-                        if (negativeValues == null) {
-                            negativeValues = new DBStringListProperty(); // only create if at least one negative disorder
-                            data.put(PHENOTYPE_NEGATIVE_PROPERTY, negativeValues);
-                        }
-                        negativeValues.getList().add(phenotipsFeature.getValue());
+                        negativeValues.add(phenotipsFeature.getValue());
                     }
                 }
+
                 this.features = Collections.unmodifiableSet(this.features);  // same as in constructor
+                // update the values in the document (overwriting the old list, if any)
+                data.set(PHENOTYPE_POSITIVE_PROPERTY, positiveValues, context);
+                data.set(PHENOTYPE_NEGATIVE_PROPERTY, negativeValues, context);
                 context.getWiki().saveDocument(doc, "Updated features from JSON", true, context);
             }
 
             JSONArray disorders = json.optJSONArray(JSON_KEY_DISORDERS);
             if (disorders != null) {
-                this.disorders = new TreeSet<Disorder>();
-
-                DBStringListProperty disorderValues = (DBStringListProperty) data.get(DISEASE_PROPERTIES_OMIMID);
+                List<String> disorderValues = new LinkedList<String>();   // new disorders list (for setting values in the Wiki document)
+                this.disorders              = new TreeSet<Disorder>();    // keep this instance of PhenotipsPatient in sync with the document
 
                 for (int i = 0; i < disorders.size(); i++) {
                     JSONObject disorderJSON = disorders.optJSONObject(i);
@@ -315,13 +310,12 @@ public class PhenoTipsPatient implements Patient
                     Disorder phenotipsDisorder = new PhenoTipsDisorder(disorderJSON);
                     this.disorders.add(phenotipsDisorder);
 
-                        if (disorderValues == null) {
-                            disorderValues = new DBStringListProperty();
-                            data.put(DISEASE_PROPERTIES_OMIMID, disorderValues);
-                        }
-                        disorderValues.getList().add(phenotipsDisorder.getValue());
+                    disorderValues.add(phenotipsDisorder.getValue());
                 }
+
                 this.disorders = Collections.unmodifiableSet(this.disorders);  // same as in constructor
+                // update the values in the document (overwriting the old list, if any)
+                data.set(DISORDER_PROPERTIES_OMIMID, disorderValues, context);
                 context.getWiki().saveDocument(doc, "Updated disorders from JSON", true, context);
             }
 

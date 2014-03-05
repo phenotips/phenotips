@@ -116,8 +116,10 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
         Set<String> extendedPhenotypes = new HashSet<String>();
         for (String phenotype : phenotypes) {
             OntologyTerm phenotypeTerm = ontologyManager.resolveTerm(phenotype);
-            for (OntologyTerm term : phenotypeTerm.getAncestorsAndSelf()) {
-                extendedPhenotypes.add(term.getId());
+            if (phenotypeTerm != null) {
+                for (OntologyTerm term : phenotypeTerm.getAncestorsAndSelf()) {
+                    extendedPhenotypes.add(term.getId());
+                }
             }
         }
         patientRecordObj.setDBStringListValue(extendedFieldName, new ArrayList<String>(extendedPhenotypes));
