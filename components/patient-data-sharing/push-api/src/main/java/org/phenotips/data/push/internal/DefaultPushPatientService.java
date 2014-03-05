@@ -110,6 +110,12 @@ public class DefaultPushPatientService implements PushPatientService
         this.storageManager.storeRemoteLoginData(localUserName, remoteServerIdentifier, remoteUser, loginToken);
     }
 
+    protected void removeUserData(String remoteServerIdentifier)
+    {
+        String localUserName = getLocalUserName();
+        this.storageManager.removeRemoteLoginData(localUserName, remoteServerIdentifier);
+    }
+
     private String getLocalUserName()
     {
         XWikiContext context = getXContext();
@@ -190,6 +196,25 @@ public class DefaultPushPatientService implements PushPatientService
         return patient;
     }
 
+    private Set<String> parseJSONArrayIntoSet(String listOfStrings)
+    {
+        Set<String> fieldSet = null;
+        try {
+            if (listOfStrings != null) {
+                JSONArray fields = JSONArray.fromObject(listOfStrings);
+                if (fields != null) {
+                    fieldSet = new TreeSet<String>();
+                    for (Object field: fields) {
+                        fieldSet.add(field.toString());
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            // ignore
+        }
+        return fieldSet;
+    }
+
     @Override
     public JSONObject getLocalPatientJSON(String patientID, String exportFieldListJSON)
     {
@@ -198,28 +223,31 @@ public class DefaultPushPatientService implements PushPatientService
             return null;
         }
 
-        Set<String> fieldSet = null;
-        if (exportFieldListJSON != null) {
-            JSONArray fields = JSONArray.fromObject(exportFieldListJSON);
-            if (fields != null) {
-                fieldSet = new TreeSet<String>();
-                for (Object field: fields) {
-                    fieldSet.add(field.toString());
-                }
-            }
-        }
-
-        return patient.toJSON(fieldSet);
+        return patient.toJSON(parseJSONArrayIntoSet(exportFieldListJSON));
     }
 
     @Override
-    public PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier, String remoteUserName, String password)
+    public PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier, String remoteUserName, String password, boolean saveUserToken)
     {
         PushServerConfigurationResponse response = this.internalService.getRemoteConfiguration(remoteServerIdentifier, remoteUserName, password, null);
 
-        storeUserData(remoteServerIdentifier, remoteUserName, response.getRemoteUserToken());   // note: even if newly received token is null
+        if (response != null && response.isSuccessful()) {
+            if (saveUserToken) {
+                storeUserData(remoteServerIdentifier, remoteUserName, response.getRemoteUserToken());   // note: even if newly received token is null
+            }
+            else {
+                removeUserData(remoteServerIdentifier);
+            }
+
+        }
 
         return response;
+    }
+
+    @Override
+    public void removeStoredLoginTokens(String remoteServerIdentifier)
+    {
+        removeUserData(remoteServerIdentifier);
     }
 
     @Override
@@ -232,7 +260,7 @@ public class DefaultPushPatientService implements PushPatientService
         PushServerConfigurationResponse response = this.internalService.getRemoteConfiguration(remoteServerIdentifier,
                                                       storedData.getRemoteUserName(), null, storedData.getLoginToken());
 
-        if (response.getRemoteUserToken() != null && response.getRemoteUserToken() != storedData.getLoginToken()) {
+        if (response != null && response.getRemoteUserToken() != null && response.getRemoteUserToken() != storedData.getLoginToken()) {
             storeUserData(remoteServerIdentifier, storedData.getRemoteUserName(), response.getRemoteUserToken());  // update token to newly received one
         }
 
@@ -240,7 +268,7 @@ public class DefaultPushPatientService implements PushPatientService
     }
 
     @Override
-    public PushServerSendPatientResponse sendPatient(String patientID, Set<String> exportFields, String groupName,
+    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String groupName,
                                                      String remoteGUID, String remoteServerIdentifier)
     {
         Patient patient = getPatientByID(patientID, "push");
@@ -251,10 +279,12 @@ public class DefaultPushPatientService implements PushPatientService
         if (storedData == null || storedData.getRemoteUserName() == null || storedData.getLoginToken() == null)
             return new DefaultPushServerSendPatientResponse(DefaultPushServerResponse.generateIncorrectCredentialsJSON());
 
+        Set<String> exportFields = parseJSONArrayIntoSet(exportFieldListJSON);
+
         PushServerSendPatientResponse response =  this.internalService.sendPatient(patient, exportFields, groupName, remoteGUID, remoteServerIdentifier,
                                                                                    storedData.getRemoteUserName(), null, storedData.getLoginToken());
 
-        if (response.isSuccessful()) {
+        if (response != null && response.isSuccessful()) {
             this.storageManager.storePatientPushInfo(patient.getDocument().getName(), remoteServerIdentifier,
                                                      response.getRemotePatientGUID(), response.getRemotePatientID(), response.getRemotePatientURL());
         }
@@ -262,7 +292,7 @@ public class DefaultPushPatientService implements PushPatientService
     }
 
     @Override
-    public PushServerSendPatientResponse sendPatient(String patientID, Set<String> exportFields, String groupName,
+    public PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String groupName,
                                                      String remoteGUID, String remoteServerIdentifier,
                                                      String remoteUserName, String password)
     {
@@ -271,10 +301,12 @@ public class DefaultPushPatientService implements PushPatientService
             return new DefaultPushServerSendPatientResponse(DefaultPushServerResponse.generateActionFailedJSON());
         }
 
+        Set<String> exportFields = parseJSONArrayIntoSet(exportFieldListJSON);
+
         PushServerSendPatientResponse response = this.internalService.sendPatient(patient, exportFields, groupName, remoteGUID, remoteServerIdentifier,
                                                                                   remoteUserName, password, null);
 
-        if (response.isSuccessful()) {
+        if (response != null && response.isSuccessful()) {
             this.storageManager.storePatientPushInfo(patient.getDocument().getName(), remoteServerIdentifier,
                                                      response.getRemotePatientGUID(), response.getRemotePatientID(), response.getRemotePatientURL());
         }

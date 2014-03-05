@@ -40,4 +40,6 @@ public interface PatientPushHistory
     Timestamp getLastPushTime();
 
     long getLastPushAgeInDays();
+
+    long getLastPushAgeInHours();
 }

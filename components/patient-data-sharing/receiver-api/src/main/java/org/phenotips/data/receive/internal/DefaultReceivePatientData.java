@@ -459,7 +459,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
             affectedPatient.updateFromJSON(patientData);
 
-            this.logger.warn("Imported new patient successfully");
+            this.logger.warn("Updated patient successfully");
 
             // store separately from the patient object
             BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context);
@@ -587,8 +587,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
         try {
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(patient.getDocument());
 
-            if ((doc.getCreatorReference() == null || doc.getCreatorReference().getName() != userName) &&
-                (doc.getAuthorReference()  == null || doc.getAuthorReference() .getName() != userName)) {
+            if ((doc.getCreatorReference() == null || !doc.getCreatorReference().getName().equals(userName)) &&
+                (doc.getAuthorReference()  == null || !doc.getAuthorReference() .getName().equals(userName))) {
                 return false;
             }
         } catch (Exception ex) {

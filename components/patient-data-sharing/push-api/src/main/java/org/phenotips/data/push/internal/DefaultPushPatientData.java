@@ -236,11 +236,13 @@ public class DefaultPushPatientData implements PushPatientData
                                         userName, password, user_token);
             if (method == null) return null;
 
-            exportFields.add(VersionsController.getEnablingFieldName());   // require version information in JSON output
+            if (exportFields != null) {                                        // when exportFields is null everything is included anyway
+                exportFields.add(VersionsController.getEnablingFieldName());   // require version information in JSON output
+            }
 
             String patientJSON = patient.toJSON(exportFields).toString();
 
-            this.logger.warn("===> Patient\\Document {} as JSON: {}", patient.getDocument().getName(), patientJSON);
+            //this.logger.warn("===> Patient\\Document {} as JSON: {}", patient.getDocument().getName(), patientJSON);
 
             method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PATIENTJSON,
                                 URLEncoder.encode(patientJSON, XWiki.DEFAULT_ENCODING));

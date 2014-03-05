@@ -64,9 +64,9 @@ public interface PushPatientService
      * When exportFieldListJSON is {@code null} all available data is returned.
      *
      * @param patientID PhenoTips Patient ID
-     * @param exportFieldListJSON a string in the JSON Array format with the list of fields
+     * @param exportFieldListJSON a string in the JSON array format with the list of fields
      *                            which should be included in the output. When not {@code null}
-     *                            only those patient data fields listed will be serialized.
+     *                            only patient data fields listed will be serialized.
      * @return
      */
     JSONObject getLocalPatientJSON(String patientID, String exportFieldListJSON);
@@ -84,11 +84,14 @@ public interface PushPatientService
      * @param remoteServerIdentifier server name as configured in TODO
      * @param userName user name on the remote server
      * @param password user password on the remote server
+     * @param saveUserToken save userLoignToken received from the remote server or not. The user may not wish to
+     *                      compromise his account on the remote server if someone gets access to the account on the local server
      * @return server response which, upon successful login, contains the list of remote phenotips groups the user is a part of as
      * well as the list of accepted patient fields.<p>
      * Returns {@code null} if no response was received from the server (e.g. a wrong server IP, a network problem, etc.)
      */
-    PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier, String remoteUserName, String password);
+    PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier,
+                                                           String remoteUserName, String password, boolean saveUserToken);
     /**
      * Same as above, but uses the previously stored remote user name and login token to authenticate
      * on the remote server. The retrieved user name and token are based on the current local user and the remote server.<p>
@@ -99,6 +102,11 @@ public interface PushPatientService
      */
     PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier);
 
+    /**
+     * Removes stored remote login token, if any - for security purposes
+     * @param remoteServerIdentifier
+     */
+    void removeStoredLoginTokens(String remoteServerIdentifier);
 
     /**
      * Submits the specified subset of patient data to the specified remote server. The new patient created on the remote
@@ -109,7 +117,9 @@ public interface PushPatientService
      * will be updated (only the submitted fields)
      *
      * @param patient local patient to be pushed to the remove server
-     * @param exportFields patient fields to be pushed. All other fields will be omitted.
+     * @param exportFieldListJSON patient fields to be pushed, as a string representing a JSON array.
+     *                            When not {@code null} only patient data fields listed will be pushed.
+     *                            When {@code null}, all available data fields will be pushed.
      * @param groupName group name (optional, can be {@code null})
      * @param remoteGUID if a remote patient with the same GUID exists and is owned by the given group and is authored by the given user
      *                   patient data will be updated instead of creating a new patient (optional, can be {@code null})
@@ -120,7 +130,7 @@ public interface PushPatientService
      * @return Server response, see {@code PushServerSendPatientResponse}.<p>
      * Returns {@code null} if no response was received from the server (e.g. a wrong server IP, a network problem, etc.)
      */
-    PushServerSendPatientResponse sendPatient(String patientID, Set<String> exportFields, String groupName,
+    PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String groupName,
                                               String remoteGUID, String remoteServerIdentifier,
                                               String remoteUserName, String password);
     /**
@@ -131,7 +141,7 @@ public interface PushPatientService
      * {@code PushServerSendPatientResponse} equivalent to the "incorrect password" response.
      * Otherwise see the docs for the other version.
      */
-    PushServerSendPatientResponse sendPatient(String patientID, Set<String> exportFields, String groupName,
+    PushServerSendPatientResponse sendPatient(String patientID, String exportFieldListJSON, String groupName,
                                               String remoteGUID, String remoteServerIdentifier);
 
     /**

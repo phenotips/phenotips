@@ -45,6 +45,8 @@ public interface SecureStorageManager
     void storeRemoteLoginData(String userName, String serverName, String remoteUserName, String remoteLoginToken);
     void storeLocalLoginToken(String userName, String sourceServerName, String loginToken);
 
+    void removeRemoteLoginData(String userName, String serverName);
+
     // null if not found
     RemoteLoginData getRemoteLoginData(String userName, String serverName);
     LocalLoginToken getLocalLoginToken(String userName, String sourceServerName);

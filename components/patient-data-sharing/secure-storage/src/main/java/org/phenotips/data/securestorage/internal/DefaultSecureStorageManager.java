@@ -55,6 +55,20 @@ public class DefaultSecureStorageManager implements SecureStorageManager
     private Logger logger;
 
     @Override
+    public void removeRemoteLoginData(String localUserName, String serverName)
+    {
+        RemoteLoginData existing = getRemoteLoginData(localUserName, serverName);
+        if (existing != null) {
+            Session session = this.sessionFactory.getSessionFactory().openSession();
+            Transaction t = session.beginTransaction();
+            t.begin();
+            this.logger.warn("DEBUG: removing stored token for [{}] @ [{}]", localUserName, serverName);
+            session.delete(existing);
+            t.commit();
+        }
+    }
+
+    @Override
     public void storeRemoteLoginData(String localUserName, String serverName, String remoteUserName, String remoteLoginToken)
     {
         RemoteLoginData existing = getRemoteLoginData(localUserName, serverName);
@@ -204,6 +218,7 @@ public class DefaultSecureStorageManager implements SecureStorageManager
         {
             this.logger.warn("DEBUG: Updating patient push info");
             existing.setLastPushTimeToNow();
+            existing.setRemotePatientID(remotePatientID);
             existing.setRemotePatientGUID(remotePatientGUID);
             existing.setRemotePatientURL(remotePatientURL);
             session.update(existing);

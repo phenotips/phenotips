@@ -74,6 +74,13 @@ public class DefaultPatientPushHistory implements PatientPushHistory
     }
 
     @Override
+    public long getLastPushAgeInHours()
+    {
+        long diffInMilliseconds = System.currentTimeMillis() - getLastPushTime().getTime();
+        return (diffInMilliseconds / (1000 * 60 * 60));
+    }
+
+    @Override
     public String getRemotePatientGUID()
     {
         return remotePatientGUID;
