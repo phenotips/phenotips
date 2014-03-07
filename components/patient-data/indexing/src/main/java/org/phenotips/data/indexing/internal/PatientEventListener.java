@@ -85,6 +85,12 @@ public class PatientEventListener implements EventListener
         }
 
         @Override
+        public String getExternalId()
+        {
+            return null;
+        }
+
+        @Override
         public JSONObject toJSON()
         {
             return null;

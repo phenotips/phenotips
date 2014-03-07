@@ -54,6 +54,13 @@ public interface Patient
     String getId();
 
     /**
+     * Returns the external ID of the patient document.
+     *
+     * @return string ID
+     */
+    String getExternalId();
+
+    /**
      * Returns a reference to the document where the patient data is stored.
      * 
      * @return a valid document reference
