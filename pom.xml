@@ -598,6 +598,13 @@
             <excludes>
               <exclude>**/internal/**</exclude>
             </excludes>
+            <ignored>
+              <difference>
+                <className>**/data/Patient</className>
+                <differenceType>7012</differenceType>
+                <method>java.lang.String getId()</method>
+              </difference>
+            </ignored>
           </configuration>
         </plugin>
         <plugin>

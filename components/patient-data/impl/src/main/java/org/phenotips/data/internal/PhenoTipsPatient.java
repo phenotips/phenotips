@@ -157,6 +157,12 @@ public class PhenoTipsPatient implements Patient
     }
 
     @Override
+    public String getId()
+    {
+        return this.document.getName();
+    }
+
+    @Override
     public DocumentReference getDocument()
     {
         return this.document;

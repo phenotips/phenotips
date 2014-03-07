@@ -47,6 +47,13 @@ public interface Patient
     EntityReference DEFAULT_DATA_SPACE = new EntityReference("data", EntityType.SPACE);
 
     /**
+     * Returns the ID of the patient document.
+     *
+     * @return string ID
+     */
+    String getId();
+
+    /**
      * Returns a reference to the document where the patient data is stored.
      * 
      * @return a valid document reference
