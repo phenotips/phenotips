@@ -79,6 +79,12 @@ public class PatientEventListener implements EventListener
         }
 
         @Override
+        public String getId()
+        {
+            return this.document.getName();
+        }
+
+        @Override
         public JSONObject toJSON()
         {
             return null;
