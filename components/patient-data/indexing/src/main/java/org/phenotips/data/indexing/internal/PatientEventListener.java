@@ -44,6 +44,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
 import net.sf.json.JSONObject;
 
 /**
@@ -82,6 +84,23 @@ public class PatientEventListener implements EventListener
         public String getId()
         {
             return this.document.getName();
+        }
+
+        @Override
+        public String getExternalId()
+        {
+            try {
+                for (ImmutablePair<String, String> identifier : this
+                    .<ImmutablePair<String, String>>getData("identifiers"))
+                {
+                    if (identifier.getKey().equalsIgnoreCase("external_id")) {
+                        return identifier.getValue();
+                    }
+                }
+            } catch (Exception ex) {
+                return null;
+            }
+            return null;
         }
 
         @Override

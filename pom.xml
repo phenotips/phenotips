@@ -604,6 +604,11 @@
                 <differenceType>7012</differenceType>
                 <method>java.lang.String getId()</method>
               </difference>
+              <difference>
+                <className>**/data/Patient</className>
+                <differenceType>7012</differenceType>
+                <method>java.lang.String getExternalId()</method>
+              </difference>
             </ignored>
           </configuration>
         </plugin>
