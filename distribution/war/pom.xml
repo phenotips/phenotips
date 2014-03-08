@@ -41,12 +41,29 @@
     <xwiki.extension.distribution.ui>org.phenotips:phenotips-ui</xwiki.extension.distribution.ui>
   </properties>
   <dependencies>
+    <!-- Needed for compiling patched Java code -->
+    <dependency>
+      <groupId>net.sf.jtidy</groupId>
+      <artifactId>jtidy</artifactId>
+      <version>r938</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+    <!-- Base XWiki WAR -->
     <dependency>
       <groupId>org.xwiki.enterprise</groupId>
       <artifactId>xwiki-enterprise-web</artifactId>
       <version>${xwiki.version}</version>
       <type>war</type>
     </dependency>
+    <!-- PhenoTips components -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>component-registry</artifactId>
