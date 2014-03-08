@@ -169,6 +169,44 @@
         <classifier>jdk15</classifier>
         <version>2.4</version>
       </dependency>
+      <!-- Force a specific version since older incompatible versions are pulled otherwise -->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>13.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore-nio</artifactId>
+        <version>4.3.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>4.3.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.3.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpasyncclient</artifactId>
+        <version>4.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>rome</groupId>
+        <artifactId>rome</artifactId>
+        <version>1.0</version>
+        <exclusions>
+          <exclusion>
+            <!-- We're using the newer org.jdom:jdom -->
+            <groupId>jdom</groupId>
+            <artifactId>jdom</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
