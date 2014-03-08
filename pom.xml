@@ -124,7 +124,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <xwiki.version>5.2-milestone-2</xwiki.version>
+    <xwiki.version>5.4.2</xwiki.version>
     <slf4j.version>1.7.5</slf4j.version>
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>
