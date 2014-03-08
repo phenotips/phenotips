@@ -837,6 +837,12 @@ solr.remote.url=http://localhost:8080/solr/xwiki/
               <type>jar</type>
               <targetPath>resources/uicomponents/</targetPath>
             </overlay>
+            <overlay>
+              <groupId>org.xwiki.platform</groupId>
+              <artifactId>xwiki-platform-colibri</artifactId>
+              <type>zip</type>
+              <targetPath>skins/</targetPath>
+            </overlay>
           </overlays>
         </configuration>
       </plugin>
