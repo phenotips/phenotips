@@ -1352,6 +1352,22 @@ document.observe('xwiki:dom:loaded', function() {
                   suggestion.down(".suggestValue").up().insert({top: ynpicker});
                   // Prevent click events from the label from activating the suggestion selection twice because of being forwarded to the input
                   ynpicker.select('input').invoke('observe', 'click', function(event) {event.stop()});
+                  
+                  // Make it clear visually that clicking on the suggestion is equivalent to clicking on Y
+                  suggestion.observe('mouseover', function(event) {
+                    suggestion.down('label.yes').addClassName('highlighted');
+                  })
+                  suggestion.observe('mouseout', function(event) {
+                    suggestion.down('label.yes').removeClassName('highlighted');
+                  })
+                  suggestion.down('label.no').observe('mouseover', function(event) {
+                    event.stop();
+                    event.findElement().addClassName('highlighted');
+                    event.findElement().previous('label.yes').removeClassName('highlighted');
+                  })
+                  suggestion.down('label.no').observe('mouseout', function(event) {
+                    event.findElement().removeClassName('highlighted');
+                  })
 
                   // Keep the default behavior for the Y button
                   //  but capture the N button clicks and make sure the value is selected for the negative property field
