@@ -671,6 +671,11 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
   padding: 0px !important;
   float: none !important;
 }
+#body .yes-no-picker label.highlighted {
+  background-color: #999;
+  color: #fff;
+  text-shadow: 0 1px 1px #000;
+}
 .yes-no-picker label.selected {
   text-shadow: 0 1px 1px #000;
 }
