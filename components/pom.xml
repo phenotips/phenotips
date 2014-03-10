@@ -40,6 +40,7 @@
     <module>patient-update-listeners</module>
     <module>patient-data</module>
     <module>patient-access-rules</module>
+    <module>patient-data-sharing</module>
     <module>patient-measurements</module>
     <module>xwiki-platform-users</module>
     <module>studies</module>

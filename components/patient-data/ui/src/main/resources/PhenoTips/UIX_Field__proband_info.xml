@@ -148,7 +148,8 @@
 enabled=false
 required=
 order=2
-fields=proband,family_of</parameters>
+fields=proband,family_of
+contains_PII=true</parameters>
     </property>
     <property>
       <scope>wiki</scope>

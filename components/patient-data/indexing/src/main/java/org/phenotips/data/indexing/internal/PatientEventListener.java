@@ -25,7 +25,6 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
-
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.bridge.event.DocumentCreatedEvent;
 import org.xwiki.bridge.event.DocumentDeletedEvent;
@@ -38,6 +37,7 @@ import org.xwiki.observation.event.FilterableEvent;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -48,7 +48,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Monitors document changes and submits modified patients to the {@link PatientIndexer indexer}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -59,7 +59,7 @@ public class PatientEventListener implements EventListener
 {
     /**
      * A deleted patient, we only care about its document.
-     * 
+     *
      * @version $Id$
      * @since 1.0M10
      */
@@ -70,7 +70,7 @@ public class PatientEventListener implements EventListener
 
         /**
          * Simple constructor passing the document reference.
-         * 
+         *
          * @param document the document reference where this patient existed
          */
         public DeletedPatient(DocumentReference document)
@@ -94,6 +94,18 @@ public class PatientEventListener implements EventListener
         public JSONObject toJSON()
         {
             return null;
+        }
+
+        @Override
+        public JSONObject toJSON(Collection<String> onlyFieldNames)
+        {
+            return null;
+        }
+
+        @Override
+        public void updateFromJSON(JSONObject json)
+        {
+            throw new UnsupportedOperationException();
         }
 
         @Override

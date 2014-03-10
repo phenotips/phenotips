@@ -65,7 +65,15 @@ public interface RecordConfiguration
      * @return an unmodifiable ordered list of field names, empty if none are enabled or the configuration is missing
      */
     List<String> getEnabledFieldNames();
-
+        
+    /**
+     * The list of non-identifiable fields displayed in the patient record (i.e. fields which contain no personal
+     * information which can be tracked to a particular patient)
+     * 
+     * @return an unmodifiable ordered list of field names, empty if no non-identifiable fields are enabled or the configuration is missing
+     */
+    List<String> getEnabledNonIdentifiableFieldNames();
+    
     /**
      * The list of possible fields defined in the application. This doesn't include metadata stored in separate
      * entities, such as measurements, relatives, additional files, etc.

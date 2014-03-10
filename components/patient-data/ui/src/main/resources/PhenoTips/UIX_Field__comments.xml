@@ -129,7 +129,8 @@
 enabled=true
 required=
 order=2
-fields=comments</parameters>
+fields=comments
+contains_PII=true</parameters>
     </property>
     <property>
       <scope>wiki</scope>

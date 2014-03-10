@@ -31,7 +31,7 @@ import javax.inject.Singleton;
 
 /**
  * Handles the patient name, stored as {@code first_name} and {@code last_name}.
- * 
+ *
  * @version $Id$
  * @since 1.0M10
  */
@@ -47,7 +47,7 @@ public class PatientNameController extends AbstractSimpleController
     }
 
     @Override
-    protected String getName()
+    public String getName()
     {
         return "patientName";
     }

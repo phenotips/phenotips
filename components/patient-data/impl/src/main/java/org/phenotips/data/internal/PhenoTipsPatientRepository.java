@@ -51,7 +51,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 /**
  * Implementation of patient data access service using XWiki as the storage backend, where patients in documents having
  * an object of type {@code PhenoTips.PatientClass}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -122,7 +122,7 @@ public class PhenoTipsPatientRepository implements PatientRepository
     }
 
     @Override
-    public synchronized Patient createNewPatient()
+    public synchronized Patient createNewPatient(DocumentReference creator)
     {
         try {
             // FIXME Take these from the configuration
@@ -152,7 +152,9 @@ public class PhenoTipsPatientRepository implements PatientRepository
             doc.readFromTemplate(this.referenceResolver.resolve(PhenoTipsPatient.TEMPLATE_REFERENCE), context);
             doc.setTitle(newDoc.getName());
             doc.getXObject(Patient.CLASS_REFERENCE).setLongValue("identifier", crtMaxID);
-            doc.setCreatorReference(this.bridge.getCurrentUserReference());
+            if (creator != null) {
+                doc.setCreatorReference(creator);
+            }
             context.getWiki().saveDocument(doc, context);
 
             Patient patient = new PhenoTipsPatient(doc);
@@ -182,4 +184,11 @@ public class PhenoTipsPatientRepository implements PatientRepository
             return null;
         }
     }
+
+    @Override
+    public synchronized Patient createNewPatient()
+    {
+        return createNewPatient(this.bridge.getCurrentUserReference());
+    }
+
 }

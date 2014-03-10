@@ -24,7 +24,6 @@ import org.phenotips.configuration.RecordConfiguration;
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
 import org.phenotips.data.Patient;
-
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
@@ -127,6 +126,20 @@ public class GlobalRecordConfiguration implements RecordConfiguration
         return Collections.unmodifiableList(result);
     }
 
+    @Override
+    public List<String> getEnabledNonIdentifiableFieldNames()
+    {
+        List<String> result = new LinkedList<String>();
+        for (RecordSection section : getEnabledSections()) {
+            for (RecordElement element : section.getEnabledElements()) {
+            	if (!element.containsPrivateIdentifiableInformation()) {
+            		result.addAll(element.getDisplayedFields());
+            	}
+            }
+        }
+        return Collections.unmodifiableList(result);    	
+    }
+    
     @Override
     public List<String> getAllFieldNames()
     {

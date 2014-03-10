@@ -1,0 +1,2 @@
+org.phenotips.data.receive.internal.DefaultReceivePatientData
+org.phenotips.data.receive.script.ReceivePatientDataScriptService
