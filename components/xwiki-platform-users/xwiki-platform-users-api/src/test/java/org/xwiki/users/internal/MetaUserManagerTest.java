@@ -29,6 +29,7 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.model.reference.WikiReference;
+import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
@@ -78,6 +79,12 @@ public class MetaUserManagerTest
         this.modelConfiguration = this.mocker.getInstance(ModelConfiguration.class);
         this.userManager = this.mocker.getComponentUnderTest();
         this.cm = this.mocker.getInstance(ComponentManager.class);
+    }
+
+    @AfterComponent
+    public void setupMockComponentManager() throws Exception
+    {
+        this.mocker.registerMockComponent(ComponentManager.class);
     }
 
     @Test

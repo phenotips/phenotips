@@ -359,9 +359,9 @@ HWoIt+H/pF8AnW4ntAVBMrwAAAAASUVORK5CYII=
       <code>var YesNoPicker = Class.create({
 
   hints : {
-    yes : {unselectedTitle : "Select as present", selectedTitle : "Unselect as present"},
-    no  : {unselectedTitle : "Select as absent",  selectedTitle : "Unselect as absent"},
-    yes : {unselectedTitle : "Unelect", selectedTitle : ""}
+    yes : {unselectedTitle : "Select as present", selectedTitle : "Unselect as present", labelTitle : "YES (investigated and observed)"},
+    no  : {unselectedTitle : "Select as absent",  selectedTitle : "Unselect as absent", labelTitle : "NO (investigated and NOT observed)"},
+    na  : {unselectedTitle : "Unselect", selectedTitle : "", labelTitle : "NA (irrelevant or unknown)"}
   },
 
   initialize : function(element, label, isLabelActive) {
@@ -385,6 +385,10 @@ HWoIt+H/pF8AnW4ntAVBMrwAAAAASUVORK5CYII=
     var _onNo = this._onNo.bindAsEventListener(this);
     var _onNA = this._onNA.bindAsEventListener(this);
     var _onUnselect = this._onUnselect.bindAsEventListener(this);
+
+    this.yes &amp;&amp; (this.yes.title = this.hints.yes.labelTitle);
+    this.no &amp;&amp; (this.no.title = this.hints.no.labelTitle);
+    this.na &amp;&amp; (this.na.title = this.hints.na.labelTitle);
 
     this.yes &amp;&amp; this.yes.observe('click', _onYes);
     this.no &amp;&amp; this.no.observe('click', _onNo);
@@ -522,11 +526,15 @@ HWoIt+H/pF8AnW4ntAVBMrwAAAAASUVORK5CYII=
 });
 
 YesNoPicker.generatePickerElement = function(buttons, value, title, activate, label) {
-  var supportedValues = {yes : 'Y', no : 'N', na: 'NA'};
+  var supportedValues = {
+      yes : {label: 'Y', title : 'YES (investigated and observed)'},
+      no  : {label: 'N', title : 'NO (investigated and NOT observed)'},
+      na  : {label: 'NA', title : 'NA (irrelevant or unknown)'}
+  };
   var ynPickerElt = new Element("span", {'class': 'yes-no-picker'});
   buttons.each(function(b) {
      if (b.type &amp;&amp; supportedValues[b.type]) {
-       var bLabel = new Element('label', {'class' : b.type + (b.selected &amp;&amp; ' selected' || '')}).update(supportedValues[b.type]);
+       var bLabel = new Element('label', {'class' : b.type + (b.selected &amp;&amp; ' selected' || ''), title : supportedValues[b.type].title}).update(supportedValues[b.type].label);
        var bInput = new Element('input', {type : 'checkbox', value : value, title: title || ''});
        b.selected &amp;&amp; (bInput.checked = true);
        if (b.name) {
@@ -646,23 +654,30 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
   position: relative;
   cursor: pointer;
   vertical-align: middle;
-  height: 19px;
-  text-shadow: none !important;
+  height: 20px;
 }
 .yes-no-picker label {
   display: inline-block;
   width: 20px !important;
-  height: 19px;
+  height: 20px;
   text-align: center;
   overflow: hidden;
   background: transparent none center center no-repeat;
   box-shadow: inset 0 1px 2px #999;
   font-size: .7em;
-  line-height: 19px !important;
+  line-height: 20px !important;
   cursor: pointer;
   margin: 0px !important;
   padding: 0px !important;
   float: none !important;
+}
+#body .yes-no-picker label.highlighted {
+  background-color: #999;
+  color: #fff;
+  text-shadow: 0 1px 1px #000;
+}
+.yes-no-picker label.selected {
+  text-shadow: 0 1px 1px #000;
 }
 
 .yes-no-picker label:first-child {
@@ -697,11 +712,11 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
 }
 .yes-no-picker label.na {
   ##width: 24px;
-  color: #BBB;
+  color: #888;
   border-right: 4px solid #fff;
 }
 .yes-no-picker label.selected.na {
-  background-color: #ccc;
+  background-color: #888;
   color: #fff;
   cursor: default;
 }
@@ -731,6 +746,6 @@ $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
 $xwiki.ssx.use('PhenoTips.YesNoNAPicker')##
 #set ($doDisplay = ($xcontext.action == 'edit' || "$!value" != ''))
 {{html clean=false wiki=false}}##
-#if ($xcontext.action == 'edit')&lt;span class="yes-no-picker"&gt;&lt;label class="na"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="" #if($value == '')checked="checked"#end /&gt;NA&lt;/label&gt;&lt;label class="yes"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="1" #if($value == '1')checked="checked"#end /&gt;Y&lt;/label&gt;&lt;label class="no"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="0" #if($value == '0')checked="checked" #end/&gt;N&lt;/label&gt;&lt;/span&gt;#elseif ($value == '0')NO #{end}#if ($doDisplay)&lt;label class="yes-no-picker-label"&gt;$!object.xWikiClass.get($name).prettyName&lt;/label&gt;#end{{/html}}{{/velocity}}
+#if ($xcontext.action == 'edit')&lt;span class="yes-no-picker"&gt;&lt;label class="na" title="NA (irrelevant or unknown)"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="" #if($value == '')checked="checked"#end /&gt;NA&lt;/label&gt;&lt;label class="yes" title="YES (investigated and observed)"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="1" #if($value == '1')checked="checked"#end /&gt;Y&lt;/label&gt;&lt;label class="no" title="NO (investigated and NOT observed)"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="0" #if($value == '0')checked="checked" #end/&gt;N&lt;/label&gt;&lt;/span&gt;#elseif ($value == '0')NO #{end}#if ($doDisplay)&lt;label class="yes-no-picker-label"&gt;$!object.xWikiClass.get($name).prettyName&lt;/label&gt;#end{{/html}}{{/velocity}}
 </content>
 </xwikidoc>

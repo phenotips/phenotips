@@ -2303,10 +2303,13 @@ return MS;
     resultValue : "name",
     resultCategory : "term_category",
     resultInfo : {
-                           "Definition"    : {"selector"  : "def",
+                           ""              : {"selector"  : "def",
                                               "processor" : function(text) { return text.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;'); }
                            },
-                           "Synonyms"      : {"selector"  : "synonym"}
+                           "Also known as" : {"selector"  : "synonym"},
+                           "Is a type of"  : {"selector"  : "is_a",
+                                              "processor" : function(text) { return text.replace(/^([A-Z]+:[0-9]+)\s+!\s+/, ''); }
+                           }
     },
     resultParent : {
       selector : 'is_a',
@@ -4166,7 +4169,7 @@ div.suggestItems span.suggestSynonym{
 }
 
 div.suggestItems span.suggestSynonym:before {
-  content: "(alternative name: ";
+  content: "(also known as: ";
   font-size: 0.8em;
   opacity: .4;
 }
