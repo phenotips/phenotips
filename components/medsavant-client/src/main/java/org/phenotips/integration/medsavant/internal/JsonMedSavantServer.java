@@ -222,25 +222,31 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
                 parameters.add(this.projectID); // Project ID
                 parameters.add(refID); // Reference ID
 
+                String thousandGColumn = getAnnotationColumnName(refID, "1000g2012apr_all", "Score");
+                Collection<JSONObject> thousandGConditions = new LinkedList<JSONObject>();
+                thousandGConditions.add(makeCondition(refID, "BinaryCondition", "lessThan", thousandGColumn,
+                    THOUSAND_GENOMES_THRESHOLD, true));
+                thousandGConditions.add(makeCondition(refID, "UnaryCondition", "isNull", thousandGColumn));
+
                 Collection<JSONObject> poliphenConditions = new LinkedList<JSONObject>();
                 String poliphenColumn = getAnnotationColumnName(refID, "ljb2_pp2hvar", "Score");
-                String thousandGColumn = getAnnotationColumnName(refID, "1000g2012apr_all", "Score");
                 poliphenConditions.add(makeCondition(refID, "BinaryCondition", "greaterThan",
                     poliphenColumn, POLIPHEN_THRESHOLD, true));
                 poliphenConditions.add(makeCondition(refID, "UnaryCondition", "isNull", poliphenColumn));
                 JSONArray conditions = new JSONArray();
-                for (JSONObject poliphenCondition : poliphenConditions) {
-                    JSONArray conditionsRow = new JSONArray();
-                    conditionsRow.add(makeCondition(refID, "BinaryCondition", "equalTo", "dna_id", eid));
-                    conditionsRow.add(makeCondition(refID, "BinaryCondition", "greaterThan", "qual", QUALITY_THRESHOLD,
-                        true));
-                    conditionsRow.add(makeCondition(refID, "BinaryCondition", "lessThan", thousandGColumn,
-                        THOUSAND_GENOMES_THRESHOLD, true));
-                    for (String effect : IGNORED_EFFECTS) {
-                        conditionsRow.add(makeCondition(refID, "BinaryCondition", "notEqualTo", "effect", effect));
+                for (JSONObject thousandGCondition : thousandGConditions) {
+                    for (JSONObject poliphenCondition : poliphenConditions) {
+                        JSONArray conditionsRow = new JSONArray();
+                        conditionsRow.add(makeCondition(refID, "BinaryCondition", "equalTo", "dna_id", eid));
+                        conditionsRow.add(makeCondition(refID, "BinaryCondition", "greaterThan", "qual",
+                            QUALITY_THRESHOLD, true));
+                        for (String effect : IGNORED_EFFECTS) {
+                            conditionsRow.add(makeCondition(refID, "BinaryCondition", "notEqualTo", "effect", effect));
+                        }
+                        conditionsRow.add(thousandGCondition);
+                        conditionsRow.add(poliphenCondition);
+                        conditions.add(conditionsRow);
                     }
-                    conditionsRow.add(poliphenCondition);
-                    conditions.add(conditionsRow);
                 }
                 parameters.add(conditions); // Conditions
 
