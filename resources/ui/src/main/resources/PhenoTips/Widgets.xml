@@ -4169,7 +4169,7 @@ div.suggestItems span.suggestSynonym{
 }
 
 div.suggestItems span.suggestSynonym:before {
-  content: "(alternative name: ";
+  content: "(also known as: ";
   font-size: 0.8em;
   opacity: .4;
 }
