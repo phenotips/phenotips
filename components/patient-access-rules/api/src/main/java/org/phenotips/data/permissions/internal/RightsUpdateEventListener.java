@@ -60,7 +60,7 @@ import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * This listener is in charge of keeping the patient records' rights objects updated. There are 3 possible rights
- * combinations: "view", "view,edit", and "view,edit,delete". There are 3 rights objects that correspond to there
+ * combinations: "view", "view,edit", and "view,edit,delete". There are 3 rights objects that correspond to these
  * combinations.
  *
  * @version $Id$
@@ -95,7 +95,7 @@ public class RightsUpdateEventListener implements EventListener
     @Named("current")
     private DocumentReferenceResolver<String> stringEntityResolver;
 
-    /** A map of current existing right objects with keys being the (access) level field of the object. */
+    /** A map of current existing rights objects with keys being the (access) level field of the object. */
     private Map<String, BaseObject> rightsObjects = new HashMap<String, BaseObject>();
 
     @Override
