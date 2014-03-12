@@ -26,4 +26,5 @@
 
 <suppressions>
   <suppress checks="MultipleStringLiterals" files="JsonMedSavantServer.java"/>
+  <suppress checks="ClassFanOutComplexity" files="JsonMedSavantServer.java"/>
 </suppressions>

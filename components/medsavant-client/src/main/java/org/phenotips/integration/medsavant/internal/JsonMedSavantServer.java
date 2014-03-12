@@ -28,6 +28,10 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,9 +50,20 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.PartSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiAttachment;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.web.Utils;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -164,7 +179,33 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
     @Override
     public boolean uploadVCF(Patient patient)
     {
-        // TODO Auto-generated method stub
+        PostMethod method = null;
+        try {
+            PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
+            String url = getMethodURL("UploadManager", "upload");
+            String eid = identifiers.get(0).getValue();
+            XWikiContext context = Utils.getContext();
+            XWikiDocument doc = context.getWiki().getDocument(patient.getDocument(), context);
+            method = new PostMethod(url);
+            List<Part> parts = new LinkedList<Part>();
+            for (XWikiAttachment attachment : doc.getAttachmentList()) {
+                if (StringUtils.endsWithIgnoreCase(attachment.getFilename(), ".vcf")
+                    && isCorrectVCF(attachment, eid, context)) {
+                    parts.add(new FilePart(patient.getId() + ".vcf", new AttachmentPartSource(attachment)));
+                }
+            }
+            if (parts.size() > 0) {
+                method.setRequestEntity(new MultipartRequestEntity((Part[]) parts.toArray(), method.getParams()));
+                this.client.executeMethod(method);
+                return true;
+            }
+        } catch (Exception ex) {
+            this.logger.warn("Failed to upload VCF for patient [{}]: {}", patient.getDocument(), ex.getMessage(), ex);
+        } finally {
+            if (method != null) {
+                method.releaseConnection();
+            }
+        }
         return false;
     }
 
@@ -417,5 +458,64 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
         }
         result.put("args", values);
         return result;
+    }
+
+    private boolean isCorrectVCF(XWikiAttachment attachment, String eid, XWikiContext context)
+        throws XWikiException, IOException
+    {
+        BufferedReader in =
+            new BufferedReader(new InputStreamReader(attachment.getContentInputStream(context),
+                XWiki.DEFAULT_ENCODING));
+        String line;
+        while ((line = in.readLine()) != null) {
+            if (line.startsWith("##")) {
+                // Still in the meta, go on
+                continue;
+            } else if (!line.startsWith("#CHROM")) {
+                // Actual data, we're past the meta but didn't encounter the header, strange...
+                // Malformed file, abandon
+                break;
+            }
+            String[] fields = line.split("\t");
+            if (fields.length != 10 || !StringUtils.equals(eid, fields[9])) {
+                // Wrong sample ID or more than one sample, bail out
+                break;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private static final class AttachmentPartSource implements PartSource
+    {
+        private final XWikiAttachment attachment;
+
+        private AttachmentPartSource(XWikiAttachment attachment)
+        {
+            this.attachment = attachment;
+        }
+
+        @Override
+        public long getLength()
+        {
+            return this.attachment.getFilesize();
+        }
+
+        @Override
+        public String getFileName()
+        {
+            return this.attachment.getFilename();
+        }
+
+        @Override
+        public InputStream createInputStream()
+        {
+            try {
+                return this.attachment.getContentInputStream(Utils.getContext());
+            } catch (XWikiException e) {
+                return org.apache.commons.io.input.ClosedInputStream.CLOSED_INPUT_STREAM;
+            }
+        }
+
     }
 }
