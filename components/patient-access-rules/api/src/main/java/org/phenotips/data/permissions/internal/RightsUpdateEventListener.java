@@ -223,7 +223,7 @@ public class RightsUpdateEventListener implements EventListener
         } else {
             return;
         }
-        setRights(right, "groups", "XWikiAllGroup.XWikiAllGroup");
+        setRights(right, "groups", "XWiki.XWikiAllGroup");
     }
 
     private void updateOwnerRights(Map<String, BaseObject> rightsObjects, XWikiDocument doc)
