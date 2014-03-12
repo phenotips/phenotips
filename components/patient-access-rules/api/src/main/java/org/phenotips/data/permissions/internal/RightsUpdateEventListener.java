@@ -39,6 +39,7 @@ import org.xwiki.observation.event.Event;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +59,10 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
+ * This listener is in charge of keeping the patient records' rights objects updated. There are 3 possible rights
+ * combinations: "view", "view,edit", and "view,edit,delete". There are 3 rights objects that correspond to these
+ * combinations.
+ *
  * @version $Id$
  */
 @Component
@@ -73,6 +78,9 @@ public class RightsUpdateEventListener implements EventListener
 
     private static final EntityReference RIGHTS_CLASS = new EntityReference("XWikiRights", EntityType.DOCUMENT,
         new EntityReference("XWiki", EntityType.SPACE));
+
+    /** The list of all the possible rights combinations for this particular application. */
+    private static final List<String> rightsCombinations = Arrays.asList("view", "view,edit", "view,edit,delete");
 
     @Inject
     private Logger logger;
@@ -105,10 +113,14 @@ public class RightsUpdateEventListener implements EventListener
         XWikiDocument doc = (XWikiDocument) source;
         XWikiContext context = (XWikiContext) data;
         if (isPatient(doc)) {
-            clearRights(doc);
-            updateDefaultRights(doc, context);
-            updateOwnerRights(doc, context);
-            updateCollaboratorsRights(doc, context);
+            Map<String, BaseObject> rightsObjects = findRights(doc);
+            List<String> missingRights = findMissingRights(rightsObjects);
+            clearRights(rightsObjects);
+            //Create rights after clearRights, because it saves unnecessary resetting of groups and users
+            createRights(missingRights, rightsObjects, doc, context);
+            updateDefaultRights(rightsObjects, doc);
+            updateOwnerRights(rightsObjects, doc);
+            updateCollaboratorsRights(rightsObjects, doc);
         }
     }
 
@@ -118,78 +130,140 @@ public class RightsUpdateEventListener implements EventListener
             && !"PatientTemplate".equals(doc.getDocumentReference().getName());
     }
 
-    private void clearRights(XWikiDocument doc)
+    /**
+     * Finds all existing rights objects.
+     *
+     * @param doc XWikiDocument
+     * @return map of rights combination as keys, and corresponding existing rights objects as values
+     */
+    private Map<String, BaseObject> findRights(XWikiDocument doc)
     {
-        doc.removeXObjects(RIGHTS_CLASS);
+        List<BaseObject> allRights = doc.getXObjects(RIGHTS_CLASS);
+        if (allRights == null) {
+            return new HashMap<String, BaseObject>();
+        }
+        Map<String, BaseObject> rightsObjects = new HashMap<String, BaseObject>();
+        List<String> missingRights = new LinkedList<String>(rightsCombinations);
+        for (BaseObject right : allRights) {
+            //getXObjects returns an ArrayList that could be lacking elements
+            if (right == null) {
+                continue;
+            }
+            String rightLevel = right.getStringValue("levels");
+            if (rightsCombinations.contains(rightLevel)) {
+                rightsObjects.put(rightLevel, right);
+            }
+        }
+        return rightsObjects;
     }
 
-    private void updateDefaultRights(XWikiDocument doc, XWikiContext context)
+    /**
+     * Finds the rights combinations that do not have a corresponding existing object.
+     *
+     * @param rightsObjects map of existing rights objects
+     * @return a list of rights combinations that are missing
+     */
+    private List<String> findMissingRights(Map<String, BaseObject> rightsObjects)
     {
-        try {
-            Visibility visibility = getVisibility(doc);
-            if (visibility == null || "none".equals(visibility.getDefaultAccessLevel().getName())) {
-                return;
+        List<String> missingRights = new LinkedList<String>(rightsCombinations);
+        for (String rightLevel : rightsObjects.keySet()) {
+            if (missingRights.contains(rightLevel)) {
+                missingRights.remove(rightLevel);
             }
-            BaseObject right = doc.newXObject(RIGHTS_CLASS, context);
-            right.setLargeStringValue("groups", "XWiki.XWikiAllGroup");
-            right.setIntValue("allow", 1);
-            if ("view".equals(visibility.getDefaultAccessLevel().getName())) {
-                right.setStringValue("levels", "view");
-            } else if ("edit".equals(visibility.getDefaultAccessLevel().getName())) {
-                right.setStringValue("levels", "view,edit");
-            }
-        } catch (XWikiException ex) {
-            this.logger.error("Failed to update rights: {}", ex.getMessage(), ex);
+        }
+        return missingRights;
+    }
+
+    /**
+     * Clears all users and groups from the existing rights objects. If those do not exist, creates them.
+     */
+    private void clearRights(Map<String, BaseObject> rightsObjects)
+    {
+        for (BaseObject right : rightsObjects.values()) {
+            right.setLargeStringValue("groups", "");
+            right.setLargeStringValue("users", "");
         }
     }
 
-    private void updateOwnerRights(XWikiDocument doc, XWikiContext context)
+    /**
+     * Loops over the {@code rightsCombinations} and attaches a new rights object for each combination to the document.
+     *
+     * @param rightsCombinations the string array containing all the combinations for which there should be an object
+     * created
+     * @param rightsObjects the map of existing rights objects
+     * @param doc XWikiDocument
+     * @param context XWikiContext
+     */
+    private void createRights(List<String> rightsCombinations, Map<String, BaseObject> rightsObjects, XWikiDocument doc,
+        XWikiContext context)
     {
-        try {
-            DocumentReference owner = getOwner(doc);
-            if (owner == null || !(isUser(owner) || isGroup(owner))) {
-                return;
+        for (String rights : rightsCombinations) {
+            try {
+                BaseObject newRightObject = doc.newXObject(RIGHTS_CLASS, context);
+                newRightObject.setStringValue("levels", rights);
+                newRightObject.setIntValue("allow", 1);
+                rightsObjects.put(rights, newRightObject);
+            } catch (XWikiException ex) {
+                this.logger.error("Failed to create rights: {}", ex.getMessage(), ex);
             }
-            BaseObject right = doc.newXObject(RIGHTS_CLASS, context);
-            if (isUser(owner)) {
-                right.setLargeStringValue("users", owner.toString());
-            } else if (isGroup(owner)) {
-                right.setLargeStringValue("groups", owner.toString());
-            }
-            right.setStringValue("levels", "view,edit,delete");
-            right.setIntValue("allow", 1);
-        } catch (XWikiException ex) {
-            this.logger.error("Failed to update rights: {}", ex.getMessage(), ex);
         }
     }
 
-    private void updateCollaboratorsRights(XWikiDocument doc, XWikiContext context)
+    private void updateDefaultRights(Map<String, BaseObject> rightsObjects, XWikiDocument doc)
     {
-        try {
-            for (Map.Entry<AccessLevel, List<DocumentReference>> entry : getCollaborators(doc).entrySet()) {
-                BaseObject right = doc.newXObject(RIGHTS_CLASS, context);
-                if ("manage".equals(entry.getKey().getName()) || "owner".equals(entry.getKey().getName())) {
-                    right.setStringValue("levels", "view,edit,delete");
-                } else if ("edit".equals(entry.getKey().getName())) {
-                    right.setStringValue("levels", "view,edit");
-                } else if ("view".equals(entry.getKey().getName())) {
-                    right.setStringValue("levels", "view");
-                }
-                right.setIntValue("allow", 1);
-                List<String> users = new LinkedList<String>();
-                List<String> groups = new LinkedList<String>();
-                for (DocumentReference userOrGroup : entry.getValue()) {
-                    if (isUser(userOrGroup)) {
-                        users.add(userOrGroup.toString());
-                    } else if (isGroup(userOrGroup)) {
-                        groups.add(userOrGroup.toString());
-                    }
-                }
-                right.setLargeStringValue("users", StringUtils.join(users, ","));
-                right.setLargeStringValue("groups", StringUtils.join(groups, ","));
+        Visibility visibility = getVisibility(doc);
+        if (visibility == null || "none".equals(visibility.getDefaultAccessLevel().getName())) {
+            return;
+        }
+        BaseObject right;
+        if ("view".equals(visibility.getDefaultAccessLevel().getName())) {
+            right = rightsObjects.get("view");
+        } else if ("edit".equals(visibility.getDefaultAccessLevel().getName())) {
+            right = rightsObjects.get("view,edit");
+        } else {
+            return;
+        }
+        setRights(right, "groups", "XWiki.XWikiAllGroup");
+    }
+
+    private void updateOwnerRights(Map<String, BaseObject> rightsObjects, XWikiDocument doc)
+    {
+        DocumentReference owner = getOwner(doc);
+        if (owner == null || !(isUser(owner) || isGroup(owner))) {
+            return;
+        }
+        BaseObject right = rightsObjects.get("view,edit,delete");
+        if (isUser(owner)) {
+            setRights(right, "users", owner.toString());
+        } else if (isGroup(owner)) {
+            setRights(right, "groups", owner.toString());
+        }
+    }
+
+    private void updateCollaboratorsRights(Map<String, BaseObject> rightsObjects, XWikiDocument doc)
+    {
+        for (Map.Entry<AccessLevel, List<DocumentReference>> entry : getCollaborators(doc).entrySet()) {
+            BaseObject right;
+            if ("manage".equals(entry.getKey().getName()) || "owner".equals(entry.getKey().getName())) {
+                right = rightsObjects.get("view,edit,delete");
+            } else if ("edit".equals(entry.getKey().getName())) {
+                right = rightsObjects.get("view,edit");
+            } else if ("view".equals(entry.getKey().getName())) {
+                right = rightsObjects.get("view");
+            } else {
+                return;
             }
-        } catch (XWikiException ex) {
-            this.logger.error("Failed to update rights: {}", ex.getMessage(), ex);
+            List<String> users = new LinkedList<String>();
+            List<String> groups = new LinkedList<String>();
+            for (DocumentReference userOrGroup : entry.getValue()) {
+                if (isUser(userOrGroup)) {
+                    users.add(userOrGroup.toString());
+                } else if (isGroup(userOrGroup)) {
+                    groups.add(userOrGroup.toString());
+                }
+            }
+            setRights(right, "users", StringUtils.join(users, ","));
+            setRights(right, "groups", StringUtils.join(groups, ","));
         }
     }
 
@@ -267,5 +341,14 @@ public class RightsUpdateEventListener implements EventListener
         } catch (Exception e) {
         }
         return false;
+    }
+
+    private void setRights(BaseObject rightsObject, String field, String value)
+    {
+        String currentValue = rightsObject.getStringValue(field);
+        if (!StringUtils.isEmpty(currentValue)) {
+            currentValue += ",";
+        }
+        rightsObject.setLargeStringValue(field, currentValue + value);
     }
 }
