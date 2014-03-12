@@ -95,9 +95,6 @@ public class RightsUpdateEventListener implements EventListener
     @Named("current")
     private DocumentReferenceResolver<String> stringEntityResolver;
 
-    /** A map of current existing rights objects with keys being the (access) level field of the object. */
-    private Map<String, BaseObject> rightsObjects = new HashMap<String, BaseObject>();
-
     @Override
     public String getName()
     {
@@ -116,14 +113,14 @@ public class RightsUpdateEventListener implements EventListener
         XWikiDocument doc = (XWikiDocument) source;
         XWikiContext context = (XWikiContext) data;
         if (isPatient(doc)) {
-            //Finds all applicable rights (stores in a global rightsObjects), but returns missing
-            List<String> missingRights = findRights(doc);
-            clearRights();
+            Map<String, BaseObject> rightsObjects = findRights(doc);
+            List<String> missingRights = findMissingRights(rightsObjects);
+            clearRights(rightsObjects);
             //Create rights after clearRights, because it saves unnecessary resetting of groups and users
-            createRights(missingRights, doc, context);
-            updateDefaultRights(doc);
-            updateOwnerRights(doc);
-            updateCollaboratorsRights(doc, context);
+            createRights(missingRights, rightsObjects, doc, context);
+            updateDefaultRights(rightsObjects, doc);
+            updateOwnerRights(rightsObjects, doc);
+            updateCollaboratorsRights(rightsObjects, doc);
         }
     }
 
@@ -134,20 +131,18 @@ public class RightsUpdateEventListener implements EventListener
     }
 
     /**
-     * Finds all existing rights objects. If none exist, returns {@link #rightsCombinations} as a list. If there are any
-     * rights objects, compares each' access level to the access levels specified in {@link #rightsCombinations}. If
-     * there are any missing, returns them. Adds the existing rights objects under {@link #rightsObjects}.
+     * Finds all existing rights objects.
      *
      * @param doc XWikiDocument
-     * @return list of rights combinations that are currently missing from the document
+     * @return map of rights combination as keys, and corresponding existing rights objects as values
      */
-    private List<String> findRights(XWikiDocument doc)
+    private Map<String, BaseObject> findRights(XWikiDocument doc)
     {
         List<BaseObject> allRights = doc.getXObjects(RIGHTS_CLASS);
-        //If no rights exist, then return all rightsCombinations as list
         if (allRights == null) {
-            return rightsCombinations;
+            return new HashMap<String, BaseObject>();
         }
+        Map<String, BaseObject> rightsObjects = new HashMap<String, BaseObject>();
         List<String> missingRights = new LinkedList<String>(rightsCombinations);
         for (BaseObject right : allRights) {
             //getXObjects returns an ArrayList that could be lacking elements
@@ -157,6 +152,22 @@ public class RightsUpdateEventListener implements EventListener
             String rightLevel = right.getStringValue("levels");
             if (rightsCombinations.contains(rightLevel)) {
                 rightsObjects.put(rightLevel, right);
+            }
+        }
+        return rightsObjects;
+    }
+
+    /**
+     * Finds the rights combinations that do not have a corresponding existing object.
+     *
+     * @param rightsObjects map of existing rights objects
+     * @return a list of rights combinations that are missing
+     */
+    private List<String> findMissingRights(Map<String, BaseObject> rightsObjects)
+    {
+        List<String> missingRights = new LinkedList<String>(rightsCombinations);
+        for (String rightLevel : rightsObjects.keySet()) {
+            if (missingRights.contains(rightLevel)) {
                 missingRights.remove(rightLevel);
             }
         }
@@ -166,7 +177,7 @@ public class RightsUpdateEventListener implements EventListener
     /**
      * Clears all users and groups from the existing rights objects. If those do not exist, creates them.
      */
-    private void clearRights()
+    private void clearRights(Map<String, BaseObject> rightsObjects)
     {
         for (BaseObject right : rightsObjects.values()) {
             right.setLargeStringValue("groups", "");
@@ -179,10 +190,12 @@ public class RightsUpdateEventListener implements EventListener
      *
      * @param rightsCombinations the string array containing all the combinations for which there should be an object
      * created
+     * @param rightsObjects the map of existing rights objects
      * @param doc XWikiDocument
      * @param context XWikiContext
      */
-    private void createRights(List<String> rightsCombinations, XWikiDocument doc, XWikiContext context)
+    private void createRights(List<String> rightsCombinations, Map<String, BaseObject> rightsObjects, XWikiDocument doc,
+        XWikiContext context)
     {
         for (String rights : rightsCombinations) {
             try {
@@ -196,7 +209,7 @@ public class RightsUpdateEventListener implements EventListener
         }
     }
 
-    private void updateDefaultRights(XWikiDocument doc)
+    private void updateDefaultRights(Map<String, BaseObject> rightsObjects, XWikiDocument doc)
     {
         Visibility visibility = getVisibility(doc);
         if (visibility == null || "none".equals(visibility.getDefaultAccessLevel().getName())) {
@@ -213,7 +226,7 @@ public class RightsUpdateEventListener implements EventListener
         setRights(right, "groups", "XWikiAllGroup.XWikiAllGroup");
     }
 
-    private void updateOwnerRights(XWikiDocument doc)
+    private void updateOwnerRights(Map<String, BaseObject> rightsObjects, XWikiDocument doc)
     {
         DocumentReference owner = getOwner(doc);
         if (owner == null || !(isUser(owner) || isGroup(owner))) {
@@ -227,7 +240,7 @@ public class RightsUpdateEventListener implements EventListener
         }
     }
 
-    private void updateCollaboratorsRights(XWikiDocument doc, XWikiContext context)
+    private void updateCollaboratorsRights(Map<String, BaseObject> rightsObjects, XWikiDocument doc)
     {
         for (Map.Entry<AccessLevel, List<DocumentReference>> entry : getCollaborators(doc).entrySet()) {
             BaseObject right;
