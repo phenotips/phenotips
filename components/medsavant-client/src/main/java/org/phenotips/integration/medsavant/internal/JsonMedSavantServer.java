@@ -76,6 +76,10 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
 
     private static final String PROJECT_MANAGER = "ProjectManager";
 
+    private static final String VARIANT_MANAGER = "VariantManager";
+
+    private static final String REQUEST_PARAMETER = "json=";
+
     private static final List<String> IGNORED_EFFECTS = Arrays.asList("ncRNA_INTRONIC", "UPSTREAM", "DOWNSTREAM",
         "INTERGENIC", "UTR3", "UTR5", "SYNONYMOUS", "INTRONIC");
 
@@ -125,7 +129,7 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
         try {
             PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
             String eid = identifiers.get(0).getValue();
-            String url = getMethodURL("VariantManager", "getVariantCountForDNAIDs");
+            String url = getMethodURL(VARIANT_MANAGER, "getVariantCountForDNAIDs");
             method = new PostMethod(url);
             JSONArray parameters = new JSONArray();
             parameters.add(this.projectID);
@@ -136,7 +140,7 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             parameters.add(ids);
             for (Integer refID : this.referenceIDs) {
                 parameters.set(1, refID);
-                String body = "json=" + URLEncoder.encode(parameters.toString(), ENCODING);
+                String body = REQUEST_PARAMETER + URLEncoder.encode(parameters.toString(), ENCODING);
                 method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
                     ENCODING));
                 this.client.executeMethod(method);
@@ -172,24 +176,29 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
         try {
             PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
             String eid = identifiers.get(0).getValue();
-            String url = getMethodURL("VariantManager", "getVariants");
+            String url = getMethodURL(VARIANT_MANAGER, "getVariants");
             method = new PostMethod(url);
             JSONArray parameters = new JSONArray();
-            parameters.add(this.projectID); // Project ID
-            parameters.add(0); // Reference ID, will be filled in later, in the loop
+            // 1: Project ID
+            parameters.add(this.projectID);
+            // 2: Reference ID, will be filled in later, in the loop
+            parameters.add(0);
 
             JSONArray conditions = new JSONArray();
             JSONArray dnaIDConditions = new JSONArray();
             dnaIDConditions.add(makeCondition(0, "BinaryCondition", "equalTo", "dna_id", eid));
             conditions.add(dnaIDConditions);
-            parameters.add(conditions); // Conditions
+            // 3: Conditions
+            parameters.add(conditions);
 
-            parameters.add(-1); // Start at
-            parameters.add(-1); // Max number of results -> all
+            // 4: Start at
+            parameters.add(-1);
+            // 5: Max number of results -> all
+            parameters.add(-1);
             for (Integer refID : this.referenceIDs) {
                 parameters.set(1, refID);
                 parameters.getJSONArray(2).getJSONArray(0).getJSONObject(0).put("refId", refID);
-                String body = "json=" + URLEncoder.encode(parameters.toString(), ENCODING);
+                String body = REQUEST_PARAMETER + URLEncoder.encode(parameters.toString(), ENCODING);
                 method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
                     ENCODING));
                 this.client.executeMethod(method);
@@ -216,43 +225,20 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             for (Integer refID : this.referenceIDs) {
                 PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
                 String eid = identifiers.get(0).getValue();
-                String url = getMethodURL("VariantManager", "getVariants");
+                String url = getMethodURL(VARIANT_MANAGER, "getVariants");
                 method = new PostMethod(url);
                 JSONArray parameters = new JSONArray();
-                parameters.add(this.projectID); // Project ID
-                parameters.add(refID); // Reference ID
-
-                String thousandGColumn = getAnnotationColumnName(refID, "1000g2012apr_all", "Score");
-                Collection<JSONObject> thousandGConditions = new LinkedList<JSONObject>();
-                thousandGConditions.add(makeCondition(refID, "BinaryCondition", "lessThan", thousandGColumn,
-                    THOUSAND_GENOMES_THRESHOLD, true));
-                thousandGConditions.add(makeCondition(refID, "UnaryCondition", "isNull", thousandGColumn));
-
-                Collection<JSONObject> poliphenConditions = new LinkedList<JSONObject>();
-                String poliphenColumn = getAnnotationColumnName(refID, "ljb2_pp2hvar", "Score");
-                poliphenConditions.add(makeCondition(refID, "BinaryCondition", "greaterThan",
-                    poliphenColumn, POLIPHEN_THRESHOLD, true));
-                poliphenConditions.add(makeCondition(refID, "UnaryCondition", "isNull", poliphenColumn));
-                JSONArray conditions = new JSONArray();
-                for (JSONObject thousandGCondition : thousandGConditions) {
-                    for (JSONObject poliphenCondition : poliphenConditions) {
-                        JSONArray conditionsRow = new JSONArray();
-                        conditionsRow.add(makeCondition(refID, "BinaryCondition", "equalTo", "dna_id", eid));
-                        conditionsRow.add(makeCondition(refID, "BinaryCondition", "greaterThan", "qual",
-                            QUALITY_THRESHOLD, true));
-                        for (String effect : IGNORED_EFFECTS) {
-                            conditionsRow.add(makeCondition(refID, "BinaryCondition", "notEqualTo", "effect", effect));
-                        }
-                        conditionsRow.add(thousandGCondition);
-                        conditionsRow.add(poliphenCondition);
-                        conditions.add(conditionsRow);
-                    }
-                }
-                parameters.add(conditions); // Conditions
-
-                parameters.add(-1); // Start at
-                parameters.add(-1); // Max number of results -> all
-                String body = "json=" + URLEncoder.encode(parameters.toString(), ENCODING);
+                // 1: Project ID
+                parameters.add(this.projectID);
+                // 2: Reference ID
+                parameters.add(refID);
+                // 3: Conditions
+                parameters.add(getFilteredVariantsConditions(refID, eid));
+                // 4: Start at
+                parameters.add(-1);
+                // 5: Max number of results -> all
+                parameters.add(-1);
+                String body = REQUEST_PARAMETER + URLEncoder.encode(parameters.toString(), ENCODING);
                 method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
                     ENCODING));
                 this.client.executeMethod(method);
@@ -295,7 +281,7 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             method = new PostMethod(url);
             JSONArray parameters = new JSONArray();
             parameters.add(projectName);
-            String body = "json=" + URLEncoder.encode(parameters.toString(), ENCODING);
+            String body = REQUEST_PARAMETER + URLEncoder.encode(parameters.toString(), ENCODING);
             method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
                 ENCODING));
             this.client.executeMethod(method);
@@ -321,7 +307,7 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             method = new PostMethod(url);
             JSONArray parameters = new JSONArray();
             parameters.add(this.projectID);
-            String body = "json=" + URLEncoder.encode(parameters.toString(), ENCODING);
+            String body = REQUEST_PARAMETER + URLEncoder.encode(parameters.toString(), ENCODING);
             method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
                 ENCODING));
             this.client.executeMethod(method);
@@ -353,7 +339,7 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             JSONArray parameters = new JSONArray();
             parameters.add(this.projectID);
             parameters.add(refID);
-            String body = "json=" + URLEncoder.encode(parameters.toString(), ENCODING);
+            String body = REQUEST_PARAMETER + URLEncoder.encode(parameters.toString(), ENCODING);
             method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
                 ENCODING));
             this.client.executeMethod(method);
@@ -383,6 +369,39 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             }
         }
         return "";
+    }
+
+    private JSONArray getFilteredVariantsConditions(Integer refID, String patientId)
+    {
+        String thousandGColumn = getAnnotationColumnName(refID, "1000g2012apr_all", "Score");
+        Collection<JSONObject> thousandGConditions = new LinkedList<JSONObject>();
+        thousandGConditions.add(makeCondition(refID, "BinaryCondition", "lessThan", thousandGColumn,
+            THOUSAND_GENOMES_THRESHOLD, true));
+        thousandGConditions.add(makeCondition(refID, "UnaryCondition", "isNull", thousandGColumn));
+
+        String poliphenColumn = getAnnotationColumnName(refID, "ljb2_pp2hvar", "Score");
+        Collection<JSONObject> poliphenConditions = new LinkedList<JSONObject>();
+        poliphenConditions.add(makeCondition(refID, "BinaryCondition", "greaterThan",
+            poliphenColumn, POLIPHEN_THRESHOLD, true));
+        poliphenConditions.add(makeCondition(refID, "UnaryCondition", "isNull", poliphenColumn));
+
+        JSONArray conditions = new JSONArray();
+        for (JSONObject thousandGCondition : thousandGConditions) {
+            for (JSONObject poliphenCondition : poliphenConditions) {
+                JSONArray conditionsRow = new JSONArray();
+                conditionsRow.add(makeCondition(refID, "BinaryCondition", "equalTo", "dna_id", patientId));
+                conditionsRow.add(makeCondition(refID, "BinaryCondition", "greaterThan", "qual",
+                    QUALITY_THRESHOLD, true));
+                for (String effect : IGNORED_EFFECTS) {
+                    conditionsRow.add(makeCondition(refID, "BinaryCondition", "notEqualTo", "effect", effect));
+                }
+                conditionsRow.add(thousandGCondition);
+                conditionsRow.add(poliphenCondition);
+                conditions.add(conditionsRow);
+            }
+        }
+
+        return conditions;
     }
 
     private JSONObject makeCondition(Integer refID, String type, String method, Object... args)
