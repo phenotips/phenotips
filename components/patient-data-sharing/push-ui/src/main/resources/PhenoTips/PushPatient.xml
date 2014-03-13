@@ -1179,6 +1179,14 @@ function _printObjectInternal(o, level) {
   box-shadow: 0px 1px 2px rgb(170, 170, 170) inset;
 }
 
+#user-selection input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+    border-color: rgb(0, 137, 220);
+}
+
+#user-selection input.button:disabled {
+    background-image: none;
+}
+
 #user-selection #authorizenewuser {
   margin-top: 0.5em;
 }
