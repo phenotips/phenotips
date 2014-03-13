@@ -19,12 +19,20 @@
  */
 package org.phenotips.data.internal.controller;
 
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.permissions.Owner;
+import org.phenotips.data.permissions.internal.PatientAccessHelper;
+import org.phenotips.groups.Group;
+import org.phenotips.groups.GroupManager;
+import org.slf4j.Logger;
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.users.User;
@@ -55,23 +63,25 @@ public class ContactInformationController implements PatientDataController<Immut
     private static final String ATTRIBUTE_INSTITUTION = "company";
 
     @Inject
+    private Logger logger;
+
+    @Inject
     private UserManager userManager;
+
+    @Inject
+    private GroupManager groupManager;
+
+    @Inject
+    private DocumentAccessBridge documentAccessBridge;
+
+    @Inject
+    private PatientAccessHelper patientAccessHelper;
 
     @Override
     public PatientData<ImmutablePair<String, String>> load(Patient patient)
     {
-        final DocumentReference reporter = patient.getReporter();
-        if (reporter == null) {
-            throw new NullPointerException("The patient does not have a reporter");
-        }
-        String ownerIdentifier = reporter.getName();
-        User user = userManager.getUser(ownerIdentifier);
-        if (user == null) {
-            throw new NullPointerException("No user found for name: " + ownerIdentifier);
-        }
-        List<ImmutablePair<String, String>> contactInfo = new LinkedList<ImmutablePair<String, String>>();
-        populateUserInfo(contactInfo, user);
-        return new SimpleNamedData<String>(DATA_CONTACT, contactInfo);
+        Owner owner = patientAccessHelper.getOwner(patient);
+        return new SimpleNamedData<String>(DATA_CONTACT, getContactInfo(owner));
     }
 
     @Override
@@ -104,21 +114,55 @@ public class ContactInformationController implements PatientDataController<Immut
         throw new UnsupportedOperationException();
     }
 
+    private List<ImmutablePair<String, String>> getContactInfo(Owner owner)
+    {
+        List<ImmutablePair<String, String>> contactInfo = new LinkedList<ImmutablePair<String, String>>();
+        String ownerIdentifier = owner.getUsername();
+        if (owner.isGroup()) {
+            Group group = groupManager.getGroup(ownerIdentifier);
+            if (group == null) {
+                return null;
+            }
+            populateGroupInfo(contactInfo, group);
+        } else {
+            User user = userManager.getUser(ownerIdentifier);
+            if (user == null) {
+                return null;
+            }
+            populateUserInfo(contactInfo, user);
+        }
+        return contactInfo;
+    }
+
     private void populateUserInfo(List<ImmutablePair<String, String>> contactInfo, User user)
     {
         String email = (String) user.getAttribute(ATTRIBUTE_EMAIL);
         String institution = (String) user.getAttribute(ATTRIBUTE_INSTITUTION);
 
-        addUserInfo(contactInfo, DATA_USER_ID, user.getUsername());
-        addUserInfo(contactInfo, DATA_NAME, user.getName());
-        addUserInfo(contactInfo, DATA_EMAIL, email);
-        addUserInfo(contactInfo, DATA_INSTITUTION, institution);
+        addInfo(contactInfo, DATA_USER_ID, user.getUsername());
+        addInfo(contactInfo, DATA_NAME, user.getName());
+        addInfo(contactInfo, DATA_EMAIL, email);
+        addInfo(contactInfo, DATA_INSTITUTION, institution);
     }
 
-    private void addUserInfo(List<ImmutablePair<String, String>> contactInfo, String key, String value)
+    private void addInfo(List<ImmutablePair<String, String>> contactInfo, String key, String value)
     {
         if (StringUtils.isNotBlank(value)) {
             contactInfo.add(ImmutablePair.of(key, value));
+        }
+    }
+
+    private void populateGroupInfo(List<ImmutablePair<String, String>> contactInfo, Group group)
+    {
+        addInfo(contactInfo, DATA_NAME, group.getReference().getName());
+
+        DocumentReference documentReference = group.getReference();
+        try {
+            XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(documentReference);
+            BaseObject data = doc.getXObject(Group.CLASS_REFERENCE);
+            addInfo(contactInfo, DATA_EMAIL, data.getStringValue(DATA_CONTACT));
+        } catch (Exception e) {
+            logger.error("Could not find requested document");
         }
     }
 }
