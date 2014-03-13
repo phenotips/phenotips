@@ -190,27 +190,48 @@
                  .insert(intro &amp;&amp; new Element('p', {'class' : 'intro xHint'}).update(intro) || '')
                  .insert(new Element ('div', {'class' : 'section-contents'}));
     },
+    _updateOwnershipManager : function(owner) {
+      this._ownerInfo.update('This case is owned by ' + owner + ".");
+      if (this._canTransferOwnership) {
+        this._ownerInfo.insert(" You can:");
+        this._checkKeepOwnershipOption();
+      }
+    },
     _initOwnershipManager : function() {
-      var ownerInfo = this._element.down(".owner");
-      var info = new Element('div', {id : 'owner', 'class' : 'intro xHint'}).update('This case is owned by ' + ownerInfo.innerHTML + ". ");
-      this._ownershipManager.insert(info);
-      var newOwnerInput = $('new-owner-input') || '';
+      this._ownerInfo = new Element('div', {id : 'owner', 'class' : 'intro xHint'});
+      this._ownershipManager.update(this._ownerInfo);
+
+      // HACK: 'new-owner-input' control had to be put into the document from the start
+      //       to make suggest picker attach to it correctly; it now has to be moved into
+      //       the `owner` section of this "access rights" dialog/popup
+      var newOwnerInput       = $('new-owner-input') || '';
       var newOwnerGroupSelect = $('new-owner-group-select') || '';
-      var canTransferOwnership = newOwnerInput || newOwnerGroupSelect;
-      if (canTransferOwnership) {
-        info.insert("You can:")
+
+      this._defaultOwnerOption   = undefined;
+      this._removeSelectedUser   = undefined;
+      this._canTransferOwnership = newOwnerInput || newOwnerGroupSelect;
+
+      if (this._canTransferOwnership) {
         var transfer = new Element('table', {id : 'transfer'});
+        this._removeSelectedUser = function() {  // removes previously selected user displayed by the suggest user picker
+            transfer.select('.delete-tool').each(function (item) {
+               item.click();
+            });
+        }
+        var _this = this;
         var _getTransferOption = function (type, text, controlledElement) {
            var optionWrapper = new Element('tr');
            var input = new Element('input', {"type" : "radio", name : "transfer-to"});
            var label = new Element('label').insert(input).insert(text);
-           input.observe('change', function(event) {
-             var trigger = event.findElement('input');
+           input.observe('change', function() {
              transfer.select('.controlled-element input, .controlled-element select').each(function (item) {
-                item.disabled = true;
+                item.disable();
              });
-             if (trigger.checked &amp;&amp; controlledElement) {
-               trigger.up('tr').down('.controlled-element input, .controlled-element select').disabled = false;
+             _this._removeSelectedUser();
+             if (input.checked &amp;&amp; controlledElement) {
+               input.up('tr').select('.controlled-element input, .controlled-element select').each(function (item) {
+                  item.enable();
+               });
              }
            });
            optionWrapper.insert(new Element('span', {'class' : 'fa fa-' + type}).wrap('td'))
@@ -218,9 +239,9 @@
                         .insert(controlledElement &amp;&amp; controlledElement.wrap('td', {'class' : 'controlled-element'}) || '');
            return optionWrapper;
         }
-        var defaultOption = _getTransferOption("check", "Keep current owner", "");
-        transfer.insert(defaultOption);
-        defaultOption.down('input').checked = true;
+        this._defaultOwnerOption = _getTransferOption("check", "Keep current owner", "");
+        transfer.insert(this._defaultOwnerOption);
+        //this._checkKeepOwnershipOption();
         if (newOwnerGroupSelect) {
           transfer.insert(_getTransferOption("group", "Transfer ownership to one of your groups", newOwnerGroupSelect));
         }
@@ -228,9 +249,15 @@
           transfer.insert(_getTransferOption("user", "Transfer ownership to another user", newOwnerInput));
         }
         transfer.select('.controlled-element input, .controlled-element select').each(function (item) {
-          item.disabled = true;
+          item.disable();
         });
         this._ownershipManager.insert(transfer);
+      }
+    },
+    _checkKeepOwnershipOption : function() {
+      if (this._defaultOwnerOption) {
+        this._defaultOwnerOption.down('input').click();   // check the "keep current owner" radio (which also triggers all
+                                                          // corresponding actions such as disable/enable controlled elements)
       }
     },
     _initVisibilityManager : function() {
@@ -373,10 +400,11 @@
           _this._messages.update('');
           _this._dialog.showDialog();
           _this._container.up('.msdialog-modal-container').style.zIndex = 3001;
-          _this._collaboratorsList.update('&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;&lt;/td&gt;&lt;/tr&gt;');
+          _this._collaboratorsList.update('&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="$xwiki.getSkinFile(\'icons/xwiki/ajax-loader-large.gif\')"/&gt;&lt;/td&gt;&lt;/tr&gt;');
         },
         onSuccess : function(response) {
            var data = response.responseJSON;
+           _this._updateOwnershipManager(_this._element.down(".owner").innerHTML);   // get current owner from document HTML
            _this._updateVisibility(data.visibility);
            _this._updateCollaborators(data.collaborators);
         },
@@ -674,9 +702,9 @@ document.observe("xwiki:dom:loaded", function() {
 #set ($serviceDocName = 'PhenoTips.PatientAccessRightsManagement')
 #set ($serviceDoc = $xwiki.getDocument($serviceDocName))
 $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)
-$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js')
+$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)
 $xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)
-$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js')
+$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)
 $xwiki.jsx.use($serviceDocName)
 $xwiki.ssx.use($serviceDocName)
 {{/velocity}}
@@ -723,7 +751,7 @@ $xwiki.ssx.use($serviceDocName)
           &lt;input type="text" name="group" class="suggestGroups" value="" placeholder="New collaborating group" id="new-group-input" /&gt;
         #end
         #if ($canTransfer)
-          &lt;div id="new-owner-input"&gt;&lt;input type="text" name="owner" class="suggestUsers" value="" placeholder="New owner" /&gt;&lt;/div&gt;
+          &lt;div id="new-owner-input"&gt;&lt;input type="text" name="owner" id="new-owner-user-select" class="suggestUsers" value="" placeholder="New owner" /&gt;&lt;/div&gt;
           #set ($groups = $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
           #set ($phgroups = [])
           #foreach ($group in $groups)
