@@ -45,12 +45,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Handle's the patient contact information.
+ * Handle's the patient owner's contact information.
  *
  * @version $Id$
+ * @since 1.0M11
  */
 @Component(roles = { PatientDataController.class })
-@Named("patient-contact")
+@Named("owner-contact")
 @Singleton
 public class ContactInformationController implements PatientDataController<ImmutablePair<String, String>>
 {
@@ -59,8 +60,9 @@ public class ContactInformationController implements PatientDataController<Immut
     private static final String DATA_EMAIL = "email";
     private static final String DATA_NAME = "name";
     private static final String DATA_INSTITUTION = "institution";
-    private static final String ATTRIBUTE_EMAIL = DATA_EMAIL;
     private static final String ATTRIBUTE_INSTITUTION = "company";
+    private static final String ATTRIBUTE_EMAIL_USER = DATA_EMAIL;
+    private static final String ATTRIBUTE_EMAIL_GROUP = DATA_CONTACT;
 
     @Inject
     private Logger logger;
@@ -102,7 +104,6 @@ public class ContactInformationController implements PatientDataController<Immut
             json.put(DATA_CONTACT, new JSONObject());
             container = json.getJSONObject(DATA_CONTACT);
         }
-
         for (ImmutablePair<String, String> item : data) {
             container.put(item.getKey(), item.getValue());
         }
@@ -136,20 +137,13 @@ public class ContactInformationController implements PatientDataController<Immut
 
     private void populateUserInfo(List<ImmutablePair<String, String>> contactInfo, User user)
     {
-        String email = (String) user.getAttribute(ATTRIBUTE_EMAIL);
+        String email = (String) user.getAttribute(ATTRIBUTE_EMAIL_USER);
         String institution = (String) user.getAttribute(ATTRIBUTE_INSTITUTION);
 
         addInfo(contactInfo, DATA_USER_ID, user.getUsername());
         addInfo(contactInfo, DATA_NAME, user.getName());
         addInfo(contactInfo, DATA_EMAIL, email);
         addInfo(contactInfo, DATA_INSTITUTION, institution);
-    }
-
-    private void addInfo(List<ImmutablePair<String, String>> contactInfo, String key, String value)
-    {
-        if (StringUtils.isNotBlank(value)) {
-            contactInfo.add(ImmutablePair.of(key, value));
-        }
     }
 
     private void populateGroupInfo(List<ImmutablePair<String, String>> contactInfo, Group group)
@@ -160,9 +154,16 @@ public class ContactInformationController implements PatientDataController<Immut
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(documentReference);
             BaseObject data = doc.getXObject(Group.CLASS_REFERENCE);
-            addInfo(contactInfo, DATA_EMAIL, data.getStringValue(DATA_CONTACT));
+            addInfo(contactInfo, DATA_EMAIL, data.getStringValue(ATTRIBUTE_EMAIL_GROUP));
         } catch (Exception e) {
             logger.error("Could not find requested document");
+        }
+    }
+
+    private void addInfo(List<ImmutablePair<String, String>> contactInfo, String key, String value)
+    {
+        if (StringUtils.isNotBlank(value)) {
+            contactInfo.add(ImmutablePair.of(key, value));
         }
     }
 }
