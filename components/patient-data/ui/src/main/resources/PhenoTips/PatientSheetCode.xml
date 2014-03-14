@@ -1131,12 +1131,16 @@ document.observe('xwiki:dom:loaded', function() {
              if (!exists) {
                var group = this._getGroup(sectionId);
                if (!group) {return;}
-               var newItem = new Element('div', {'class' : 'summary-item'}).update(
+               var isCustomEntry = !inputElt.value.startsWith("HP:");
+               var newItem = new Element('div', {'class' : 'summary-item' + (isCustomEntry ? ' custom-entry': '')}).update(
                   new Element('label', {'class' : type}).insert({
                      'top': new Element('input', {'value' : inputElt.value, checked : 'checked', type : 'checkbox', 'class': 'hidden'}),
                      'bottom' : inputElt.title || inputElt.nextSibling.nodeValue || inputElt.nextSibling.firstChild.nodeValue || inputElt.value
                   })
                );
+               if (isCustomEntry) {
+                 newItem.insert({top: new Element('span', {'class': "fa fa-exclamation-triangle", title: "This is not a standardized phenotype"}).update(' ')})
+               }
                newItem.__source = inputElt;
                var tools = new Element('span', {'class' : 'tools hint'});
                var deleteTool = new Element('span', {'class' : 'tool'}).update('Delete');
