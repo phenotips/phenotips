@@ -400,7 +400,7 @@
           _this._messages.update('');
           _this._dialog.showDialog();
           _this._container.up('.msdialog-modal-container').style.zIndex = 3001;
-          _this._collaboratorsList.update('&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="$xwiki.getSkinFile(\'icons/xwiki/ajax-loader-large.gif\')"/&gt;&lt;/td&gt;&lt;/tr&gt;');
+          _this._collaboratorsList.update('&lt;tr&gt;&lt;td colspan="3"&gt;&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;&lt;/td&gt;&lt;/tr&gt;');
         },
         onSuccess : function(response) {
            var data = response.responseJSON;
