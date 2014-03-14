@@ -737,7 +737,7 @@ $xwiki.ssx.use($serviceDocName)
     #if ($canManage),#else and#end it is (% class="access-rights-info visibility" title="$!{visibility.description}" %){{icon name="$visibility"/}}${visibility.label}(%%)##
     #if ($canManage) ##
       and it is shared with (% class="access-rights-info" %){{html wiki="true" clean="false"}}{{icon name="group"/}}&lt;span class="collaborators"&gt;$collaboratorsCount collaborator#if ($collaboratorsCount != 1)s#{end}&lt;/span&gt;{{/html}}. ##
-      (% class="buttonwrapper tool edit" %)[[ {{icon name="edit" title="Modify visibility and collaborations" /}} Modify permissions&gt;&gt;path:#||class="button"]]##
+      (% class="buttonwrapper tool edit" %)[[ {{icon name="wrench" title="Modify visibility and collaborations" /}} Modify permissions&gt;&gt;path:#||class="button"]]##
       (% class="hidden" %)((({{html wiki="true" clean="false"}}
         &lt;input type="hidden" name="serviceURL" value="$serviceDoc.getURL('get', 'outputSyntax=plain')"/&gt;
         #foreach ($l in $_service.listAccessLevels())
