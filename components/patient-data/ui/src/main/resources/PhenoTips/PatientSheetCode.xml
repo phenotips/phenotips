@@ -1157,14 +1157,17 @@ document.observe('xwiki:dom:loaded', function() {
              if (detailsUrl) {
                var detailsTool = new Element('span', {'class' : 'tool'}).update('Add details');
                var clearTool = new Element('span', {'class' : 'tool'}).update('Clear details');
-               tools.insert(' · ').insert(detailsTool).insert(clearTool);
+               var editTool = new Element('span', {'class' : 'tool'}).update('Edit details');
+               var editClearTools = new Element('span').insert(editTool).insert(' · ').insert(clearTool);
+               tools.insert(' · ').insert(detailsTool).insert(editClearTools);
                detailsTool.observe('click', function(event) {
                  var source = event.findElement('.summary-item');
                  var detailsElt = new Element('div', {'class' : 'phenotype-details loading'}).update('Loading...');
                  source.insert(detailsElt);
                  event.findElement().hide();
                  clearTool.__target = detailsElt;
-                 clearTool.show();
+                 editTool.__target = detailsElt;
+                 editClearTools.show();
 
                  var addTrigger = event.findElement();
                  if (addTrigger.disabled) {
@@ -1219,6 +1222,7 @@ document.observe('xwiki:dom:loaded', function() {
                      deleteUrl = deleteUrl.value;
                      deleteUrl &amp;&amp; (clearTool.__url = deleteUrl);
                      clearTool.__target = detailsElt;
+                     editTool.__target = detailsElt;
                   }
                   detailsElt.update(existingDetails);
                   selectionSummary._preparePreview(detailsElt);
@@ -1226,7 +1230,15 @@ document.observe('xwiki:dom:loaded', function() {
                   detailsTool.hide();
                }  else {
                   clearTool.hide();
+                  editClearTools.hide();
                }
+               editTool.observe('click', function(event) {
+                 var target = event.findElement().__target;
+                 if (!target.hasClassName('focused')) {
+                   event.stop();
+                   selectionSummary._focusDetails(target);
+                 }
+               });
                clearTool.observe('click', function(event) {
                  event.stop();
                  var deleteTrigger = event.element();
@@ -1248,7 +1260,7 @@ document.observe('xwiki:dom:loaded', function() {
                          delete deleteTrigger.__target;
                        }
                        delete deleteTrigger.__url;
-                       deleteTrigger.hide();
+                       deleteTrigger.up().hide();
                        detailsTool.show();
                      },
                      onComplete : function() {
