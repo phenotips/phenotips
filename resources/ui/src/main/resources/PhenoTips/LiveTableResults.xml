@@ -198,6 +198,8 @@
     #set($discard = $row.put('doc_delete_url', $itemDoc.getURL('delete')))
     #set($discard = $row.put('doc_rename_url', $itemDoc.getURL('view', 'xpage=rename&amp;step=1')))
     #set($discard = $row.put('doc_rights_url', $itemDoc.getURL('edit', 'editor=rights')))
+    #set($discard = $row.put('doc_export_url', $itemDoc.getURL('export', "format=xar&amp;name=$!{itemDoc.fullName}&amp;pages=$!{itemDoc.fullName}")))
+    #set($discard = $row.put('doc_history_url', $itemDoc.getURL('view', 'viewer=history')))
     #set($discard = $row.put('doc_author_url', $xwiki.getURL($itemDoc.author)))
     #set($discard = $row.put('doc_date', $xwiki.formatDate($itemDoc.date)))
     #set($discard = $row.put('doc_title', $escapetool.xml($itemDoc.plainTitle)))
