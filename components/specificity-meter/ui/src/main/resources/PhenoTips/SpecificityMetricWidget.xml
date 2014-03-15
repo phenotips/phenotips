@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc>
+  <web>PhenoTips</web>
+  <name>SpecificityMetricWidget</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>PhenoTips.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1389484064000</creationDate>
+  <date>1394851167000</date>
+  <contentUpdateDate>1390580849000</contentUpdateDate>
+  <version>1.1</version>
+  <title>SpecificityMetricWidget</title>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <attachment>
+    <filename>5star-c.png</filename>
+    <filesize>833</filesize>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1390580848000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAAG4AAAAWCAYAAAAhKqlXAAADCElEQVR4Xu3ZfUhTaxzA8celoCJL
+CsvSjEpWQZkJkZjRopd7iV6gF5rbHxmkM9F0pSUX05GRXC52rXmmjHRubtPVfMlNC51zO7rNtOxO
+uuqOTisSeqH+ulBK9WsnkGXlVQI9E54ffP84HM6HA+ccDuc8CM/MibnIZzqA4KOAqgw2C3nr3EoK
+Lp4ewK4kAflKBb4+XnW+RAKKt6mFbw2FcZcWjotdVH1hnZYiC8GuPvNGzEW+C8DF7k0BCrepTrmG
+OgrAaSkAXd7m697vYhdpzkfInGT+J4oUA51dk/jq70QU7MUuduWJyL+j8uRzisyFyZyWXNDmcCq9
+18UuUqQv/2PAlPWZInPg27prBGPECRTpBS52reoDq9tKuJntsv06S/mhvgc1vNeO5rPjFJkFP+sf
+vfB9923Bmw75kREjsfuh4VrMvZqLEUrZ6QCJJAEVzp2L3a+gKn2Z0tGcPN5vEsFAuwgGzSJwWkRu
+4Neya46/VCYHRMydi10AMQsRJ1Co7jKn1mlOnaA6zsFsG2xPAYeeDz3aw2BT7ANSthNab8S5ZEl+
+2xBCc+xiF03idWJOLUWmTLjs6fB9w52p4Gg8BtaKHdBatB4a80KgNjtwSkqhXxfBR0dpb15c7Hrw
+6othlS678L+nPWkw0pUKj+sPglkaBYYrIaDPXzJtt7PZRgkPiWhnXl3senCtG390Z++7tuuroeXP
+lTPWdCVEX5KAimiAERe7HlyRElhnlqyB2VQqYMno7xHGXOx6UmWwrfbyjTCbKoT+Ghpg2MUufUc0
+5Ic6emu2wmxSZy5uZdTFrmeJwSzlPH9yNxYm667aAg35K6BHFU1vT0lfEGajf5Qy62IX3eQtSnLU
+bv84ZOQC1bILjMWR7oPD+7oUMVHuqy/VX1010t8cD/R+OmvFpuESHtrDrItdJE8OLHtm+x3+bdoJ
+9XmhY/f/Wsv/4eWaFqQ2ERtGRzt/g8EW7odSPusssy52UXXWkjoTsfGFNntp+f8t6hF8FF2VwTb0
+6mKH5SlBZQy42MUtvPkCb6MAFz0+AHIAAAAASUVORK5CYII=
+</content>
+  </attachment>
+  <attachment>
+    <filename>5star-g.png</filename>
+    <filesize>461</filesize>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1390580849000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAAG4AAAAWCAQAAACLI2HcAAABlElEQVRYw93STUsCQRjA8VE82K2j
+B6lL5+jSzVvfoGP3Dt3qFPQFkqAIgmYUhG1Jw0htS7G0FzQzSZMURPBlFyyz1DXBoAzraTVFwaCL
+B2efP3uY5cfAMIPQ0I1e0bsiI3vKgW7Pbg6XxSqjYkD7Yp0gBpbladGRtQZCSa+SocVaPluDKng2
+5GeR3Vj9qkpYeCGjMrMmdSrXpM1cjLws2l8Rv1/hNyGPJ2Rgk+PRxdhBIs4XC/UKdHt6F0pJPhrx
+uTmW2cKrdNnm2dlCvQziv6Wf2TG6bEOJsObEVv78GxThAdKQgHu4zTLTiDqLOrx7uSLkIAZX4ARb
+u50QmUVU2hY/ZMS3qgR5CIFbYr3ZzvASota2OMekKj4478t9jNcR1bbFWfsp9GcwmtS0W2nM1xfQ
+H2NB9FusccQC0J/FS79FROfNhaCZHxzSF2rHBYmWdovI/E0jCnfSq+Xi/knLNseHISp1mSEztFvE
+kDiEwZ53zXWufdfsEWIQ+TAs0G6R1e59tJrWVL3/DFNmZzDDEtqtLOcHu6lbW1ZFMNUAAAAASUVO
+RK5CYII=
+</content>
+  </attachment>
+  <object>
+    <class>
+      <name>XWiki.DocumentSheetBinding</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <sheet>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sheet</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Sheet</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </sheet>
+    </class>
+    <name>PhenoTips.SpecificityMetricWidget</name>
+    <number>0</number>
+    <className>XWiki.DocumentSheetBinding</className>
+    <guid>9f0c7fe2-0b50-4b9a-b3fb-cbdea4372e62</guid>
+    <property>
+      <sheet>PhenoTips.UIXSheet</sheet>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.SpecificityMetricWidget</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>a63b1624-c668-4ffb-917d-774fe9559841</guid>
+    <property>
+      <cache>forbid</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+  widgets.SpecificityMetricWidget = Class.create({
+    levels : {
+      #foreach ($i in [0..5])
+        '$i' : "${escapetool.javascript($services.localization.render("phenotips.specificityMeter.level.${i}"))}"#if ($foreach.hasNext),#end
+
+      #end
+    },
+    initialize: function() {
+      this.container = $('specificity-metric-widget');
+      this.meterInsertionPoint = $('current-phenotype-selection');
+      if (!this.meterInsertionPoint || !this.container || this.container.__specificityMetricWidget) {
+        return;
+      }
+      this.initContainer();
+
+      this.service =  new XWiki.Document('SpecificityMetricWidgetService', 'PhenoTips').getURL('get');
+      this._reqMeta = {};
+
+      this.initDataCache();
+      this.watchChanges();
+    },
+
+    initContainer : function () {
+      this.meterInsertionPoint.insert({before: this.container});
+      var label = new Element('span', {"class": ""}).update("${escapetool.javascript($services.localization.render('phenotips.specificityMeter.label'))}");
+      this.meterDisplay = new Element('span', {'id' : 'specificity-meter'});
+      var hintLabel = new Element('a', {"class": "info", 'href' : '#specificity-meter', 'title' : "${escapetool.javascript($services.localization.render('phenotips.specificityMeter.info.title'))}"}).update("${escapetool.javascript($services.localization.render('phenotips.specificityMeter.info.label'))}");
+      this.container.update(label).insert(this.meterDisplay).insert(hintLabel);
+
+      hintLabel.observe('click', function(event) {
+        event.stop();
+        var content = new Element('div').insert(
+                                         new Element('div', {'style' : 'text-align: center'}).insert(
+                                             new Element('a', {href : 'http://monarchinitiative.org/'}).insert(
+                                                 new Element('img', {src : 'http://monarchinitiative.org/sites/all/themes/monarch/logo.png', title: 'Monarch Initiative'})
+                                             )
+                                         )
+                                       ).insert("${escapetool.javascript($services.localization.render('phenotips.specificityMeter.info'))}");
+        new XWiki.widgets.ModalPopup(content, {}, {'title' : "${escapetool.javascript($services.localization.render('phenotips.specificityMeter.info.title'))}"}).showDialog();
+      });
+
+      this.showValue(0);
+      this.container.__specificityMetricWidget = this;
+    },
+
+    showValue : function(v) {
+      this._crtValue = Math.min(1, Math.max(0, Number.isNaN(v) ? 0 : v));
+      var value = this._crtValue * 5;
+      this.meterDisplay.title = this.levels[Math.round(value)] + " (" + value.toPrecision(3) + "/5)";
+      this.meterDisplay.update(new Element('div', {'id' : "specificity-meter-value", "style" : "width: " + Math.round(v * 100) + "%;"}));
+    },
+
+    loadingValue : function() {
+      this.meterDisplay.update(new Element('div', {'id' : "specificity-meter-value-loading"}).update(new Element('span', {'class' : "fa fa-lg fa-spinner fa-spin"})));
+    },
+
+    initDataCache : function() {
+      this.cache = {};
+      $$(".yes-no-picker").each(function(element) {
+        var yesInput = element.down('.yes input');
+        var noInput = element.down('.no input');
+        if (yesInput.name === noInput.name) {
+          // Not a phenotype
+          return;
+        }
+        var key = yesInput.value;
+        var text = yesInput.title || key;
+        var obj = this.cache[key];
+        var enable = !element.down('.na input').checked;
+        if (enable) {
+          if (!obj) {
+            obj = {'key' : key, 'text' : text};
+            this.cache[key] = obj;
+          } else {
+            obj.disabled = false;
+          }
+          obj.type = (noInput.checked ? 'not_symptom' : (key.startsWith('HP:') ? 'symptom' : 'free_symptom'));
+        } else {
+          if (obj) {
+            obj.disabled = true;
+          }
+        }
+        this.launchEval();
+      }.bind(this));
+    },
+
+    watchChanges : function() {
+      document.observe('phenotype:selected', function(event) {
+        if (!event.memo || !event.memo.key || !event.memo.element) {return;}
+        var key = event.memo.key;
+        var text = event.memo.text || event.memo.key;
+        var obj = this.cache[key];
+        // The event is sent for NA, Yes and No checkboxes, in this order, with partial results along the way.
+        // If we want to check the final state of the value, we only take the No checkbox into account.
+        if (event.memo.type == 'no') {
+          var yesSelected = event.memo.element.up('.yes-no-picker').down('.yes input').checked;
+          var noSelected = event.memo.enable;
+          if (yesSelected || noSelected) {
+            if (!obj) {
+              obj = {'key' : key, 'text' : text};
+              this.cache[key] = obj;
+            } else {
+              obj.disabled = false;
+            }
+            obj.type = noSelected ? 'not_symptom' : (key.startsWith('HP:') ? 'symptom' : 'free_symptom');
+          } else {
+            if (obj) {
+              obj.disabled = true;
+            }
+          }
+        }
+        this.launchEval();
+      }.bindAsEventListener(this));
+    },
+
+    launchEval : function() {
+      if (this._reqMeta.pendingRequest !== undefined) {
+        window.clearTimeout(this._reqMeta.pendingRequest);
+        this._reqMeta.pendingRequest = undefined;
+      }
+      if (!this._reqMeta.expectedReqNo) {
+        this._reqMeta.expectedReqNo = 0;
+      }
+      var parameters = { reqNo : ++this._reqMeta.expectedReqNo, outputSyntax : 'plain'};
+      for (var k in this.cache) {
+        var obj = this.cache [k];
+        if (obj &amp;&amp; !obj.disabled) {
+          var list = parameters[obj.type];
+          if (!list) {
+            parameters[obj.type] = list = [];
+          }
+          list.push(obj.key);
+        }
+      }
+
+      this._reqMeta.pendingRequest = function() {
+        this._reqMeta.pendingRequest = undefined;
+        new Ajax.Request(this.service, {
+          parameters: parameters,
+          onCreate : function () {
+            // Loading...
+            this.loadingValue();
+          }.bind(this),
+          onSuccess : function (response) {
+            var json = response.responseJSON;
+            var score = json &amp;&amp; json.score || -1;
+            if (score &gt;= 0) {
+              this.showValue(score);
+            }
+          }.bind(this),
+          onFailure : function () {
+            this.showValue(this._crtValue);
+          }.bind(this)
+        });
+      }.bind(this).delay(0.5);
+    }
+  });
+  
+  //  ========================================================================
+
+  var init = function(event) {
+    new PhenoTips.widgets.SpecificityMetricWidget();
+  };
+
+  (XWiki &amp;&amp; XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+
+  // End PhenoTips augmentation.
+  return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.SpecificityMetricWidget</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>fb644879-47e3-41e5-b26f-89dc7a347689</guid>
+    <property>
+      <cache>forbid</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+
+#specificity-metric-widget {
+##  text-align: center;
+  padding: 1em;
+  border-bottom: 1px dotted $theme.borderColor;
+  background-color: $theme.highlightColor;
+}
+
+#specificity-metric-widget .fa {
+  display: inline-block;
+  margin: 0 .05em;
+  vertical-align: baseline;
+  width: 1em;
+}
+#specificity-metric-widget .icon {
+  margin: 0 0.5em 0 0;
+}
+#specificity-metric-widget a {
+  float: right;
+  font-size: .8em;
+  font-style: italic;
+}
+
+#specificity-meter {
+  color: #c82;
+  cursor: default;
+  display: inline-block;
+  margin: 0 1em 0 .5em;
+}
+#specificity-meter {
+  width: 110px;
+  height: 22px;
+  background: transparent url("${doc.getAttachmentURL('5star-g.png')}") left top no-repeat;
+  text-align: left;
+  vertical-align: bottom;
+}
+#specificity-meter-value {
+  width: 0px;
+  height: 22px;
+  background: transparent url("${doc.getAttachmentURL('5star-c.png')}") left top no-repeat;
+}
+#specificity-meter-value-loading {
+  width: 110px;
+  height: 22px;
+  text-align: center;
+  background: transparent;
+}
+#specificity-meter-value-loading .fa {
+  vertical-align: bottom;
+  color: $theme.linkColor;
+}</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <name>PhenoTips.SpecificityMetricWidget</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>d6a5842b-329a-4ee8-ac02-353f3ce65b22</guid>
+    <property>
+      <content>{{velocity}}
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
+$xwiki.jsx.use('PhenoTips.SpecificityMetricWidget', {'minify' : false})##
+$xwiki.ssx.use('PhenoTips.SpecificityMetricWidget')##
+#if ($xcontext.action == 'edit')
+(% id="specificity-metric-widget" %)((()))
+#end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.patientSheet.after</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.widget.monarch.specificitymeter</name>
+    </property>
+    <property>
+      <parameters/>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <content>(% style="text-align: center" %)((([[[[image:http://monarchinitiative.org/sites/all/themes/monarch/logo.png||alt="Monarch Initiative"]]&gt;&gt;http://monarchinitiative.org/]])))
+
+{{translation key='phenotips.specificityMeter.info'/}}</content>
+</xwikidoc>
