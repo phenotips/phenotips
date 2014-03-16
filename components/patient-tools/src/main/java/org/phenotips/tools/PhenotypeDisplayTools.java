@@ -27,6 +27,7 @@ import org.xwiki.script.service.ScriptService;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -113,7 +114,8 @@ public class PhenotypeDisplayTools implements ScriptService
 
     public String display(Collection<Map<String, ?>> template)
     {
-        return new PropertyDisplayer(template, getFormData(), this.ontologyService).display();
+        FormData formData = this.replaceOldTerms(this.getFormData());
+        return new PropertyDisplayer(template, formData, this.ontologyService).display();
     }
 
     public void clear()
@@ -131,6 +133,26 @@ public class PhenotypeDisplayTools implements ScriptService
             data = new FormData();
             this.execution.getContext().setProperty(CONTEXT_KEY, data);
         }
+
         return data;
+    }
+
+    private FormData replaceOldTerms(FormData data)
+    {
+        if (data.getMode() == DisplayMode.Edit) {
+            List<String> correctIds = new LinkedList<String>();
+            List<String> correctNegativeIds = new LinkedList<String>();
+            for (String id : data.getSelectedValues()) {
+                correctIds.add(ontologyService.getTerm(id).getId());
+            }
+            for (String id : data.getSelectedNegativeValues()) {
+                correctNegativeIds.add(ontologyService.getTerm(id).getId());
+            }
+            data.setSelectedValues(correctIds);
+            data.setSelectedNegativeValues(correctNegativeIds);
+            return data;
+        } else {
+            return data;
+        }
     }
 }
