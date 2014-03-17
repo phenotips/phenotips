@@ -132,14 +132,14 @@ public class GlobalRecordConfiguration implements RecordConfiguration
         List<String> result = new LinkedList<String>();
         for (RecordSection section : getEnabledSections()) {
             for (RecordElement element : section.getEnabledElements()) {
-            	if (!element.containsPrivateIdentifiableInformation()) {
-            		result.addAll(element.getDisplayedFields());
-            	}
+                if (!element.containsPrivateIdentifiableInformation()) {
+                    result.addAll(element.getDisplayedFields());
+                }
             }
         }
-        return Collections.unmodifiableList(result);    	
+        return Collections.unmodifiableList(result);
     }
-    
+
     @Override
     public List<String> getAllFieldNames()
     {

@@ -101,12 +101,11 @@ public abstract class AbstractSimpleController implements PatientDataController<
 
         for (ImmutablePair<String, String> item : data) {
             if (selectedFieldNames == null || selectedFieldNames.contains(item.getKey())) {
-
                 if (container == null || container.isNullObject()) {
-                    json.put(getJsonPropertyName(), new JSONObject());       // only add it if at least one poroperty is enabled
+                    // put() is placed here because we want to create the property iff at least one field is set/enabled
+                    json.put(getJsonPropertyName(), new JSONObject());
                     container = json.getJSONObject(getJsonPropertyName());
                 }
-
                 container.put(item.getKey(), item.getValue());
             }
         }

@@ -40,6 +40,10 @@ import net.sf.json.JSONObject;
  */
 public abstract class AbstractPhenoTipsOntologyProperty implements OntologyProperty, Comparable<OntologyProperty>
 {
+    /** Used for reading and writing properties to JSON. */
+    protected static final String ID_JSON_KEY_NAME   = "id";
+    protected static final String NAME_JSON_KEY_NAME = "label";
+
     /** Pattern used for identifying ontology terms from free text terms. */
     private static final Pattern ONTOLOGY_TERM_PATTERN = Pattern.compile("\\w++:\\w++");
 
@@ -48,10 +52,6 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
 
     /** @see #getName() */
     protected String name;
-
-    /** Used for reading and writing properties to JSON */
-    protected static final String ID_JSON_KEY_NAME   = "id";
-    protected static final String NAME_JSON_KEY_NAME = "label";
 
     /**
      * Simple constructor providing the {@link #id term identifier}.
@@ -70,7 +70,7 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
     }
 
     /**
-     * Constructor for initializeing form a JSON Object
+     * Constructor for initializeing form a JSON Object.
      * @param json JSON object describing this property
      */
     protected AbstractPhenoTipsOntologyProperty(JSONObject json)

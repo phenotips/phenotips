@@ -47,14 +47,14 @@ public interface RecordConfiguration
 
     /**
      * The list of sections enabled in the patient record.
-     * 
+     *
      * @return an unmodifiable ordered list of sections, empty if none are enabled or the configuration is missing
      */
     List<RecordSection> getEnabledSections();
 
     /**
      * The list of available sections, enabled or disabled, that can be displayed in the patient record.
-     * 
+     *
      * @return an unmodifiable ordered list of sections, or an empty list if none are defined
      */
     List<RecordSection> getAllSections();
@@ -65,15 +65,16 @@ public interface RecordConfiguration
      * @return an unmodifiable ordered list of field names, empty if none are enabled or the configuration is missing
      */
     List<String> getEnabledFieldNames();
-        
+
     /**
      * The list of non-identifiable fields displayed in the patient record (i.e. fields which contain no personal
      * information which can be tracked to a particular patient)
      * 
-     * @return an unmodifiable ordered list of field names, empty if no non-identifiable fields are enabled or the configuration is missing
+     * @return an unmodifiable ordered list of field names, empty if no non-identifiable fields are enabled or the
+     *         configuration is missing
      */
     List<String> getEnabledNonIdentifiableFieldNames();
-    
+
     /**
      * The list of possible fields defined in the application. This doesn't include metadata stored in separate
      * entities, such as measurements, relatives, additional files, etc.

@@ -78,11 +78,11 @@ public class DefaultRecordElement implements RecordElement
     {
         return !StringUtils.equals("false", this.extension.getParameters().get("enabled"));
     }
-    
+
     @Override
     public boolean containsPrivateIdentifiableInformation()
     {
-        return StringUtils.equals("true", this.extension.getParameters().get("contains_PII"));    	
+        return StringUtils.equals("true", this.extension.getParameters().get("contains_PII"));
     }
 
     @Override

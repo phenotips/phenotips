@@ -35,6 +35,8 @@ import com.xpn.xwiki.objects.DBStringListProperty;
  */
 public class PhenoTipsDisorder extends AbstractPhenoTipsOntologyProperty implements Disorder
 {
+    protected static final String MIM_PREFIX = "MIM:";
+
     /**
      * Constructor that copies the data from an XProperty value.
      *
@@ -43,7 +45,7 @@ public class PhenoTipsDisorder extends AbstractPhenoTipsOntologyProperty impleme
      */
     PhenoTipsDisorder(DBStringListProperty property, String value)
     {
-        super(StringUtils.equals(property.getName(), "omim_id") ? "MIM:" + value : value);
+        super(StringUtils.equals(property.getName(), "omim_id") ? MIM_PREFIX + value : value);
     }
 
     PhenoTipsDisorder(JSONObject json)
@@ -57,7 +59,7 @@ public class PhenoTipsDisorder extends AbstractPhenoTipsOntologyProperty impleme
         if (getId().equals("")) {
             return getName();
         }
-        String id = StringUtils.removeStart(getId(), "MIM:");
+        String id = StringUtils.removeStart(getId(), MIM_PREFIX);
         return id;
     }
 }

@@ -31,9 +31,9 @@ import org.xwiki.stability.Unstable;
 public interface Disorder extends OntologyProperty
 {
     /**
-     * Returns the PhenoTips value of the feature
+     * Returns the PhenoTips value of the disorder.
      * TODO: move to OntologyProperty and or implement a OntologyProperty-to-PhenotipsPropertName mapping service
-     * @return
+     * @return the value
      */
     String getValue();
 }

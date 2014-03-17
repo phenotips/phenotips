@@ -61,6 +61,12 @@ public class SexController implements PatientDataController<ImmutablePair<String
 
     private static final String EXPOSED_PROPERTY_NAME = DATA_NAME;
 
+    private static final String SEX_MALE    = "M";
+    private static final String SEX_FEMALE  = "F";
+    private static final String SEX_UNKNOWN = "U";
+
+    private static final String ERROR_MESSAGE_NO_PATIENT_CLASS = "The patient does not have a PatientClass";
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -73,6 +79,11 @@ public class SexController implements PatientDataController<ImmutablePair<String
     @Inject
     private Execution execution;
 
+    private String parseGender(String gender)
+    {
+        return (StringUtils.equals(SEX_FEMALE, gender) || StringUtils.equals(SEX_MALE, gender)) ? gender : SEX_UNKNOWN;
+    }
+
     @Override
     public PatientData<ImmutablePair<String, String>> load(Patient patient)
     {
@@ -80,15 +91,14 @@ public class SexController implements PatientDataController<ImmutablePair<String
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException("The patient does not have a PatientClass");
+                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
             List<ImmutablePair<String, String>> result = new LinkedList<ImmutablePair<String, String>>();
-            String gender = data.getStringValue(INTERNAL_PROPERTY_NAME);
-            gender = (StringUtils.equals("F", gender) || StringUtils.equals("M", gender)) ? gender : "U";
+            String gender = parseGender(data.getStringValue(INTERNAL_PROPERTY_NAME));
             result.add(ImmutablePair.of(EXPOSED_PROPERTY_NAME, gender));
             return new SimpleNamedData<String>(DATA_NAME, result);
         } catch (Exception e) {
-            this.logger.error("Could not find requested document");
+            this.logger.error("Failed to load patient gender: [{}]", e.getMessage());
         }
         return null;
     }
@@ -100,7 +110,7 @@ public class SexController implements PatientDataController<ImmutablePair<String
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
             if (data == null) {
-                throw new NullPointerException("The patient does not have a PatientClass");
+                throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
 
             String gender = patient.<ImmutablePair<String, String>>getData(DATA_NAME).get(0).getValue();
@@ -112,7 +122,7 @@ public class SexController implements PatientDataController<ImmutablePair<String
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
             context.getWiki().saveDocument(doc, "Updated gender from JSON", true, context);
         } catch (Exception e) {
-            this.logger.error("Failed saving patient gender");
+            this.logger.error("Failed to save patient gender: [{}]", e.getMessage());
         }
     }
 
@@ -125,7 +135,9 @@ public class SexController implements PatientDataController<ImmutablePair<String
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        if (selectedFieldNames != null && !selectedFieldNames.contains(INTERNAL_PROPERTY_NAME)) return;
+        if (selectedFieldNames != null && !selectedFieldNames.contains(INTERNAL_PROPERTY_NAME)) {
+            return;
+        }
 
         for (ImmutablePair<String, String> data : patient.<ImmutablePair<String, String>>getData(DATA_NAME)) {
             json.put(data.getKey(), data.getRight());
@@ -135,12 +147,14 @@ public class SexController implements PatientDataController<ImmutablePair<String
     @Override
     public PatientData<ImmutablePair<String, String>> readJSON(JSONObject json)
     {
-        if (!json.containsKey(DATA_NAME)) return null;   // no supported data in provided JSON
+        if (!json.containsKey(DATA_NAME)) {
+            // no supported data in provided JSON
+            return null;
+        }
 
         List<ImmutablePair<String, String>> result = new LinkedList<ImmutablePair<String, String>>();
 
-        String gender = json.getString(DATA_NAME);
-        gender = (StringUtils.equals("F", gender) || StringUtils.equals("M", gender)) ? gender : "U";
+        String gender = parseGender(json.getString(DATA_NAME));
         result.add(ImmutablePair.of(EXPOSED_PROPERTY_NAME, gender));
 
         return new SimpleNamedData<String>(DATA_NAME, result);

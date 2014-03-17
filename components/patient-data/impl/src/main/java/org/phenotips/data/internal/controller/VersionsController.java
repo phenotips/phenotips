@@ -118,17 +118,20 @@ public class VersionsController extends AbstractSimpleController
                 distribution.getDistributionExtension().getId().getVersion().toString()));
         } catch (ComponentLookupException ex) {
             // Shouldn't happen
+            this.logger.error("Could not find DistributionManager component");
         }
     }
 
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        // unlike all other controllers, there is no record field name describing version information
+        // unlike all other controllers, there is no field name controlling version information
         // so for this particular controller a special getEnablingFieldName() property is used
-        // which, if included in the list of fields, enbales all available data to be dumped into JSON
-        if (selectedFieldNames == null || selectedFieldNames.contains(VersionsController.getEnablingFieldName()))
+        // which, if included in the list of fields, enbales version data to be dumped into JSON
+        // (note that we may sometimes want to omit this data when presenting results for the end users)
+        if (selectedFieldNames == null || selectedFieldNames.contains(VersionsController.getEnablingFieldName())) {
             super.writeJSON(patient, json, null);
+        }
     }
 
     @Override
@@ -150,6 +153,12 @@ public class VersionsController extends AbstractSimpleController
         return "meta";
     }
 
+    /**
+     * Unlike all other controllers, there is no field name controlling presence of version information
+     * in JSON output. This method returns a name which can be used instead.
+     *
+     * @return a name which can be included in the list of enabled fields to enable version info in JSON output
+     */
     public static String getEnablingFieldName()
     {
         return CONTROLLER_NAME;

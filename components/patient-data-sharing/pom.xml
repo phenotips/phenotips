@@ -31,6 +31,10 @@
   <packaging>pom</packaging>
   <name>PhenoTips - Patient data sharing</name>
 
+  <properties>
+    <checkstyle.skip>true</checkstyle.skip>
+  </properties>
+
   <modules>
     <module>share-protocol</module>
     <module>secure-storage</module>

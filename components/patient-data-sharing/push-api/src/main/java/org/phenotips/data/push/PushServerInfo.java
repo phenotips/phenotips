@@ -27,9 +27,18 @@ package org.phenotips.data.push;
  */
 public interface PushServerInfo extends Comparable<PushServerInfo> // comparable to be able to put in a map or hash
 {
+    /**
+     * @return server ID, as configured on the PhenoTips configuration page
+     */
     String getServerID();
 
+    /**
+     * @return server URL, as configured on the PhenoTips configuration page
+     */
     String getServerURL();
 
+    /**
+     * @return server description, as configured on the PhenoTips configuration page
+     */
     String getServerDescription();
 }

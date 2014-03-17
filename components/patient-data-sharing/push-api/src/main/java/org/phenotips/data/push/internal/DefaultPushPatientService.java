@@ -57,7 +57,6 @@ import org.xwiki.context.Execution;
 import groovy.lang.Singleton;
 
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.EntityReference;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;

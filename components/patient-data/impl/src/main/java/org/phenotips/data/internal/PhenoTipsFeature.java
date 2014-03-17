@@ -58,10 +58,12 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
      */
     private static final Pattern NEGATIVE_PREFIX = Pattern.compile("^negative_");
 
-    /** Used for reading and writing Features to JSON */
+    /** Used for reading and writing Features to JSON. */
     private static final String TYPE_JSON_KEY_NAME     = "type";
     private static final String OBSERVED_JSON_KEY_NAME = "observed";
     private static final String METADATA_JSON_KEY_NAME = "qualifiers";
+    private static final String JSON_PRESENTSTATUS_YES = "yes";
+    private static final String JSON_PRESENTSTATUS_NO  = "no";
 
     /** Logging helper object. */
     private final Logger logger = LoggerFactory.getLogger(PhenoTipsFeature.class);
@@ -112,13 +114,13 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
     }
 
     /**
-     * Constructor for initializeing form a JSON Object
+     * Constructor for initializeing form a JSON Object.
      * @param json JSON object describing this property
      */
     PhenoTipsFeature(JSONObject json)
     {
         super(json);
-        this.present      = (json.getString(OBSERVED_JSON_KEY_NAME).equals("yes"));
+        this.present      = (json.getString(OBSERVED_JSON_KEY_NAME).equals(JSON_PRESENTSTATUS_YES));
         this.type         = json.getString(TYPE_JSON_KEY_NAME);
         this.propertyName = null;
     }
@@ -155,7 +157,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
     {
         JSONObject result = super.toJSON();
         result.element(TYPE_JSON_KEY_NAME,     getType());
-        result.element(OBSERVED_JSON_KEY_NAME, (this.present ? "yes" : "no"));
+        result.element(OBSERVED_JSON_KEY_NAME, (this.present ? JSON_PRESENTSTATUS_YES : JSON_PRESENTSTATUS_NO));
         if (!this.metadata.isEmpty()) {
             JSONArray metadataList = new JSONArray();
             for (FeatureMetadatum metadatum : this.metadata.values()) {
