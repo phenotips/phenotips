@@ -21,18 +21,16 @@ package org.phenotips.listeners;
 
 import org.phenotips.data.Patient;
 import org.phenotips.ontology.OntologyManager;
+import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.bridge.event.DocumentCreatingEvent;
 import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
-import org.xwiki.model.reference.EntityReference;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
-import org.xwiki.observation.event.filter.EventFilter;
-import org.xwiki.observation.event.filter.RegexEventFilter;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -43,6 +41,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -51,62 +51,61 @@ import com.xpn.xwiki.objects.DBStringListProperty;
 /**
  * Listens for document being created or updated, and before the action takes place, iterates over all the HPO terms and
  * replaces the deprecated ones.
- *
+ * 
  * @version $Id$
  */
 @Component
 @Named("deprecated-phenotype-updater")
 @Singleton
-public class DeprecatedPhenotypeUpdaterEventListener implements EventListener
+public class DeprecatedPhenotypeUpdaterEventListener extends AbstractEventListener implements EventListener
 {
-    /** The XClass used for storing patient data. */
-    private static final EntityReference CLASS_REFERENCE = Patient.CLASS_REFERENCE;
-
     @Inject
     private OntologyManager ontologyManager;
 
     @Inject
     private Execution execution;
 
-    @Override
-    public String getName()
-    {
-        return "phenotype-saver";
-    }
+    /** The list of field names which might contain deprecated terms. */
+    private final Set<String> fieldsToFix;
 
-    @Override
-    public List<Event> getEvents()
+    /** Default constructor, sets up the listener name and the list of events to subscribe to. */
+    public DeprecatedPhenotypeUpdaterEventListener()
     {
-        // The list of events this listener listens to
-        EventFilter eventFilter = new RegexEventFilter("xwiki:data\\.P[0-9]+");
-        return Arrays.<Event>asList(new DocumentUpdatingEvent(eventFilter), new DocumentCreatingEvent(eventFilter));
+        super("deprecated-phenotype-updater", new DocumentCreatingEvent(), new DocumentUpdatingEvent());
+
+        this.fieldsToFix = new HashSet<String>();
+        this.fieldsToFix.add("phenotype");
+        this.fieldsToFix.add("extended_phenotype");
+        this.fieldsToFix.add("negative_phenotype");
+        this.fieldsToFix.add("extended_negative_phenotype");
+        this.fieldsToFix.add("prenatal_phenotype");
+        this.fieldsToFix.add("extended_prenatal_phenotype");
+        this.fieldsToFix.add("negative_prenatal_phenotype");
+        this.fieldsToFix.add("extended_negative_prenatal_phenotype");
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        //Most likely missing some sources of HPO terms
-        Set<String> fieldsToFix = new HashSet<String>();
-        fieldsToFix.add("extended_prenatal_phenotype");
-        fieldsToFix.add("extended_negative_prenatal_phenotype");
-        fieldsToFix.add("prenatal_phenotype");
-        fieldsToFix.add("negative_prenatal_phenotype");
-        fieldsToFix.add("extended_phenotype");
-        fieldsToFix.add("extended_negative_phenotype");
-        fieldsToFix.add("phenotype");
-        fieldsToFix.add("negative_phenotype");
-
         XWikiDocument doc = (XWikiDocument) source;
-        BaseObject patientObject = doc.getXObject(CLASS_REFERENCE);
+        BaseObject patientObject = doc.getXObject(Patient.CLASS_REFERENCE);
 
-        if (patientObject != null) {
-            XWikiContext context = (XWikiContext) execution.getContext().getProperty("xwikicontext");
-            for (String field : fieldsToFix) {
+        if (patientObject != null && !StringUtils.equals("PatientTemplate", doc.getDocumentReference().getName())) {
+            XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
+            for (String field : this.fieldsToFix) {
                 DBStringListProperty currentTermList = (DBStringListProperty) patientObject.getField(field);
+                if (currentTermList == null) {
+                    continue;
+                }
                 List<String> terms = currentTermList.getList();
                 Set<String> correctSet = new LinkedHashSet<String>();
                 for (String term : terms) {
-                    correctSet.add(ontologyManager.resolveTerm(term).getId());
+                    OntologyTerm properTerm = this.ontologyManager.resolveTerm(term);
+                    if (properTerm != null) {
+                        correctSet.add(properTerm.getId());
+                    } else {
+                        correctSet.add(term);
+                    }
                 }
                 List<String> correctList = new LinkedList<String>();
                 correctList.addAll(correctSet);
