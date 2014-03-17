@@ -820,11 +820,11 @@ TXVppcEAAAAASUVORK5CYII=
 #headerglobal {
   position: relative;
 }
-#company h1 a {
+#institution h1 a {
   color: $theme.pageBackgroundColor !important;
   text-decoration: none !important;
 }
-#company h1 {
+#institution h1 {
   border: 0 none;
   color: $theme.pageBackgroundColor;
   font-size: 1.2em;
@@ -1527,7 +1527,7 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
 ### Global header
 ###
 ### The uppermost area of each page
-### Contains the company logo, links to global actions and the search facility
+### Contains the institution's logo, links to global actions and the search facility
 ###
 #if($isInServletMode) ## Visible only in a page
 &lt;div id="headerglobal" class="layoutsection"&gt;
@@ -1539,8 +1539,8 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
 #else
 &lt;div class="minwidthd"&gt;&lt;/div&gt;
 #end
-  &lt;div id="company"&gt;
-  &lt;div id="companylogo"&gt;
+  &lt;div id="institution"&gt;
+  &lt;div id="institutionlogo"&gt;
     &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;
 #if("$!{themeDocFullName}" == '')
   #set($themeDocFullName = "$!xwiki.getUserPreference('colorTheme')")
@@ -1564,8 +1564,8 @@ input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .butt
 #end
     &lt;img src="$!logourl" alt="Logo"/&gt;
     &lt;/a&gt;
-  &lt;/div&gt; ## companylogo
-  &lt;/div&gt; ## company
+  &lt;/div&gt; ## institutionlogo
+  &lt;/div&gt; ## institution
   &lt;div class="clearfloats"&gt;&lt;/div&gt;
 #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.header.bottom'))
   $services.rendering.render($uix.execute(), 'xhtml/1.0')
