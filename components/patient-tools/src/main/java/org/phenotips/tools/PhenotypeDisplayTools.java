@@ -20,6 +20,7 @@
 package org.phenotips.tools;
 
 import org.phenotips.ontology.OntologyService;
+import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
@@ -143,13 +144,25 @@ public class PhenotypeDisplayTools implements ScriptService
             List<String> correctIds = new LinkedList<String>();
             List<String> correctNegativeIds = new LinkedList<String>();
             for (String id : data.getSelectedValues()) {
-                correctIds.add(ontologyService.getTerm(id).getId());
-            }
-            for (String id : data.getSelectedNegativeValues()) {
-                correctNegativeIds.add(ontologyService.getTerm(id).getId());
+                OntologyTerm properTerm = this.ontologyService.getTerm(id);
+                if (properTerm != null) {
+                    correctIds.add(properTerm.getId());
+                } else {
+                    correctIds.add(id);
+                }
             }
             data.setSelectedValues(correctIds);
-            data.setSelectedNegativeValues(correctNegativeIds);
+            if (data.getSelectedNegativeValues() != null) {
+                for (String id : data.getSelectedNegativeValues()) {
+                    OntologyTerm properTerm = this.ontologyService.getTerm(id);
+                    if (properTerm != null) {
+                        correctNegativeIds.add(properTerm.getId());
+                    } else {
+                        correctNegativeIds.add(id);
+                    }
+                }
+                data.setSelectedNegativeValues(correctNegativeIds);
+            }
             return data;
         } else {
             return data;
