@@ -60,7 +60,7 @@ public class ContactInformationController implements PatientDataController<Immut
     private static final String DATA_EMAIL = "email";
     private static final String DATA_NAME = "name";
     private static final String DATA_INSTITUTION = "institution";
-    private static final String ATTRIBUTE_INSTITUTION = "company";
+    private static final String ATTRIBUTE_INSTITUTION = "institution";
     private static final String ATTRIBUTE_EMAIL_USER = DATA_EMAIL;
     private static final String ATTRIBUTE_EMAIL_GROUP = DATA_CONTACT;
 
