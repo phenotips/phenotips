@@ -2607,7 +2607,7 @@ console.log(categories);
     var wrapper = new Element('div', {'class' : 'entry-data'});
     wrapper.insert({'bottom': this._generateEntryTitle(data.id, data.value)});
     var entryTools = new Element('span', {'class' : 'entry-tools'});
-    wrapper.insert({'bottom': entryTools});
+    wrapper.insert({'top': entryTools});
     element.update(wrapper);
 
     if (!this._isRootEntry(element)) {
@@ -2618,7 +2618,7 @@ console.log(categories);
       }
     }
     if (data.info) {
-      entryTools.insert({'bottom' : this._createTool('i', 'info-tool', "Information about this term", this._showEntryInfo)});
+      entryTools.insert({'top' : this._createTool('i', 'info-tool', "Information about this term", this._showEntryInfo)});
       element.insert({bottom : data.info});
     }
 
@@ -2888,6 +2888,7 @@ console.log(categories);
     this.container.close();
   }
   });
+
   return MS;
 }(MS || {}));</code>
     </property>
@@ -4623,9 +4624,11 @@ div.resultContainer div.sourceContent.loading {
 }
 .ontology-tree .entry-tools {
   /* float: right; */
-  display: none;
+  display: inline-block;
   font-size: 0.8em;
   margin-left: 0.5em;
+  margin-right: 0.5em;
+  min-width: 17px;
   vertical-align: middle;
 }
 .ontology-tree .entry-data {
@@ -4640,36 +4643,51 @@ div.resultContainer div.sourceContent.loading {
 .ontology-tree .entry-data:hover .entry-tools {
   display: inline-block;
 }
-.ontology-tree .entry-tool {
-  background-color: #333;
-  color: #fff;
-  -moz-border-radius: .7em;
-  -webkit-border-radius: .7em;
-  border-radius: .7em;
-  display: inline-block;
-  min-width: 1.4em;
-  text-align: center;
-  font-weight: bold;
-  box-shadow: 0 0 6px #ccc;
-  margin: 0 2px;
+.ontology-tree .entry-tool, .term-entry .entry-tool {
+  background: #FCFFF4;
+  #css3_backgroundLinearGradient({
+    'to': 'bottom',
+    'colors': [
+        {'color': '#FCFFF4', 'position': '0%'},
+        {'color': '#DFE5D7', 'position': '40%'},
+        {'color': '#B3BEAD', 'position': '100%'}
+    ]
+  })
+  border: 1px solid #FFFFFF;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px #555555;
+  color: #333333;
   cursor: pointer;
-  opacity: .5;
-  text-shadow: 1px 1px 0 #333;
+  display: inline-block;
+  font-family: serif;
+  font-size: 0.87em;
+  font-weight: normal;
+  height: 15px;
+  line-height: 16px;
+  margin-top: 1px;
+  text-align: center;
+  text-shadow: 0 1px 1px #FFFFFF;
+  vertical-align: top;
+  width: 15px;
 }
 .ontology-tree .entry-tool:hover {
   opacity: 1;
 }
-.ontology-tree .info-tool {
-  background-color: #369;
-  font-style: italic;
+
+.ontology-tree .info-tool:hover, .term-entry .info-tool:hover {
+  background: #2B88D9;
+  #css3_backgroundLinearGradient({
+    'to': 'bottom',
+    'colors': [
+        {'color': '#3B679E', 'position': '0%'},
+        {'color': '#2B88D9', 'position': '50%'},
+        {'color': '#207CCA', 'position': '51%'},
+        {'color': '#7DB9E8', 'position': '100%'}
+    ]
+  })
 }
 .ontology-tree .browse-tool {
-  -moz-border-radius: 0.875em;
-  -webkit-border-radius: 0.875em;
-  border-radius: 0.875em;
-  letter-spacing: -1px;
-  /*font-size: 0.8em;
-  min-width: 1.75em;*/
+  background-color: #333;
 }
 .ontology-tree .accept-tool {
   background-color: #292;
@@ -4871,11 +4889,6 @@ div.resultContainer div.sourceContent.loading {
   cursor: pointer;
   right: .25em;
   position: absolute;
-}
-.dropdown .ontology-tree .entry-tools {
-  position: absolute;
-  right: 0;
-  top: 0.2em;
 }
 .dropdown .ontology-tree .entry-data {
   line-height: 1.4em;
