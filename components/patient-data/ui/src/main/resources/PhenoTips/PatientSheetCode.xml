@@ -1568,7 +1568,12 @@ document.observe('xwiki:dom:loaded', function() {
           var positiveName = event.memo.obrowser.suggest.fld.name.replace(/__suggested$/, "");
           var negativeName = event.memo.obrowser.suggest.fld.name.replace(/(_\d+)_/, "$1_negative_").replace(/__suggested$/, "");
           var value = item.value;
-          var text = item.up('.entry-data').down('.value').firstChild.nodeValue;
+          var text = item.up('.entry-data').down('.value').firstChild;
+          text = text &amp;&amp; text.nodeValue || false;
+          if (!text) {
+            item.up(".parents").remove();
+            return;
+          }
           var ynpickerElt = YesNoPicker.generatePickerElement([
               {type: 'na', selected: !isValueSelected(positiveName, value) &amp;&amp; !isValueSelected(negativeName, value)},
               {type: 'yes', selected: isValueSelected(positiveName, value)},
