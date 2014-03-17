@@ -4556,7 +4556,9 @@ div.resultContainer div.sourceContent.loading {
       <cache>long</cache>
     </property>
     <property>
-      <code>.ontology-tree {
+      <code>#template("colorThemeInit.vm")
+
+.ontology-tree {
 }
 .ontology-tree .parents{
   list-style-type: none;
@@ -4586,11 +4588,11 @@ div.resultContainer div.sourceContent.loading {
 }
 
 .ontology-tree .parents+.root:before {
-  color: #000;
+  color: $theme.textColor;
 }
 
 .ontology-tree .key {
-  color: #777;
+  opacity: .4;
   font-size: .8em;
 }
 .ontology-tree .root&gt;.entry-data .value {
@@ -4638,10 +4640,7 @@ div.resultContainer div.sourceContent.loading {
   cursor: pointer;
 }
 .ontology-tree .entry-data:hover {
-  background: #FFB;
-}
-.ontology-tree .entry-data:hover .entry-tools {
-  display: inline-block;
+  background: $theme.highlightColor;
 }
 .ontology-tree .entry-tool, .term-entry .entry-tool {
   background: #FCFFF4;
@@ -4670,8 +4669,10 @@ div.resultContainer div.sourceContent.loading {
   vertical-align: top;
   width: 15px;
 }
-.ontology-tree .entry-tool:hover {
-  opacity: 1;
+
+.ontology-tree .entry-tool:hover, .term-entry .entry-tool:hover {
+  color: #FFFFFF;
+  text-shadow: 0 1px 1px #333333;
 }
 
 .ontology-tree .info-tool:hover, .term-entry .info-tool:hover {
@@ -4690,16 +4691,15 @@ div.resultContainer div.sourceContent.loading {
   background-color: #333;
 }
 .ontology-tree .accept-tool {
-  background-color: #292;
+  background-color: $theme.notificationSuccessColor;
 }
 .ontology-tree .remove-tool {
-  background-color: #a00;
+  background-color: $theme.notificationErrorColor;
 }
 .ontology-tree .accepted &gt;.entry-data {
   background-color: $theme.backgroundSecondaryColor;
 }
 .ontology-tree .accepted &gt;.entry-data .info .value {
-  /*color: #292;*/
   font-weight: bold;
 }
 
@@ -4714,10 +4714,7 @@ div.resultContainer div.sourceContent.loading {
   border: 0 none;
   background: #fff;
   padding: 4px 8px;
-  -moz-border-radius: 0 12px 12px 12px;
-  -webkit-border-radius: 0 12px 12px 12px;
   border-radius: 0 12px 12px 12px;
-  -moz-box-shadow: 0 0 6px #777;
   box-shadow: 0 0 6px #777;
   z-index: 20000;
 }
@@ -4726,13 +4723,13 @@ div.resultContainer div.sourceContent.loading {
 }
 .ontology-tree .entry .tooltip .key {
   font-size: .8em;
-  color: #777;
+  color:$theme.textColor;
 }
 .ontology-tree .entry .tooltip dl {
   margin: .3em 0;
 }
 .ontology-tree .entry .tooltip dt {
-  color: #000;
+  color: $theme.textColor;
   font-style: italic;
   margin: .4em 0 0.2em;
 }
@@ -4752,7 +4749,8 @@ div.resultContainer div.sourceContent.loading {
   vertical-align: middle;
 }
 .expand-tool.locked {
-  color: #ccc;
+  color: $theme.textColor;
+  opacity: .4;
   cursor: default;
 }
 .expand-tool.disabled {
