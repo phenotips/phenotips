@@ -250,6 +250,16 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release 1.0-milestone-11 -->
+            <difference>
+              <className>**/data/Patient</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getId()</method>
+            </difference>
+            <difference>
+              <className>**/data/Patient</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getExternalId()</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
@@ -633,21 +643,7 @@
           <configuration>
             <comparisonVersion>${clirr.previous.version}</comparisonVersion>
             <skip>${clirr.skip}</skip>
-            <excludes>
-              <exclude>**/internal/**</exclude>
-            </excludes>
-            <ignored>
-              <difference>
-                <className>**/data/Patient</className>
-                <differenceType>7012</differenceType>
-                <method>java.lang.String getId()</method>
-              </difference>
-              <difference>
-                <className>**/data/Patient</className>
-                <differenceType>7012</differenceType>
-                <method>java.lang.String getExternalId()</method>
-              </difference>
-            </ignored>
+            <!-- The list of excluded files and ignored changes is configured way above, in the <plugins> section. -->
           </configuration>
         </plugin>
         <plugin>
