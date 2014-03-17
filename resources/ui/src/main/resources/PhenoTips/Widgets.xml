@@ -4686,6 +4686,7 @@ div.resultContainer div.sourceContent.loading {
         {'color': '#7DB9E8', 'position': '100%'}
     ]
   })
+  cursor: help;
 }
 .ontology-tree .browse-tool {
   background-color: #333;
