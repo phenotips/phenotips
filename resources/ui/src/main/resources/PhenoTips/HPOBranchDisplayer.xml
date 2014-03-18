@@ -277,17 +277,17 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
       &lt;dt class=""&gt;&lt;/dt&gt;
       &lt;dd&gt;&lt;div&gt;$itemData.def&lt;/div&gt;&lt;/dd&gt;
     #end
-    #if (${itemData.synonym.size()} &gt; 0)
+    #if ($itemData.synonym.empty == false)
       &lt;dt class="also-known-as"&gt;Also known as&lt;/dt&gt;&lt;dd&gt;
       #foreach ($s in $itemData.synonym)
         &lt;div&gt;$s&lt;/div&gt;
       #end&lt;/dd&gt;
     #end
-    #if (${itemData.is_a.size()} &gt; 0)
+    #if ($itemData.is_a.empty == false)
       &lt;dt class="is-a-type-of"&gt;Is a type of&lt;/dt&gt;&lt;dd&gt;
       #foreach ($p in $itemData.is_a)
         &lt;div&gt;$p.replaceAll("^([A-Z]+:[0-9]+)\s+!\s+", '')&lt;/div&gt;
-      #end
+      #end&lt;/dd&gt;
     #end
     &lt;/dl&gt;
   &lt;/div&gt;
