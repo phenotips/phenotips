@@ -44,7 +44,7 @@
 <hidden>false</hidden>
 <content>{{velocity}}
   $response.setContentType("text/xml")
-  
+
   #set ($input = $request.getParameter("input").toLowerCase())
   #set ($templateName = $classname + 'Template')
   #set ($className = $request.getParameter("classname"))
@@ -80,7 +80,7 @@
   #foreach($result in $finalResults)
    &lt;rs id="$idCount" info=""&gt;$result&lt;/rs&gt;
   #set ($idCount = $idCount + 1)
-  #end  
+  #end
   &lt;/results&gt;
 {{/velocity}}
 </content></xwikidoc>
