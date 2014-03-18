@@ -2813,6 +2813,7 @@ console.log(categories);
   },
   _unselectEntry: function (entry) {
      this.options.unselectTerm(entry.__termId);
+     this.options.unselectTerm(entry.__termId, true);
      entry.removeClassName('accepted');
   },
   _createTool : function (text, className, title, method) {
