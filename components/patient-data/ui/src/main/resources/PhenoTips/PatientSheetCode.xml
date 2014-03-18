@@ -1488,6 +1488,24 @@ document.observe('xwiki:dom:loaded', function() {
             }
             }
 
+            // Info buttons behavior
+            var itemParent = item.up('.term-entry');
+            var infoTool = itemParent.down('.info-tool');
+            var tooltip = itemParent.down('.tooltip');
+            if (infoTool) {
+              if (!tooltip) {
+                infoTool.setOpacity(0);
+              } else {
+                infoTool.observe('click', function (event) {
+                  event.findElement('.chapter').select('.tooltip').invoke('addClassName', 'invisible');
+                  event.findElement('.term-entry').down('.tooltip').removeClassName('invisible');
+                });
+                tooltip.down('.hide-tool').observe('click', function (event) {
+                  event.findElement('.tooltip').addClassName('invisible');
+                });
+              }
+            }
+
             // ------------------------------------------------------------------------
             // Add  y/n selection
             // ------------------------------------------------------------------------

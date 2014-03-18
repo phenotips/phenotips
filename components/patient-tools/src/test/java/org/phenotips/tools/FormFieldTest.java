@@ -19,7 +19,23 @@
  */
 package org.phenotips.tools;
 
+import org.phenotips.components.ComponentManagerRegistry;
+import org.phenotips.ontology.OntologyManager;
+import org.phenotips.ontology.OntologyService;
+import org.phenotips.ontology.OntologyTerm;
+
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.xml.XMLUtils;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,13 +45,36 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class FormFieldTest
 {
     private DOMImplementationLS domls;
 
-    public FormFieldTest() throws ClassNotFoundException, InstantiationException, IllegalAccessException
+    public FormFieldTest() throws ClassNotFoundException, InstantiationException, IllegalAccessException,
+        NoSuchFieldException, ComponentLookupException
     {
         this.domls = (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
+        Field field = ReflectionUtils.getField(ComponentManagerRegistry.class, "cmProvider");
+        boolean isAccessible = field.isAccessible();
+        try {
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Provider<ComponentManager> cmp = mock(Provider.class);
+            field.set(null, cmp);
+            ComponentManager cm = mock(ComponentManager.class);
+            when(cmp.get()).thenReturn(cm);
+            OntologyManager om = mock(OntologyManager.class);
+            when(cm.getInstance(OntologyManager.class)).thenReturn(om);
+            OntologyTerm parent = new MockOntologyTerm("HP:0000708", "Behavioural/Psychiatric Abnormality", "", null);
+            OntologyTerm ocd =
+                new MockOntologyTerm("HP:0000722", "OCD", "Obsessive-Compulsive Disorder", Arrays.asList("OC"), parent);
+            when(om.resolveTerm("HP:0000722")).thenReturn(ocd);
+        } finally {
+            field.setAccessible(isAccessible);
+        }
+
     }
 
     @Test
@@ -219,5 +258,84 @@ public class FormFieldTest
         Assert.assertEquals("checked", e.getAttribute("checked"));
         Assert.assertEquals("negative_phenotype_HP:0000722", e.getAttribute("id"));
         Assert.assertEquals("Obsessive-compulsive disorder", e.getAttribute("title"));
+    }
+
+    private static class MockOntologyTerm implements OntologyTerm
+    {
+        private String id;
+
+        private String name;
+
+        private String description;
+
+        private List<String> synonyms;
+
+        private Set<OntologyTerm> parents;
+
+        MockOntologyTerm(String id, String name, String description, List<String> synonyms, OntologyTerm... parents)
+        {
+            this.id = id;
+            this.name = name;
+            this.description = description;
+            this.synonyms = synonyms;
+            this.parents = new HashSet<OntologyTerm>(Arrays.asList(parents));
+        }
+
+        @Override
+        public Set<OntologyTerm> getParents()
+        {
+            return this.parents;
+        }
+
+        @Override
+        public OntologyService getOntology()
+        {
+            return null;
+        }
+
+        @Override
+        public String getName()
+        {
+            return this.name;
+        }
+
+        @Override
+        public String getId()
+        {
+            return this.id;
+        }
+
+        @Override
+        public long getDistanceTo(OntologyTerm other)
+        {
+            return 0;
+        }
+
+        @Override
+        public String getDescription()
+        {
+            return this.description;
+        }
+
+        @Override
+        public Set<OntologyTerm> getAncestorsAndSelf()
+        {
+            return null;
+        }
+
+        @Override
+        public Set<OntologyTerm> getAncestors()
+        {
+            return null;
+        }
+
+        @Override
+        public Object get(String name)
+        {
+            if ("synonym".equals(name)) {
+                return this.synonyms;
+            }
+            return null;
+        }
     }
 }

@@ -4705,10 +4705,10 @@ div.resultContainer div.sourceContent.loading {
   font-weight: bold;
 }
 
-.ontology-tree .entry {
+.ontology-tree .entry, .term-entry {
   position: relative;
 }
-.ontology-tree .entry .tooltip {
+.ontology-tree .entry .tooltip, .term-entry .tooltip {
   position: absolute;
   top: .7em;
   width: 80%;
@@ -4720,22 +4720,25 @@ div.resultContainer div.sourceContent.loading {
   box-shadow: 0 0 6px #777;
   z-index: 20000;
 }
-.ontology-tree .entry .tooltip .value {
+.term-entry .tooltip {
+  font-size: 1em !important;
+}
+.ontology-tree .entry .tooltip .value, .term-entry .tooltip .value {
   font-weight: bold;
 }
-.ontology-tree .entry .tooltip .key {
+.ontology-tree .entry .tooltip .key, .term-entry .tooltip ,key {
   font-size: .8em;
   color:$theme.textColor;
 }
-.ontology-tree .entry .tooltip dl {
+.ontology-tree .entry .tooltip dl, .term-entry .tooltip dl {
   margin: .3em 0;
 }
-.ontology-tree .entry .tooltip dt {
+.ontology-tree .entry .tooltip dt, .term-entry .tooltip dt {
   color: $theme.textColor;
   font-style: italic;
   margin: .4em 0 0.2em;
 }
-.ontology-tree .entry .tooltip .hide-tool {
+.ontology-tree .entry .tooltip .hide-tool, .term-entry .tooltip .hide-tool {
   position: absolute;
   top: .2em;
   right: .5em;
