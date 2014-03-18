@@ -24,18 +24,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>ontology-access</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>ontology-access</artifactId>
+  <artifactId>ontology-ethnicity-access</artifactId>
   <packaging>pom</packaging>
-  <name>PhenoTips - Ontology Access</name>
+  <name>PhenoTips - Ontologies - Ethnicity Ontology integration</name>
 
   <modules>
     <module>api</module>
-    <module>ui</module>
-    <module>hpo</module>
-    <module>omim</module>
-    <module>ethnicity</module>
   </modules>
 </project>
