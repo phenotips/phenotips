@@ -90,17 +90,16 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     @Override
     public OntologyTerm getTerm(String id)
     {
-        ModifiableSolrParams params = new ModifiableSolrParams();
-        params.set(CommonParams.Q, ID_FIELD_NAME + ':' + ClientUtils.escapeQueryChars(id));
-        String cacheKey = SolrQueryUtils.getCacheKey(params);
-        OntologyTerm result = this.externalServicesAccess.getCache().get(cacheKey);
+        OntologyTerm result = this.externalServicesAccess.getCache().get(id);
         if (result == null) {
+            ModifiableSolrParams params = new ModifiableSolrParams();
+            params.set(CommonParams.Q, ID_FIELD_NAME + ':' + ClientUtils.escapeQueryChars(id));
             SolrDocumentList allResults = this.search(params);
             if (allResults != null && !allResults.isEmpty()) {
                 result = new SolrOntologyTerm(allResults.get(0), this);
-                this.externalServicesAccess.getCache().set(cacheKey, result);
+                this.externalServicesAccess.getCache().set(id, result);
             } else {
-                this.externalServicesAccess.getCache().set(cacheKey, EMPTY_MARKER);
+                this.externalServicesAccess.getCache().set(id, EMPTY_MARKER);
             }
         }
         return (result == EMPTY_MARKER) ? null : result;
@@ -109,15 +108,26 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     @Override
     public Set<OntologyTerm> getTerms(Collection<String> ids)
     {
+        Set<OntologyTerm> result = new LinkedHashSet<OntologyTerm>();
         StringBuilder query = new StringBuilder("id:(");
         for (String id : ids) {
-            query.append(ClientUtils.escapeQueryChars(id));
-            query.append(' ');
+            OntologyTerm cachedTerm = this.externalServicesAccess.getCache().get(id);
+            if (cachedTerm != null) {
+                if (cachedTerm != EMPTY_MARKER) {
+                    result.add(cachedTerm);
+                }
+            } else {
+                query.append(ClientUtils.escapeQueryChars(id));
+                query.append(' ');
+            }
         }
         query.append(')');
-        Set<OntologyTerm> result = new LinkedHashSet<OntologyTerm>();
-        for (SolrDocument doc : this.search(SolrQueryUtils.transformQueryToSolrParams(query.toString()))) {
-            result.add(new SolrOntologyTerm(doc, this));
+
+        // There's at least one more term not found in the cache
+        if (query.length() > 5) {
+            for (SolrDocument doc : this.search(SolrQueryUtils.transformQueryToSolrParams(query.toString()))) {
+                result.add(new SolrOntologyTerm(doc, this));
+            }
         }
         return result;
     }
