@@ -25,8 +25,6 @@ import org.xwiki.component.annotation.Component;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,7 +38,7 @@ import org.apache.solr.common.params.CommonParams;
  * upon the index becoming a full-fledged ontology.
  *
  * @version $Id$
- * @since 1.0M10
+ * @since 1.0M11
  */
 @Component
 @Named("ethnicity")
@@ -51,18 +49,17 @@ public class EthnicityOntology extends AbstractSolrOntologyService
      * @param stringSearch part of full ethnicity name
      * @return set of strings that are full ethnicity names that match the partial string
      */
-    public List<String> getEthnicities(String stringSearch)
+    public Set<OntologyTerm> getMatchingEthnicities(String stringSearch)
     {
-        List<String> returnList = new LinkedList<String>();
         Map<String, String> searchMap = new HashMap<String, String>();
-        Map<String, String> optionsMap = new HashMap<String, String>();
         searchMap.put("nameGram", stringSearch);
+        // Order by population size:
+        searchMap.put("_val_", "popsize");
+
+        Map<String, String> optionsMap = new HashMap<String, String>();
         optionsMap.put(CommonParams.ROWS, "10");
-        Set<OntologyTerm> resultsList = search(searchMap, optionsMap);
-        for (OntologyTerm result : resultsList) {
-            returnList.add(result.get("name").toString());
-        }
-        return returnList;
+
+        return search(searchMap, optionsMap);
     }
 
     @Override
@@ -82,6 +79,7 @@ public class EthnicityOntology extends AbstractSolrOntologyService
     {
         Set<String> aliases = new HashSet<String>();
         aliases.add(getName());
+        aliases.add("ETHNO");
         return aliases;
     }
 }

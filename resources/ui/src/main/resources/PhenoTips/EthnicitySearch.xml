@@ -21,53 +21,42 @@
 -->
 
 <xwikidoc>
-<web>PhenoTips</web>
-<name>EthnicitySearch</name>
-<language></language>
-<defaultLanguage></defaultLanguage>
-<translation>0</translation>
-<parent>PhenoTips.PatientClass</parent>
-<creator>xwiki:XWiki.Admin</creator>
-<author>xwiki:XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-<creationDate>1392830485000</creationDate>
-<date>1392846984000</date>
-<contentUpdateDate>1392846984000</contentUpdateDate>
-<version>1.1</version>
-<title>EthnicitySearch</title>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment></comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.1</syntaxId>
-<hidden>false</hidden>
-<content>{{velocity}}
+  <web>PhenoTips</web>
+  <name>EthnicitySearch</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1395188095000</creationDate>
+  <parent>PhenoTips.PatientClass</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1395189008000</date>
+  <contentUpdateDate>1395188716000</contentUpdateDate>
+  <version>1.1</version>
+  <title>EthnicitySearch</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+#if ($xcontext.action == 'get')
   $response.setContentType("text/xml")
 
   #set ($input = $request.getParameter("input").toLowerCase())
-  #set ($templateName = $classname + 'Template')
-  #set ($className = $request.getParameter("classname"))
-  #set ($fieldName = $request.getParameter("fieldname"))
-  #set ($solrResults = $services.ethnicity.getEthnicities($input))
   #set ($finalResults = [])
+  #set ($lowercaseResults = [])
 
   ##Get existing ethnicities
   ##------------------------
-  #set($query = "select distinct list from BaseObject as obj, DBStringListProperty as prop join prop.list list where obj.name &lt;&gt; ? and obj.className = ? and prop.id.id = obj.id and prop.id.name = ? and lower(list) like ?")
-  #set($queryResult = $xwiki.search($query, 30, 0, [${templateName}, ${className}, ${fieldName}, "%${input}%"]))
-  #set($wikiResults = $queryResult.toArray())
 
-  ##Looping
-  ##-------
-  #foreach($res in $wikiResults)
-    #set ($res = $escapetool.xml($res))
-    #set ($s = $finalResults.add($res))
+  #foreach($res in $services.ontologies.ethnicity.getMatchingEthnicities($input))
+    #set ($discard = $finalResults.add($res.name))
+    #set ($discard = $lowercaseResults.add($res.name.toLowerCase()))
   #end
-  #foreach($res in $solrResults)
-    #set ($res = $res.toLowerCase())
-    #if ($listtool.contains($finalResults, $res) != true)
-    #set ($s = $finalResults.add($res))
+  #foreach($res in $services.query.hql('select distinct list from BaseObject as obj, DBStringListProperty as prop join prop.list list where obj.name &lt;&gt; ? and obj.className = ? and prop.id.id = obj.id and (prop.id.name = ? or prop.id.name = ?) and lower(list) like ?').bindValues(['PhenoTips.PatientTemplate', 'PhenoTips.PatientClass', 'maternal_ethnicity', 'paternal_ethnicity', "%${input}%"]).setLimit(10).execute())
+    #if (!$lowercaseResults.contains($res.toLowerCase()))
+      #set ($discard = $finalResults.add($res))
     #end
   #end
 
@@ -76,11 +65,11 @@
 
   &lt;?xml version="1.0" encoding="UTF-8"?&gt;
   &lt;results type="3"&gt;
-  #set ($idCount = 1)
   #foreach($result in $finalResults)
-   &lt;rs id="$idCount" info=""&gt;$result&lt;/rs&gt;
-  #set ($idCount = $idCount + 1)
+    &lt;rs id="$foreach.count" info=""&gt;$escapetool.xml($result)&lt;/rs&gt;
   #end
   &lt;/results&gt;
+#end
 {{/velocity}}
-</content></xwikidoc>
+</content>
+</xwikidoc>

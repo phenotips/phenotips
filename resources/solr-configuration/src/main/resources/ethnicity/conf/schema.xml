@@ -37,8 +37,11 @@
     that avoids logging every request
 -->
 
-<schema name="omim" version="1.5">
+<schema name="ethnicity" version="1.5">
   <types>
+    <!-- Numeric field for storing the population size. -->
+    <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" positionIncrementGap="0"/>
+
     <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
 
@@ -120,9 +123,11 @@
   <fields>
     <field name="id" type="string" indexed="true" stored="true" required="true"/>
     <field name="name" type="text_general" indexed="false" stored="true"/>
-    <field name="nameGram" type="text_general_edge_ngram" indexed="true" stored="false" omitNorms="false"/>
+    <field name="nameGram" type="text_general_edge_ngram" indexed="true" stored="false"/>
     <field name="nameSpell" type="text_spell" indexed="true" stored="false"/>
     <field name="nameSort" type="string" indexed="true" stored="false"/>
+
+    <field name="popsize" type="tlong" indexed="true" stored="false" omitNorms="true"/>
 
     <!-- Catchall field, containing all other searchable text fields (implemented
          via copyField further on in this schema).  -->
