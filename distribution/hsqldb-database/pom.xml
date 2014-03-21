@@ -157,7 +157,7 @@
                     <resourceBundle>org.xwiki.platform:xwiki-platform-tool-configuration-resources:4.4</resourceBundle>
                   </resourceBundles>
                   <properties>
-                    <xwikiDbConnectionUrl>jdbc:hsqldb:file:${project.build.directory}/data/database/xwiki_db;shutdown=true</xwikiDbConnectionUrl>
+                    <xwikiDbConnectionUrl>jdbc:hsqldb:file:${project.build.directory}/data/database/xwiki_db;shutdown=true;hsqldb.cache_size=50000;hsqldb.script_format=3;hsqldb.nio_max_size=512;hsqldb.lob_file_scale=16;hsqldb.default_table_type=cached;hsqldb.tx=mvcc</xwikiDbConnectionUrl>
                     <xwikiDbConnectionUsername>sa</xwikiDbConnectionUsername>
                     <xwikiDbConnectionPassword />
                     <xwikiDbConnectionDriverClass>org.hsqldb.jdbcDriver</xwikiDbConnectionDriverClass>
