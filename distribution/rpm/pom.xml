@@ -35,7 +35,9 @@
   <properties>
     <ptwar.path>${project.build.directory}/ptwar</ptwar.path>
     <solrwar.path>${project.build.directory}/solrwar</solrwar.path>
-    <db.path>${project.build.directory}/data</db.path>
+    <data.path>${project.build.directory}/phenotips</db.path>
+    <db.path>${data.path}/data</db.path>
+    <solr.path>${data.path}/data/solrconfig</solr.path>
     <xwiki.properties.environment.permanentDirectory>/var/lib/phenotips/data</xwiki.properties.environment.permanentDirectory>
   </properties>
 
@@ -59,6 +61,14 @@
       <artifactId>database-zip</artifactId>
       <version>${project.version}</version>
       <type>zip</type>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>solr-configuration</artifactId>
+      <version>${project.version}</version>
+      <type>jar</type>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 
@@ -123,6 +133,24 @@
               <outputDirectory>${db.path}</outputDirectory>
             </configuration>
           </execution>
+          <execution>
+            <id>unzip-solr-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>solr-configuration</artifactId>
+                  <version>${project.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${solr.path}/solrconfig</outputDirectory>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <!-- Prepare configuration -->
@@ -150,40 +178,48 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
           <group>Applications/Science</group>
           <icon>src/main/resources/phenotips.gif</icon>
           <prefix>/usr/local</prefix>
-          <defaultDirmode>755</defaultDirmode>
+          <defaultDirmode>750</defaultDirmode>
           <defaultFilemode>644</defaultFilemode>
+          <defaultUsername>tomcat</defaultUsername>
+          <defaultGroupname>tomcat</defaultGroupname>
           <requires>
             <require>java &gt;= 0:1.6.0</require>
             <require>tomcat6</require>
           </requires>
           <mappings>
+            <!-- Copy the main PhenoTips war into Tomcat's webapps directory -->
             <mapping>
               <directory>/var/lib/tomcat6/webapps/phenotips</directory>
-              <filemode>644</filemode>
-              <username>root</username>
-              <groupname>root</groupname>
               <sources>
                 <source>
                   <location>${ptwar.path}</location>
                 </source>
               </sources>
             </mapping>
+            <!-- Copy the Solr war into Tomcat's webapps directory -->
             <mapping>
               <directory>/var/lib/tomcat6/webapps/phenotips-solr</directory>
-              <filemode>644</filemode>
-              <username>root</username>
-              <groupname>root</groupname>
               <sources>
                 <source>
                   <location>${solrwar.path}</location>
                 </source>
               </sources>
             </mapping>
+            <!-- Copy the Solr configuration and indexes into the data directory -->
+            <mapping>
+              <directory>/var/lib/phenotips/data/</directory>
+              <sources>
+                <source>
+                  <location>${solr.path}</location>
+                </source>
+              </sources>
+            </mapping>
+            <!-- Copy the database into the data directory -->
             <mapping>
               <directory>/var/lib/phenotips/data</directory>
-              <filemode>644</filemode>
-              <username>tomcat</username>
-              <groupname>tomcat</groupname>
+              <configuration>noreplace</configuration>
+              <directoryIncluded>false</directoryIncluded>
+              <recurseDirectories>true</recurseDirectories>
               <sources>
                 <source>
                   <location>${db.path}</location>
