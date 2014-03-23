@@ -85,7 +85,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 
 (% class="hide-toc" id="hide-toc" %)((([[×&gt;&gt;||title="Hide table of contents" anchor="tmToC"]])))
 
-(% class="hide-toc hide-toc-ghost" %)((([[Hide table of contents&gt;&gt;#tmToC||id="tmHideToC" class="document-action" title="Hide table of contents"]])))
+(% class="hide-toc hide-toc-ghost" %)((([[Hide table of contents&gt;&gt;||id="tmHideToC" class="document-action" title="Hide table of contents" anchor="tmToC"]])))
 )))
 #end
 #if ($xcontext.action == 'edit')
