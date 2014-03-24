@@ -35,7 +35,7 @@
   <properties>
     <ptwar.path>${project.build.directory}/ptwar</ptwar.path>
     <solrwar.path>${project.build.directory}/solrwar</solrwar.path>
-    <data.path>${project.build.directory}/phenotips</db.path>
+    <data.path>${project.build.directory}/phenotips</data.path>
     <db.path>${data.path}/data</db.path>
     <solr.path>${data.path}/data/solrconfig</solr.path>
     <xwiki.properties.environment.permanentDirectory>/var/lib/phenotips/data</xwiki.properties.environment.permanentDirectory>
@@ -94,6 +94,7 @@
                   <type>war</type>
                 </artifactItem>
               </artifactItems>
+              <excludes>**\/xwiki.cfg,**/xwiki.properties,**/hibernate.cfg.xml</excludes>
               <outputDirectory>${ptwar.path}</outputDirectory>
             </configuration>
           </execution>
@@ -112,43 +113,8 @@
                   <type>war</type>
                 </artifactItem>
               </artifactItems>
+              <excludes>**/web.xml</excludes>
               <outputDirectory>${solrwar.path}</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unzip-database</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>${project.groupId}</groupId>
-                  <artifactId>database-zip</artifactId>
-                  <version>${project.version}</version>
-                  <type>zip</type>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${db.path}</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unzip-solr-resources</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>${project.groupId}</groupId>
-                  <artifactId>solr-configuration</artifactId>
-                  <version>${project.version}</version>
-                  <type>jar</type>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${solr.path}/solrconfig</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -157,6 +123,82 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-remote-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>xwiki-configuration-resources</id>
+          </execution>
+          <execution>
+            <id>xwiki-platform-tool-configuration-resources</id>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <resourceBundles>
+                <resourceBundle>org.xwiki.platform:xwiki-platform-tool-configuration-resources:${xwiki.version}</resourceBundle>
+              </resourceBundles>
+              <properties>
+                <xwikiDbConnectionUrl>jdbc:hsqldb:file:${environment.permanentDirectory}/database/xwiki_db;shutdown=true;hsqldb.cache_size=50000;hsqldb.script_format=3;hsqldb.nio_max_size=512;hsqldb.lob_file_scale=16;hsqldb.default_table_type=cached;hsqldb.tx=mvcc</xwikiDbConnectionUrl>
+                <xwikiDbConnectionUsername>sa</xwikiDbConnectionUsername>
+                <xwikiDbConnectionPassword />
+                <xwikiDbConnectionDriverClass>org.hsqldb.jdbcDriver</xwikiDbConnectionDriverClass>
+                <xwikiDbDialect>org.hibernate.dialect.HSQLDialect</xwikiDbDialect>
+                <xwikiDbHbmXwiki>xwiki.hbm.xml</xwikiDbHbmXwiki>
+                <xwikiDbHbmFeeds>feeds.hbm.xml</xwikiDbHbmFeeds>
+                <xwikiDbHbmCommonExtraMappings>activitystream.hbm.xml</xwikiDbHbmCommonExtraMappings>
+                <xwikiCfgPlugins>\
+  com.xpn.xwiki.monitor.api.MonitorPlugin,\
+  com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.JsSkinFileExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.JsResourceSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssSkinFileExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.CssResourceSkinExtensionPlugin,\
+  com.xpn.xwiki.plugin.skinx.LinkExtensionPlugin,\
+  com.xpn.xwiki.plugin.mail.MailPlugin,\
+  com.xpn.xwiki.plugin.packaging.PackagePlugin,\
+  com.xpn.xwiki.plugin.svg.SVGPlugin,\
+  com.xpn.xwiki.plugin.fileupload.FileUploadPlugin,\
+  com.xpn.xwiki.plugin.image.ImagePlugin,\
+  com.xpn.xwiki.plugin.zipexplorer.ZipExplorerPlugin,\
+  com.xpn.xwiki.plugin.lucene.LucenePlugin,\
+  com.xpn.xwiki.plugin.diff.DiffPlugin,\
+  com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin,\
+  com.xpn.xwiki.plugin.jodatime.JodaTimePlugin,\
+  com.xpn.xwiki.plugin.scheduler.SchedulerPlugin,\
+  com.xpn.xwiki.plugin.mailsender.MailSenderPlugin,\
+  com.xpn.xwiki.plugin.activitystream.plugin.ActivityStreamPlugin, \
+  com.xpn.xwiki.plugin.watchlist.WatchListPlugin, \
+  com.xpn.xwiki.plugin.tag.TagPlugin</xwikiCfgPlugins>
+                <xwikiCfgVirtual>0</xwikiCfgVirtual>
+                <xwikiCfgVirtualUsepath>0</xwikiCfgVirtualUsepath>
+                <xwikiCfgEditCommentMandatory>0</xwikiCfgEditCommentMandatory>
+                <xwikiCfgDefaultSkin>colibri</xwikiCfgDefaultSkin>
+                <xwikiCfgDefaultBaseSkin>colibri</xwikiCfgDefaultBaseSkin>
+                <xwikiCfgEncoding>UTF-8</xwikiCfgEncoding>
+                <xwikiCfgAdditionalProperties>
+xwiki.plugin.watchlist.automaticwatch=none
+xwiki.authentication.group.allgroupimplicit=1
+xwiki.section.edit=0
+xwiki.backlinks=0
+xwiki.showviewaction=0
+xwiki.defaultweb=data
+xwiki.usedefaultweb=1
+xwiki.usedefaultaction=0
+xwiki.monitor=0
+                </xwikiCfgAdditionalProperties>
+                <xwikiPropertiesEnvironmentPermanentDirectory>/var/lib/phenotips/data/</xwikiPropertiesEnvironmentPermanentDirectory>
+                <xwikiPropertiesAdditionalProperties>
+model.reference.default.space=data
+extension.repositories=maven-xwiki:maven:http://nexus.xwiki.org/nexus/content/groups/public
+extension.repositories=maven-phenotips:maven:http://nexus.cs.toronto.edu/nexus/content/repositories/releases/
+extension.repositories=extensions.xwiki.org:xwiki:http://extensions.xwiki.org/xwiki/rest/
+solr.type=remote
+solr.remote.url=http://localhost:8080/phenotips-solr/xwiki/
+                </xwikiPropertiesAdditionalProperties>
+              </properties>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <!-- Produce the RPM -->
@@ -190,6 +232,7 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
             <!-- Copy the main PhenoTips war into Tomcat's webapps directory -->
             <mapping>
               <directory>/var/lib/tomcat6/webapps/phenotips</directory>
+              <recurseDirectories>true</recurseDirectories>
               <sources>
                 <source>
                   <location>${ptwar.path}</location>
@@ -199,34 +242,75 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
             <!-- Copy the Solr war into Tomcat's webapps directory -->
             <mapping>
               <directory>/var/lib/tomcat6/webapps/phenotips-solr</directory>
+              <recurseDirectories>true</recurseDirectories>
               <sources>
                 <source>
                   <location>${solrwar.path}</location>
                 </source>
               </sources>
             </mapping>
-            <!-- Copy the Solr configuration and indexes into the data directory -->
+            <!-- Copy the custom PhenoTips/XWiki configuration files into the webapp -->
             <mapping>
-              <directory>/var/lib/phenotips/data/</directory>
-              <sources>
-                <source>
-                  <location>${solr.path}</location>
-                </source>
-              </sources>
-            </mapping>
-            <!-- Copy the database into the data directory -->
-            <mapping>
-              <directory>/var/lib/phenotips/data</directory>
+              <directory>/var/lib/tomcat6/webapps/phenotips/WEB-INF/</directory>
               <configuration>noreplace</configuration>
               <directoryIncluded>false</directoryIncluded>
-              <recurseDirectories>true</recurseDirectories>
               <sources>
                 <source>
-                  <location>${db.path}</location>
+                  <location>${project.build.outputDirectory}/</location>
+                  <includes>
+                    <include>xwiki.cfg</include>
+                    <include>xwiki.properties</include>
+                    <include>hibernate.cfg.xml</include>
+                  </includes>
                 </source>
               </sources>
             </mapping>
+            <!-- Copy the custom Solr webapp configuration -->
+            <mapping>
+              <directory>/var/lib/tomcat6/webapps/phenotips-solr/WEB-INF/</directory>
+              <directoryIncluded>false</directoryIncluded>
+              <sources>
+                <source>
+                  <location>${project.build.outputDirectory}/</location>
+                  <includes>
+                    <include>web.xml</include>
+                  </includes>
+                </source>
+              </sources>
+            </mapping>
+            <!-- Copy the data dependencies into the "next" directory for optional unpacking when first installing this package -->
+            <mapping>
+              <directory>/var/lib/phenotips/next/</directory>
+              <dependency>
+                <includes>
+                  <include>${project.groupId}:database-zip</include>
+                  <include>${project.groupId}:solr-configuration</include>
+                </includes>
+              </dependency>
+            </mapping>
           </mappings>
+          <preinstallScriptlet>
+            <scriptFile>src/main/scripts/preinstall</scriptFile>
+            <fileEncoding>utf-8</fileEncoding>
+          </preinstallScriptlet>
+          <postinstallScriptlet>
+            <scriptFile>src/main/scripts/postinstall</scriptFile>
+            <fileEncoding>utf-8</fileEncoding>
+          </postinstallScriptlet>
+          <postremoveScriptlet>
+            <scriptFile>src/main/scripts/postremove</scriptFile>
+            <fileEncoding>utf-8</fileEncoding>
+          </postremoveScriptlet>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <!-- Comes from Apache Solr and shouldn't use our license/copyright -->
+            <exclude>src/main/resources/web.xml</exclude>
+          </excludes>
         </configuration>
       </plugin>
     </plugins>
