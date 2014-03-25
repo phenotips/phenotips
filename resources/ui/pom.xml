@@ -146,6 +146,7 @@
             <include>**/ColorThemes/*.xml</include>
             <include>**/data/*.xml</include>
             <include>**/Studies/*.xml</include>
+            <include>**/Menu/*.xml</include>
           </includes>
           <excludes>
             <exclude>**/Main/Welcome*.xml</exclude>

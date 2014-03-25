@@ -988,127 +988,6 @@ body .xwiki-livetable-topfilters-container .value-cloud-tools a {
 #patients.xwiki-livetable .actions {
   text-align: right;
 }
-.document-action, #table-of-contents, #patients.xwiki-livetable .action, .space-data .action {
-  border-radius: 6px;
-  box-shadow: 0 0 6px $theme.borderColor;
-  text-align: left;
-}
-#document-actions {
-  color: $theme.textColor;
-  margin-right: -8px;
-  position: fixed;
-  right: 5%;
-  top: 8.5em;
-}
-#document-actions.absolute {
-  float: right;
-  height: 0;
-  margin-right: -32px;
-  margin-top: -5px;
-  overflow: visible;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-* html #document-actions {
-  position: absolute;
-}
-*+html #document-actions {
-  position: absolute;
-}
-.document-action, #patients.xwiki-livetable .action, .space-data .action {
-  background: none $theme.buttonPrimaryBackgroundColor 3px 5px no-repeat;
-  border: 1px solid $theme.buttonPrimaryBackgroundColor !important;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.25), inset 0 0 10px rgba(0, 0, 0, 0.1);
-  display: block;
-  height: 26px;
-  margin: 4px 0;
-  text-indent: -9999px;
-  width: 22px;
-}
-#patients.xwiki-livetable .action {
-  display: inline-block;
-  padding: 0;
-}
-.document-action-button {
-  width: 24px !important;
-}
-.document-action:hover, #patients.xwiki-livetable .action:hover, .space-data .action:hover {
-  box-shadow: 0 0 6px $theme.linkColor;
-  cursor: pointer;
-}
-#tmActionEdit, #patients.xwiki-livetable .actionedit {
-  background-image: url("#__img('editb-s')");
-}
-#tmExportPdf {
-  background-image: url("$xwiki.getSkinFile('icons/silk/page_white_acrobat.png')");
-}
-#tmHistory {
-  background-image: url("$xwiki.getSkinFile('icons/silk/page_white_stack.png')");
-  margin-top: -30px;
-}
-#tmActionDelete, #patients.xwiki-livetable .actiondelete, .space-data .action.delete {
-  background-image: url("#__img('no-s')");
-}
-#tmActionsave {
-  background-image: url("#__img('check-s')");
-}
-#tmActioncancel {
-  background-image: url("#__img('delete-s')");
-}
-#tmToC, #tmHideToC, #patients.xwiki-livetable .actionview {
-  background-image: url("#__img('toc-s')");
-}
-#table-of-contents {
-  background-color: $theme.highlightColor;
-  border: 1px solid $theme.borderColor;
-  margin-right: 20px;
-  margin-top: -2px;
-  padding: 1em 1em 1em 0;
-  position: fixed;
-  right: 5%;
-  top: 9em;
-  visibility: hidden;
-  width: 22%;
-  z-index: 20000;
-}
-#table-of-contents.absolute {
-  margin-left: -16px;
-  margin-right: -4px;
-  margin-top: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-#table-of-contents ul {
-  list-style-type: square;
-  margin: 0 0 0 1em;
-  padding: 0;
-}
-#table-of-contents:target {
-  visibility: visible;
-}
-#hide-toc {
-  position: absolute;
-  right: 0.25em;
-  top: -0.5em;
-}
-.hide-toc p {
-  line-height: 1em;
-  margin 0;
-  padding 0;
-}
-#hide-toc a {
-  color: $theme.textColor !important;
-  padding: 0 0.25em;
-  text-decoration: none !important;
-}
-#table-of-contents .hide-toc-ghost {
-  margin-top: -2px;
-  position: absolute;
-  right: -29px;
-  top: -0.5em;
-}
 h1:target, h2:target, h3:target {
   background-color: $theme.highlightColor;
 }
@@ -1122,7 +1001,7 @@ h1:target, h2:target, h3:target {
   box-shadow: none;
 }
 input.button, input.button:hover, .buttonwrapper a, .buttonwrapper a:link, .buttonwrapper a:active, .buttonwrapper a:hover {
-  background-image: none;
+##  background-image: none;
 }
 #mainmenu * {
   text-shadow: none;

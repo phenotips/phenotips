@@ -81,11 +81,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 #else
 #if ($xcontext.action != 'export')
 (% id="table-of-contents" %)(((
-{{toc /}}
-
-(% class="hide-toc" id="hide-toc" %)((([[×&gt;&gt;||title="Hide table of contents" anchor="tmToC"]])))
-
-(% class="hide-toc hide-toc-ghost" %)((([[Hide table of contents&gt;&gt;||id="tmHideToC" class="document-action" title="Hide table of contents" anchor="tmToC"]])))
+{{toc start="2" depth="2" /}}
 )))
 #end
 #if ($xcontext.action == 'edit')
@@ -96,6 +92,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 #end
 ##
 ## Extensions displayed before the content
+(% class="before-patient-data" %)(((
 #foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.before'))
   #set ($hasExtensionsBefore = true)
   {{html wiki=false clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
@@ -103,6 +100,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 #end
 #if ($hasExtensionsBefore)
 ----
+)))
 #end
 ##
 #if ($config.getProperty('no_pii_warning').value == 1)
