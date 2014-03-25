@@ -786,16 +786,6 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
     <property>
       <code>document.observe('xwiki:dom:loaded', function() {
-    var jumpToPubmed = function(termID) {
-       var label = termID.up('label');
-       var li = label.up('li');
-       var url = "http://www.ncbi.nlm.nih.gov/pubmed?term=" + termID.value;
-       var link = new Element('a', {'target': '_blank', 'title' : "See this article on pubmed", 'href' : url});
-       label.wrap(link);
-       $('pubmed-search-history').down('ul').insert({'top' : li});
-       window.open(url);
-       $('pubmed-search-history').down('h4').removeClassName('hidden');
-    }
     // ------------------------------------------------------------------------
     // Creation of suggest widgets
 
@@ -872,24 +862,6 @@ document.observe('xwiki:dom:loaded', function() {
             fadeOnClear : false,
             timeout : 30000,
             parentContainer : null
-        },
-        "pubmed" : {
-            script: "$xwiki.getURL('PhenoTips.PubMedService', 'get')?",
-            varname: "q",
-            noresults: "No matching articles",
-            json: true,
-            resultsParameter : "rows",
-            resultId : "id",
-            resultValue : "Title",
-            resultInfo : {
-                           "Authors"   : {"selector"  : "AuthorList"},
-                           "Date"      : {"selector"  : "EPubDate"},
-                           "Journal"   : {"selector"  : "Source"}
-                         },
-            enableHierarchy: false,
-            fadeOnClear : false,
-            timeout : 30000,
-            parentContainer : null
         }
     };
     var pickerSpecialClassOptions = {
@@ -937,18 +909,6 @@ document.observe('xwiki:dom:loaded', function() {
                   'listInsertionPosition' : 'before',
                   'onItemAdded' : enableHighlightChecked,
                   'acceptFreeText' : true
-                },
-      'portal' : {
-                  'showKey' : false,
-                  'showTooltip' : false,
-                  'showDeleteTool' : false,
-                  'enableSort' : false,
-                  'showClearTool' : true,
-                  'inputType': 'checkbox',
-                  'listInsertionElt' : $('pubmed-search-history'),
-                  'listInsertionPosition' : 'bottom',
-                  'silent' : true,
-                  'onItemAdded' : jumpToPubmed
                 }
     }
     // ------------------------------------------------------------------------
