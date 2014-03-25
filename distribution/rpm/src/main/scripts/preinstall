@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -e
+
+# Stop Tomcat
+/sbin/service tomcat6 stop >/dev/null 2>&1 || true
