@@ -40,7 +40,7 @@
     <dependency>
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
-      <version>2.2.9</version>
+      <version>2.3.2</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -75,7 +75,7 @@
             <dependency>
               <groupId>org.hsqldb</groupId>
               <artifactId>hsqldb</artifactId>
-              <version>2.2.9</version>
+              <version>2.3.2</version>
             </dependency>
             <!-- Add dependencies that have their own set of migrators, so that a new database doesn't trigger migrators. -->
             <dependency>
