@@ -892,7 +892,6 @@ document.observe('xwiki:dom:loaded', function() {
                   detailsElt.select('input, textarea').invoke('observe', 'focus', function(event){selectionSummary._focusDetails(detailsElt)});
                   detailsTool.hide();
                }  else {
-                  clearTool.hide();
                   editClearTools.hide();
                }
                editTool.observe('click', function(event) {
