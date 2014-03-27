@@ -86,7 +86,9 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <packagingExcludes>
-            WEB-INF/lib/slf4j-jdk14-*.jar
+            WEB-INF/lib/slf4j-jdk14-*.jar,
+            WEB-INF/lib/httpclient-4.1.*.jar,
+            WEB-INF/lib/httpcore-4.1.*.jar
           </packagingExcludes>
         </configuration>
       </plugin>
