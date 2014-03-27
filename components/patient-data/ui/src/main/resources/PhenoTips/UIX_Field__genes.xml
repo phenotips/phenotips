@@ -233,7 +233,7 @@
       <name/>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -321,7 +321,7 @@
     <property>
       <code>document.observe("xwiki:dom:loaded", function(event) {
   var geneSuggestOptions = {
-            script: "$xwiki.getURL('PhenoTips.GeneNameService', 'get')?outputSyntax=plain&amp;",
+            script: new XWiki.Document('GeneNameService', 'PhenoTips').getURL('get', 'outputSyntax=plain') + "&amp;",
             varname: "q",
             noresults: "No matching gene names",
             json: true,
@@ -394,7 +394,7 @@
       <name/>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -492,10 +492,10 @@
       <name/>
     </property>
     <property>
-      <parse/>
+      <parse>0</parse>
     </property>
     <property>
-      <use>currentPage</use>
+      <use>onDemand</use>
     </property>
   </object>
   <object>

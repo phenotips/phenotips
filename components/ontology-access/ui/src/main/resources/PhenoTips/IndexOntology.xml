@@ -354,7 +354,7 @@
         // Create a notification message to display to the user when the submit is being sent
         form._x_notification = new XWiki.widgets.Notification("Indexing in progress...", "inprogress");
         form.disable();
-        new Ajax.Request("${xwiki.getURL('PhenoTips.IndexOntology')}", {
+        new Ajax.Request(new XWiki.Document('IndexOntology', 'PhenoTips').getURL('get'), {
             method : 'post',
             parameters : formData,
             onSuccess : function (response) {
@@ -382,7 +382,7 @@
       <name/>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>

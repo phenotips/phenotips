@@ -1262,7 +1262,7 @@
       <name>Modified suggest widget</name>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -2293,7 +2293,7 @@ return MS;
   var widgets = MS.widgets = MS.widgets || {};
   widgets.OntologyBrowser = Class.create({
   options : {
-    script : "$xwiki.getURL('PhenoTips.SolrService', 'get', 'sort=nameSort asc&amp;start=0&amp;rows=10000')&amp;",
+    script : new XWiki.Document('SolrService', 'PhenoTips').getURL('get', 'sort=nameSort asc&amp;start=0&amp;rows=10000') + "&amp;",
     varname: "q",
     method : "post",
     json : true,
@@ -2897,7 +2897,7 @@ console.log(categories);
       <name>Ontology browser</name>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>

@@ -324,7 +324,7 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
       <name/>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -501,7 +501,7 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
       <name/>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>

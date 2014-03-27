@@ -496,7 +496,7 @@ document.observe('xwiki:dom:loaded', function() {
     // go : namespace:
     var suggestionsMapping = {
         "hpo" : {
-            script: "$xwiki.getURL('PhenoTips.SolrService', 'get')?",
+            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get") + "?",
             queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
                            'name' : {'wordBoost': 10, 'phraseBoost': 20},
                            'nameSpell' : {'wordBoost': 18, 'phraseBoost': 36, 'stubBoost': 14},
@@ -544,7 +544,7 @@ document.observe('xwiki:dom:loaded', function() {
             parentContainer : null
         },
         "omim" : {
-            script: "$xwiki.getURL('PhenoTips.OmimService', 'get')?outputSyntax=plain&amp;",
+            script: new XWiki.Document('OmimService', 'PhenoTips').getURL("get", "outputSyntax=plain") + "&amp;",
             queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
                            'name' : {'wordBoost': 20, 'phraseBoost': 40},
                            'nameSpell' : {'wordBoost': 50, 'phraseBoost': 100, 'stubBoost': 20},
@@ -1289,7 +1289,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Term suggest</name>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -1989,7 +1989,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Automatic computation of growth parameters</name>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -2276,13 +2276,13 @@ document.observe('xwiki:dom:loaded', function() {
 
   var services = {
     'omim' : {
-       'script' : "$xwiki.getURL('PhenoTips.OmimPredictService', 'get', 'format=html&amp;q=')",
+       'script' : new XWiki.Document('OmimPredictService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
        'source' : [defaultSearchTermIDsInput],
        'target' : $('omim-search-results'),
        'suggestFor' : omimField
     },
     'diffDiagnosis' : {
-       'script' : "$xwiki.getURL('PhenoTips.DiffDiagnosisService', 'get', 'format=html&amp;q=')",
+       'script' : new XWiki.Document('DiffDiagnosisService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
        'source' : [defaultSearchTermIDsInput],
        'target' : $('diffDiagnosis-search-results'),
        'suggestFor' : $('quick-phenotype-search')
@@ -2544,7 +2544,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Instant searches in the Diagnosis zone</name>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
