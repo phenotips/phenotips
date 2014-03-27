@@ -22,7 +22,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>UIX__content-top-menu</name>
+  <name>ContentTopMenu</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -41,7 +41,7 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX__content-top-menu</name>
+    <name>PhenoTips.ContentTopMenu</name>
     <number>0</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>e5d4f60d-d537-495d-bef2-c7e7894fb3f4</guid>
@@ -163,7 +163,7 @@
     </property>
   </object>
   <object>
-    <name>PhenoTips.UIX__content-top-menu</name>
+    <name>PhenoTips.ContentTopMenu</name>
     <number>1</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>13a3388b-e108-4903-9b1a-2ef792c5c472</guid>
@@ -294,7 +294,7 @@
     </property>
   </object>
   <object>
-    <name>PhenoTips.UIX__content-top-menu</name>
+    <name>PhenoTips.ContentTopMenu</name>
     <number>2</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>4097e56a-9f34-410b-a188-84a459a3bbea</guid>
@@ -486,7 +486,7 @@
     </property>
   </object>
   <object>
-    <name>PhenoTips.UIX__content-top-menu</name>
+    <name>PhenoTips.ContentTopMenu</name>
     <number>3</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>5c370dd1-519a-4cae-a5b2-a555d2199cae</guid>
@@ -592,7 +592,7 @@
     </property>
   </object>
   <object>
-    <name>PhenoTips.UIX__content-top-menu</name>
+    <name>PhenoTips.ContentTopMenu</name>
     <number>4</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>dd3b46fe-acb2-43ee-bf76-b01d0c3bccae</guid>
@@ -704,7 +704,7 @@
     </property>
   </object>
   <object>
-    <name>PhenoTips.UIX__content-top-menu</name>
+    <name>PhenoTips.ContentTopMenu</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>b3934e65-aa68-4fcb-8df4-875c955e2f93</guid>
@@ -841,7 +841,7 @@
     </property>
   </object>
   <object>
-    <name>PhenoTips.UIX__content-top-menu</name>
+    <name>PhenoTips.ContentTopMenu</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>9449621f-d20d-42a1-bc70-18096cd6be2a</guid>
@@ -912,8 +912,8 @@
     <property>
       <content>{{velocity}}
 #if ($doc.getObject('PhenoTips.PatientClass'))
-$xwiki.ssx.use('PhenoTips.UIX__content-top-menu')##
-$xwiki.jsx.use('PhenoTips.UIX__content-top-menu')##
+$xwiki.ssx.use('PhenoTips.ContentTopMenu')##
+$xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 {{html clean="false" wiki="true"}}
 &lt;div id="patient-record-actions"&gt;
 
