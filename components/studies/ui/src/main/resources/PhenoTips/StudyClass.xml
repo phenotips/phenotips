@@ -845,7 +845,7 @@
   #set ($max = $studySortedData.size())
 #end
 
-$xwiki.ssx.use($studyClassName)
+$xwiki.ssx.use($studyClassName, {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
 $xwiki.jsx.use($studyClassName)
 {{/velocity}}
 

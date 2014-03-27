@@ -871,7 +871,7 @@
   #set ($max = $groupSortedData.size())
 #end
 
-$xwiki.ssx.use($groupClassName)
+$xwiki.ssx.use($groupClassName, {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})
 $xwiki.jsx.use($groupClassName)
 {{/velocity}}
 
