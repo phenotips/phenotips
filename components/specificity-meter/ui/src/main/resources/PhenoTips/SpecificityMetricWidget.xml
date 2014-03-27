@@ -594,8 +594,8 @@ RK5CYII=
       <content>{{velocity}}
 $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})
 $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
-$xwiki.jsx.use('PhenoTips.SpecificityMetricWidget', {'minify' : false})##
 $xwiki.ssx.use('PhenoTips.SpecificityMetricWidget')##
+$xwiki.jsx.use('PhenoTips.SpecificityMetricWidget')##
 #if ($xcontext.action == 'edit')
 (% id="specificity-metric-widget" %)((()))
 #end

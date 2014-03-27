@@ -846,7 +846,7 @@
 #end
 
 $xwiki.ssx.use($studyClassName)
-$xwiki.jsx.use($studyClassName, {'minify' : false})
+$xwiki.jsx.use($studyClassName)
 {{/velocity}}
 
 {{velocity}}

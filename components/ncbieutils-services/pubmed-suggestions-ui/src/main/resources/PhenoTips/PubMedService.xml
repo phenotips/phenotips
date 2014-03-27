@@ -290,7 +290,7 @@
     <property>
       <content>{{velocity}}
 #if ($xcontext.action == 'edit')
-$xwiki.jsx.use('PhenoTips.PubMedService', {'minify' : false})##
+$xwiki.jsx.use('PhenoTips.PubMedService')##
 (% class="chapter pubmed-search" %)(((
 == Suggested reading on PubMed ==
 

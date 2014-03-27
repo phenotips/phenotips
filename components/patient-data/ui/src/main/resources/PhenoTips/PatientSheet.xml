@@ -47,12 +47,12 @@
 {{include document="PhenoTips.TabelarDataMacros" /}}
 
 {{velocity output=false}}
-$xwiki.jsx.use('PhenoTips.TouchscreenEvents', {'minify' : false})##
+$xwiki.jsx.use('PhenoTips.TouchscreenEvents')##
 $xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.ssx.use('PhenoTips.Widgets', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('PhenoTips.Widgets', {'minify' : false})##
+$xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('PhenoTips.PatientSheetCode', {'minify' : false})##
+$xwiki.jsx.use('PhenoTips.PatientSheetCode')##
 $xwiki.jsfx.use('js/xwiki/actionbuttons/actionButtons.js', true)##
 $xwiki.jsfx.use('js/xwiki/editors/autosave.js')##
 $xwiki.ssfx.use('uicomponents/widgets/validation/livevalidation.css', true)##

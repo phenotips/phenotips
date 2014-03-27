@@ -573,8 +573,8 @@
 {{include document="PhenoTips.TabelarDataMacros" /}}
 
 {{velocity}}
-$xwiki.jsx.use('PhenoTips.UIX_Field__genes', {'minify' : false})##
 $xwiki.ssx.use('PhenoTips.UIX_Field__genes')##
+$xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
 #set ($targetClassName = 'PhenoTips.InvestigationClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
   === List of known affected genes ===

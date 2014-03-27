@@ -872,7 +872,7 @@
 #end
 
 $xwiki.ssx.use($groupClassName)
-$xwiki.jsx.use($groupClassName, {'minify' : false})
+$xwiki.jsx.use($groupClassName)
 {{/velocity}}
 
 {{velocity}}
