@@ -461,7 +461,6 @@ RK5CYII=
       <code>#template('colorThemeInit.vm')
 
 #specificity-metric-widget {
-##  text-align: center;
   padding: 1em;
   border-bottom: 1px dotted $theme.borderColor;
   background-color: $theme.highlightColor;

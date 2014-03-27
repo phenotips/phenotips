@@ -131,15 +131,15 @@
 .start-button {
   margin: 6px !important;
   padding: 1em 2em !important;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
   border-radius: 4px;
 }
 .start-box .info {
   font-size: .7em;
   opacity: .5;
 }
-#document-info {display:none}
+#document-info {
+  display:none;
+}
 </code>
     </property>
     <property>

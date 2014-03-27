@@ -4096,7 +4096,6 @@ div.suggestItems {
   background: white;
   z-index: 100013;
   text-align:left;
-  -moz-box-shadow: 0 4px 8px #777;
   box-shadow: 0 4px 8px #777;
   margin-left: 1px;
   margin-top: 5px;
@@ -4127,17 +4126,17 @@ div.suggestItems:after {
 }
 
 div.suggestItems .hide-button-wrapper {
-    text-align: right;
-    line-height: 1em;
-    border-bottom: 1px dotted;
+  text-align: right;
+  line-height: 1em;
+  border-bottom: 1px dotted;
 }
 div.suggestItems .hide-button {
-    cursor: pointer;
-    font-size: 0.8em;
-    font-style: italic;
-    opacity: .4;
-    padding: 0 0.5em;
-    margin: 0 4px;
+  cursor: pointer;
+  font-size: 0.8em;
+  font-style: italic;
+  opacity: .4;
+  padding: 0 0.5em;
+  margin: 0 4px;
 }
 div.suggestItems ul {
   margin: 0px;
@@ -4434,7 +4433,7 @@ div.resultContainer div.sourceContent.loading {
   display: block;
 }
 .accepted-suggestions li:hover {
-  background: #$theme.highlightColor;
+  background: $theme.highlightColor;
 }
 .accepted-suggestions li:hover .delete-tool {
   position: absolute;
@@ -4451,10 +4450,7 @@ div.resultContainer div.sourceContent.loading {
   border: 0 none;
   background: #fff;
   padding: 4px 8px;
-  -moz-border-radius: 0 12px 12px 12px;
-  -webkit-border-radius: 0 12px 12px 12px;
   border-radius: 0 12px 12px 12px;
-  -moz-box-shadow: 0 0 6px #777;
   box-shadow: 0 0 6px #777;
   z-index: 20;
 }
@@ -4769,16 +4765,16 @@ div.resultContainer div.sourceContent.loading {
   opacity: .5;
 }
 .ontology-tree .subterm-selected .expand-tool:after {
-    background: none repeat scroll 0 0 $theme.linkColor;
-    color: $theme.linkColor;
-    content: "...";
-    display: inline-block;
-    font-weight: bold;
-    margin-left: 1.3em;
-    position: absolute;
-    text-align: center;
-    top: .3em;
-    width: 11px;
+  background: none repeat scroll 0 0 $theme.linkColor;
+  color: $theme.linkColor;
+  content: "...";
+  display: inline-block;
+  font-weight: bold;
+  margin-left: 1.3em;
+  position: absolute;
+  text-align: center;
+  top: .3em;
+  width: 11px;
 }</code>
     </property>
     <property>

@@ -477,7 +477,6 @@ YesNoPicker.generatePickerElement = function(buttons, value, title, activate, la
   color: #FFF;
 }
 .yes-no-picker label.na {
-  ##width: 24px;
   color: #888;
   border-right: 4px solid #fff;
 }

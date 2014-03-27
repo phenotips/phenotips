@@ -221,8 +221,6 @@
   background-position: center center;
   background-repeat: no-repeat;
 
-  background: -o-radial-gradient(circle, #FFFFFF, #D2D2D2);
-  background: -webkit-radial-gradient(circle, #FFFFFF, #D2D2D2);
   background: radial-gradient(circle, #FFFFFF, #D2D2D2);
 }
 /* ===========================================

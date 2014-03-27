@@ -4172,7 +4172,7 @@ label.selected input[type="checkbox"] {
   -webkit-column-break-before:avoid;
   -moz-column-break-before:avoid;
   column-break-before:avoid;
-  webkit-column-break-inside:avoid;
+  -webkit-column-break-inside:avoid;
   -moz-column-break-inside:avoid;
   column-break-inside:avoid;
   display: table;
