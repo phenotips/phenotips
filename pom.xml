@@ -566,10 +566,8 @@
             <includes>
               <include>**/*Test.class</include>
             </includes>
-            <!-- This would speed up build time, but the XWiki component manager used during tests doesn't support that.
-            <parallel>suitesAndClasses</parallel>
+            <parallel>classesAndMethods</parallel>
             <threadCount>2</threadCount>
-            -->
           </configuration>
         </plugin>
         <plugin>
