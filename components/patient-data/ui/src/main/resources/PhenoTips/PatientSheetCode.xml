@@ -488,7 +488,8 @@ document.observe('xwiki:dom:loaded', function() {
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe('xwiki:dom:loaded', function() {
+      <code>var XWiki = (function(XWiki) {
+  var init = function() {
     // ------------------------------------------------------------------------
     // Creation of suggest widgets
 
@@ -1283,7 +1284,10 @@ document.observe('xwiki:dom:loaded', function() {
         });
       }
     });
-});</code>
+  };
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  return XWiki;
+}(XWiki || {}));</code>
     </property>
     <property>
       <name>Term suggest</name>
