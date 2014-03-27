@@ -148,32 +148,7 @@
       });
     });
   });
-})
-
-/*
-require(['jQueryNoConflict'], function($) {
-  // It's not possible to write a CSS selector that targets list items containing lists so we rely on JavaScript.
-  // The 'dropdown' CSS class is used only to display the down/left arrow.
-  $('.menu-horizontal li ul').parent().addClass('xDropdown');
-
-  // Collapsible menu bahavior.
-  $('.menu-vertical.collapsible').each(function(){
-    var open = $(this).hasClass('open');
-    $(this).find('li ul').each(function() {
-      $(this).addClass('xDropdown-menu').parent().addClass('xDropdown' + (open ? ' open' : ''));
-      // Wrap everything (including text nodes) before the sub-menu in a DIV that will toggle its state.
-      var toggle = this.ownerDocument.createElement('div');
-      $(this).parent().prepend(toggle);
-      for(var next = toggle.nextSibling; next != this; next = toggle.nextSibling) {
-        toggle.appendChild(next);
-      }
-      $(toggle).addClass('xDropdown-toggle').on('click', function() {
-        $(this).parent().toggleClass('open');
-      });
-    });
-  });
-})
-*/</code>
+})</code>
     </property>
     <property>
       <name/>
