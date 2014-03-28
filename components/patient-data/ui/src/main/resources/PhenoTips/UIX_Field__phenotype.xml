@@ -178,7 +178,8 @@
     });
   });
 
-  phBrowserCollapseAll.click();
+  // FIXME: Re-enable once https://github.com/phenotips/phenotips/issues/822 is fixed.
+  // phBrowserCollapseAll.click();
 
   // ------------------------------------------------------------------------
   // Behavior of the quick search box
