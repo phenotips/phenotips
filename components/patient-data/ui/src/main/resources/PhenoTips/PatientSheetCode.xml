@@ -3696,9 +3696,6 @@ h1, h2, h3, h4 {
 .viewbody .subsection {
   margin-left: 18px;
 }
-.viewbody .subsection .value-checked {
-  background-image: url("$xwiki.getSkinFile('icons/silk/bullet_blue.gif')");
-}
 /** edit mode **/
 .editbody .clinical-info label.section {
   line-height: 1.4em;
