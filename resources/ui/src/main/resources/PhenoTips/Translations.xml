@@ -95,5 +95,8 @@ saveandcontinue=Quick save
 cancel=Cancel changes since last save
 
 phenotips.profile.preferences=PhenoTips preferences
-phenotips.profile.preferences.mapping=Preferred mapping</content>
+phenotips.profile.preferences.mapping=Preferred mapping
+
+XWiki.XWikiUsers_company=Affiliation
+XWiki.XWikiUsers_comment=About</content>
 </xwikidoc>
