@@ -2820,4 +2820,420 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
       <title>Data shared with me (% style="float: right;" %)[[Browse all data »&gt;&gt;data.AllData]]</title>
     </property>
   </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>454b809e-0edd-4d8f-9a54-d17c25cd9319</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{velocity}}{{html clean=false}}
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
+&lt;div id="phenotips-mainmenu" class="layoutsubsection actionmenu"&gt;
+&lt;strong id="xwikimenutitle" class="hidden"&gt;$services.localization.render('core.menu.main.title')&lt;/strong&gt;
+&lt;div class="rightmenu"&gt;
+#set ($workspaceManagerMainDocumentReference = $services.model.createDocumentReference($xcontext.mainWikiName, 'WorkspaceManager', 'WebHome'))
+#set ($isWorkspaceManagerAppInstalled = $xwiki.exists($workspaceManagerMainDocumentReference))
+#set ($isWorkspace = $services.workspace.isWorkspace($xcontext.database))
+#set ($isMainWikiUser = ($xcontext.mainWikiName == "$!{xcontext.userReference.wikiReference.name}"))
+##
+## User
+##
+#if (!$xcontext.action.startsWith('login'))
+  #if ($isGuest)
+    #set ($loginurl = $xwiki.getURL('XWiki.XWikiLogin', 'login', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
+    #xwikitopmenuentry($!loginurl $!services.localization.render('login') 'tmLogin' 'fa fa-sign-in')
+  #else
+    #set ($logouturl = $xwiki.getURL('XWiki.XWikiLogout', 'logout', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
+    #xwikitopmenuentry($!logouturl $!services.localization.render('logout') 'tmLogout' 'fa fa-sign-out')
+  #end
+#end
+#if ($isGuest &amp;&amp; $xwiki.hasAccessLevel('register', 'XWiki.XWikiPreferences'))
+  #set ($regurl = $xwiki.getURL('XWiki.Register', 'register'))
+  #xwikitopmenuentry($!regurl $!services.localization.render('core.register') 'tmRegister' 'fa fa-plus-square')
+#end
+##
+##
+#if (!$isGuest)
+#if ($isSuperAdmin)
+  #xwikitopmenuentry('#' $!services.localization.render('superadmin') 'tmUser' 'fa fa-user')
+#else
+  #xwikitopmenuentry("$!xwiki.getURL($xcontext.user)" "$!xwiki.getUserName($xcontext.user, false)" 'tmUser' 'fa fa-user')
+#end
+#end
+&lt;/div&gt;
+&lt;div class="leftmenu"&gt;
+##
+## Administration
+##
+#set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
+#if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
+  #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
+  #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'fa fa-cogs')
+#end
+&lt;/div&gt;
+&lt;/div&gt;
+{{/html}}{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.header.top:data</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.header.top.globalMenu</name>
+    </property>
+    <property>
+      <parameters/>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>1</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>554855a7-0987-4b6c-a437-aa9679825a47</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{velocity}}{{html clean=false}}
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
+&lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
+  &lt;div class="rightmenu"&gt;
+    &lt;div class="topmenuentry search"&gt;
+      #if ($displayQuickSearch &amp;&amp; ($xwiki.exists('Main.Search') || $xwiki.exists('Main.WebSearch')))
+      &lt;form action="#if($xwiki.exists('Main.Search'))$xwiki.getURL('Main.Search')#else$xwiki.getURL('Main.WebSearch')#end"&gt;
+        &lt;div class="globalsearch"&gt;&lt;input type="hidden" name="space" value="data"/&gt;
+          &lt;label for="headerglobalsearchinput"&gt;&lt;span class="fa fa-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="Search for a patient record..." size="20"/&gt;&lt;input class="button hidden" type="submit" value="$services.localization.render('panels.search.submit')" alt="$services.localization.render('panels.search.submit')"/&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+      #end
+    &lt;/div&gt;
+    &lt;div class="topmenuentry add"&gt;
+{{/html}}
+
+{{include reference="PhenoTips.CreatePatientRecordForm" /}}
+
+{{html clean=false}}&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="breadcrumbs leftmenu"&gt;
+    &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;&lt;span class="fa fa-home fa-lg"&gt;&lt;/span&gt;&lt;/a&gt; &amp;raquo;
+    &lt;a href="$!xwiki.getURL("${doc.space}.WebHome")" &gt;$!{doc.space}&lt;/a&gt;
+    #if ($doc.name != 'WebHome')
+      &amp;raquo; &lt;a href="$doc.getURL()"&gt;$doc.displayTitle&lt;/a&gt;
+    #end
+  &lt;/div&gt;
+&lt;/div&gt;
+{{/html}}{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.header.bottom:data</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.header.bottom.globalTools</name>
+    </property>
+    <property>
+      <parameters/>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>2</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>abf81c0c-b0e8-458c-b89d-35a229a8c24e</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content/>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.main.top:data</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.main.top.empty</name>
+    </property>
+    <property>
+      <parameters/>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>3</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>5db691f3-5585-4feb-bfde-a03ad02677c5</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content/>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.content.top:data</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.content.top.empty</name>
+    </property>
+    <property>
+      <parameters/>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
 </xwikidoc>
