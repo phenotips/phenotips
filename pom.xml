@@ -623,9 +623,11 @@
               <version>2.6</version>
             </dependency>
           </dependencies>
+          <!-- This doesn't currently work on Jenkins...
           <configuration>
             <deployAtEnd>true</deployAtEnd>
           </configuration>
+          -->
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
