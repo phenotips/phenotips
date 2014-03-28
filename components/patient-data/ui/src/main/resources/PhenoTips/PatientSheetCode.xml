@@ -893,7 +893,7 @@ document.observe('xwiki:dom:loaded', function() {
       var keys = Object.keys(suggestionsMapping);
       var specialClasses = Object.keys(pickerSpecialClassOptions);
       for (var i = 0; i &lt; keys.length; i++) {
-        var selector = 'input.suggest-' + keys[i];
+        var selector = 'input.suggest-' + keys[i] + ':not(.initialized)';
         $$(selector).each(function(item) {
           if (!item.hasClassName('initialized')) {
             item._customOptions = Object.clone(suggestionsMapping[keys[i]]);
@@ -1057,12 +1057,8 @@ document.observe('xwiki:dom:loaded', function() {
             item._trigger._source = item;
             item._trigger._root = item.up('.term-entry');
             item._trigger._root.insert({'top' : item._trigger});
-            if (item._trigger._root.hasClassName('dropdown-root')) {
-            item._trigger.observe('click', function(event) {
-              event.stop();
-              var trigger =  event.element();
-              var source  =  trigger._source;
-              var root    =  trigger._root;
+
+            var __loadOntologyBranch = function(source, doExpand) {
               source._ontologyBrowser || (source._ontologyBrowser = new MS.widgets.OntologyBrowser(
                 sugestedInput._suggest,
                 source._dropDown,
@@ -1075,19 +1071,29 @@ document.observe('xwiki:dom:loaded', function() {
                   enableBrowse: false
                 }
               ));
-              if (root._expanded) {
+              source._ontologyBrowser.show(source.value);
+              if (!doExpand) {
                 source._ontologyBrowser.hide();
-              } else {
-                source._ontologyBrowser.show(source.value);
               }
+              source._dropDown.element.insert(source._dropDown.dropdown.down('.tooltip'));
+            }
 
-              trigger.update(source._ontologyBrowser._getExpandCollapseSymbol(root._expanded));
-              root._expanded = !root._expanded;
-            });
+            if (item._trigger._root.hasClassName('dropdown-root')) {
+              item._trigger.observe('click', function(event) {
+                event.stop();
+                var trigger =  event.element();
+                var source  =  trigger._source;
+                var root    =  trigger._root;
+                __loadOntologyBranch(source, !root._expanded);
+
+                trigger.update(source._ontologyBrowser._getExpandCollapseSymbol(root._expanded));
+                root._expanded = !root._expanded;
+              });
             } else {
               item._trigger.addClassName('disabled');
             }
-            }
+
+            }   // if subsection
 
             // Info buttons behavior
             var itemParent = item.up('.term-entry');
