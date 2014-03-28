@@ -721,19 +721,12 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
   #end
   )))
   (% class="controlled" %) (((
-  #__qsBox("$!{class.name}_$!{obj.number}_phenotype" "controlled")
   #if ($xcontext.action == 'edit')
-    $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-    $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
     (% class="selector-panels"%)(((
     (% class="half-width selector-panel browser browse-phenotype-categories force-collapse"%)(((
+    #__qsBox("$!{class.name}_$!{obj.number}_phenotype" "controlled")
     (% class="browser-title"%)
     === **Browse categories** ===
-    (% class="background-search diffDiagnosis-search phenotype-group collapsible-group hidden" title="Phenotypes that are likely to help improve differential diagnosis"%)(((
-    === You might want to check for... ===
-    (% class="hint" %)Phenotypes that are likely to help improve differential diagnosis
-    (% id="diffDiagnosis-search-results" class="background-suggestions" %)((()))
-    )))
   #end
   (% class="phenotype" %)(((
     #if ($xcontext.action == 'edit' || !$showUnaffected)$doc.display('phenotype')#end##
@@ -742,9 +735,16 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
     #__phenotypeMeta_displayAll('edit')##
     )))## browse-phenotype-categories
     (% class="half-width selector-panel current-phenotype-selection"%)(((
+    (% class='sub-panel'%)(((
     === **Current selection** ===
     (% id="current-phenotype-selection"%)(((
     {{html clean="false"}}&lt;input type="hidden" id="phenotype-meta-add-action" value="$doc.getURL('objectadd', "classname=PhenoTips.PhenotypeMetaClass&amp;amp;xredirect=$escapetool.url($doc.getURL('edit', 'xaction=lastmeta&amp;xpage=plain'))&amp;amp;form_token=$!{services.csrf.getToken()}")"/&gt;{{/html}}
+    )))
+    )))
+    (% class="background-search diffDiagnosis-search phenotype-group collapsible-group hidden sub-panel" %)(((
+    === You may want to investigate... ===
+    (% class="hint" %)Phenotypes that are likely to help improve differential diagnosis
+    (% id="diffDiagnosis-search-results" class="background-suggestions" %)((()))
     )))
     )))
     (% class="clear"%)((()))
