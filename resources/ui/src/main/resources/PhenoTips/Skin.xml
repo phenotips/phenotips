@@ -892,10 +892,6 @@ TXVppcEAAAAASUVORK5CYII=
   margin-right: 5px;
 }
 
-.editbody input[name=action_saveandcontinue] {
-  display: none;
-}
-
 .add-data-button,
 .buttonwrapper a.add-data-button:link,
 .buttonwrapper a.add-data-button:visited,
