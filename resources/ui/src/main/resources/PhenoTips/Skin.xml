@@ -861,13 +861,15 @@ TXVppcEAAAAASUVORK5CYII=
   float: none;
 }
 #phenotips-globalTools .search input {
-  margin-left: -1.2em;
+  height: 1.8em;
+  margin-left: 0;
   margin-right: 5px;
-  margin-top: 2px;
-  max-height: 20px;
-  padding: 0 3px 0 1.2em;
+  margin-top: -1px;
+  min-height: 22px;
+  padding: 0 3px;
   width: 20em;
 }
+
 #phenotips-globalTools label {
   margin-left: 2em;
 }
@@ -885,9 +887,9 @@ TXVppcEAAAAASUVORK5CYII=
   width: auto;
 }
 #phenotips-globalTools .search .icon-search, #phenotips-globalTools .search .fa-search {
-  color: $theme.textColor;
+  color: $theme.menuLinkColor;
   display: inline-block;
-  opacity: .2;
+  margin-right: 5px;
 }
 
 .editbody input[name=action_saveandcontinue] {
