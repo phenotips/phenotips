@@ -1684,27 +1684,49 @@ document.observe('xwiki:dom:loaded', function() {
             var target = _info[p];
             if (value == 'evaluation' &amp;&amp; target['valueHooks'] &amp;&amp; _this._getMostRecentEntry() == cell.up('tr.data-row')) {
               var targetElt = values[p]['valCategory'] &amp;&amp; target['valueHooks'][values[p]['valCategory']];
-              if (targetElt &amp;&amp; !targetElt.checked) {
-                if (targetElt._ynpicker) {
-                  targetElt._ynpicker._onYes();
-                } else {
-                  targetElt.checked = true;
-                }
-                highlightChecked(targetElt);
-              }
+              _this._selectMeasurementTerm(targetElt);
               ['extreme-below-normal', 'extreme-above-normal'].without(values[p]['valCategory'] || '').each(function(val) {
                 var elt = target['valueHooks'][val];
-                if (elt &amp;&amp; elt.checked) {
-                  if (elt._ynpicker) {
-                    elt._ynpicker._onUnselect();
-                  } else {
-                    elt.checked = false;
-                  }
-                }
+                _this._unselectMeasurementTerm(elt);
               });
             }
           }
         });
+      }
+    },
+
+    /**
+     *
+     * */
+    _selectMeasurementTerm : function (elt) {
+      if (elt &amp;&amp; !elt.checked) {
+        if (elt._ynpicker) {
+          elt._ynpicker._onYes();
+        } else {
+          elt.checked = true;
+        }
+        highlightChecked(elt);
+        var addedItem = $('current-phenotype-selection').down('label input[value="' + elt.value + '"]');
+        if (addedItem) {
+          addedItem.up('label').insert({before : new Element('span', {
+                                                               'class' : 'fa fa-bolt',
+                                                               'title' : 'This phenotype was automatically added based on abnormal measurement values'
+          }).update(' ')});
+        }
+      }
+    },
+
+
+    /**
+     *
+     * */
+    _unselectMeasurementTerm : function (elt) {
+      if (elt &amp;&amp; elt.checked) {
+        if (elt._ynpicker) {
+          elt._ynpicker._onUnselect();
+        } else {
+          elt.checked = false;
+        }
       }
     },
 
