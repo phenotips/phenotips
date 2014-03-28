@@ -846,6 +846,10 @@ TXVppcEAAAAASUVORK5CYII=
   overflow: visible;
   padding: 10px;
 }
+
+.actionmenu {
+  height: 1.8em;
+}
 #phenotips-mainmenu, #phenotips-globalTools {
   background-color: rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
@@ -861,10 +865,10 @@ TXVppcEAAAAASUVORK5CYII=
   float: none;
 }
 #phenotips-globalTools .search input {
-  height: 1.8em;
+  height: 1.7em;
   margin-left: 0;
   margin-right: 5px;
-  margin-top: -1px;
+  margin-top: 0.05em;
   min-height: 22px;
   padding: 0 3px;
   width: 20em;
