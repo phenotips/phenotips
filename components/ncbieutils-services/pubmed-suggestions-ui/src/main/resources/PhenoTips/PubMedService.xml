@@ -194,7 +194,7 @@
   });
 
   PubMed.service = {
-    'script' : new XWiki.Document('PubMedService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
+    'script' : "${xwiki.getURL('PhenoTips.PubMedService', 'get', 'format=html')}&amp;q=",
     'source' : [$('customSearchTermsInput'), $('defaultSearchTermsInput')],
     'target' : $('pubmed-search-results')
   };
@@ -212,7 +212,7 @@
       <name/>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
