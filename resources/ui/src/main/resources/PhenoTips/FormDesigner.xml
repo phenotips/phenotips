@@ -537,8 +537,6 @@ document.observe("xwiki:dom:loaded", function(){
     </property>
     <property>
       <code>#template("colorThemeInit.vm")
-#template("macros.vm")
-
 
 .designer-panel {
   width: 45%;
@@ -553,11 +551,11 @@ document.observe("xwiki:dom:loaded", function(){
 .designer-panel.extensions {
 }
 .designer-panel.hint p {
-    font-size: 0.9em;
-    font-style: italic;
-    opacity: 0.5;
-    padding: 80px 5px;
-    text-align: center;
+  font-size: 0.9em;
+  font-style: italic;
+  opacity: 0.5;
+  padding: 80px 5px;
+  text-align: center;
 }
 .designer-panel.hint:before, .designer-panel.hint:after {
   color: $theme.linkColor;
@@ -599,7 +597,7 @@ document.observe("xwiki:dom:loaded", function(){
 }
 .extension-tools {
   float: right;
-  margin-top: -25px; ##-1.4em;
+  margin-top: -25px;
 }
 .extension-tool {
   background-color: $theme.buttonSecondaryBackgroundColor;
@@ -612,9 +610,7 @@ document.observe("xwiki:dom:loaded", function(){
   height: 20px;
   line-height: 20px;
   margin: 2px;
-  ##text-indent: 20px;
   overflow: hidden;
-  ##background: transparent none center center no-repeat;
   text-decoration: none !important;
   text-align: center;
   text-shadow: 0 0 3px $theme.borderColor;
@@ -627,42 +623,33 @@ document.observe("xwiki:dom:loaded", function(){
   display: none;
 }
 .extension-tool.flag {
-  ##background-image: url("$xwiki.getSkinFile('icons/silk/error_add.png')");
   cursor: pointer;
 }
 .extension-tool.flag i {
   opacity: 0.3;
 }
 .extension-tool.flag.required {
-  ##background-image: url("$xwiki.getSkinFile('icons/silk/error.png')");
   color: $theme.notificationErrorColor !important;
 }
 .extension-tool.flag.required i {
   opacity: .8;
 }
 .extension-tool.flag:hover {
-  ##background-image: url("$xwiki.getSkinFile('icons/silk/error_add.png')");
   color: $theme.textColor !important;
 }
 .extension-tool.flag:hover i {
   opacity: .7 !important;
 }
 .extension-tool.flag.required:hover {
-  ## background-image: url("$xwiki.getSkinFile('icons/silk/error_delete.png')");
   color: $theme.notificationErrorColor !important;
 }
 .extension-tool.flag.required:hover i {
   opacity: 1 !important;
 }
-.extension-tool.edit {
-  ##background-image: url("$xwiki.getSkinFile('icons/silk/pencil.png')");
-}
 .extension-tool.delete {
-  ##background-image: url("$xwiki.getSkinFile('icons/silk/cross.png')");
   color: $theme.notificationErrorColor !important;
 }
 .extension-tool.move {
-  ##background-image: url("$xwiki.getSkinFile('icons/datamodel/move.png')");
   cursor: move;
 }
 
@@ -686,19 +673,19 @@ document.observe("xwiki:dom:loaded", function(){
   padding: .5em 1em;
 }
 .extension-maquette {
-    background-color: $theme.pageContentBackgroundColor;
-    border: 1px solid $theme.borderColor;
-    border-radius: .5em;
-    color: $theme.buttonSecondaryTextColor;
-    margin: 5px; ## 10px;
-    padding: .5em;
-    width: auto;
+  background-color: $theme.pageContentBackgroundColor;
+  border: 1px solid $theme.borderColor;
+  border-radius: .5em;
+  color: $theme.buttonSecondaryTextColor;
+  margin: 5px;
+  padding: .5em;
+  width: auto;
 }
 .extension-maquette:hover, .sections .section-maquette .section-contents:hover {
   background-color: $theme.highlightColor;
 }
 .extension-title {
-    margin-right: 64px;
+  margin-right: 64px;
 }
 .extension-title p {
   margin: 0;

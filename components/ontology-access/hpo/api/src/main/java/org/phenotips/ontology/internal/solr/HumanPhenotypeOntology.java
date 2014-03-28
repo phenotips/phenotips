@@ -111,7 +111,7 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
      *
      * @param ontologyUrl the address from where to get the ontology file
      * @return {@code 0} if the indexing succeeded, {@code 1} if writing to the Solr server failed, {@code 2} if the
-     * specified URL is invalid
+     *         specified URL is invalid
      */
     protected int index(String ontologyUrl)
     {
@@ -135,9 +135,9 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
             allTerms.add(doc);
         }
         try {
-            externalServicesAccess.getServer().add(allTerms);
-            externalServicesAccess.getServer().commit();
-            externalServicesAccess.getCache().removeAll();
+            this.externalServicesAccess.getServer().add(allTerms);
+            this.externalServicesAccess.getServer().commit();
+            this.externalServicesAccess.getCache().removeAll();
             return 0;
         } catch (SolrServerException ex) {
             this.logger.warn("Failed to index ontology: {}", ex.getMessage());
@@ -155,8 +155,7 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
     protected int clear()
     {
         try {
-            externalServicesAccess.getServer().deleteByQuery("*:*");
-            //If used standalone  - commit and clean the cache
+            this.externalServicesAccess.getServer().deleteByQuery("*:*");
             return 0;
         } catch (SolrServerException ex) {
             this.logger.error("SolrServerException while clearing the Solr index", ex);
@@ -177,7 +176,7 @@ public class HumanPhenotypeOntology extends AbstractSolrOntologyService
         query.setQuery("version:*");
         query.set("rows", "1");
         try {
-            response = externalServicesAccess.getServer().query(query);
+            response = this.externalServicesAccess.getServer().query(query);
             termList = response.getResults();
 
             if (!termList.isEmpty()) {

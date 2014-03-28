@@ -47,12 +47,14 @@
 {{include document="PhenoTips.TabelarDataMacros" /}}
 
 {{velocity output=false}}
-$xwiki.jsx.use('PhenoTips.TouchscreenEvents', {'minify' : false})##
+$xwiki.jsx.use('PhenoTips.TouchscreenEvents')##
 $xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
 $xwiki.ssx.use('PhenoTips.Widgets', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('PhenoTips.Widgets', {'minify' : false})##
+$xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-$xwiki.jsx.use('PhenoTips.PatientSheetCode', {'minify' : false})##
+$xwiki.jsx.use('PhenoTips.PatientSheetCode')##
 $xwiki.jsfx.use('js/xwiki/actionbuttons/actionButtons.js', true)##
 $xwiki.jsfx.use('js/xwiki/editors/autosave.js')##
 $xwiki.ssfx.use('uicomponents/widgets/validation/livevalidation.css', true)##
@@ -81,11 +83,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 #else
 #if ($xcontext.action != 'export')
 (% id="table-of-contents" %)(((
-{{toc /}}
-
-(% class="hide-toc" id="hide-toc" %)((([[×&gt;&gt;||title="Hide table of contents" anchor="tmToC"]])))
-
-(% class="hide-toc hide-toc-ghost" %)((([[Hide table of contents&gt;&gt;#tmToC||id="tmHideToC" class="document-action" title="Hide table of contents"]])))
+{{toc start="2" depth="2" /}}
 )))
 #end
 #if ($xcontext.action == 'edit')
@@ -96,6 +94,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 #end
 ##
 ## Extensions displayed before the content
+(% class="before-patient-data" %)(((
 #foreach ($e in $services.uix.getExtensions('org.phenotips.patientSheet.before'))
   #set ($hasExtensionsBefore = true)
   {{html wiki=false clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
@@ -103,6 +102,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 #end
 #if ($hasExtensionsBefore)
 ----
+)))
 #end
 ##
 #if ($config.getProperty('no_pii_warning').value == 1)

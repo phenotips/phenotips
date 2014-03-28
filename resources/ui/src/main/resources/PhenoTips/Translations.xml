@@ -90,8 +90,13 @@ admin.ontology=Ontology index
 admin.workgroups=Work groups
 admin.studies=Studies
 
-saveandview=Save
+saveandview=Save and view summary
+saveandcontinue=Quick save
+cancel=Cancel changes since last save
 
 phenotips.profile.preferences=PhenoTips preferences
-phenotips.profile.preferences.mapping=Preferred mapping</content>
+phenotips.profile.preferences.mapping=Preferred mapping
+
+XWiki.XWikiUsers_company=Affiliation
+XWiki.XWikiUsers_comment=About</content>
 </xwikidoc>

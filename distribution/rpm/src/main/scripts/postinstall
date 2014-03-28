@@ -1,0 +1,69 @@
+#!/bin/sh
+
+set -e
+
+if [ "$1" = 1 ]
+then
+  # Initial installation, extract the original configuration
+  unzip -qq -d /var/lib/phenotips/data/ /var/lib/phenotips/next/database-zip*.zip
+  unzip -qq -d /var/lib/phenotips/solrconfig/ /var/lib/phenotips/next/solr-config*.jar
+else
+  # Upgrade, update all Solr core configurations and only update specific Solr indexes
+  unzip -q -d /var/lib/phenotips/next/solrconfig /var/lib/phenotips/next/solr-config*.jar
+  rm -rf /var/lib/phenotips/solrconfig/hpo/ /var/lib/phenotips/solrconfig/omim/ /var/lib/phenotips/solrconfig/ethnicity/
+  mv -t /var/lib/phenotips/solrconfig/ /var/lib/phenotips/next/solrconfig/hpo/ /var/lib/phenotips/next/solrconfig/omim/ /var/lib/phenotips/next/solrconfig/ethnicity
+  if [[ -d /var/lib/phenotips/solrconfig/patients/ ]]
+  then
+    rm -rf /var/lib/phenotips/solrconfig/patients/conf/
+    mv -t /var/lib/phenotips/solrconfig/patients/ /var/lib/phenotips/next/solrconfig/patients/conf/
+  else
+    mv -t /var/lib/phenotips/solrconfig/ /var/lib/phenotips/next/solrconfig/patients/
+  fi
+  if [[ -d /var/lib/phenotips/solrconfig/xwiki/ ]]
+  then
+    rm -rf /var/lib/phenotips/solrconfig/xwiki/conf/
+    mv -t /var/lib/phenotips/solrconfig/xwiki/ /var/lib/phenotips/next/solrconfig/xwiki/conf/
+  else
+    mv -t /var/lib/phenotips/solrconfig/ /var/lib/phenotips/next/solrconfig/xwiki/
+  fi
+fi
+
+
+# Cleanup
+rm -rf /var/lib/phenotips/next/
+
+# Reset proper rights
+chown -R tomcat:tomcat /var/lib/phenotips/
+
+# Increase the amount of heap memory allocated for Tomcat, if needed
+if `cat /etc/tomcat6/tomcat6.conf | grep -E '^\s*JAVA_OPTS.*-Xmx' >/dev/null 2>&1`
+then
+  CURRENT=`cat /etc/tomcat6/tomcat6.conf | grep -E '^\s*JAVA_OPTS.*-Xmx' | sed -r -e 's/^\s*JAVA_OPTS.*-Xmx([^" ]+).*/\1/'`
+  echo $CURRENT | grep -i g >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024*1024*1024 | sed -e 's/[gG]//' | bc`
+  echo $CURRENT | grep -i m >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024*1024 | sed -e 's/[mM]//' | bc`
+  echo $CURRENT | grep -i k >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024 | sed -e 's/[kK]//' | bc`
+  if [ "`echo "$CURRENT > 1073741823" | bc`" = "0" ]
+  then
+    sed -i -r -e 's/^(\s*JAVA_OPTS.*-Xmx)([^" ]+)(.*)/\11g\3/' /etc/tomcat6/tomcat6.conf
+  fi
+else
+  echo -e -n '\nJAVA_OPTS="$JAVA_OPTS -Xmx1g"' >> /etc/tomcat6/tomcat6.conf
+fi
+
+# Increase the amount of permgen memory allocated for Tomcat, if needed
+if `cat /etc/tomcat6/tomcat6.conf | grep -E '^\s*JAVA_OPTS.*-XX:MaxPermSize=' >/dev/null 2>&1`
+then
+  CURRENT=`cat /etc/tomcat6/tomcat6.conf | grep -E '^\s*JAVA_OPTS.*-XX:MaxPermSize=' | sed -r -e 's/^\s*JAVA_OPTS.*-XX:MaxPermSize=([^" ]+).*/\1/'`
+  echo $CURRENT | grep -i g >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024*1024*1024 | sed -e 's/[gG]//' | bc`
+  echo $CURRENT | grep -i m >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024*1024 | sed -e 's/[mM]//' | bc`
+  echo $CURRENT | grep -i k >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024 | sed -e 's/[kK]//' | bc`
+  if [ "`echo "$CURRENT > 201326591" | bc`" = "0" ]
+  then
+    sed -i -r -e 's/^(\s*JAVA_OPTS.*-XX:MaxPermSize=)([^" ]+)(.*)/\1192m\3/' /etc/tomcat6/tomcat6.conf
+  fi
+else
+  echo -e -n '\nJAVA_OPTS="$JAVA_OPTS -XX:MaxPermSize=192m"' >> /etc/tomcat6/tomcat6.conf
+fi
+
+# Start Tomcat
+/sbin/service tomcat6 start >/dev/null 2>&1 || true

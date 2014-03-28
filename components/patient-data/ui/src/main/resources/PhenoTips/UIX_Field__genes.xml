@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc>
+  <web>PhenoTips</web>
+  <name>UIX_Field__genes</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>PhenoTips.PatientSheet</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1393126448000</creationDate>
+  <date>1393560610000</date>
+  <contentUpdateDate>1393128786000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Known affected genes</title>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <object>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.UIX_Field__genes</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>0c3e868a-743c-4714-ba1a-a04cbf6b0dd1</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function() {
+
+  var fetchGeneDetails = function(geneRefs, geneNames) {
+    if (!geneNames) {
+      geneNames = geneRefs.pluck('value');
+    }
+    var i = 0;
+    geneRefs.each(function (element) {
+      element._name = geneNames[i];
+      ++i;
+    });
+    var queryString = '?outputSyntax=plain&amp;g=' + geneNames.join("&amp;g=");
+    new Ajax.Request(new XWiki.Document('GeneNameService', 'PhenoTips').getURL('get') + queryString,
+       {
+         onCreate : function() {
+           geneRefs.each(function(element) {
+             var geneLinks = element.next('div.gene-links');
+             if (!geneLinks) {
+               geneLinks = new Element('div', {'class' : 'gene-links', style : 'min-height: 16px'});
+               element.insert({after: geneLinks});
+             }
+             geneLinks.addClassName('loading').update('');
+           });
+         },
+         onSuccess : function(response) {
+           geneRefs.each(function(element) {
+             var data = response.responseJSON;
+             var geneName = element._name;
+             var info = data.response[geneName] &amp;&amp; data.response[geneName].external_ids;
+             if (info) {
+
+                var geneLinks = element.next('div.gene-links') || new Element('div', {'class' : 'gene-links'});
+                var externalDBs = [
+                          { name : 'GENECARDS', url : 'http://www.genecards.org/cgi-bin/carddisp.pl?gene=',          field : 'genecards_id'},
+                          { name : 'OMIM',      url : 'http://www.omim.org/entry/',                                  field : 'omim_id'},
+                          { name : 'Entrez',    url : 'http://www.ncbi.nlm.nih.gov/gene/?term=',                     field : 'entrez_id'},
+                          { name : 'RefSeq',    url : 'http://www.ncbi.nlm.nih.gov/nuccore/',                        field : 'refseq_accession'},
+                          { name : 'Ensembl',   url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_gene_id'}
+                ];
+                externalDBs.each(function (item) {
+                         var value = info[item.field];
+                         if (value) {
+                           if (!value.each) {
+                             value = [value];
+                           }
+                           value.each (function (id) {
+                             geneLinks.insert(new Element('a', {
+                               'href'   : item.url + id,
+                               'class'  : 'button secondary'
+                             }).update(item.name + ': ' + id).wrap('span', {'class' : 'buttonwrapper'}));
+                           });
+                         }
+                });
+                geneLinks.select('a').each(function(item) {
+                         item.observe('click', function(event) {
+                            event.stop();
+                            window.open(item.href);
+                         })
+                });
+                element.observe('ms:suggest:selected', function(event) {
+                  if (event.memo &amp;&amp; event.memo.value) {
+                    fetchGeneDetails([element], [event.memo.value]);
+                  }
+                })
+                if (!element.__handleEmptyValue) {
+                   element.__handleEmptyValue = true;
+                   ['keyup', 'change', 'keypress'].each(function(eventName) {
+                     element.observe(eventName, function (event) {
+                       if (element.value == '') {
+                         geneLinks &amp;&amp; geneLinks.update('');
+                       }
+                     })
+                   });
+                }
+             }
+           });
+         },
+         onComplete : function () {
+           geneRefs.each(function(element) {
+             var geneLinks = element.next('div.gene-links');
+             if (geneLinks) {
+               geneLinks.removeClassName('loading');
+             }
+           });
+         }
+       }
+    );
+  }
+
+  fetchGeneDetails($$('input.gene-name'));
+
+  $$('input.gene-name').invoke('observe', "ms:suggest:selected", function (event) {
+    fetchGeneDetails([event.findElement()], event.memo &amp;&amp; [event.memo.value] || []);
+  });
+
+  document.observe("xwiki:dom:updated", function(event) {
+    if (event.memo &amp;&amp; event.memo.elements) {
+      event.memo.elements.each(function (elt) {
+        fetchGeneDetails(elt.select('input.gene-name'));
+        elt.select('input.gene-name').invoke('observe', "ms:suggest:selected", function (event) {
+          fetchGeneDetails([event.findElement()], event.memo &amp;&amp; [event.memo.value] || []);
+        });
+      });
+    }
+  })
+})</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.UIX_Field__genes</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>ddc20308-5638-42ba-9680-19944cc57e54</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe("xwiki:dom:loaded", function(event) {
+  var geneSuggestOptions = {
+            script: new XWiki.Document('GeneNameService', 'PhenoTips').getURL('get', 'outputSyntax=plain') + "&amp;",
+            varname: "q",
+            noresults: "No matching gene names",
+            json: true,
+            resultsParameter : "docs",
+            resultId : "symbol",
+            resultValue : "symbol",
+            enableHierarchy: false,
+            resultInfo : {
+                 "Name" : {selector : "name"},
+                 "Gene family" : {selector: 'gene_family'},
+                 "Aliases" : {selector: 'alias_symbol'},
+                 "See also in" : {
+                    "selector"  : 'external_ids',
+                    "processor" : function (map) {
+                       var result = new Element('div');
+                       var externalDBs = [
+                          { name : 'GENECARDS', url : 'http://www.genecards.org/cgi-bin/carddisp.pl?gene=',          field : 'genecards_id'},
+                          { name : 'OMIM',      url : 'http://www.omim.org/entry/',                                  field : 'omim_id'},
+                          { name : 'Entrez',    url : 'http://www.ncbi.nlm.nih.gov/gene/?term=',                     field : 'entrez_id'},
+                          { name : 'RefSeq',    url : 'http://www.ncbi.nlm.nih.gov/nuccore/',                        field : 'refseq_accession'},
+                          { name : 'Ensembl',   url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_gene_id'}
+                       ];
+                       externalDBs.each(function (item) {
+                         var value = map[item.field];
+                         if (value) {
+                           if (!value.each) {
+                             value = [value];
+                           }
+                           value.each (function (id) {
+                             result.insert(new Element('a', {
+                               'href'   : item.url + id,
+                               'class'  : 'button secondary'
+                             }).update(item.name + ': ' + id).wrap('span', {'class' : 'buttonwrapper'}));
+                           });
+                         }
+                       });
+                       result.select('a').each(function(item) {
+                         item.observe('click', function(event) {
+                            event.stop();
+                            window.open(item.href);
+                         })
+                       });
+                       return result;
+                    }
+                 }
+                         },
+            fadeOnClear : false,
+            timeout : 30000,
+            parentContainer : null
+  };
+
+  // -----------------------------------------------------------------
+  // Create and attach the suggests
+  // -----------------------------------------------------------------
+  var attachPickers = function() {
+    if (typeof(MS.widgets.Suggest) != "undefined") {
+      $$('input.suggest-gene').each(function(item) {
+        if (!item.hasClassName('initialized')) {
+          item._suggest = new MS.widgets.Suggest(item, geneSuggestOptions);
+          item.addClassName('initialized');
+        }
+      });
+    }
+  };
+  attachPickers();
+  document.observe("xwiki:dom:updated", attachPickers);
+});</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.UIX_Field__genes</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>31ef03c0-7319-491e-8ee4-ac2863448012</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.extradata-list td.counter {
+  width: 3em;
+}
+.extradata-list td.gene {
+  width: 50%;
+  text-align: left;
+}</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <name>PhenoTips.UIX_Field__genes</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>7b7c0c0e-2a31-4710-8479-891b7742595e</guid>
+    <property>
+      <content>{{include document="PhenoTips.PatientSheetMacros" /}}
+
+{{include document="PhenoTips.TabelarDataMacros" /}}
+
+{{velocity}}
+$xwiki.ssx.use('PhenoTips.UIX_Field__genes')##
+$xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
+#set ($targetClassName = 'PhenoTips.InvestigationClass')
+#if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
+  === List of known affected genes ===
+
+  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular', 'mode' : $xcontext.action})
+#end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.patientSheet.section.genotype</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.patientSheet.field.genes</name>
+    </property>
+    <property>
+      <parameters>title=Known affected genes
+enabled=true
+required=
+order=1
+fields=</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <content/>
+</xwikidoc>

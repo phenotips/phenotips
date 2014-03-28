@@ -20,6 +20,7 @@
 package org.phenotips.tools;
 
 import org.phenotips.ontology.OntologyService;
+import org.phenotips.ontology.OntologyTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
@@ -27,6 +28,7 @@ import org.xwiki.script.service.ScriptService;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -113,7 +115,8 @@ public class PhenotypeDisplayTools implements ScriptService
 
     public String display(Collection<Map<String, ?>> template)
     {
-        return new PropertyDisplayer(template, getFormData(), this.ontologyService).display();
+        FormData formData = this.replaceOldTerms(this.getFormData());
+        return new PropertyDisplayer(template, formData, this.ontologyService).display();
     }
 
     public void clear()
@@ -131,6 +134,38 @@ public class PhenotypeDisplayTools implements ScriptService
             data = new FormData();
             this.execution.getContext().setProperty(CONTEXT_KEY, data);
         }
+
         return data;
+    }
+
+    private FormData replaceOldTerms(FormData data)
+    {
+        if (data.getMode() == DisplayMode.Edit) {
+            List<String> correctIds = new LinkedList<String>();
+            List<String> correctNegativeIds = new LinkedList<String>();
+            for (String id : data.getSelectedValues()) {
+                OntologyTerm properTerm = this.ontologyService.getTerm(id);
+                if (properTerm != null) {
+                    correctIds.add(properTerm.getId());
+                } else {
+                    correctIds.add(id);
+                }
+            }
+            data.setSelectedValues(correctIds);
+            if (data.getSelectedNegativeValues() != null) {
+                for (String id : data.getSelectedNegativeValues()) {
+                    OntologyTerm properTerm = this.ontologyService.getTerm(id);
+                    if (properTerm != null) {
+                        correctNegativeIds.add(properTerm.getId());
+                    } else {
+                        correctNegativeIds.add(id);
+                    }
+                }
+                data.setSelectedNegativeValues(correctNegativeIds);
+            }
+            return data;
+        } else {
+            return data;
+        }
     }
 }

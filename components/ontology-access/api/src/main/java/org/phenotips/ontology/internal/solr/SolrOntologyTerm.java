@@ -68,6 +68,13 @@ public class SolrOntologyTerm implements OntologyTerm
     private Set<OntologyTerm> ancestors;
 
     /**
+     * A set containing the term itself and its ancestors, transformed from a set of IDs into a real set of terms.
+     * 
+     * @see #getAncestorsAndSelf()
+     */
+    private Set<OntologyTerm> ancestorsAndSelf;
+
+    /**
      * Constructor that provides the backing {@link #doc Solr document} and the {@link #ontology owner ontology}.
      * 
      * @param doc the {@link #doc Solr document} representing this term
@@ -81,6 +88,12 @@ public class SolrOntologyTerm implements OntologyTerm
             this.removeSelfDuplicate();
             this.parents = new LazySolrTermSet(doc.getFieldValues("is_a"), ontology);
             this.ancestors = new LazySolrTermSet(doc.getFieldValues(TERM_CATEGORY), ontology);
+            Collection<Object> termSet = new HashSet<Object>();
+            termSet.add(this.getId());
+            if (doc.getFieldValues(TERM_CATEGORY) != null) {
+                termSet.addAll(doc.getFieldValues(TERM_CATEGORY));
+            }
+            this.ancestorsAndSelf = new LazySolrTermSet(termSet, this.ontology);
         }
     }
 
@@ -132,10 +145,7 @@ public class SolrOntologyTerm implements OntologyTerm
     @Override
     public Set<OntologyTerm> getAncestorsAndSelf()
     {
-        Collection<Object> termSet = new HashSet<Object>();
-        termSet.add(this.getId());
-        termSet.addAll(doc.getFieldValues(TERM_CATEGORY));
-        return new LazySolrTermSet(termSet, this.ontology);
+        return this.ancestorsAndSelf != null ? this.ancestorsAndSelf : Collections.<OntologyTerm>emptySet();
     }
 
     @Override

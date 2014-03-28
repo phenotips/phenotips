@@ -115,303 +115,6 @@
       </use>
     </class>
     <name>PhenoTips.PatientSheetCode</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>a483377f-bdfd-467a-93f5-0214e0f45995</guid>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>document.observe('xwiki:dom:loaded', function() {
-  var deleteTool = $('tmActionDelete');
-  if (!deleteTool) {
-    return false;
-  }
-  deleteTool.observe('click', function(clickEvent) {
-    clickEvent.stop();
-    var item = clickEvent.element();
-    item.blur();
-    if (item.disabled) {
-      // Do nothing if the button was already clicked and it's waiting for a response from the server.
-      return;
-    } else {
-      var url = item.readAttribute('href') + "?confirm=1&amp;form_token=" + $$('meta[name=form_token]')[0].content + (Prototype.Browser.Opera ? "" : "&amp;ajax=1");
-      new XWiki.widgets.ConfirmedAjaxRequest(
-        /* Ajax request URL */
-        url,
-        /* Ajax request parameters */
-        {
-          onCreate : function() {
-            // Disable the button, to avoid a cascade of clicks from impatient users
-            item.disabled = true;
-          },
-          onSuccess : function() {
-            // Go to space WebHome
-            window.location = new XWiki.Document('WebHome', XWiki.Document.currentSpace).getURL('view');
-          },
-          onFailure : function() {
-            // Better luck next time!
-            item.disabled = false;
-          }
-        },
-        /* Interaction parameters */
-        {
-          confirmationText: "$services.localization.render('core.recyclebin.confirm')"
-        }
-      );
-    }
-  });
-});</code>
-    </property>
-    <property>
-      <name>Confirmed AJAX deletion</name>
-    </property>
-    <property>
-      <parse>1</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>1</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>ea03b772-54bb-4c4d-8cca-e0c83c372320</guid>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>var tocLinkClicked = function(event) {
-    event.stop();
-    var trigger = event.findElement('a');
-    var targetName = trigger &amp;&amp; trigger.getAttribute('href');
-    var target = targetName &amp;&amp; $(targetName.substring(1));
-    var parent = target &amp;&amp; (target.up('.collapsible-group') || target.up('.chapter'));
-    if (parent &amp;&amp; parent.hasClassName('collapsed')) {
-       parent.removeClassName('collapsed');
-       if (parent.down('.expand-tool')) {
-         parent.down('.expand-tool').update('▼');
-       }
-       if (parent.up('.chapter')) {
-         parent.up('.chapter').removeClassName('collapsed');
-       }
-       parent.scrollTo();
-    } else {
-       target.scrollTo();
-    }
-};
-
-document.observe('xwiki:dom:loaded', function() {
-  var tocElement = $('table-of-contents')
-  if (!tocElement) {return;}
-  var titleLink = tocElement.down('li a');//first link
-  if (titleLink) {
-    titleLink.href = '#document-title';
-  }
-  var crtContents = tocElement.down('ul ul');
-  if (!crtContents) {return;}
-  var completeContents = new Element('ul');
-  var crtContainer = completeContents;
-  var crtLevel = 2;
-  // , h3[id]
-  $$('h2[id]').each(function(title) {
-    var target = title.id;
-    var myLevel = parseInt(title.nodeName.substring(1));
-    var tocLine = new Element('li').update(new Element('a', {'href' : '#' + target}).update(title.innerHTML));
-    if (myLevel &lt; crtLevel) {
-       crtContainer = crtContainer.up('ul');
-    } else if (myLevel &gt; crtLevel) {
-      var lastTocLine = crtContainer.down('li:last-child');
-      if (!lastTocLine) {
-        lastTocLine = new Element('li');
-        crtContainer.insert({'bottom' : lastTocLine});
-      }
-      crtContainer = new Element('ul');
-      lastTocLine.insert({'bottom' : crtContainer});
-    }
-    crtLevel = myLevel;
-    crtContainer.insert({'bottom' : tocLine});
-  });
-  crtContents.replace(completeContents);
-
-  // JS show/hide of ToC, to avoid jumps in Chrome
-  var tocTrigger = $('tmToC');
-  if (tocTrigger) {
-    tocTrigger.observe('click', function(event) {
-      event.stop();
-      tocElement.style.display= 'block';
-      tocElement.style.visibility= 'visible';
-    });
-  }
-  var tocHideTriggers = tocElement.select('.hide-toc a');
-  tocHideTriggers.invoke('observe', 'click', function(event) {
-     event.stop();
-     tocElement.style.display= '';
-     tocElement.style.visibility= 'hidden';
-  });
-  var tocLinks = tocElement.select('ul a');
-  tocLinks.invoke('observe', 'click', function(event) {
-     //tocElement.style.display= '';
-     //tocElement.select('.hide-toc a').click();
-     tocLinkClicked(event);
-  });
-});</code>
-    </property>
-    <property>
-      <name>Fix for the incomplete ToC</name>
-    </property>
-    <property>
-      <parse>0</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <name>PhenoTips.PatientSheetCode</name>
     <number>2</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>3dbaeab5-a161-4a7e-9884-f130958b03b5</guid>
@@ -520,68 +223,6 @@ document.observe('xwiki:dom:loaded', function() {
       });
     });
   });
-
-  // ------------------------------------------------------------------------
-  // Behavior of the quick search box
-  // ------------------------------------------------------------------------
-  var qsBox = $('quick-search-box');
-  if (qsBox) {
-    var content = qsBox.next('div');
-    if (content) {
-      qsBox.__x_qsInput = qsBox.down('input[type=text]') || {};
-      var qsSticky = new StickyBox(qsBox, content, {shadowSize : 0, isSticky : function(element) {return !element.__x_qsInput._activeSuggest} });
-      Event.observe(document, 'ms:suggest:containerCreated', function(event) {
-        if (event.memo.suggest.fld == qsBox.__x_qsInput) {
-          qsBox.__x_qsInput._activeSuggest = true;
-          var qsSuggest = event.memo.container;
-          if (qsBox.getStyle('position') == 'fixed') {
-            qsSuggest.style.position = 'fixed';
-          }
-          qsSuggest.style.top = (qsBox.__x_qsInput.cumulativeOffset().top + qsBox.__x_qsInput.getHeight()) + 'px';
-          qsSuggest.style.left = qsBox.__x_qsInput.cumulativeOffset().left;
-        }
-      });
-      Event.observe(document, 'ms:suggest:clearSuggestions', function(event) {
-        if (event.memo.suggest.fld == qsBox.__x_qsInput) {
-          qsBox.__x_qsInput._activeSuggest = false;
-        }
-      });
-    }
-  }
-
-  var docContent = $('mainContentArea');
-  if (docContent) {
-    docContent.style.position = 'relative';
-
-    var docActions = $('document-actions');
-    if (docActions) {
-      docActions.addClassName('absolute');
-      var daSticky  = new StickyBox(docActions, docContent, {shadowSize : 6});
-    }
-
-    var toc = $('table-of-contents');
-    if (toc) {
-      toc.addClassName('absolute');
-      var tocSticky = new StickyBox(toc, docContent, {shadowSize : 6});
-    }
-  }
-  var summaryContent = $('current-phenotype-selection');
-  var summary = summaryContent &amp;&amp; summaryContent.up('.selector-panel');;
-  if (summary) {
-    var container = summary.up();//alert(container);
-    summary.addClassName('absolute');
-    var sSticky  = new StickyBox(summary, container, {shadowSize : qsBox &amp;&amp; (qsBox.getHeight() + 3) || 0, resize: true, isSticky : function(element) {return element.hasClassName('half-width') &amp;&amp; element.getHeight() &lt; element.previous().getHeight()}});
-    summary.observe('size:changed', function(event) {
-      if (!event.memo) {
-         summaryContent.style.height = '';
-         summaryContent.style.overflow = '';
-      } else {
-         summaryContent.style.height = (summaryContent.getHeight() + (event.memo.diff || 0)) + 'px';
-         summaryContent.style.overflow = 'auto';
-         summary.style.overflow = '';
-      }
-    });
-  }
 });</code>
     </property>
     <property>
@@ -785,17 +426,8 @@ document.observe('xwiki:dom:loaded', function() {
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe('xwiki:dom:loaded', function() {
-    var jumpToPubmed = function(termID) {
-       var label = termID.up('label');
-       var li = label.up('li');
-       var url = "http://www.ncbi.nlm.nih.gov/pubmed?term=" + termID.value;
-       var link = new Element('a', {'target': '_blank', 'title' : "See this article on pubmed", 'href' : url});
-       label.wrap(link);
-       $('pubmed-search-history').down('ul').insert({'top' : li});
-       window.open(url);
-       $('pubmed-search-history').down('h4').removeClassName('hidden');
-    }
+      <code>var XWiki = (function(XWiki) {
+  var init = function() {
     // ------------------------------------------------------------------------
     // Creation of suggest widgets
 
@@ -803,7 +435,7 @@ document.observe('xwiki:dom:loaded', function() {
     // go : namespace:
     var suggestionsMapping = {
         "hpo" : {
-            script: "$xwiki.getURL('PhenoTips.SolrService', 'get')?",
+            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get") + "?",
             queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
                            'name' : {'wordBoost': 10, 'phraseBoost': 20},
                            'nameSpell' : {'wordBoost': 18, 'phraseBoost': 36, 'stubBoost': 14},
@@ -851,7 +483,7 @@ document.observe('xwiki:dom:loaded', function() {
             parentContainer : null
         },
         "omim" : {
-            script: "$xwiki.getURL('PhenoTips.OmimService', 'get')?outputSyntax=plain&amp;",
+            script: new XWiki.Document('OmimService', 'PhenoTips').getURL("get", "outputSyntax=plain") + "&amp;",
             queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
                            'name' : {'wordBoost': 20, 'phraseBoost': 40},
                            'nameSpell' : {'wordBoost': 50, 'phraseBoost': 100, 'stubBoost': 20},
@@ -867,24 +499,6 @@ document.observe('xwiki:dom:loaded', function() {
             resultValue : "name",
             resultInfo : {
                            "Locus"      : {"selector"  : "Locus"}
-                         },
-            enableHierarchy: false,
-            fadeOnClear : false,
-            timeout : 30000,
-            parentContainer : null
-        },
-        "pubmed" : {
-            script: "$xwiki.getURL('PhenoTips.PubMedService', 'get')?",
-            varname: "q",
-            noresults: "No matching articles",
-            json: true,
-            resultsParameter : "rows",
-            resultId : "id",
-            resultValue : "Title",
-            resultInfo : {
-                           "Authors"   : {"selector"  : "AuthorList"},
-                           "Date"      : {"selector"  : "EPubDate"},
-                           "Journal"   : {"selector"  : "Source"}
                          },
             enableHierarchy: false,
             fadeOnClear : false,
@@ -937,18 +551,6 @@ document.observe('xwiki:dom:loaded', function() {
                   'listInsertionPosition' : 'before',
                   'onItemAdded' : enableHighlightChecked,
                   'acceptFreeText' : true
-                },
-      'portal' : {
-                  'showKey' : false,
-                  'showTooltip' : false,
-                  'showDeleteTool' : false,
-                  'enableSort' : false,
-                  'showClearTool' : true,
-                  'inputType': 'checkbox',
-                  'listInsertionElt' : $('pubmed-search-history'),
-                  'listInsertionPosition' : 'bottom',
-                  'silent' : true,
-                  'onItemAdded' : jumpToPubmed
                 }
     }
     // ------------------------------------------------------------------------
@@ -1131,12 +733,16 @@ document.observe('xwiki:dom:loaded', function() {
              if (!exists) {
                var group = this._getGroup(sectionId);
                if (!group) {return;}
-               var newItem = new Element('div', {'class' : 'summary-item'}).update(
+               var isCustomEntry = !inputElt.value.startsWith("HP:");
+               var newItem = new Element('div', {'class' : 'summary-item' + (isCustomEntry ? ' custom-entry': '')}).update(
                   new Element('label', {'class' : type}).insert({
                      'top': new Element('input', {'value' : inputElt.value, checked : 'checked', type : 'checkbox', 'class': 'hidden'}),
                      'bottom' : inputElt.title || inputElt.nextSibling.nodeValue || inputElt.nextSibling.firstChild.nodeValue || inputElt.value
                   })
                );
+               if (isCustomEntry) {
+                 newItem.insert({top: new Element('span', {'class': "fa fa-exclamation-triangle", title: "This is not a standardized phenotype"}).update(' ')})
+               }
                newItem.__source = inputElt;
                var tools = new Element('span', {'class' : 'tools hint'});
                var deleteTool = new Element('span', {'class' : 'tool'}).update('Delete');
@@ -1153,14 +759,17 @@ document.observe('xwiki:dom:loaded', function() {
              if (detailsUrl) {
                var detailsTool = new Element('span', {'class' : 'tool'}).update('Add details');
                var clearTool = new Element('span', {'class' : 'tool'}).update('Clear details');
-               tools.insert(' · ').insert(detailsTool).insert(clearTool);
+               var editTool = new Element('span', {'class' : 'tool'}).update('Edit details');
+               var editClearTools = new Element('span').insert(editTool).insert(' · ').insert(clearTool);
+               tools.insert(' · ').insert(detailsTool).insert(editClearTools);
                detailsTool.observe('click', function(event) {
                  var source = event.findElement('.summary-item');
                  var detailsElt = new Element('div', {'class' : 'phenotype-details loading'}).update('Loading...');
                  source.insert(detailsElt);
                  event.findElement().hide();
                  clearTool.__target = detailsElt;
-                 clearTool.show();
+                 editTool.__target = detailsElt;
+                 editClearTools.show();
 
                  var addTrigger = event.findElement();
                  if (addTrigger.disabled) {
@@ -1215,14 +824,22 @@ document.observe('xwiki:dom:loaded', function() {
                      deleteUrl = deleteUrl.value;
                      deleteUrl &amp;&amp; (clearTool.__url = deleteUrl);
                      clearTool.__target = detailsElt;
+                     editTool.__target = detailsElt;
                   }
                   detailsElt.update(existingDetails);
                   selectionSummary._preparePreview(detailsElt);
                   detailsElt.select('input, textarea').invoke('observe', 'focus', function(event){selectionSummary._focusDetails(detailsElt)});
                   detailsTool.hide();
                }  else {
-                  clearTool.hide();
+                  editClearTools.hide();
                }
+               editTool.observe('click', function(event) {
+                 var target = event.findElement().__target;
+                 if (!target.hasClassName('focused')) {
+                   event.stop();
+                   selectionSummary._focusDetails(target);
+                 }
+               });
                clearTool.observe('click', function(event) {
                  event.stop();
                  var deleteTrigger = event.element();
@@ -1244,7 +861,7 @@ document.observe('xwiki:dom:loaded', function() {
                          delete deleteTrigger.__target;
                        }
                        delete deleteTrigger.__url;
-                       deleteTrigger.hide();
+                       deleteTrigger.up().hide();
                        detailsTool.show();
                      },
                      onComplete : function() {
@@ -1276,7 +893,7 @@ document.observe('xwiki:dom:loaded', function() {
       var keys = Object.keys(suggestionsMapping);
       var specialClasses = Object.keys(pickerSpecialClassOptions);
       for (var i = 0; i &lt; keys.length; i++) {
-        var selector = 'input.suggest-' + keys[i];
+        var selector = 'input.suggest-' + keys[i] + ':not(.initialized)';
         $$(selector).each(function(item) {
           if (!item.hasClassName('initialized')) {
             item._customOptions = Object.clone(suggestionsMapping[keys[i]]);
@@ -1353,6 +970,22 @@ document.observe('xwiki:dom:loaded', function() {
                   // Prevent click events from the label from activating the suggestion selection twice because of being forwarded to the input
                   ynpicker.select('input').invoke('observe', 'click', function(event) {event.stop()});
 
+                  // Make it clear visually that clicking on the suggestion is equivalent to clicking on Y
+                  suggestion.observe('mouseover', function(event) {
+                    suggestion.down('label.yes').addClassName('highlighted');
+                  })
+                  suggestion.observe('mouseout', function(event) {
+                    suggestion.down('label.yes').removeClassName('highlighted');
+                  })
+                  suggestion.down('label.no').observe('mouseover', function(event) {
+                    event.stop();
+                    event.findElement().addClassName('highlighted');
+                    event.findElement().previous('label.yes').removeClassName('highlighted');
+                  })
+                  suggestion.down('label.no').observe('mouseout', function(event) {
+                    event.findElement().removeClassName('highlighted');
+                  })
+
                   // Keep the default behavior for the Y button
                   //  but capture the N button clicks and make sure the value is selected for the negative property field
                   var nLabel = ynpicker.down('.no');
@@ -1424,12 +1057,8 @@ document.observe('xwiki:dom:loaded', function() {
             item._trigger._source = item;
             item._trigger._root = item.up('.term-entry');
             item._trigger._root.insert({'top' : item._trigger});
-            if (item._trigger._root.hasClassName('dropdown-root')) {
-            item._trigger.observe('click', function(event) {
-              event.stop();
-              var trigger =  event.element();
-              var source  =  trigger._source;
-              var root    =  trigger._root;
+
+            var __loadOntologyBranch = function(source, doExpand) {
               source._ontologyBrowser || (source._ontologyBrowser = new MS.widgets.OntologyBrowser(
                 sugestedInput._suggest,
                 source._dropDown,
@@ -1442,18 +1071,46 @@ document.observe('xwiki:dom:loaded', function() {
                   enableBrowse: false
                 }
               ));
-              if (root._expanded) {
+              source._ontologyBrowser.show(source.value);
+              if (!doExpand) {
                 source._ontologyBrowser.hide();
-              } else {
-                source._ontologyBrowser.show(source.value);
               }
+              source._dropDown.element.insert(source._dropDown.dropdown.down('.tooltip'));
+            }
 
-              trigger.update(source._ontologyBrowser._getExpandCollapseSymbol(root._expanded));
-              root._expanded = !root._expanded;
-            });
+            if (item._trigger._root.hasClassName('dropdown-root')) {
+              item._trigger.observe('click', function(event) {
+                event.stop();
+                var trigger =  event.element();
+                var source  =  trigger._source;
+                var root    =  trigger._root;
+                __loadOntologyBranch(source, !root._expanded);
+
+                trigger.update(source._ontologyBrowser._getExpandCollapseSymbol(root._expanded));
+                root._expanded = !root._expanded;
+              });
             } else {
               item._trigger.addClassName('disabled');
             }
+
+            }   // if subsection
+
+            // Info buttons behavior
+            var itemParent = item.up('.term-entry');
+            var infoTool = itemParent.down('.info-tool');
+            var tooltip = itemParent.down('.tooltip');
+            if (infoTool) {
+              if (!tooltip) {
+                infoTool.setOpacity(0);
+              } else {
+                infoTool.observe('click', function (event) {
+                  event.findElement('.chapter').select('.tooltip').invoke('addClassName', 'invisible');
+                  event.findElement('.term-entry').down('.tooltip').removeClassName('invisible');
+                });
+                tooltip.down('.hide-tool').observe('click', function (event) {
+                  event.findElement('.tooltip').addClassName('invisible');
+                });
+              }
             }
 
             // ------------------------------------------------------------------------
@@ -1536,7 +1193,12 @@ document.observe('xwiki:dom:loaded', function() {
           var positiveName = event.memo.obrowser.suggest.fld.name.replace(/__suggested$/, "");
           var negativeName = event.memo.obrowser.suggest.fld.name.replace(/(_\d+)_/, "$1_negative_").replace(/__suggested$/, "");
           var value = item.value;
-          var text = item.up('.entry-data').down('.value').firstChild.nodeValue;
+          var text = item.up('.entry-data').down('.value').firstChild;
+          text = text &amp;&amp; text.nodeValue || false;
+          if (!text) {
+            item.up(".parents").remove();
+            return;
+          }
           var ynpickerElt = YesNoPicker.generatePickerElement([
               {type: 'na', selected: !isValueSelected(positiveName, value) &amp;&amp; !isValueSelected(negativeName, value)},
               {type: 'yes', selected: isValueSelected(positiveName, value)},
@@ -1566,205 +1228,16 @@ document.observe('xwiki:dom:loaded', function() {
         });
       }
     });
-});</code>
+  };
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  return XWiki;
+}(XWiki || {}));</code>
     </property>
     <property>
       <name>Term suggest</name>
     </property>
     <property>
-      <parse>1</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>6</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>762f626c-9e6e-4a95-89bd-0217053bf947</guid>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>document.observe('xwiki:dom:loaded', function() {
-  // Only do this in edit mode
-  if (XWiki.contextaction != 'edit') { return; }
-  var form = $('edit') || $('inline');
-  if (!form) {return; }
-  var formToken = form.form_token &amp;&amp; form.form_token.value;
-
-  // What the form initially looked like
-  var originalFormData = form.serialize();
-
-  // Warn users when they navigate away from this page without submitting the form, if the data changed
-  /*window.onbeforeunload = function(uEvent) {
-    if (originalFormData != form.serialize()) {
-      return "There are unsaved changes on this page. Are you sure you wish to leave?";
-    }
-  };
-  form.observe('submit', function(event) {
-     window.onbeforeunload = function() {};
-  });*/
-
-  // Obtain the number of the loaded version
-  var originalVersion = ($$("meta[name=version]").length &gt; 0) ? $$("meta[name=version]")[0].content : false;
-
-  // What could happen on cancel:
-  var __getRollbackURL = function (version) {
-    return XWiki.currentDocument.getURL('rollback', 'rev=' + version + "&amp;confirm=1&amp;form_token=" + formToken);
-  }
-  var deleteURL =  XWiki.currentDocument.getURL('delete', "confirm=1&amp;form_token=" + formToken);
-  var NEW_DOCUMENT = 'none';
-
-  if (originalVersion) {
-     var cancelURL = __getRollbackURL(originalVersion);
-  }
-
-  var versionProviderURL = XWiki.currentDocument.getRestURL();
-  var __getDocumentVersionFromREST = function(xml) {
-    var version = xml.getElementsByTagName('version');
-    if (version.length &gt; 0) {
-       return version[0].firstChild.nodeValue;
-    }
-    return false;
-  };
-
-  // In background, check if the document actually exists; if not, it should be deleted on cancel
-  // (non-existing documents have 1.1 in their meta version)
-  new Ajax.Request(
-            versionProviderURL, {
-              method: 'get',
-              onSuccess : function (response) {
-                // only update if the information was unavailable in the meta section
-                if (!originalVersion &amp;&amp; (originalVersion = __getDocumentVersionFromREST(response.responseXML))) {
-                   cancelURL = __getRollbackURL(originalVersion);
-                }
-              },
-              onFailure : function (response) {
-                if (response.statusCode == 404) {
-                   //Document missing
-                   originalVersion = NEW_DOCUMENT;
-                   cancelURL = deleteURL;
-                }
-              }.bind(this)
-            }
-      );
-
-  //form.select('input[name=action_cancel]').invoke('stopOserving', 'click');
-  form.select('input[name=action_cancel]').invoke('observe', 'click', function (event) {
-    // Continue with the default behavior if the cancel action is being forced after form version verification
-    // or if at this point we still have no information regarding the original document version
-    if (form._isVersionVerified || !originalVersion || !cancelURL) { return; }
-    Event.stop(event);
-    // Find the current version
-    new Ajax.Request(
-            versionProviderURL,
-            {
-              method: 'get',
-              onCreate : function() {
-                form._isVersionVerified = true;
-              },
-              onSuccess : function(response) {
-                var crtVersion = __getDocumentVersionFromREST(response.responseXML);
-                window.onbeforeunload = function() {};
-                if (crtVersion &amp;&amp; crtVersion != originalVersion) {
-                  // Go to the original state (i.e. rollback or delete)
-                  window.location = cancelURL;
-                } else {
-                  //just cancel
-                  event.element().click();
-                }
-              }.bind(this),
-              onFailure : function (response) {
-                window.onbeforeunload = function() {};
-                // Fail silently
-                event.element().click();
-              }.bind(this),
-              on0 : function (response) {
-                response.request.options.onFailure(response);
-              }
-            }
-      );
-  });
-});</code>
-    </property>
-    <property>
-      <name>Fix uncancellable object changes</name>
-    </property>
-    <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -2155,27 +1628,49 @@ document.observe('xwiki:dom:loaded', function() {
             var target = _info[p];
             if (value == 'evaluation' &amp;&amp; target['valueHooks'] &amp;&amp; _this._getMostRecentEntry() == cell.up('tr.data-row')) {
               var targetElt = values[p]['valCategory'] &amp;&amp; target['valueHooks'][values[p]['valCategory']];
-              if (targetElt &amp;&amp; !targetElt.checked) {
-                if (targetElt._ynpicker) {
-                  targetElt._ynpicker._onYes();
-                } else {
-                  targetElt.checked = true;
-                }
-                highlightChecked(targetElt);
-              }
+              _this._selectMeasurementTerm(targetElt);
               ['extreme-below-normal', 'extreme-above-normal'].without(values[p]['valCategory'] || '').each(function(val) {
                 var elt = target['valueHooks'][val];
-                if (elt &amp;&amp; elt.checked) {
-                  if (elt._ynpicker) {
-                    elt._ynpicker._onUnselect();
-                  } else {
-                    elt.checked = false;
-                  }
-                }
+                _this._unselectMeasurementTerm(elt);
               });
             }
           }
         });
+      }
+    },
+
+    /**
+     *
+     * */
+    _selectMeasurementTerm : function (elt) {
+      if (elt &amp;&amp; !elt.checked) {
+        if (elt._ynpicker) {
+          elt._ynpicker._onYes();
+        } else {
+          elt.checked = true;
+        }
+        highlightChecked(elt);
+        var addedItem = $('current-phenotype-selection').down('label input[value="' + elt.value + '"]');
+        if (addedItem) {
+          addedItem.up('label').insert({before : new Element('span', {
+                                                               'class' : 'fa fa-bolt',
+                                                               'title' : 'This phenotype was automatically added based on abnormal measurement values'
+          }).update(' ')});
+        }
+      }
+    },
+
+
+    /**
+     *
+     * */
+    _unselectMeasurementTerm : function (elt) {
+      if (elt &amp;&amp; elt.checked) {
+        if (elt._ynpicker) {
+          elt._ynpicker._onUnselect();
+        } else {
+          elt.checked = false;
+        }
       }
     },
 
@@ -2464,7 +1959,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Automatic computation of growth parameters</name>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -2578,76 +2073,10 @@ document.observe('xwiki:dom:loaded', function() {
        item.addClassName('collapsed');
      }
   });
-
-
-  $$('.chapter .browser .browser-title').each(function(item){
-    var phBrowserHide = new Element('span', {'class' : 'tool hide'}).update('Hide');
-    var phBrowserExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(phBrowserHide);
-    item.insert({after: phBrowserExpandTools});
-    [phBrowserHide, item].invoke('observe', 'click', function (event) {
-      event.element().up('.browser').toggleClassName('collapsed');
-      event.element().up('.chapter').select('.current-phenotype-selection').invoke('toggleClassName', 'third-width');
-    });
-  });
-  var phBrowserExpandAll = new Element('span', {'class' : 'tool expand-all'}).update('Expand all');
-  var phBrowserCollapseAll = new Element('span', {'class' : 'tool collapse-all'}).update('Collapse all');
-  var phBrowserJumpTo = new Element('span', {'class' : 'tool jump-to'}).update('Jump to');
-  var phBrowserExpandTools =
-      new Element('span', {'class' : 'inner-expand-tools'}).insert(phBrowserJumpTo).insert(" · ").insert(
-                  phBrowserExpandAll).insert(" · ").insert(phBrowserCollapseAll).insert(" · ");
-
-  var phBrowserTocList = new Element('ul');
-  var phBrowserToc = new Element('div', {'class' : 'chapter-toc'}).insert(phBrowserTocList);
-
-  $$('.chapter.phenotype-info .browser h3+.expand-tools').invoke('insert', {'top' : phBrowserExpandTools});
-  phBrowserExpandTools.up().insert({'after' : phBrowserToc});
-  $$('.chapter.phenotype-info .collapsible-group h3').each(function(item) {
-     phBrowserTocList.insert(new Element('li').update(new Element('a', {'href' : '#' + item.getAttribute('id')}).update(item.innerHTML)));
-     item.insert({'top': new Element('span', {'class' : 'expand-tool'}).update('▼')});
-  });
-
-  var toggleCategory = function(target) {
-     if (!target) {return;}
-     if (typeof (target.element) == 'function') {
-       return toggleCategory(target.element());
-     }
-     var parent = target.up('.collapsible-group');
-     if (parent) {
-       parent.toggleClassName('collapsed');
-       parent.down('.expand-tool').update(parent.hasClassName('collapsed') &amp;&amp; '►' || '▼');
-     }
-  }
-
-  $$('.chapter.phenotype-info .collapsible-group h3').each(function(item){
-     if (!item.up('.collapsible-group').down('input[type=checkbox]:checked')) {
-       toggleCategory(item);
-     }
-     item.observe('click', toggleCategory);
-  });
-  phBrowserExpandAll.observe('click', function(event){
-    event.element().up('.chapter').select('.collapsible-group.collapsed h3').each(function(item){
-      toggleCategory(item);
-    });
-  });
-  phBrowserCollapseAll.observe('click', function(event){
-    event.element().up('.chapter').select('.collapsible-group:not(.collapsed) h3').each(function(item){
-      toggleCategory(item);
-    });
-  });
-
-  phBrowserToc.toggle();
-  phBrowserJumpTo.observe('click', function(event){
-    phBrowserToc.toggle();
-  });
-  phBrowserToc.select('a').invoke('observe', 'click', function(event) {
-    phBrowserToc.toggle();
-    tocLinkClicked(event);
-  });
-
 });</code>
     </property>
     <property>
-      <name>Expand/collapse categories</name>
+      <name>Expand/collapse sections</name>
     </property>
     <property>
       <parse>0</parse>
@@ -2738,10 +2167,6 @@ document.observe('xwiki:dom:loaded', function() {
     <property>
       <code>document.observe('xwiki:dom:loading', function() {
 
-  $$('.ncbi-search-box h3, .ncbi-search-box .expand-tools .tool').invoke('observe', 'click', function(event) {
-     event.element().up('.ncbi-search-box').toggleClassName('collapsed');
-  });
-
   var defaultSearchTerms = $('defaultSearchTerms');
   var defaultSearchTermsInput = $('defaultSearchTermsInput');
   var defaultSearchTermIDsInput = $('defaultSearchTermIDsInput');
@@ -2751,13 +2176,13 @@ document.observe('xwiki:dom:loaded', function() {
 
   var services = {
     'omim' : {
-       'script' : "$xwiki.getURL('PhenoTips.OmimPredictService', 'get', 'format=html&amp;q=')",
+       'script' : new XWiki.Document('OmimPredictService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
        'source' : [defaultSearchTermIDsInput],
        'target' : $('omim-search-results'),
        'suggestFor' : omimField
     },
     'diffDiagnosis' : {
-       'script' : "$xwiki.getURL('PhenoTips.DiffDiagnosisService', 'get', 'format=html&amp;q=')",
+       'script' : new XWiki.Document('DiffDiagnosisService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
        'source' : [defaultSearchTermIDsInput],
        'target' : $('diffDiagnosis-search-results'),
        'suggestFor' : $('quick-phenotype-search')
@@ -3019,7 +2444,7 @@ document.observe('xwiki:dom:loaded', function() {
       <name>Instant searches in the Diagnosis zone</name>
     </property>
     <property>
-      <parse>1</parse>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -3986,13 +3411,14 @@ hr {
     </property>
     <property>
       <code>#template('colorThemeInit.vm')
+
 /** ----------------------------------------------------------- */
 /** Default style fixes **/
-.space-data #mainContentArea, #mainEditArea {
+.space-data #mainContentArea, .space-data #mainEditArea {
     background-color: #F9F9F9;
     border: 1px solid #FFFFFF;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-    margin: 2em 5%;
+    margin: 3em 0;
     padding: 0.5em 10px;
     text-shadow: 1px 1px 0 #FFFFFF;
 }
@@ -4000,47 +3426,72 @@ hr {
    margin: 3em -10px -3em;
 }
 .space-data #document-head {
-  border-bottom: .4em solid $theme.buttonPrimaryBackgroundColor;
-  margin: -2.7em -12px 0;
+  margin: -3em -11px 0;
 }
 .space-data #document-head #document-title {
   display: inline-block;
+  line-height: 0;
+  vertical-align: bottom;
 }
+
 .space-data #document-head h1 {
-    background-color: $theme.buttonPrimaryBackgroundColor;
-    border-bottom: 0 none;
-    border-radius: 8px 8px 0 0;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-    color: $theme.buttonPrimaryTextColor;
-    display: inline-block;
-    font-size: 1.2em;
-    letter-spacing: 2px;
-    margin: 0 0 -0.4em;
-    padding: 0.4em 3em;
-    text-shadow: 0 0 1px $theme.buttonPrimaryTextColor;
-    text-transform: uppercase;
-}
-#document-head #document-authors {
-  color: $theme.textPrimaryColor;
+  border: 1px solid $theme.menuGradientColor;
+  border-bottom: 0 none;
+    #css3_backgroundLinearGradient({
+    'to': 'bottom',
+    'colors': [
+      {'color': $theme.menuBackgroundColor, 'position': '0%'},
+      {'color': $theme.menuGradientColor, 'position': '50%'}
+    ]
+  })
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 -3px 3px rgba(0, 0, 0, 0.15);
+  color: $theme.menuLinkColor;
   display: inline-block;
-  font-size: .87em;
-  margin-left: 1em;
-  padding-top: .6em;
-  vertical-align: top;
+  font-size: 1.2em;
+  letter-spacing: 2px;
+  margin: 0;
+  padding: 0.4em 11px;
+  text-shadow: 0 0 1px $theme;
+  text-transform: uppercase;
 }
+
+.space-data #document-head #document-authors {
+  #css3_backgroundLinearGradient({
+    'to': 'bottom',
+    'colors': [
+      {'color': $theme.menuGradientColor, 'position': '0%'},
+      {'color': $theme.menuBackgroundColor, 'position': '50%'}
+    ]
+  })
+  color: $theme.menuLinkColor;
+  border: 1px solid $theme.menuGradientColor;
+  font-size: 0.87em;
+  padding: 0.5em 10px;
+  text-shadow: 1px 0 0 rgba(0, 0, 0, .3);
+  vertical-align: top;
+  display: block;
+  border-bottom: 0 none;
+}
+
 #document-head #document-authors .sep {
   margin: 0 .5em;
 }
 #document-head #document-authors .document-author {
-  color: $theme.textColor;
   font-weight: bold;
+}
+.space-data .before-patient-data {
+  border: 0 none;
+  border-left: 1px solid $theme.menuBackgroundColor;
+  border-right: 1px solid $theme.menuBackgroundColor;
+  box-shadow: 0 4px 4px #f9f9f9;
+  margin: 0 -11px;
+  padding: 5px 10px;
 }
 #xwikicontent {
   overflow: visible;
 }
-#table-of-contents {
-    width: 31%;
-}
+
 .xwiki-form-listclass {
     display: inline-block;
 }
@@ -4156,19 +3607,6 @@ h1, h2, h3, h4 {
   text-shadow: 1px 1px 0 $theme.pageContentBackgroundColor;
 }
 .chapter h2 {
-  ##color: $theme.linkColor;
-  ##font-size: 1.5em;##1.2em;
-  ####text-transform: uppercase;
-  ##font-family: Georgia, serif;
-  ##border-bottom: 1px solid $theme.linkColor; ##$theme.borderColor;
-  ####border-left: .2em solid $theme.linkColor; ##$theme.borderColor;
-  ####padding-left: .2em;
-  ####text-shadow: 0 0 1px $theme.textSecondaryColor;
-  ####border-radius: 0 0 0 .4em; ##.4em 0 0 0;
-  ##cursor: pointer;
-  ##margin-top: 0;
-  border-bottom: 1px solid $theme.linkColor;
-  ####color: $theme.linkColor;
   border-bottom: 1px solid $theme.titleColor;
   cursor: default;
   font-family: Georgia,serif;
@@ -4187,112 +3625,6 @@ h1, h2, h3, h4 {
   text-transform: uppercase;
   margin: 1em 0;
   padding: 0 20px 0 0;
-}
-.chapter .phenotype-group,
-.chapter .negative_phenotype-group {
-  padding: 0 1em;
-}
-.chapter .phenotype-group h3,
-.chapter .negative_phenotype-group h3 {
-  overflow: visible;
-  text-transform: uppercase;
-  font-size: 1.1em;
-  cursor: pointer;
-  margin-left: -1em;
-  margin-bottom: .3em;
-}
-.editbody .chapter .custom-entries {
-  margin-top: .5em;
-  padding-top: .5em;
-  padding-left: .8em;
-  border-top: 1px dotted $theme.borderColor;
-}
-.browse-phenotype-categories {
-  margin: .5em .75% 0em !important;
-  padding-right: .75%;
-}
-.current-phenotype-selection {
-  padding: 0 !important;
-  background-color: #FFFFFF;
-  border: 1px solid #FFFFFF;
-  border-radius: 4px;
-  box-shadow: 0 1px 8px #DDDDDD inset;
-  float: right;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  margin-top: 0.5em;
-}
-#current-phenotype-selection {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-.current-phenotype-selection &gt; h3 {
-    background: none repeat scroll 0 0 #333333;
-    border: 0 none;
-    border-radius: 4px 4px 0 0;
-    color: #FFFFFF;
-    margin: 0 !important;
-    padding: 0.4em 1em;
-    text-shadow: none;
-}
-.current-phenotype-selection h3 {
-  margin-left: 1em;
-  margin-right: 1em;
-}
-.current-phenotype-selection.half-width {
-  width: 47.5%;
-}
-#current-phenotype-selection .summary-group {
-  margin: 1em;
-}
-#current-phenotype-selection .summary-item {
-  padding-left: 18px;
-  margin-left: 1em;
-  margin-bottom: .5em;
-}
-#current-phenotype-selection .summary-item .no, .value-checked.no-selected {
-  color: $theme.notificationErrorColor;
-}
-#current-phenotype-selection .summary-item .no:before {
-  content: "NO ";
-}
-#current-phenotype-selection .summary-item label {
-  width: auto;
-  margin-right: 1em;
-}
-#current-phenotype-selection .summary-item .tools {
-  color: $theme.textPrimaryColor;
-  font-size: 0.8em;
-}
-#current-phenotype-selection .summary-item .tools .tool:hover {
-  color: $theme.linkColor;
-  cursor: pointer;
-}
-.fieldset .displayed-value p {
-  line-height: 1.4em;
-  margin: 0;
-}
-.fieldset .displayed-value {
-  margin: 0 0 0.5em;
-}
-label.selected, label.subterm-selected {
-  background-color: $theme.backgroundSecondaryColor;
-  background-image: none;
-  font-weight: bold;
-  padding-left: 4px;
-  margin-left: -4px;
-  border-radius: 2px;
-}
-label.subterm-selected {
-  background-image: url("$xwiki.getSkinFile('icons/silk/shading.gif')");
-  background-position: 14px center;
-  background-repeat: no-repeat;
-}
-label.subterm-selected input[type="checkbox"] {
-  opacity: .2;
-}
-label.selected input[type="checkbox"] {
-  opacity: 1;
 }
 /** ----------------------------------------------------------- */
 /** Patient info zone **/
@@ -4318,51 +3650,6 @@ label.selected input[type="checkbox"] {
 }
 .viewbody .family_study .half-width * {
   margin: 0 !important;
-}
-/** ----------------------------------------------------------- */
-/** Quick search box &amp; suggest */
-.emphasized-box {
-  background: $theme.backgroundSecondaryColor;
-  border: 1px solid $theme.backgroundSecondaryColor;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.15);
-}
-.quick-search-box {
-  border: 0 none;
-  z-index: 2000;
-  background: $theme.buttonPrimaryBackgroundColor;
-}
-.quick-search-box fieldset {
-  border: 1px solid $theme.backgroundSecondaryColor;
-  padding: .5em .8em;
-}
-.quick-search-box table {
-  margin: 0;
-  width: 100%;
-}
-.quick-search-box table td {
-  border: 0 none;
-  padding: 0;
-}
-.quick-search-box table td.input{
-  min-width: 60%;
-}
-.quick-search-box table label{
-  color: $theme.buttonPrimaryTextColor;
-  text-shadow: none;
-  font-weight: bold;
-}
-.quick-search-box table td.icon {
-  max-width: 1.5em;
-  vertical-align: middle;
-  opacity: .7;
-}
-.quick-search-box input {
-  background-position: right center;
-  background-repeat: no-repeat;
-}
-.quick-search-box input:focus {
-  color: $theme.textColor;
-  font-style: normal;
 }
 /** ----------------------------------------------------------- */
 /** PubMed search box &amp; suggest */
@@ -4417,18 +3704,6 @@ label.selected input[type="checkbox"] {
   line-height: 1.4em;
   font-weight: bold;
 }
-.editbody .clinical-info .predefined-entries label.section {
-  font-weight: normal;
-}
-.editbody .clinical-info .phenotypes-main label.section:before {
-  content: "\25bc";
-  display: inline-block;
-  color: $theme.textSecondaryColor;
-  font-size: .75em;
-  top: -0.5em;
-  text-shadow: 0 0 5px $theme.textSecondaryColor;
-  opacity: .3;
-}
 .chapter div .expand-tools {
   margin-top: -3.5em;
   margin-right: 0;
@@ -4461,144 +3736,6 @@ label.selected input[type="checkbox"] {
 .chapter.collapsed &gt; h2 {
   display: block;
 }
-.chapter.collapsed #quick-search-box {
-  display: block;
-}
-.selector-panels {
-  position: relative;
-}
-.browser.collapsed .expand-tools .inner-expand-tools,
-.browser.collapsed .expand-tools .hide,
-.browser.collapsed div {
-  display: none;
-}
-.browser.collapsed {
-  position: absolute;
-  top: 0;
-  left: 0;
-  border: 0 none;
-}
-.browser.collapsed + .current-phenotype-selection {
-}
-.browser.collapsed .browser-title {
-  text-transform: none;
-  font-size: 80%;
-  color: $theme.textPrimaryColor;
-  border: 0 none;
-  margin: 0;
-  padding: 0;
-}
-.browser.collapsed .browser-title:after {
-  content: " »";
-}
-.browser.collapsed .browser-title:hover{
-  cursor: pointer;
-  color: $theme.linkColor;
-}
-
-.phenotype-info .chapter-toc {
-  float: right;
-  height: 0;
-  margin: -5px -10px 0;
-  overflow: visible;
-  text-align: right;
-  position: relative;
-  z-index: 1950;
-}
-.phenotype-info .chapter-toc ul {
-  list-style-type: none;
-  background: $theme.pageBackgroundColor;
-  border: 1px solid $theme.borderColor;
-  border-radius: 4px 0 4px 4px;
-  list-style-type: none;
-  margin: 0;
-  padding: 0.3em 1em;
-  font-size: .8em;
-}
-.phenotype-info h3 .expand-tool {
-  vertical-align: top;
-  width: 1em;
-  font-size: 1em;
-}
-.phenotype-group.collapsed *,
-.negative_phenotype-group.collapsed * {
-  display: none;
-}
-.phenotype-group.collapsed h3,
-.negative_phenotype-group.collapsed h3 {
-  display: block;
-}
-.phenotype-group.collapsed h3 *,
-.negative_phenotype-group.collapsed h3 * {
-  display: inline;
-}
-.phenotypes-main {
-  position: relative;
-}
-.phenotypes-main .hint {
-  margin-left: 20px;
-}
-.subsection {
-  margin-left: 1.3em;
-}
-.subsection .phenotypes-main br {
-  display: none;
-}
-.subsection .phenotypes-main br:last-child {
-  display: block;
-  clear: left;
-}
-.subsection .phenotypes-main {
-  display: block;
-}
-.subsection .phenotypes-main label {
-  float: left;
-  margin: 0 1% 0 0;
-  padding: 0 8px;
-  width: auto;
-  font-weight: normal !important;
-}
-.subsection .phenotypes-main label.section {
-  clear: both;
-  display: block;
-  float: none;
-}
-/** -------------------------------------------- **/
-/** Suggestions **/
-.accepted-suggestions li .delete-tool, .clear-tool {
-  background-color: $theme.buttonPrimaryBackgroundColor;
-  color: $theme.buttonPrimaryTextColor;
-  border-radius: 3px;
-  padding: 2px;
-}
-/** -------------------------------------------- **/
-/** Negative phenotypes **/
-
-.negative_phenotype-group h3 {
-  color: $theme.notificationErrorColor;
-}
-.negative_phenotype-group h3 em {
-  font-weight: bold;
-}
-.negative_phenotype-group .infomessage {
-  margin-left: -4px;
-}
-.negative_phenotype-group .phenotypes-main .hint {
-  margin-left: 0;
-}
-.negative_phenotype-group .label-other {
-  display: none;
-}
-.negative_phenotype-group .selected .value, .viewbody .negative_phenotype-group .value-checked , .viewbody .negative_phenotype-group .section {
-  text-decoration: line-through;
-  color: $theme.notificationErrorColor;
-}
-/** -------------------------------------------- **/
-/** "Unaffected" zone **/
-.unaffected label {
-  display: inline;
-  font-weight: bold;
-}
 /** --------------------------------------------- **/
 /** Charts **/
 .chart-wrapper {
@@ -4621,7 +3758,7 @@ label.selected input[type="checkbox"] {
   -webkit-column-break-before:avoid;
   -moz-column-break-before:avoid;
   column-break-before:avoid;
-  webkit-column-break-inside:avoid;
+  -webkit-column-break-inside:avoid;
   -moz-column-break-inside:avoid;
   column-break-inside:avoid;
   display: table;
@@ -4803,9 +3940,6 @@ form .extradata-list tr:hover td {
   color: $theme.buttonPrimaryTextColor;
   text-decoration: none !important;
 }
-.ncbi-search-box.collapsed h3 {
-  color: $theme.linkColor;
-}
 .growth-charts-section.collapsed #charts,
 .growth-charts-section.collapsed .expand-tools .hide,
 .growth-charts-section .expand-tools .show {
@@ -4961,21 +4095,6 @@ form .extradata-list tr:hover td {
 .ncbi-search-box {
   margin-top: 2em;
 }
-.ncbi-search-box h3 {
-  ##padding: 0 20px 0 0;
-  cursor: pointer;
-}
-.ncbi-search-box.collapsed h3 {
-  color: $theme.linkColor;
-}
-.ncbi-search-box.collapsed .ncbi-search-box-content,
-.ncbi-search-box.collapsed .expand-tools .hide,
-.ncbi-search-box .expand-tools .show {
-  display: none;
-}
-.ncbi-search-box.collapsed .expand-tools .show {
-  display: inline;
-}
 /*--------------------------------------------------------------*/
 /** Search terms from phenotypes */
 .default-search-terms-container {
@@ -5043,19 +4162,6 @@ form .extradata-list tr:hover td {
 .background-search h3 {
   font-weight: bold !important;
   margin-top: 0;
-}
-.diffDiagnosis-search {
-  background-color: $theme.highlightColor;;
-  border: 10px solid $theme.highlightColor;;
-  border-radius: 4px 4px 4px 4px;
-  margin-left: -10px;
-  margin-right: -10px;
-}
-#diffDiagnosis-search-results ul li {
-  margin: 0;
-}
-#diffDiagnosis-search-results ul .id {
-  display: none;
 }
 .background-suggestions ul {
   list-style-type: none;

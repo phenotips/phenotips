@@ -70,7 +70,6 @@ var TemplateSelector = Class.create( {
         
         //console.log("[Data from Template] - " + stringifyObject(pictureBox.pedigreeData));
         pictureBox.innerHTML = response.responseXML.documentElement.querySelector("property[name='image'] > value").textContent.replace(/&amp;/, '&');
-        pictureBox.innerHTML = pictureBox.textContent;
         pictureBox.observe('click', this._onTemplateSelected.bindAsEventListener(this, pictureBox));
     },
 

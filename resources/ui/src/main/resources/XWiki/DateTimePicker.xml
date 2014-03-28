@@ -2861,7 +2861,7 @@ var SimpleDateFormat;
     <property>
       <code>#template('colorThemeInit.vm')
 input.xwiki-date {
-  background-image: url("$xwiki.getSkinFile('icons/silk/date.gif')");
+  background-image: url("$xwiki.getSkinFile('icons/silk/date.png')");
   background-position: right center;
   background-repeat: no-repeat;
   min-height: 16px;

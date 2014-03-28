@@ -349,16 +349,17 @@
       var mandatoryElt = form.down('.mandatory input');
       if (!mandatoryElt || mandatoryElt.value != "") {
         var formData = new Hash(form.serialize(true));
-        formData.set('xpage', 'plain');
+        formData.set('outputSyntax', 'plain');
         formData.set('ajax', '1');
         // Create a notification message to display to the user when the submit is being sent
         form._x_notification = new XWiki.widgets.Notification("Indexing in progress...", "inprogress");
         form.disable();
-        new Ajax.Request("${xwiki.getURL('PhenoTips.IndexOntology')}", {
+        // FIXME Use the XWiki.Document JS API after upgrading to XWiki 6.0
+        new Ajax.Request("$xwiki.getURL('PhenoTips.IndexOntology', 'get')", {
             method : 'post',
             parameters : formData,
             onSuccess : function (response) {
-              form._x_notification.replace(new XWiki.widgets.Notification("Done: " + response.responseText, "done"));
+              form._x_notification.replace(new XWiki.widgets.Notification(response.responseText, "done"));
             }.bind(this),
             onFailure : function (response) {
               var failureReason = response.statusText;
@@ -393,9 +394,10 @@
   #set($result = $services.ontologies.hpo.reindex("$!{request.url}"))
   #if ("$!{request.ajax}" == '1')
     #if ($result == 0)
-      (% class='xnotification xnotification-done' %)Indexing succeeded.
+      Indexing succeeded.
     #else
-      (% class='xnotification xnotification-error' %)Indexing failed.
+      $response.setStatus(500)##
+      Indexing failed.
     #end
 
   #else

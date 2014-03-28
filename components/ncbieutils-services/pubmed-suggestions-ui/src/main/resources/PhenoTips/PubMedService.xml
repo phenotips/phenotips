@@ -194,7 +194,7 @@
   });
 
   PubMed.service = {
-    'script' : "$xwiki.getURL('PhenoTips.PubMedService', 'get', 'format=html&amp;q=')",
+    'script' : "${xwiki.getURL('PhenoTips.PubMedService', 'get', 'format=html')}&amp;q=",
     'source' : [$('customSearchTermsInput'), $('defaultSearchTermsInput')],
     'target' : $('pubmed-search-results')
   };
@@ -290,7 +290,7 @@
     <property>
       <content>{{velocity}}
 #if ($xcontext.action == 'edit')
-$xwiki.jsx.use('PhenoTips.PubMedService', {'minify' : false})##
+$xwiki.jsx.use('PhenoTips.PubMedService')##
 (% class="chapter pubmed-search" %)(((
 == Suggested reading on PubMed ==
 

@@ -2,3 +2,4 @@ org.phenotips.listeners.FreePhenotypeCategoryUpdater
 org.phenotips.listeners.PatientBirthdateUpdater
 org.phenotips.listeners.PatientExtendedPhenotypeUpdater
 org.phenotips.listeners.MeasurementAgeUpdater
+org.phenotips.listeners.DeprecatedPhenotypeUpdaterEventListener

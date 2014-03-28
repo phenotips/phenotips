@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc>
+  <web>PhenoTips</web>
+  <name>SpecificityMetricWidgetService</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>PhenoTips.SpecificityMetricWidget</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1389812641000</creationDate>
+  <date>1394851602000</date>
+  <contentUpdateDate>1394851602000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{groovy}}
+import groovy.json.JsonOutput;
+import groovy.json.JsonSlurper;
+
+def IC_calc(n) {return n == 0 ? 0 : -Math.log((n * 1.0)/services.ontologies.omim.count(['symptom' : 'HP:0000001']))/Math.log(2)}
+
+def IC(hpoId)  {
+  def toSearch = hpoId
+  def ic = IC_calc(services.ontologies.omim.count(['symptom' : toSearch]))
+  def i = 0;
+
+  while (ic == 0 &amp;&amp; ++i &lt; 5) {
+    toSearch = services.ontologies.hpo.getTerm(toSearch).parents[0].id;
+    ic = IC_calc(services.ontologies.omim.count(['symptom' : toSearch]))
+  }
+  return ic * (1 + i/5)
+}
+
+def process(paramName) {
+  def result = [score : 0, count : 0]
+  def values = request.getParameterValues(paramName)
+  if (values != null) {
+    for (def i = 0; i &lt; values.length; ++i) {
+      def term = services.ontologies.hpo.getTerm(values[i])
+      if (term != null) {
+        result.score +=  IC(values[i])
+        result.count ++;
+      }
+    }
+  }
+  return result
+}
+
+def localScore() {
+  def hpo = services.ontologies.hpo
+  def omim = services.ontologies.omim
+  def totalDiseases = omim.count(['symptom' : 'HP:0000001'])
+
+  def maxIC = IC_calc(1)
+
+  def symptoms = request.getParameterValues('symptom')
+  def not_symptoms = request.getParameterValues('symptom')
+  def rSymptom = process('symptom')
+  def rNSymptom = process('not_symptom')
+  def data = ['score' : 0]
+
+  if (rSymptom.count + rNSymptom.count &gt; 0) {
+    // TODO: improve me!
+    def score = 2* Math.atan(rSymptom.score / 10 + rNSymptom.score / 20) / Math.PI
+    data.put('score', score)
+  }
+  println JsonOutput.toJson(data);
+  return true;
+}
+
+def monarchScore() {
+  def data = ["features" : []];
+  if (request.getParameterValues('symptom')) {
+    request.getParameterValues('symptom').each() { value -&gt;
+      data.features.add(["id" : value])
+    }
+  }
+  if (request.getParameterValues('not_symptom')) {
+    request.getParameterValues('not_symptom').each() { value -&gt;
+      data.features.add(["id" : value, "isPresent" : false])
+    }
+  }
+  def url = 'http://tartini.crbs.ucsd.edu/score?annotation_profile=' + JsonOutput.toJson(data)
+
+  def score = url.toURL().text
+  if (score) {
+    println '{"score":' + new JsonSlurper().parseText(score).scaled_score + '}'
+    return true;
+  } else {
+    return false;
+  }
+}
+if (xcontext.action == 'get') {
+  response.setContentType('application/json')
+}
+if (request.forceLocal || !monarchScore()) {
+  localScore();
+}
+{{/groovy}}</content>
+</xwikidoc>

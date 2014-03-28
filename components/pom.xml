@@ -49,6 +49,8 @@
     <module>patient-tools</module>
     <module>ncbieutils-services</module>
     <module>phenotype-mapping-service</module>
+    <module>specificity-meter</module>
+    <module>medsavant-client</module>
     <module>integration</module>
   </modules>
 </project>

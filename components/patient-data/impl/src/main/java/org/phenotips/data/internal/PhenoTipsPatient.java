@@ -43,6 +43,7 @@ import java.util.TreeSet;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,6 +183,29 @@ public class PhenoTipsPatient implements Patient
     private boolean isFieldIncluded(Collection<String> includedFieldNames, String[] fieldNames)
     {
         return (includedFieldNames == null || includedFieldNames.containsAll(Arrays.asList(fieldNames)));
+    }
+
+    @Override
+    public String getId()
+    {
+        return this.document.getName();
+    }
+
+    @Override
+    public String getExternalId()
+    {
+        try {
+            for (ImmutablePair<String, String> identifier : this
+                .<ImmutablePair<String, String>>getData("identifiers"))
+            {
+                if (identifier.getKey().equalsIgnoreCase("external_id")) {
+                    return identifier.getValue();
+                }
+            }
+        } catch (Exception ex) {
+            return null;
+        }
+        return null;
     }
 
     @Override

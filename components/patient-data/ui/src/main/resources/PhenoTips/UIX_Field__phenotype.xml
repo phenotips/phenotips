@@ -44,6 +44,578 @@
   <hidden>true</hidden>
   <object>
     <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.UIX_Field__phenotype</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>45c42ef5-2dbe-454a-83fb-410dab672231</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function() {
+  // ------------------------------------------------------------------------
+  // Phenotype Section Nav Tools
+  // ------------------------------------------------------------------------
+  if (!$('inline')) {
+    // If not in edit mode, no behavior to add
+    return;
+  }
+
+  $$('.chapter .browser .browser-title').each(function(item) {
+    item.insert({after: new Element('span', {'class' : 'expand-tools'})});
+  });
+  var phBrowserExpandAll = new Element('span', {'class' : 'tool expand-all'}).update('Expand all');
+  var phBrowserCollapseAll = new Element('span', {'class' : 'tool collapse-all'}).update('Collapse all');
+  var phBrowserExpandTools = new Element('span', {'class' : 'inner-expand-tools'}).insert(phBrowserExpandAll).insert(" · ").insert(phBrowserCollapseAll);
+
+  $$('.chapter.phenotype-info .browser h3+.expand-tools').invoke('insert', {'top' : phBrowserExpandTools});
+  $$('.chapter.phenotype-info .collapsible-group h3').each(function(item) {
+    item.insert({'top': new Element('span', {'class' : 'expand-tool'}).update('▼')});
+  });
+
+  var toggleCategory = function(target) {
+    if (!target) {return;}
+    if (typeof (target.element) == 'function') {
+      return toggleCategory(target.findElement());
+    }
+    var parent = target.up('.collapsible-group');
+    if (parent) {
+      var heightBefore = parent.getHeight();
+      parent.toggleClassName('collapsed');
+      parent.down('.expand-tool').update(parent.hasClassName('collapsed') &amp;&amp; '►' || '▼');
+
+      var summary = parent.up('.selector-panel.current-phenotype-selection');
+      if (summary) {
+        summary.fire('size:changed', {diff : (heightBefore - parent.getHeight())});
+      }
+    }
+  }
+
+  $$('.chapter.phenotype-info .collapsible-group h3').each(function(item){
+     if (item.up('.browser') &amp;&amp; !item.up('.collapsible-group').down('input[type=checkbox]:checked')) {
+       toggleCategory(item);
+     }
+     item.observe('click', toggleCategory);
+  });
+  phBrowserExpandAll.observe('click', function(event){
+    event.element().up('.chapter').select('.collapsible-group.collapsed h3').each(function(item) {
+      toggleCategory(item);
+    });
+  });
+  phBrowserCollapseAll.observe('click', function(event){
+    event.element().up('.chapter').select('.collapsible-group:not(.collapsed) h3').each(function(item) {
+      toggleCategory(item);
+    });
+  });
+
+  // FIXME: Re-enable once https://github.com/phenotips/phenotips/issues/822 is fixed.
+  // phBrowserCollapseAll.click();
+
+  // ------------------------------------------------------------------------
+  // Behavior of the quick search box
+  // ------------------------------------------------------------------------
+  var offsetTop = $('patient-record-actions') &amp;&amp; $('patient-record-actions').getHeight() || 0;
+  var qsBox = $('quick-search-box');
+  if (qsBox) {
+    var content = qsBox.up('div');
+    if (content) {
+      qsBox.__x_qsInput = qsBox.down('input[type=text]') || {};
+      var qsSticky = new StickyBox(qsBox, content, {shadowSize : offsetTop, isSticky : function(element) {return !element.__x_qsInput._activeSuggest} });
+      Event.observe(document, 'ms:suggest:containerCreated', function(event) {
+        if (event.memo.suggest.fld == qsBox.__x_qsInput) {
+          qsBox.__x_qsInput._activeSuggest = true;
+          var qsSuggest = event.memo.container;
+          if (qsBox.getStyle('position') == 'fixed') {
+            qsSuggest.style.position = 'fixed';
+          }
+          qsSuggest.style.top = (qsBox.__x_qsInput.cumulativeOffset().top + qsBox.__x_qsInput.getHeight()) + 'px';
+          qsSuggest.style.left = qsBox.__x_qsInput.cumulativeOffset().left;
+        }
+      });
+      Event.observe(document, 'ms:suggest:clearSuggestions', function(event) {
+        if (event.memo.suggest.fld == qsBox.__x_qsInput) {
+          qsBox.__x_qsInput._activeSuggest = false;
+        }
+      });
+    }
+  }
+
+  // ------------------------------------------------------------------------
+  // Behavior of the selection summary box
+  // ------------------------------------------------------------------------
+  var summaryContent = $('current-phenotype-selection');
+  var summary = summaryContent &amp;&amp; summaryContent.up('.selector-panel');
+  if (summary) {
+    var container = summary.up();
+    summary.addClassName('absolute');
+    var sSticky  = new StickyBox(summary, container, {shadowSize : offsetTop, resize: true, isSticky : function(element) {return element.hasClassName('half-width') &amp;&amp; element.getHeight() &lt; element.previous().getHeight()}});
+    summary.observe('size:changed', function(event) {
+      if (!event.memo) {
+         summaryContent.style.height = '';
+         summaryContent.style.overflow = '';
+      } else {
+         summaryContent.style.height = (summaryContent.getHeight() + (event.memo.diff || 0)) + 'px';
+         summaryContent.style.overflow = 'auto';
+         summary.style.overflow = '';
+      }
+    });
+  }
+});</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>PhenoTips.UIX_Field__phenotype</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>c1ed84c3-bd41-4c48-a17c-0e3610e66b66</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template("colorThemeInit.vm")
+
+/** ----------------------------------------------------------- */
+/** Quick search box &amp; suggest */
+.emphasized-box {
+  background: $theme.backgroundSecondaryColor;
+  border: 1px solid $theme.backgroundSecondaryColor;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), 0 -1.8em 10px #f9f9f9, 0 10px 10px #F9F9F9, inset 0 0 50px rgba(0, 0, 0, 0.15);
+}
+.quick-search-box {
+  border: 0 none;
+  z-index: 2000;
+  #css3_backgroundLinearGradient({
+    'to': 'bottom',
+    'colors': [
+      {'color': $theme.menuGradientColor, 'position': '0%'},
+      {'color': $theme.menuBackgroundColor, 'position': '50%'}
+    ]
+  })
+}
+.quick-search-box fieldset {
+  border: 1px solid $theme.backgroundSecondaryColor;
+  padding: .5em .8em;
+}
+.quick-search-box table {
+  margin: 0;
+  width: 100%;
+}
+.quick-search-box table td {
+  border: 0 none;
+  padding: 0;
+}
+.quick-search-box table label {
+  color: $theme.menuLinkColor;
+  font-weight: bold;
+  text-shadow: 0 1px 1px $theme.menuBackgroundColor;
+}
+.quick-search-box table td.icon {
+  width: 3.2em;
+  vertical-align: middle;
+}
+.quick-search-box input:focus {
+  color: $theme.textColor;
+  font-style: normal;
+}
+
+/* ------------------------------------------------- */
+.editbody .clinical-info .predefined-entries label.section {
+  font-weight: normal;
+}
+.editbody .clinical-info .phenotypes-main label.section:before {
+  content: "\25bc";
+  display: inline-block;
+  color: $theme.textSecondaryColor;
+  font-size: .75em;
+  top: -0.5em;
+  text-shadow: 0 0 5px $theme.textSecondaryColor;
+  opacity: .3;
+}
+
+/* -------------------------------------------------- */
+.chapter.collapsed #quick-search-box {
+  display: block;
+}
+.selector-panels {
+  position: relative;
+}
+
+.phenotype-info h3 .expand-tool {
+  vertical-align: top;
+  width: 1em;
+  font-size: 1em;
+}
+.phenotype-group.collapsed *,
+.negative_phenotype-group.collapsed * {
+  display: none;
+}
+.phenotype-group.collapsed h3,
+.negative_phenotype-group.collapsed h3 {
+  display: block;
+}
+.phenotype-group.collapsed h3 *,
+.negative_phenotype-group.collapsed h3 * {
+  display: inline;
+}
+.phenotypes-main {
+  position: relative;
+}
+.phenotypes-main .hint {
+  margin-left: 20px;
+}
+.subsection {
+  margin-left: 1.3em;
+}
+.subsection .phenotypes-main br {
+  display: none;
+}
+.subsection .phenotypes-main br:last-child {
+  display: block;
+  clear: left;
+}
+.subsection .phenotypes-main {
+  display: block;
+}
+.subsection .phenotypes-main label {
+  float: left;
+  margin: 0 1% 0 0;
+  padding: 0 8px;
+  width: auto;
+  font-weight: normal !important;
+}
+.subsection .phenotypes-main label.section {
+  clear: both;
+  display: block;
+  float: none;
+}
+.chapter .phenotype-group,
+.chapter .negative_phenotype-group {
+  padding: 0 1em;
+}
+.chapter .phenotype-group h3,
+.chapter .negative_phenotype-group h3 {
+  overflow: visible;
+  text-transform: uppercase;
+  font-size: 1.1em;
+  cursor: pointer;
+  margin-left: -1em;
+  margin-bottom: .3em;
+}
+.editbody .chapter .custom-entries {
+  margin-top: .5em;
+  padding-top: .5em;
+  padding-left: .8em;
+  border-top: 1px dotted $theme.borderColor;
+}
+.browse-phenotype-categories {
+  margin: .5em .75% 0em !important;
+  padding-right: .75%;
+}
+.current-phenotype-selection {
+  padding: 0 !important;
+  background-color: #FFFFFF;
+  border: 1px solid #FFFFFF;
+  border-radius: 4px;
+  box-shadow: 0 1px 8px #DDDDDD inset;
+  float: right;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+#current-phenotype-selection {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.sub-panel &gt; h3 {
+  font-size: 0.8em !important;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0 !important;
+  padding: 5px 20px 5px 15px !important;
+  text-align: left;
+  text-transform: uppercase;
+  #css3_backgroundLinearGradient({
+     'to': 'bottom',
+     'colors': [
+      {'color': $theme.panelHeaderGradientColor, 'position': '0%'},
+      {'color': $theme.panelHeaderBackgroundColor, 'position': '100%'}
+    ]
+  })
+  border-radius: 4px 4px 0 0;
+  border: 1px solid $theme.borderColor;
+  color: $theme.panelHeaderTextColor;
+  text-shadow: 0 1px 0 $theme.panelHeaderGradientColor;
+}
+
+.diffDiagnosis-search {
+  background-color: $theme.highlightColor;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+#diffDiagnosis-search-results ul li {
+  margin: 0;
+}
+#diffDiagnosis-search-results ul .id {
+  display: none;
+}
+
+.current-phenotype-selection h3 {
+  margin-left: 1em;
+  margin-right: 1em;
+}
+.current-phenotype-selection.half-width {
+  width: 47.5%;
+}
+#current-phenotype-selection .summary-group {
+  margin: 1em;
+}
+#current-phenotype-selection .summary-item {
+  padding-left: 18px;
+  margin-left: 1em;
+  margin-bottom: .5em;
+}
+#current-phenotype-selection .summary-item .no, .value-checked.no-selected {
+  color: $theme.notificationErrorColor;
+}
+#current-phenotype-selection .summary-item .no:before {
+  content: "NO ";
+}
+#current-phenotype-selection .summary-item label {
+  width: auto;
+  margin-right: 1em;
+}
+#current-phenotype-selection .summary-item .tools {
+  color: $theme.textPrimaryColor;
+  font-size: 0.8em;
+}
+#current-phenotype-selection .summary-item .tools .tool:hover {
+  color: $theme.linkColor;
+  cursor: pointer;
+}
+.fieldset .displayed-value p {
+  line-height: 1.4em;
+  margin: 0;
+}
+.fieldset .displayed-value {
+  margin: 0 0 0.5em;
+}
+label.selected, label.subterm-selected {
+  background-color: $theme.backgroundSecondaryColor;
+  background-image: none;
+  font-weight: bold;
+  padding-left: 4px;
+  margin-left: -4px;
+  border-radius: 2px;
+}
+label.subterm-selected {
+  background-image: url("$xwiki.getSkinFile('icons/silk/shading.gif')");
+  background-position: 14px center;
+  background-repeat: no-repeat;
+}
+label.subterm-selected input[type="checkbox"] {
+  opacity: .2;
+}
+label.selected input[type="checkbox"] {
+  opacity: 1;
+}
+/** -------------------------------------------- **/
+/** Suggestions **/
+.accepted-suggestions li .delete-tool, .clear-tool {
+  background-color: $theme.buttonPrimaryBackgroundColor;
+  color: $theme.buttonPrimaryTextColor;
+  border-radius: 3px;
+  padding: 2px;
+}
+/** -------------------------------------------- **/
+/** Negative phenotypes **/
+
+.negative_phenotype-group h3 {
+  color: $theme.notificationErrorColor;
+}
+.negative_phenotype-group h3 em {
+  font-weight: bold;
+}
+.negative_phenotype-group .infomessage {
+  margin-left: -4px;
+}
+.negative_phenotype-group .phenotypes-main .hint {
+  margin-left: 0;
+}
+.negative_phenotype-group .label-other {
+  display: none;
+}
+.negative_phenotype-group .selected .value, .viewbody .negative_phenotype-group .value-checked , .viewbody .negative_phenotype-group .section {
+  text-decoration: line-through;
+  color: $theme.notificationErrorColor;
+}
+/** -------------------------------------------- **/
+/** "Unaffected" zone **/
+.unaffected label {
+  display: inline;
+  font-weight: bold;
+}</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
       <customMapping/>
@@ -115,16 +687,16 @@
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
+$xwiki.ssx.use('PhenoTips.UIX_Field__phenotype')##
+$xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
 #macro (__qsBox $fieldName $cssClass)
   #if ($xcontext.action == 'edit')
    (% id="quick-search-box"  class="group-other quick-search-box emphasized-box $!{cssClass}" %)(((
     {{html clean="false" wiki="false"}}
     &lt;fieldset&gt;
-      ##&lt;h3 class="section"&gt;Quick phenotype search&lt;/h3&gt;
-      &lt;table&gt;&lt;tbody&gt;&lt;tr&gt;
-      &lt;td class="icon"&gt;&lt;label for="quick-phenotype-search"&gt;&lt;span class="fa fa-search fa-3x"&gt; &lt;/span&gt;&lt;/label&gt;&lt;/td&gt;
+      &lt;table&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="icon"&gt;&lt;label for="quick-phenotype-search"&gt;&lt;span class="fa fa-search fa-3x"&gt; &lt;/span&gt;&lt;/label&gt;&lt;/td&gt;
       &lt;td&gt;&lt;label for="quick-phenotype-search"&gt;Quick phenotype search:&lt;/label&gt;
-      &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip generateYesNo' placeholder='Enter keywords and choose among suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
+      &lt;input type='text' name='$!{fieldName}' class='suggested multi suggest-hpo quickSearch withTip generateYesNo' placeholder='Enter keywords and choose from the suggested ontology terms' size='16' id='quick-phenotype-search'/&gt;&lt;/td&gt;
       &lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
     &lt;/fieldset&gt;
     {{/html}}
@@ -150,19 +722,12 @@
   #end
   )))
   (% class="controlled" %) (((
-  #__qsBox("$!{class.name}_$!{obj.number}_phenotype" "controlled")
   #if ($xcontext.action == 'edit')
-    $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-    $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
     (% class="selector-panels"%)(((
     (% class="half-width selector-panel browser browse-phenotype-categories force-collapse"%)(((
+    #__qsBox("$!{class.name}_$!{obj.number}_phenotype" "controlled")
     (% class="browser-title"%)
     === **Browse categories** ===
-    (% class="background-search diffDiagnosis-search phenotype-group collapsible-group hidden" title="Phenotypes that are likely to help improve differential diagnosis"%)(((
-    === You might want to check for... ===
-    (% class="hint" %)Phenotypes that are likely to help improve differential diagnosis
-    (% id="diffDiagnosis-search-results" class="background-suggestions" %)((()))
-    )))
   #end
   (% class="phenotype" %)(((
     #if ($xcontext.action == 'edit' || !$showUnaffected)$doc.display('phenotype')#end##
@@ -171,9 +736,16 @@
     #__phenotypeMeta_displayAll('edit')##
     )))## browse-phenotype-categories
     (% class="half-width selector-panel current-phenotype-selection"%)(((
+    (% class='sub-panel'%)(((
     === **Current selection** ===
     (% id="current-phenotype-selection"%)(((
     {{html clean="false"}}&lt;input type="hidden" id="phenotype-meta-add-action" value="$doc.getURL('objectadd', "classname=PhenoTips.PhenotypeMetaClass&amp;amp;xredirect=$escapetool.url($doc.getURL('edit', 'xaction=lastmeta&amp;xpage=plain'))&amp;amp;form_token=$!{services.csrf.getToken()}")"/&gt;{{/html}}
+    )))
+    )))
+    (% class="background-search diffDiagnosis-search phenotype-group collapsible-group hidden sub-panel" %)(((
+    === You may want to investigate... ===
+    (% class="hint" %)Phenotypes that are likely to help improve differential diagnosis
+    (% id="diffDiagnosis-search-results" class="background-suggestions" %)((()))
     )))
     )))
     (% class="clear"%)((()))

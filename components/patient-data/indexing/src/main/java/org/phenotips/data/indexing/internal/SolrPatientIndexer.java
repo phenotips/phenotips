@@ -21,17 +21,25 @@ package org.phenotips.data.indexing.internal;
 
 import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.query.Query;
+import org.xwiki.query.QueryException;
+import org.xwiki.query.QueryManager;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
@@ -49,6 +57,9 @@ import org.slf4j.Logger;
 @Singleton
 public class SolrPatientIndexer implements PatientIndexer, Initializable
 {
+    /** Character used in URLs to delimit path segments. */
+    private static final String URL_PATH_SEPARATOR = "/";
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -56,11 +67,24 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     /** The Solr server instance used. */
     private SolrServer server;
 
+    /** Provides access to the configuration, where the Solr location is configured. */
+    @Inject
+    @Named("xwikiproperties")
+    private ConfigurationSource configuration;
+
+    /** Allows querying for patients. */
+    @Inject
+    private QueryManager qm;
+
+    /** Provides access to patients. */
+    @Inject
+    private PatientRepository patientRepository;
+
     @Override
     public void initialize() throws InitializationException
     {
         try {
-            this.server = new HttpSolrServer("http://localhost:8080/solr/patients/");
+            this.server = new HttpSolrServer(this.getSolrLocation() + "patients/");
         } catch (RuntimeException ex) {
             throw new InitializationException("Invalid URL specified for the Solr server: {}");
         }
@@ -105,7 +129,35 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     @Override
     public void reindex()
     {
-        // FIXME Not implemented yet
-        throw new UnsupportedOperationException();
+        try {
+            List<String> patientDocs =
+                this.qm.createQuery("from doc.object(PhenoTips.PatientClass) as patient", Query.XWQL).execute();
+            this.server.deleteByQuery("*:*");
+            for (String patientDoc : patientDocs) {
+                this.index(this.patientRepository.getPatientById(patientDoc));
+            }
+            this.server.commit();
+        } catch (SolrServerException ex) {
+            this.logger.warn("Failed to reindex patients: {}", ex.getMessage());
+        } catch (IOException ex) {
+            this.logger.warn("Error occurred while reindexing patients: {}", ex.getMessage());
+        } catch (QueryException ex) {
+            this.logger.warn("Failed to search patients for reindexing: {}", ex.getMessage());
+        }
+    }
+
+    /**
+     * Get the URL where the Solr server can be reached, without any core name.
+     * 
+     * @return an URL as a String
+     */
+    protected String getSolrLocation()
+    {
+        String wikiSolrUrl = this.configuration.getProperty("solr.remote.url", String.class);
+        if (StringUtils.isBlank(wikiSolrUrl)) {
+            return "http://localhost:8080/solr/";
+        }
+        return StringUtils.substringBeforeLast(StringUtils.removeEnd(wikiSolrUrl, URL_PATH_SEPARATOR),
+            URL_PATH_SEPARATOR) + URL_PATH_SEPARATOR;
     }
 }

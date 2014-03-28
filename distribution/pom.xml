@@ -43,4 +43,19 @@
     <module>solr-war</module>
     <module>standalone</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>rpm</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+        <file>
+          <exists>/usr/bin/rpmbuild</exists>
+        </file>
+      </activation>
+      <modules>
+        <module>rpm</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

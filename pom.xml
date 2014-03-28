@@ -28,6 +28,10 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
   <name>PhenoTips - Parent POM</name>
   <description>PhenoTips is a software tool providing an easy-to-use Web interface and standardized database back-end for collecting clinical symptoms and physical findings observed in patients with genetic disorders.</description>
   <url>http://phenotips.org/</url>
@@ -124,8 +128,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <xwiki.version>5.2-milestone-2</xwiki.version>
-    <slf4j.version>1.7.5</slf4j.version>
+    <xwiki.version>5.4.2</xwiki.version>
+    <slf4j.version>1.7.6</slf4j.version>
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>
     <clirr.skip>false</clirr.skip>
@@ -138,7 +142,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.2</version>
+        <version>3.3.1</version>
       </dependency>
       <!-- Everybody logs -->
       <dependency>
@@ -168,6 +172,44 @@
         <artifactId>json-lib</artifactId>
         <classifier>jdk15</classifier>
         <version>2.4</version>
+      </dependency>
+      <!-- Force a specific version since older incompatible versions are pulled otherwise -->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>13.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore-nio</artifactId>
+        <version>4.3.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>4.3.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.3.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpasyncclient</artifactId>
+        <version>4.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>rome</groupId>
+        <artifactId>rome</artifactId>
+        <version>1.0</version>
+        <exclusions>
+          <exclusion>
+            <!-- We're using the newer org.jdom:jdom -->
+            <groupId>jdom</groupId>
+            <artifactId>jdom</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -199,8 +241,8 @@
       </plugin>
       <plugin>
         <!-- Check license headers -->
-        <groupId>com.mycila.maven-license-plugin</groupId>
-        <artifactId>maven-license-plugin</artifactId>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
       </plugin>
       <plugin>
         <!-- API backwards compatibility check -->
@@ -256,6 +298,14 @@
               <className>**/phenotips/configuration/RecordElement</className>
               <differenceType>7012</differenceType>
               <method>boolean containsPrivateIdentifiableInformation()</method>
+              <className>**/data/Patient</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getId()</method>
+            </difference>
+            <difference>
+              <className>**/data/Patient</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getExternalId()</method>
             </difference>
           </ignored>
           <excludes>
@@ -287,7 +337,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.6.3.201306030806</version>
+        <version>0.7.0.201403182114</version>
         <executions>
           <execution>
             <id>jacoco-prepare</id>
@@ -318,8 +368,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <!-- Lock down plugin version for build reproducibility -->
-        <version>1.1</version>
         <dependencies>
           <dependency>
             <groupId>org.xwiki.commons</groupId>
@@ -390,13 +438,19 @@
     </plugins>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.3.1</version>
+        </plugin>
         <!-- Apply checkstyle rules and fail the build in case of errors. The checkstyle config
              files are taken from the build-tools JAR module.-->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.9.1</version>
+          <version>2.12</version>
           <dependencies>
             <dependency>
               <groupId>org.xwiki.commons</groupId>
@@ -422,10 +476,10 @@
         </plugin>
         <!-- Check license headers and fail the build if they're missing or not matching the defined format -->
         <plugin>
-          <groupId>com.mycila.maven-license-plugin</groupId>
-          <artifactId>maven-license-plugin</artifactId>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.9.0</version>
+          <version>2.6</version>
           <configuration>
             <skip>${license.skip}</skip>
             <header>license.txt</header>
@@ -489,19 +543,13 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-remote-resources-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.3</version>
+          <version>1.5</version>
         </plugin>
         <plugin>
-          <!-- Since 2.0-beta-9 maven-release-plugin uses remote tagging by default. Remote tagging implies that SCM
-               information is not fetched from the local working copy but from the SCM pom configuration. This forces
-               us to specify SCM configuration in every module which has its own lifecycle. Inheritance can't be used
-               for SCM configuration since a released parent pom contains SCM information about its tag and not about
-               the trunk. We could have globally set remoteTagging to false but we haven't since we prefer to follow
-               maven conventions as much as possible. -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.4</version>
+          <version>2.5</version>
           <configuration>
             <!-- By default the release plugin will execute the "clean" and "verify" goals but won't perform an
                  "install". This is causing problems since several modules will fail to build during release:prepare.
@@ -526,26 +574,26 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.1.2</version>
+          <version>2.2.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-plugin-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.9</version>
+          <version>3.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.4</version>
+          <version>2.5.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.5.1</version>
-          <!-- We're using Java 1.6 is required -->
+          <version>3.1</version>
+          <!-- Java 1.6 is required -->
           <configuration>
             <source>1.6</source>
             <target>1.6</target>
@@ -555,12 +603,14 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.12.3</version>
+          <version>2.17</version>
           <!-- Rule is to put tests in *Test classes -->
           <configuration>
             <includes>
               <include>**/*Test.class</include>
             </includes>
+            <parallel>classesAndMethods</parallel>
+            <threadCount>2</threadCount>
           </configuration>
         </plugin>
         <plugin>
@@ -587,14 +637,13 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-	  <!-- Changed from version 2.7 to version 2.8 for compatibility with maven 3.1.x -->
           <version>2.8</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.2</version>
+          <version>2.4</version>
           <configuration>
             <!-- Add some useful information about the extension in the manifest file. -->
             <archive>
@@ -608,27 +657,32 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.7</version>
+          <version>2.8.1</version>
           <!-- We're deploying to Nexus using the WebDAV protocol -->
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.wagon</groupId>
               <artifactId>wagon-webdav-jackrabbit</artifactId>
-              <version>2.2</version>
+              <version>2.6</version>
             </dependency>
           </dependencies>
+          <!-- This doesn't currently work on Jenkins...
+          <configuration>
+            <deployAtEnd>true</deployAtEnd>
+          </configuration>
+          -->
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.4</version>
+          <version>2.7</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>clirr-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.5</version>
+          <version>2.6.1</version>
           <executions>
             <execution>
               <id>clirr-check</id>
@@ -640,22 +694,20 @@
           <configuration>
             <comparisonVersion>${clirr.previous.version}</comparisonVersion>
             <skip>${clirr.skip}</skip>
-            <excludes>
-              <exclude>**/internal/**</exclude>
-            </excludes>
+            <!-- The list of excluded files and ignored changes is configured way above, in the <plugins> section. -->
           </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.4</version>
+          <version>1.5</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.8.1</version>
+          <version>2.9.1</version>
           <configuration>
             <!-- Always exclude the internal package since it's not user-public -->
             <excludePackageNames>*.internal.*</excludePackageNames>
@@ -667,13 +719,13 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.2</version>
+          <version>3.3</version>
           <!-- Site Plugin doesn’t automatically pull the Apache Wagon implementation -->
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.wagon</groupId>
               <artifactId>wagon-webdav-jackrabbit</artifactId>
-              <version>2.2</version>
+              <version>2.6</version>
             </dependency>
           </dependencies>
           <configuration>
@@ -681,7 +733,7 @@
               <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.7</version>
                 <configuration>
                   <!-- Since contacting the Maven Repositories can take a very long time, tell the plugin not to display
                        the repository locations of the dependencies in the report. -->
@@ -700,7 +752,7 @@
               <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.8</version>
+                <version>2.9.1</version>
                 <configuration>
                   <!-- Always exclude the internal package since it's not user-public -->
                   <excludePackageNames>*.internal.*</excludePackageNames>
