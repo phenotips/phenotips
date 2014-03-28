@@ -20,28 +20,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>StudyClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1395991361000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1392932631000</creationDate>
-  <date>1392943900000</date>
-  <contentUpdateDate>1374506500000</contentUpdateDate>
+  <date>1395992434000</date>
+  <contentUpdateDate>1395992406000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content/>
   <class>
     <name>PhenoTips.StudyClass</name>
     <customClass/>
@@ -125,6 +123,10 @@
     </sections>
   </class>
   <object>
+    <name>PhenoTips.StudyClass</name>
+    <number>0</number>
+    <className>XWiki.ClassSheetBinding</className>
+    <guid>ca8e78a3-0377-4b80-9cd9-a90abc6a4c7e</guid>
     <class>
       <name>XWiki.ClassSheetBinding</name>
       <customClass/>
@@ -148,15 +150,15 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </sheet>
     </class>
-    <name>PhenoTips.StudyClass</name>
-    <number>0</number>
-    <className>XWiki.ClassSheetBinding</className>
-    <guid>ca8e78a3-0377-4b80-9cd9-a90abc6a4c7e</guid>
     <property>
       <sheet>StudySheet</sheet>
     </property>
   </object>
   <object>
+    <name>PhenoTips.StudyClass</name>
+    <number>0</number>
+    <className>XWiki.ConfigurableClass</className>
+    <guid>fc5f7101-092c-4797-9267-1f703d4a52ec</guid>
     <class>
       <name>XWiki.ConfigurableClass</name>
       <customClass/>
@@ -335,10 +337,6 @@
         <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
       </sectionPriority>
     </class>
-    <name>PhenoTips.StudyClass</name>
-    <number>0</number>
-    <className>XWiki.ConfigurableClass</className>
-    <guid>fc5f7101-092c-4797-9267-1f703d4a52ec</guid>
     <property>
       <advancedOnly/>
     </property>
@@ -410,6 +408,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.StudyClass</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>02916482-1d6e-4fb7-a622-dea0194ec043</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -481,10 +483,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.StudyClass</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>02916482-1d6e-4fb7-a622-dea0194ec043</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -553,6 +551,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.StudyClass</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>658dafd9-d28c-4dd7-af19-bbb5bb02f4f3</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -624,10 +626,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.StudyClass</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>658dafd9-d28c-4dd7-af19-bbb5bb02f4f3</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -688,6 +686,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.StudyClass</name>
+    <number>0</number>
+    <className>XWiki.WikiMacroClass</className>
+    <guid>6ce660c1-677c-4b54-8ab6-f8b106aefe59</guid>
     <class>
       <name>XWiki.WikiMacroClass</name>
       <customClass/>
@@ -797,10 +799,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </visibility>
     </class>
-    <name>PhenoTips.StudyClass</name>
-    <number>0</number>
-    <className>XWiki.WikiMacroClass</className>
-    <guid>6ce660c1-677c-4b54-8ab6-f8b106aefe59</guid>
     <property>
       <code>{{velocity output="false"}}
 #set ($studyClassName = 'PhenoTips.StudyClass')
@@ -899,6 +897,10 @@ $xwiki.jsx.use($studyClassName)
     </property>
   </object>
   <object>
+    <name>PhenoTips.StudyClass</name>
+    <number>0</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>8d44e4b7-b664-4ae8-b641-db6215e10cce</guid>
     <class>
       <name>XWiki.WikiMacroParameterClass</name>
       <customClass/>
@@ -947,10 +949,6 @@ $xwiki.jsx.use($studyClassName)
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>
-    <name>PhenoTips.StudyClass</name>
-    <number>0</number>
-    <className>XWiki.WikiMacroParameterClass</className>
-    <guid>8d44e4b7-b664-4ae8-b641-db6215e10cce</guid>
     <property>
       <defaultValue>false</defaultValue>
     </property>
@@ -965,6 +963,10 @@ $xwiki.jsx.use($studyClassName)
     </property>
   </object>
   <object>
+    <name>PhenoTips.StudyClass</name>
+    <number>1</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>0086267a-f522-450a-8e96-608dd7513e6d</guid>
     <class>
       <name>XWiki.WikiMacroParameterClass</name>
       <customClass/>
@@ -1013,10 +1015,6 @@ $xwiki.jsx.use($studyClassName)
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>
-    <name>PhenoTips.StudyClass</name>
-    <number>1</number>
-    <className>XWiki.WikiMacroParameterClass</className>
-    <guid>0086267a-f522-450a-8e96-608dd7513e6d</guid>
     <property>
       <defaultValue>false</defaultValue>
     </property>
@@ -1031,6 +1029,10 @@ $xwiki.jsx.use($studyClassName)
     </property>
   </object>
   <object>
+    <name>PhenoTips.StudyClass</name>
+    <number>2</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>e2ae620c-d2d4-41e9-987b-358e1e407952</guid>
     <class>
       <name>XWiki.WikiMacroParameterClass</name>
       <customClass/>
@@ -1079,10 +1081,6 @@ $xwiki.jsx.use($studyClassName)
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>
-    <name>PhenoTips.StudyClass</name>
-    <number>2</number>
-    <className>XWiki.WikiMacroParameterClass</className>
-    <guid>e2ae620c-d2d4-41e9-987b-358e1e407952</guid>
     <property>
       <defaultValue>name</defaultValue>
     </property>
@@ -1097,6 +1095,10 @@ $xwiki.jsx.use($studyClassName)
     </property>
   </object>
   <object>
+    <name>PhenoTips.StudyClass</name>
+    <number>3</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>2f1871f7-5e6e-4f21-80fd-efe40023d0ea</guid>
     <class>
       <name>XWiki.WikiMacroParameterClass</name>
       <customClass/>
@@ -1145,10 +1147,6 @@ $xwiki.jsx.use($studyClassName)
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>
-    <name>PhenoTips.StudyClass</name>
-    <number>3</number>
-    <className>XWiki.WikiMacroParameterClass</className>
-    <guid>2f1871f7-5e6e-4f21-80fd-efe40023d0ea</guid>
     <property>
       <defaultValue/>
     </property>
@@ -1163,6 +1161,10 @@ $xwiki.jsx.use($studyClassName)
     </property>
   </object>
   <object>
+    <name>PhenoTips.StudyClass</name>
+    <number>4</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>db8e9923-7a1b-4b86-b713-61fa96df6c6b</guid>
     <class>
       <name>XWiki.WikiMacroParameterClass</name>
       <customClass/>
@@ -1211,10 +1213,6 @@ $xwiki.jsx.use($studyClassName)
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>
-    <name>PhenoTips.StudyClass</name>
-    <number>4</number>
-    <className>XWiki.WikiMacroParameterClass</className>
-    <guid>db8e9923-7a1b-4b86-b713-61fa96df6c6b</guid>
     <property>
       <defaultValue/>
     </property>
@@ -1229,6 +1227,10 @@ $xwiki.jsx.use($studyClassName)
     </property>
   </object>
   <object>
+    <name>PhenoTips.StudyClass</name>
+    <number>5</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>3f684849-c614-4ccd-a708-a09391593483</guid>
     <class>
       <name>XWiki.WikiMacroParameterClass</name>
       <customClass/>
@@ -1277,10 +1279,6 @@ $xwiki.jsx.use($studyClassName)
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>
-    <name>PhenoTips.StudyClass</name>
-    <number>5</number>
-    <className>XWiki.WikiMacroParameterClass</className>
-    <guid>3f684849-c614-4ccd-a708-a09391593483</guid>
     <property>
       <defaultValue/>
     </property>
@@ -1294,5 +1292,4 @@ $xwiki.jsx.use($studyClassName)
       <name>filterval</name>
     </property>
   </object>
-  <content/>
 </xwikidoc>

@@ -20,28 +20,88 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>StudyBindingClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.StudyClass</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1395991357000</creationDate>
+  <parent>PhenoTips.StudyClass</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1389819078000</creationDate>
-  <date>1389829395000</date>
-  <contentUpdateDate>1389828118000</contentUpdateDate>
+  <date>1395991357000</date>
+  <contentUpdateDate>1395991357000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content>{{velocity output=false}}
+#if ("$!mode" == '' || "$!mode" == 'get')
+  #set ($mode = 'edit')
+#end
+#if ("$!name" == '')
+  #set ($name = 'studyReference')
+#end
+#if ("$!prefix" == '')
+  #set ($prefix = 'PhenoTips.StudyBindingClass_')
+#end
+#if ("$!value" == '')
+  #set ($value = '')
+#end
+{{/velocity}}
+
+{{velocity}}{{html clean="false" wiki="true"}}
+#if ($mode == 'edit')
+#set ($groups = $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
+#set ($studies = $collectionstool.sortedSet)
+#foreach ($group in $groups)
+  #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+  #if (!$groupObj &amp;&amp; $group.name.endsWith(' Administrators'))
+    #set ($groupObj = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)).getObject('PhenoTips.PhenoTipsGroupClass'))
+  #end
+  #if ($groupObj.getProperty('studies').value.isEmpty() == false)
+    #set ($discard = $studies.addAll($groupObj.getProperty('studies').value))
+  #end
+#end
+&lt;div class="form-template-option"&gt;
+&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value=""#if ("$!{value}" == '') checked="checked"#end/&gt;None&lt;/label&gt;
+&lt;p class="xHint"&gt;Use the system's default form configuration: a generic form covering basic patient information and covering phenotypes related to major anatomic systems.&lt;/p&gt;
+&lt;/div&gt;
+#foreach ($sName in $studies)
+    #set ($s = $xwiki.getDocument($sName))
+    #set ($config = $s.getObject('PhenoTips.StudyClass'))
+    #set ($configTitle = '')
+    #if ("$!{s.plainTitle}" != '')
+      #set ($configTitle = "$s.plainTitle")
+    #else
+      #set ($configTitle = "${s.name}")
+    #end
+    &lt;div class="form-template-option"&gt;
+    &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value="${s.documentReference}" #if ("$!{value}" == "${s.documentReference}") checked="checked" #end/&gt;$configTitle&lt;/label&gt;
+    &lt;p class="xHint"&gt;$!{s.content}&lt;/p&gt;
+    &lt;/div&gt;
+#end
+#else
+  #if ("$!value" == '')
+    None
+  #else
+    #set ($s = $xwiki.getDocument($value))
+    #set ($config = $s.getObject('PhenoTips.StudyClass'))
+    #set ($configTitle = '')
+    #if ("$!{s.plainTitle}" != '')
+      #set ($configTitle = "$s.plainTitle")
+    #else
+      #set ($configTitle = "${s.name}")
+    #end
+    [[${configTitle}&gt;&gt;${value}]]
+  #end
+#end
+{{/html}}{{/velocity}}
+</content>
   <class>
     <name>PhenoTips.StudyBindingClass</name>
     <customClass/>
@@ -77,6 +137,10 @@
     </studyReference>
   </class>
   <object>
+    <name>PhenoTips.StudyBindingClass</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>29beb1b4-dff9-4c8e-90f4-fc31834bd208</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -148,10 +212,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.StudyBindingClass</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>29beb1b4-dff9-4c8e-90f4-fc31834bd208</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -219,6 +279,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.StudyBindingClass</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>de3434cb-e595-42cf-b861-4e383d4f4680</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -290,10 +354,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.StudyBindingClass</name>
-    <number>1</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>de3434cb-e595-42cf-b861-4e383d4f4680</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -363,6 +423,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.StudyBindingClass</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>89109749-5cca-4849-86c0-376b29afa531</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -434,10 +498,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.StudyBindingClass</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>89109749-5cca-4849-86c0-376b29afa531</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -472,6 +532,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.StudyBindingClass</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>3dc9eb76-22a3-4007-8454-9fead6580288</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -536,10 +600,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.StudyBindingClass</name>
-    <number>0</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>3dc9eb76-22a3-4007-8454-9fead6580288</guid>
     <property>
       <content>{{velocity output="false"}}
 #set ($sheetName = 'PhenoTips.StudyBindingSheet')
@@ -597,67 +657,4 @@ $xwiki.ssx.use($className)
       <scope>wiki</scope>
     </property>
   </object>
-  <content>{{velocity output=false}}
-#if ("$!mode" == '' || "$!mode" == 'get')
-  #set ($mode = 'edit')
-#end
-#if ("$!name" == '')
-  #set ($name = 'studyReference')
-#end
-#if ("$!prefix" == '')
-  #set ($prefix = 'PhenoTips.StudyBindingClass_')
-#end
-#if ("$!value" == '')
-  #set ($value = '')
-#end
-{{/velocity}}
-
-{{velocity}}{{html clean="false" wiki="true"}}
-#if ($mode == 'edit')
-#set ($groups = $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
-#set ($studies = $collectionstool.sortedSet)
-#foreach ($group in $groups)
-  #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
-  #if (!$groupObj &amp;&amp; $group.name.endsWith(' Administrators'))
-    #set ($groupObj = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)).getObject('PhenoTips.PhenoTipsGroupClass'))
-  #end
-  #if ($groupObj.getProperty('studies').value.isEmpty() == false)
-    #set ($discard = $studies.addAll($groupObj.getProperty('studies').value))
-  #end
-#end
-&lt;div class="form-template-option"&gt;
-&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value=""#if ("$!{value}" == '') checked="checked"#end/&gt;None&lt;/label&gt;
-&lt;p class="xHint"&gt;Use the system's default form configuration: a generic form covering basic patient information and covering phenotypes related to major anatomic systems.&lt;/p&gt;
-&lt;/div&gt;
-#foreach ($sName in $studies)
-    #set ($s = $xwiki.getDocument($sName))
-    #set ($config = $s.getObject('PhenoTips.StudyClass'))
-    #set ($configTitle = '')
-    #if ("$!{s.plainTitle}" != '')
-      #set ($configTitle = "$s.plainTitle")
-    #else
-      #set ($configTitle = "${s.name}")
-    #end
-    &lt;div class="form-template-option"&gt;
-    &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value="${s.documentReference}" #if ("$!{value}" == "${s.documentReference}") checked="checked" #end/&gt;$configTitle&lt;/label&gt;
-    &lt;p class="xHint"&gt;$!{s.content}&lt;/p&gt;
-    &lt;/div&gt;
-#end
-#else
-  #if ("$!value" == '')
-    None
-  #else
-    #set ($s = $xwiki.getDocument($value))
-    #set ($config = $s.getObject('PhenoTips.StudyClass'))
-    #set ($configTitle = '')
-    #if ("$!{s.plainTitle}" != '')
-      #set ($configTitle = "$s.plainTitle")
-    #else
-      #set ($configTitle = "${s.name}")
-    #end
-    [[${configTitle}&gt;&gt;${value}]]
-  #end
-#end
-{{/html}}{{/velocity}}
-</content>
 </xwikidoc>

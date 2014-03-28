@@ -20,29 +20,88 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>StudySheet</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1395991405000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1392932649000</creationDate>
-  <date>1392933900000</date>
-  <contentUpdateDate>1392933900000</contentUpdateDate>
+  <date>1395991405000</date>
+  <contentUpdateDate>1395991405000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content>{{velocity}}
+$xwiki.ssx.use('PhenoTips.StudySheet')##
+#set ($groups = $services.query.xwql('from doc.object(PhenoTips.PhenoTipsGroupClass) as g where :study member of g.studies').bindValue('study', $services.model.serialize($doc.documentReference, 'local')))
+#set ($groupsCount = $groups.count())
+#set ($casesCount = $services.query.xwql('from doc.object(PhenoTips.PatientClass) as p, doc.object(PhenoTips.StudyBindingClass) as o where o.studyReference = :study').bindValue('study', $services.model.serialize($doc.documentReference, 'default')).count())
+
+#if ($xcontext.action == 'edit')
+(% class="xform" %)(((
+; {{html}}&lt;label&gt;Name&lt;/label&gt;{{/html}}
+: (% class="xHint" %)The study's name, as it should appear on the presentation page and anywhere else this study is referenced.
+: {{html}}&lt;input type="text" name="title" value="$!doc.title"/&gt;{{/html}}
+; {{html}}&lt;label&gt;Description&lt;/label&gt;{{/html}}
+: (% class="xHint" %)A short presentation to inform visitors what this study's purpose is (optional).
+: {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="20" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
+
+(% class="buttonwrapper" %)[[{{icon name="wrench" /}} Patient form configuration&gt;&gt;path:$xwiki.getURL("${doc.fullName}", 'view')?s=form#content-form||target="_blank" class="button"]]
+
+)))
+#else
+$!doc.content
+#if ($xcontext.action == 'view')
+#set ($sections = [
+  {'id' : 'members', 'name' : "Participating groups ($groupsCount)", 'icon' : 'group',       'content' : "((({{phenotips-groups filterby='studies' filterval='$doc.fullName' /}})))"},
+  {'id' : 'cases',   'name' : "Cases ($casesCount)",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.StudyCases"/}}'},
+  {'id' : 'form' ,   'name' : "Form configuration",  'icon' : 'cog',        'content' : "{{include reference='PhenoTips.FormDesigner' /}}"}
+])
+#set ($menu = [])
+#set ($contents = {})
+#foreach ($s in $sections)
+  #set ($discard = $menu.add({
+      'id' : $s.id,
+      'name' : "&lt;i class='fa fa-$s.icon'&gt;&lt;/i&gt; $s.name",
+      'url' : "?s=${s.id}#content-${s.id}"
+  }))
+  #set ($discard = $contents.put($s.id, $s.content))
+#end
+#set ($crtContent = '')
+#if ($menu.size() &gt; 0)
+  #set ($crtItem = "$!request.s")
+  #if ("$!contents.get($crtItem)" == '')
+    #set ($crtItem = "$!menu.get(0).id")
+  #end
+  #set ($crtContent = "$!contents.get($crtItem)")
+#end
+#if ($menu.size() &gt; 1)
+(% class="vertical-menu $!{options.cssClass}" %)(((
+#foreach ($i in $menu)
+* {{html clean=false wiki=false}}&lt;a href="$i.url" id="group-section-$i.id" #if ($i.id == $crtItem) class="current" #end&gt;$i.name&lt;/a&gt;{{/html}}
+#end
+)))
+(% class="menu-section" id="content-${crtItem}" %)#end((($crtContent)))
+#else
+
+{{info}}There #if($groupsCount == 1)is#{else}are#{end} #if($groupsCount == 0)no#{else}$groupsCount#end group#if($groupsCount != 1)s#end participating in this study and #if($casesCount == 0)no#{else}$casesCount#end case#if($casesCount != 1)s#end #if($casesCount == 1)has#{else}have#{end} been entered.{{/info}}
+
+#end
+#end
+{{/velocity}}</content>
   <object>
+    <name>PhenoTips.StudySheet</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>615ece93-e9ae-4b28-bf12-bf6f9f6a4139</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -114,10 +173,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.StudySheet</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>615ece93-e9ae-4b28-bf12-bf6f9f6a4139</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -166,62 +221,4 @@
       <use>onDemand</use>
     </property>
   </object>
-  <content>{{velocity}}
-$xwiki.ssx.use('PhenoTips.StudySheet')##
-#set ($groups = $services.query.xwql('from doc.object(PhenoTips.PhenoTipsGroupClass) as g where :study member of g.studies').bindValue('study', $services.model.serialize($doc.documentReference, 'local')))
-#set ($groupsCount = $groups.count())
-#set ($casesCount = $services.query.xwql('from doc.object(PhenoTips.PatientClass) as p, doc.object(PhenoTips.StudyBindingClass) as o where o.studyReference = :study').bindValue('study', $services.model.serialize($doc.documentReference, 'default')).count())
-
-#if ($xcontext.action == 'edit')
-(% class="xform" %)(((
-; {{html}}&lt;label&gt;Name&lt;/label&gt;{{/html}}
-: (% class="xHint" %)The study's name, as it should appear on the presentation page and anywhere else this study is referenced.
-: {{html}}&lt;input type="text" name="title" value="$!doc.title"/&gt;{{/html}}
-; {{html}}&lt;label&gt;Description&lt;/label&gt;{{/html}}
-: (% class="xHint" %)A short presentation to inform visitors what this study's purpose is (optional).
-: {{html wiki="false" clean="false"}}&lt;textarea name="content" rows="20" cols="80"&gt;$!escapetool.html($doc.content)&lt;/textarea&gt;{{/html}}
-
-(% class="buttonwrapper" %)[[{{icon name="wrench" /}} Patient form configuration&gt;&gt;path:$xwiki.getURL("${doc.fullName}", 'view')?s=form#content-form||target="_blank" class="button"]]
-
-)))
-#else
-$!doc.content
-#if ($xcontext.action == 'view')
-#set ($sections = [
-  {'id' : 'members', 'name' : "Participating groups ($groupsCount)", 'icon' : 'group',       'content' : "((({{phenotips-groups filterby='studies' filterval='$doc.fullName' /}})))"},
-  {'id' : 'cases',   'name' : "Cases ($casesCount)",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.StudyCases"/}}'},
-  {'id' : 'form' ,   'name' : "Form configuration",  'icon' : 'cog',        'content' : "{{include reference='PhenoTips.FormDesigner' /}}"}
-])
-#set ($menu = [])
-#set ($contents = {})
-#foreach ($s in $sections)
-  #set ($discard = $menu.add({
-      'id' : $s.id,
-      'name' : "&lt;i class='fa fa-$s.icon'&gt;&lt;/i&gt; $s.name",
-      'url' : "?s=${s.id}#content-${s.id}"
-  }))
-  #set ($discard = $contents.put($s.id, $s.content))
-#end
-#set ($crtContent = '')
-#if ($menu.size() &gt; 0)
-  #set ($crtItem = "$!request.s")
-  #if ("$!contents.get($crtItem)" == '')
-    #set ($crtItem = "$!menu.get(0).id")
-  #end
-  #set ($crtContent = "$!contents.get($crtItem)")
-#end
-#if ($menu.size() &gt; 1)
-(% class="vertical-menu $!{options.cssClass}" %)(((
-#foreach ($i in $menu)
-* {{html clean=false wiki=false}}&lt;a href="$i.url" id="group-section-$i.id" #if ($i.id == $crtItem) class="current" #end&gt;$i.name&lt;/a&gt;{{/html}}
-#end
-)))
-(% class="menu-section" id="content-${crtItem}" %)#end((($crtContent)))
-#else
-
-{{info}}There #if($groupsCount == 1)is#{else}are#{end} #if($groupsCount == 0)no#{else}$groupsCount#end group#if($groupsCount != 1)s#end participating in this study and #if($casesCount == 0)no#{else}$casesCount#end case#if($casesCount != 1)s#end #if($casesCount == 1)has#{else}have#{end} been entered.{{/info}}
-
-#end
-#end
-{{/velocity}}</content>
 </xwikidoc>
