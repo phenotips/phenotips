@@ -233,7 +233,7 @@
     <property>
       <properties>given-name:first_name
 family-name:last_name
-org:company
+org:institution
 note:comment</properties>
     </property>
   </object>

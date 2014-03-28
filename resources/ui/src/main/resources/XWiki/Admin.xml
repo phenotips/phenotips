@@ -344,15 +344,15 @@
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </comment>
-      <company>
+      <institution>
         <disabled>0</disabled>
-        <name>company</name>
+        <name>institution</name>
         <number>8</number>
-        <prettyName>Company</prettyName>
+        <prettyName>Institution</prettyName>
         <size>30</size>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </company>
+      </institution>
       <default_language>
         <disabled>0</disabled>
         <name>default_language</name>
@@ -548,7 +548,7 @@
       <comment>This is the default administrative account.</comment>
     </property>
     <property>
-      <company>http://phenotips.org/</company>
+      <institution>http://phenotips.org/</institution>
     </property>
     <property>
       <default_language/>
