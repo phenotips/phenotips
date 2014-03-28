@@ -115,4 +115,8 @@
       </plugin>
     </plugins>
   </build>
+
+  <properties>
+    <coverage.instructionRatio>0.94</coverage.instructionRatio>
+  </properties>
 </project>
