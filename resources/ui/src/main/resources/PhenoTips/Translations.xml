@@ -89,6 +89,7 @@ admin.mapping=Phenotypes displayed by default
 admin.ontology=Ontology index
 admin.workgroups=Work groups
 admin.studies=Studies
+admin.company=Institution
 
 saveandview=Save and view summary
 saveandcontinue=Quick save
