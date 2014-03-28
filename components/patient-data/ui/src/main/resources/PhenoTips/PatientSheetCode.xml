@@ -223,68 +223,6 @@ document.observe('xwiki:dom:loaded', function() {
       });
     });
   });
-
-  // ------------------------------------------------------------------------
-  // Behavior of the quick search box
-  // ------------------------------------------------------------------------
-  var qsBox = $('quick-search-box');
-  if (qsBox) {
-    var content = qsBox.next('div');
-    if (content) {
-      qsBox.__x_qsInput = qsBox.down('input[type=text]') || {};
-      var qsSticky = new StickyBox(qsBox, content, {shadowSize : 0, isSticky : function(element) {return !element.__x_qsInput._activeSuggest} });
-      Event.observe(document, 'ms:suggest:containerCreated', function(event) {
-        if (event.memo.suggest.fld == qsBox.__x_qsInput) {
-          qsBox.__x_qsInput._activeSuggest = true;
-          var qsSuggest = event.memo.container;
-          if (qsBox.getStyle('position') == 'fixed') {
-            qsSuggest.style.position = 'fixed';
-          }
-          qsSuggest.style.top = (qsBox.__x_qsInput.cumulativeOffset().top + qsBox.__x_qsInput.getHeight()) + 'px';
-          qsSuggest.style.left = qsBox.__x_qsInput.cumulativeOffset().left;
-        }
-      });
-      Event.observe(document, 'ms:suggest:clearSuggestions', function(event) {
-        if (event.memo.suggest.fld == qsBox.__x_qsInput) {
-          qsBox.__x_qsInput._activeSuggest = false;
-        }
-      });
-    }
-  }
-
-  var docContent = $('mainContentArea');
-  if (docContent) {
-    docContent.style.position = 'relative';
-
-    var docActions = $('document-actions');
-    if (docActions) {
-      docActions.addClassName('absolute');
-      var daSticky  = new StickyBox(docActions, docContent, {shadowSize : 6});
-    }
-
-    var toc = $('table-of-contents');
-    if (toc) {
-      toc.addClassName('absolute');
-      var tocSticky = new StickyBox(toc, docContent, {shadowSize : 6});
-    }
-  }
-  var summaryContent = $('current-phenotype-selection');
-  var summary = summaryContent &amp;&amp; summaryContent.up('.selector-panel');;
-  if (summary) {
-    var container = summary.up();//alert(container);
-    summary.addClassName('absolute');
-    var sSticky  = new StickyBox(summary, container, {shadowSize : qsBox &amp;&amp; (qsBox.getHeight() + 3) || 0, resize: true, isSticky : function(element) {return element.hasClassName('half-width') &amp;&amp; element.getHeight() &lt; element.previous().getHeight()}});
-    summary.observe('size:changed', function(event) {
-      if (!event.memo) {
-         summaryContent.style.height = '';
-         summaryContent.style.overflow = '';
-      } else {
-         summaryContent.style.height = (summaryContent.getHeight() + (event.memo.diff || 0)) + 'px';
-         summaryContent.style.overflow = 'auto';
-         summary.style.overflow = '';
-      }
-    });
-  }
 });</code>
     </property>
     <property>
@@ -2129,76 +2067,10 @@ document.observe('xwiki:dom:loaded', function() {
        item.addClassName('collapsed');
      }
   });
-
-
-  $$('.chapter .browser .browser-title').each(function(item){
-    var phBrowserHide = new Element('span', {'class' : 'tool hide'}).update('Hide');
-    var phBrowserExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(phBrowserHide);
-    item.insert({after: phBrowserExpandTools});
-    [phBrowserHide, item].invoke('observe', 'click', function (event) {
-      event.element().up('.browser').toggleClassName('collapsed');
-      event.element().up('.chapter').select('.current-phenotype-selection').invoke('toggleClassName', 'third-width');
-    });
-  });
-  var phBrowserExpandAll = new Element('span', {'class' : 'tool expand-all'}).update('Expand all');
-  var phBrowserCollapseAll = new Element('span', {'class' : 'tool collapse-all'}).update('Collapse all');
-  var phBrowserJumpTo = new Element('span', {'class' : 'tool jump-to'}).update('Jump to');
-  var phBrowserExpandTools =
-      new Element('span', {'class' : 'inner-expand-tools'}).insert(phBrowserJumpTo).insert(" · ").insert(
-                  phBrowserExpandAll).insert(" · ").insert(phBrowserCollapseAll).insert(" · ");
-
-  var phBrowserTocList = new Element('ul');
-  var phBrowserToc = new Element('div', {'class' : 'chapter-toc'}).insert(phBrowserTocList);
-
-  $$('.chapter.phenotype-info .browser h3+.expand-tools').invoke('insert', {'top' : phBrowserExpandTools});
-  phBrowserExpandTools.up().insert({'after' : phBrowserToc});
-  $$('.chapter.phenotype-info .collapsible-group h3').each(function(item) {
-     phBrowserTocList.insert(new Element('li').update(new Element('a', {'href' : '#' + item.getAttribute('id')}).update(item.innerHTML)));
-     item.insert({'top': new Element('span', {'class' : 'expand-tool'}).update('▼')});
-  });
-
-  var toggleCategory = function(target) {
-     if (!target) {return;}
-     if (typeof (target.element) == 'function') {
-       return toggleCategory(target.element());
-     }
-     var parent = target.up('.collapsible-group');
-     if (parent) {
-       parent.toggleClassName('collapsed');
-       parent.down('.expand-tool').update(parent.hasClassName('collapsed') &amp;&amp; '►' || '▼');
-     }
-  }
-
-  $$('.chapter.phenotype-info .collapsible-group h3').each(function(item){
-     if (!item.up('.collapsible-group').down('input[type=checkbox]:checked')) {
-       toggleCategory(item);
-     }
-     item.observe('click', toggleCategory);
-  });
-  phBrowserExpandAll.observe('click', function(event){
-    event.element().up('.chapter').select('.collapsible-group.collapsed h3').each(function(item){
-      toggleCategory(item);
-    });
-  });
-  phBrowserCollapseAll.observe('click', function(event){
-    event.element().up('.chapter').select('.collapsible-group:not(.collapsed) h3').each(function(item){
-      toggleCategory(item);
-    });
-  });
-
-  phBrowserToc.toggle();
-  phBrowserJumpTo.observe('click', function(event){
-    phBrowserToc.toggle();
-  });
-  phBrowserToc.select('a').invoke('observe', 'click', function(event) {
-    phBrowserToc.toggle();
-    tocLinkClicked(event);
-  });
-
 });</code>
     </property>
     <property>
-      <name>Expand/collapse categories</name>
+      <name>Expand/collapse sections</name>
     </property>
     <property>
       <parse>0</parse>
@@ -3748,112 +3620,6 @@ h1, h2, h3, h4 {
   margin: 1em 0;
   padding: 0 20px 0 0;
 }
-.chapter .phenotype-group,
-.chapter .negative_phenotype-group {
-  padding: 0 1em;
-}
-.chapter .phenotype-group h3,
-.chapter .negative_phenotype-group h3 {
-  overflow: visible;
-  text-transform: uppercase;
-  font-size: 1.1em;
-  cursor: pointer;
-  margin-left: -1em;
-  margin-bottom: .3em;
-}
-.editbody .chapter .custom-entries {
-  margin-top: .5em;
-  padding-top: .5em;
-  padding-left: .8em;
-  border-top: 1px dotted $theme.borderColor;
-}
-.browse-phenotype-categories {
-  margin: .5em .75% 0em !important;
-  padding-right: .75%;
-}
-.current-phenotype-selection {
-  padding: 0 !important;
-  background-color: #FFFFFF;
-  border: 1px solid #FFFFFF;
-  border-radius: 4px;
-  box-shadow: 0 1px 8px #DDDDDD inset;
-  float: right;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  margin-top: 0.5em;
-}
-#current-phenotype-selection {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-.current-phenotype-selection &gt; h3 {
-    background: none repeat scroll 0 0 #333333;
-    border: 0 none;
-    border-radius: 4px 4px 0 0;
-    color: #FFFFFF;
-    margin: 0 !important;
-    padding: 0.4em 1em;
-    text-shadow: none;
-}
-.current-phenotype-selection h3 {
-  margin-left: 1em;
-  margin-right: 1em;
-}
-.current-phenotype-selection.half-width {
-  width: 47.5%;
-}
-#current-phenotype-selection .summary-group {
-  margin: 1em;
-}
-#current-phenotype-selection .summary-item {
-  padding-left: 18px;
-  margin-left: 1em;
-  margin-bottom: .5em;
-}
-#current-phenotype-selection .summary-item .no, .value-checked.no-selected {
-  color: $theme.notificationErrorColor;
-}
-#current-phenotype-selection .summary-item .no:before {
-  content: "NO ";
-}
-#current-phenotype-selection .summary-item label {
-  width: auto;
-  margin-right: 1em;
-}
-#current-phenotype-selection .summary-item .tools {
-  color: $theme.textPrimaryColor;
-  font-size: 0.8em;
-}
-#current-phenotype-selection .summary-item .tools .tool:hover {
-  color: $theme.linkColor;
-  cursor: pointer;
-}
-.fieldset .displayed-value p {
-  line-height: 1.4em;
-  margin: 0;
-}
-.fieldset .displayed-value {
-  margin: 0 0 0.5em;
-}
-label.selected, label.subterm-selected {
-  background-color: $theme.backgroundSecondaryColor;
-  background-image: none;
-  font-weight: bold;
-  padding-left: 4px;
-  margin-left: -4px;
-  border-radius: 2px;
-}
-label.subterm-selected {
-  background-image: url("$xwiki.getSkinFile('icons/silk/shading.gif')");
-  background-position: 14px center;
-  background-repeat: no-repeat;
-}
-label.subterm-selected input[type="checkbox"] {
-  opacity: .2;
-}
-label.selected input[type="checkbox"] {
-  opacity: 1;
-}
 /** ----------------------------------------------------------- */
 /** Patient info zone **/
 .clinical-info .fieldset {
@@ -3878,51 +3644,6 @@ label.selected input[type="checkbox"] {
 }
 .viewbody .family_study .half-width * {
   margin: 0 !important;
-}
-/** ----------------------------------------------------------- */
-/** Quick search box &amp; suggest */
-.emphasized-box {
-  background: $theme.backgroundSecondaryColor;
-  border: 1px solid $theme.backgroundSecondaryColor;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.15);
-}
-.quick-search-box {
-  border: 0 none;
-  z-index: 2000;
-  background: $theme.buttonPrimaryBackgroundColor;
-}
-.quick-search-box fieldset {
-  border: 1px solid $theme.backgroundSecondaryColor;
-  padding: .5em .8em;
-}
-.quick-search-box table {
-  margin: 0;
-  width: 100%;
-}
-.quick-search-box table td {
-  border: 0 none;
-  padding: 0;
-}
-.quick-search-box table td.input{
-  min-width: 60%;
-}
-.quick-search-box table label{
-  color: $theme.buttonPrimaryTextColor;
-  text-shadow: none;
-  font-weight: bold;
-}
-.quick-search-box table td.icon {
-  max-width: 1.5em;
-  vertical-align: middle;
-  opacity: .7;
-}
-.quick-search-box input {
-  background-position: right center;
-  background-repeat: no-repeat;
-}
-.quick-search-box input:focus {
-  color: $theme.textColor;
-  font-style: normal;
 }
 /** ----------------------------------------------------------- */
 /** PubMed search box &amp; suggest */
@@ -3977,18 +3698,6 @@ label.selected input[type="checkbox"] {
   line-height: 1.4em;
   font-weight: bold;
 }
-.editbody .clinical-info .predefined-entries label.section {
-  font-weight: normal;
-}
-.editbody .clinical-info .phenotypes-main label.section:before {
-  content: "\25bc";
-  display: inline-block;
-  color: $theme.textSecondaryColor;
-  font-size: .75em;
-  top: -0.5em;
-  text-shadow: 0 0 5px $theme.textSecondaryColor;
-  opacity: .3;
-}
 .chapter div .expand-tools {
   margin-top: -3.5em;
   margin-right: 0;
@@ -4020,144 +3729,6 @@ label.selected input[type="checkbox"] {
 }
 .chapter.collapsed &gt; h2 {
   display: block;
-}
-.chapter.collapsed #quick-search-box {
-  display: block;
-}
-.selector-panels {
-  position: relative;
-}
-.browser.collapsed .expand-tools .inner-expand-tools,
-.browser.collapsed .expand-tools .hide,
-.browser.collapsed div {
-  display: none;
-}
-.browser.collapsed {
-  position: absolute;
-  top: 0;
-  left: 0;
-  border: 0 none;
-}
-.browser.collapsed + .current-phenotype-selection {
-}
-.browser.collapsed .browser-title {
-  text-transform: none;
-  font-size: 80%;
-  color: $theme.textPrimaryColor;
-  border: 0 none;
-  margin: 0;
-  padding: 0;
-}
-.browser.collapsed .browser-title:after {
-  content: " »";
-}
-.browser.collapsed .browser-title:hover{
-  cursor: pointer;
-  color: $theme.linkColor;
-}
-
-.phenotype-info .chapter-toc {
-  float: right;
-  height: 0;
-  margin: -5px -10px 0;
-  overflow: visible;
-  text-align: right;
-  position: relative;
-  z-index: 1950;
-}
-.phenotype-info .chapter-toc ul {
-  list-style-type: none;
-  background: $theme.pageBackgroundColor;
-  border: 1px solid $theme.borderColor;
-  border-radius: 4px 0 4px 4px;
-  list-style-type: none;
-  margin: 0;
-  padding: 0.3em 1em;
-  font-size: .8em;
-}
-.phenotype-info h3 .expand-tool {
-  vertical-align: top;
-  width: 1em;
-  font-size: 1em;
-}
-.phenotype-group.collapsed *,
-.negative_phenotype-group.collapsed * {
-  display: none;
-}
-.phenotype-group.collapsed h3,
-.negative_phenotype-group.collapsed h3 {
-  display: block;
-}
-.phenotype-group.collapsed h3 *,
-.negative_phenotype-group.collapsed h3 * {
-  display: inline;
-}
-.phenotypes-main {
-  position: relative;
-}
-.phenotypes-main .hint {
-  margin-left: 20px;
-}
-.subsection {
-  margin-left: 1.3em;
-}
-.subsection .phenotypes-main br {
-  display: none;
-}
-.subsection .phenotypes-main br:last-child {
-  display: block;
-  clear: left;
-}
-.subsection .phenotypes-main {
-  display: block;
-}
-.subsection .phenotypes-main label {
-  float: left;
-  margin: 0 1% 0 0;
-  padding: 0 8px;
-  width: auto;
-  font-weight: normal !important;
-}
-.subsection .phenotypes-main label.section {
-  clear: both;
-  display: block;
-  float: none;
-}
-/** -------------------------------------------- **/
-/** Suggestions **/
-.accepted-suggestions li .delete-tool, .clear-tool {
-  background-color: $theme.buttonPrimaryBackgroundColor;
-  color: $theme.buttonPrimaryTextColor;
-  border-radius: 3px;
-  padding: 2px;
-}
-/** -------------------------------------------- **/
-/** Negative phenotypes **/
-
-.negative_phenotype-group h3 {
-  color: $theme.notificationErrorColor;
-}
-.negative_phenotype-group h3 em {
-  font-weight: bold;
-}
-.negative_phenotype-group .infomessage {
-  margin-left: -4px;
-}
-.negative_phenotype-group .phenotypes-main .hint {
-  margin-left: 0;
-}
-.negative_phenotype-group .label-other {
-  display: none;
-}
-.negative_phenotype-group .selected .value, .viewbody .negative_phenotype-group .value-checked , .viewbody .negative_phenotype-group .section {
-  text-decoration: line-through;
-  color: $theme.notificationErrorColor;
-}
-/** -------------------------------------------- **/
-/** "Unaffected" zone **/
-.unaffected label {
-  display: inline;
-  font-weight: bold;
 }
 /** --------------------------------------------- **/
 /** Charts **/
@@ -4585,19 +4156,6 @@ form .extradata-list tr:hover td {
 .background-search h3 {
   font-weight: bold !important;
   margin-top: 0;
-}
-.diffDiagnosis-search {
-  background-color: $theme.highlightColor;;
-  border: 10px solid $theme.highlightColor;;
-  border-radius: 4px 4px 4px 4px;
-  margin-left: -10px;
-  margin-right: -10px;
-}
-#diffDiagnosis-search-results ul li {
-  margin: 0;
-}
-#diffDiagnosis-search-results ul .id {
-  display: none;
 }
 .background-suggestions ul {
   list-style-type: none;
