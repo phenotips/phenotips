@@ -1031,7 +1031,7 @@ document.observe('xwiki:dom:loaded', function() {
                   suggestion.down(".suggestValue").up().insert({top: ynpicker});
                   // Prevent click events from the label from activating the suggestion selection twice because of being forwarded to the input
                   ynpicker.select('input').invoke('observe', 'click', function(event) {event.stop()});
-                  
+
                   // Make it clear visually that clicking on the suggestion is equivalent to clicking on Y
                   suggestion.observe('mouseover', function(event) {
                     suggestion.down('label.yes').addClassName('highlighted');
@@ -2266,10 +2266,6 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
     <property>
       <code>document.observe('xwiki:dom:loading', function() {
-
-  $$('.ncbi-search-box h3, .ncbi-search-box .expand-tools .tool').invoke('observe', 'click', function(event) {
-     event.element().up('.ncbi-search-box').toggleClassName('collapsed');
-  });
 
   var defaultSearchTerms = $('defaultSearchTerms');
   var defaultSearchTermsInput = $('defaultSearchTermsInput');
@@ -3711,19 +3707,6 @@ h1, h2, h3, h4 {
   text-shadow: 1px 1px 0 $theme.pageContentBackgroundColor;
 }
 .chapter h2 {
-  ##color: $theme.linkColor;
-  ##font-size: 1.5em;##1.2em;
-  ####text-transform: uppercase;
-  ##font-family: Georgia, serif;
-  ##border-bottom: 1px solid $theme.linkColor; ##$theme.borderColor;
-  ####border-left: .2em solid $theme.linkColor; ##$theme.borderColor;
-  ####padding-left: .2em;
-  ####text-shadow: 0 0 1px $theme.textSecondaryColor;
-  ####border-radius: 0 0 0 .4em; ##.4em 0 0 0;
-  ##cursor: pointer;
-  ##margin-top: 0;
-  border-bottom: 1px solid $theme.linkColor;
-  ####color: $theme.linkColor;
   border-bottom: 1px solid $theme.titleColor;
   cursor: default;
   font-family: Georgia,serif;
@@ -4358,9 +4341,6 @@ form .extradata-list tr:hover td {
   color: $theme.buttonPrimaryTextColor;
   text-decoration: none !important;
 }
-.ncbi-search-box.collapsed h3 {
-  color: $theme.linkColor;
-}
 .growth-charts-section.collapsed #charts,
 .growth-charts-section.collapsed .expand-tools .hide,
 .growth-charts-section .expand-tools .show {
@@ -4515,21 +4495,6 @@ form .extradata-list tr:hover td {
 /** Box style */
 .ncbi-search-box {
   margin-top: 2em;
-}
-.ncbi-search-box h3 {
-  ##padding: 0 20px 0 0;
-  cursor: pointer;
-}
-.ncbi-search-box.collapsed h3 {
-  color: $theme.linkColor;
-}
-.ncbi-search-box.collapsed .ncbi-search-box-content,
-.ncbi-search-box.collapsed .expand-tools .hide,
-.ncbi-search-box .expand-tools .show {
-  display: none;
-}
-.ncbi-search-box.collapsed .expand-tools .show {
-  display: inline;
 }
 /*--------------------------------------------------------------*/
 /** Search terms from phenotypes */
