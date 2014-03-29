@@ -65,7 +65,7 @@
   ##test1: http://localhost:8080/bin/get/PhenoTips/PushPatientService?outputSyntax=plain&amp;do=getpatientjson&amp;patientid=P0000001
   ##test2: http://localhost:8080/bin/get/PhenoTips/PushPatientService?outputSyntax=plain&amp;do=getpatientjson&amp;patientid=P0000001&amp;fields=[%22gender%22,%22omim_id%22]
   ##test3: http://localhost:8080/bin/get/PhenoTips/PushPatientService?outputSyntax=plain&amp;do=getpatientjson&amp;patientid=P00XXXXX  (returns null)
-  #set ($patientJSON = $service.getLocalPatientJSON($request.patientid, $request.fields))  
+  #set ($patientJSON = $service.getLocalPatientJSON($request.patientid, $request.fields))
   $jsontool.serialize($patientJSON)   ## no error checking - local call
 #elseif ($request.do == 'getuser')
   ## test1: http://localhost:8080/bin/get/PhenoTips/PushPatientService?outputSyntax=plain&amp;do=getuser&amp;serverid=PUSH1
@@ -76,7 +76,7 @@
   #end
   #set ($data = { "remoteUserName":$lastUsedUsername })
   $jsontool.serialize($data)  ## no error checking - local call
-#elseif ($request.do == 'removetokens')  
+#elseif ($request.do == 'removetokens')
   ## test: http://localhost:8080/bin/get/PhenoTips/PushPatientService?outputSyntax=plain&amp;do=removetokens&amp;serverid=PUSH1  (login with savetoken=true, passwordless login, remove, passwordless now fails)
   #set ($serverid = $request.serverid)
   #set ($response = $service.removeStoredLoginTokens($serverid))
@@ -125,7 +125,7 @@
   #else
     #set ($response = $service.sendPatient($patientid, $fields, $groupname, $guid, $serverId, $username, $password))
   #end
-  
+
   ##$jsontool.serialize($response)
 
   #set ($data = {'status':'error'})
