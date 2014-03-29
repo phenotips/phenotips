@@ -588,7 +588,8 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
     </property>
     <property>
       <code>document.observe('xwiki:dom:loaded', function() {
-  $$('.xwiki-livetable-topfilters-container .toggle-filters').invoke('observe', 'click', function() {
+  $$('.xwiki-livetable-topfilters-container .toggle-filters').invoke('observe', 'click', function(event) {
+    event.stop();
     $('patients-topfilters').toggleClassName('collapsed');
   });
   $('patients-topfilters') &amp;&amp; $('patients-topfilters').addClassName('collapsed');
@@ -690,39 +691,12 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
 #document-title h1 {
   border: 0 none;
 }
-#patients-topfilters .toggle-filters {
-  clear: both;
-  cursor: pointer;
-  font-size: 1em;
-  font-style: italic;
-  margin: -1em 4px 0;
-  opacity: 0.4;
-  padding: 0 0.5em;
-  float: right;
-}
-#patients-topfilters.collapsed .toggle-filters {
-  float: none;
-  font-size: 1.2em;
-  opacity: 1;
-  font-style: normal;
-}
-#patients-topfilters h2 {
-  margin: 0 4px 0;
-  padding: 0 0.5em;
-  color: #000;
-  border-bottom: 0px none;
-  font-weight: normal;
-}
-#patients-topfilters.collapsed h2 {
-  display: none;
-}
 #patients-topfilters .toggle-filters:before {
-  content: "Hide";
+  content: "▼ ";
 }
 #patients-topfilters.collapsed .toggle-filters:before {
-  content: "Show";
+  content: "► ";
 }
-
 #patients-topfilters.collapsed .filters {
   display: none;
 }</code>
