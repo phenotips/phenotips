@@ -20,29 +20,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>PushPatient</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1396049911000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1393456734000</creationDate>
-  <date>1394049848000</date>
-  <contentUpdateDate>1393614034000</contentUpdateDate>
+  <date>1396052446000</date>
+  <contentUpdateDate>1396049911000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
+  <content/>
   <object>
+    <name>PhenoTips.PushPatient</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>767e254e-4d44-413d-8243-c88835562b5e</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -114,10 +116,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PushPatient</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>767e254e-4d44-413d-8243-c88835562b5e</guid>
     <property>
       <cache>forbid</cache>
     </property>
@@ -1075,6 +1073,10 @@ function _printObjectInternal(o, level) {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PushPatient</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>039b7857-377d-4086-8a44-e16fce031439</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -1146,10 +1148,6 @@ function _printObjectInternal(o, level) {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PushPatient</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>039b7857-377d-4086-8a44-e16fce031439</guid>
     <property>
       <cache>forbid</cache>
     </property>
@@ -1219,6 +1217,10 @@ function _printObjectInternal(o, level) {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PushPatient</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>87b251c1-821f-4c7b-8258-787134bd0cd9</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -1283,10 +1285,6 @@ function _printObjectInternal(o, level) {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.PushPatient</name>
-    <number>0</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>87b251c1-821f-4c7b-8258-787134bd0cd9</guid>
     <property>
       <content>{{velocity}}
 $xwiki.jsx.use('PhenoTips.PushPatient')
@@ -1310,5 +1308,4 @@ $xwiki.ssx.use('PhenoTips.PushPatient')
       <scope>wiki</scope>
     </property>
   </object>
-  <content/>
 </xwikidoc>
