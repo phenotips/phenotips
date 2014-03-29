@@ -167,12 +167,12 @@
 
       this._container = new Element('form', {'id' : 'push-patients-ui', 'class' : 'xform', 'method' : 'post', 'action' : this._serviceURL});
       this._container.insert(generateSection('server-selection','Push server','Remote PhenoTips server this patient\'s data will be pushed to'))
-                     .insert(generateSection('user-selection','Remote user name','The user name on the remote server which will be used to authorize on the server and '+
+                     .insert(generateSection('user-selection','Remote user name','The user name on the remote server which will be used to authenticate on the server and '+
                                                    'push the data; this user will be marked as the reporter on the remote server'))
                      .insert(generateSection('group-selection','Remote PhenoTips group','The PhenoTips group you would like to share this patient with on the remote server. ' +
-                                                                       'If a group is selected the group would be the owner and the given remote user will be a collaborator. ' +
-                                                                       'If no group is selected the given remote user will be the only owner.'))
-                     .insert(generateSection('fields-selection','Patient Data','Thisis the data that wil be pushed to the server'));
+                                                                       'If a group is selected, the group would be the owner and the given remote user will be a collaborator. ' +
+                                                                       'If no group is selected, the given remote user will be the only owner.'))
+                     .insert(generateSection('fields-selection','Patient Data','This is the data that will be pushed to the server'));
 
       this._checkBoxApprove = new Element('input',{type:'checkbox', 'id':'approve-checkbox', 'value':'approve'});
       this._labelApprove = new Element('label', {'id':'approve-label'});
