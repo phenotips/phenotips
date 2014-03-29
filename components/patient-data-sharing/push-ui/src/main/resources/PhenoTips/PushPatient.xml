@@ -129,7 +129,7 @@
       // ---------------------------------------------------------------------
       this._element = $('push-patient');
       if (!this._element) { return; }
-      this._pushLauncher = this._element.down('.pushpatientbutton a');
+      this._pushLauncher = this._element.down('a');
       if (!this._pushLauncher) { return; }
 
       this._serviceURL = new XWiki.Document('PushPatientService', 'PhenoTips').getURL('get', 'outputSyntax=plain');
@@ -334,7 +334,7 @@
         onCreate : function() {
           _this.__launchUIAjaxInProgress = true;
           _this._dialog.showDialog();
-          _this._container.up('.msdialog-modal-container').style.zIndex = 1001;
+          _this._container.up('.msdialog-modal-container').style.zIndex = 3001;
         },
         onSuccess : function (response) {
           console.log("PUSH: Got response for the getremotes request");
@@ -1152,7 +1152,9 @@ function _printObjectInternal(o, level) {
       <cache>forbid</cache>
     </property>
     <property>
-      <code>#push-patients-ui td {
+      <code>#template("colorThemeInit.vm")
+
+#push-patients-ui td {
   border: 0 none;
   padding: .3em;
   text-align: left;
@@ -1164,7 +1166,7 @@ function _printObjectInternal(o, level) {
 }
 
 .hintText {
-  color: rgb(159, 159, 159);
+  color: $theme.textPrimaryColor;
 }
 
 #user-selection input[type="text"]{
@@ -1178,7 +1180,7 @@ function _printObjectInternal(o, level) {
 }
 
 #user-selection input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
-    border-color: rgb(0, 137, 220);
+    border-color: $theme.linkColor;
 }
 
 #user-selection input.button:disabled {
@@ -1198,11 +1200,11 @@ function _printObjectInternal(o, level) {
 }
 
 .jsonpreview-level-0 {
-  background: #F5F0F0;
+  background: $theme.highlightColor;
 }
 
 .jsonpreview-level-2 {
-  background: #EEEEFF;
+  background: #FFF;
 }
 </code>
     </property>
@@ -1210,7 +1212,7 @@ function _printObjectInternal(o, level) {
       <name/>
     </property>
     <property>
-      <parse/>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -1287,16 +1289,13 @@ function _printObjectInternal(o, level) {
     </class>
     <property>
       <content>{{velocity}}
-$xwiki.jsx.use('PhenoTips.PushPatient')
-##$xwiki.jsfx.use('/uicomponents/pedigree/PushPatient.js')
-$xwiki.ssx.use('PhenoTips.PushPatient')
-(% id="push-patient" %)(((
-   (% class="buttonwrapper pushpatientbutton" %)[[Push to...&gt;&gt;path:#||class="button"]]
-)))
+$xwiki.jsx.use('PhenoTips.PushPatient')##
+$xwiki.ssx.use('PhenoTips.PushPatient')##
+(% id="push-patient" %)((([[Push to remote server&gt;&gt;path:#||class="button"]])))
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.before</extensionPointId>
+      <extensionPointId>org.phenotips.patientRecordMenu.moreActions</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.widget.pushpatient</name>
