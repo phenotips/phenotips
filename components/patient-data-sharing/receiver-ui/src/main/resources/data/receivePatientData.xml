@@ -44,15 +44,15 @@
   <hidden>true</hidden>
   <object>
     <class>
-    <name>XWiki.XWikiRights</name>
-    <customClass/>
-    <customMapping/>
-    <defaultViewSheet/>
-    <defaultEditSheet/>
-    <defaultWeb/>
-    <nameField/>
-    <validationScript/>
-    <allow>
+      <name>XWiki.XWikiRights</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <allow>
         <defaultValue>1</defaultValue>
         <disabled>0</disabled>
         <displayFormType>select</displayFormType>
@@ -62,8 +62,8 @@
         <prettyName>Allow/Deny</prettyName>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-    </allow>
-    <groups>
+      </allow>
+      <groups>
         <cache>0</cache>
         <disabled>0</disabled>
         <displayType>input</displayType>
@@ -77,8 +77,8 @@
         <size>5</size>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
-    </groups>
-    <levels>
+      </groups>
+      <levels>
         <cache>0</cache>
         <disabled>0</disabled>
         <displayType>select</displayType>
@@ -91,8 +91,8 @@
         <size>3</size>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.LevelsClass</classType>
-    </levels>
-    <users>
+      </levels>
+      <users>
         <cache>0</cache>
         <disabled>0</disabled>
         <displayType>input</displayType>
@@ -106,20 +106,20 @@
         <size>5</size>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
-    </users>
+      </users>
     </class>
     <name>data.receivePatientData</name>
     <number>0</number>
     <className>XWiki.XWikiRights</className>
     <guid>b4d5386c-f834-44ce-a8c7-e3750c5c275d</guid>
     <property>
-        <allow>1</allow>
+      <allow>1</allow>
     </property>
     <property>
-        <levels>view</levels>
+      <levels>view</levels>
     </property>
     <property>
-        <users>XWiki.XWikiGuest</users>
+      <users>XWiki.XWikiGuest</users>
     </property>
   </object>
   <content>{{velocity}}{{html clean="false"}}
