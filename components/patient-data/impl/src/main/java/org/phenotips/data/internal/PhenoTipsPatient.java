@@ -26,21 +26,23 @@ import org.phenotips.data.Feature;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -52,7 +54,6 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.DBStringListProperty;
-import org.xwiki.context.Execution;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -307,7 +308,9 @@ public class PhenoTipsPatient implements Patient
 
                 for (int i = 0; i < inputFeatures.size(); i++) {
                     JSONObject featureInJSON = inputFeatures.optJSONObject(i);
-                    if (featureInJSON == null) { continue; }
+                    if (featureInJSON == null) {
+                        continue;
+                    }
 
                     Feature phenotipsFeature = new PhenoTipsFeature(featureInJSON);
                     this.features.add(phenotipsFeature);
@@ -319,7 +322,7 @@ public class PhenoTipsPatient implements Patient
                     }
                 }
 
-                // as in constructor: make unmofidiable
+                // as in constructor: make unmodifiable
                 this.features = Collections.unmodifiableSet(this.features);
 
                 // update the values in the document (overwriting the old list, if any)
@@ -345,7 +348,9 @@ public class PhenoTipsPatient implements Patient
 
                 for (int i = 0; i < inputDisorders.size(); i++) {
                     JSONObject disorderJSON = inputDisorders.optJSONObject(i);
-                    if (disorderJSON == null) { continue; }
+                    if (disorderJSON == null) {
+                        continue;
+                    }
 
                     Disorder phenotipsDisorder = new PhenoTipsDisorder(disorderJSON);
                     this.disorders.add(phenotipsDisorder);
@@ -376,11 +381,13 @@ public class PhenoTipsPatient implements Patient
             XWikiContext context = (XWikiContext) execution.getContext().getProperty("xwikicontext");
 
             DocumentAccessBridge documentAccessBridge = ComponentManagerRegistry.getContextComponentManager().
-                                                                             getInstance(DocumentAccessBridge.class);
+                getInstance(DocumentAccessBridge.class);
             XWikiDocument doc = (XWikiDocument) documentAccessBridge.getDocument(getDocument());
 
             BaseObject data = doc.getXObject(CLASS_REFERENCE);
-            if (data == null) { return; }
+            if (data == null) {
+                return;
+            }
 
             updateFeaturesFromJSON(doc, data, context, json);
 
@@ -393,11 +400,11 @@ public class PhenoTipsPatient implements Patient
                         this.extraData.put(patientData.getName(), patientData);
                         serializer.save(this);
                         this.logger.warn("Successfully updated patient form JSON using serializer [{}]",
-                                         serializer.getName());
+                            serializer.getName());
                     }
                 } catch (UnsupportedOperationException ex) {
                     this.logger.warn("Unable to update patient from JSON using serializer [{}] - [{}]: {}",
-                                     serializer.getName(), ex.getMessage(), ex);
+                        serializer.getName(), ex.getMessage(), ex);
                 }
             }
         } catch (Exception ex) {
