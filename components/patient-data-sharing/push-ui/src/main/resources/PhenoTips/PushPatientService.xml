@@ -100,7 +100,7 @@
     #set ($data.cantconnect = 'true')
   #elseif ($response.isSuccessful())
     ## yay!
-    #set ($data = {'status':'success', 'groups':$response.getRemoteUserGroups(), 'serverfields': $response.getRemoteAcceptedPatientFields()})
+    #set ($data = {'status':'success', 'groups':$response.getRemoteUserGroups(), 'serverfields': $response.getRemoteAcceptedPatientFields(), 'updatesEnabled': $response.remoteUpdatesEnabled()})
   #elseif ($response.isLoginFailed_UnauthorizedServer())
     #set ($data.serverconnectproblem = 'true')
     #set ($data.unauthorizedserver = 'true')

@@ -501,8 +501,14 @@ public class DefaultReceivePatientData implements ReceivePatientData
 			response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_USERGROUPS, groupList);
 			response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_ACCEPTEDFIELDS, acceptedFields);
 
-			BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context); // TODO: make nice
-			if (this.userTokensEnabled(serverConfig)) {
+            if (updatesByGUIDEnabled(request.getRemoteAddr(), context)) {
+                response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_UPDATESENABLED, true);
+            } else {
+                response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_UPDATESENABLED, false);
+            }
+
+            BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context); // TODO: make nice
+            if (this.userTokensEnabled(serverConfig)) {
 	            String token = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USER_TOKEN);
 	            if (token == null) {
 	                token = generateNewToken(userName);      // Note: if token is not null it must be valid, keep it until expire date

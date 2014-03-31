@@ -67,6 +67,18 @@ public interface PushServerConfigurationResponse extends PushServerResponse
     Set<String> getPushableFields();
 
     /**
+     * Indicates wheather remote server allows updates of existing patients. When false, only pushes
+     * of new patients are allowed.<p>
+     *
+     * Note that even when updates are enabled, remote user used for pushing should have enough
+     * permissions to modify the patient. Updates are also only alowed when a valid GUID is provided,
+     * supposedly obtained as a result of an earlier push request.
+     *
+     * @return {@code true} if remote server allows
+     */
+    boolean remoteUpdatesEnabled();
+
+    /**
      * Get the user_token for future passwordless patient data pushes to the same server by the same remote user.
      * This feature may be disabled on the remote server, in which case {@code null} is returned.
      *

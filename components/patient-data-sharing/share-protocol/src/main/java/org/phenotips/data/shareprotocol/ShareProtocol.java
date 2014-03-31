@@ -88,6 +88,7 @@ public class ShareProtocol
     // response to a GETINFO action request will include the following fields (iff successful):
     public static final String SERVER_JSON_GETINFO_KEY_NAME_USERGROUPS     = "user_groups";
     public static final String SERVER_JSON_GETINFO_KEY_NAME_ACCEPTEDFIELDS = "accepted_fields";
+    public static final String SERVER_JSON_GETINFO_KEY_NAME_UPDATESENABLED = "updates_enabled";
     // (optional) ...and optionally this as well, if enabled on the server:
     public static final String SERVER_JSON_GETINFO_KEY_NAME_USERTOKEN      = "user_login_token";
 

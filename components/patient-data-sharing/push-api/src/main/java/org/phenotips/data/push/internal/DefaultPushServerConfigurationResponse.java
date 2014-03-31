@@ -103,6 +103,12 @@ public class DefaultPushServerConfigurationResponse extends DefaultPushServerRes
     }
 
     @Override
+    public boolean remoteUpdatesEnabled()
+    {
+        return hasKeySetToTrue(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_UPDATESENABLED);
+    }
+
+    @Override
     public String getRemoteUserToken()
     {
         return valueOrNull(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_USERTOKEN);
