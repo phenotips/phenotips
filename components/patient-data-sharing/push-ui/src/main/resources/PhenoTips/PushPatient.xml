@@ -469,7 +469,7 @@
         onSuccess : function (response) {
           _this._lastLoginResponse = undefined;
           _this._lastApprovedUser  = undefined;
-          this._updateUserList();
+          _this._updateUserList();
         },
         onFailure : function(response) {
           alert("Failed to log out");
