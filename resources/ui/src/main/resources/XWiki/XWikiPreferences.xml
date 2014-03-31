@@ -1170,6 +1170,96 @@
   <object>
     <name>XWiki.XWikiPreferences</name>
     <number>0</number>
+    <className>PhenoTips.PushPatientServer</className>
+    <guid>9fd37c41-b39b-4bce-8824-f45161f36083</guid>
+    <class>
+      <name>PhenoTips.PushPatientServer</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <description>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>description</name>
+        <number>4</number>
+        <picker>0</picker>
+        <prettyName>Description</prettyName>
+        <rows>2</rows>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <name>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Server name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <token>
+        <algorithm/>
+        <customDisplay>{{velocity}}
+#if ($type == 'edit')
+{{html clean="false"}}&lt;input type="password" name="${prefix}${name}" value="#if ("$!{value}" != '')********#end" /&gt;{{/html}}
+#else
+********
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>token</name>
+        <number>4</number>
+        <picker>0</picker>
+        <prettyName>Authentication token</prettyName>
+        <size>25</size>
+        <storageType>Clear</storageType>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.PasswordClass</classType>
+      </token>
+      <url>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>url</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Server URL</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </url>
+    </class>
+    <property>
+      <description>PhenomeCentral is a repository for secure data sharing targeted to clinicians and scientists working in the rare disorder community. PhenomeCentral encourages global scientific collaboration while respecting the privacy of patients profiled in this centralized database.</description>
+    </property>
+    <property>
+      <name>PhenomeCentral</name>
+    </property>
+    <property>
+      <token/>
+    </property>
+    <property>
+      <url>https://phenomecentral.org/</url>
+    </property>
+  </object>
+  <object>
+    <name>XWiki.XWikiPreferences</name>
+    <number>0</number>
     <className>XWiki.ClassSheetBinding</className>
     <guid>a31af27a-2ed7-4a6a-9b53-afe212bd8e2b</guid>
     <class>
