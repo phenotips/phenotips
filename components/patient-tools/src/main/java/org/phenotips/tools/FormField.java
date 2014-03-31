@@ -96,9 +96,9 @@ public class FormField extends AbstractFormElement
                     generateCheckbox("none", this.value, "", (!isSelected(YES) && !isSelected(NO)), "na", "NA"),
                     generateCheckbox(fieldNames[YES], this.value, this.hint, isSelected(YES), "yes", "Y"),
                     generateCheckbox(fieldNames[NO], this.value, this.hint, isSelected(NO), "no", "N"),
-                    this.term.getName()
-                        + (StringUtils.isNotBlank(this.term.getDescription()) ? "\n"
-                            + StringEscapeUtils.escapeXml(this.term.getDescription()) : ""),
+                    this.term == null ? this.title + "\n(custom term)" : (this.term.getName() + (StringUtils
+                        .isNotBlank(this.term.getDescription()) ? "\n"
+                        + StringEscapeUtils.escapeXml10(this.term.getDescription()) : "")),
                     generateLabel(fieldNames[YES] + '_' + this.value, "yes-no-picker-label", this.title),
                     generateTooltip());
 
