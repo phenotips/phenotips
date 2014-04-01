@@ -100,6 +100,16 @@
 #editor-menu .close {
   background-image: url("$xwiki.getSkinFile('icons/silk/bullet_go.png')");
 }
+#editor-menu .readonlymessage {
+  background-image: url("$xwiki.getSkinFile('icons/silk/bullet_error.png')");
+} 
+#editor-menu .reload {
+  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_refresh_small.png')");
+} 
+#editor-menu .templates {
+  background-image: url("$xwiki.getSkinFile('icons/silk/bullet_star.png')"); /* star.png */
+} 
+
 .loading-indicator {
     background-image: url("$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')");
     background-position: center;
@@ -221,6 +231,8 @@
   background-position: center center;
   background-repeat: no-repeat;
 
+  background: -o-radial-gradient(circle, #FFFFFF, #D2D2D2);
+  background: -webkit-radial-gradient(circle, #FFFFFF, #D2D2D2);
   background: radial-gradient(circle, #FFFFFF, #D2D2D2);
 }
 /* ===========================================

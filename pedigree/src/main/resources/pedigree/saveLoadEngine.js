@@ -5,13 +5,43 @@
  * @constructor
  */
 
-function unescapeRestData (dataNode) {
+function unescapeRestData (data) {
     // http://stackoverflow.com/questions/4480757/how-do-i-unescape-html-entities-in-js-change-lt-to
     var tempNode = document.createElement('div');
-    tempNode.innerHTML = dataNode.textContent.replace(/&amp;/, '&');
+    tempNode.innerHTML = data.replace(/&amp;/, '&');
     return tempNode.innerText || tempNode.text || tempNode.textContent;
 }
 
+function getSelectorFromXML(responseXML, selectorName, attributeName, attributeValue) {
+    if (responseXML.querySelector) {
+        // modern browsers
+        return responseXML.querySelector(selectorName + "[" + attributeName + "='" + attributeValue + "']");        
+    } else {
+        // IE7 && IE8 && some other older browsers
+        // http://www.w3schools.com/XPath/xpath_syntax.asp
+        // http://msdn.microsoft.com/en-us/library/ms757846%28v=vs.85%29.aspx
+        var query = "//" + selectorName + "[@" + attributeName + "='" + attributeValue + "']";
+        try {
+            return responseXML.selectSingleNode(query);
+        } catch (e) {
+            // Firefox v3.0-
+            alert("your browser is unsupported");
+            window.stop && window.stop();
+            throw "Unsupported browser";
+        }
+    }
+}
+
+function getSubSelectorTextFromXML(responseXML, selectorName, attributeName, attributeValue, subselectorName) {
+    var selector = getSelectorFromXML(responseXML, selectorName, attributeName, attributeValue);
+    
+    var value = selector.innerText || selector.text || selector.textContent;
+    
+    if (!value)     // fix IE behavior where (undefined || "" || undefined) == undefined
+        value = "";
+    
+    return value;
+}
 
 var ProbandDataLoader = Class.create( {
     initialize: function() {
@@ -26,12 +56,12 @@ var ProbandDataLoader = Class.create( {
         });
     },
 
-    onProbandDataReady : function(response) {
-        var data = response.responseXML.documentElement;
-        this.probandData = {};        
-        this.probandData.firstName = unescapeRestData(data.querySelector("property[name='first_name'] > value"));
-        this.probandData.lastName  = unescapeRestData(data.querySelector("property[name='last_name'] > value"));
-        this.probandData.gender    = unescapeRestData(data.querySelector("property[name='gender'] > value")); 
+    onProbandDataReady : function(response) {        
+        var responseXML = response.responseXML;  //documentElement.
+        this.probandData = {};
+        this.probandData.firstName = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "first_name", "value"));
+        this.probandData.lastName  = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "last_name", "value"));
+        this.probandData.gender    = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "gender", "value"));
         if (this.probandData.gender == '')
             this.probandData.gender = 'U';
         console.log("Proband data: " + stringifyObject(this.probandData));
@@ -134,7 +164,8 @@ var SaveLoadEngine = Class.create( {
             onSuccess: function (response) {
                 //console.log("Data from LOAD: " + stringifyObject(response));
                 console.log("[Data from LOAD]");
-                var rawdata = response.responseXML.documentElement.querySelector("property[name='data'] > value");
+                                
+                var rawdata  = getSubSelectorTextFromXML(response.responseXML, "property", "name", "data", "value");                
                 var jsonData = unescapeRestData(rawdata);
                 if (jsonData.trim()) {
                     console.log("recived JSON: " + stringifyObject(jsonData));

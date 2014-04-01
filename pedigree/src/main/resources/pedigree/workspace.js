@@ -21,12 +21,13 @@ var Workspace = Class.create({
         this.viewBoxX = 0;
         this.viewBoxY = 0;
         this.zoomCoefficient = 1;
+        this.generateTopMenu();
+        
         this.background = this.getPaper().rect(0,0, this.width, this.height).attr({fill: 'blue', stroke: 'none', opacity: 0}).toBack();
         this.background.node.setAttribute("class", "panning-background");
 
         this.adjustSizeToScreen = this.adjustSizeToScreen.bind(this);
-        Event.observe (window, 'resize', me.adjustSizeToScreen);
-        this.generateTopMenu();
+        Event.observe (window, 'resize', me.adjustSizeToScreen);        
         this.generateViewControls();
 
         //Initialize pan by dragging
@@ -51,6 +52,35 @@ var Workspace = Class.create({
             me.background.attr({cursor: 'default'});
         };
         me.background.drag(move, start, end);
+        
+        if (document.addEventListener) {
+            // adapted from from raphaelZPD
+            me.handleMouseWheel = function(evt) {
+                if (evt.preventDefault)
+                    evt.preventDefault();
+                else
+                    evt.returnValue = false;
+                    
+                    var delta;    
+                    if (evt.wheelDelta)
+                        delta = -evt.wheelDelta; // Chrome/Safari
+                    else
+                        delta = evt.detail; // Mozilla
+                    
+                    //console.log("Mouse wheel: " + delta);                    
+                    if (delta > 0) {
+                        me.zoomSlider.setValue(1 - (me.__zoom.__crtValue - .25))
+                    } else {
+                        me.zoomSlider.setValue(1 - (me.__zoom.__crtValue + .25))
+                    }
+            }
+                    
+            if (navigator.userAgent.toLowerCase().indexOf('webkit') >= 0) {
+                this.canvas.addEventListener('mousewheel', me.handleMouseWheel, false); // Chrome/Safari
+            } else {
+                this.canvas.addEventListener('DOMMouseScroll', me.handleMouseWheel, false); // Others
+            }
+        } 
     },
 
     /**
@@ -101,24 +131,42 @@ var Workspace = Class.create({
     generateTopMenu: function() {
         var menu = new Element('div', {'id' : 'editor-menu'});
         this.getWorkArea().insert({before : menu});
-        var submenus = [{
-            name : 'internal',
-            items: [
-                { key : 'undo',   label : 'Undo'},
-                { key : 'redo',   label : 'Redo'},
-                { key : 'layout', label : 'Automatic layout'},
-                { key : 'clear',  label : 'Clear all'}
-            ]
-        }, {
-            name : 'external',
-            items: [
-                { key : 'save',      label : 'Save'},
-                { key : 'reload',    label : 'Reload'},
-                { key : 'templates', label : 'Templates'},
-                //{ key : 'print',     label : 'Printable version'},
-                { key : 'close',     label : 'Close'}
-            ]
-        }];
+        var submenus = [];
+        
+        if (editor.isUnsupportedBrowser()) {
+            submenus = [{
+                name : 'internal',
+                items: [
+                    { key : 'readonlymessage', label : 'Unsuported browser mode'},
+                    { key : 'layout',          label : 'Automatic layout'},
+                ]
+            }, {
+                name : 'external',
+                items: [
+                    { key : 'reload',    label : 'Reload'},
+                    { key : 'close',     label : 'Close'}
+                ]
+            }];
+        } else {
+            submenus = [{
+                name : 'internal',
+                items: [
+                    { key : 'undo',   label : 'Undo'},
+                    { key : 'redo',   label : 'Redo'},
+                    { key : 'layout', label : 'Automatic layout'},
+                    { key : 'clear',  label : 'Clear all'}
+                ]
+            }, {
+                name : 'external',
+                items: [
+                    { key : 'save',      label : 'Save'},
+                    { key : 'reload',    label : 'Reload'},
+                    { key : 'templates', label : 'Templates'},
+                    //{ key : 'print',     label : 'Printable version'},
+                    { key : 'close',     label : 'Close'}
+                ]
+            }];
+        }
         var _createSubmenu = function(data) {
             var submenu = new Element('div', {'class' : data.name + '-actions action-group'});
             menu.insert(submenu);
@@ -144,7 +192,7 @@ var Workspace = Class.create({
      * @method zoom
      * @param {Number} zoomCoefficient The zooming ratio
      */
-    zoom: function(zoomCoefficient) {        
+    zoom: function(zoomCoefficient) {
         if (zoomCoefficient < 0.25) zoomCoefficient = 0.25;     
         zoomCoefficient = Math.round(zoomCoefficient/0.05)/20;
         //console.log("zoom: " + zoomCoefficient);
@@ -220,12 +268,16 @@ var Workspace = Class.create({
             onChange : function (value) {
                 // Called whenever the Slider has finished moving or has had its value changed via the setSlider Value function.
                 // The called function gets the slider value (or array if slider has multiple handles) as its parameter.
-                //console.log("val: " + value);
+                //console.log("val: " + value + " cur value: " + _this.__zoom.__crtValue);
                 _this.__zoom.__crtValue = 1 - value;
                 _this.zoom(0.25 + _this.__zoom.__crtValue)
             }
         });
-        this.zoomSlider.setValue(0.5); // TODO : set initial value
+        if (editor.isUnsupportedBrowser()) {
+            this.zoomSlider.setValue(0.25); // 1:1 for best chance of decent looks on non-SVG browsers like IE8
+        } else {
+            this.zoomSlider.setValue(0.5); // TODO : set initial value
+        }
         this.__zoom['in'].observe('click', function(event) {
             _this.zoomSlider.setValue(1 - (_this.__zoom.__crtValue + .25))
         });
@@ -253,6 +305,7 @@ var Workspace = Class.create({
      * Returns the current zoom level (not normalized to any value, larger numbers mean deeper zoom-in)
      */
     getCurrentZoomLevel: function(pixelSizeAtDefaultZoom) {
+        if (!this.__zoom) return 0.5;
         return this.__zoom.__crtValue;
     },
 
@@ -351,7 +404,7 @@ var Workspace = Class.create({
         this.getPaper().setViewBox(this.viewBoxX, this.viewBoxY, this.width/this.zoomCoefficient, this.height/this.zoomCoefficient);
         this.background && this.background.attr({"width": this.width, "height": this.height});
         if (editor.getNodeMenu()) {
-            editor.getNodeMenu().reposition();
+            editor.getNodeMenu().reposition(0,0);
         }
     },
 

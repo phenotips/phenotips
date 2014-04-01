@@ -44,7 +44,8 @@ var TemplateSelector = Class.create( {
             var pictureBox = new Element('div', {'class': 'picture-box'});
             pictureBox.update("Loading...");
             this.mainDiv.insert(pictureBox);
-            new Ajax.Request(objects[i].querySelector("link[rel='http://www.xwiki.org/rel/properties']").getAttribute("href"), {
+            var href = getSelectorFromXML(objects[i], "link", "rel", "http://www.xwiki.org/rel/properties").getAttribute("href");
+            new Ajax.Request(href, {
                 method: 'GET',
                 onSuccess: this._onTemplateAvailable.bind(this, pictureBox)
             });
@@ -59,17 +60,29 @@ var TemplateSelector = Class.create( {
      * @private
      */
     _onTemplateAvailable: function(pictureBox, response) {
-        pictureBox.innerHTML = response.responseXML.documentElement.querySelector("property[name='data'] > value").textContent.replace(/&amp;/, '&');
-        var db_data = JSON.parse(pictureBox.textContent);
+        pictureBox.innerHTML = getSubSelectorTextFromXML(response.responseXML, "property", "name", "data", "value").replace(/&amp;/, '&');
+        var value = pictureBox.innerText || pictureBox.text || pictureBox.textContent; // damn IE ;)        
+        var db_data = JSON.parse(value);
         // TODO
         // HACK until DB is updated: hardcoded templates
-        if (db_data.partnerships.length == 0)
+        if (db_data.partnerships.length == 0) {
             pictureBox.pedigreeData = '{"GG":[{"id":0,"prop":{"gender":"F","fName":"Proband"}}],"ranks":[1],"order":[[],[0]],"positions":[5]}';
-        else
+            pictureBox.description  = "Proband only";
+        }
+        else {
             pictureBox.pedigreeData = '{"GG":[{"id":0,"prop":{"gender":"F","fName":"Proband"}},{"id":1,"chhub":true,"prop":{},"outedges":[{"to":0}]},{"id":2,"rel":true,"hub":true,"prop":{},"outedges":[{"to":1}]},{"id":3,"prop":{"gender":"F","fName":""},"outedges":[{"to":2}]},{"id":4,"prop":{"gender":"M","fName":""},"outedges":[{"to":2}]},{"id":5,"chhub":true,"prop":{},"outedges":[{"to":3}]},{"id":6,"rel":true,"hub":true,"prop":{},"outedges":[{"to":5}]},{"id":7,"prop":{"gender":"M"},"outedges":[{"to":6}]},{"id":8,"prop":{"gender":"F"},"outedges":[{"to":6}]},{"id":9,"chhub":true,"prop":{},"outedges":[{"to":4}]},{"id":10,"rel":true,"hub":true,"prop":{},"outedges":[{"to":9}]},{"id":11,"prop":{"gender":"M"},"outedges":[{"to":10}]},{"id":12,"prop":{"gender":"F"},"outedges":[{"to":10}]},{"id":13,"chhub":true,"prop":{},"outedges":[{"to":8}]},{"id":14,"rel":true,"hub":true,"prop":{},"outedges":[{"to":13}]},{"id":15,"prop":{"gender":"M"},"outedges":[{"to":14}]},{"id":16,"prop":{"gender":"F"},"outedges":[{"to":14}]},{"id":17,"chhub":true,"prop":{},"outedges":[{"to":11}]},{"id":18,"rel":true,"hub":true,"prop":{},"outedges":[{"to":17}]},{"id":19,"prop":{"gender":"M"},"outedges":[{"to":18}]},{"id":20,"prop":{"gender":"F"},"outedges":[{"to":18}]},{"id":21,"chhub":true,"prop":{},"outedges":[{"to":12}]},{"id":22,"rel":true,"hub":true,"prop":{},"outedges":[{"to":21}]},{"id":23,"prop":{"gender":"M"},"outedges":[{"to":22}]},{"id":24,"prop":{"gender":"F"},"outedges":[{"to":22}]},{"id":25,"chhub":true,"prop":{},"outedges":[{"to":7}]},{"id":26,"rel":true,"hub":true,"prop":{},"outedges":[{"to":25}]},{"id":27,"prop":{"gender":"M"},"outedges":[{"to":26}]},{"id":28,"prop":{"gender":"F"},"outedges":[{"to":26}]}],"ranks":[7,6,5,5,5,4,3,3,3,4,3,3,3,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1],"order":[[],[15,14,16,27,26,28,23,22,24,19,18,20],[13,25,21,17],[8,6,7,12,10,11],[5,9],[3,2,4],[1],[0]],"positions":[83,83,83,40,126,40,40,61,17,126,126,149,105,17,17,5,29,149,149,137,161,105,105,93,117,61,61,49,73]}';
+            pictureBox.description  = "Family with 3 generations";
+        }
         
         //console.log("[Data from Template] - " + stringifyObject(pictureBox.pedigreeData));
-        pictureBox.innerHTML = response.responseXML.documentElement.querySelector("property[name='image'] > value").textContent.replace(/&amp;/, '&');
+        
+        // TODO: render images with JavaScript instead
+        if (window.SVGSVGElement &&
+            document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Image", "1.1")) {
+            pictureBox.innerHTML = unescapeRestData(getSubSelectorTextFromXML(response.responseXML, "property", "name", "image", "value"));
+        } else {
+            pictureBox.innerHTML = "<table bgcolor='#FFFAFA'><tr><td><br>&nbsp;" + pictureBox.description + "&nbsp;<br><br></td></tr></table>";
+        }
         pictureBox.observe('click', this._onTemplateSelected.bindAsEventListener(this, pictureBox));
     },
 
