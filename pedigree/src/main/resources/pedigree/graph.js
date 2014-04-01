@@ -170,9 +170,13 @@ var GraphicsSet = Class.create({
         
         var cornerRadius     = PedigreeEditor.attributes.curvedLinesCornerRadius * 0.8;
         var goesRight        = ( xFrom > xTo );
-        var xFinalBend       = goesRight ? xTo + lastBend                  : xTo - lastBend; 
-        var xFinalBendVert   = goesRight ? xTo + lastBend + cornerRadius   : xTo - lastBend - cornerRadius;
-        var xBeforeFinalBend = goesRight ? xTo + lastBend + cornerRadius*2 : xTo - lastBend - cornerRadius*2;
+        if (isFinite(lastBend)) {
+            var xFinalBend       = goesRight ? xTo + lastBend                  : xTo - lastBend; 
+            var xFinalBendVert   = goesRight ? xTo + lastBend + cornerRadius   : xTo - lastBend - cornerRadius;
+            var xBeforeFinalBend = goesRight ? xTo + lastBend + cornerRadius*2 : xTo - lastBend - cornerRadius*2;
+        } else {
+            var xBeforeFinalBend = xTo;
+        }        
         var xFromAndBit        = goesRight ? xFrom - cornerRadius/2        : xFrom + cornerRadius/2;
         var xFromAfterCorner   = goesRight ? xFromAndBit - cornerRadius    : xFromAndBit + cornerRadius;
         var xFromAfter2Corners = goesRight ? xFromAndBit - 2*cornerRadius  : xFromAndBit + 2 * cornerRadius;
@@ -184,31 +188,49 @@ var GraphicsSet = Class.create({
         }
         else {
             editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xFromAndBit, yFrom, attr, twoLines, !goesRight, true);
-            if (goesRight)
-                drawCornerCurve( xFromAndBit, yFrom, xFromAfterCorner, yFrom-cornerRadius, true, attr, twoLines, -2.5, 2.5, 2.5, -2.5 );
-            else
-                drawCornerCurve( xFromAndBit, yFrom, xFromAfterCorner, yFrom-cornerRadius, true, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );            
-            editor.getGraphicsSet().drawLineWithCrossings(id, xFromAfterCorner, yFrom-cornerRadius, xFromAfterCorner, yTop+cornerRadius, attr, twoLines, goesRight);
-            if (goesRight)
-                drawCornerCurve( xFromAfterCorner, yTop+cornerRadius, xFromAfter2Corners, yTop, false, attr, twoLines, -2.5, 2.5, 2.5, -2.5 );
-            else
-                drawCornerCurve( xFromAfterCorner, yTop+cornerRadius, xFromAfter2Corners, yTop, false, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );            
+            
+            if (Math.abs(yFrom - yTop) >= cornerRadius*2) {
+                if (goesRight)
+                    drawCornerCurve( xFromAndBit, yFrom, xFromAfterCorner, yFrom-cornerRadius, true, attr, twoLines, -2.5, 2.5, 2.5, -2.5 );
+                else
+                    drawCornerCurve( xFromAndBit, yFrom, xFromAfterCorner, yFrom-cornerRadius, true, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );            
+                editor.getGraphicsSet().drawLineWithCrossings(id, xFromAfterCorner, yFrom-cornerRadius, xFromAfterCorner, yTop+cornerRadius, attr, twoLines, goesRight);
+                if (goesRight)
+                    drawCornerCurve( xFromAfterCorner, yTop+cornerRadius, xFromAfter2Corners, yTop, false, attr, twoLines, -2.5, 2.5, 2.5, -2.5 );
+                else
+                    drawCornerCurve( xFromAfterCorner, yTop+cornerRadius, xFromAfter2Corners, yTop, false, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );
+            } else {
+                // draw one continuous curve
+                if (goesRight)
+                    drawLevelChangeCurve( xFromAndBit, yFrom, xFromAfter2Corners, yTop, attr, twoLines, -2.5, 2.5, 2.5, -2.5 );
+                else
+                    drawLevelChangeCurve( xFromAndBit, yFrom, xFromAfter2Corners, yTop, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );                
+            }
             editor.getGraphicsSet().drawLineWithCrossings(id, xFromAfter2Corners, yTop, xBeforeFinalBend, yTop, attr, twoLines, !goesRight, true);
         }
         
-        // curve down to yTo level
-        // draw corner        
-        if (goesRight)
-            drawCornerCurve( xBeforeFinalBend, yTop, xFinalBendVert, yTop+cornerRadius, true, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );
-        else
-            drawCornerCurve( xBeforeFinalBend, yTop, xFinalBendVert, yTop+cornerRadius, true, attr, twoLines, 2.5, -2.5, -2.5, 2.5 );
-        editor.getGraphicsSet().drawLineWithCrossings(id, xFinalBendVert, yTop+cornerRadius, xFinalBendVert, yTo-cornerRadius, attr, twoLines, !goesRight);
-        if (goesRight)
-            drawCornerCurve( xFinalBendVert, yTo-cornerRadius, xFinalBend, yTo, false, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );
-        else
-            drawCornerCurve( xFinalBendVert, yTo-cornerRadius, xFinalBend, yTo, false, attr, twoLines, 2.5, -2.5, -2.5, 2.5 );
-        editor.getGraphicsSet().drawLineWithCrossings(id, xFinalBend, yTo, xTo, yTo, attr, twoLines, !goesRight);
-
+        if (xBeforeFinalBend != xTo) {
+            // curve down to yTo level
+            if (Math.abs(yTo - yTop) >= cornerRadius*2) {
+                // draw corner        
+                if (goesRight)
+                    drawCornerCurve( xBeforeFinalBend, yTop, xFinalBendVert, yTop+cornerRadius, true, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );
+                else
+                    drawCornerCurve( xBeforeFinalBend, yTop, xFinalBendVert, yTop+cornerRadius, true, attr, twoLines, 2.5, -2.5, -2.5, 2.5 );
+                editor.getGraphicsSet().drawLineWithCrossings(id, xFinalBendVert, yTop+cornerRadius, xFinalBendVert, yTo-cornerRadius, attr, twoLines, !goesRight);
+                if (goesRight)
+                    drawCornerCurve( xFinalBendVert, yTo-cornerRadius, xFinalBend, yTo, false, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );
+                else
+                    drawCornerCurve( xFinalBendVert, yTo-cornerRadius, xFinalBend, yTo, false, attr, twoLines, 2.5, -2.5, -2.5, 2.5 );
+            } else {
+                // draw one continuous curve
+                if (goesRight)
+                    drawLevelChangeCurve( xBeforeFinalBend, yTop, xFinalBend, yTo, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );
+                else
+                    drawLevelChangeCurve( xBeforeFinalBend, yTop, xFinalBend, yTo, attr, twoLines, 2.5, -2.5, -2.5, 2.5 );
+            }
+            editor.getGraphicsSet().drawLineWithCrossings(id, xFinalBend, yTo, xTo, yTo, attr, twoLines, !goesRight);
+        }
     },
     
     /**
@@ -277,7 +299,7 @@ var GraphicsSet = Class.create({
                 };                
                 if (distance(intersectPoint, {"x": x1, "y": y1}) < 20*20)
                     continue;
-                if (distance(intersectPoint, {"x": x2, "y": y2}) < 20*20)
+                if (distance(intersectPoint, {"x": x2, "y": y2}) < 17*17)
                     continue;
                 
                 if (isHorizontal) {                    
@@ -339,15 +361,15 @@ var GraphicsSet = Class.create({
         var position = editor.convertGraphCoordToCanvasCoord(graphPos.x, graphPos.y );        
         
         if (positionedGraph.isRelationship(id)) {
-            console.log("-> add partnership");
+            //console.log("-> add partnership");
             node = new Partnership(position.x, position.y, id);
         }
         else if (positionedGraph.isPersonGroup(id)) {
-            console.log("-> add person group");
+            //console.log("-> add person group");
             node = new PersonGroup(position.x, position.y, properties["gender"], id, properties["numPersons"]);
         }        
         else if (positionedGraph.isPerson(id)) {
-            console.log("-> add person");
+            //console.log("-> add person");
             node = new Person(position.x, position.y, properties["gender"], id);
         }
         else {
@@ -605,8 +627,8 @@ var GraphicsSet = Class.create({
         }
         console.log("moved: " + stringifyObject(changeSet.moved));
         if (changeSet.hasOwnProperty("new")) {
-            for (var i = 0; i < changeSet.new.length; i++) {
-                var nextNew = changeSet.new[i];                
+            for (var i = 0; i < changeSet["new"].length; i++) {
+                var nextNew = changeSet["new"][i];                
                 if (editor.getGraph().isRelationship(nextNew))
                     newRelationships.push(nextNew);
                 else

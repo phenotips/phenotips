@@ -43,6 +43,7 @@ PositionedGraph.prototype = {
     yDistanceNodeToChildhub:        17,
     yDistanceChildhubToNode:        17,
     yExtraPerHorizontalLine:         4,
+    yAttachPortHeight:             1.5,
 
     initialize: function( baseG,
                           horizontalPersonSeparationDist,
@@ -2141,6 +2142,17 @@ PositionedGraph.prototype = {
     //=[vertical separation for horizontal edges]========================================
     positionVertically: function()
     {
+        /*// debug: very useful debug case, which is very hard to reproduce without fiddling with
+          //        a normally-processed MS_004 graph. TODO: remove      
+          if (this.positions.length > 60) {
+          this.positions[50] = 80;
+          this.positions[51] = 193;
+          this.positions[53] = 217;
+          this.positions[60] = 440;
+          this.order.vOrder[45] = this.order.vOrder[50];
+          this.order.vOrder[50] = 0;
+        }*/
+
         var verticalLevels = new VerticalLevels();
 
         if (this.GG.v.length <= 1) return verticalLevels;
@@ -2205,7 +2217,12 @@ PositionedGraph.prototype = {
                     right_x = Math.max( right_x, child_x );
                 }
 
-                edgeInfo.push( { "childhub": v, "top_x": top_x, "left_x": left_x, "right_x": right_x, "childCoords": childCoords} );
+                // special case improvement: single child which is leftmost on the rank and its parent is to the right of it
+                // (this may not produce less edge crossings, but is more visually pleasing)
+                var needTopmost = (outEdges.length == 1) &&
+                                  ( ( (this.order.vOrder[outEdges[0]] == 0) && (top_x > this.positions[outEdges[0]]) ) ||
+                                    ( (this.order.vOrder[outEdges[0]] == this.order.vOrder.length -1) && (top_x < this.positions[outEdges[0]]) ) );
+                edgeInfo.push( { "childhub": v, "top_x": top_x, "left_x": left_x, "right_x": right_x, "childCoords": childCoords, "needTopmost": needTopmost} );
                 initLevels.push(1);
             }
             //console.log("EdgeInfo: " + stringifyObject(edgeInfo));
@@ -2251,19 +2268,21 @@ PositionedGraph.prototype = {
                     if (childX >= edgeInfo[edge2].left_x && childX <= edgeInfo[edge2].right_x)
                         intersections++;
                 }
+                if (edgeInfo[edge2].needTopmost)    // single leftmost child should be topmost
+                    return intersections += 0.1;
                 return intersections;
             };
 
             var optimizer = new VerticalPosIntOptimizer( pairScoreFunc, initLevels );
 
-            var edgeLevels = optimizer.computeVerticalPositions( 5, 400 );    // - full exhaustive search when up to 5 edges cross other edges on this rank
-                                                                              // - heuristic with up to 200 steps is used otherwise
-                                                                              //
-                                                                              //   max full search running time: ~    f(numEdgesThatCross) * scoreFuncTime  (*)
-                                                                              //   max heuristic running time:   ~  bigConstant * numSteps * scoreFuncTime
-                                                                              //
-                                                                              //   (*) where f(numEdgesThatCross) is the number of combinations without gaps
-                                                                              //       (e.g. 3,2,1 is OK but 3,1,1 is not);  f(6) = 8646, f(5) = 962
+            // - full exhaustive search when up to 5 edges cross other edges on this rank
+            // - heuristic with up to 400 steps is used otherwise
+            //
+            //   max full search running time: ~                 f(numEdgesThatCross) * scoreFuncTime  (*)
+            //   max heuristic running time:   ~  bigC * numEdgesThatCross * numSteps * scoreFuncTime
+            //
+            //   (*) where f(numEdgesThatCross) is (currently) numEdgesThatCross^numEdgesThatCross, e.g. f(5) = 3125
+            var edgeLevels = optimizer.computeVerticalPositions( 5, 400 );
 
             console.log("[rank " + r + "] Final vertical childedge levels: " +  stringifyObject(edgeLevels));
 
@@ -2276,9 +2295,12 @@ PositionedGraph.prototype = {
 
         // 2) vertical positioning of person-relationship edges:
         for (var r = 1; r <= this.maxRank; r++) {
-            
-            var maxLevel = 1;
-            
+
+            var numLevels = 1;
+
+            var initLevels = [];
+            var edgeInfo   = [];
+
             var len = this.order.order[r].length;
             for (var i = 0; i < len; i++) {
                 var v = this.order.order[r][i];
@@ -2287,66 +2309,184 @@ PositionedGraph.prototype = {
                     var outEdges = this.GG.getOutEdges(v);
                     if (outEdges.length <= 0) continue;
 
-                    //console.log("person: " + v);
+                    var v_x = this.positions[v];
 
                     verticalLevels.outEdgeVerticalLevel[v] = {};
 
-                    var partnerInfo = this._findLeftAndRightPartners(v);
-                    var leftEdges   = partnerInfo.leftPartners;
-                    var rightEdges  = partnerInfo.rightPartners;
-
-                    //console.log("Vert Positioning " + v);
+                    //console.log("Vert Positioning rel edges from person " + v);
                     //console.log("leftEdges: " + stringifyObject(leftEdges));
                     //console.log("rightEdges: " + stringifyObject(rightEdges));
-                    //console.log("Vert levels @ rank " + r + ": " + verticalLevels.rankVerticalLevels[r-1]);
+
                     var vOrder = this.order.vOrder;
 
-                    var nextAttachL   = 0;      // attachment point of the line connecting the node and it's relationship
-                    var nextVerticalL = 0;      // vertical level of the line
-                    for (var k = 0; k < leftEdges.length; k++) {
-                        var u = this.GG.downTheChainUntilNonVirtual( leftEdges[k] );
+                    var positionEdgesOnOneSide = function( edges ) {
+                        var nextAttachPort    = 0;      // attachment point of the line connecting the node and it's relationship
+                        var nextVerticalLevel = 0;      // vertical level of the line
+                        for (var k = 0; k < edges.length; k++) {
+                            var u    = this.GG.downTheChainUntilNonVirtual( edges[k] );    // final destination for the edge - possibly at another rank
+                            var dest = edges[k];                                           // immediate target - on the same rank
 
-                        if (nextVerticalL == 0) {
-                            for (var o = vOrder[leftEdges[k]] + 1; o < vOrder[v]; o++) {
-                                // there are non-virtual vertices between the node and it's relationship - need to draw the line above the nodes
+                            // check what lies between V and DEST. Need to raise the edge by different amounts depending on what lies there
+                            // (nothing, relationship nodes, real nodes)
+                            var minOrder = Math.min(vOrder[dest], vOrder[v]) + 1;
+                            var maxOrder = Math.max(vOrder[dest], vOrder[v]);
+                            var minLevel = (minOrder == maxOrder) ? 0 : 1;  // 0 if next to each other, 1 if at least anything inbetween
+                            //console.log("v: " + v + "(" + vOrder[v] + "),  dest: " + dest +  "(" + vOrder[dest] + "), minOrder: " + minOrder + ", maxOrder: " + maxOrder);
+                            for (var o = minOrder; o < maxOrder; o++) {
                                 var w = this.order.order[r][o];
-                                if (!this.GG.isVirtual(w) && !this.GG.isRelationship(w)) { nextVerticalL = 1; break; }
+                                if (this.GG.isRelationship(w)) { minLevel = Math.max(minLevel, 2); }
+                                if (this.GG.isPerson(w))       { minLevel = Math.max(minLevel, 3); }
                             }
-                        }
-                        console.log("attaching (L) " + u + "(" + leftEdges[k] + ") at level " + nextAttachL);
-                        verticalLevels.outEdgeVerticalLevel[v][u] = { attachlevel: nextAttachL, verticalLevel: nextVerticalL };
+                            nextVerticalLevel = Math.max(nextVerticalLevel, minLevel);
+                            //console.log("attaching ->" + dest + "(" + u + ") at attach port " + nextAttachPort + " and level " + nextVerticalLevel);
+                            verticalLevels.outEdgeVerticalLevel[v][u] = { attachlevel: nextAttachPort, verticalLevel: nextVerticalLevel };
 
-                        nextAttachL++;
-                        nextVerticalL++;
-                    }
+                            //------------------------------
+                            if (minLevel >= 2) {
+                                // potentially crossing some other relatioship edges: add to the set of edges to be optimized
 
-                    var nextAttachR   = 0;      // attachment point of the line connecting the node and it's relationship
-                    var nextVerticalR = 0;      // vertical level of the line
-                    for (var k = 0; k < rightEdges.length; k++) {
-                        var u = this.GG.downTheChainUntilNonVirtual( rightEdges[k] );
-                        if (nextVerticalR == 0) {
-                            for (var o = vOrder[v] + 1; o < vOrder[rightEdges[k]]; o++) {
-                                // there are non-virtual vertices between the node and it's relationship - need to draw the line above the nodes
-                                var w = this.order.order[r][o];
-                                if (!this.GG.isVirtual(w)) { nextVerticalR = 1; break; }
+                                var left_x    = Math.min( v_x, this.positions[dest] );
+                                var right_x   = Math.max( v_x, this.positions[dest] );
+                                var down_x    = this.positions[dest];
+
+                                // if the edge is going upwards need to take that into account when positioning edges
+                                // on this rank, not on the rank of the other parent
+                                var top_x     = Infinity;
+                                if (dest == u) {                      // same as !this.GG.isVirtual(u)
+                                    var parents = this.GG.getInEdges(u);
+                                    var otherParent = (parents[0] == v) ? parents[1] : parents[0];
+                                    if (this.GG.isVirtual(otherParent)) {       // can only be if the edge goes upwards since relationship nodes
+                                        top_x = this.positions[otherParent];    //  are always ranked at the rank of the lower-ranked partner
+                                        if (top_x > right_x)
+                                            right_x = top_x;
+                                        if (top_x < left_x)
+                                            left_x = top_x;
+                                    }
+                                }
+
+                                edgeInfo.push( { "v": v, "u": u, "v_x": v_x, "left_x": left_x, "right_x": right_x, "down_x": down_x, "top_x": top_x} );
+                                initLevels.push(nextVerticalLevel);
                             }
+                            //------------------------------
+
+                            nextAttachPort++;
+                            nextVerticalLevel++;
                         }
 
-                        console.log("attaching (R) " + u + "(" + rightEdges[k] + ") at level " + nextAttachR);
-                        verticalLevels.outEdgeVerticalLevel[v][u] = { attachlevel: nextAttachR, verticalLevel: nextVerticalR };
+                        return nextVerticalLevel;
+                    }.bind(this);
 
-                        nextAttachR++;
-                        nextVerticalR++;
-                    }
+                    var partnerInfo = this._findLeftAndRightPartners(v);
+                    //console.log("Asigning left edges");
+                    var maxLeftLevel = positionEdgesOnOneSide(partnerInfo.leftPartners);
+                    //console.log("Asigning right edges");
+                    var maxRightLevel = positionEdgesOnOneSide(partnerInfo.rightPartners);
 
-                    maxLevel = Math.max(maxLevel, Math.max(nextVerticalR, nextVerticalL));                    
-                    //console.log("Vert levels @ rank " + r + ": " + verticalLevels.rankVerticalLevels[r-1]);
+                    numLevels = Math.max(numLevels, Math.max(maxLeftLevel, maxRightLevel));
                 }
             }
-            
-            verticalLevels.rankVerticalLevels[r-1] += (maxLevel - 1);
+
+            if (edgeInfo.length > 1) {    // if at most one edge crosses other vertices - we know everything is already laid out perfectly
+
+                // compose the "crossing score" function which, given edgeInfo + which horizontal line is higher,
+                // can tell the number of crossings between two node-to-relationship edges
+                var pairScoreFunc = function( edge1, edge2, edge1level, edge2level ) {
+                    //
+                    // general form of a displayed edges is one of:
+                    // (where the solid line is part of the edge and the dotted part is treated as a separate edge related to the other partner or some other node)
+                    //
+                    // a)             ___________                           .....                   <-- level 2   \
+                    //            ___/           \                         .     .                                 }  <--- between rank R and R-1
+                    //     [node1]......[other]   \_____[relationship]..../       \....[node2]      <-- level 1   /
+                    //                    .                   |
+                    //                    .                   |
+                    //       ^                                ^
+                    //     left_x & v_x               right_x & down_x      (no top_x)
+                    //
+                    // b)                                                    ........[node2]                          <--- on some other rank
+                    //                _________                              |
+                    //               /         \                             |
+                    //     [node1]__/   [...]   \_____[relationship]_____[virtual]        <--- this virtual node is the "otherParent" of relationship
+                    //                                      |
+                    //                                      |
+                    //       ^                              ^                ^
+                    //     left_x & v_x                  down_x       right_x & top_x
+                    //
+                    // c)            _________
+                    //              /         \
+                    //     [node]__/   [...]   \__[virtual]
+                    //                               |
+                    //                               |
+                    //                               .......[relationship].....[node2]                                <--- on some other rank
+                    //       ^                       ^
+                    //     left_x & v_x      right_x & down_x     (no top_x)
+
+                    if ( edgeInfo[edge1].right_x <= edgeInfo[edge2].left_x ||
+                         edgeInfo[edge1].left_x  >= edgeInfo[edge2].right_x )
+                         return 0;                                              // edges do not overlap => no penalty for any level assignment
+
+                    if (edge1level == edge2level) return Infinity;              // intersect and at the same level => forbidden => (penalty == Infinity)
+
+                    if (edge2level > edge1level) {
+                        var tmpEdge  = edge1;
+                        var tmpLevel = edge1level;
+                        edge1        = edge2;
+                        edge1level   = edge2level;
+                        edge2        = tmpEdge;
+                        edge2level   = tmpLevel;
+                    }
+
+                    // edge1 is the upper edge by now
+
+                    if (edgeInfo[edge1].v == edgeInfo[edge2].v &&
+                        edgeInfo[edge1].direction == edgeInfo[edge2].direction &&
+                        edgeInfo[edge1].attachLevel < edgeInfo[edge2].attachLevel ) {
+                        return Infinity;                 // edges originating from the same vertex in the same direction
+                                                         // should keep their relative positioning, period
+                    }
+
+                    // edge1 completely overlaps edge2 and is above - this is optimal, penalty = 0
+                    if (edgeInfo[edge1].left_x <= edgeInfo[edge2].left_x && edgeInfo[edge1].right_x >= edgeInfo[edge2].right_x)
+                        return 0;
+                    // should overlap but instead is below - 2 unnecessary intersections
+                    if (edgeInfo[edge1].left_x >= edgeInfo[edge2].left_x && edgeInfo[edge1].right_x <= edgeInfo[edge2].right_x)
+                        return 2;
+
+                    var extraIntersections = 0;
+
+                    // edges cross: if lower edge has top_x and it crosses the other edge -> report 1 unnecessary crossing
+                    if (edgeInfo[edge2].top_x >= edgeInfo[edge1].left_x && edgeInfo[edge2].top_x <= edgeInfo[edge1].right_x)
+                        extraIntersections++;
+
+                    // edges cross: upper edge's down_x crosses lower edge (0.5 because it will be counted twice for left/right edge)
+                    if (edgeInfo[edge1].down_x >= edgeInfo[edge2].left_x && edgeInfo[edge1].down_x <= edgeInfo[edge2].right_x)
+                        extraIntersections += 0.5;
+
+                    return extraIntersections;
+                }
+
+                console.log("[rank " + r + "] Init vertical relatioship levels: " +  stringifyObject(initLevels));
+
+                var optimizer = new VerticalPosIntOptimizer( pairScoreFunc, initLevels, initLevels );  // init level == min level
+
+                var relEdgeLevels = optimizer.computeVerticalPositions( 5, 400 );
+
+                console.log("[rank " + r + "] Final vertical relatioship levels: " +  stringifyObject(relEdgeLevels));
+
+                // save computed levels where they ultimately belong
+                for (var i = 0; i < edgeInfo.length; i++) {
+                    verticalLevels.outEdgeVerticalLevel[ edgeInfo[i].v ][ edgeInfo[i].u ].verticalLevel = relEdgeLevels[i];
+                    if (relEdgeLevels[i] > numLevels)
+                        numLevels = relEdgeLevels[i];
+                }
+            }
+
+            verticalLevels.rankVerticalLevels[r-1] += Math.max(0, (numLevels - 2));
         }
-        console.log("Vert pos: " + stringifyObject(verticalLevels.outEdgeVerticalLevel));
+        
+        //console.log("Vert child:         " + stringifyObject(verticalLevels.childEdgeLevel));
+        //console.log("Vert relationships: " + stringifyObject(verticalLevels.outEdgeVerticalLevel));
+        //console.log("Vert levels:        " + stringifyObject(verticalLevels.rankVerticalLevels));
 
         return verticalLevels;
     },
@@ -2486,10 +2626,23 @@ PositionedGraph.prototype = {
         return this.rankY[rank] + (level - 1)*this.yExtraPerHorizontalLine;
     },
 
-    computeRelLineY: function( rank, level )
-    {
-        var shift = (level == 0) ? 0 : this.yDistanceChildhubToNode/2;
-        return this.rankY[rank] - level*this.yExtraPerHorizontalLine - shift;
+    computeRelLineY: function( rank, attachLevel, verticalLevel )
+    {        
+        var attachY = this.rankY[rank] - (attachLevel)*this.yAttachPortHeight;
+        
+        var relLineY = this.rankY[rank];
+        
+        if (verticalLevel == 1) {
+            // going above another line
+            relLineY -= (attachLevel)*this.yAttachPortHeight;
+        } else if (verticalLevel == 2) {
+            // going above relationship node
+            relLineY -= this.yExtraPerHorizontalLine * 1.25;
+        } else {
+            relLineY -= verticalLevel * this.yExtraPerHorizontalLine;
+        }
+        
+        return {"attachY":  attachY, "relLineY": relLineY };
     },
     //========================================[vertical separation for horizontal edges]=
 

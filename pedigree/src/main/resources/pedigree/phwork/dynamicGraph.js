@@ -139,7 +139,7 @@ DynamicPositionedGraph.prototype = {
             var rankPerson = this.DG.ranks[personId];
             if (rank == rankPerson) {
                 var level = this.DG.vertLevel.outEdgeVerticalLevel[personId][relId].verticalLevel;
-                y = this.DG.computeRelLineY(rank, level);
+                y = this.DG.computeRelLineY(rank, 0, level).relLineY;
             }
 
             var rankRelationship = this.DG.ranks[relId];
@@ -153,7 +153,10 @@ DynamicPositionedGraph.prototype = {
             var level1   = this.DG.vertLevel.outEdgeVerticalLevel[partners[0]].hasOwnProperty(v) ? this.DG.vertLevel.outEdgeVerticalLevel[partners[0]][v].verticalLevel : 0;
             var level2   = this.DG.vertLevel.outEdgeVerticalLevel[partners[1]].hasOwnProperty(v) ? this.DG.vertLevel.outEdgeVerticalLevel[partners[1]][v].verticalLevel : 0;
             var level    = Math.min(level1, level2);
-            y = this.DG.computeRelLineY(rank, level);
+            var attach1  = this.DG.vertLevel.outEdgeVerticalLevel[partners[0]].hasOwnProperty(v) ? this.DG.vertLevel.outEdgeVerticalLevel[partners[0]][v].attachlevel : 0;
+            var attach2  = this.DG.vertLevel.outEdgeVerticalLevel[partners[1]].hasOwnProperty(v) ? this.DG.vertLevel.outEdgeVerticalLevel[partners[1]][v].attachlevel : 0;
+            var attach   = Math.min(attach1, attach2);
+            y = this.DG.computeRelLineY(rank, attach, level).relLineY;
         }
 
         return {"x": x, "y": y};
@@ -182,10 +185,14 @@ DynamicPositionedGraph.prototype = {
 
         //console.log("Info: " +  stringifyObject(info));
 
-        var rank = this.DG.ranks[person];
+        var verticalRelInfo = this.DG.computeRelLineY(this.DG.ranks[person], info.attachlevel, info.verticalLevel);
 
-        var result = {attachmentPort: info.attachlevel, verticalY: this.DG.computeRelLineY(rank, info.verticalLevel)};
+        var result = {"attachmentPort": info.attachlevel,
+                      "attachY":        verticalRelInfo.attachY,        
+                      "verticalLevel":  info.verticalLevel,
+                      "verticalY":      verticalRelInfo.relLineY};
 
+        //console.log("rel: " + relationship + ", person: " + person + " => " + stringifyObject(result));
         return result;
     },
 
@@ -2132,7 +2139,6 @@ Heuristics.prototype = {
         // 2) fix some common layout imperfections
         var xcoord = new XCoord(this.DG.positions, this.DG);
 
-
         // search for gaps between children (which may happen due to deletions) and close them by moving chldren closer to each other
         for (var v = 0; v <= this.DG.GG.getMaxRealVertexId(); v++) {
             if (!this.DG.GG.isChildhub(v)) continue;
@@ -2332,7 +2338,7 @@ Heuristics.prototype = {
                 var relX      = xcoord.xcoord[v];
                 var parent1X  = xcoord.xcoord[parents[0]];
                 var parent2X  = xcoord.xcoord[parents[1]];
-                var midX      = (parent1X + parent2X)/2;
+                var midX      = Math.floor((parent1X + parent2X)/2);
 
                 if (relX == midX) continue;
 
@@ -2344,7 +2350,7 @@ Heuristics.prototype = {
                 var rightMost = childInfo.rightMostChildId;
                 var leftX     = xcoord.xcoord[leftMost];
                 var rightX    = xcoord.xcoord[rightMost];
-                var middle    = (leftX + rightX)/2;
+                var middle    = Math.floor((leftX + rightX)/2);
 
                 var needShiftRel = midX - relX;
 

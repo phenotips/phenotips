@@ -93,7 +93,6 @@ var LineSet = Class.create({
     },
     
     removeAllLinesAffectedByOwnerMovement: function(owner) {
-        
         var returnNewAffected = [];
         
         var processed = {};

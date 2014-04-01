@@ -71,7 +71,6 @@ var Partnership = Class.create(AbstractNode, {
             value = "A";
         if (this._consangrMode != value) {
             this._consangrMode = value;
-            this.getGraphics().updatePartnerConnections();
         }
     },
     

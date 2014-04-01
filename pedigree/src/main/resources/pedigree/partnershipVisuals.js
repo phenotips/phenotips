@@ -17,7 +17,11 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         this._childlessStatusLabel = null;
         this._junctionShape = editor.getPaper().circle(x,y, PedigreeEditor.attributes.partnershipRadius).attr({fill: '#EA5E48', stroke: 'black', 'stroke-width':2});
 
-        this._hoverBox = new PartnershipHoverbox(partnership, x, y, this.getShapes());
+        if (editor.isReadOnlyMode()) {
+            this._hoverBox = new ReadOnlyHoverbox(partnership, x, y, this.getShapes());
+        } else {        
+            this._hoverBox = new PartnershipHoverbox(partnership, x, y, this.getShapes());
+        }
         this.updateIDLabel();
         
         this._childhubConnection = null;
@@ -157,9 +161,13 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             
             var nodePos       = editor.getGraph().getPosition(person);
             var finalPosition = editor.convertGraphCoordToCanvasCoord( nodePos.x, nodePos.y );            
-            var finalYTo      = finalPosition.y - finalSegmentInfo.attachmentPort * 12;
-            var lastBend      = PedigreeEditor.attributes.radius * (2.3 - finalSegmentInfo.attachmentPort*0.35);               
-            var yTop          = editor.convertGraphCoordToCanvasCoord( 0, finalSegmentInfo.verticalY ).y;            
+            var finalYTo      = editor.convertGraphCoordToCanvasCoord( 0, finalSegmentInfo.attachY ).y;               
+            var yTop          = editor.convertGraphCoordToCanvasCoord( 0, finalSegmentInfo.verticalY ).y;
+            var lastBend      = ((finalYTo == yTop) && (yTop < this.getY()) && finalSegmentInfo.attachmentPort == 1) ?
+                                Infinity :
+                                PedigreeEditor.attributes.radius * (2.2 - finalSegmentInfo.attachmentPort*0.35);            
+            
+            //console.log("Rel: " + id + ", Y: " + this.getY() + ", Attach/FinalY: " +finalYTo + ", yTOP: " + yTop + ", lastbend: " + lastBend + ", finalPos: " + stringifyObject(finalPosition));
             
             var goesLeft = false;                        // indicates if the current step fo the path is right-to-left or left-to-right            
             var xFrom    = this.getX();                  // always the X of the end of the previous segment of the curve
@@ -215,7 +223,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 }
                                 
                 xTo      = position.x;
-                yTo      = (i == path.length - 1) ? finalYTo : position.y;
+                yTo      = (i >= path.length - 2) ? yTop : position.y;
                 prevY    = position.y;                
                 prevX    = position.x;
                                                 
@@ -267,12 +275,12 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 vertical = newVertical;
                 wasAngle = angled;
             }
-
+            
             if (yFrom >= finalPosition.y + cornerRadius*2)
                 editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xTo, finalYTo, lineAttr, consangr, false);
             else
                 // draw a line/curve from (xFrom, yFrom) trough (..., yTop) to (xTo, yTo).
-                // It may be a line if all y are the same, a lline with one bend or a line with two bends
+                // It may be a line if all y are the same, a line with one bend or a line with two bends
                 editor.getGraphicsSet().drawCurvedLineWithCrossings( id, xFrom, yFrom, yTop, xTo, finalYTo, lastBend, lineAttr, consangr, goesLeft );
         }
         

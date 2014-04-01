@@ -1,15 +1,12 @@
-// TODO: compute independent sub-sets of crosing edges, and optimize those
-//       sub-sets independently - problem size may be much smaller this way
-//       (each sub-set may be optimized using already implemented methods, and results for different sub-sets combined)
-//
-// TODO: test performance: this.pairScoreFunc() is called for all possible combinations of (i,j,level_i,level_j)
-//                         during computeCrosses(). Store the values and avoid calling the function again?
+// TODO: test performance improvement: this.pairScoreFunc() is called for all possible combinations of (i,j,level_i,level_j)
+//                                     during computeCrosses(). Store the values and avoid calling the function again?
+//                                     (may not make any difference since function computation is trivial)
 
 VerticalPosIntOptimizer = function ( pairScoreFunc, initLevels, minLevels ) {
     this.pairScoreFunc = pairScoreFunc;      // function(u, v, uLev, vLev) - returns penalty for interaction between two edges u and v when u's level is uLev and v's level is vLev
+                                             //                              (assumed to be symetrical, i.e. f(a,b,levA,levB) = f(b,a,levB,levA)
 
     this.initLevels = initLevels;            // array[int]
-    this.numEdges   = initLevels.length;     // int
 
     this.maxOfMinlevels = 1;
     if (minLevels) {
@@ -18,115 +15,175 @@ VerticalPosIntOptimizer = function ( pairScoreFunc, initLevels, minLevels ) {
             this.minLevels = minLevels;
     }
 
-    var precompute          = this.computeCrosses();
-    this.minPossiblePenalty = precompute.minPossiblePenalty; // int               - the minimum possible penalty (the sum of minimum penalties for each edge pair)
-    this.crosses            = precompute.crosses;            // array[array[int]] - for each edge pre-compute which edges it intersects with (for performance optimization)
-    this.edgesThatCross     = precompute.edgesThatCross;     // array[int]        - list of edges that cross at least one edge (for performance optimization)
-
-    this.initScore = this.scoreFunc(initLevels);
-
-    //console.log("Crosses: " +  stringifyObject(this.crosses));
-    console.log("[Optimizer] MinPossiblePenalty: " + this.minPossiblePenalty + ", InitialPenalty: " + this.initScore);
+    var precompute = this.computeComponents();
+    console.log("Precomputed: " + stringifyObject(precompute));
+    this.components = precompute.components;  // class             - mapping between edges and connected components; see Components class
+    this.crosses    = precompute.crosses;     // array[array[int]] - for each edge the list of edges it directly intersects with (for performance optimization)
 };
 
 VerticalPosIntOptimizer.prototype = {
 
-    numberOfLevelsPenalty: function( numLevelsUsed ) {
-        return ( numLevelsUsed - 1 ) / this.numEdges;       // 1 level => (penalty == 0), above 1 level => (0 < penalty < 1)
+    // computes penalty ofr the number of levels used.
+    // value: (0 <= numberOfLevelsPenalty < 1) => this affects the total penalty less than a single extra crossing,
+    // i.e. we want to use as few levels as possible, but it is beter to use an extra level than to have more crossings
+    numberOfLevelsPenalty: function( maxLevelUsed, minRequired, numEdges ) {
+        return ( maxLevelUsed - minRequired ) / (numEdges+1);       // 1 level => (penalty == 0), above 1 level => (0 < penalty < 1)
     },
 
-    scoreFunc: function ( levels ) {
+    componentScoreFunc: function ( levels, componentID ) {
         //console.log("scoring: " + stringifyObject(levels));
 
-        var penalty = 0;
+        var penalty      = 0;
+        var maxLevelUsed = 0;
+        var minRequired  = 1;
 
-        for (var i = 0; i < this.edgesThatCross.length; i++) {       // only check the penalty for edges that cross other edges, it is known to be 0 ow
-            var edge    = this.edgesThatCross[i];
+        var component = this.components.getComponentEdges(componentID);
+
+        for (var i = 0; i < component.length; i++) {
+            var edge    = component[i];
+            if (levels[edge] > maxLevelUsed)
+                maxLevelUsed = levels[edge];
+            if (this.minLevels && this.minLevels[edge] > minRequired)
+                minRequired = this.minLevels[edge];
             var crosses = this.crosses[edge];
             for (var j = 0; j < crosses.length; j++) {
                 var intersects = crosses[j];
-                if (intersects > edge) {                  // because we want to only count each intersection once (
-                    penalty += this.pairScoreFunc( edge, intersects, levels[edge], levels[intersects] );
+                if (intersects > edge) {                  // because we want to only count each intersection only once, and score func is symmetrical
+                    //console.log("[p] " + edge + " + " + intersects + " = " + this.pairScoreFunc( edge, intersects, levels[edge], levels[intersects] ));
+                    penalty += this.pairScoreFunc( edge, intersects, levels[edge], levels[intersects] );;
                     if (!isFinite(penalty))
                         return penalty;
                 }
             }
         }
 
-        // + penalty for the number of levels used: less levels is better given the same "crossing" score
-        var usedLevels = filterUnique(levels).length;
-        penalty += this.numberOfLevelsPenalty(usedLevels);
-
-        //console.log("total penalty: " + penalty);
+        // add penalty for the number of levels used: less levels is better given the same "crossing" score
+        // (note: only care about max level used, as that affects the layout, we don't care if there are unused levels inbetween)
+        var numLevelsPen = this.numberOfLevelsPenalty(maxLevelUsed, minRequired, component.length);
+        penalty += numLevelsPen;
+        //console.log("num levels penalty: " + numLevelsPen);
 
         return penalty;
     },
 
-    computeCrosses: function () {
-        // find all edges which cross, for now - using plain (and likely non-optimal) O(n^2) algo
+    computeComponents: function () {
+        // find all connected components, for now - using plain (and likely non-optimal) O(n^2) algo
+        // (as a side effect can compute minimum posible penalty score)
 
-        var minPossiblePenalty = 0;
+        var components = new Complonents();   // mapping between edges and connected components; see Components class
 
-        var edgesThatCross = [];
-        var handled        = {};
+        var crosses = [];                     // for each edge the list of edges it directly intersects with
 
-        var hasToBeBelowForPerfectScore = [];
-        var hasToBeAboveForPerfectScore = [];
+        var hasToBeAboveForPerfectScore = []; // used for heurisic computation of minimum number of levels required
 
-        var crosses = [];
-        for (var i = 0; i < this.numEdges; i++) {
+        var numEdges = this.initLevels.length;
+        for (var i = 0; i < numEdges; i++) {
             crosses[i] = [];
-            hasToBeBelowForPerfectScore[i] = 0;
-            hasToBeAboveForPerfectScore[i] = 0;
+            hasToBeAboveForPerfectScore[i] = [];
         }
 
-        for (var i = 0; i < this.numEdges-1; i++) {
-            for (var j = i+1; j < this.numEdges; j++) {
-                if (this.pairScoreFunc( i, j, 1, 1 ) == Infinity) {  // only happens when edges intersect
+        for (var i = 0; i < numEdges-1; i++) {
+            for (var j = i+1; j < numEdges; j++) {
+                if (this.pairScoreFunc( i, j, 1, 1 ) == Infinity) {  // only happens when edges intersect and can't be at the same level
                     crosses[i].push(j);
                     crosses[j].push(i);
 
-                    if (!handled.hasOwnProperty(i)) {
-                        edgesThatCross.push(i);
-                        handled[i] = true;
+                    var componentI = components.getEdgeComponent(i);
+                    var componentJ = components.getEdgeComponent(j);
+
+                    if (componentI === undefined && componentJ === undefined) {
+                        // both i and j are not in any component yet
+                        components.addToNewComponent(i);
+                        components.addToExistingComponent(j, components.getEdgeComponent(i));
                     }
-                    if (!handled.hasOwnProperty(j))  {
-                        edgesThatCross.push(j);
-                        handled[j] = true;
+                    else if (componentI !== undefined) {
+                        if (componentJ !== undefined) {
+                            // both i and j are assigned to a component
+                            if (componentI != componentJ) {
+                                // ...to different components: merge (ow we are ok)
+                                components.mergeComponents(componentI, componentJ);
+                            }
+                        } else {
+                            // i has a component, j does not
+                            components.addToExistingComponent(j, componentI);
+                        }
+                    } else {
+                        // j has a component, i does not
+                        components.addToExistingComponent(i, componentJ);
                     }
 
-                    // if they cross the best arrangement of these two edges is either one above the other or v.v.
-                    // in any case there may be some penalty associated for that, but can't do beter than the better
-                    // of these two options. Compute it so that later once we achieve the minimum possible penalty we stop
+                    // if edges cross => the best arrangement of these two edges is either one above the other or v.v.
+                    // in any case there may be some penalty associated for that, but can't do beter than the best
+                    // of these two options. Compute it so that later once (if) minimum possible penalty is achieved
+                    // the algorithm stop without wasting more time
                     var scoreAbove = this.pairScoreFunc( i, j, 1, 2 );
                     var scoreBelow = this.pairScoreFunc( i, j, 2, 1 );
 
-                    minPossiblePenalty += Math.min( scoreAbove, scoreBelow );
+                    var compID = components.getEdgeComponent(i);
+                    components.addRequiredPenaltyToComponent(compID, Math.min( scoreAbove, scoreBelow ));
 
                     if (scoreAbove < scoreBelow) {
-                        hasToBeAboveForPerfectScore[i] = 1;
-                        hasToBeBelowForPerfectScore[j] = 1;
+                        hasToBeAboveForPerfectScore[i].push(j);
                     }
                     if (scoreAbove > scoreBelow) {
-                        hasToBeAboveForPerfectScore[j] = 1;
-                        hasToBeBelowForPerfectScore[i] = 1;
+                        hasToBeAboveForPerfectScore[j].push(i);
                     }
                 }
             }
         }
 
-        // it is hard to know the exact number of levels needed: even if at most 2 edges overlap at the same time,
-        // may need many levels as they stack below each other. Yet we know that if for the perfect score we need
-        // an edge to be below one and above the other, we need at least 3 levels. That 3-level arrangement may
-        // not be valid and we may end up with only 2 levels, but then the penalty will be larger due to
-        // non-pairwise-perfect crossing arrangement
-        var minNumLevels = (minPossiblePenalty == 0) ? 1 : 2;
-        for (var i = 0; i < this.numEdges; i++) {
-            minNumLevels = Math.max( minNumLevels, 1 + hasToBeBelowForPerfectScore[i] + hasToBeAboveForPerfectScore[i] );
-        }
-        minPossiblePenalty += this.numberOfLevelsPenalty(minNumLevels);   // (0 <= numberOfLevelsPenalty < 1) => this affects the penalty less than a single extra crossing
+        // it is good to know best possible score so that algorithm may stops earlier if this score is
+        // achieved; it is hard to compute precisely though, as that is equivalent to solving the problem.
+        //
+        // One posible heuristic is the size of the largest clique, but that is hard to compute (clique problem
+        // is hard), and even if at most 2 edges overlap at the same time, may need many levels as they stack
+        // below each other (e.g. in a stairs-like structure)
+        //
+        // So the following dumb heuristic is used to determine num levels needed for each component:
+        //  - for each edge min level is max( minLevel given in the input, max(min levels of all edges it should be above) )
 
-        return {"crosses": crosses, "minPossiblePenalty": minPossiblePenalty, "edgesThatCross": edgesThatCross };
+        for (var compID = 0; compID < components.getNumComponents(); compID++) {
+
+            // if min penalty is above 0 it means at least one crossing => at least 2 levels are required
+            var minNumLevels = 1;
+            var minRequired  = 1;
+            var minMinLevel  = Infinity;
+
+            var component = components.getComponentEdges(compID);
+            for (var i = 0; i < component.length; i++) {
+                var edge = component[i];
+
+                if (this.minLevels) {
+                    if (this.minLevels[edge] > minRequired)
+                        minRequired = this.minLevels[edge];
+                    if (this.minLevels[edge] < minMinLevel)
+                        minMinLevel = this.minLevels[edge];
+                }
+
+                var minForThisEdge = this.minLevels ? this.minLevels[edge] : 1;
+
+                for (var j = 0; j < hasToBeAboveForPerfectScore[edge].length; j++) {
+                    var needToBeAboveEdge = hasToBeAboveForPerfectScore[edge][j];
+                    var minForOtherEdge = this.minLevels ? this.minLevels[edge] : 1;
+                    // if the other edge also has to be above something and has min level
+                    if (hasToBeAboveForPerfectScore[needToBeAboveEdge].length > 0 && minForOtherEdge == 1)
+                        minForOtherEdge++;
+                    minForThisEdge = Math.max( minForThisEdge, minForOtherEdge + 1 );
+                }
+
+                minNumLevels = Math.max( minNumLevels, minForThisEdge );
+            }
+
+            var needExtraLevelsAboveMin = (components.getMinPossiblePenalty(compID) == 0) ? 0 : 1;
+            if (!isFinite(minMinLevel)) minMinLevel = 1;
+            minNumLevels = Math.max(minNumLevels, minMinLevel + needExtraLevelsAboveMin);
+
+            // this penalty is guaranteed to be less than 1 => this affects the penalty less than a single extra crossing
+            var penaltyForNumLevelsUsed = this.numberOfLevelsPenalty(minNumLevels, minRequired, component.length);
+            components.addRequiredPenaltyToComponent(compID, penaltyForNumLevelsUsed);
+        }
+
+        return {"crosses": crosses, "components": components };
     },
 
     computeVerticalPositions: function( maxFullSearchSize, maxSteps, seed ) {
@@ -134,47 +191,69 @@ VerticalPosIntOptimizer.prototype = {
         // maxSteps          - max number of steps for a heuristic; max time = C2 * maxSteps per cluster
         //                     (where C2 > C1, and both include computing the penalty for a given arrangmenet, which is ~O(clusterSize^2)
 
-        if (this.initScore == this.minPossiblePenalty)
-            return this.initLevels;
+        this.seed = seed ? seed : 1;
 
-        if ( this.edgesThatCross.length <= maxFullSearchSize )     // problem size for exhaustiveSearch == numEdges!
-            return this.exhaustiveSearch();
+        var bestSoFar = this.initLevels;
 
-        this.seed = seed ? seed : 1;                               // random seed for simulatedAnnellingOptimizer
-        return this.simulatedAnnellingOptimizer( maxSteps );
+        // fix component-by-component
+        for (var compID = 0; compID < this.components.getNumComponents(); compID++) {
+
+            console.log("Optimizing next component [ID="+compID+"] with edges: " + stringifyObject(this.components.getComponentEdges(compID)));
+
+            console.log("CompID[" + compID + "]: MinPossiblePenalty: " + this.components.getMinPossiblePenalty(compID));
+            console.log("CompID[" + compID + "]: Initial Penalty:    " + this.componentScoreFunc(bestSoFar, compID));
+            console.log("CompID[" + compID + "]: Initial assignment: " + stringifyObject(bestSoFar));
+
+            // problem size for exhaustiveSearch ~= numEdges!, can't afford to try all combinations for large problems
+            if ( this.components.getComponentEdges(compID).length <= maxFullSearchSize )
+                bestSoFar = this.exhaustiveSearch( compID, bestSoFar );
+            else
+                bestSoFar = this.simulatedAnnellingOptimizer( compID, bestSoFar, maxSteps );
+
+            console.log("CompID[" + compID + "]: Final assignment: " + stringifyObject(bestSoFar));
+            console.log("CompID[" + compID + "]: Final Penalty:    " + this.componentScoreFunc(bestSoFar, compID));
+        }
+
+        console.log("Final assignment: " + stringifyObject(bestSoFar));
+
+        return bestSoFar;
     },
 
     //----------------------------------------------------------------------------------
-    exhaustiveSearch: function() {
-        this.checkedNumber  = 0;
+    exhaustiveSearch: function( componentID, bestSoFar ) {
 
-        var result = this.recursiveExhaustiveSearch( this.initLevels.slice(0), 0, { "score": this.initScore, "values": this.initLevels } );
+        var initScore = this.componentScoreFunc(bestSoFar, componentID)
 
-        console.log("[fsearch] Found best assignment: " + stringifyObject(result.values) + " (score: " + result.score + ")");
+        this.checkedNumber = 0; // TODO: debug
 
-        console.log("[fsearch] tried " +  this.checkedNumber + " combinations");
+        var result = this.recursiveExhaustiveSearch( componentID, bestSoFar.slice(0), 0, {"values":bestSoFar, "score":initScore} );
+
+        console.log("[fsearch] CompID[" + componentID + "]: Tried " +  this.checkedNumber + " combinations"); // TODO: debug
 
         return result.values;
     },
 
-    recursiveExhaustiveSearch: function ( valuesSoFar, level, bestSoFar ) {
+    recursiveExhaustiveSearch: function ( componentID, valuesSoFar, level, bestSoFar ) {
 
         //console.log("best value at enter [" + level + "]: " + stringifyObject(bestSoFar.values) + " (score: " + bestSoFar.score + ")");
 
+        var component = this.components.getComponentEdges(componentID);
+
         // reached the end of the recursion
-        if (level == this.edgesThatCross.length) {
+        if (level == component.length) {
             //console.log("trying complete: " + stringifyObject(valuesSoFar));
-            var score = this.scoreFunc(valuesSoFar);
+            var score = this.componentScoreFunc(valuesSoFar, componentID);
             if (score < bestSoFar.score) {
                 bestSoFar.values = valuesSoFar.slice(0);
                 bestSoFar.score  = score;
                 console.log("[fsearch] New best: " + stringifyObject(bestSoFar.values) + " (score: " + bestSoFar.score + ")");
             }
-            this.checkedNumber++;
+            //console.log("best value at enter [" + level + "]: " + stringifyObject(valuesSoFar));
+            this.checkedNumber++; // TODO: debug
             return bestSoFar;
         }
 
-        var edge = this.edgesThatCross[level];
+        var edge = component[level];
 
         // TODO: since we don't want any gaps in levels, a smarter search can be used which fills the gaps
         //       once it is known that if they are not filled now the arrangmenet will be incorrect
@@ -183,19 +262,19 @@ VerticalPosIntOptimizer.prototype = {
         //       with lover IDs since those are already assigned a value. Edges with higher ids haveno assignment yet
 
         var minValue = 1;
-        var maxValue = this.edgesThatCross.length;
+        var maxValue = component.length;
 
-        if (this.minLevels)
+        if (this.minLevels) {
             minValue = this.minLevels[edge];
-        if (this.minLevels)
-            maxValue++;
+            maxValue += (minValue - 1);
+        }
 
         for (var i = minValue; i <= maxValue; i++ ) {
             valuesSoFar[edge] = i;
 
-            bestSoFar = this.recursiveExhaustiveSearch( valuesSoFar, level+1, bestSoFar );
+            bestSoFar = this.recursiveExhaustiveSearch( componentID, valuesSoFar, level+1, bestSoFar );
 
-            if (bestSoFar.score == this.minPossiblePenalty) break;
+            if (bestSoFar.score == this.components.getMinPossiblePenalty(componentID)) break;
         }
         //console.log("best value at exit [" + level + "]: " + stringifyObject(bestSoFar.values) + " (score: " + bestSoFar.score + ")");
 
@@ -205,16 +284,26 @@ VerticalPosIntOptimizer.prototype = {
 
 
     //--[ simulatedAnnelling() related ]------------------------------------------------
-    makeBasicValidAssignment: function ( initLevels ) {
-        // give each edge that crosses a separate level - may not be optimal, but guaranteed ot be "valid" with a penalty below Infinity
+    makeBasicValidAssignment: function ( initLevels, componentID ) {
+        var component = this.components.getComponentEdges(componentID);
+        var value = 1;
+
+        // give each edge that crosses a separate level - may not be optimal, but guaranteed to be "valid" with a penalty below Infinity
         var newAssignemnt = initLevels.slice(0);
-        for (var i = 0; i < this.edgesThatCross.length; i++)
-            newAssignemnt[this.edgesThatCross[i]] = (i+1);    // levels start from 1
-        //console.log("Initialvalid assignment: " + stringifyObject(newAssignemnt) + ", score: " + this.scoreFunc(newAssignemnt));
+        for (var i = 0; i < component.length; i++) {
+            var edge = component[i];
+            if (this.minLevels && value < this.minLevels[edge])
+                value = this.minLevels[edge];
+            newAssignemnt[edge] = value;
+            value++; // for next age to be different form this one
+        }
+
+        console.log("[asearch] CompID[" + componentID + "]: Initial assignment:   " + stringifyObject(initLevels)    + ", score: " + this.componentScoreFunc(initLevels, componentID));
+        console.log("[asearch] CompID[" + componentID + "]: InitValid assignment: " + stringifyObject(newAssignemnt) + ", score: " + this.componentScoreFunc(newAssignemnt, componentID));
         return newAssignemnt;
     },
 
-    computeNeighbour: function ( currentState, step ) {
+    computeNeighbour: function ( currentState, componentID, step ) {
         // general idea: assign some other "level" to one of the edges (where "some" and "one of" can be picked randomly/depending on the `step`).
         //               If that level is forbidden due to a crossing with some other edges assign the first OK level in the direction of change
         //               + normalize after the change (e.g. remove unused levels + shift to make smallest used levle to be level #1)
@@ -225,72 +314,63 @@ VerticalPosIntOptimizer.prototype = {
 
         //console.log("computeNeighbour - current: " + stringifyObject(currentState));
 
+        var component = this.components.getComponentEdges(componentID);
+
         var newState = currentState.slice(0);
 
-        // pick a random edge - among those which cross some other edges (all edges not crossing any others are always assigned level 1)
-        var edge = this.edgesThatCross[ Math.floor(this.random() * this.edgesThatCross.length) ];
-
-        var maxUsedLevel = Math.max.apply(null, currentState);
-
-        // check random value an dif it makes sense to increment or decrement it
-        var oldValue   = newState[edge];
-        var isBelowAll = true;
-        var isAboveAll = true;
-        for (var i = 0; i < this.crosses[edge].length; i++) {
-            var crossesWith = this.crosses[edge][i];
-            if (newState[crossesWith] > oldValue)
-                isAboveAll = false;
-            else
-                isBelowAll = false;
-        }
-
-        // pick new random level for the edge (different form the old value)
-        var newValue;
         do {
-            newValue = Math.floor(this.random()*(maxUsedLevel + 2));   // value = [0...maxUsedLevel+1].
-        }                                                              // note: 0 is not a valid "level" but lets the edge to be positioned above any other (and later normalized to have level 1)
-        while ( newValue == oldValue || (isBelowAll && newValue < oldValue) || (isAboveAll && newValue > oldValue) );
+            // pick a random edge in the component
+            var edge         = component[ Math.floor(this.random() * component.length) ];
+            var oldLevel     = newState[edge];
+            var maxUsedLevel = oldLevel;
 
-        //console.log("new value: " + newValue);
-
-        var increment = (newValue > oldValue) ? +1 : -1;
-
-        do {
-            var changed = false;
+            // check random value and if it makes sense to increment or decrement it
+            var isBelowAll = true;
+            var isAboveAll = true;
+            var forbidden  = {};
             for (var i = 0; i < this.crosses[edge].length; i++) {
-                var crossedEdgeValue = newState[this.crosses[edge][i]];
-                if (newValue == crossedEdgeValue) {    // if this edge level == level of an edge it intersects with. Such an assignment wont work anyhow
-                    newValue += increment;
-                    changed = true;
-                }
+                var crossesWith = this.crosses[edge][i];
+                var crossLevel  = newState[crossesWith];
+                if (crossLevel > maxUsedLevel)
+                    maxUsedLevel = crossLevel;
+                forbidden[crossLevel] = true;
+                if (crossLevel >= oldLevel)
+                    isAboveAll = false;
+                if (crossLevel <= oldLevel)
+                    isBelowAll = false;
+            }
+            if (this.minLevels && oldLevel == this.minLevels[edge]) {
+                isBelowAll = true;       // if level == minLevel for the edge does not make sense to decrese the level
             }
         }
-        while (changed);
+        while (isAboveAll && isBelowAll);  // if both above lal and below all no sense to play with the edge; need to pick another edge
 
-        newState[edge] = newValue;
+        // pick new random level for the edge (different form the old value)
+        var newLevel;
+        do {
+            newLevel = Math.floor(this.random()*(maxUsedLevel + 2));   // value = [0...maxUsedLevel+1].
+        }                                                              // note: 0 is not a valid "level" but lets the edge to be
+                                                                       // positioned below any other (and later normalized to have proper minLevel)
+        while ( newLevel == oldLevel || (isBelowAll && newLevel < oldLevel) || (isAboveAll && newLevel > oldLevel) || forbidden.hasOwnProperty(newLevel));
 
-        this.normalize(newState);
+        //console.log("Edge: " + edge + ", oldLevel: " + oldLevel + ", newLevel: " + newLevel);
 
-        //console.log("computeNeighbour - final: " + stringifyObject(newState));
+        newState[edge] = newLevel;
+
+        this.normalize(newState, component);
+
+        //console.log("computeNeighbour - final: " + stringifyObject(newState) + ", score: " + this.componentScoreFunc( newState, componentID ));
 
         return newState;
     },
 
-    normalize: function( levels ) {
+    normalize: function( levels, component ) {
         //console.log("pre-normalized levels: " + stringifyObject(levels));
 
-        // 1. normalize so that the smallest used level is this.maxOfMinlevels
-        var minUsedLevel = Math.min.apply(null, levels);
-        if (minUsedLevel != this.maxOfMinlevels) {
-            var increment = this.maxOfMinlevels - minUsedLevel;
-            for (var i = 0; i < this.edgesThatCross.length; i++)
-                levels[this.edgesThatCross[i]] += increment;
-        }
-
-        // 2. if there are gaps (e.g. 1,2,4,5) decrement all levels above each gap to fill the gap
+        // 1. if there are gaps (e.g. 1,2,4,5) decrement all levels above each gap to fill the gap
         var usedLevels = filterUnique(levels).sort();
         for (var i = usedLevels.length-1; i > 0; i--) {
-            if (usedLevels[i] != usedLevels[i-1] + 1) {      // there may be only one gap so no need to implement a more effficient algorithm
+            if (usedLevels[i] != usedLevels[i-1] + 1) {      // there may be only one gap so no need to implement a more robust algorithm
                 for (var j = 0; j < levels.length; j++)
                     if (levels[j] >= usedLevels[i])
                         levels[j]--;
@@ -299,28 +379,24 @@ VerticalPosIntOptimizer.prototype = {
             }
         }
 
-        // 3. normalize so that the lowest edge in each overlapping stack has rank 1
-        do {
-            var changed = false;
-            for (var i = 0; i < this.edgesThatCross.length; i++) {
-                var edge = this.edgesThatCross[i];
+        //console.log("post fill gap levels: " + stringifyObject(levels));
 
-                var maxBelow = 0;
-                for (var j = 0; j < this.crosses[edge].length; j++) {
-                    var crossesWith = this.crosses[edge][j];
-                    if (levels[crossesWith] < levels[edge] && levels[crossesWith] > maxBelow)
-                        maxBelow = levels[crossesWith];
-                }
+        // 2. make sure all edges satisfy their min levels (including fixing 0 level)
+        for (var i = 0; i < component.length; i++) {
+            var edge = component[i];
 
-                if (levels[edge] != maxBelow + 1) {
-                    levels[edge] = maxBelow + 1;
-                    changed = true;
+            var curLevel = levels[edge];
+            var minLevel = this.minLevels ? this.minLevels[edge] : 1;
+
+            if (curLevel < minLevel) {
+                var adjust = minLevel - curLevel;
+                for (var j = 0; j < component.length; j++) {
+                    levels[component[j]] += adjust;
                 }
             }
         }
-        while (changed);
 
-        //console.log("normalized levels: " + stringifyObject(levels));
+        //console.log("post normalization: " + stringifyObject(levels));
     },
 
     random: function() {
@@ -341,12 +417,14 @@ VerticalPosIntOptimizer.prototype = {
         return false;
     },
 
-    simulatedAnnellingOptimizer: function ( maxSteps ) {
+    simulatedAnnellingOptimizer: function ( componentID, bestSoFar, maxSteps ) {
 
         console.log("[asearch] Starting simulatedAnnellingOptimizer");
 
-        var bestState = isFinite(this.initScore) ? this.initLevels : this.makeBasicValidAssignment(this.initLevels);
-        var bestScore = isFinite(this.initScore) ? this.initScore  : this.scoreFunc(bestState);
+        var bestScore = this.componentScoreFunc(bestSoFar, componentID);
+
+        var bestState = isFinite(bestScore) ? bestSoFar : this.makeBasicValidAssignment(bestSoFar, componentID);
+        var bestScore = isFinite(bestScore) ? bestScore : this.componentScoreFunc(bestState, componentID);
 
         var currentState = bestState;
         var currentScore = bestScore;
@@ -368,7 +446,7 @@ VerticalPosIntOptimizer.prototype = {
         // return sbest                                      // Return the best solution found.
 
         var step = maxSteps;
-        while (bestScore > this.minPossiblePenalty && step >= 0) {
+        while (bestScore > this.components.getMinPossiblePenalty(componentID) && step >= 0) {
 
             // reset once in the middle of the search (TODO: investigate if we need more resets or don't need resets at all)
             if (step == maxSteps/2 && currentScore > bestScore) {
@@ -376,8 +454,8 @@ VerticalPosIntOptimizer.prototype = {
                 currentScore = bestScore;
             }
 
-            var neighbourState = this.computeNeighbour( currentState, step );
-            var neighbourScore = this.scoreFunc( neighbourState );
+            var neighbourState = this.computeNeighbour( currentState, componentID, step );
+            var neighbourScore = this.componentScoreFunc( neighbourState, componentID );
 
             if ( this.doSwitchDuringAnneling( currentScore, neighbourScore, step ) ) {
                 currentState = neighbourState;
@@ -385,7 +463,7 @@ VerticalPosIntOptimizer.prototype = {
             }
 
             if (currentScore < bestScore) {
-                console.log("[asearch] New best: " + stringifyObject(currentState) + ", score: " + currentScore + " (@ step = " + step + ")");
+                console.log("[asearch] New best: " + stringifyObject(currentState) + ", score: " + currentScore + " (@ step = " + (maxSteps - step + 1) + ")");
                 bestState = currentState.slice(0);
                 bestScore = currentScore;
             }
@@ -396,5 +474,73 @@ VerticalPosIntOptimizer.prototype = {
         return bestState;
     }
     //-------------------------------------------------[ simulatedAnnelling() related ]--
+};
+
+
+Complonents = function() {
+    this.components         = []; // arrat[arrat[int]] - for each component -> a list of edges
+    this.minPossiblePenalty = []; // array[double]     - for each component min possible penalty per component
+
+    // Note: data in edgeComponents can be derived from data in components (and v.v.),
+    //       but both are stored for performance reasons
+    this.edgeComponents = [];  // array[int] - for each edge -> component ID
+};
+
+Complonents.prototype = {
+    getNumComponents: function() {
+        return this.components.length;
+    },
+
+    getComponentEdges: function(componentID) {
+        return this.components[componentID];
+    },
+
+    // returns component ID of the edge
+    getEdgeComponent: function( edge ) {
+        return this.edgeComponents[edge];
+    },
+
+    addToNewComponent: function( edge ) {
+        this.edgeComponents[edge] = this.components.length;
+        this.components.push([edge]);   // new component has just one edge
+        this.minPossiblePenalty.push(0);        // new component has 0 min penalty
+    },
+
+    addToExistingComponent: function( edge, componentID) {
+        this.components[componentID].push(edge);
+        this.edgeComponents[edge] = componentID;
+    },
+
+    // NOTE: may reassign some unrelated component IDs
+    mergeComponents: function( component1, component2) {
+        if (component1 == component2)
+            return;
+        var minID = Math.min(component1, component2);
+        var maxID = Math.max(component1, component2);
+
+        // move all edges in maxID to minID
+        for (var i = 0; i < this.components[maxID].length; i++) {
+            var edge = this.components[maxID][i];
+            this.addToExistingComponent(edge, minID);
+        }
+
+        // add penalties
+        this.minPossiblePenalty[minID] += this.minPossiblePenalty[maxID];
+
+        // remove component maxID
+        this.components.splice(maxID,1);
+        this.minPossiblePenalty.splice(maxID,1);
+    },
+
+    addRequiredPenaltyToComponent: function( componentID, penalty ) {
+        this.minPossiblePenalty[componentID] += penalty;
+    },
+
+    // for performance reasons we want to stop as soon as we hit the best possible assignment;
+    // while it is hard to compute the actual optimal score, we can estimate it from below,
+    // such that if this low estimate is achieved we are guaranteed we have the best assignment
+    getMinPossiblePenalty: function( componentID ) {
+        return this.minPossiblePenalty[componentID];
+    }
 };
 

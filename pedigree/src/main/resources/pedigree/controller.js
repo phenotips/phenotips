@@ -125,7 +125,7 @@ var Controller = Class.create({
         var needUpdateAncestors = false;
         var needUpdateRelationship = false;
         
-        for (propertySetFunction in properties) {
+        for (var propertySetFunction in properties) {
             if (properties.hasOwnProperty(propertySetFunction)) {
                 var propValue = properties[propertySetFunction];  
                                
@@ -134,7 +134,7 @@ var Controller = Class.create({
                     //console.log("validated");
                     
                     // prepare undo event
-                    propertyGetFunction =  propertySetFunction.replace("set","get");
+                    var propertyGetFunction =  propertySetFunction.replace("set","get");
                     var oldValue = node[propertyGetFunction]();
                     undoEvent.memo.properties[propertySetFunction] = oldValue;
                     if (oldValue != propValue) changed = true;
@@ -152,6 +152,10 @@ var Controller = Class.create({
                     needUpdateRelationship = true;
                     if (!twinUpdate) twinUpdate = {};
                     twinUpdate[propertySetFunction] = propValue;
+                }
+                
+                if (propertySetFunction == "setConsanguinity") {
+                    needUpdateRelationship = true;
                 }
             }
         }
@@ -186,7 +190,7 @@ var Controller = Class.create({
         }
         
         if (needUpdateRelationship) {
-            var relID = editor.getGraph().getParentRelationship(nodeID);
+            var relID =editor.getGraph().isRelationship(nodeID) ? nodeID : editor.getGraph().getParentRelationship(nodeID);
             var changeSet = {"moved": [relID]};
             editor.getGraphicsSet().applyChanges(changeSet, true);
         }
@@ -281,7 +285,7 @@ var Controller = Class.create({
         if (!event.memo.noUndoRedo)
             editor.getActionStack().addState( event );
         
-        return changeSet.new[0]; // new relationship
+        return changeSet["new"][0]; // new relationship
     },
     
     handlePersonNewSibling: function(event)    
@@ -462,10 +466,4 @@ Controller._validatePropertyValue = function( nodeID, propertySetFunction, propV
     }        
     return true;
 } 
-
-
-//var JSON = editor.getGraph().toJSON();
-//console.log("JSON generated: " + JSON);
-//editor.getGraphicsSet().clearGraph();
-//editor.getSaveLoadEngine().createGraphFromSerializedData({"zzz": JSON});
-//console.log("Changes: " + stringifyObject(changeSet));                
+               

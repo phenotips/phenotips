@@ -183,6 +183,24 @@ function drawCornerCurve (xFrom, yFrom, xTo, yTo, bendDown, attr, doubleCurve, s
     }
 }
 
+function drawLevelChangeCurve (xFrom, yFrom, xTo, yTo, attr, doubleCurve, shiftx1, shifty1, shiftx2, shifty2 )
+{
+    var xDistance = xTo - xFrom;   
+    var dist1x    = xDistance/2;
+    
+    var raphaelPath = " M " + (xFrom)           + " " + yFrom;                    
+    raphaelPath    += " C " + (xFrom + dist1x)  + " " + (yFrom) +
+                        " " + (xTo   - dist1x)  + " " + (yTo) +
+                        " " + (xTo)             + " " + (yTo);
+    
+    curve = editor.getPaper().path(raphaelPath).attr(attr).toBack();
+    if (doubleCurve) {
+        var curve2 = curve.clone().toBack();
+        curve .transform("t " + shiftx1  + "," + shifty1 + "...");
+        curve2.transform("t " + shiftx2 + "," + shifty2 + "..."); 
+    }    
+}
+
 /**
  * Computes the intersection point between a horizontal line @ y == crossY and a line from x1,y1 to x2,y2
  */
