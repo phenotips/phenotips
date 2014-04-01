@@ -250,7 +250,7 @@ var AbstractHoverbox = Class.create({
      * @return {Raphael.st} The generated button
      */
     createButton: function(x, y, svgPath, svgPathBBox, attributes, onClick, className, title) {
-
+        
         var timer = new Timer();
         var icon = editor.getPaper().path(svgPath).attr(attributes);
         icon.transform(["t" , x , y]);
@@ -428,7 +428,7 @@ var AbstractHoverbox = Class.create({
      * @param {Number} orbY The y coordinate of the orb
      * @return {Raphael.st} Raphael set of elements that make up the handle
      */
-    generateHandle: function(type, startX, startY, orbX, orbY, title, orbShapeGender, toHide) {
+    generateHandle: function(type, startX, startY, orbX, orbY, title, orbShapeGender, toHide) {        
         if (!orbShapeGender)
             orbShapeGender = "F";
         var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(PedigreeEditor.attributes.handleStrokeWidth);

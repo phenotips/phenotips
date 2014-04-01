@@ -7,8 +7,34 @@
 // Loop types are picked based on http://jsperf.com/loops/128
 
 
-// To allow debug code to run in IE & && IE8
+// To allow debug code to run in IE7 && IE8
 if (!window.console) { var console = {log: function() {}}; }
+
+// For IE7 && IE8 again
+if(typeof String.prototype.trim !== 'function') {
+  String.prototype.trim = function() {
+    return this.replace(/^\s+|\s+$/g, ''); 
+  }
+}
+
+// And again (IE7 && IE8 fix)
+if (!Array.prototype.forEach)
+{
+  Array.prototype.forEach = function(fun)
+  {
+    var t = Object(this);
+    var len = t.length >>> 0;
+    if (typeof fun !== "function")
+      throw new TypeError();
+
+    var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+    for (var i = 0; i < len; i++)
+    {
+      if (i in t)
+        fun.call(thisArg, t[i], i, t);
+    }
+  };
+}
 
 // Used for: cloning a 2D array of integers (i.e. no deep copy of elements is necessary)
 // Specific implementation is pciked based on http://jsperf.com/clone-2d-array/4

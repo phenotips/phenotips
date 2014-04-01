@@ -288,30 +288,32 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
             shape.attr(PedigreeEditor.attributes.nodeShape);
         }
         
-        //var shadow = shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3);
-        var shadow = shape.clone().attr({stroke: 'none', fill: 'gray', opacity: .3});
-        shadow.translate(3,3);
-        shadow.insertBefore(shape);
+        if (!editor.isUnsupportedBrowser()) {
+            //var shadow = shape.glow({width: 5, fill: true, opacity: 0.1}).translate(3,3);
+            var shadow = shape.clone().attr({stroke: 'none', fill: 'gray', opacity: .3});
+            shadow.translate(3,3);
+            shadow.insertBefore(shape);
+        }
         
         this._genderShape = shape;
         
         this._genderGraphics = editor.getPaper().set(shadow, shape);
     },
-    
+
     /**
      * Sets/replaces the current highlight box
      *
      * @method setGenderGraphics
-     */    
+     */
     setHighlightBox: function() {
         this._highlightBox && this._highlightBox.remove();
-        
+
         this._highlightBox = editor.getPaper().rect(this.getX()-(this._width/2), this.getY()-(this._width/2),
                                                     this._width, this._width, 5).attr(PedigreeEditor.attributes.boxOnHover);
         this._highlightBox.attr({fill: 'black', opacity: 0, 'fill-opacity': 0});
-        this._highlightBox.insertBefore(this.getGenderGraphics().flatten());        
+        this._highlightBox.insertBefore(this.getGenderGraphics().flatten());
     },
-    
+
     /**
      * Returns the box around the element that appears when the node is highlighted
      *
@@ -328,7 +330,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * @method highlight
      */
     highlight: function() {
-        this.getHighlightBox().attr({"opacity": .5, 'fill-opacity':.5});
+        this.getHighlightBox() && this.getHighlightBox().attr({"opacity": .5, 'fill-opacity':.5});
     },
     
     /**

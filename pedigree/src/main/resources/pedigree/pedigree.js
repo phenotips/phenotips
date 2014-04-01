@@ -35,7 +35,7 @@ var PedigreeEditor = Class.create({
         // load proband data and load the graph after proband data is available
         this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
 
-        this._controller = new Controller();
+        this._controller = new Controller();                
 
         //attach actions to buttons on the top bar
         var undoButton = $('action-undo');
@@ -75,6 +75,14 @@ var PedigreeEditor = Class.create({
             //editor.getSaveLoadEngine().save();
             window.location=XWiki.currentDocument.getURL('edit');
         });
+        
+        var unsupportedBrowserButton = $('action-readonlymessage');
+        unsupportedBrowserButton && unsupportedBrowserButton.on("click", function(event) {
+            alert("Your browser does not support all the features required for " +
+                  "Pedigree Editor, so pedigree is displayed in read-only mode (and may have quirks).\n\n" +
+                  "Supported browsers include Firefox v3.5+, Internet Explorer v9+, " +
+                  "Chrome, Safari v4+, Opera v10.5+ and most mobile browsers.");
+        });        
 
         //this.startAutoSave(30);
     },
@@ -159,6 +167,46 @@ var PedigreeEditor = Class.create({
      */
     getPaper: function() {
         return this.getWorkspace().getPaper();
+    },
+    
+    /**
+     * @method isReadOnlyMode
+     * @return {Boolean} True iff pedigree drawn should be read only with no handles
+     *                   (read-only mode is used for IE8 as well as for template display and
+     *                   print and export versions).
+     */    
+    isReadOnlyMode: function() {
+        if (this.isUnsupportedBrowser()) return true;
+        
+        return false;
+    },
+    
+    isUnsupportedBrowser: function() {
+        // http://voormedia.com/blog/2012/10/displaying-and-detecting-support-for-svg-images
+        if (!document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1")) {
+            // implies unpredictable behavior when using handles & interactive elements,
+            // and most likely extremely slow on any CPU
+            return true;            
+        }
+        // http://kangax.github.io/es5-compat-table/
+        if (!window.JSON) {
+            // no built-in JSON parser - can't proceed in any way; note that this also implies
+            // no support for some other functions such as parsing XML.
+            //
+            // TODO: include free third-party JSON parser and replace XML with JSON when loading data;
+            //       (e.g. https://github.com/douglascrockford/JSON-js)
+            //
+            //       => at that point all browsers which suport SVG but are treated as unsupported
+            //          should theoreticaly start working (FF 3.0, Safari 3 & Opera 9/10 - need to test).
+            //          IE7 does not support SVG and JSON and is completely out of the running;
+            alert("Your browser is not unsupported and is unable to load and display any pedigrees.\n\n" +
+                  "Suported browsers include Internet Explorer version 9 and higher, Safari version 4 and higher, "+
+                  "Firefox version 3.6 and higher, Opera version 10.5 and higher, any version of Chrome and most "+
+                  "other modern browsers (including mobile). IE8 is able to display pedigrees in read-only mode.");
+            window.stop && window.stop();
+            return true;
+        }
+        return false;
     },
 
     /**
@@ -287,7 +335,7 @@ var PedigreeEditor = Class.create({
             },
             {
                 'name' : 'adopted',
-                'label' : 'Adopted',
+                'label' : 'Adopted in',
                 'type' : 'checkbox',
                 'function' : 'setAdopted'
             },
@@ -375,7 +423,7 @@ var PedigreeEditor = Class.create({
             },           
             {
                 'name' : 'adopted',
-                'label' : 'Adopted',
+                'label' : 'Adopted in',
                 'type' : 'checkbox',
                 'function' : 'setAdopted'
             }

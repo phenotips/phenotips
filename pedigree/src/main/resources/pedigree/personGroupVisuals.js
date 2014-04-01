@@ -17,7 +17,11 @@ var PersonGroupVisuals = Class.create(PersonVisuals, {
     },
 
     generateHoverbox: function(x, y) {
-        return new PersonGroupHoverbox(this.getNode(), x, y, this.getGenderGraphics());
+        if (editor.isReadOnlyMode()) {
+            return new ReadOnlyHoverbox(this.getNode(), x, y, this.getGenderGraphics());
+        } else {        
+            return new PersonGroupHoverbox(this.getNode(), x, y, this.getGenderGraphics());
+        }
     },
     
     /**

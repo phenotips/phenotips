@@ -386,7 +386,7 @@ var Person = Class.create(AbstractPerson, {
      * @param {Array} disorders List of Disorder objects
      */
     setDisorders: function(disorders) {
-        console.log("Set disorders: " + stringifyObject(disorders));
+        //console.log("Set disorders: " + stringifyObject(disorders));
         
         for(var i = this.getDisorders().length-1; i >= 0; i--) {
             this.removeDisorder( this.getDisorders()[i] );

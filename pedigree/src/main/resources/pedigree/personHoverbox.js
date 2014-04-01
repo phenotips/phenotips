@@ -28,7 +28,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      */
     generateHandles: function($super) {
         if (this._currentHandles !== null) return;        
-        $super();
+        $super();               
         
         //var timer = new Timer();
         
