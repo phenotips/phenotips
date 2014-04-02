@@ -62,7 +62,6 @@ $xwiki.jsfx.use('uicomponents/pedigree/phwork/dynamicGraph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/nodeMenu.js', true)##
 $xwiki.jsfx.use('uicomponents/pedigree/nodetypeSelectionBubble.js')##
 $xwiki.ssfx.use('uicomponents/pedigree/editor.css', true)##
-$xwiki.jsfx.use('uicomponents/pedigree/raphaelzpd.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/ageCalc.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/graphicHelpers.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/disorder.js')##
