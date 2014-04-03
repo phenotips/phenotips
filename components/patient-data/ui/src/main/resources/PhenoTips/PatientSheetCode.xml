@@ -20,29 +20,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>PatientSheetCode</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.PatientClass</parent>
   <creator>xwiki:XWiki.Admin</creator>
-  <author>xwiki:XWiki.Admin</author>
-  <customClass/>
-  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <creationDate>1337795658000</creationDate>
-  <date>1346374948000</date>
-  <contentUpdateDate>1346374948000</contentUpdateDate>
+  <parent>PhenoTips.PatientClass</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1396486857000</date>
+  <contentUpdateDate>1396448839000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content/>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>2</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>3dbaeab5-a161-4a7e-9884-f130958b03b5</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -114,10 +116,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>2</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>3dbaeab5-a161-4a7e-9884-f130958b03b5</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -236,6 +234,10 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>3</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>fcece596-8be6-4fa6-a193-609666005fd9</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -307,10 +309,6 @@ document.observe('xwiki:dom:loaded', function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>3</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>fcece596-8be6-4fa6-a193-609666005fd9</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -347,6 +345,10 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>4</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>e1208274-545d-4b27-9609-010a6ce16194</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -418,10 +420,6 @@ document.observe('xwiki:dom:loaded', function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>4</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>e1208274-545d-4b27-9609-010a6ce16194</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -1244,6 +1242,10 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>7</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>47891262-4dc8-44ea-83b2-944326a5acd0</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -1315,10 +1317,6 @@ document.observe('xwiki:dom:loaded', function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>7</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>47891262-4dc8-44ea-83b2-944326a5acd0</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -1966,6 +1964,10 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>8</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>fee0fd2a-16d1-45ac-8a44-16af9afec0f7</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -2037,10 +2039,6 @@ document.observe('xwiki:dom:loaded', function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>8</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>fee0fd2a-16d1-45ac-8a44-16af9afec0f7</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -2086,6 +2084,10 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>9</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>ec95a008-e5ee-4400-83fc-b60abd4d4440</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -2157,10 +2159,6 @@ document.observe('xwiki:dom:loaded', function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>9</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>ec95a008-e5ee-4400-83fc-b60abd4d4440</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -2451,6 +2449,10 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>10</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>108065a7-3adb-4e83-b9c4-c9e7a7fbfd89</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -2522,10 +2524,6 @@ document.observe('xwiki:dom:loaded', function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>10</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>108065a7-3adb-4e83-b9c4-c9e7a7fbfd89</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -2565,6 +2563,10 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>11</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>96600d0a-4191-4307-9350-f0c8fb5b1a26</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -2636,10 +2638,6 @@ document.observe('xwiki:dom:loaded', function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>11</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>96600d0a-4191-4307-9350-f0c8fb5b1a26</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -2704,6 +2702,10 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>12</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>caf691e4-d58c-485a-9916-7abe49199ce3</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -2775,10 +2777,6 @@ document.observe('xwiki:dom:loaded', function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>12</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>caf691e4-d58c-485a-9916-7abe49199ce3</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -2802,6 +2800,10 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>13</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>98e58dee-d663-42fb-88b0-2daa181ec3d4</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -2873,10 +2875,6 @@ document.observe('xwiki:dom:loaded', function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>13</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>98e58dee-d663-42fb-88b0-2daa181ec3d4</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -2902,6 +2900,10 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>14</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>b4ad6f0b-ebac-4bca-a223-ea8f394c837c</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -2973,10 +2975,6 @@ document.observe('xwiki:dom:loaded', function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>14</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>b4ad6f0b-ebac-4bca-a223-ea8f394c837c</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -3066,6 +3064,10 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>15</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>0dad2b4e-4f21-4652-b032-0aa9d6ee2e5a</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -3137,10 +3139,6 @@ document.observe('xwiki:dom:loaded', function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>15</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>0dad2b4e-4f21-4652-b032-0aa9d6ee2e5a</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -3162,6 +3160,10 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>0</number>
+    <className>XWiki.PDFClass</className>
+    <guid>8013b262-b466-4c84-be89-c48455787e47</guid>
     <class>
       <name>XWiki.PDFClass</name>
       <customClass/>
@@ -3217,10 +3219,6 @@ document.observe('xwiki:dom:loaded', function() {
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </xhtmlxsl>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>0</number>
-    <className>XWiki.PDFClass</className>
-    <guid>8013b262-b466-4c84-be89-c48455787e47</guid>
     <property>
       <fopxsl>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;xsl:stylesheet version="1.0"
@@ -3331,6 +3329,10 @@ hr {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>972515de-46fe-48d5-85b6-4d4dc5a696f5</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -3402,10 +3404,6 @@ hr {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>972515de-46fe-48d5-85b6-4d4dc5a696f5</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -3776,6 +3774,10 @@ h1, h2, h3, h4 {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>1</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>ccd8a586-777c-4597-98e9-2303833adacb</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -3847,10 +3849,6 @@ h1, h2, h3, h4 {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>1</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>ccd8a586-777c-4597-98e9-2303833adacb</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -4005,6 +4003,10 @@ form .extradata-list tr:hover td {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>2</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>a92ecd55-7896-45b8-878a-a7e2228a740d</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -4076,10 +4078,6 @@ form .extradata-list tr:hover td {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>2</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>a92ecd55-7896-45b8-878a-a7e2228a740d</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -4181,6 +4179,10 @@ form .extradata-list tr:hover td {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>3</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>6b031d72-7733-4ce5-905f-b999ec0c3165</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -4252,10 +4254,6 @@ form .extradata-list tr:hover td {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>3</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>6b031d72-7733-4ce5-905f-b999ec0c3165</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -4383,6 +4381,10 @@ form .extradata-list tr:hover td {
     </property>
   </object>
   <object>
+    <name>PhenoTips.PatientSheetCode</name>
+    <number>4</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>af20ed8f-b8cd-4d2f-ae19-f053f0bb5f03</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -4454,10 +4456,6 @@ form .extradata-list tr:hover td {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.PatientSheetCode</name>
-    <number>4</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>7a348f6f-7b94-4630-b559-60c2fe83e6f8</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -4486,5 +4484,4 @@ input.LV_invalid_field {
       <use>onDemand</use>
     </property>
   </object>
-  <content/>
 </xwikidoc>
