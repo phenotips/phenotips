@@ -143,16 +143,18 @@ public class PhenotypeDisplayTools implements ScriptService
         if (data.getMode() == DisplayMode.Edit) {
             List<String> correctIds = new LinkedList<String>();
             List<String> correctNegativeIds = new LinkedList<String>();
-            for (String id : data.getSelectedValues()) {
-                OntologyTerm properTerm = this.ontologyService.getTerm(id);
-                if (properTerm != null) {
-                    correctIds.add(properTerm.getId());
-                } else {
-                    correctIds.add(id);
+            if (data.getSelectedValues() != null && !data.getSelectedValues().isEmpty()) {
+                for (String id : data.getSelectedValues()) {
+                    OntologyTerm properTerm = this.ontologyService.getTerm(id);
+                    if (properTerm != null) {
+                        correctIds.add(properTerm.getId());
+                    } else {
+                        correctIds.add(id);
+                    }
                 }
             }
             data.setSelectedValues(correctIds);
-            if (data.getSelectedNegativeValues() != null) {
+            if (data.getSelectedNegativeValues() != null && !data.getSelectedNegativeValues().isEmpty()) {
                 for (String id : data.getSelectedNegativeValues()) {
                     OntologyTerm properTerm = this.ontologyService.getTerm(id);
                     if (properTerm != null) {
