@@ -361,7 +361,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
               if (item._restriction &amp;&amp; item._restriction.value.strip() != '') {
                 item._restriction = item._restriction.value.strip().split(",");
               } else {
-                item._restriction == null;
+                item._restriction = null;
               }
             }
             if (item._customOptions.queryProcessor &amp;&amp; item._restriction) {
