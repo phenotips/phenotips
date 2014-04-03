@@ -253,65 +253,7 @@
                See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
           <ignored>
-            <!-- Remove the following ignores after we release 1.0-milestone-11 -->
-            <difference>
-              <className>**/phenotips/data/Patient</className>
-              <differenceType>7012</differenceType>
-              <method>net.sf.json.JSONObject toJSON(java.util.Collection)</method>
-            </difference>
-            <difference>
-              <className>**/phenotips/configuration/RecordElement</className>
-              <differenceType>7012</differenceType>
-              <method>boolean containsPrivateIdentifiableInformation()</method>
-            </difference>
-            <difference>
-              <className>**/phenotips/data/Patient</className>
-              <differenceType>7012</differenceType>
-              <method>void updateFromJSON(net.sf.json.JSONObject)</method>
-            </difference>
-            <difference>
-              <className>**/phenotips/data/PatientRepository</className>
-              <differenceType>7012</differenceType>
-              <method>org.phenotips.data.Patient createNewPatient(org.xwiki.model.reference.DocumentReference)</method>
-            </difference>
-            <difference>
-              <className>**/phenotips/data/PatientDataController</className>
-              <differenceType>7012</differenceType>
-              <method>void writeJSON(org.phenotips.data.Patient, net.sf.json.JSONObject, java.util.Collection)</method>
-            </difference>
-            <difference>
-              <className>**/phenotips/data/PatientDataController</className>
-              <differenceType>7012</differenceType>
-              <method>java.lang.String getName()</method>
-            </difference>
-            <difference>
-              <className>**/phenotips/data/Feature</className>
-              <differenceType>7012</differenceType>
-              <method>java.lang.String getValue()</method>
-            </difference>
-            <difference>
-              <className>**/phenotips/data/Disorder</className>
-              <differenceType>7012</differenceType>
-              <method>java.lang.String getValue()</method>
-            </difference>
-            <difference>
-              <className>**/phenotips/configuration/RecordConfiguration</className>
-              <differenceType>7012</differenceType>
-              <method>java.util.List getEnabledNonIdentifiableFieldNames()</method>
-            </difference>
-            <difference>
-              <className>**/phenotips/configuration/RecordElement</className>
-              <differenceType>7012</differenceType>
-              <method>boolean containsPrivateIdentifiableInformation()</method>
-              <className>**/data/Patient</className>
-              <differenceType>7012</differenceType>
-              <method>java.lang.String getId()</method>
-            </difference>
-            <difference>
-              <className>**/data/Patient</className>
-              <differenceType>7012</differenceType>
-              <method>java.lang.String getExternalId()</method>
-            </difference>
+            <!-- Remove the following ignores after we release 1.0-milestone-12 -->
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
