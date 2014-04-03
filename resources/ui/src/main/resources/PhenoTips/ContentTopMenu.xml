@@ -705,6 +705,124 @@
   </object>
   <object>
     <name>PhenoTips.ContentTopMenu</name>
+    <number>5</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>d9cb78bc-4b20-4d9d-8cdf-2ad11f36a716</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe("xwiki:dom:loaded", function() {
+  // It's not possible to write a CSS selector that targets list items containing lists so we rely on JavaScript.
+  // The 'dropdown' CSS class is used only to display the down/left arrow.
+  $$('.menu-horizontal li ul').each(function(item) {
+    item.up().addClassName('xDropdown');
+  });
+
+  // Collapsible menu bahavior.
+  $$('.menu-vertical.collapsible').each(function(item){
+    var isOpen = item.hasClassName('open');
+    item.select('li ul').each(function(submenuList) {
+      submenuList.addClassName('xDropdown-menu');
+      var submenu = submenuList.up();
+      submenu.addClassName('xDropdown' + (isOpen ? ' open' : ''));
+      // Wrap everything (including text nodes) before the sub-menu in a DIV that will toggle its state.
+      var toggle = new Element('div');
+      submenu.childElements.each(function(c){
+        toggle.insert(c);
+      });
+      submenu.insert({top : toggle});
+      toggle.addClassName('xDropdown-toggle');
+      toggle.observe('click', function(event) {
+        event.findElement().up().toggleClassName('open');
+      });
+    });
+  });
+})</code>
+    </property>
+    <property>
+      <name>Enable dropdown menus</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.ContentTopMenu</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>b3934e65-aa68-4fcb-8df4-875c955e2f93</guid>
@@ -842,6 +960,257 @@
   </object>
   <object>
     <name>PhenoTips.ContentTopMenu</name>
+    <number>1</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>87c40da3-7d05-4feb-ad36-18d4a49376d3</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+
+/* General Styles */
+
+.menu-vertical ul, .menu-horizontal ul {
+  list-style-type: none;
+  margin: auto;
+}
+
+.menu-vertical ul *, .menu-horizontal ul * {
+  line-height: normal;
+}
+
+.menu-vertical li, .menu-horizontal li {
+  cursor: default;
+  line-height: 16px;
+  min-height: 16px;
+}
+
+.menu-vertical img, .menu-horizontal img {
+  vertical-align: middle;
+}
+
+/* Horizontal separator */
+.menu-vertical li:empty, .menu-horizontal li li:empty {
+  border-top: 1px solid $theme.borderColor;
+  line-height: 1px;
+  min-height: auto;
+  padding: 0;
+}
+
+/* Horizontal Menu */
+
+.menu.menu-horizontal {
+  #css3_backgroundLinearGradient({
+    'to': 'bottom',
+    'colors': [
+      {'color': $theme.menuGradientColor, 'position': '0%'},
+      {'color': $theme.menuBackgroundColor, 'position': '50%'}
+    ]
+  })
+  color: $theme.menuLinkColor;
+  font-size: .85em;
+  height: 2em;
+  padding-left: 25px;
+}
+
+.menu-horizontal li {
+  padding: 0.2em 1.3em;
+}
+
+.menu-horizontal li li:empty {
+  border-top: 1px solid $theme.textSecondaryColor;
+  margin: .5em 1em;
+}
+
+/* Vertical separator */
+.menu-horizontal &gt; ul &gt; li:empty {
+  border-left: 1px solid $theme.textSecondaryColor;
+  margin: 0 .5em;
+  padding: 0;
+  vertical-align: middle;
+}
+
+.menu-horizontal li a, .menu-horizontal li a:visited {
+  color: inherit;
+}
+
+.menu-horizontal &gt; ul &gt; li {
+  display: inline-block;
+}
+
+.menu-horizontal &gt; ul &gt; li.xDropdown:after {
+  content: '\25BC';
+  font-size: .8em;
+  margin-left: .5em;
+}
+
+.menu-horizontal li li.xDropdown:after {
+  content: '\25B8';
+  float: right;
+  margin-left: .5em;
+}
+
+.menu-horizontal &gt; ul ul {
+  background: none repeat scroll 0 0 $theme.menuBackgroundColor;
+  border-radius: 0 0 .8em .8em;
+  box-shadow: 0 1px 1px $theme.borderColor;
+  display: none;
+  margin: 0.2em 0 0 -1.3em;
+  padding-bottom: .3em;
+  position: absolute;
+  z-index: 1000;
+}
+
+.menu-horizontal li:hover &gt; ul {
+  display: block;
+}
+
+/* The only way to have a menu with more than 2 levels without JavaScript is to use a fixed width. */
+.menu-horizontal.fixedWidth li li {
+  position: relative;
+}
+
+.menu-horizontal.fixedWidth ul ul {
+  width: 12em;
+}
+
+.menu-horizontal.fixedWidth ul ul ul {
+  left: 12em;
+  margin: 0;
+  top: 0;
+}
+
+/* Vertical Menu */
+
+.menu.menu-vertical {
+  color: inherit;
+}
+
+.menu.menu-vertical ul {
+  margin-top: .3em;
+}
+
+.menu.menu-vertical ul ul {
+  margin-left: 1em;
+}
+
+.menu-vertical li {
+  padding: .3em;
+}
+
+.menu-vertical li:empty {
+  margin: .3em 0;
+}
+
+.menu-vertical .xDropdown-toggle {
+  cursor: pointer;
+}
+
+.menu-vertical .xDropdown-toggle:hover {
+  background-color: $theme.highlightColor;
+}
+
+.menu-vertical .xDropdown-toggle:after {
+  content: '\25C2';
+  float: right;
+}
+
+.menu-vertical .xDropdown.open .xDropdown-toggle:after {
+  content: '\25BE';
+}
+
+.menu-vertical .xDropdown-menu {
+  display: none;
+}
+
+.menu-vertical .xDropdown.open &gt; .xDropdown-menu {
+  display: block;
+}</code>
+    </property>
+    <property>
+      <name>Menu styles</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.ContentTopMenu</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>9449621f-d20d-42a1-bc70-18096cd6be2a</guid>
@@ -911,32 +1280,36 @@
     </class>
     <property>
       <content>{{velocity}}
+#macro (__icon $name){{html clean="false"}}&lt;span class="fa fa-${name}"&gt; &lt;/span&gt;{{/html}}#end
 #if ($doc.getObject('PhenoTips.PatientClass'))
-$xwiki.ssx.use('PhenoTips.ContentTopMenu')##
+#set ($colorTheme = $xwiki.getUserPreference('colorTheme'))
+#if ("$!colorTheme" != '')
+  ## Make sure we use an absolute reference (see XWIKI-9672)
+  #set ($colorTheme = $services.model.resolveDocument($colorTheme, $doc.documentReference))
+#end
+$xwiki.ssx.use('PhenoTips.ContentTopMenu', {'colorTheme': $colorTheme})##
 $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
-{{html clean="false" wiki="true"}}
-&lt;div id="patient-record-actions"&gt;
-
-{{menu id="pr-more-actions-menu" type="horizontal"}}
+(% id="patient-record-actions" %)(((
+(% id="pr-more-actions-menu" class="menu menu-horizontal" %)(((
 #if ($xcontext.action == 'view')
 #if($hasEdit &amp;&amp; !$isReadOnly)
   #set($editaction = $doc.getDefaultEditMode())
-* [[{{icon name="pencil" /}}$services.localization.render('core.menu.edit')&gt;&gt;path:$doc.getURL($editaction, $!languageparams)|| id="prActionEdit"]]
+* [[#__icon("pencil")$services.localization.render('core.menu.edit')&gt;&gt;path:$doc.getURL($editaction, $!languageparams)|| id="prActionEdit"]]
 #end## HAS EDIT
 #set ($canDelete = !$doc.isNew() &amp;&amp; $xwiki.checkAccess($doc.fullName, 'delete'))
 #if ($canDelete)
-* [[{{icon name="times" /}}$services.localization.render('core.menu.delete')&gt;&gt;path:$doc.getURL('delete', $!languageparams)|| id="prActionDelete"]]
+* [[#__icon("times")$services.localization.render('core.menu.delete')&gt;&gt;path:$doc.getURL('delete', $!languageparams)|| id="prActionDelete"]]
 #end## HAS DELETE
 #else## NOT IN VIEW MODE, SHOW EDIT MODE ACTIONS
-* {{icon name="check" /}}{{html clean="false"}}&lt;label class=""&gt;&lt;input class="" type="submit" value="Save" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
-** {{html clean="false"}}&lt;label class=""&gt;&lt;input class="" id="tmActionSave" type="submit" value="Quick save" title="Save and continue editing" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
-** {{html clean="false"}}&lt;label class=""&gt;&lt;input class="" id="tmActionSaveAndContinue" type="submit" value="Save and view summary" title="Save and view summary"" name="action_save"/&gt;&lt;/label&gt;{{/html}}
+* {{html clean="false"}}&lt;span class="fa fa-check"&gt; &lt;/span&gt;&lt;label&gt;&lt;input type="submit" value="Save" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
+** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSave" type="submit" value="Quick save" title="Save and continue editing" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
+** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSaveAndContinue" type="submit" value="Save and view summary" title="Save and view summary"" name="action_save"/&gt;&lt;/label&gt;{{/html}}
 * {{html clean="false"}}&lt;span class="fa fa-ban"&gt; &lt;/span&gt;&lt;label&gt;&lt;input class="background: transparent; color: white" id="tmActionCancel" type="button" value="Cancel" title="Cancel changes and go to summary view" name="action_cancel"/&gt;&lt;/label&gt;{{/html}}
 #end## DONE WITH EDIT MODE SPECIFIC ACTIONS
 * {{html clean="false"}}&lt;span class="fa fa-list"&gt; &lt;/span&gt;&lt;span id="toc-entry"&gt;Jump to...&lt;/span&gt;{{/html}}
-##THE ToC will be populated by JS
+##The ToC will be populated by JS
 ** ----
-* {{icon name="cog" /}}More actions
+* #__icon("cog") More actions
 #if ($xcontext.action != 'view' || $viewer != 'content')
 ** [[Open in view mode&gt;&gt;$doc.fullName|| title="Open record in view mode in a new window" target="__blank"]]
 #end
@@ -964,10 +1337,8 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 ** {{html clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
 #end
 #end
-{{/menu}}
-
-&lt;/div&gt;
-{{/html}}
+)))## menu
+)))## container
 #end{{/velocity}}</content>
     </property>
     <property>
