@@ -305,10 +305,10 @@ public class PropertyDisplayer
             StringBuilder value = new StringBuilder();
             for (String propname : o.getxWikiClass().getEnabledPropertyNames()) {
                 Property property = o.getProperty(propname);
-                Object propvalue = property.getValue();
-                if (propvalue == null) {
+                if (property == null || property.getValue() == null) {
                     continue;
                 }
+                Object propvalue = property.getValue();
                 if (StringUtils.equals("target_property_name", propname)) {
                     category = propvalue.toString();
                 } else if (StringUtils.equals("target_property_value", propname)) {
