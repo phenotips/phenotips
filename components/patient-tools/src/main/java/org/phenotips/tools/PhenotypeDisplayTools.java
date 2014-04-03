@@ -163,8 +163,8 @@ public class PhenotypeDisplayTools implements ScriptService
                         correctNegativeIds.add(id);
                     }
                 }
-                data.setSelectedNegativeValues(correctNegativeIds);
             }
+            data.setSelectedNegativeValues(correctNegativeIds);
             return data;
         } else {
             return data;
