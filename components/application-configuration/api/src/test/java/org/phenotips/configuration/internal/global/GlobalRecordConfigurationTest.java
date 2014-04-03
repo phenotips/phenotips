@@ -522,7 +522,7 @@ public class GlobalRecordConfigurationTest
 
         RecordConfiguration config =
             new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
-        Assert.assertEquals("dd/MM/yyyy", config.getDateOfBirthFormat());
+        Assert.assertEquals("yyyy-MM-dd", config.getDateOfBirthFormat());
     }
 
     /** {@link GlobalRecordConfiguration#getDateOfBirthFormat()} catches exceptions. */
@@ -540,7 +540,7 @@ public class GlobalRecordConfigurationTest
 
         RecordConfiguration config =
             new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
-        Assert.assertEquals("dd/MM/yyyy", config.getDateOfBirthFormat());
+        Assert.assertEquals("yyyy-MM-dd", config.getDateOfBirthFormat());
     }
 
     /** {@link GlobalRecordConfiguration#getDateOfBirthFormat()} has a default format when the config is missing. */
@@ -560,7 +560,7 @@ public class GlobalRecordConfigurationTest
 
         RecordConfiguration config =
             new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
-        Assert.assertEquals("dd/MM/yyyy", config.getDateOfBirthFormat());
+        Assert.assertEquals("yyyy-MM-dd", config.getDateOfBirthFormat());
     }
 
     /** {@link GlobalRecordConfiguration#toString()} lists all the enabled sections. */
