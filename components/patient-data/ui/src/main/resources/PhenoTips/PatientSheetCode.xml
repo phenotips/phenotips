@@ -2047,10 +2047,10 @@ document.observe('xwiki:dom:loaded', function() {
     <property>
       <code>document.observe('xwiki:dom:loaded', function() {
   // Edit buttons for every heading in view mode
-  var editButton = $('tmActionEdit');
+  var editButton = $('prActionEdit');
   if (editButton) {
     $$('h2[id]').each(function(title) {
-      var editLink = new Element('a', {'class' : 'action-edit', 'href' : editButton.href + '#' + title.id}).update('Edit');
+      var editLink = new Element('a', {'class' : 'action-edit fa fa-pencil', 'href' : editButton.href + '#' + title.id, 'title' : 'Edit'});
       title.insert(editLink);
     });
   }
@@ -3592,13 +3592,11 @@ input[type=text]:focus, textarea:focus {
 }
 h2 a.action-edit {
   display: inline-block;
-  width: 16px;
-  height: 16px;
-  text-indent: 40px;
-  background: transparent url("$xwiki.getSkinFile('edit-s-gray.png')") center center no-repeat;
+  font-size: .8em;
+  color: $theme.textColor;
   visibility: hidden;
-  overflow: hidden;
-  margin: 0 .5em;
+  opacity: .8;
+  margin: 0 0 0 1em;
 }
 .chapter:hover a.action-edit {
   visibility: visible;
