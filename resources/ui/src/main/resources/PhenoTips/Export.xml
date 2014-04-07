@@ -360,6 +360,11 @@ ${newline}##
           #end
         #end
         "##
+      #elseif ("$!targetClass.get($field).classType" == 'Boolean')
+        #if ($value == 1)Yes##
+        #elseif ($value == 0)No##
+        #else-##
+        #end
       #elseif ("$!{targetClass.get($field).classType}" == 'TextArea')
         "$!{services.rendering.render($services.rendering.parse($value, $patientDoc.getSyntax().toIdString()), "plain/1.0").replace('"', '""')}"##
       #else
