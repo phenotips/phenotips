@@ -73,7 +73,8 @@
   #end
 #end
 #macro (fixMode)
-  #if (!$xwiki.hasAccessLevel($mode, $xcontext.user, $patientDoc.fullName))
+  #set ($canEditPatientRecord = $xwiki.hasAccessLevel($mode, $xcontext.user, $patientDoc.fullName))
+  #if (!$canEditPatientRecord)
     #set ($mode = 'view')
   #end
 #end
@@ -90,7 +91,9 @@
     {{error}}Requested patient not found.{{/error}}
   #else
     #fixMode()
-    #saveDataFromRequest()
+    #if ($canEditPatientRecord)
+      #saveDataFromRequest()
+    #end
     $response.sendRedirect($patientDoc.getURL($mode))
   #end
 #elseif ($externalIdentifier != '')
@@ -98,7 +101,9 @@
   #if ($matchingDocuments.size() == 1)
     #set ($patientDoc = $matchingDocuments.get(0))
     #fixMode()
-    #saveDataFromRequest()
+    #if ($canEditPatientRecord)
+      #saveDataFromRequest()
+    #end
     $response.sendRedirect($patientDoc.getURL($mode))
   #elseif ($matchingDocuments.size() &gt; 1)
     {{error}}Non-unique identifier.{{/error}}
@@ -107,7 +112,9 @@
     #if ($patient)
       #set ($patientDoc = $xwiki.getDocument($patient.document))
       #fixMode()
-      #saveDataFromRequest()
+      #if ($canEditPatientRecord)
+        #saveDataFromRequest()
+      #end
       $response.sendRedirect($xwiki.getURL($patientDoc, $mode))
     #else
     {{error}}You don't have the permission to create a new patient record.{{/error}}
