@@ -73,6 +73,10 @@
 #if ($source &amp;&amp; !$source.isNew())
   #set ($patientObject = $source.getObject('PhenoTips.PatientClass'))
   #set ($metadata.source_url = "$!source.getExternalURL()")
+  #set ($onset = "$!patientObject.getProperty('global_age_of_onset').value")
+  #if ($onset != '')
+    #set ($metadata.global_age_of_onset = {'id' : $onset, 'label' : $services.ontologies.hpo.getTerm($onset).name})
+  #end
   ## prepare phenotype meta information
   #set ($metaObjects = $source.getObjects('PhenoTips.PhenotypeMetaClass'))
   #set ($allMeta = {})
