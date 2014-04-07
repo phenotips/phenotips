@@ -365,6 +365,10 @@ ${newline}##
         #elseif ($value == 0)No##
         #else-##
         #end
+      #elseif ("$!targetClass.get($field).classType" == 'Users')
+        #if ($stringtool.isNotBlank($value))
+          "$!{xwiki.getUserName($value, false).replace('"', '""')}"##
+        #end
       #elseif ("$!{targetClass.get($field).classType}" == 'TextArea')
         "$!{services.rendering.render($services.rendering.parse($value, $patientDoc.getSyntax().toIdString()), "plain/1.0").replace('"', '""')}"##
       #else
