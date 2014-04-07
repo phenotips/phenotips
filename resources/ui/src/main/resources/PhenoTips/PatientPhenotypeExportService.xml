@@ -71,6 +71,7 @@
   #end
 #end
 #if ($source &amp;&amp; !$source.isNew())
+  #set ($patientObject = $source.getObject('PhenoTips.PatientClass'))
   #set ($metadata.source_url = "$!source.getExternalURL()")
   ## prepare phenotype meta information
   #set ($metaObjects = $source.getObjects('PhenoTips.PhenotypeMetaClass'))
@@ -131,7 +132,7 @@
   ##
   #set($phenotypeProperties = ['prenatal_phenotype', 'negative_prenatal_phenotype', 'phenotype', 'negative_phenotype'])
   #foreach ($p in $phenotypeProperties)
-     #foreach ($v in $source.getObject('PhenoTips.PatientClass').getProperty($p).value)
+     #foreach ($v in $patientObject.getProperty($p).value)
        #__build_clinical_data($p $v)
      #end
   #end
