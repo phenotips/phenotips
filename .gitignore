@@ -9,6 +9,10 @@ target-eclipse
 .idea
 atlassian-ide-plugin.xml
 
+# Sample patients
+P00*.xml
+F00*.xml
+
 # Eclipse
 .classpath
 .project
