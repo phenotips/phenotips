@@ -74,7 +74,7 @@
   ## Add the columns needed for the actual data
   ##
   #set($tablelist = [])
-  #foreach($colname in $collist)
+  #foreach($colname in $request.parameterNames)
     #livetable_addColumnToQuery($colname)
   #end
   ##
@@ -383,6 +383,8 @@
   #end
   #if($propClass &amp;&amp; $listtool.contains($propClass.getPropertyNames(), $colname))
     #set($propType = "$!{propClass.get($colname).type}")
+  #elseif (!$colname.startsWith('doc.'))
+    #break($macro)
   #end
   ##
   ## Filter values
