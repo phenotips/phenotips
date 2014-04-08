@@ -58,13 +58,18 @@
  * NOTE: This macro is not fully encapsulated because it defines a few Velocity variables that are used in subsequent macros.
  *#
 #macro(gridresultwithfilter_buildQuery $className $collist $filterfrom $filterwhere $filterParams)
-  ## Additional columns, should *not* contain parameters, all added column names must be filtered
+  ## Additional columns; should *not* contain raw parameters, all added column names must be filtered
   #set($fromSql = '')
-  ## parametrized filter part of the query
+  ## Parametrized filter part of the query
   #set($whereSql = '')
-  ## list of parameters to use with $whereSql
+  ## List of values to use with $whereSql
   #set($whereParams = [])
-  #set($class = $xwiki.getDocument($className).getxWikiClass())
+  ## The default XClass used for otherwise unbound property names; the main type of object queried by the livetable
+  #if ("$!{clasName}" != '')
+    #set ($class = $xwiki.getDocument($className).getxWikiClass())
+  #else
+    #set ($class = $NULL)
+  #end
   ##
   ## Add the columns needed for the actual data
   ##
@@ -82,6 +87,7 @@
     #if("$!orderDirection" != '' &amp;&amp; "$!orderDirection" != 'asc')
       #set($orderDirection = 'desc')
     #end
+    ## FIXME: Add support for ordering on properties from another XClass
     #set($tableAlias = $order)
     ## only safe version should be used in SQL queries
     #set($safe_tableAlias = "$!{tableAlias.replaceAll('[^a-zA-Z0-9_.]','')}")
@@ -98,6 +104,7 @@
       #if("$multiselect" != '1')
         #livetable_getTableName($order)
         #set($fromSql = "${fromSql}, ${tableName} ${safe_tableAlias}")
+        ## FIXME: Check if this is indeed a property of the class
         #set($whereSql = "${whereSql} and obj.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.name = ?")
         #set($discard = $whereParams.add("${order}"))
         #set($orderSql = " order by ${safe_tableAlias}.value ${orderDirection}")
