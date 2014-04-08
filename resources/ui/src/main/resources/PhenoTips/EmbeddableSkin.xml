@@ -304,7 +304,12 @@
   margin: 0 !important; 
 }
 .main {
-  padding: 0;
+  padding: 0 0 4em !important;
+}
+#body .bottombuttons {
+  left: 0;
+  right: 0;
+  margin: 0.5em 11px !important;
 }</style.css>
     </property>
     <property>

@@ -896,6 +896,22 @@ TXVppcEAAAAASUVORK5CYII=
   margin-right: 5px;
 }
 
+.bottombuttons {
+  background: #F9F9F9;
+  border: 1px solid #FFFFFF;
+  bottom: 0;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  left: 0;
+  margin: 0.5em 25px !important;
+  padding: 0.5em 10px;
+  position: fixed;
+  right: 0;
+  z-index: 3;
+}
+.bottombuttons input[name="action_cancel"] {
+  float: right;
+}
+
 .add-data-button,
 .buttonwrapper a.add-data-button:link,
 .buttonwrapper a.add-data-button:visited,
@@ -1004,6 +1020,12 @@ h1:target, h2:target, h3:target {
 }
 #mainmenu * {
   text-shadow: none;
+}
+.editbody #footerglobal {
+  margin-bottom: 4em;
+}
+.main {
+  padding-bottom: 0;
 }</code>
     </property>
     <property>
