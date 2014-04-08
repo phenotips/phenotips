@@ -491,9 +491,24 @@
           #set($discard = $whereParams.addAll(["${colname}", "%|${filterValue}|%"]))
         #end
       #else
-        #set($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
-        #set($whereSql = "${whereSql} and obj.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value = ?")
-        #set($discard = $whereParams.addAll(["${colname}", "${filterValue}"]))
+        #set ($joinOperator = "$!{request.get(""${colname}/join_mode"").toUpperCase()}")
+        #if ($joinOperator != 'AND' &amp;&amp; $joinOperator != 'OR')
+          #set ($joinOperator = 'AND')
+        #end
+        #foreach ($filterValue in $request.getParameterValues($colname))
+          #if ($foreach.isFirst())
+            #set ($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
+            #set ($whereSql = "${whereSql} and obj.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and (")
+            #set ($discard = $whereParams.add("${colname}"))
+          #else
+            #set ($whereSql = "${whereSql} ${joinOperator}")
+          #end
+          #set ($whereSql = "${whereSql} ${safe_tableAlias}.value = ?")
+          #set ($discard = $whereParams.add("${filterValue}"))
+          #if ($foreach.isLast())
+            #set ($whereSql = "${whereSql})")
+          #end
+        #end
       #end
     #else
       #set($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
