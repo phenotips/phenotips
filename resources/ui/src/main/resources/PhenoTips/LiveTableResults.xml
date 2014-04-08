@@ -43,6 +43,10 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity output="false"}}
+## Additional XClasses that have been brought into the query, excluding the main class type which is used by default for properties.
+## If a property ("propname") comes from a different XClass, a "propname/class" parameter with the XClass name ("Space.ClassName") as the value must be present in the request.
+#set ($extraClassesAddedToQuery = {})
+
 #**
  * Macro to get the results of a livetable data call.
  * This page is called from live grids via Ajax with the argument xpage=plain. It returns a
@@ -233,7 +237,7 @@
   #elseif($colname == '_action')
     #set($discard = $row.put($colname, $services.localization.render("${request.transprefix}actiontext")))
   #else
-    #set($propClassName = "$!request.get($colname.concat('_class'))")
+    #set($propClassName = "$!request.get($colname.concat('/class'))")
     #if($propClassName != '')
       #set($propClass = $xwiki.getDocument($propClassName).getxWikiClass())
       #set($discard = $itemDoc.use($propClassName))
@@ -315,7 +319,7 @@
  * NOTE the resulting $tableName is safe to use inside SQL queries
  *#
 #macro(livetable_getTableName $colname)
-  #set($propClassName = "$!request.get(${colname.concat('_class')})")
+  #set($propClassName = "$!request.get(${colname.concat('/class')})")
   #if($propClassName != '')
     #set($propClass = $xwiki.getDocument($propClassName).getxWikiClass())
   #else
@@ -375,9 +379,18 @@
   #set($safe_tableAlias = "$!{tableAlias.replaceAll('[^a-zA-Z0-9_.]','')}")
   ##
   #set($propType = '')
-  #set($propClassName = "$!request.get(${colname.concat('_class')})")
+  #set($propClassName = "$!request.get(${colname.concat('/class')})")
+  #set ($targetedObject = 'obj')
   #if($propClassName != '')
-    #set($propClass = $xwiki.getDocument($propClassName).getxWikiClass())
+    #set ($propClass = $xwiki.getDocument($propClassName).getxWikiClass())
+    #if ($propClass &amp;&amp; $listtool.contains($propClass.getPropertyNames(), $colname) &amp;&amp; !$extraClassesAddedToQuery.containsKey($propClassName))
+      #set ($targetedObject = "extraobj${extraClassesAddedToQuery.size()}")
+      #set ($discard = $extraClassesAddedToQuery.put($propClassName, $targetedObject))
+      #set ($fromSql = "${fromSql}, BaseObject ${targetedObject}")
+      #set ($whereSql = "${whereSql} and ${targetedObject}.className = ? and ${targetedObject}.name = doc.fullName")
+      #set ($discard = $whereParams.add($propClassName))
+    #end
+    #set ($targetedObject = $extraClassesAddedToQuery.get($propClassName))
   #else
     #set($propClass = $class)
   #end
@@ -433,11 +446,11 @@
     #elseif($propType == 'NumberClass' || $propType == 'BooleanClass')
       #livetable_getTableName($colname)
       #set($fromSql = "${fromSql}, ${tableName} ${safe_tableAlias}")
-      #set($whereSql = "${whereSql} and obj.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value = ?")
+      #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value = ?")
       #set($discard = $whereParams.addAll(["${colname}", $mathtool.toInteger(${filterValue})]))
     #elseif($propType == 'DateClass')
       #set($fromSql = "${fromSql}, DateProperty ${safe_tableAlias}")
-      #set($whereSql = "${whereSql} and obj.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ?")
+      #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ?")
       #set($discard = $whereParams.add("${colname}"))
       #if ($filterValue != '')
         #set($whereSql = "${whereSql} and upper(str(${safe_tableAlias}.value)) like upper(?)")
@@ -456,7 +469,7 @@
       #end
     #elseif($propType == 'TextAreaClass' || $propType == 'UsersClass' || $propType == 'GroupsClass')
       #set($fromSql = "${fromSql}, LargeStringProperty ${safe_tableAlias}")
-      #set($whereSql = "${whereSql} and obj.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?)")
+      #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?)")
       #set($discard = $whereParams.addAll(["${colname}", "%${filterValue}%"]))
     #elseif($propType == 'StaticListClass' || $propType == 'DBListClass' || $propType == 'DBTreeListClass')
       #set($multiSelect = $propClass.get($colname).getProperty('multiSelect').getValue())
@@ -470,7 +483,7 @@
           #foreach ($filterValue in $request.getParameterValues($colname))
             #if ($foreach.isFirst())
               #set ($fromSql = "${fromSql}, DBStringListProperty ${safe_tableAlias}")
-              #set ($whereSql = "${whereSql} and obj.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and (")
+              #set ($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and (")
               #if ($request.get("${colname}_subterms") == 'yes')
                 #set ($discard = $whereParams.add("extended_${colname}"))
               #else
@@ -487,7 +500,7 @@
           #end
         #else
           #set($fromSql = "${fromSql}, StringListProperty ${safe_tableAlias}")
-          #set($whereSql = "${whereSql} and obj.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and concat('|', concat(upper(${safe_tableAlias}.textValue), '|')) like upper(?)")
+          #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and concat('|', concat(upper(${safe_tableAlias}.textValue), '|')) like upper(?)")
           #set($discard = $whereParams.addAll(["${colname}", "%|${filterValue}|%"]))
         #end
       #else
@@ -498,7 +511,7 @@
         #foreach ($filterValue in $request.getParameterValues($colname))
           #if ($foreach.isFirst())
             #set ($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
-            #set ($whereSql = "${whereSql} and obj.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and (")
+            #set ($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and (")
             #set ($discard = $whereParams.add("${colname}"))
           #else
             #set ($whereSql = "${whereSql} ${joinOperator}")
@@ -512,7 +525,7 @@
       #end
     #else
       #set($fromSql = "${fromSql}, StringProperty ${safe_tableAlias}")
-      #set($whereSql = "${whereSql} and obj.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?)")
+      #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?)")
       #set($discard = $whereParams.addAll(["${colname}", "%${filterValue}%"]))
     #end
   #end
