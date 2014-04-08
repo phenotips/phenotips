@@ -78,12 +78,6 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0) &amp;&amp; ($column != 'doc.creator') &amp;&amp; ($column != 'doc.author'))
   #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true, 'html': true }))
 #end
-#foreach ($filterableColumn in ['date_of_birth', 'omim_id', 'phenotype'])
-  #if (!$configuredColumns.contains($filterableColumn))
-    #set ($discard = $columns.add($filterableColumn))
-    #set ($discard = $columnsProperties.put($filterableColumn, { 'type' : 'hidden' }))
-  #end
-#end
 ##  toggle-filters
 #set ($topFilters = $doc.getRenderedContent("(% class='xform' %)((( {{html clean='false'}}&lt;span class='buttonwrapper'&gt;&lt;a class='button toggle-filters' href='#'&gt;Advanced data filters&lt;/a&gt;&lt;/span&gt;{{/html}}
 {{velocity}}#__filters_display('xform'){{/velocity}})))", "xwiki/2.1"))
