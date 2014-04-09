@@ -69,7 +69,7 @@
   ## List of values to use with $whereSql
   #set($whereParams = [])
   ## The default XClass used for otherwise unbound property names; the main type of object queried by the livetable
-  #if ("$!{clasName}" != '')
+  #if ("$!{className}" != '')
     #set ($class = $xwiki.getDocument($className).getxWikiClass())
   #else
     #set ($class = $NULL)
