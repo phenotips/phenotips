@@ -118,10 +118,10 @@
       <name>org.phenotips.patientSheet.section.genotype</name>
     </property>
     <property>
-      <parameters>${prevParamsBlock}
+      <parameters>title=Genotype information
 enabled=true
-order=11
-title=Genotype information</parameters>
+required=
+order=11</parameters>
     </property>
   </object>
   <content/>
