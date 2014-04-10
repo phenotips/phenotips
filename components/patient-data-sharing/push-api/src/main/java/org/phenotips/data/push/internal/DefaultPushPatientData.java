@@ -19,39 +19,39 @@
  */
 package org.phenotips.data.push.internal;
 
+import org.phenotips.Constants;
+import org.phenotips.data.Patient;
+import org.phenotips.data.internal.controller.VersionsController;
+import org.phenotips.data.push.PushPatientData;
+import org.phenotips.data.push.PushServerConfigurationResponse;
+import org.phenotips.data.push.PushServerGetPatientIDResponse;
+import org.phenotips.data.push.PushServerSendPatientResponse;
+import org.phenotips.data.shareprotocol.ShareProtocol;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
+import org.xwiki.model.reference.DocumentReference;
+
 import java.net.URLEncoder;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang3.StringUtils;
-import org.phenotips.Constants;
-import org.phenotips.data.shareprotocol.ShareProtocol;
-import org.phenotips.data.Patient;
-import org.phenotips.data.push.PushPatientData;
-import org.phenotips.data.push.PushServerConfigurationResponse;
-import org.phenotips.data.push.PushServerGetPatientIDResponse;
-import org.phenotips.data.push.PushServerSendPatientResponse;
-import org.phenotips.data.internal.controller.VersionsController;
 import org.slf4j.Logger;
-import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
-
-import groovy.lang.Singleton;
-
-import org.xwiki.model.reference.DocumentReference;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+
+import groovy.lang.Singleton;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 
 /**
  * Default implementation for the {@link PushPatientData} component.
@@ -63,6 +63,29 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class DefaultPushPatientData implements PushPatientData
 {
+    /** Server configuration ID property name within the PushPatientServer class. */
+    public static final String PUSH_SERVER_CONFIG_ID_PROPERTY_NAME = "name";
+
+    /** Server configuration URL property name within the PushPatientServer class. */
+    public static final String PUSH_SERVER_CONFIG_URL_PROPERTY_NAME = "url";
+
+    /** Server configuration Description property name within the PushPatientServer class. */
+    public static final String PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME = "description";
+
+    /** Server configuration URL property name within the PushPatientServer class. */
+    public static final String PUSH_SERVER_CONFIG_TOKEN_PROPERTY_NAME = "token";
+
+    /** Destination page. */
+    private static final String PATIENT_DATA_SHARING_PAGE = "/bin/receivePatientData";
+
+    /**
+     * Key and value which should be added to POST/GET requests to force XWiki to display raw output without any
+     * additional HTML E.g. http://localhost:8080/bin/receivePatientData?xpage=plain&...
+     */
+    private static final String XWIKI_RAW_OUTPUT_KEY = "xpage";
+
+    private static final String XWIKI_RAW_OUTPUT_VALUE = "plain";
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -73,27 +96,6 @@ public class DefaultPushPatientData implements PushPatientData
 
     /** HTTP client used for communicating with the remote server. */
     private final HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
-
-    /** Destination page. */
-    private static final String PATIENT_DATA_SHARING_PAGE = "/bin/receivePatientData";
-
-    /** Key and value which should be added to POST/GET requests to force XWiki to display raw output without any additional HTML
-     *  E.g. http://localhost:8080/bin/receivePatientData?xpage=plain&...
-     * */
-    private static final String XWIKI_RAW_OUTPUT_KEY   = "xpage";
-    private static final String XWIKI_RAW_OUTPUT_VALUE = "plain";
-
-    /** Server configuration ID property name within the PushPatientServer class. */
-    public static final String PUSH_SERVER_CONFIG_ID_PROPERTY_NAME  = "name";
-
-    /** Server configuration URL property name within the PushPatientServer class. */
-    public static final String PUSH_SERVER_CONFIG_URL_PROPERTY_NAME = "url";
-
-    /** Server configuration Description property name within the PushPatientServer class. */
-    public static final String PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME = "description";
-
-    /** Server configuration URL property name within the PushPatientServer class. */
-    public static final String PUSH_SERVER_CONFIG_TOKEN_PROPERTY_NAME = "token";
 
     /**
      * Helper method for obtaining a valid xcontext from the execution context.
@@ -142,27 +144,28 @@ public class DefaultPushPatientData implements PushPatientData
     }
 
     private PostMethod generatePostMethod(String remoteServerIdentifier, String actionName,
-                                          String userName, String password, String user_token)
+        String userName, String password, String userToken)
     {
         BaseObject serverConfiguration = this.getPushServerConfiguration(remoteServerIdentifier);
 
         String submitURL = getBaseURL(serverConfiguration);
-        if (submitURL == null) return null;
+        if (submitURL == null) {
+            return null;
+        }
 
-        this.logger.warn("POST URL: {}", submitURL);
+        this.logger.trace("POST URL: {}", submitURL);
 
         PostMethod method = new PostMethod(submitURL);
 
         method.addParameter(XWIKI_RAW_OUTPUT_KEY, XWIKI_RAW_OUTPUT_VALUE);
-        method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER,  ShareProtocol.POST_PROTOCOL_VERSION);
+        method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER, ShareProtocol.POST_PROTOCOL_VERSION);
         method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_SERVER_TOKEN, getServerToken(serverConfiguration));
-        method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_ACTION,       actionName);
+        method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_ACTION, actionName);
 
         method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME, userName);
-        if (user_token != null) {
-            method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USER_TOKEN, user_token);
-        }
-        else {
+        if (userToken != null) {
+            method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USER_TOKEN, userToken);
+        } else {
             method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PASSWORD, password);
         }
 
@@ -180,40 +183,42 @@ public class DefaultPushPatientData implements PushPatientData
         try {
             XWikiContext context = getXContext();
             XWiki xwiki = context.getWiki();
-            XWikiDocument prefsDoc = xwiki.getDocument(new DocumentReference(xwiki.getDatabase(), "XWiki", "XWikiPreferences"), context);
-            return prefsDoc.getXObject(new DocumentReference(xwiki.getDatabase(), Constants.CODE_SPACE, "PushPatientServer"), PUSH_SERVER_CONFIG_ID_PROPERTY_NAME, serverName);
+            XWikiDocument prefsDoc =
+                xwiki.getDocument(new DocumentReference(xwiki.getDatabase(), "XWiki", "XWikiPreferences"), context);
+            return prefsDoc.getXObject(new DocumentReference(xwiki.getDatabase(), Constants.CODE_SPACE,
+                "PushPatientServer"), PUSH_SERVER_CONFIG_ID_PROPERTY_NAME, serverName);
         } catch (XWikiException ex) {
-            this.logger.warn("Failed to get server info: [{}] {}", ex.getMessage(), ex);
+            this.logger.warn("Failed to get server info: {}", ex.getMessage(), ex);
             return null;
         }
     }
 
     @Override
-    public PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier, String userName, String password, String user_token)
+    public PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier, String userName,
+        String password, String userToken)
     {
-        this.logger.warn("===> Getting server configuration: [{}]", remoteServerIdentifier);
+        this.logger.debug("===> Getting server configuration for: [{}]", remoteServerIdentifier);
 
         PostMethod method = null;
 
         try {
-            method = generatePostMethod(remoteServerIdentifier,
-                                        ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_INFO,
-                                        userName, password, user_token);
-            if (method == null) return null;
+            method = generatePostMethod(remoteServerIdentifier, ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_INFO,
+                userName, password, userToken);
+            if (method == null) {
+                return null;
+            }
 
             int returnCode = this.client.executeMethod(method);
 
-            this.logger.warn("GetConfig HTTP return code: {}", returnCode);
+            this.logger.trace("GetConfig HTTP return code: {}", returnCode);
 
             String response = method.getResponseBodyAsString();
 
-            //this.logger.warn("RESPONSE FROM SERVER: {}", response);
-
-            JSONObject responseJSON = (JSONObject)JSONSerializer.toJSON(response);
+            JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
 
             return new DefaultPushServerConfigurationResponse(responseJSON);
         } catch (Exception ex) {
-            this.logger.error("Failed to login - [{}] {}", ex.getMessage(), ex);
+            this.logger.error("Failed to login: {}", ex.getMessage(), ex);
         } finally {
             if (method != null) {
                 method.releaseConnection();
@@ -223,29 +228,29 @@ public class DefaultPushPatientData implements PushPatientData
     }
 
     @Override
-    public PushServerSendPatientResponse sendPatient(Patient patient, Set<String> exportFields, String groupName, String remoteGUID,
-                                                     String remoteServerIdentifier, String userName, String password, String user_token)
+    public PushServerSendPatientResponse sendPatient(Patient patient, Set<String> exportFields, String groupName,
+        String remoteGUID, String remoteServerIdentifier, String userName, String password, String userToken)
     {
-        this.logger.warn("===> Sending to server: [{}]", remoteServerIdentifier);
+        this.logger.debug("===> Sending to server: [{}]", remoteServerIdentifier);
 
         PostMethod method = null;
 
         try {
-            method = generatePostMethod(remoteServerIdentifier,
-                                        ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_PUSH,
-                                        userName, password, user_token);
-            if (method == null) return null;
+            method = generatePostMethod(remoteServerIdentifier, ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_PUSH,
+                userName, password, userToken);
+            if (method == null) {
+                return null;
+            }
 
-            if (exportFields != null) {                                        // when exportFields is null everything is included anyway
-                exportFields.add(VersionsController.getEnablingFieldName());   // require version information in JSON output
+            if (exportFields != null) {
+                // Version information is required in the JSON; when exportFields is null everything is included anyway
+                exportFields.add(VersionsController.getEnablingFieldName());
             }
 
             String patientJSON = patient.toJSON(exportFields).toString();
 
-            //this.logger.warn("===> Patient\\Document {} as JSON: {}", patient.getDocument().getName(), patientJSON);
-
             method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PATIENTJSON,
-                                URLEncoder.encode(patientJSON, XWiki.DEFAULT_ENCODING));
+                URLEncoder.encode(patientJSON, XWiki.DEFAULT_ENCODING));
 
             if (groupName != null) {
                 method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_GROUPNAME, groupName);
@@ -256,18 +261,16 @@ public class DefaultPushPatientData implements PushPatientData
 
             int returnCode = this.client.executeMethod(method);
 
-            this.logger.warn("Push HTTP return code: {}", returnCode);
+            this.logger.trace("Push HTTP return code: {}", returnCode);
 
             String response = method.getResponseBodyAsString();
 
-            //this.logger.warn("RESPONSE FROM SERVER: {}", response);
-
-            JSONObject responseJSON = (JSONObject)JSONSerializer.toJSON(response);
+            JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
 
             return new DefaultPushServerSendPatientResponse(responseJSON);
 
         } catch (Exception ex) {
-            this.logger.error("Failed to push patient: [{}] {}", ex.getMessage(), ex);
+            this.logger.error("Failed to push patient: {}", ex.getMessage(), ex);
         } finally {
             if (method != null) {
                 method.releaseConnection();
@@ -278,34 +281,32 @@ public class DefaultPushPatientData implements PushPatientData
 
     @Override
     public PushServerGetPatientIDResponse getPatientURL(String remoteServerIdentifier, String remoteGUID,
-                                                        String userName, String password, String user_token)
+        String userName, String password, String user_token)
     {
-        this.logger.warn("===> Sending to server: [{}]", remoteServerIdentifier);
+        this.logger.debug("===> Contacting server: [{}]", remoteServerIdentifier);
 
         PostMethod method = null;
 
         try {
-            method = generatePostMethod(remoteServerIdentifier,
-                                        ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_GETID,
-                                        userName, password, user_token);
-            if (method == null) return null;
+            method = generatePostMethod(remoteServerIdentifier, ShareProtocol.CLIENT_POST_ACTIONKEY_VALUE_GETID,
+                userName, password, user_token);
+            if (method == null) {
+                return null;
+            }
 
             method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_GUID, remoteGUID);
 
             int returnCode = this.client.executeMethod(method);
-
-            this.logger.warn("Push HTTP return code: {}", returnCode);
+            this.logger.trace("Push HTTP return code: {}", returnCode);
 
             String response = method.getResponseBodyAsString();
+            this.logger.trace("RESPONSE FROM SERVER: {}", response);
 
-            this.logger.warn("RESPONSE FROM SERVER: {}", response);
-
-            JSONObject responseJSON = (JSONObject)JSONSerializer.toJSON(response);
+            JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
 
             return new DefaultPushServerGetPatientIDResponse(responseJSON);
-
         } catch (Exception ex) {
-            this.logger.error("Failed to get patient URL: [{}] {}", ex.getMessage(), ex);
+            this.logger.error("Failed to get patient URL: {}", ex.getMessage(), ex);
         } finally {
             if (method != null) {
                 method.releaseConnection();

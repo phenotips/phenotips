@@ -82,7 +82,7 @@ public class DefaultPushPatientService implements PushPatientService
     @Inject
     private PushPatientData internalService;
 
-    /** Used for login token storage in a way unavailable to web pages */
+    /** Used for storing login token so they're unaccessible from public scripts. */
     @Inject
     private SecureStorageManager storageManager;
 
@@ -154,13 +154,11 @@ public class DefaultPushPatientService implements PushPatientService
                     .equals("")) {
                     this.logger.warn("   ...available: [{}]",
                         serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME));
-                    PushServerInfo info =
-                        new DefaultPushServerInfo(
-                            serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME),
-                            serverConfiguration
-                                .getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_URL_PROPERTY_NAME),
-                            serverConfiguration
-                                .getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME));
+                    PushServerInfo info = new DefaultPushServerInfo(
+                        serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME),
+                        serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_URL_PROPERTY_NAME),
+                        serverConfiguration.
+                            getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME));
                     response.add(info);
                 }
             }
