@@ -21,19 +21,15 @@
 package org.phenotips.data.push;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.push.PushServerConfigurationResponse;
-import org.phenotips.data.push.PushServerSendPatientResponse;
-import org.phenotips.data.push.PushServerGetPatientIDResponse;
-
-import java.util.Set;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
+import java.util.Set;
+
 /**
- * API that allows pushing patient data to a remote PhenoTips instance.<p>
- *
- * Note: this API does not check any permisions and assumes the caller has the right to push the patient.
+ * API that allows pushing patient data to a remote PhenoTips instance. Note: this API does not check any permissions
+ * and assumes the caller has the right to push the patient.
  *
  * @version $Id$
  * @since 1.0M11
@@ -44,62 +40,76 @@ public interface PushPatientData
 {
     /**
      * Retrieves the list of patient fields accepted by the remote server as well as the list of groups the given remote
-     * user is a member of on the remote server.<p>
-     *
-     * Uses the provided credentials to authorize on the remote server. In case optional user_token is not null the token
-     * is used and the password is ignored.
+     * user is a member of on the remote server.
+     * <p>
+     * Uses the provided credentials to authorize on the remote server. In case optional user_token is not null the
+     * token is used and the password is ignored.
      *
      * @param remoteServerIdentifier server name as configured in TODO
      * @param userName user name on the remote server
      * @param password user password on the remote server. Ignored if user_token is not null.
      * @param user_token passwordless-login token provided by the remote server on the last successful login (optional)
-     * @return server response which, upon successful login, contains the list of remote phenotips groups the user is a part of as
-     * well as the list of accepted patient fields. If enabled on the the remote server will also contain a token for future
-     * passwordless logins, which may or may not be the same as the token provided. See {@code PushServerConfigurationResponse}.<p>
-     * Returns {@code null} if no response was received from the server (e.g. a wrong server IP, a network problem, etc.)
+     * @return server response which, upon successful login, contains the list of remote phenotips groups the user is a
+     *         part of as well as the list of accepted patient fields. If enabled on the the remote server will also
+     *         contain a token for future passwordless logins, which may or may not be the same as the token provided.
+     *         See {@code PushServerConfigurationResponse}.
+     *         <p>
+     *         Returns {@code null} if no response was received from the server (e.g. a wrong server IP, a network
+     *         problem, etc.)
      */
-    PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier, String userName, String password, String user_token);
+    PushServerConfigurationResponse getRemoteConfiguration(String remoteServerIdentifier, String userName,
+        String password, String user_token);
 
     /**
-     * Submits the specified subset of patient data to the specified remote server. The new patient created on the remote
-     * server will be created and authored by the given user, and owned by the given group (if provided) or the user otherwise.
+     * Submits the specified subset of patient data to the specified remote server. The new patient created on the
+     * remote server will be created and authored by the given user, and owned by the given group (if provided) or the
+     * user otherwise.
      * <p>
-     * A new remote patient will be created with each submission, unless remoteGUID is provided, and a patient with the given GUID
-     * exists on the remote server and owned by the given group and is authored by the given user - in which case remote patient
-     * will be updated (only the submitted fields)
+     * A new remote patient will be created with each submission, unless remoteGUID is provided, and a patient with the
+     * given GUID exists on the remote server and owned by the given group and is authored by the given user - in which
+     * case remote patient will be updated (only the submitted fields)
      *
      * @param patient local patient to be pushed to the remove server
      * @param exportFields patient fields to be pushed. All other fields will be omitted.
      * @param groupName group name (optional, can be {@code null})
-     * @param remoteGUID if a remote patient with the same GUID exists and is owned by the given group and is authored by the given user
-     *                   patient data will be updated instead of creating a new patient (optional, can be {@code null})
+     * @param remoteGUID if a remote patient with the same GUID exists and is owned by the given group and is authored
+     *            by the given user patient data will be updated instead of creating a new patient (optional, can be
+     *            {@code null})
      * @param remoteServerIdentifier server name as configured in TODO
      * @param userName user name on the remote server
      * @param password user password on the remote server. Ignored if user_token is not null.
-     * @param user_token passwordless-login token provided by the remote server on the last successful login (optional, can be {@code null})
-     * @return Server response, indicating whether the submit was successful, and the remote ID and GUID of the remote patient object
-     * (for linking to and future updates of the created remote patient). See {@code PushServerSendPatientResponse} for details.<p>
-     * Returns {@code null} if no response was received from the server (e.g. a wrong server IP, a network problem, etc.)
+     * @param user_token passwordless-login token provided by the remote server on the last successful login (optional,
+     *            can be {@code null})
+     * @return Server response, indicating whether the submit was successful, and the remote ID and GUID of the remote
+     *         patient object (for linking to and future updates of the created remote patient). See
+     *         {@code PushServerSendPatientResponse} for details.
+     *         <p>
+     *         Returns {@code null} if no response was received from the server (e.g. a wrong server IP, a network
+     *         problem, etc.)
      */
-    PushServerSendPatientResponse sendPatient(Patient patient, Set<String> exportFields, String groupName, String remoteGUID,
-                                              String remoteServerIdentifier, String userName, String password, String user_token);
+    PushServerSendPatientResponse sendPatient(Patient patient, Set<String> exportFields, String groupName,
+        String remoteGUID, String remoteServerIdentifier, String userName, String password, String user_token);
 
     /**
-     * Gets the remote patient ID and URL for viewing the remote patient.<p>
-     *
-     * Uses the provided credentials to authorize on the remote server. In case optional user_token is not null the token
-     * is used and the password is ignored.
+     * Gets the remote patient ID and URL for viewing the remote patient.
+     * <p>
+     * Uses the provided credentials to authorize on the remote server. In case the optional {@code user_token} is not
+     * null, the token is used and the password is ignored.
      *
      * @param remoteServerIdentifier server name as configured in TODO
-     * @param remotePatientGUID GUID of the remote patient object, as received from the remote server when the patient was created
+     * @param remotePatientGUID GUID of the remote patient object, as received from the remote server when the patient
+     *            was created
      * @param remoteServerIdentifier server name as configured in TODO
      * @param userName user name on the remote server
      * @param password user password on the remote server. Ignored if user_token is not null.
-     * @param user_token passwordless-login token provided by the remote server on the last successful login (optional, can be {@code null})
-     * @return server response which, upon successful login, contains the remote patient URL and ID.
-     * See {@code PushServerGetPatientIDResponse}.<p>
-     * Returns {@code null} if no response was received from the server (e.g. a wrong server IP, a network problem, etc.)
+     * @param user_token passwordless-login token provided by the remote server on the last successful login (optional,
+     *            can be {@code null})
+     * @return server response which, upon successful login, contains the remote patient URL and ID. See
+     *         {@code PushServerGetPatientIDResponse}.
+     *         <p>
+     *         Returns {@code null} if no response was received from the server (e.g. a wrong server IP, a network
+     *         problem, etc.)
      */
     PushServerGetPatientIDResponse getPatientURL(String remoteServerIdentifier, String remoteGUID,
-                                                 String userName, String password, String user_token);
+        String userName, String password, String user_token);
 }

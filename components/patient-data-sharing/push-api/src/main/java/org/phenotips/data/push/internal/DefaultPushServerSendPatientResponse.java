@@ -19,12 +19,13 @@
  */
 package org.phenotips.data.push.internal;
 
+import org.phenotips.data.push.PushServerSendPatientResponse;
+import org.phenotips.data.shareprotocol.ShareProtocol;
+
 import net.sf.json.JSONObject;
 
-import org.phenotips.data.shareprotocol.ShareProtocol;
-import org.phenotips.data.push.PushServerSendPatientResponse;
-
-public class DefaultPushServerSendPatientResponse extends DefaultPushServerGetPatientIDResponse implements PushServerSendPatientResponse
+public class DefaultPushServerSendPatientResponse extends DefaultPushServerGetPatientIDResponse implements
+    PushServerSendPatientResponse
 {
     DefaultPushServerSendPatientResponse(JSONObject serverResponse)
     {
@@ -59,7 +60,6 @@ public class DefaultPushServerSendPatientResponse extends DefaultPushServerGetPa
     public boolean isActionFailed_knownReason()
     {
         return (super.isActionFailed_knownReason() || isActionFailed_incorrectGroup() ||
-                isActionFailed_UpdatesDisabled()   || isActionFailed_IncorrectGUID() ||
-                isActionFailed_GUIDAccessDenied());
+            isActionFailed_UpdatesDisabled() || isActionFailed_IncorrectGUID() || isActionFailed_GUIDAccessDenied());
     }
 }

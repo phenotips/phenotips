@@ -34,27 +34,27 @@ import org.xwiki.stability.Unstable;
 public interface PushServerGetPatientIDResponse extends PushServerResponse
 {
     /**
-     * GUID of the remote patient object, which can be used to update remote patient data or
-     * to get the curent remote patient URL.
+     * GUID of the remote patient object, which can be used to update remote patient data or to get the current remote
+     * patient URL.
      *
-     * @return {@code String}, remote GUID;
-     * {@code null} if the response did not include this information (e.g. in case of a failure)
+     * @return {@code String}, remote GUID; {@code null} if the response did not include this information (e.g. in case
+     *         of a failure)
      */
     String getRemotePatientGUID();
 
     /**
      * Current remote URL of the patient created or patient updated.
      *
-     * @return {@code String}, URL of the patient on the remote server;
-     * {@code null} if the response did not include this information (e.g. in case of a failure)
+     * @return {@code String}, URL of the patient on the remote server; {@code null} if the response did not include
+     *         this information (e.g. in case of a failure)
      */
     String getRemotePatientURL();
 
     /**
      * Current remote URL of the patient created or patient updated.
      *
-     * @return {@code String}, URL of the patient on the remote server;
-     * {@code null} if the response did not include this information (e.g. in case of a failure)
+     * @return {@code String}, URL of the patient on the remote server; {@code null} if the response did not include
+     *         this information (e.g. in case of a failure)
      */
     String getRemotePatientID();
 }

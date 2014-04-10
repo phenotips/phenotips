@@ -33,31 +33,49 @@ import java.sql.Timestamp;
 public class DefaultPatientPushHistory implements PatientPushHistory
 {
     // TODO: List<Timestamp> of all the times this patient was pushed?
+    /** Last time this patient was pushed to this server. */
+    private final Timestamp lastTimePushed;
 
-    private final Timestamp lastTimePushed;   // last time this patient was pushed to this server
+    /** The ID on the remote server as of last push (in theory may change - GUID should be used for updating). */
+    private final String remotePatientID;
 
-    private final String remotePatientID;     // ID as of last push (in theory may change - GUID should be used for updating)
+    /**
+     * URL as of last push. In practice this can be reconstructed from the ID, but is stored to account for possibly
+     * differently configured remote server.
+     */
+    private final String remotePatientURL;
 
-    private final String remotePatientURL;    // URL as of last push. In practice can recostruct form ID, but stored
-                                        // to acount for possibly differently configured remote server
+    /** Supposedly never changes. May be {@code null} if the remote server does not provide a GUID. */
+    private final String remotePatientGUID;
 
-    private final String remotePatientGUID;   // supposedly never changes; nullable: in case remote server does not provide a GUID
-
-
+    /**
+     * Constructor that copies the information from a persisted entity.
+     *
+     * @param pushInfo the stored data to copy, must be non-null
+     */
     public DefaultPatientPushHistory(PatientPushedToInfo pushInfo)
     {
-        this.lastTimePushed    = pushInfo.getLastPushTime();
+        this.lastTimePushed = pushInfo.getLastPushTime();
         this.remotePatientGUID = pushInfo.getRemotePatientGUID();
-        this.remotePatientID   = pushInfo.getRemotePatientID();
-        this.remotePatientURL  = pushInfo.getRemotePatientURL();
+        this.remotePatientID = pushInfo.getRemotePatientID();
+        this.remotePatientURL = pushInfo.getRemotePatientURL();
     }
 
-    public DefaultPatientPushHistory(Timestamp lastTimePushed, String remotePatientGUID, String remotePatientID, String remotePatientURL)
+    /**
+     * Constructor that receives all the relevant information as parameters.
+     *
+     * @param lastTimePushed see {@link #getLastPushTime()}
+     * @param remotePatientGUID see {@link #getRemotePatientGUID()}
+     * @param remotePatientID see {@link #getRemotePatientID()}
+     * @param remotePatientURL see {@link #getRemotePatientURL()}
+     */
+    public DefaultPatientPushHistory(Timestamp lastTimePushed, String remotePatientGUID, String remotePatientID,
+        String remotePatientURL)
     {
-        this.lastTimePushed    = lastTimePushed;
+        this.lastTimePushed = lastTimePushed;
         this.remotePatientGUID = remotePatientGUID;
-        this.remotePatientID   = remotePatientID;
-        this.remotePatientURL  = remotePatientURL;
+        this.remotePatientID = remotePatientID;
+        this.remotePatientURL = remotePatientURL;
     }
 
     @Override
@@ -83,18 +101,18 @@ public class DefaultPatientPushHistory implements PatientPushHistory
     @Override
     public String getRemotePatientGUID()
     {
-        return remotePatientGUID;
+        return this.remotePatientGUID;
     }
 
     @Override
     public String getRemotePatientID()
     {
-        return remotePatientID;
+        return this.remotePatientID;
     }
 
     @Override
     public String getRemotePatientURL()
     {
-        return remotePatientURL;
+        return this.remotePatientURL;
     }
 }

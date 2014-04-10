@@ -22,9 +22,8 @@ package org.phenotips.data.push;
 import java.sql.Timestamp;
 
 /**
- * Stores information about previous pushes of a single patient to a given remote server.<p>
- *
- * Stored data includes the last know patient URL on the remote server (for quick linking in UI).
+ * Stores information about previous pushes of a single patient to a given remote server. Stored data includes the last
+ * know patient URL on the remote server (for quick linking in UI).
  *
  * @version $Id$
  * @since 1.0M11

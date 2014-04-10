@@ -34,28 +34,26 @@ import org.xwiki.stability.Unstable;
 public interface PushServerSendPatientResponse extends PushServerGetPatientIDResponse
 {
     /**
-     * @return {@code true} iff the group name provided in the push request
-     * is either not a valid group name or corresponds to a group that the
-     * user prvided is not a member of.
+     * @return {@code true} iff the group name provided in the push request is either not a valid group name or
+     *         corresponds to a group that the user provided is not a member of.
      */
     boolean isActionFailed_incorrectGroup();
 
     /**
-     * @return {@code true} iff GUID was provided in the push request and updating
-     * existing patients is disable don the server.
+     * @return {@code true} iff GUID was provided in the push request and updating existing patients is disabled on the
+     *         server.
      */
     boolean isActionFailed_UpdatesDisabled();
 
     /**
-     * @return {@code true} iff GUID provided in the push request does not
-     * correspond to an existing Phenotips Patient object on the remote server.
+     * @return {@code true} iff GUID provided in the push request does not correspond to an existing PhenoTips Patient
+     *         object on the remote server.
      */
     boolean isActionFailed_IncorrectGUID();
 
     /**
-     * @return {@code true} iff GUID was provided in the push request and the
-     * user specified in the request does not have permissions to update the
-     * corresponding document on the remote server.
+     * @return {@code true} iff GUID was provided in the push request and the user specified in the request does not
+     *         have permissions to update the corresponding document on the remote server.
      */
     boolean isActionFailed_GUIDAccessDenied();
 }

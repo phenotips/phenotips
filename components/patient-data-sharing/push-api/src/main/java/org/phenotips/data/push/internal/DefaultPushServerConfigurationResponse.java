@@ -19,6 +19,12 @@
  */
 package org.phenotips.data.push.internal;
 
+import org.phenotips.components.ComponentManagerRegistry;
+import org.phenotips.configuration.RecordConfiguration;
+import org.phenotips.configuration.RecordConfigurationManager;
+import org.phenotips.data.push.PushServerConfigurationResponse;
+import org.phenotips.data.shareprotocol.ShareProtocol;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
@@ -26,13 +32,8 @@ import java.util.TreeSet;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.phenotips.data.shareprotocol.ShareProtocol;
-import org.phenotips.data.push.PushServerConfigurationResponse;
-import org.phenotips.components.ComponentManagerRegistry;
-import org.phenotips.configuration.RecordConfiguration;
-import org.phenotips.configuration.RecordConfigurationManager;
-
-public class DefaultPushServerConfigurationResponse extends DefaultPushServerResponse implements PushServerConfigurationResponse
+public class DefaultPushServerConfigurationResponse extends DefaultPushServerResponse implements
+    PushServerConfigurationResponse
 {
     DefaultPushServerConfigurationResponse(JSONObject serverResponse)
     {
@@ -41,12 +42,13 @@ public class DefaultPushServerConfigurationResponse extends DefaultPushServerRes
 
     protected Set<String> getSetFromJSONList(String key)
     {
-        JSONArray stringList = response.optJSONArray(key);
-        if (stringList == null)
+        JSONArray stringList = this.response.optJSONArray(key);
+        if (stringList == null) {
             return null;
+        }
 
-        Set<String> result = new TreeSet<String>();  // to make sure order is unchanged
-        for(Object field : stringList) {
+        Set<String> result = new TreeSet<String>(); // to make sure order is unchanged
+        for (Object field : stringList) {
             result.add(field.toString());
         }
 
@@ -84,20 +86,21 @@ public class DefaultPushServerConfigurationResponse extends DefaultPushServerRes
         {
             Set<String> remoteAcceptedFields = getRemoteAcceptedPatientFields(groupName);
 
-            if (remoteAcceptedFields == null)
+            if (remoteAcceptedFields == null) {
                 return Collections.emptySet();
+            }
 
             RecordConfigurationManager configurationManager = ComponentManagerRegistry.getContextComponentManager().
-                                                              getInstance(RecordConfigurationManager.class);
+                getInstance(RecordConfigurationManager.class);
 
             RecordConfiguration patientConfig = configurationManager.getActiveConfiguration();
 
             Set<String> commonFields = new TreeSet<String>(patientConfig.getEnabledNonIdentifiableFieldNames());
 
-            commonFields.retainAll(remoteAcceptedFields);  // of the non-personal fields available,
-                                                           // only keep those fields enable doin the remote server
+            // From the non-PII fields available, keep only those that are also enabled on the remote server
+            commonFields.retainAll(remoteAcceptedFields);
             return commonFields;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             return Collections.emptySet();
         }
     }

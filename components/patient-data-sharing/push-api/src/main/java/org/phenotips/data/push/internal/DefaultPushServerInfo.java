@@ -20,8 +20,9 @@
 package org.phenotips.data.push.internal;
 
 import org.phenotips.data.push.PushServerInfo;
+
 /**
- * Default implementation.
+ * Basic implementation of the {@link PushServerInfo} interface.
  *
  * @version $Id$
  * @since 1.0M11
@@ -29,7 +30,9 @@ import org.phenotips.data.push.PushServerInfo;
 public class DefaultPushServerInfo implements PushServerInfo
 {
     private final String serverID;
+
     private final String serverURL;
+
     private final String serverDescription;
 
     DefaultPushServerInfo(String serverID, String serverURL, String serverDescription)
@@ -42,19 +45,19 @@ public class DefaultPushServerInfo implements PushServerInfo
     @Override
     public String getServerID()
     {
-        return serverID;
+        return this.serverID;
     }
 
     @Override
     public String getServerURL()
     {
-        return serverURL;
+        return this.serverURL;
     }
 
     @Override
     public String getServerDescription()
     {
-        return serverDescription;
+        return this.serverDescription;
     }
 
     @Override

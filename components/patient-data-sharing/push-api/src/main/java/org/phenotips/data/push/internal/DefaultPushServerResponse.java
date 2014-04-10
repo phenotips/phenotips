@@ -19,10 +19,10 @@
  */
 package org.phenotips.data.push.internal;
 
-import net.sf.json.JSONObject;
-
-import org.phenotips.data.shareprotocol.ShareProtocol;
 import org.phenotips.data.push.PushServerResponse;
+import org.phenotips.data.shareprotocol.ShareProtocol;
+
+import net.sf.json.JSONObject;
 
 public class DefaultPushServerResponse implements PushServerResponse
 {
@@ -53,15 +53,16 @@ public class DefaultPushServerResponse implements PushServerResponse
 
     protected boolean hasKeySetToTrue(String key)
     {
-        return response.containsKey(key) && response.getBoolean(key);
+        return this.response.containsKey(key) && this.response.getBoolean(key);
     }
 
     protected String valueOrNull(String key)
     {
-        if (!response.containsKey(key))
+        if (!this.response.containsKey(key)) {
             return null;
+        }
 
-        return response.getString(key);
+        return this.response.getString(key);
     }
 
     @Override
@@ -71,43 +72,51 @@ public class DefaultPushServerResponse implements PushServerResponse
     }
 
     @Override
-    public boolean isIncorrectProtocolVersion() {
+    public boolean isIncorrectProtocolVersion()
+    {
         return hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_PROTOCOLFAILED);
     }
 
     @Override
-    public boolean isLoginFailed() {
+    public boolean isLoginFailed()
+    {
         return hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_LOGINFAILED);
     }
 
     @Override
-    public boolean isActionFailed() {
+    public boolean isActionFailed()
+    {
         return hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_ACTIONFAILED);
     }
 
     @Override
-    public boolean isLoginFailed_knownReason() {
+    public boolean isLoginFailed_knownReason()
+    {
         return (isLoginFailed_UnauthorizedServer() || isLoginFailed_IncorrectCredentials() ||
-                isLoginFailed_TokensNotSuported()  || isLoginFailed_UserTokenExpired());
+            isLoginFailed_TokensNotSuported() || isLoginFailed_UserTokenExpired());
     }
 
     @Override
-    public boolean isLoginFailed_UnauthorizedServer() {
+    public boolean isLoginFailed_UnauthorizedServer()
+    {
         return isLoginFailed() && hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_UNTRUSTEDSERVER);
     }
 
     @Override
-    public boolean isLoginFailed_IncorrectCredentials() {
+    public boolean isLoginFailed_IncorrectCredentials()
+    {
         return isLoginFailed() && hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_WRONGCREDENTIALS);
     }
 
     @Override
-    public boolean isLoginFailed_UserTokenExpired() {
+    public boolean isLoginFailed_UserTokenExpired()
+    {
         return isLoginFailed() && hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_EXPIREDUSERTOKEN);
     }
 
     @Override
-    public boolean isLoginFailed_TokensNotSuported() {
+    public boolean isLoginFailed_TokensNotSuported()
+    {
         return isLoginFailed() && hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_NOUSERTOKENS);
     }
 
@@ -118,7 +127,8 @@ public class DefaultPushServerResponse implements PushServerResponse
     }
 
     @Override
-    public boolean isActionFailed_isUnknownAction() {
+    public boolean isActionFailed_isUnknownAction()
+    {
         return isActionFailed() && hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_UNSUPPORTEDOP);
     }
 }
