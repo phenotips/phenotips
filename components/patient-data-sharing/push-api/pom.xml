@@ -71,11 +71,6 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>patient-access-rules-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>application-configuration-api</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -102,10 +97,6 @@
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-oldcore</artifactId>
       <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-httpclient</groupId>
