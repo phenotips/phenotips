@@ -22,8 +22,9 @@ package org.phenotips.data.internal.controller;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.SimpleNamedData;
 import org.phenotips.data.permissions.Owner;
-import org.phenotips.data.permissions.internal.PatientAccessHelper;
+import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
@@ -90,13 +91,17 @@ public class ContactInformationController implements PatientDataController<Immut
     private DocumentAccessBridge documentAccessBridge;
 
     @Inject
-    private PatientAccessHelper patientAccessHelper;
+    private PermissionsManager permissions;
 
     @Override
     public PatientData<ImmutablePair<String, String>> load(Patient patient)
     {
-        Owner owner = this.patientAccessHelper.getOwner(patient);
-        return new SimpleNamedData<String>(DATA_CONTACT, getContactInfo(owner));
+        Owner owner = this.permissions.getPatientAccess(patient).getOwner();
+        List<ImmutablePair<String, String>> contactInfo = getContactInfo(owner);
+        if (contactInfo == null) {
+            return null;
+        }
+        return new SimpleNamedData<String>(DATA_CONTACT, contactInfo);
     }
 
     @Override
@@ -141,17 +146,16 @@ public class ContactInformationController implements PatientDataController<Immut
     {
         List<ImmutablePair<String, String>> contactInfo = new LinkedList<ImmutablePair<String, String>>();
         if (owner == null) {
-            return contactInfo;
+            return null;
         }
-        String ownerIdentifier = owner.getUsername();
         if (owner.isGroup()) {
-            Group group = this.groupManager.getGroup(ownerIdentifier);
+            Group group = this.groupManager.getGroup((DocumentReference) owner.getUser());
             if (group == null) {
                 return null;
             }
             populateGroupInfo(contactInfo, group);
         } else {
-            User user = this.userManager.getUser(ownerIdentifier);
+            User user = this.userManager.getUser(owner.getUser().toString());
             if (user == null) {
                 return null;
             }

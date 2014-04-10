@@ -36,6 +36,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
@@ -692,5 +693,33 @@ public class DefaultPatientAccessHelperTest
         when(this.context.getWiki()).thenReturn(xwiki);
         when(xwiki.getGroupService(this.context)).thenThrow(new XWikiException());
         Assert.assertSame(none, this.mocker.getComponentUnderTest().getAccessLevel(this.patient, OTHER_USER));
+    }
+
+    /** Basic tests for {@link PatientAccessHelper#getType(EntityReference)}. */
+    @Test
+    public void getType() throws Exception
+    {
+        XWikiDocument doc = mock(XWikiDocument.class);
+        when(this.bridge.getDocument(OWNER)).thenReturn(doc);
+        when(doc.getXObject(new EntityReference("XWikiUsers", EntityType.DOCUMENT,
+            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(mock(BaseObject.class));
+
+        doc = mock(XWikiDocument.class);
+        when(this.bridge.getDocument(GROUP)).thenReturn(doc);
+        when(doc.getXObject(new EntityReference("XWikiUsers", EntityType.DOCUMENT,
+            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(null);
+        when(doc.getXObject(new EntityReference("XWikiGroups", EntityType.DOCUMENT,
+            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(mock(BaseObject.class));
+
+        doc = mock(XWikiDocument.class);
+        when(this.bridge.getDocument(COLLABORATOR)).thenReturn(doc);
+        when(doc.getXObject(new EntityReference("XWikiUsers", EntityType.DOCUMENT,
+            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(null);
+        when(doc.getXObject(new EntityReference("XWikiGroups", EntityType.DOCUMENT,
+            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(null);
+
+        Assert.assertEquals("user", this.mocker.getComponentUnderTest().getType(OWNER));
+        Assert.assertEquals("group", this.mocker.getComponentUnderTest().getType(GROUP));
+        Assert.assertEquals("unknown", this.mocker.getComponentUnderTest().getType(COLLABORATOR));
     }
 }

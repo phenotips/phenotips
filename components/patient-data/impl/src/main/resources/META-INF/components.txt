@@ -3,7 +3,6 @@ org.phenotips.data.internal.controller.VersionsController
 org.phenotips.data.internal.controller.IdentifiersController
 org.phenotips.data.internal.controller.DatesController
 org.phenotips.data.internal.controller.PatientNameController
-org.phenotips.data.internal.controller.ContactInformationController
 org.phenotips.data.internal.controller.SexController
 org.phenotips.data.internal.controller.GlobalQualifiersController
 org.phenotips.data.internal.controller.TextNotesController
