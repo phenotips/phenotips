@@ -22,9 +22,6 @@ package org.phenotips.data.push.internal;
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
-import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.PatientAccess;
-import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.push.PatientPushHistory;
 import org.phenotips.data.push.PushPatientData;
 import org.phenotips.data.push.PushPatientService;
@@ -36,9 +33,12 @@ import org.phenotips.data.securestorage.PatientPushedToInfo;
 import org.phenotips.data.securestorage.RemoteLoginData;
 import org.phenotips.data.securestorage.SecureStorageManager;
 
+import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.security.authorization.AuthorizationManager;
+import org.xwiki.security.authorization.Right;
 
 import java.util.Collections;
 import java.util.List;
@@ -89,9 +89,13 @@ public class DefaultPushPatientService implements PushPatientService
     @Inject
     private PatientRepository patientRepository;
 
-    /** Used to check user right to push a patient when pushing using a string */
+    /** Used for checking access rights. */
     @Inject
-    private PermissionsManager permisionManager;
+    private AuthorizationManager access;
+
+    /** Used for obtaining the current user. */
+    @Inject
+    private DocumentAccessBridge bridge;
 
     protected RemoteLoginData getStoredData(String remoteServerIdentifier)
     {
@@ -193,9 +197,9 @@ public class DefaultPushPatientService implements PushPatientService
             accessLevelName = "view";
         }
 
-        PatientAccess access = this.permisionManager.getPatientAccess(patient);
-        AccessLevel requiredAccess = this.permisionManager.resolveAccessLevel(accessLevelName);
-        if (!access.hasAccessLevel(requiredAccess)) {
+        // FIXME: Access rights should be checked in the script service, not here
+        if (!this.access.hasAccess(Right.toRight(accessLevelName), this.bridge.getCurrentUserReference(),
+            patient.getDocument())) {
             this.logger.warn("Can't access patient [{}] at level [{}]: access level violation", patientID,
                 accessLevelName);
             return null;
