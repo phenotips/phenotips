@@ -82,7 +82,7 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
   #__phenotypeMeta_displayLastEntry()
 #else
 #if ($xcontext.action != 'export')
-(% id="table-of-contents" %)(((
+(% id="table-of-contents" class="hidden" %)(((
 {{toc start="2" depth="2" /}}
 )))
 #end
