@@ -45,28 +45,30 @@
   <content>{{velocity}}{{html clean=false}}
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
-$xwiki.jsx.use('PhenoTips.StudyBindingClass')##
-$xwiki.ssx.use('PhenoTips.StudyBindingClass')##
 #if($hasCreatePage)
   &lt;form id="patient-creation-form" class="patient-creation-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
     &lt;input type="hidden" name="doCreate" value="1" /&gt;
     ##
-    ## Is there more than one sheet option?
-    ## Check out all the groups this user is part of
-    #set ($groups = $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
-    #set ($studies = [])
-    #foreach ($group in $groups)
-      #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
-      #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
-        #set ($groupObj = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)).getObject('PhenoTips.PhenoTipsGroupClass'))
+    #if ($xwiki.exists('PhenoTips.StudyBindingClass'))
+      ## Is there more than one sheet option?
+      ## Check out all the groups this user is part of
+      #set ($groups = $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
+      #set ($studies = [])
+      #foreach ($group in $groups)
+        #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+        #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
+          #set ($groupObj = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)).getObject('PhenoTips.PhenoTipsGroupClass'))
+        #end
+        #if ($groupObj.getProperty('studies').value.isEmpty() == false)
+          #set ($discard = $studies.addAll($groupObj.getProperty('studies').value))
+        #end
       #end
-      #if ($groupObj.getProperty('studies').value.isEmpty() == false)
-        #set ($discard = $studies.addAll($groupObj.getProperty('studies').value))
+      #if ($studies.size() &gt; 0)
+        $xwiki.jsx.use('PhenoTips.StudyBindingClass')##
+        $xwiki.ssx.use('PhenoTips.StudyBindingClass')##
+        &lt;input type="hidden" name="sheet" value="PhenoTips.StudyBindingSheet" /&gt;
       #end
-    #end
-    #if ($studies.size() &gt; 0)
-      &lt;input type="hidden" name="sheet" value="PhenoTips.StudyBindingSheet" /&gt;
     #end
     ## Extensions displayed before the content
     #foreach ($e in $services.uix.getExtensions('org.phenotips.newPatientForm'))
