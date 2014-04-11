@@ -913,7 +913,8 @@
 }
 
 #patient-record-actions .menu.menu-horizontal {
-  padding-left: 10px;
+  border: 0 none;
+  padding: 0 0 0 10px;
   font-size: 1em;
   height: 1.8em;
   text-shadow: none;
