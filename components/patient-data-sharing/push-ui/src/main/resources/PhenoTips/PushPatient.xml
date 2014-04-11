@@ -1356,7 +1356,7 @@ function _printObjectInternal(o, level) {
       <content>{{velocity}}
 $xwiki.jsx.use('PhenoTips.PushPatient')##
 $xwiki.ssx.use('PhenoTips.PushPatient')##
-(% id="push-patient" %)((([[Push to remote server&gt;&gt;path:#||class="button"]])))
+(% id="push-patient" %)((([[Push to remote server&gt;&gt;path:#]])))
 {{/velocity}}</content>
     </property>
     <property>
