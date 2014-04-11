@@ -3266,7 +3266,7 @@ document.observe('xwiki:dom:loaded', function() {
       &lt;xsl:attribute name="precedence"&gt;true&lt;/xsl:attribute&gt;
       &lt;xsl:apply-templates select="@*"/&gt;
       &lt;fo:table margin-top="2em"&gt;&lt;fo:table-body&gt;&lt;fo:table-row&gt;&lt;fo:table-cell&gt;
-      &lt;fo:block text-align="leftl"&gt;
+      &lt;fo:block text-align="left"&gt;
         &lt;fo:instream-foreign-object content-width="scale-to-fit" content-height="scale-to-fit"
             inline-progression-dimension.minimum="auto" inline-progression-dimension.maximum="100%"
             block-progression-dimension.minimum="auto" block-progression-dimension.maximum="700px"&gt;
