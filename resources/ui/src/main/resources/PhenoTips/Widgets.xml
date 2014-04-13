@@ -3106,7 +3106,8 @@ console.log(categories);
     <property>
       <code>StickyBox = Class.create({
     options : {
-      shadowSize : 6,
+      offsetTop : 6,
+      offsetBottom: 0,
       resize : false,
       isSticky : function(element) {return true}
     },
@@ -3115,6 +3116,10 @@ console.log(categories);
       this.stickyAreaElement = stickyAreaElement;
       if (this.stickyElement &amp;&amp; this.stickyAreaElement) {
         this.options = Object.extend(Object.clone(this.options), options || { });
+        // Temporary, for backwards compatibility with deprecated parameter 'shadowSize'
+        if (this.options.shadowSize &amp;&amp; options.offsetTop === undefined) {
+          this.options.offsetTop = this.options.shadowSize;
+        }
         this.resetPosition = this.resetPosition.bindAsEventListener(this);
         Event.observe(window, 'scroll', this.resetPosition);
         Event.observe(window, 'resize', this.resetPosition);
@@ -3133,7 +3138,7 @@ console.log(categories);
       this.stickyElement.style.overflow = '';
       this.stickyElement.fire('size:changed');
       this.boxHeight = this.stickyElement.getHeight();
-      var maxBoxHeight = document.viewport.getHeight() - 2*this.options.shadowSize;
+      var maxBoxHeight = document.viewport.getHeight() - this.options.offsetTop - this.options.offsetBottom;
       if (this.options.resize) {
          var memo =  {'diff' : (maxBoxHeight - this.boxHeight), 'original': this.boxHeight};
          this.boxHeight = maxBoxHeight;
@@ -3142,10 +3147,9 @@ console.log(categories);
          this.stickyElement.fire('size:changed', memo);
       }
       this.boxWidth = this.stickyElement.getWidth();
-      this.boxMinTop = this.stickyAreaElement.cumulativeOffset().top + this.options.shadowSize ;
+      this.boxMinTop = this.stickyAreaElement.cumulativeOffset().top + this.options.offsetTop;
       this.boxMaxTop = this.stickyAreaElement.cumulativeOffset().top + this.stickyAreaElement.getHeight() - this.boxHeight;
       this.boxLeft = this.stickyElement.cumulativeOffset().left;
-//      this.boxRelativeLeft = this.stickyElement.positionedOffset().left;
       this.boxRelativeLeft = this.boxLeft - this.stickyElement.getOffsetParent().viewportOffset().left;
       var relativeContentPosition = this.stickyAreaElement.viewportOffset().top;
       this.direction = 0;
@@ -3174,7 +3178,7 @@ console.log(categories);
         this.stickyElement.addClassName('sticky');
         this.stickyElement.style.left = this.boxLeft + 'px';
         this.stickyElement.style.width = (this.boxWidth) + 'px';
-        this.stickyElement.style.top = this.options.shadowSize + 'px';
+        this.stickyElement.style.top = this.options.offsetTop + 'px';
         this.stickyElement.style.right = '';
         this.stickyElement.style.position = 'fixed';
       }

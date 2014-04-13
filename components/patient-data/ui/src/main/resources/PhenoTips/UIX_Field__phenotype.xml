@@ -188,7 +188,7 @@
     var content = qsBox.up('div');
     if (content) {
       qsBox.__x_qsInput = qsBox.down('input[type=text]') || {};
-      var qsSticky = new StickyBox(qsBox, content, {shadowSize : offsetTop, isSticky : function(element) {return !element.__x_qsInput._activeSuggest} });
+      var qsSticky = new StickyBox(qsBox, content, {offsetTop : offsetTop, isSticky : function(element) {return !element.__x_qsInput._activeSuggest} });
       Event.observe(document, 'ms:suggest:containerCreated', function(event) {
         if (event.memo.suggest.fld == qsBox.__x_qsInput) {
           qsBox.__x_qsInput._activeSuggest = true;
@@ -211,12 +211,13 @@
   // ------------------------------------------------------------------------
   // Behavior of the selection summary box
   // ------------------------------------------------------------------------
+  var offsetBottom = document.documentElement.down('.bottombuttons') &amp;&amp; document.documentElement.down('.bottombuttons').getHeight();
   var summaryContent = $('current-phenotype-selection');
   var summary = summaryContent &amp;&amp; summaryContent.up('.selector-panel');
   if (summary) {
     var container = summary.up();
     summary.addClassName('absolute');
-    var sSticky  = new StickyBox(summary, container, {shadowSize : offsetTop, resize: true, isSticky : function(element) {return element.hasClassName('half-width') &amp;&amp; element.getHeight() &lt; element.previous().getHeight()}});
+    var sSticky  = new StickyBox(summary, container, {offsetTop : offsetTop, offsetBottom: offsetBottom, resize: true, isSticky : function(element) {return element.hasClassName('half-width') &amp;&amp; element.getHeight() &lt; element.previous().getHeight()}});
     summary.observe('size:changed', function(event) {
       if (!event.memo) {
          summaryContent.style.height = '';

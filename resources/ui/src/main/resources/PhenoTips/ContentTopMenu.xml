@@ -573,7 +573,7 @@
 
       var docActions = $('patient-record-actions');
       if (docActions) {
-        var daSticky  = new StickyBox(docActions, docContent, {shadowSize : 0});
+        var daSticky  = new StickyBox(docActions, docContent, {offsetTop : 0});
       }
     }
   };
