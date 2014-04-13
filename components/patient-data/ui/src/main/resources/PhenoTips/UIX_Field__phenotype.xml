@@ -333,7 +333,7 @@
 }
 .quick-search-box {
   border: 0 none;
-  z-index: 2000;
+  z-index: 1000;
   #css3_backgroundLinearGradient({
     'to': 'bottom',
     'colors': [
