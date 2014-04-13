@@ -20,29 +20,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>Widgets</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1397259078000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1323127778000</creationDate>
-  <date>1324230646000</date>
-  <contentUpdateDate>1324230646000</contentUpdateDate>
+  <date>1397332155000</date>
+  <contentUpdateDate>1397259078000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content/>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>0e1a6de2-6050-432f-a39f-656bb3b90163</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -114,10 +116,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>0e1a6de2-6050-432f-a39f-656bb3b90163</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -1269,6 +1267,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>d12911da-ec96-4e6b-bee9-8e6a5673edf8</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -1340,10 +1342,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>1</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>d12911da-ec96-4e6b-bee9-8e6a5673edf8</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -1607,6 +1605,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>2</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>8671764c-5e4b-4641-a1ae-0a77d30d8009</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -1678,10 +1680,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>2</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>8671764c-5e4b-4641-a1ae-0a77d30d8009</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -2004,6 +2002,10 @@ return MS;
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>3</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>d536b27d-9de4-4d3d-9bc8-e458d3274c16</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -2075,10 +2077,6 @@ return MS;
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>3</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>d536b27d-9de4-4d3d-9bc8-e458d3274c16</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -2210,6 +2208,10 @@ return MS;
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>4</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>984c7b53-5644-489c-8ddc-ef51a196254a</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -2281,10 +2283,6 @@ return MS;
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>4</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>984c7b53-5644-489c-8ddc-ef51a196254a</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -2904,6 +2902,10 @@ console.log(categories);
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>5</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>62a03919-3321-48ca-ae5a-b748ca291f63</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -2975,10 +2977,6 @@ console.log(categories);
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>5</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>62a03919-3321-48ca-ae5a-b748ca291f63</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -3027,6 +3025,10 @@ console.log(categories);
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>6</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>1cc2a76f-aca1-4bfa-a468-3a599799c13c</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -3098,10 +3100,6 @@ console.log(categories);
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>6</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>1cc2a76f-aca1-4bfa-a468-3a599799c13c</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -3225,6 +3223,10 @@ console.log(categories);
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>7</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>576a48e8-6707-4310-941b-0abb9e532d23</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -3296,10 +3298,6 @@ console.log(categories);
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>7</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>576a48e8-6707-4310-941b-0abb9e532d23</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -3439,6 +3437,10 @@ document.observe("xwiki:dom:loaded", function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>8</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>a81251a5-7e93-4dda-b851-c37f4841d346</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -3510,10 +3512,6 @@ document.observe("xwiki:dom:loaded", function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>8</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>a81251a5-7e93-4dda-b851-c37f4841d346</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -3581,6 +3579,10 @@ document.observe("xwiki:dom:loaded", function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>9</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>ce0e1cc4-d0b1-4bf0-9815-444160042fd0</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -3652,10 +3654,6 @@ document.observe("xwiki:dom:loaded", function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>9</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>ce0e1cc4-d0b1-4bf0-9815-444160042fd0</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -3837,6 +3835,10 @@ document.observe("xwiki:dom:loaded", function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>3adf8acf-b6e8-4d05-a382-fa56ee969cf9</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -3908,10 +3910,6 @@ document.observe("xwiki:dom:loaded", function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>3adf8acf-b6e8-4d05-a382-fa56ee969cf9</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -3997,6 +3995,10 @@ document.observe("xwiki:dom:loaded", function() {
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>1</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>95d4225b-2cf1-4680-9922-a2d82e238ffe</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -4068,10 +4070,6 @@ document.observe("xwiki:dom:loaded", function() {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>1</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>95d4225b-2cf1-4680-9922-a2d82e238ffe</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -4319,6 +4317,10 @@ div.resultContainer div.sourceContent.loading {
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>2</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>64464fe6-5214-4cab-b03d-ba1892d3bb2c</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -4390,10 +4392,6 @@ div.resultContainer div.sourceContent.loading {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>2</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>64464fe6-5214-4cab-b03d-ba1892d3bb2c</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -4474,6 +4472,10 @@ div.resultContainer div.sourceContent.loading {
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>3</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>8b79ea53-be8b-4d5e-a725-4d60224414b7</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -4545,10 +4547,6 @@ div.resultContainer div.sourceContent.loading {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>3</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>8b79ea53-be8b-4d5e-a725-4d60224414b7</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -4788,6 +4786,10 @@ div.resultContainer div.sourceContent.loading {
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>4</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>a629e713-040b-4000-b42e-4b34bb397448</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -4859,10 +4861,6 @@ div.resultContainer div.sourceContent.loading {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>4</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>a629e713-040b-4000-b42e-4b34bb397448</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -4918,6 +4916,10 @@ div.resultContainer div.sourceContent.loading {
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>5</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>6a32e24f-34dd-4972-b5da-305be3db4027</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -4989,10 +4991,6 @@ div.resultContainer div.sourceContent.loading {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>5</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>6a32e24f-34dd-4972-b5da-305be3db4027</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -5015,6 +5013,10 @@ input.xwiki-free-multiselect-value {
     </property>
   </object>
   <object>
+    <name>PhenoTips.Widgets</name>
+    <number>6</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>db98aaff-6646-4778-8d05-160724bac290</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -5086,10 +5088,6 @@ input.xwiki-free-multiselect-value {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.Widgets</name>
-    <number>6</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>db98aaff-6646-4778-8d05-160724bac290</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -5110,5 +5108,4 @@ input.xwiki-free-multiselect-value {
       <use>onDemand</use>
     </property>
   </object>
-  <content/>
 </xwikidoc>
