@@ -102,8 +102,8 @@ $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 #end
 #if ($hasExtensionsBefore)
 ----
-)))
 #end
+)))
 ##
 #if ($config.getProperty('no_pii_warning').value == 1)
 {{warning}}This form should **not** be used for recording **personally identifiable information**.{{/warning}}
