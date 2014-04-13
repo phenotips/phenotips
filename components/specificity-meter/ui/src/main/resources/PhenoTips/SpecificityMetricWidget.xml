@@ -208,7 +208,11 @@ RK5CYII=
     initialize: function() {
       this.container = $('specificity-metric-widget');
       this.meterInsertionPoint = $('current-phenotype-selection');
-      if (!this.meterInsertionPoint || !this.container || this.container.__specificityMetricWidget) {
+      if (!this.container || this.container.__specificityMetricWidget) {
+        return;
+      }
+      if (!this.meterInsertionPoint) {
+        this.container.remove();
         return;
       }
       this.initContainer();
@@ -221,6 +225,7 @@ RK5CYII=
     },
 
     initContainer : function () {
+      this.container.removeClassName('hidden');
       this.meterInsertionPoint.insert({before: this.container});
       var label = new Element('span', {"class": ""}).update("${escapetool.javascript($services.localization.render('phenotips.specificityMeter.label'))}");
       this.meterDisplay = new Element('span', {'id' : 'specificity-meter'});
@@ -596,7 +601,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
 $xwiki.ssx.use('PhenoTips.SpecificityMetricWidget', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('PhenoTips.SpecificityMetricWidget')##
 #if ($xcontext.action == 'edit')
-(% id="specificity-metric-widget" %)((()))
+(% id="specificity-metric-widget" class="hidden" %)((()))
 #end
 {{/velocity}}</content>
     </property>
