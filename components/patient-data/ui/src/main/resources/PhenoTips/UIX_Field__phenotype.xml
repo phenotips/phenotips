@@ -327,7 +327,10 @@
 .emphasized-box {
   background: $theme.backgroundSecondaryColor;
   border: 1px solid $theme.backgroundSecondaryColor;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), 0 -1.8em 10px #f9f9f9, 0 10px 10px #F9F9F9, inset 0 0 50px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), 0 10px 10px #F9F9F9, inset 0 0 50px rgba(0, 0, 0, 0.15);
+}
+.quick-search-box.sticky {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), 0 -1.8em 0px #f9f9f9, 0 10px 10px #F9F9F9, inset 0 0 50px rgba(0, 0, 0, 0.15);
 }
 .quick-search-box {
   border: 0 none;

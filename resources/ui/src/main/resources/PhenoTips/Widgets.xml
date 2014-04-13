@@ -3171,6 +3171,7 @@ console.log(categories);
 
     makeFixed : function() {
       if (this.stickyElement.style.position != 'fixed') {
+        this.stickyElement.addClassName('sticky');
         this.stickyElement.style.left = this.boxLeft + 'px';
         this.stickyElement.style.width = (this.boxWidth) + 'px';
         this.stickyElement.style.top = this.options.shadowSize + 'px';
@@ -3180,6 +3181,7 @@ console.log(categories);
     },
     makeAbsolute : function(top) {
       if (this.stickyElement.style.position != 'absolute') { // || top &amp;&amp; this.stickyElement.style.top != top + 'px'){
+        this.stickyElement.addClassName('sticky');
         top = top || (this.stickyAreaElement.getHeight() - this.stickyElement.getHeight());
         this.stickyElement.style.top = top + 'px';
         this.stickyElement.style.right = '';
@@ -3194,6 +3196,7 @@ console.log(categories);
     },
     makeDefault : function() {
       if (this.stickyElement.style.position != ''){
+        this.stickyElement.removeClassName('sticky');
         this.stickyElement.style.position = '';
         this.stickyElement.style.top = '';
         this.stickyElement.style.left = '';
