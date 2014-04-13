@@ -2047,7 +2047,7 @@ document.observe('xwiki:dom:loaded', function() {
   // Edit buttons for every heading in view mode
   var editButton = $('prActionEdit');
   if (editButton) {
-    $$('.chapter > h2[id]').each(function(title) {
+    $$('.chapter &gt; h2[id]').each(function(title) {
       var editLink = new Element('a', {'class' : 'action-edit fa fa-pencil', 'href' : editButton.href + '#' + title.id, 'title' : 'Edit'});
       title.insert(editLink);
     });
@@ -2057,7 +2057,7 @@ document.observe('xwiki:dom:loaded', function() {
   // , .chapter.phenotype-info .negative_phenotype-group
   $$('.chapter.phenotype-info .phenotype-group').invoke('addClassName', 'collapsible-group');
 
-  $$('.chapter > h2').each(function(item){
+  $$('.chapter &gt; h2').each(function(item){
     var chapterShow = new Element('span', {'class' : 'tool show'}).update('Show');
     var chapterHide = new Element('span', {'class' : 'tool hide'}).update('Hide');
     var chapterExpandTools = new Element('span', {'class' : 'expand-tools'}).insert(chapterShow).insert(chapterHide);
@@ -3602,7 +3602,7 @@ h2 a.action-edit {
 h1, h2, h3, h4 {
   text-shadow: 1px 1px 0 $theme.pageContentBackgroundColor;
 }
-.chapter > h2 {
+.chapter &gt; h2 {
   border-bottom: 1px solid $theme.titleColor;
   cursor: default;
   font-family: Georgia,serif;
@@ -3610,10 +3610,10 @@ h1, h2, h3, h4 {
   margin: -1.5em -10px 0;
   padding-left: 10px;
 }
-.editbody .chapter > h2 {
+.editbody .chapter &gt; h2 {
   cursor: pointer;
 }
-.chapter > h2+.hint {
+.chapter &gt; h2+.hint {
   margin: 1em 0;
 }
 .chapter h3 {
