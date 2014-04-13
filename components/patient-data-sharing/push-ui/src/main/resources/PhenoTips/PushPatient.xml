@@ -148,7 +148,27 @@
       this._pushLauncher.observe('click', function(event) {
         event.stop();
         event.findElement().blur();
-        _this._launchUI();
+
+        if (event.findElement('.editbody')) {
+          // we're in edit mode; ask user if they want to save before exporting the data
+          new XWiki.widgets.ConfirmationBox(
+            {
+              onYes : function() {
+                document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
+                document.observe('xwiki:document:saved', function () {
+                  _this._launchUI();
+                });
+              },
+              onNo : function() {
+                _this._launchUI();
+              }
+            },
+            /* Interaction parameters */
+            { confirmationText: "Save before exporting?" }
+          );
+        } else {
+          _this._launchUI();
+        }
       });
       // ---------------------------------------------------------------------
       // Initialization done
