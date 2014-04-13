@@ -1328,13 +1328,10 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 ** [[Export XAR&gt;&gt;path:$doc.getURL('export', "format=xar&amp;name=${doc.fullName}&amp;pages=${doc.fullName}")|| class="export-link"]]
 ** [[Export JSON&gt;&gt;path:$xwiki.getURL('PhenoTips.PatientPhenotypeExportService', 'get', "id=${doc.name}")|| class="export-link"]]
 #end
-#set ($hasExtensions = false)
 #foreach ($e in $services.uix.getExtensions("org.phenotips.patientRecordMenu.moreActions"))
- #set ($hasExtensions = true)
-#end
-#if ($hasExtensions)
+#if ($foreach.index == 0)
 ** ----
-#foreach ($e in $services.uix.getExtensions("org.phenotips.patientRecordMenu.moreActions"))
+#end
 ** {{html clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
 #end
 #end
@@ -1349,7 +1346,7 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
       <name>org.phenotips.patientSheet.menu</name>
     </property>
     <property>
-      <parameters>title=Patient sheet side menu
+      <parameters>title=Patient sheet top menu
 order=1</parameters>
     </property>
     <property>
