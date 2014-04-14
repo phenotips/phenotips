@@ -3415,6 +3415,7 @@ hr {
 .space-data #mainContentArea, .space-data #mainEditArea {
     background-color: #F9F9F9;
     border: 1px solid #FFFFFF;
+    border-top: none;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     margin: 3em 0;
     padding: 0.5em 10px;
