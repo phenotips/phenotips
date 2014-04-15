@@ -143,7 +143,7 @@
 
   var tocElement = $('table-of-contents')
   var tocMenuEntry = $('toc-entry')
-  if (!tocElement || !tocMenuEntry) {
+  if (!tocElement || !tocMenuEntry || !tocElement.down('ul')) {
     tocMenuEntry &amp;&amp; tocMenuEntry.up('li').remove();
      return;
   }
