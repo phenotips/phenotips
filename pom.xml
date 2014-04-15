@@ -461,6 +461,9 @@
               <!-- Since there's no comment syntax for Maven IT tests's goal.txt file we need to exclude it -->
               <exclude>**/it/**/goals.txt</exclude>
               <exclude>**/goal.txt</exclude>
+              <!-- Exclude sample patient records -->
+              <exclude>**/P0*.xml</exclude>
+              <exclude>**/F0*.xml</exclude>
             </excludes>
             <useDefaultExcludes>false</useDefaultExcludes>
           </configuration>
