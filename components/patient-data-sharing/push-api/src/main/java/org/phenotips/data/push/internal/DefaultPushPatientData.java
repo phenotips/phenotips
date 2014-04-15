@@ -184,8 +184,8 @@ public class DefaultPushPatientData implements PushPatientData
             XWikiContext context = getXContext();
             XWiki xwiki = context.getWiki();
             XWikiDocument prefsDoc =
-                xwiki.getDocument(new DocumentReference(xwiki.getDatabase(), "XWiki", "XWikiPreferences"), context);
-            return prefsDoc.getXObject(new DocumentReference(xwiki.getDatabase(), Constants.CODE_SPACE,
+                xwiki.getDocument(new DocumentReference(context.getDatabase(), "XWiki", "XWikiPreferences"), context);
+            return prefsDoc.getXObject(new DocumentReference(context.getDatabase(), Constants.CODE_SPACE,
                 "PushPatientServer"), PUSH_SERVER_CONFIG_ID_PROPERTY_NAME, serverName);
         } catch (XWikiException ex) {
             this.logger.warn("Failed to get server info: {}", ex.getMessage(), ex);

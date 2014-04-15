@@ -634,8 +634,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
     {
         try {
             XWiki xwiki = context.getWiki();
-            XWikiDocument prefsDoc = xwiki.getDocument(new DocumentReference(xwiki.getDatabase(), "XWiki", "XWikiPreferences"), context);
-            BaseObject result = prefsDoc.getXObject(new DocumentReference(xwiki.getDatabase(), Constants.CODE_SPACE, "ReceivePatientServer"), SERVER_CONFIG_IP_PROPERTY_NAME, serverIP);
+            XWikiDocument prefsDoc = xwiki.getDocument(new DocumentReference(context.getDatabase(), "XWiki", "XWikiPreferences"), context);
+            BaseObject result = prefsDoc.getXObject(new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "ReceivePatientServer"), SERVER_CONFIG_IP_PROPERTY_NAME, serverIP);
 
             if (result != null) {
                 return result;
@@ -643,7 +643,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
             // failed to find by IP - look up by hostname
             String domainName = InetAddress.getByName(serverIP).getHostName();
-            return prefsDoc.getXObject(new DocumentReference(xwiki.getDatabase(), Constants.CODE_SPACE, "ReceivePatientServer"), SERVER_CONFIG_IP_PROPERTY_NAME, domainName);
+            return prefsDoc.getXObject(new DocumentReference(context.getDatabase(), Constants.CODE_SPACE, "ReceivePatientServer"), SERVER_CONFIG_IP_PROPERTY_NAME, domainName);
         } catch (Exception ex) {
             this.logger.error("Failed to get server info: [{}] {}", ex.getMessage(), ex);
             return null;
