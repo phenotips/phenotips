@@ -1334,7 +1334,6 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 #end
 ** {{html clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
 #end
-#end
 )))## menu
 )))## container
 #end{{/velocity}}</content>
