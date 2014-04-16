@@ -206,6 +206,16 @@ var isValueSelected = function (fieldName, value) {
 
 document.observe('xwiki:dom:loaded', function() {
   // ------------------------------------------------------------------------
+  // Capture the ENTER key on the form and prevent it from submitting the form
+  // ------------------------------------------------------------------------
+  ['keypress', 'keyup', 'keydown'].each(function (eventName) {
+     $$('.editbody form#inline').invoke('observe', eventName, function (event) {
+        if (event.keyCode == Event.KEY_RETURN) {
+           event.stop();
+        }
+     });
+  });
+  // ------------------------------------------------------------------------
   // Selected term highlighting
   // ------------------------------------------------------------------------
   ["yes", "no"].each(function (type) {
