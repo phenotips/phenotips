@@ -95,7 +95,7 @@
   ## There are many possible sources of error. Assume error until you actually get success :)
   ##
   #set ($data = {'status':'error'})
-  #if (!$response)
+  #if (!$response || $response.isIncorrectProtocolVersion())
     #set ($data.serverconnectproblem = 'true')
     #set ($data.cantconnect = 'true')
   #elseif ($response.isSuccessful())
@@ -126,7 +126,7 @@
   ##$jsontool.serialize($response)
 
   #set ($data = {'status':'error'})
-  #if (!$response)
+  #if (!$response || $response.isIncorrectProtocolVersion())
     #set ($data.serverconnectproblem = 'true')
     #set ($data.cantconnect = 'true')
   #elseif ($response.isSuccessful())

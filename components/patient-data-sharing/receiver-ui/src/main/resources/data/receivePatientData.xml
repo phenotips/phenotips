@@ -127,18 +127,22 @@
 $response.setContentType('application/json')
 
 #set ($service = $services.receivePatientData)
-#if ($service.isServerTrusted())
-  #if ($request.action == 'get_server_info')
-    $service.getConfiguration().toString()
-  #elseif ($request.action == 'push')
-    $service.receivePatient().toString()
-  #elseif ($request.action == 'get_patient_id')
-    $service.getPatientURL().toString()
-  #else
-    $service.unsupportedeActionResponse().toString()
-  #end
+#if (!$service)
+  {}
 #else
-  $service.untrustedServerResponse().toString()
+  #if ($service.isServerTrusted())
+    #if ($request.action == 'get_server_info')
+      $service.getConfiguration().toString()
+    #elseif ($request.action == 'push')
+      $service.receivePatient().toString()
+    #elseif ($request.action == 'get_patient_id')
+      $service.getPatientURL().toString()
+    #else
+      $service.unsupportedeActionResponse().toString()
+    #end
+  #else
+    $service.untrustedServerResponse().toString()
+  #end
 #end
 {{/html}}{{/velocity}}
 </content>

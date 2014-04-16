@@ -214,6 +214,11 @@ public class DefaultPushPatientData implements PushPatientData
 
             String response = method.getResponseBodyAsString();
 
+            // can't be valid JSOn with less than 2 characters: most likely empty response from an un-accepting server
+            if (response.length() < 2) {
+                return null;
+            }
+
             JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
 
             return new DefaultPushServerConfigurationResponse(responseJSON);

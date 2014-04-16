@@ -74,7 +74,8 @@ public class DefaultPushServerResponse implements PushServerResponse
     @Override
     public boolean isIncorrectProtocolVersion()
     {
-        return hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_PROTOCOLFAILED);
+        return hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_PROTOCOLFAILED) ||
+               !this.response.containsKey(ShareProtocol.SERVER_JSON_KEY_NAME_PROTOCOLVER);
     }
 
     @Override

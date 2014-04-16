@@ -193,11 +193,11 @@
                      .insert(generateSection('fields-selection','Patient data preview','Please review the data that will be sent to the server'));
 
       this._checkBoxApprove = new Element('input',{type:'checkbox', 'id':'approve-checkbox', 'value':'approve'});
-      this._labelApprove = new Element('label', {'id':'approve-label'});
-      this._labelApprove.insert(this._checkBoxApprove).insert(" I agree to push this data to the server");
-      var approveElement = new Element('div', {'class' : 'confirm-push plainmessage'});
-      approveElement.insert(this._labelApprove);
-      this._container.insert(approveElement);
+      var labelApprove = new Element('label', {'id':'approve-label'});
+      labelApprove.insert(this._checkBoxApprove).insert(" I agree to push this data to the server");
+      this._approveElement = new Element('div', {'class' : 'confirm-push plainmessage'});
+      this._approveElement.insert(labelApprove);
+      this._container.insert(this._approveElement);
 
       this._serverManager = this._container.down('#server-selection .section-contents');
       this._userManager   = this._container.down('#user-selection .section-contents');
@@ -278,7 +278,7 @@
       this._fieldsManager.update(this._generateServerAndUserFirstMessage());
 
       this._pushButton.disable();   // disabled until the server is selected and fields are confirmed
-      this._labelApprove.hide();
+      this._approveElement.hide();
 
       this._pushResultSection.update("");
 
@@ -296,6 +296,13 @@
       this._userManager.update(this._generateServerFirstMessage());
 
       this._onUnapprovedUser();
+    },
+
+    _disableControl: function(control) {
+        // disables the control and makes sure that even if all controls are now disabled
+        // and will get re-enabled later this one wont get re-enabled
+        control.disable();
+        control.__wasDisabledState = true;  // see _disableInputs()
     },
 
     _disableInputs: function(disableCancelAsWell) {
@@ -397,7 +404,7 @@
           _this._disableInputs();
         },
         onSuccess : function (response) {
-          console.log("PUSH: Got user last used for the server (JSON: " + stringifyObject(response.responseJSON) + ")");
+          //console.log("PUSH: Got user last used for the server (JSON: " + stringifyObject(response.responseJSON) + ")");
           if (response.responseJSON.remoteUserName) {
             _this._lastApprovedUser = response.responseJSON.remoteUserName;
           }
@@ -460,7 +467,7 @@
             console.log("--&gt; login successful!");
             this._lastApprovedUser = username;
             this._updateUserList();  // update current user list with an indication that this user has successfully logged in
-            this._populateGroupsAndData(this._lastLoginResponse.groups, this._lastLoginResponse.serverfields);
+            this._populateGroupsAndData(this._lastLoginResponse.groups, this._lastLoginResponse.serverfields, this._lastLoginResponse.updatesEnabled);
           }
           else {
             console.log("--&gt; login failed!");
@@ -631,8 +638,11 @@
     // ---------------------------------------------------------------------
     // Display group picker and data preview - once server/user are known
     // ---------------------------------------------------------------------
-    _populateGroupsAndData: function(groupList, fieldList) {
+    _populateGroupsAndData: function(groupList, fieldList, serverUpdatesEnabled) {
       //console.log("Fields: " + stringifyObject(fieldList));
+      if (!serverUpdatesEnabled) {
+          this._remoteServers[this._selectedServer]["noUpdates"] = true;
+      }
       this._displayGroupPicker(groupList);
       this._generateDataPreview(fieldList);
     },
@@ -640,6 +650,7 @@
     _displayGroupPicker: function(groupList) {
       if (!groupList) {
         groupList = this._userGroupsList;
+        if (!this._userGroupsList) return;
       }
       else {
         this._userGroupsList = groupList;
@@ -676,6 +687,10 @@
       }
 
       this._groupManager.update(groupListElement);
+
+      if (this._remoteServers[this._selectedServer]["noUpdates"]) {
+          this._disableUpdateOption();
+      }
     },
 
     _generateDataPreview: function(fieldList) {
@@ -710,7 +725,7 @@
     _displayPatientData: function(patientData) {
       this._checkBoxApprove.checked = false;
       this._checkBoxApprove.enable();
-      this._labelApprove.show();
+      this._approveElement.show();
       this._patientData = patientData;
       //console.log("Data: " + stringifyObject(patientData));
       this._fieldsManager.update(this._generatePatientDataPreview(patientData));
@@ -826,7 +841,7 @@
         if (serverData.pushAgeHours !== undefined &amp;&amp; serverData.pushAgeHours &gt;=0) {
            existingPatientDataInfo = new Element('dd');
 
-           var description = new Element('p', {'class' : 'hint'});
+           var description = new Element('p', {'class' : 'hint', 'id': 'server-description'});
            var lastUpdated = serverData.pushAgeHours;
            description.insert("This patient has been uploaded to ").insert(serverLink.clone(true));
            if (lastUpdated &lt; 1) {
@@ -847,7 +862,7 @@
            var radio1 = new Element('input', {"type" : "radio", "value": "update", "id":"choice-update-patient", "name": "new-or-update"});
            radio1.checked = true;
            radio1.observe('change', function() { _this._displayGroupPicker() });
-           var label1 = new Element('label').insert(new Element('span', {'class' : 'fa fa-refresh'}).update(' ')).insert(radio1).insert("Update remote patient");
+           var label1 = new Element('label', {"id":"choice-update-patient-label"}).insert(new Element('span', {'class' : 'fa fa-refresh'}).update(' ')).insert(radio1).insert("Update remote patient");
            var radio2 = new Element('input', {"type" : "radio", "value": "new", "id":"choice-new-patient", "name": "new-or-update"});
            radio2.observe('change', function() { _this._displayGroupPicker() } );
            var label2 = new Element('label').insert(new Element('span', {'class' : 'fa fa-plus-square'}).update(' ')).insert(radio2).insert("Create new remote patient");
@@ -920,6 +935,7 @@
         }
         else
           _this._pushButton.disable();
+          _this._pushResultSection.update("");
       });
 
       this._container.observe('submit', function(event) {
@@ -935,6 +951,19 @@
             pushUpdate = radioSelectUpdate.checked;
         }
         return pushUpdate;
+    },
+
+    _disableUpdateOption: function() {
+        var radioSelectNew = document.getElementById('choice-new-patient');
+        if (radioSelectNew) {
+            radioSelectNew.checked = true;
+        }
+        var radioSelectUpdate = document.getElementById('choice-update-patient-label');
+        if (radioSelectUpdate) {
+            var serverDesc = document.getElementById('server-description');
+            serverDesc.insert("<br>Selected server does not allow updating existing patients, so can only push again to a new patient record.");
+            radioSelectUpdate.hide()
+        }
     },
 
     _pushPatient: function() {
@@ -1002,6 +1031,9 @@
                     } else
                     if (res.accessdeniedguid) {
                         _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient."));
+                    } else
+                    if (res.cantconnect) {
+                      _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to connect to server", true));
                     }
                 }
                 //_this._dialog.closeDialog();
@@ -1024,6 +1056,9 @@
           },
           onComplete : function() {
             _this._restoreInputs();
+            if (!_this._checkBoxApprove.checked) {
+              _this._pushButton.disable();
+            }
           }
         });
     },
@@ -1265,15 +1300,13 @@ function _printObjectInternal(o, level) {
   color: $theme.textPrimaryColor;
 }
 .user-password-box label:before {
-  background-color: #FFFFFF;
-  border: 1px solid #FFFFFF;
   border-radius: 4px 0 0 4px;
   display: inline-block;
   margin-right: -3px;
   padding: 0.3em;
 }
 #user-selection .buttonwrapper {
-  margin: 0;
+  margin: 3px;
 }
 
 #fields-selection dl {
