@@ -205,7 +205,6 @@ var isValueSelected = function (fieldName, value) {
 };
 
 document.observe('xwiki:dom:loaded', function() {
-  $$('.editbody .negative_phenotype-group').invoke('hide');
   // ------------------------------------------------------------------------
   // Selected term highlighting
   // ------------------------------------------------------------------------
