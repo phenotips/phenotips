@@ -203,7 +203,7 @@
 ##
 #macro (__phenotypeMeta_displayEntry $targetObj)
     #set($dataClass = $targetObj.xWikiClass)
-    #set($enabledProperties = ['age_of_onset', 'pace_of_progression', 'comments', 'supporting_images', 'supporting_documents'])
+    #set($enabledProperties = ['age_of_onset', 'pace_of_progression', 'mode_of_inheritance', 'comments', 'supporting_images', 'supporting_documents'])
     #set($targetId = "phenotypeMeta__$!{class.name}_$!{obj.number}_$!{targetObj.getProperty('target_property_name').value}__$!{targetObj.getProperty('target_property_value').value}")
     {{html wiki="true" clean="false"}}##
     {{html wiki="false" clean="false"}}&lt;dl id="$targetId"&gt;{{/html}}##
