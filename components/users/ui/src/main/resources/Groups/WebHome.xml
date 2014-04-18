@@ -249,11 +249,9 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
   &lt;div class="rightmenu"&gt;
     &lt;div class="topmenuentry search"&gt;
       #if ($displayQuickSearch &amp;&amp; ($xwiki.exists('Main.Search') || $xwiki.exists('Main.WebSearch')))
-      &lt;form action="#if($xwiki.exists('Main.Search'))$xwiki.getURL('Main.Search')#else$xwiki.getURL('Main.WebSearch')#end"&gt;
         &lt;div class="globalsearch"&gt;&lt;input type="hidden" name="space" value="data"/&gt;
-          &lt;label for="headerglobalsearchinput"&gt;&lt;span class="fa fa-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="Search for a patient record..." size="20"/&gt;&lt;input class="button hidden" type="submit" value="$services.localization.render('panels.search.submit')" alt="$services.localization.render('panels.search.submit')"/&gt;
+          &lt;label for="headerglobalsearchinput"&gt;&lt;span class="fa fa-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="Search for a patient record..." size="20"/&gt;
         &lt;/div&gt;
-      &lt;/form&gt;
       #end
     &lt;/div&gt;
     #if ($hasCreatePage)
