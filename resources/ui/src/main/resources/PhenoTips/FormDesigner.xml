@@ -1107,7 +1107,7 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##
 &lt;/div&gt;
 &lt;/form&gt;{{/html}}
 #else
-{{warning}}You are don't have permission to access this configuration.{{/warning}}
+{{warning}}You don't have permission to access this configuration.{{/warning}}
 #end
 #end
 {{/velocity}}
