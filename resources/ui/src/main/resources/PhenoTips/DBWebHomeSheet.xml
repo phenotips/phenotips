@@ -464,24 +464,26 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
     }
   };
   var exportTool = $('phenotips_export');
-  if (!exportTool) {
-     return;
-  }
-  exportTool.observe('click', function(event) {
-    event.stop();
-    var dialog = new MS.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': 'Export options', 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
-    dialog.showDialog();
-    // =================================================================================
-    // Generate the dialog content
-    new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1]), {
-      onSuccess: function(transport) {
-        var content = dialog.dialogBox._x_contentPlug;
-        content.update(transport.responseText);
-        content.__dialog = dialog;
-        document.fire('xwiki:dom:updated', {'elements': [content]});
-      }
+  if (exportTool) {
+    exportTool.observe('click', function(event) {
+      event.stop();
+      var dialog = new MS.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': 'Export options', 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+      dialog.showDialog();
+      // =================================================================================
+      // Generate the dialog content
+      new Ajax.Request(new XWiki.Document('ExportPreferences', 'PhenoTips').getURL('get', 'space=' + /space=([^&amp;]+)/.exec(exportTool.href)[1]), {
+        onSuccess: function(transport) {
+          var content = dialog.dialogBox._x_contentPlug;
+          content.update(transport.responseText);
+          content.__dialog = dialog;
+          document.fire('xwiki:dom:updated', {'elements': [content]});
+        }
+      });
     });
-  });
+  } else if (!$('patients-topfilters')) {
+    // No filters and no export, nothing to do
+    return;
+  }
 
   document.observe('xwiki:multisuggestpicker:selectionchanged', function() {
     document.fire('xwiki:livetable:patients:filtersChanged');
