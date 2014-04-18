@@ -172,9 +172,15 @@ public class GlobalRecordConfiguration implements RecordConfiguration
     }
 
     @Override
+    public String getISODateFormat()
+    {
+        return "yyyy-MM-dd";
+    }
+
+    @Override
     public String getDateOfBirthFormat()
     {
-        String result = "dd/MM/yyyy";
+        String result = getISODateFormat();
         try {
             BaseObject settings = getGlobalConfigurationObject();
             result = StringUtils.defaultIfBlank(settings.getStringValue("dateOfBirthFormat"), result);

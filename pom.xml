@@ -254,6 +254,11 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release 1.0-milestone-12 -->
+            <difference>
+              <className>**/configuration/RecordConfiguration</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getISODateFormat()</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

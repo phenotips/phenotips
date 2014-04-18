@@ -96,6 +96,13 @@ public interface RecordConfiguration
     DocumentReference getPhenotypeMapping();
 
     /**
+     * The date format compliant with the ISO 8601 standard, in the {@link java.text.SimpleDateFormat Java date format}.
+     *
+     * @return the configured date format
+     */
+    String getISODateFormat();
+
+    /**
      * The format of the date of birth, in the standard {@link java.text.SimpleDateFormat Java date format}.
      * 
      * @return the configured date format

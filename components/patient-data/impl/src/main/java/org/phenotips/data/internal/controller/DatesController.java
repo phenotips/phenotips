@@ -111,7 +111,7 @@ public class DatesController implements PatientDataController<ImmutablePair<Stri
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
         DateFormat dateFormat =
-            new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getDateOfBirthFormat());
+            new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
         for (ImmutablePair<String, Date> data : patient.<ImmutablePair<String, Date>>getData(DATA_NAME)) {
             if (selectedFieldNames == null || selectedFieldNames.contains(data.getKey())) {
                 json.put(data.getKey(), dateFormat.format(data.getRight()));
