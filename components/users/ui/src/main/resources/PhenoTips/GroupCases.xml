@@ -46,10 +46,10 @@ $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
 $xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
 $xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
 $xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
+$xwiki.ssx.use('PhenoTips.DatabaseFilters')##
 $xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('PhenoTips.DBWebHomeSheet')##
 $xwiki.ssx.use('PhenoTips.DBWebHomeSheet')##
-$xwiki.ssx.use('PhenoTips.DatabaseFilters')##
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('XWiki.DateTimePicker')##
@@ -67,8 +67,8 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   '_actions' : {'actions': ['edit', 'delete']}
 })
 #foreach ($column in $columns)
-  #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0))
-  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true  }))
+  #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0) &amp;&amp; ($column != 'doc.creator') &amp;&amp; ($column != 'doc.author'))
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true, 'html': true }))
 #end
 ##
 #set ($topFilters = $doc.getRenderedContent("(% class='xform' %)((((% class=""toggle-filters"" %) filters(% %)
