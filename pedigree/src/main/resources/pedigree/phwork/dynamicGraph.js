@@ -188,7 +188,7 @@ DynamicPositionedGraph.prototype = {
         var verticalRelInfo = this.DG.computeRelLineY(this.DG.ranks[person], info.attachlevel, info.verticalLevel);
 
         var result = {"attachmentPort": info.attachlevel,
-                      "attachY":        verticalRelInfo.attachY,        
+                      "attachY":        verticalRelInfo.attachY,
                       "verticalLevel":  info.verticalLevel,
                       "verticalY":      verticalRelInfo.relLineY};
 
@@ -477,14 +477,12 @@ DynamicPositionedGraph.prototype = {
         // validate: by now the graph should satisfy all assumptions
         this.DG.GG.validate();
 
-        // TODO
-        //this.transpose
-
         // fix common layout mistakes (e.g. relationship not right above the only child)
-        this._heuristics.improvePositioning();
+        // and update vertical positioning of all edges
+        this._heuristics.improvePositioning(ranksBefore, rankYBefore);
 
-        // update vertical separation for all nodes & compute ancestors
-        this._updateauxiliaryStructures(ranksBefore, rankYBefore);
+        // update ancestors
+        this.updateAncestors();
 
         timer.printSinceLast("=== AddChild runtime: ");
         this._debugPrintAll("after");
@@ -543,10 +541,11 @@ DynamicPositionedGraph.prototype = {
         this.DG.GG.validate();
 
         // fix common layout mistakes (e.g. relationship not right above the only child)
-        this._heuristics.improvePositioning();
+        // and update vertical positioning of all edges
+        this._heuristics.improvePositioning(ranksBefore, rankYBefore);
 
-        // update vertical separation for all nodes & compute ancestors
-        this._updateauxiliaryStructures(ranksBefore, rankYBefore);
+        // update ancestors
+        this.updateAncestors();
 
         timer.printSinceLast("=== NewParents runtime: ");
         this._debugPrintAll("after");
@@ -625,10 +624,11 @@ DynamicPositionedGraph.prototype = {
         //this._debugPrintAll("middle");
 
         // fix common layout mistakes (e.g. relationship not right above the only child)
-        this._heuristics.improvePositioning();
+        // and update vertical positioning of all edges
+        this._heuristics.improvePositioning(ranksBefore, rankYBefore);
 
-        // update vertical separation for all nodes & compute ancestors
-        this._updateauxiliaryStructures(ranksBefore, rankYBefore);
+        // update ancestors
+        this.updateAncestors();
 
         timer.printSinceLast("=== NewRelationship runtime: ");
         this._debugPrintAll("after");
@@ -759,10 +759,11 @@ DynamicPositionedGraph.prototype = {
             this.DG.GG.validate();
 
             // fix common layout mistakes (e.g. relationship not right above the only child)
-            this._heuristics.improvePositioning();
+            // and update vertical positioning of all edges
+            this._heuristics.improvePositioning(ranksBefore, rankYBefore);
 
-            // update vertical separation for all nodes & compute ancestors
-            this._updateauxiliaryStructures(ranksBefore, rankYBefore);
+            // update ancestors
+            this.updateAncestors();
 
             timer.printSinceLast("=== DragToParentOrChild runtime: ");
             this._debugPrintAll("after");
@@ -826,10 +827,11 @@ DynamicPositionedGraph.prototype = {
         this.DG.GG.validate();
 
         // fix common layout mistakes (e.g. relationship not right above the only child)
-        this._heuristics.improvePositioning();
+        // and update vertical positioning of all edges
+        this._heuristics.improvePositioning(ranksBefore, rankYBefore);
 
-        // update vertical separation for all nodes & compute ancestors
-        this._updateauxiliaryStructures(ranksBefore, rankYBefore);
+        // update ancestors
+        this.updateAncestors();
 
         this._debugPrintAll("after");
 
@@ -869,7 +871,7 @@ DynamicPositionedGraph.prototype = {
         this.DG.GG.validate();
 
         // fix common layout mistakes (e.g. relationship not right above the only child)
-        this._heuristics.improvePositioning();
+        this._heuristics.improvePositioning(ranksBefore, rankYBefore);
 
         // update vertical separation for all nodes & compute ancestors
         this._updateauxiliaryStructures(ranksBefore, rankYBefore);
@@ -980,7 +982,7 @@ DynamicPositionedGraph.prototype = {
         var numNodesBefore   = this.DG.GG.getMaxRealVertexId();
 
         // fix common layout mistakes (e.g. relationship not right above the only child)
-        this._heuristics.improvePositioning();
+        this._heuristics.improvePositioning(ranksBefore, rankYBefore);
 
         var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore );
 
@@ -1353,7 +1355,8 @@ DynamicPositionedGraph.prototype = {
 
         var desiredPosition = this.DG.order.order[rank].length;  // by default: the later in the order the better: fewer vertices shifted
 
-        if (this.DG.GG.type[edgeToV] == TYPE.CHILDHUB && this.DG.GG.getOutEdges(edgeToV).length > 0)   // for childhubs with children - next to other children
+        // when inserting children below childhubs: next to other children
+        if (this.DG.GG.type[edgeToV] == TYPE.CHILDHUB && rank > edgeToRank && this.DG.GG.getOutEdges(edgeToV).length > 0)
             desiredPosition = this._findRightmostChildPosition(edgeToV) + 1;
 
         var fromOrder = _fromOrder ? Math.max(_fromOrder,0) : 0;
@@ -1653,7 +1656,7 @@ DynamicPositionedGraph.prototype = {
 
             //console.log("order: " + o + ", penalty: " + penalty);
 
-            if (penalty < bestPenalty) {
+            if (penalty <= bestPenalty) {
                 bestPenalty  = penalty;
                 bestPosition = o;
             }
@@ -1801,10 +1804,7 @@ Heuristics.prototype = {
 
         }
 
-        var vorders = this.DG.order.vOrder;
-        var orderedChildren = children.slice(0);
-        orderedChildren.sort(function(x, y){ return vorders[x] > vorders[y] });
-
+        var orderedChildren = this.DG.order.sortByOrder(children);
         //console.log("ordered ch: " + stringifyObject(orderedChildren));
 
         return {"leftMostHasLParner" : leftMostHasLParner,
@@ -1920,7 +1920,7 @@ Heuristics.prototype = {
         // used to swap this node AND its only partner to bring the two to the side to clear
         // space above for new parents of this node
 
-        // 1. check tghat we have exactly one partner and it has parents - if not nothing to move
+        // 1. check that we have exactly one partner and it has parents - if not nothing to move
         var parnetships = this.DG.GG.getAllRelationships(personId);
         if (parnetships.length != 1) return;
         var relationshipId = parnetships[0];
@@ -1939,22 +1939,27 @@ Heuristics.prototype = {
 
         var toTheLeft = (order < partnerOrder);
 
-        // 2. check where the partner stands among its sinblings
+        // 2. check where the partner stands among its siblings
         var partnerChildhubId   = this.DG.GG.getInEdges(partnerId)[0];
         var partnerSibglingInfo = this.analizeChildren(partnerChildhubId);
 
-        if (partnerSibglingInfo.orderedChildren.length == 1) return; // just one sibling, nothing to do
-
-        // simple cases:
-        if (partnerSibglingInfo.leftMostChildId == partnerId) {
-            if (!toTheLeft)
-                this.swapPartners( personId, partnerId, relationshipId );
-            return;
-        }
-        if (partnerSibglingInfo.rightMostChildId == partnerId) {
-            if (toTheLeft)
-                this.swapPartners( personId, partnerId, relationshipId );
-            return;
+        //if (partnerSibglingInfo.orderedChildren.length == 1) return; // just one sibling, nothing to do
+        if (partnerSibglingInfo.orderedChildren.length > 1) {
+            // simple cases:  ...
+            //                 |
+            //       +---------+-----------|
+            //       |                     |
+            //   [sibling]--[personID]  [sibling]
+            if (partnerSibglingInfo.leftMostChildId == partnerId) {
+                if (!toTheLeft)
+                    this.swapPartners( personId, partnerId, relationshipId );
+                return;
+            }
+            if (partnerSibglingInfo.rightMostChildId == partnerId) {
+                if (toTheLeft)
+                    this.swapPartners( personId, partnerId, relationshipId );
+                return;
+            }
         }
 
         // ok, partner is in the middle => may need to move some nodes around to place personId in a
@@ -1972,6 +1977,20 @@ Heuristics.prototype = {
         var numRightPartners = this.DG.GG.getOutEdges(rightParent).length;
         console.log("num left: " + numLeftPartners + ", numRight: " + numRightPartners);
         if (numLeftPartners > 1 && numRightPartners > 1) return;
+
+        if (partnerSibglingInfo.orderedChildren.length == 1) {
+            if (numLeftPartners == 1 && numRightPartners == 1) {
+                // no need to move anything enywhere, we are fine as we are now
+                return;
+            }
+            if (numLeftPartners == 1 && !toTheLeft) {
+                this.swapPartners( personId, partnerId, relationshipId );
+            }
+            if (numRightPartners == 1 && toTheLeft) {
+                this.swapPartners( personId, partnerId, relationshipId );
+            }
+            return; // the rest is for the case of multiple children
+        }
 
         // 3. check how deep the tree below is.
         //    do nothing if any children have partners (too complicated for a heuristic)
@@ -2009,8 +2028,19 @@ Heuristics.prototype = {
         }
     },
 
-    improvePositioning: function ()
+    improvePositioning: function (ranksBefore, rankYBefore)
     {
+        var timer = new Timer();
+
+        //console.log("pre-fix orders: " + stringifyObject(this.DG.order.order[2]));
+        //var xcoord = new XCoord(this.DG.positions, this.DG);
+        //this.DG.displayGraph(xcoord.xcoord, "pre-fix");
+
+        //DEBUG: for testing how layout looks when multi-rank edges are not improved
+        //this.DG.vertLevel = this.DG.positionVertically();
+        //this.DG.rankY     = this.DG.computeRankY(ranksBefore, rankYBefore);
+        //return;
+
         // given a finished positioned graph (asserts the graph is valid):
         //
         // 1. fix some display requirements, such as relationship lines always going to the right or left first before going down
@@ -2057,10 +2087,13 @@ Heuristics.prototype = {
             // sort all by their xcoordinate if to the left of parent, and in reverse order if to the right of parent
             var _this = this;
             byXcoord = function(v1,v2) {
-                    var position1 = _this.DG.positions[v1];
-                    var position2 = _this.DG.positions[v2];
+                    var rel1      = _this.DG.GG.downTheChainUntilNonVirtual(v1);
+                    var rel2      = _this.DG.GG.downTheChainUntilNonVirtual(v2);
+                    var position1 = _this.DG.positions[rel1];
+                    var position2 = _this.DG.positions[rel2];
                     var parentPos = _this.DG.positions[parent];
-                    if (position1 > parentPos && position2 > parentPos)
+                    //console.log("v1: " + v1 + ", pos: " + position1 + ", v2: " + v2 + ", pos: " + position2 + ", parPos: " + parentPos);
+                    if (position1 >= parentPos && position2 >= parentPos)
                         return position1 < position2;
                     else
                         return position1 > position2;
@@ -2133,23 +2166,40 @@ Heuristics.prototype = {
                 modified = true;
             }
         }
-        //if (modified)
-        //    this.DG.vertLevel = this.DG.positionVertically();
+
+        this.optimizeLongEdgePlacement();
+
+        timer.printSinceLast("=== Long edge handling runtime: ");
+
+        //DEBUG: for testing how layout looks without any improvements
+        //this.DG.vertLevel = this.DG.positionVertically();
+        //this.DG.rankY     = this.DG.computeRankY(ranksBefore, rankYBefore);
+        //return;
 
         // 2) fix some common layout imperfections
         var xcoord = new XCoord(this.DG.positions, this.DG);
 
-        // search for gaps between children (which may happen due to deletions) and close them by moving chldren closer to each other
+        //this.DG.displayGraph(xcoord.xcoord, "after-long-edge-improvement");
+
+        for (var v = 0; v <= this.DG.GG.getMaxRealVertexId(); v++) {
+            if (!this.DG.GG.isRelationship(v)) continue;
+            var childhub  = this.DG.GG.getRelationshipChildhub(v);
+            var relX      = xcoord.xcoord[v];
+            var childhubX = xcoord.xcoord[childhub];
+            if (childhubX != relX) {
+                improved  = xcoord.moveNodeAsCloseToXAsPossible(childhub, relX);
+            }
+        }
+
+        // search for gaps between children (which may happen due to deletions) and close them by moving children closer to each other
         for (var v = 0; v <= this.DG.GG.getMaxRealVertexId(); v++) {
             if (!this.DG.GG.isChildhub(v)) continue;
             var children = this.DG.GG.getOutEdges(v);
             if (children.length < 2) continue;
 
-            var vorders = this.DG.order.vOrder;
-            var orderedChildren = children.slice(0);
-            orderedChildren.sort(function(x, y){ return vorders[x] > vorders[y] });
+            var orderedChildren = this.DG.order.sortByOrder(children);
 
-            // compress rightmost children towards leftmost child, only moving childen withoout relationships
+            // compress right-side children towards leftmost child, only moving childen withoout relationships
             for (var i = orderedChildren.length-1; i >= 0; i--) {
                 if (i == 0 || this.DG.GG.getOutEdges(orderedChildren[i]).length > 0) {
                     for (var j = i+1; j < orderedChildren.length; j++) {
@@ -2158,7 +2208,7 @@ Heuristics.prototype = {
                     break;
                 }
             }
-            // compress leftmost children towards rightmodt child, only moving childen withoout relationships
+            // compress left-side children towards rightmost child, only moving childen without relationships
             for (var i = 0; i < orderedChildren.length; i++) {
                 if (i == (orderedChildren.length-1) || this.DG.GG.getOutEdges(orderedChildren[i]).length > 0) {
                     for (var j = i-1; j >= 0; j--) {
@@ -2169,16 +2219,26 @@ Heuristics.prototype = {
             }
         }
 
+        //this.DG.displayGraph(xcoord.xcoord, "after-basic-improvement");
+
+        this._compactGraph(xcoord, 5);
+
+        //this.DG.displayGraph(xcoord.xcoord, "after-compact1");
+
+        var orderedRelationships = this.DG.order.getLeftToRightTopToBottomOrdering(TYPE.RELATIONSHIP, this.DG.GG);
+        //console.log("Ordered rels: " + stringifyObject(orderedRelationships));
+
         var iter = 0;
         var improved = true;
-        while (improved && iter < 100) {
+        while (improved && iter < 20)
+        {
             improved = false;
             iter++;
             //console.log("iter: " + iter);
 
-            // relationships not right above their children
-            for (var v = 0; v <= this.DG.GG.getMaxRealVertexId(); v++) {
-                if (!this.DG.GG.isRelationship(v)) continue;
+            // fix relative positioning of relationships to their children
+            for (var k = 0; k < orderedRelationships.length; k++) {
+                var v = orderedRelationships[k];
 
                 var parents   = this.DG.GG.getInEdges(v);
                 var childhub  = this.DG.GG.getRelationshipChildhub(v);
@@ -2186,18 +2246,13 @@ Heuristics.prototype = {
                 var relX      = xcoord.xcoord[v];
                 var childhubX = xcoord.xcoord[childhub];
 
-                if (childhubX != relX) {
-                    improved = xcoord.moveNodeAsCloseToXAsPossible(childhub, relX);
-                    childhubX = xcoord.xcoord[childhub];
-                    //console.log("moving " + childhub + " to " + xcoord.xcoord[childhub]);
-                }
-
-                //----------------------------------------------------------------
                 var childInfo = this.analizeChildren(childhub);
 
-                var needShiftParents = 0;
+                var misalignment = 0;
 
-                // A) relationship not right above the only child
+                // First try easy options: moving nodes without moving any other nodes (works in most cases and is fast)
+
+                // relationship withone child: special case for performance reasons
                 if (childInfo.orderedChildren.length == 1) {
                     var childId = childInfo.orderedChildren[0];
                     if (xcoord.xcoord[childId] == childhubX) continue;
@@ -2205,40 +2260,32 @@ Heuristics.prototype = {
                     improved = xcoord.moveNodeAsCloseToXAsPossible(childId, childhubX);
                     //console.log("moving " + childId + " to " + xcoord.xcoord[childId]);
 
-                    if (xcoord.xcoord[childId] == childhubX) continue;
+                    if (xcoord.xcoord[childId] == childhubX) continue; // done
 
                     // ok, we can't move the child. Try to move the relationship & the parent(s)
-                    needShiftParents = xcoord.xcoord[childId] - childhubX;
+                    misalignment = xcoord.xcoord[childId] - childhubX;
                 }
-                // B) relationship not above one of it's multiple children (preferably one in the middle)
+                // relationships with many children: want to position in the "middle" inbetween the left and right child
+                //  (for one of the two definitionsof middle: exact center betoween leftmost and rightmost, or
+                //   right above the central child, e.g. 2nd of the 3)
                 else {
-                    var leftMost  = childInfo.leftMostChildId;
-                    var rightMost = childInfo.rightMostChildId;
+                    var positionInfo = this._computeDesiredChildhubLocation( childInfo, xcoord );
 
-                    var leftX  = xcoord.xcoord[leftMost];
-                    var rightX = xcoord.xcoord[rightMost];
-                    var middle = (leftX + rightX)/2;
-                    var median = (childInfo.orderedChildren.length == 3) ? xcoord.xcoord[childInfo.orderedChildren[1]] : middle;
-
-                    //if (v == 25) {
-                    //    console.log("childhubx: " + childhubX + ", leftX: " + leftX + ", rightX: " + rightX + ", middle: " + middle + ", median: " + median);
-                    //}
-
-                    // looks good when parent line is either above the mid-point between th eleftmost and rightmost child
+                    // no need to move anything when parent line is either above the mid-point between the leftmost and rightmost child
                     // or above the middle child of the three
-                    var minIntervalX = Math.min(middle, median);
-                    var maxIntervalX = Math.max(middle, median);
-                    if (minIntervalX <= childhubX && childhubX <= maxIntervalX) continue;
+                    if (positionInfo.minPreferred <= childhubX && childhubX <= positionInfo.maxPreferred) continue;
 
-                    var shiftToX = (childhubX > maxIntervalX) ? maxIntervalX : minIntervalX;
+                    // of the two "OK" points pick the one which requires less movement
+                    var shiftToX = (childhubX > positionInfo.maxPreferred) ? positionInfo.maxPreferred : positionInfo.minPreferred;
 
                     var needToShift = childhubX - shiftToX;
 
                     if (childInfo.numWithPartners == 0) {
                         // can shift children easily
                         if (needToShift < 0) {  // need to shift children left
-                            var leftMostOkPosition = xcoord.getLeftMostNoDisturbPosition(leftMost);
-                            var haveSlack = Math.min(Math.abs(needToShift), leftX - leftMostOkPosition);
+                            var leftMost  = childInfo.leftMostChildId;
+                            var leftSlack = xcoord.getSlackOnTheLeft(leftMost);
+                            var haveSlack = Math.min(Math.abs(needToShift), leftSlack);
                             if (haveSlack > 0) {
                                 for (var i = 0; i < childInfo.orderedChildren.length; i++)
                                     xcoord.xcoord[childInfo.orderedChildren[i]] -= haveSlack;
@@ -2247,8 +2294,9 @@ Heuristics.prototype = {
                             }
                         }
                         else {  // need to shift children right
-                            var rightMostOkPosition = xcoord.getRightMostNoDisturbPosition(rightMost);
-                            var haveSlack = Math.min(Math.abs(needToShift), rightMostOkPosition - rightX);
+                            var rightMost  = childInfo.rightMostChildId;
+                            var rightSlack = xcoord.getSlackOnTheRight(rightMost);
+                            var haveSlack = Math.min(needToShift, rightSlack);
                             if (haveSlack > 0) {
                                 for (var i = 0; i < childInfo.orderedChildren.length; i++)
                                     xcoord.xcoord[childInfo.orderedChildren[i]] += haveSlack;
@@ -2257,52 +2305,94 @@ Heuristics.prototype = {
                             }
                         }
                     }
-
-                    needShiftParents = -needToShift;
+                    misalignment = -needToShift;
                 }
 
-                if (needShiftParents == 0) continue;
+                if (misalignment == 0) continue;
 
-                //console.log("v = " + v + ", needShiftParents = " + needShiftParents);
+                // OK, harder case: either move the parents or the children (with whatever nodes are connected to them, in both cases).
+                // (need to make sure we do not break what has already been good, or we may be stuck in an infinite improvement loop)
 
-                if (needShiftParents < 0) { // need to shift childhub + relationship + one parent to the left
-                    var parent  = (xcoord.xcoord[parents[0]] < xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
+                // try to either shift the entire distance (misalignment) or (if that fails) at least
+                // as far as parents can go without pushing other nodes
 
-                    // if relationship node and parent node ar enext to each other we can move them together, and
-                    // only need to check that parent has enough slack (rel will move after the parent is moved
-                    // Otherwise can only move the relationship node
-                    var nodeToCheckNeighbours =  (this.DG.order.vOrder[parent] == this.DG.order.vOrder[v] - 1) ? parent : v;
-                    if (nodeToCheckNeighbours == parent)
-                        if (this.DG.GG.getInEdges(parent).length != 0) continue;
+                //var id = id ? (id+1) : 1; // DEBUG
 
-                    var willShift = Math.min(xcoord.getSlackOnTheLeft(childhub), xcoord.getSlackOnTheLeft(nodeToCheckNeighbours), -needShiftParents);
-                    improved = improved || (willShift != 0);
-                    //console.log("[L] will shift " + parent + " by " + willShift);
-                    if (nodeToCheckNeighbours == parent)
-                        xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   - willShift);
-                    xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        - willShift);
-                    xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] - willShift);
-                    var parent2 = (parent == parents[0]) ? parents[1] : parents[0];
-                    if (this.DG.GG.getOutEdges(parent2).length == 1 && this.DG.GG.getInEdges(parent2).length == 0)
-                        xcoord.moveNodeAsCloseToXAsPossible(parent2, xcoord.xcoord[parent2] - willShift);
+                var leftParent  = (xcoord.xcoord[parents[0]] < xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
+                var rightParent = (xcoord.xcoord[parents[0]] < xcoord.xcoord[parents[1]]) ? parents[1] : parents[0];
+
+                var shiftList = [v, childhub];
+                if (this.DG.order.vOrder[leftParent]  == this.DG.order.vOrder[v] - 1 && !this.DG.GG.isVirtual(leftParent)) {
+                    if (misalignment > 0 || xcoord.getSlackOnTheLeft(v) < -misalignment)
+                        shiftList.unshift(leftParent);
                 }
-                else {
-                    var parent = (xcoord.xcoord[parents[0]] > xcoord.xcoord[parents[1]]) ? parents[0] : parents[1];
+                if (this.DG.order.vOrder[rightParent] == this.DG.order.vOrder[v] + 1 && !this.DG.GG.isVirtual(rightParent)) {
+                    if (misalignment < 0 || xcoord.getSlackOnTheRight(v) < misalignment)
+                        shiftList.push(rightParent);
+                }
+                var noUpSet = {};
+                noUpSet[v] = true;
+                // findAffectedSet: function(v_list, dontmove_set, noUp_set, noDown_set, forbidden_set, shiftSize, xcoord, stopAtVirtual, minimizeMovement, stopAtPersons, stopAtRels)
+                var affectedInfoParentShift = this._findAffectedSet(shiftList, {}, noUpSet, toObjectWithTrue(shiftList), toObjectWithTrue(childInfo.orderedChildren),
+                                                                    misalignment, xcoord, true, false, 5, 3);
 
-                    var nodeToCheckNeighbours = (this.DG.order.vOrder[parent] == this.DG.order.vOrder[v] + 1) ? parent : v;
-                    if (nodeToCheckNeighbours == parent)
-                        if (this.DG.GG.getInEdges(parent).length != 0) continue;
+                var shiftList = childInfo.orderedChildren;
+                var affectedInfoChildShift = this._findAffectedSet(shiftList, {}, toObjectWithTrue(childInfo.orderedChildren), {}, toObjectWithTrue([parents[0], v, childhub, parents[1]]),
+                                                                   -misalignment, xcoord, true, false, 5, 3);
 
-                    var willShift = Math.min(xcoord.getSlackOnTheRight(childhub), xcoord.getSlackOnTheRight(nodeToCheckNeighbours), needShiftParents);
-                    improved = improved || (willShift != 0);
-                    //console.log("[R] will shift " + parent + " by " + willShift);
-                    if (nodeToCheckNeighbours == parent)
-                        xcoord.moveNodeAsCloseToXAsPossible(parent,   xcoord.xcoord[parent]   + willShift);
-                    xcoord.moveNodeAsCloseToXAsPossible(v,        xcoord.xcoord[v]        + willShift);
-                    xcoord.moveNodeAsCloseToXAsPossible(childhub, xcoord.xcoord[childhub] + willShift);
-                    var parent2 = (parent == parents[0]) ? parents[1] : parents[0];
-                    if (this.DG.GG.getOutEdges(parent2).length == 1 && this.DG.GG.getInEdges(parent2).length == 0)
-                        xcoord.moveNodeAsCloseToXAsPossible(parent2, xcoord.xcoord[parent2] + willShift);
+                if (this._isShiftSizeAcceptable( affectedInfoParentShift, false, 5, 3) ||
+                    this._isShiftSizeAcceptable( affectedInfoChildShift,  false, 5, 3) ) {
+
+                    improved = true;   // at least one of the shifts is OK
+
+                    // pick which one to use
+                    if ( this._isShiftBetter(affectedInfoParentShift, affectedInfoChildShift) ) {
+                        var nodes = affectedInfoParentShift.nodes;
+                        //console.log("["+id+"] Shifting parents by [" + misalignment + "]: " + stringifyObject(nodes));
+                        for (var i = 0; i < nodes.length; i++)
+                            xcoord.xcoord[nodes[i]] += misalignment;
+                    } else {
+                        var nodes = affectedInfoChildShift.nodes;
+                        //console.log("["+id+"] Shifting children by [" + misalignment + "]: " + stringifyObject(nodes));
+                        for (var i = 0; i < nodes.length; i++)
+                            xcoord.xcoord[nodes[i]] -= misalignment;
+                    }
+
+                    //xcoord.normalize();  // DEBUG
+                    //this.DG.displayGraph(xcoord.xcoord, "shift-"+id);
+                    continue;
+                }
+
+                // ok, can't move all the way: see if we can move parents at least a little in the desired direction
+                if (misalignment < 0) {
+                    var leftShiftingNode = (this.DG.order.vOrder[leftParent] == this.DG.order.vOrder[v] - 1) ? leftParent : v;
+                    var smallShift = Math.max(-xcoord.getSlackOnTheLeft(leftShiftingNode), misalignment);
+                    if (smallShift == 0 || smallShift == misalignment) continue;
+                } else {
+                    var rightShiftingNode = (this.DG.order.vOrder[rightParent] == this.DG.order.vOrder[v] + 1) ? rightParent : v;
+                    var smallShift = Math.min(xcoord.getSlackOnTheLeft(rightShiftingNode), misalignment);
+                    if (smallShift == 0 || smallShift == misalignment) continue;
+                }
+
+                var shiftList = [v, childhub];
+                if (this.DG.order.vOrder[leftParent]  == this.DG.order.vOrder[v] - 1 && !this.DG.GG.isVirtual(leftParent))
+                    shiftList.unshift(leftParent);
+                if (this.DG.order.vOrder[rightParent] == this.DG.order.vOrder[v] + 1 && !this.DG.GG.isVirtual(rightParent))
+                    shiftList.push(rightParent);
+                var noUpSet = {};
+                noUpSet[v] = true;
+                var affectedInfoParentShift = this._findAffectedSet(shiftList, {}, noUpSet, toObjectWithTrue(shiftList), toObjectWithTrue(childInfo.orderedChildren),
+                                                                    smallShift, xcoord, true, false, 3, 2);
+
+                if (this._isShiftSizeAcceptable( affectedInfoParentShift, false, 3, 2)) {
+                    var nodes = affectedInfoParentShift.nodes;
+                    //console.log("["+id+"] Small-shifting parents by [" + smallShift + "]: " + stringifyObject(nodes));
+                    for (var i = 0; i < nodes.length; i++)
+                        xcoord.xcoord[nodes[i]] += smallShift;
+
+                    //xcoord.normalize();  // DEBUG
+                    //this.DG.displayGraph(xcoord.xcoord, "shift-"+id);
+                    continue;
                 }
                 //----------------------------------------------------------------
             }
@@ -2311,122 +2401,529 @@ Heuristics.prototype = {
         // 2D) check if there is any extra whitespace in the graph, e.g. if a subgraph can be
         //     moved closer to the rest of the graph by shortening some edges (this may be
         //     the case after some imperfect insertion heuristics move stuff too far).
-        //     TODO: interesting testcases:
-        //           - #4D: nodes 9,10,11 can be moved ot the right, until either 9'th
-        //                  relationship hits the right limit or parentline from 9&10 is
-        //                  in the middle btween 9 & 10
-        //           - #4E: nodes a & b cna bemoved right a bit until a's parent edge is straight
-        //           - #5C: node "A" should be move left a bit
+        //     E.g. see Testcase 5g with/without compacting
+        //this.DG.displayGraph(xcoord.xcoord, "before-compact2");
 
+        this._compactGraph(xcoord);
+
+        //this.DG.displayGraph(xcoord.xcoord, "after-compact2");
 
         // 2E) center relationships between partners. Only do it if children-to-relationship positioning does not get worse
-        //     (e.g. if it was centrered then if children can be shifted to stay centered, and if it was off-center if
-        //     it get smore centered now, or children cen be moved ot be more centered)
+        //     (e.g. if it was centrered then if children can be shifted to stay centered)
         var iter = 0;
         var improved = true;
-        while (improved && iter < 100) {
+        while (improved && iter < 20) {
             improved = false;
             iter++;
-            for (var v = 0; v <= this.DG.GG.getMaxRealVertexId(); v++) {
-                if (!this.DG.GG.isRelationship(v)) continue;
+            for (var k = 0; k < orderedRelationships.length; k++) {
+                var v = orderedRelationships[k];
 
-                var parents = this.DG.GG.getInEdges(v);
+                var parents        = this.DG.GG.getInEdges(v);
+                var orderedParents = this.DG.order.sortByOrder(parents);
 
                 // only shift rel if partners are next to each other with only this relationship in between
                 if (Math.abs(this.DG.order.vOrder[parents[0]] - this.DG.order.vOrder[parents[1]]) != 2) continue;
 
-                var relX      = xcoord.xcoord[v];
-                var parent1X  = xcoord.xcoord[parents[0]];
-                var parent2X  = xcoord.xcoord[parents[1]];
-                var midX      = Math.floor((parent1X + parent2X)/2);
+                var leftParentRightSide = xcoord.getRightEdge(orderedParents[0]);
+                var rightParentLeftSide = xcoord.getLeftEdge (orderedParents[1]);
+
+                var relX = xcoord.xcoord[v];
+                var midX = Math.floor((leftParentRightSide + rightParentLeftSide)/2);
 
                 if (relX == midX) continue;
 
+                //xcoord.normalize();  // DEBUG
+                //this.DG.displayGraph(xcoord.xcoord, "pre-imnprove");
+
                 var childhub  = this.DG.GG.getRelationshipChildhub(v);
-                var childInfo = this.analizeChildren(childhub);
-                if (childInfo.numWithPartners > 0) continue;
 
-                var leftMost  = childInfo.leftMostChildId;
-                var rightMost = childInfo.rightMostChildId;
-                var leftX     = xcoord.xcoord[leftMost];
-                var rightX    = xcoord.xcoord[rightMost];
-                var middle    = Math.floor((leftX + rightX)/2);
+                var shiftSize = (midX - relX);
+                var shiftList = [v, childhub];
+                var noUpSet = {};
+                noUpSet[v] = true;
+                var affectedInfo = this._findAffectedSet(shiftList, {}, noUpSet, {}, {}, shiftSize, xcoord, true, false, 5, 3, this.DG.ranks[v]);
 
-                var needShiftRel = midX - relX;
-
-                var slackInChildrenR  = xcoord.getSlackOnTheRight(rightMost);
-                var slackInChildrenL  = xcoord.getSlackOnTheLeft(leftMost);
-                var desiredChildLineX = middle;
-
-                if (needShiftRel > 0) {
-                    var mostRightPosition = desiredChildLineX + slackInChildrenR;  // more right and child line will be not nice
-                    var shiftTo = Math.min(midX, mostRightPosition);
-                    if (shiftTo < relX) continue; // can't improve
-                }
-                else {
-                    var mostLeftPosition = desiredChildLineX - slackInChildrenL;  // more left and child line will be not nice
-                    var shiftTo = Math.max(midX, mostLeftPosition);
-                    if (shiftTo > relX) continue; // can't improve
-                }
-
-                xcoord.xcoord[v]        = shiftTo;
-                xcoord.xcoord[childhub] = shiftTo;
-
-                var shiftChildren = shiftTo - desiredChildLineX;
-                if (shiftChildren > 0 && shiftChildren > slackInChildrenR)
-                    shiftChildren = slackInChildrenR;
-                if (shiftChildren < 0 && shiftChildren < -slackInChildrenL)
-                    shiftChildren = -slackInChildrenL;
-                if (shiftChildren != 0) {
-                    for (var i = 0; i < childInfo.orderedChildren.length; i++)
-                        xcoord.xcoord[childInfo.orderedChildren[i]] += shiftChildren;
+                // checking rnak to make sure we don't move relationships with higher ranks, which are supposedly well-positioned already
+                if (this._isShiftSizeAcceptable( affectedInfo, false, 5, 3) && affectedInfo.minAffectedRank > this.DG.ranks[v]) {
+                    var nodes = affectedInfo.nodes;
+                    //console.log("Middle-positioning relationship by [" + shiftSize + "]: " + stringifyObject(nodes));
+                    for (var i = 0; i < nodes.length; i++)
+                        xcoord.xcoord[nodes[i]] += shiftSize;
+                    improved = true;
                 }
             }
         }
-
-        this.DG.try_straighten_long_edges(xcoord);
 
         //xcoord.normalize();
 
         this.DG.positions = xcoord.xcoord;
 
+        timer.printSinceLast("=== Improvement runtime: ");
+
         var timer = new Timer();
 
         this.DG.vertLevel = this.DG.positionVertically();
-        this.DG.rankY     = this.DG.computeRankY();
+        this.DG.rankY     = this.DG.computeRankY(ranksBefore, rankYBefore);
 
         timer.printSinceLast("=== Vertical spacing runtime: ");
     },
 
+    _compactGraph: function( xcoord, maxComponentSize ) {
+        // tries to shorten edges that can be shortened (thus compacting the graph)
+        //
+        // for each node checks if it has "slack" on the left and right, and iff slack > 0 computes
+        // the disconnected components resulting from removal of all edges spanning the larger-than-nbecessary gap.
+        // if components can be moved close to each other (because all nodes on the "edge" also have slack) does so.
+        //
+        // stops component computation when component size is greater than `maxComponentSize` (and does not move that component)
+        // (for performance reasons: there is a small pass with a small value to fix minor imperfections before a lot
+        // of other heuristics are applied, and then a pass with unlimited component size if performed at the end
 
+        if (!maxComponentSize) maxComponentSize = Infinity;
 
-    _findGroupMovementSlack: function( groupSet ) {
-        // given a bunch of nodes detects how much the group can be moved right or left
-        // without disturbing any nodes to the left or to the right of the group
+        //console.log("---[maxCompSize: " + maxComponentSize  + "]---");
 
-        // TODO
+        var iter = 0;
+        var improved = true;
+        while (improved && iter < 20)
+        {
+            improved = false;
+            iter++;
 
-        return { "canMoveLeft": 0, "canMoveRight": 0 };
+            // go rank-by-rank, node-by-node
+            for (var rank = 1; rank < this.DG.order.order.length; rank++) {
+                for (var order = 0; order < this.DG.order.order[rank].length - 1; order++) {
+                    var v = this.DG.order.order[rank][order];
+
+                    if (this.DG.GG.isChildhub(v)) break; // skip childhub level entirely
+
+                    var slack = xcoord.getSlackOnTheRight(v);
+                    if (slack == 0) continue;
+
+                    // looking for an edge going between v and a vertex on the same rank and to the right of v
+                    var allEdges = this.DG.GG.getAllEdges(v);
+                    for (var i = 0; i < allEdges.length; i++) {
+                        var u = allEdges[i];
+                        if (this.DG.ranks[u] == rank && this.DG.order.vOrder[u] > order) {
+
+                            // so, v has some slack on the right and has at least one edge going right on the same rank.
+                            // let see if we can shorten the distance between v and its rigthneighbour (by shortening
+                            // all edges between v and vertiuces to the right of v - without bumping any nodes connected
+                            // by all other edges into each other)
+
+                            //console.log("V = " + v);
+
+                            var DG = this.DG;
+                            var excludeEdgesSpanningOrder = function(from, to) {
+                                // filter to exclude all edges spanning the gap between v and its right neighbour
+                                if (DG.ranks[from] == rank && DG.ranks[to] == rank) {
+                                    var orderFrom = DG.order.vOrder[from];
+                                    var orderTo   = DG.order.vOrder[to];
+                                    if ((orderFrom <= order && orderTo   > order) ||
+                                        (orderTo   <= order && orderFrom > order) ) {
+                                        return false;
+                                    }
+                                }
+                                return true;
+                            };
+
+                            var rightNeighbour = this.DG.order.order[rank][order+1];
+
+                            // either move V and nodes connected to V left, or rightNeighbour and nodes connected to it right
+                            // (in both cases "connected" means "connected not using edges spanning V-rightNeighbour gap")
+                            // If maxComponentSize is not limited, then no point to analize other component, since
+                            var stopSet = {};
+                            stopSet[rightNeighbour] = true;
+                            var component = this.DG.findConnectedComponent(v, excludeEdgesSpanningOrder, stopSet, maxComponentSize );
+                            var leftSide  = true;
+
+                            if (component.stopSetReached) break; // can't shorten here: nodes are firmly connected via other edges
+
+                            if (component.size > maxComponentSize) {
+                                // can't move component on the left - it is too big. Check the right side
+                                component = this.DG.findConnectedComponent(rightNeighbour, excludeEdgesSpanningOrder, {}, maxComponentSize );
+                                if (component.size > maxComponentSize) break;  // can't move component on the right - too big as well
+                                leftSide  = false;
+                            }
+
+                            slack = leftSide ? xcoord.findVertexSetSlacks(component.component).rightSlack // slack on the right side of left component
+                                             : -xcoord.findVertexSetSlacks(component.component).leftSlack;
+
+                            if (slack == 0) break;
+
+                            console.log("Moving: " + stringifyObject(component.component) + " by " + slack);
+
+                            for (node in component.component) {
+                                if (component.component.hasOwnProperty(node)) {
+                                    xcoord.xcoord[node] += slack;
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    _findAffectedSet: function( v_list, dontmove_set, noUp_set, noDown_set, forbidden_set, shiftSize, xcoord, stopAtVirtual, minimizeMovement, stopAtPersons, stopAtRels, stopAtRank ) {
+        // Given a list of nodes (v_list) and how much we want to move them (same amount for all the nodes, shiftSize)
+        // figure out how many nodes would have to be moved to accomodate the desired movement.
+        //
+        // dontmove_set: nodes which should not be moved unless their neighbours push them.
+        //
+        // noUp_set: in-edges of nodes in the set willnot be followed when propagaitng movement
+        //
+        // noDown_set: out-edges of nodes in the set willnot be followed when propagaitng movement
+        //
+        // forbidden_set: if a node in the set has to move (due to any reason, e..g pushed by a neighbour or
+        //                due to movement propagation in some other way) propagation stops and
+        //                `forbiddenMoved` key is set to true in the return value
+        //
+        // stopAtVirtual: if `true` once a virtual node is found movement propagation is stopped
+        //
+        // stopAtPersons, stopAtRels: movement propagation stops once more than the given number of
+        //                            persons/relationships has been added to the move set
+        //
+        // minimizeMovement: minimal propagation is used, and all nodes on the same rank opposite to the
+        //                   moveme nt direction are added to the dontmove_set
+
+        var nodes = toObjectWithTrue(v_list);
+
+        var initialNodes = toObjectWithTrue(v_list);
+
+        // for each ignored node: add all nodes on the same rank which are to the left (if shifting right)
+        // or to the right of (if shifting left) the node
+
+        if (minimizeMovement) {
+            for (var i = 0; i < v_list.length; i++) {
+                noUp_set  [v_list[i]] = true;
+                noDown_set[v_list[i]] = true;
+            }
+            for (var node in dontmove_set) {
+                if (dontmove_set.hasOwnProperty(node)) {
+                    var rank  = this.DG.ranks[node];
+                    var order = this.DG.order.vOrder[node];
+
+                    var from  = (shiftSize > 0) ? 0     : order + 1;
+                    var to    = (shiftSize > 0) ? order : this.DG.order.order[rank].length;
+
+                    for (var i = from; i < to; i++) {
+                        var u = this.DG.order.order[rank][i];
+                        dontmove_set[u] = true;
+                        noUp_set[u]     = true;
+                        noDown_set[u]   = true;
+                    }
+                }
+            }
+        }
+
+        var numPersons     = 0;  // number of moved nodes (excluding nodes in the original list)
+        var numRels        = 0;
+        var numVirtual     = 0;
+        var minRank        = Infinity;
+        var forbiddenMoved = false;
+
+        var toMove = new Queue();
+        toMove.setTo(v_list);
+
+        while(toMove.size() > 0) {
+            if (stopAtPersons && numPersons > stopAtPersons) break;  // stop early and dont waste time if the caller already does not care
+            if (stopAtRels    && numRels    > stopAtRels)    break;
+
+            var nextV = toMove.pop();
+
+            if (forbidden_set && forbidden_set.hasOwnProperty(nextV)) {
+                forbiddenMoved = true;
+                break;
+            }
+
+            if ( shiftSize > 0 ) {
+                var slack = xcoord.getSlackOnTheRight(nextV);
+                if (slack < shiftSize) {
+                    var rightNeighbour = this.DG.order.getRightNeighbour(nextV, this.DG.ranks[nextV]);
+                    if (!nodes.hasOwnProperty(rightNeighbour)) {
+                        nodes[rightNeighbour] = true;
+                        toMove.push(rightNeighbour);
+                    }
+                }
+            } else {
+                var slack = xcoord.getSlackOnTheLeft(nextV);
+                if (slack < -shiftSize) {
+                    var leftNeighbour = this.DG.order.getLeftNeighbour(nextV, this.DG.ranks[nextV]);
+                    if (!nodes.hasOwnProperty(leftNeighbour)) {
+                        nodes[leftNeighbour] = true;
+                        toMove.push(leftNeighbour);
+                    }
+                }
+            }
+
+            // if we should ignore both in- and out-edges for the node - nothing else to do
+            if (noUp_set.hasOwnProperty(nextV) && noDown_set.hasOwnProperty(nextV)) continue;
+
+            if (this.DG.ranks[nextV] < minRank && !initialNodes.hasOwnProperty(nextV)) {
+                minRank = this.DG.ranks[nextV];
+                if (stopAtRank && minRank < stopAtRank) break;
+            }
+
+            if (this.DG.GG.isRelationship(nextV)) {
+                if (!initialNodes.hasOwnProperty(nextV)) numRels++;
+
+                var chhub = this.DG.GG.getOutEdges(nextV)[0];
+                if (!nodes.hasOwnProperty(chhub)) {
+                    nodes[chhub] = true;
+                    toMove.push(chhub);
+                }
+
+                if (minimizeMovement || noUp_set.hasOwnProperty(nextV)) continue;
+
+                var parents = this.DG.GG.getInEdges(nextV);
+                for (var i = 0; i < parents.length; i++) {
+                    if (!dontmove_set.hasOwnProperty(parents[i]) && !nodes.hasOwnProperty(parents[i])) {
+                        if ( (this.DG.order.vOrder[parents[i]] == this.DG.order.vOrder[nextV] + 1 && shiftSize < 0) ||  // if shiftSize > 0 it will get pushed anyway
+                             (this.DG.order.vOrder[parents[i]] == this.DG.order.vOrder[nextV] - 1 && shiftSize > 0)) {
+                            nodes[parents[i]] = true;
+                            toMove.push(parents[i]);
+                        }
+                    }
+                }
+            }
+            else
+            if (this.DG.GG.isChildhub(nextV)) {
+                var rel = this.DG.GG.getInEdges(nextV)[0];
+                if (!nodes.hasOwnProperty(rel)) {
+                    nodes[rel] = true;
+                    toMove.push(rel);
+                }
+
+                if (minimizeMovement || noDown_set.hasOwnProperty(nextV)) continue;
+
+                // move children as not to break the supposedly nice layout
+                var childInfo    = this.analizeChildren(nextV);
+                var positionInfo = this._computeDesiredChildhubLocation( childInfo, xcoord, nodes, shiftSize );
+
+                // no need to move anything else when parent line is either above the mid-point between the leftmost and rightmost child
+                // or above the middle child of the three
+                var childhubX        = xcoord.xcoord[nextV];
+                var shiftedChildhubX = childhubX + shiftSize;
+                if (shiftedChildhubX == positionInfo.minPreferredWithShift || shiftedChildhubX == positionInfo.maxPreferredWithShift) continue;
+
+                // if we improve compared to what was before - also accept
+                if (childhubX < positionInfo.minPreferredWithShift && shiftSize > 0 && shiftedChildhubX < positionInfo.minPreferredWithShift) continue;
+                if (childhubX > positionInfo.maxPreferredWithShift && shiftSize < 0 && shiftedChildhubX > positionInfo.maxPreferredWithShift) continue;
+
+                var children = this.DG.GG.getOutEdges(nextV);
+                for (var j = 0; j  < children.length; j++) {
+                    if (!dontmove_set.hasOwnProperty(children[j]) && !nodes.hasOwnProperty(children[j])) {
+                        nodes[children[j]] = true;
+                        toMove.push(children[j]);
+                    }
+                }
+            }
+            else
+            if (this.DG.GG.isPerson(nextV)) {
+                if (!initialNodes.hasOwnProperty(nextV)) numPersons++;
+
+                if (!noDown_set.hasOwnProperty(nextV)) {
+                    var rels = this.DG.GG.getOutEdges(nextV);
+                    for (var j = 0; j < rels.length; j++) {
+                        if (!dontmove_set.hasOwnProperty(rels[j]) && !nodes.hasOwnProperty(rels[j])) {
+                            if ( (this.DG.order.vOrder[rels[j]] == this.DG.order.vOrder[nextV] + 1 && shiftSize < 0) ||  // if shiftSize > 0 it will get pushed anyway
+                                 (this.DG.order.vOrder[rels[j]] == this.DG.order.vOrder[nextV] - 1 && shiftSize > 0)) {
+
+                                 // if there is already a long edge it is ok to make it longer. if not, try to keep stuff compact
+                                 if ((shiftSize > 0 && xcoord.getSlackOnTheLeft(nextV) == 0) ||
+                                     (shiftSize < 0 && xcoord.getSlackOnTheRight(nextV) == 0)) {
+                                    nodes[rels[j]] = true;
+                                    toMove.push(rels[j]);
+                                 }
+                            }
+                        }
+                    }
+                }
+
+                if (noUp_set.hasOwnProperty(nextV)) continue;
+
+                var inEdges = this.DG.GG.getInEdges(nextV);
+                if (inEdges.length > 0) {
+                    var chhub = inEdges[0];
+
+                    // check if we should even try to move chhub
+                    if (dontmove_set.hasOwnProperty(chhub) || nodes.hasOwnProperty(chhub)) continue;
+
+                    var childInfo    = this.analizeChildren(chhub);
+                    var positionInfo = this._computeDesiredChildhubLocation( childInfo, xcoord, nodes, shiftSize );
+                    var childhubX    = xcoord.xcoord[chhub];
+                    // if it will become OK - no move
+                    if (childhubX == positionInfo.minPreferredWithShift || childhubX == positionInfo.maxPreferredWithShift) continue;
+                    // if we improve compared to what was before - also accept
+                    if (childhubX < positionInfo.minPreferred && shiftSize < 0 && childhubX < positionInfo.minPreferredWithShift) continue;
+                    if (childhubX > positionInfo.maxPreferred && shiftSize > 0 && childhubX > positionInfo.maxPreferredWithShift) continue;
+
+                    nodes[chhub] = true;
+                    toMove.push(chhub);
+                }
+            }
+            else
+            if (this.DG.GG.isVirtual(nextV)) {
+                if (!initialNodes.hasOwnProperty(nextV)) numVirtual++;
+
+                if (stopAtVirtual && numVirtual > 0) break;
+
+                if (!noUp_set.hasOwnProperty(nextV)) {
+                    var v1 = this.DG.GG.getInEdges(nextV)[0];
+                    if (!this.DG.GG.isPerson(v1) && !nodes.hasOwnProperty(v1) && !dontmove_set.hasOwnProperty(v1)) {
+                        nodes[v1] = true;
+                        toMove.push(v1);
+                    }
+                }
+                if (!noDown_set.hasOwnProperty(nextV)) {
+                    var v2 = this.DG.GG.getOutEdges(nextV)[0];
+                    if (!this.DG.GG.isRelationship(v2) && !nodes.hasOwnProperty(v2) && !dontmove_set.hasOwnProperty(v2)) {
+                        nodes[v2] = true;
+                        toMove.push(v2);
+                    }
+                }
+            }
+        }
+
+        var affectedNodes = [];
+        for (var node in nodes) {
+            if (nodes.hasOwnProperty(node)) {
+                affectedNodes.push(node);
+            }
+        }
+        return { "nodes": affectedNodes, "numPersons": numPersons, "numRelationships": numRels, "numVirtual": numVirtual,
+                 "minAffectedRank": minRank, "forbiddenMoved": forbiddenMoved };
+    },
+
+    _computeDesiredChildhubLocation: function( childInfo, xcoord, nodesThatShift, shiftSize )
+    {
+        var leftMost  = childInfo.leftMostChildId;
+        var rightMost = childInfo.rightMostChildId;
+
+        var leftX  = xcoord.xcoord[leftMost];
+        var rightX = xcoord.xcoord[rightMost];
+        var middle = (leftX + rightX)/2;
+        var median = (childInfo.orderedChildren.length == 3) ? xcoord.xcoord[childInfo.orderedChildren[1]] : middle;
+        var minIntervalX = Math.min(middle, median);
+        var maxIntervalX = Math.max(middle, median);
+
+        var result = {"leftX": leftX, "rightX": rightX, "middle": middle, "median": median,
+                      "minPreferred": minIntervalX, "maxPreferred": maxIntervalX };
+
+        if (nodesThatShift) {
+            var leftXShifted  = leftX  + (nodesThatShift.hasOwnProperty(leftMost)  ? shiftSize : 0);
+            var rightXShifted = rightX + (nodesThatShift.hasOwnProperty(rightMost) ? shiftSize : 0);
+            var middleShifted = (leftXShifted + rightXShifted)/2;
+            var medianShifted = (childInfo.orderedChildren.length == 3)
+                                ? (xcoord.xcoord[childInfo.orderedChildren[1]] + (nodesThatShift.hasOwnProperty(childInfo.orderedChildren[1]) ? shiftSize : 0))
+                                : middleShifted;
+            var minIntervalXShifted = Math.min(middleShifted, medianShifted);
+            var maxIntervalXShifted = Math.max(middleShifted, medianShifted);
+
+            result["minPreferredWithShift"] = minIntervalXShifted;
+            result["maxPreferredWithShift"] = maxIntervalXShifted;
+        }
+
+        return result;
     },
 
     //=============================================================
     optimizeLongEdgePlacement: function()
     {
-        // attempts to:
         // 1) decrease the number of crossed edges
-        // 2) straighten long edges
-
-        // 1)
         // TODO
 
-        // 2)
+        // 2) straighten long edges
         var xcoord = new XCoord(this.DG.positions, this.DG);
 
-        this.DG.try_straighten_long_edges(xcoord);
+        var longEdges = this.DG.find_long_edges();
+        this.DG.try_straighten_long_edges(longEdges, xcoord);   // does so without moving other nodes
+
+        this.straighten_long_edges(longEdges, xcoord);   // attempts to straigthen more agressively
 
         this.DG.positions = xcoord.xcoord;
     },
 
+    // Straigthen edges more agressively that DG.try_straighten_long_edges(), willing to move
+    // some nodes to make long edges look better (as when they don't, it looks more ugly than a regular non-straight edge)
+    straighten_long_edges: function( longEdges, xcoord )
+    {
+        for (var e = 0; e < longEdges.length; e++) {
+            var chain = longEdges[e];
+            //this.DG.displayGraph(xcoord.xcoord, "pre-straighten-"+stringifyObject(chain));
+            console.log("trying to force-straighten edge " + stringifyObject(chain));
+
+            //var person = this.DG.GG.getInEdges(chain[0])[0];
+            do {
+                var improved = false;
+                var headCenter = xcoord.xcoord[chain[0]];
+                // go over all nodes from head to tail looking for a bend
+                for (var i = 1; i < chain.length; i++) {
+                    var nextV      = chain[i];
+                    var nextCenter = xcoord.xcoord[nextV];
+                    if (nextCenter != headCenter) {
+                        // try to shift either the head or the tail of the edge, if the amount of movement is not too big
+                        var head = chain.slice(0, i);
+                        var tail = chain.slice(i);
+
+                        var shiftHeadSize = nextCenter - headCenter;
+                        var dontmove      = toObjectWithTrue(tail);
+                        var affectedInfoHeadShift = this._findAffectedSet(head, dontmove, {}, {}, {}, shiftHeadSize, xcoord, true, true, 5, 3);
+
+                        var shiftTailSize = headCenter - nextCenter;
+                        var dontmove      = toObjectWithTrue(head);
+                        var affectedInfoTailShift = this._findAffectedSet(tail, dontmove, {}, {}, {}, shiftTailSize, xcoord, true, true, 5, 3);
+
+                        if (!this._isShiftSizeAcceptable( affectedInfoHeadShift, false, 5, 3) &&
+                            !this._isShiftSizeAcceptable( affectedInfoTailShift, false, 5, 3) ) break;  // too much distortion and/or distorting other virtual edges
+
+                        improved = true;   // at least one of the shifts is OK
+
+                        // ok, pick which one to use
+                        if ( this._isShiftBetter(affectedInfoTailShift, affectedInfoHeadShift) ) {
+                            // use tail shift
+                            var nodes = affectedInfoTailShift.nodes;
+                            for (var i = 0; i < nodes.length; i++)
+                                xcoord.xcoord[nodes[i]] += shiftTailSize;
+                        } else {
+                            // use head shift
+                            var nodes = affectedInfoHeadShift.nodes;
+                            for (var i = 0; i < nodes.length; i++)
+                                xcoord.xcoord[nodes[i]] += shiftHeadSize;
+                        }
+                        break;
+                    }
+                }
+            } while(improved);
+        }
+    },
+
+    _isShiftSizeAcceptable: function( shiftInfo, allowShiftVirtual, maxPersonNodes, maxRelNodes )
+    {
+        if (shiftInfo.forbiddenMoved) return false;
+        if (!allowShiftVirtual && shiftInfo.numVirtual > 0) return false;
+        if (shiftInfo.numPersons > maxPersonNodes) return false;
+        if (shiftInfo.numRelationships > maxRelNodes) return false;
+        return true;
+    },
+
+    _isShiftBetter: function( shiftInfo1, shiftInfo2 )
+    {
+        // the one shifting less virtual nodes is better
+        if (shiftInfo2.numVirtual > shiftInfo1.numVirtual) return true;
+        if (shiftInfo2.numVirtual < shiftInfo1.numVirtual) return false;
+
+        // the one shifting fewer person nodes is better
+        if (shiftInfo2.numPersons > shiftInfo1.numPersons) return true;
+        if (shiftInfo2.numPersons < shiftInfo1.numPersons) return false;
+
+        // the one shifting fewer rel nodes (and everything else being equal) is better
+        if (shiftInfo2.numRelationships > shiftInfo1.numRelationships) return true;
+        return false;
+    },
     //=============================================================
 
     moveToCorrectPositionAndMoveOtherNodesAsNecessary: function ( newNodeId, nodeToKeepEdgeStraightTo )
@@ -2456,11 +2953,14 @@ Heuristics.prototype = {
         // note: does not assert the graph satisfies all the assumptions in BaseGraph.validate(),
         //       in particular this can be called after a childhub was added but before it's relationship was added
 
+        //console.log("Orders: " + stringifyObject(this.DG.order));
+        console.log("========== PLACING " + newNodeId);
+
         var originalDisturbRank = this.DG.ranks[newNodeId];
 
         var xcoord = new XCoord(this.DG.positions, this.DG);
 
-        console.log("Orders at insertion rank: " + stringifyObject(this.DG.order.order[this.DG.ranks[newNodeId]]));
+        //console.log("Orders at insertion rank: " + stringifyObject(this.DG.order.order[this.DG.ranks[newNodeId]]));
         //console.log("Positions of nodes: " + stringifyObject(xcoord.xcoord));
 
         var leftBoundary  = xcoord.getLeftMostNoDisturbPosition(newNodeId);
@@ -2482,39 +2982,53 @@ Heuristics.prototype = {
                 desiredPosition = rightBoundary;
         }
 
-        if ( desiredPosition < leftBoundary )
-            insertPosition = leftBoundary;
-        else
-            insertPosition = desiredPosition;
-
-        //console.log("Order: " + this.DG.order.vOrder[newNodeId] + ", leftBoundary: " + leftBoundary + ", right: " + rightBoundary + ", desired: " + desiredPosition + ", actualInsert: " + insertPosition);
+        var insertPosition = ( desiredPosition < leftBoundary ) ? leftBoundary : desiredPosition;
 
         xcoord.xcoord[newNodeId] = insertPosition;
-
-        // find which nodes we need to shift to accomodate this insertion via "domino effect"
-
-        var alreadyProcessed = {};
-        alreadyProcessed[newNodeId] = true;
 
         var shiftAmount = 0;
         if (insertPosition > desiredPosition)
             shiftAmount = (insertPosition - desiredPosition);
 
-        var disturbedNodes = new Queue();
-        disturbedNodes.push( newNodeId );
+        // find which nodes we need to shift to accomodate this insertion via "domino effect"
 
-        var iter = 0;
+        var disturbedNodes = new Queue();
+        disturbedNodes.push([newNodeId, shiftAmount]);
+
+        var iterOuter = 0;
+        var iter      = 0;
+
+        var ancestors  = this.DG.GG.getAllAncestors(newNodeId);
+        var doNotTouch = {};
+        for (var node in ancestors) {
+            doNotTouch[node] = true;
+            var rank  = this.DG.ranks[node];
+            var order = this.DG.order.vOrder[node];
+            for (var i = 0; i < order; i++) {
+                var u = this.DG.order.order[rank][i];
+                doNotTouch[u] = true;
+            }
+        }
+        //console.log("V:" + newNodeId + " -> DoNotTouch: " + stringifyObject(doNotTouch));
+
+        var totalMove     = {};   // for each node: how much it was in total this iteration
 
         do {
+            iterOuter++;
 
-            var childrenMoved = {};   // we only move a chldhub if all its nodes have moved
+            var childrenMoved = {};   // for each childhub: which children have been moved (we only move a chldhub if all its children were moved)
 
-            // small loop 1: shift all vertices except chldhubs, which only shift if all children shift
-            while ( disturbedNodes.size() > 0 && iter < 100) {
+            // small loop 1: shift all vertices except childhubs, which only shift if all children shift
+            while ( disturbedNodes.size() > 0 && iter < 10000) {
+                iter++;  // prevent unexpected run-away due to some weird circular dependency (should not happen but TODO: check)
 
-                iter++;
+                //console.log("Disturbed nodes: " + stringifyObject(disturbedNodes.data));
 
-                var v = disturbedNodes.pop();
+                var next     = disturbedNodes.pop();
+                var v        = next[0];
+                shiftAmount  = next[1];
+
+                //console.log("Processing: " + v + " @position = " + xcoord.xcoord[v]);
 
                 var type   = this.DG.GG.type[v];
                 var vrank  = this.DG.ranks[v];
@@ -2529,39 +3043,27 @@ Heuristics.prototype = {
                     // the node to the right was disturbed: shift it
                     var rightDisturbed = this.DG.order.order[vrank][vorder+1];
 
-                    if (alreadyProcessed.hasOwnProperty(rightDisturbed)) continue;
-
                     var toMove = position - rightMostOK;
-                    if (toMove > shiftAmount)
-                        shiftAmount = toMove;
 
-                    alreadyProcessed[rightDisturbed] = true;
-                    xcoord.xcoord[rightDisturbed] += (vrank == originalDisturbRank) ? toMove : shiftAmount;
-                    disturbedNodes.push(rightDisturbed);
-                    //console.log("add1: " + rightDisturbed + " (toMove: " + toMove +")");
+                    xcoord.xcoord[rightDisturbed] += toMove;
+                    totalMove[rightDisturbed]      = totalMove.hasOwnProperty(rightDisturbed) ? totalMove[rightDisturbed] + toMove : toMove;
+                    disturbedNodes.push([rightDisturbed, toMove]);
+                    //console.log("addRNK: " + rightDisturbed + " (toMove: " + toMove + " -> " + xcoord.xcoord[rightDisturbed] + ")");
                 }
 
-                if (v == newNodeId && this.DG.GG.type[v] != TYPE.VIRTUALEDGE) continue;
+                if (v == newNodeId && type != TYPE.VIRTUALEDGE) continue;
+
+                //if (type == TYPE.VIRTUALEDGE && rank > 2) continue; // TODO: DEBUG: remove - needed for testing of edge-straightening algo
 
                 var inEdges  = this.DG.GG.getInEdges(v);
                 var outEdges = this.DG.GG.getOutEdges(v);
 
-                // force childhubs right below relationships.
-                if (type == TYPE.RELATIONSHIP && outEdges.length == 1) {
-                    var childHubId = outEdges[0];
-                    var childPos   = xcoord.xcoord[childHubId];
-                    var toMove     = position - childPos;
-                    if (toMove > shiftAmount)
-                        shiftAmount = toMove;
-                    //console.log("----- id: " + childHubId + ", pos: " + childPos + ", move: " + toMove);
-                }
-
                 // go though out- and in- edges and propagate the movement
-
                 //---------
                 var skipInEdges = false;
-                if ((type == TYPE.PERSON || type == TYPE.VIRTUALEDGE) && v == newNodeId)
+                if ((type == TYPE.PERSON || type == TYPE.VIRTUALEDGE) && v == newNodeId) {
                     skipInEdges = true;
+                }
                 if (type == TYPE.VIRTUALEDGE) {
                     var inEdgeV = inEdges[0];
                     if (this.DG.ranks[inEdgeV] == vrank)
@@ -2574,12 +3076,24 @@ Heuristics.prototype = {
                     if (inEdges.length == 2) {
                         var parent0 = inEdges[0];
                         var parent1 = inEdges[1];
-                        var order0 = this.DG.order.vOrder[parent0];
-                        var order1 = this.DG.order.vOrder[parent1];
-                        if (order0 == vorder-1 && this.DG.GG.getOutEdges(parent0).length == 1 && this.DG.GG.getInEdges(parent0).length == 0)
-                            skipInEdges = false;
-                        else if (order1 == vorder-1 && this.DG.GG.getOutEdges(parent1).length == 1 && this.DG.GG.getInEdges(parent1).length == 0)
-                            skipInEdges = false;
+                        var order0  = this.DG.order.vOrder[parent0];
+                        var order1  = this.DG.order.vOrder[parent1];
+                        if (order0 == vorder-1 && this.DG.GG.getOutEdges(parent0).length == 1 &&
+                            this.DG.GG.getInEdges(parent0).length == 0 &&
+                            !doNotTouch.hasOwnProperty(parent0) ) {
+                            if (!totalMove.hasOwnProperty(parent0) || totalMove[parent0] < totalMove[v]) {
+                                xcoord.xcoord[parent0] += shiftAmount;  // note: we can avoid adding this node to any queues as it is only connected to v
+                                totalMove[parent0]      = totalMove.hasOwnProperty(parent0) ? totalMove[parent0] + shiftAmount : shiftAmount;
+                            }
+                        }
+                        else if (order1 == vorder-1 && this.DG.GG.getOutEdges(parent1).length == 1 &&
+                                 this.DG.GG.getInEdges(parent1).length == 0 &&
+                                 !doNotTouch.hasOwnProperty(parent1)) {
+                            if (!totalMove.hasOwnProperty(parent1) || totalMove[parent1] < totalMove[v]) {
+                                xcoord.xcoord[parent1] += shiftAmount;  // note: we can avoid adding this node to any queues as it is only connected to v
+                                totalMove[parent1]      = totalMove.hasOwnProperty(parent1) ? totalMove[parent1] + shiftAmount : shiftAmount;
+                            }
+                        }
                     }
                 }
 
@@ -2588,32 +3102,32 @@ Heuristics.prototype = {
                         var u     = inEdges[i];
                         var typeU = this.DG.GG.type[u];
 
-                        if (alreadyProcessed.hasOwnProperty(u)) continue;
+                        if (doNotTouch.hasOwnProperty(u)) continue;
+                        if (totalMove.hasOwnProperty(u) && totalMove[u] >= totalMove[v]) continue;
 
                         if (type == TYPE.PERSON && typeU == TYPE.CHILDHUB) {
-                            if (childrenMoved.hasOwnProperty(u))
+                            if (childrenMoved.hasOwnProperty(u)) {
                                 childrenMoved[u]++;
-                            else
+                            }
+                            else {
                                 childrenMoved[u] = 1;
+                            }
 
                             continue;
                         }
 
-                        alreadyProcessed[u] = true;
+                        if (typeU == TYPE.VIRTUALEDGE && xcoord.xcoord[u] == xcoord.xcoord[v]) continue;
+
                         xcoord.xcoord[u] += shiftAmount;
-                        disturbedNodes.push(u);
-                        //console.log("add2: " + u + " (shift: " + shiftAmount + ")   by " + v);
+                        totalMove[u]      = totalMove.hasOwnProperty(u) ? totalMove[u] + shiftAmount : shiftAmount;
+                        disturbedNodes.push([u, shiftAmount]);
+                        //console.log("addINN: " + u + " (shift: " + shiftAmount + " -> " + xcoord.xcoord[u] + ")   by " + v);
                     }
                 }
                 //---------
 
                 //---------
                 if (type == TYPE.CHILDHUB) {
-                    //if (inEdges.length > 0) {
-                    //    var relNodeId = inEdges[0];
-                    //    if (xcoord.xcoord[relNodeId] > xcoord.xcoord[v]
-                    //}
-
                     var rightMostChildPos = 0;
                     for (var i = 0; i < outEdges.length; i++) {
                         var u   = outEdges[i];
@@ -2627,19 +3141,29 @@ Heuristics.prototype = {
                 for (var i = 0; i < outEdges.length; i++) {
                     var u = outEdges[i];
 
-                    if ( this.DG.ranks[u] == vrank ) continue;   // vertices on the same rank will only be shifted if pushed ot the right by left neighbours
-                    if ( alreadyProcessed.hasOwnProperty(u) ) continue;
-                    if ((type == TYPE.RELATIONSHIP || type == TYPE.VIRTUALEDGE) && xcoord.xcoord[u] >= xcoord.xcoord[v]) continue;
-                    if ((type == TYPE.VIRTUALEDGE) && (xcoord.xcoord[u] <= xcoord.xcoord[v])) {
-                        //   if "u" can't be shifted without moving its right neighbour do not shift it because otherwise
-                        //   we may be in a cycle shifting below, which shifts above, which shifts below, etc.
-                        if (xcoord.xcoord[u] + shiftAmount > xcoord.getRightMostNoDisturbPosition(v, true)) continue;
+                    var shiftU = shiftAmount;
+
+                    if (doNotTouch.hasOwnProperty(u)) continue;
+                    if (totalMove.hasOwnProperty(u) && totalMove[u] >= totalMove[v]) continue;
+
+                    if ( this.DG.ranks[u] == vrank ) continue;   // vertices on the same rank will only be shifted if pushed on the right by left neighbours
+
+                    if (type == TYPE.RELATIONSHIP || type == TYPE.VIRTUALEDGE) {
+                        var diff = xcoord.xcoord[v] - xcoord.xcoord[u];
+                        if (diff <= 0) continue;
+                        if (diff < shiftU)
+                            shiftU = diff;
+                    }
+                    if (type == TYPE.CHILDHUB) {
+                        if (xcoord.xcoord[v] > xcoord.xcoord[u] && totalMove.hasOwnProperty(u) && totalMove[v] > totalMove[u]) {
+                            shiftU = Math.min(shiftU, totalMove[v] - totalMove[u]);
+                        }
                     }
 
-                    alreadyProcessed[u] = true;
-                    xcoord.xcoord[u] += shiftAmount;
-                    disturbedNodes.push(u);
-                    //console.log("add3: " + u + " (shift: " + shiftAmount + ")");
+                    xcoord.xcoord[u] += shiftU;
+                    totalMove[u]      = totalMove.hasOwnProperty(u) ? totalMove[u] + shiftU : shiftU;
+                    disturbedNodes.push([u, shiftU]);
+                    //console.log("addOUT: " + u + " (shift: " + shiftU + " -> " + xcoord.xcoord[u] + ")   by " + v);
                 }
                 //---------
             }
@@ -2648,26 +3172,40 @@ Heuristics.prototype = {
             // small loop 2: shift childhubs, if necessary
             for (var chhub in childrenMoved) {
                 if (childrenMoved.hasOwnProperty(chhub)) {
-                    if (this.DG.GG.getOutEdges(chhub).length == childrenMoved[chhub]) {
-                        if (!alreadyProcessed.hasOwnProperty(chhub)) {
-                            alreadyProcessed[chhub] = true;
-                            xcoord.xcoord[chhub] += shiftAmount;
-                            disturbedNodes.push(chhub);
+                    chhub = parseInt(chhub);
+                    if (doNotTouch.hasOwnProperty(chhub)) continue;
+                    var children = this.DG.GG.getOutEdges(chhub);
+                    if (children.length > 0 && children.length == childrenMoved[chhub]) {
+                        var minShift = Infinity;
+                        for (var j = 0; j < children.length; j++) {
+                            if (totalMove[children[j]] < minShift)
+                                minShift = totalMove[children[j]];
                         }
+                        if (totalMove.hasOwnProperty(chhub)) {
+                            if (totalMove[chhub] > minShift) continue;
+                            minShift -= totalMove[chhub];
+                        }
+                        xcoord.xcoord[chhub] += minShift;
+                        totalMove[chhub]      = totalMove.hasOwnProperty(chhub) ? totalMove[chhub] + minShift : minShift;
+                        disturbedNodes.push([chhub, minShift]);
+                        //console.log("childhub: " + chhub + " (shift: " + minShift + ")");
                     }
                 }
             }
 
         // propagate this childhub movement and keep going
         }
-        while ( disturbedNodes.size() > 0 && iter < 20 );
+        while ( disturbedNodes.size() > 0 && iterOuter < 3 );
 
         //if (this.DEBUGNORMALIZE)
         //    xcoord.normalize();  // normaly don't do normalization to minimize the number of moved nodes; UI is ok with negative coords
 
+        //this.DG.displayGraph(xcoord.xcoord, "after-insert-"+newNodeId);
+
         this.DG.positions = xcoord.xcoord;
 
-        console.log("MOVED: " + newNodeId + " to position " + this.DG.positions[newNodeId]);
+        //console.log("Positions: 5-6-7: " + this.DG.positions[5] + " / " + this.DG.positions[6] + " / " + this.DG.positions[7]);
+        console.log("PLACED/MOVED: " + newNodeId + " @ position " + this.DG.positions[newNodeId]);
     }
 };
 

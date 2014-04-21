@@ -49,7 +49,7 @@ Ordering.prototype = {
         // changes vertex order within the same rank. Moves "amount" positions to the right or to the left
         if (amount == 0) return true;
 
-        newIndex = index + amount;
+        var newIndex = index + amount;
         if (newIndex < 0) return false;
 
         var ord = this.order[rank];
@@ -154,6 +154,40 @@ Ordering.prototype = {
 
     insertRank: function (insertBeforeRank) {
         this.order.splice(insertBeforeRank, 0, []);
+    },
+
+    getRightNeighbour: function(v, rank) {
+        var order = this.vOrder[v];
+        if ( order < this.order[rank].length-1 )
+            return this.order[rank][order+1];
+        return null;
+    },
+
+    getLeftNeighbour: function(v, rank) {
+        var order = this.vOrder[v];
+        if ( order > 0 )
+            return this.order[rank][order-1];
+        return null;
+    },
+
+    sortByOrder: function(v_list) {
+        var vorders = this.vOrder;
+        var result = v_list.slice(0);
+        result.sort(function(x, y){ return vorders[x] > vorders[y] });
+        return result;
+    },
+
+    // returns all vertices ordered from left-to-right and from top-to-bottom
+    getLeftToRightTopToBottomOrdering: function(onlyType, GG) {
+        var result = [];
+        for (var i = 1; i < this.order.length; i++) {
+            for (var j = 0; j < this.order[i].length; j++) {
+                var v = this.order[i][j];
+                if (!onlyType || GG.type[v] == onlyType)
+                    result.push(this.order[i][j]);
+            }
+        }
+        return result;
     }
 };
 

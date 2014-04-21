@@ -2,32 +2,39 @@
  * xinit: coordinates of _center_ of every vertex, or null
  */
 XCoord = function(xinit, graph)
-{        
+{
     // local copies just for convenience & performance
     this.halfWidth = [];
     for (var i = 0; i < graph.GG.vWidth.length; i++)
         this.halfWidth[i] = Math.floor(graph.GG.vWidth[i]/2);
 
     this.graph = graph;
-    
+
     if (xinit)
-        this.xcoord = xinit; // coordinates of _center_ of every vertex    
+        this.xcoord = xinit; // coordinates of _center_ of every vertex
     else
         this.xcoord = this.init_xcoord();
 };
 
 XCoord.prototype = {
 
+    relationshipOrChhub: function(v) {
+        if (this.graph.GG.type[v] == TYPE.RELATIONSHIP || this.graph.GG.type[v] == TYPE.CHILDHUB) return true;
+        return false;
+    },
+
     getSeparation: function (v1, v2) {
-        if (this.graph.GG.type[v1] == TYPE.RELATIONSHIP && this.graph.GG.type[v2] == TYPE.RELATIONSHIP)
+        if (this.relationshipOrChhub(v1) && this.relationshipOrChhub(v2))
             return this.graph.horizontalTwinSeparationDist;
-        
-        if (this.graph.GG.type[v1] == TYPE.RELATIONSHIP || this.graph.GG.type[v2] == TYPE.RELATIONSHIP)
+
+        if (this.relationshipOrChhub(v1) || this.relationshipOrChhub(v2))
             return this.graph.horizontalRelSeparationDist;
 
-        if ((this.graph.GG.type[v1] == TYPE.VIRTUALEDGE || this.graph.GG.type[v2] == TYPE.VIRTUALEDGE) &&
-            (this.graph.GG.hasEdge(v1,v2) || this.graph.GG.hasEdge(v2,v1)))
-            return this.graph.horizontalRelSeparationDist;
+        if ((this.graph.GG.type[v1] == TYPE.VIRTUALEDGE || this.graph.GG.type[v2] == TYPE.VIRTUALEDGE)) {
+            if (this.graph.GG.hasEdge(v1,v2) || this.graph.GG.hasEdge(v2,v1))
+                return this.graph.horizontalRelSeparationDist;
+            return this.graph.horizontalTwinSeparationDist;
+        }
 
         // separation between twins: a bit less than between other people
         if ((this.graph.GG.type[v1] == TYPE.PERSON || this.graph.GG.type[v2] == TYPE.PERSON) &&
@@ -48,33 +55,26 @@ XCoord.prototype = {
         for (var r = 0; r < this.graph.order.order.length; r++) {
 
             xinit[this.graph.order.order[r][0]] = this.halfWidth[this.graph.order.order[r][0]];
-            
+
             for (var i = 1; i < this.graph.order.order[r].length; i++) {
                 var vPrev      = this.graph.order.order[r][i-1];
                 var v          = this.graph.order.order[r][i];
                 var separation = this.getSeparation(vPrev,v);
 
-                xinit[v] = xinit[vPrev] + this.halfWidth[vPrev] + separation + this.halfWidth[v]; 
+                xinit[v] = xinit[vPrev] + this.halfWidth[vPrev] + separation + this.halfWidth[v];
             }
         }
         return xinit;
-    },    
-    
+    },
+
     getLeftMostNoDisturbPosition: function(v) {
-        var leftBoundary = this.halfWidth[v];
-
-        var order = this.graph.order.vOrder[v];
-        if ( order > 0 ) {
-            var leftNeighbour = this.graph.order.order[this.graph.ranks[v]][order-1];
-
-            leftBoundary += this.getRightEdge(leftNeighbour) + this.getSeparation(v, leftNeighbour);
-
+        var leftNeighbour = this.graph.order.getLeftNeighbour(v, this.graph.ranks[v]);
+        if ( leftNeighbour !== null) {
+            var leftBoundary = this.getRightEdge(leftNeighbour) + this.getSeparation(v, leftNeighbour) + this.halfWidth[v];
             //console.log("leftNeighbour: " + leftNeighbour + ", rightEdge: " + this.getRightEdge(leftNeighbour) + ", separation: " + this.getSeparation(v, leftNeighbour));
+            return leftBoundary;
         }
-        else
-            return -Infinity;
-
-        return leftBoundary;
+        return -Infinity;
     },
 
     getSlackOnTheLeft: function(v) {
@@ -82,21 +82,18 @@ XCoord.prototype = {
     },
 
     getRightMostNoDisturbPosition: function(v, alsoMoveRelationship) {
-        var rightBoundary = Infinity;
-
-        var order = this.graph.order.vOrder[v];
-        if ( order < this.graph.order.order[this.graph.ranks[v]].length-1 ) {
-            var rightNeighbour = this.graph.order.order[this.graph.ranks[v]][order+1];
-            rightBoundary = this.getLeftEdge(rightNeighbour) - this.getSeparation(v, rightNeighbour) - this.halfWidth[v];
+        var rightNeighbour = this.graph.order.getRightNeighbour(v, this.graph.ranks[v]);
+        if ( rightNeighbour !== null ) {
+            var rightBoundary = this.getLeftEdge(rightNeighbour) - this.getSeparation(v, rightNeighbour) - this.halfWidth[v];
 
             if (alsoMoveRelationship && this.graph.GG.type[rightNeighbour] == TYPE.RELATIONSHIP) {
                 var rightMost = this.getRightMostNoDisturbPosition(rightNeighbour);
                 var slack     = rightMost - this.xcoord[rightNeighbour];
                 rightBoundary += slack;
             }
+            return rightBoundary;
         }
-
-        return rightBoundary;
+        return Infinity;
     },
 
     getSlackOnTheRight: function(v) {
@@ -123,7 +120,7 @@ XCoord.prototype = {
 
         return actualShift;
     },
-    
+
     shiftRightOneVertex: function (v, amount) {
         // attempts to move vertex v to the right by ``amount``, but stops
         // as soon as it get as close as allowed to it's right neighbour
@@ -135,7 +132,7 @@ XCoord.prototype = {
         this.xcoord[v] += actualShift;
 
         return actualShift;
-    },    
+    },
 
     shiftRightAndShiftOtherIfNecessary: function (v, amount) {
         // shifts a vertext to the right by the given ``amount``, and shifts
@@ -148,13 +145,11 @@ XCoord.prototype = {
 
         for (var i = order + 1; i < this.graph.order.order[rank].length; i++) {
             var rightNeighbour = this.graph.order.order[rank][i];
-
             if (this.getLeftEdge(rightNeighbour) >= rightEdge + this.getSeparation(v, rightNeighbour)) {
                 // we are not interfering with the vertex to the right
                 break;
 
             }
-
             this.xcoord[rightNeighbour] = rightEdge + this.getSeparation(v, rightNeighbour) + this.halfWidth[rightNeighbour];
 
             rightEdge = this.getRightEdge(rightNeighbour);
@@ -200,6 +195,30 @@ XCoord.prototype = {
         var newX = new XCoord(this.xcoord.slice(0), this.graph, this.halfWidth);
 
         return newX;
+    },
+
+    findVertexSetSlacks: function(set) {
+        // returns the minimum slack (on the left and right) of the set of vertices, assuming all of them are moved at once
+        //
+        // e.g. separately for left/right, for each vertex in the set if the vertex to the given side of it is not in the set
+        // computes min(vertex_slack_on_that_side, current_min_slack_for_that_side) and returns total min slack
+        var leftSlack  = Infinity;
+        var rightSlack = Infinity;
+
+        for (v in set) {
+            if (set.hasOwnProperty(v)) {
+                var leftNeighbour  = this.graph.order.getLeftNeighbour(v, this.graph.ranks[v]);
+                if (!set.hasOwnProperty(leftNeighbour)) {
+                    leftSlack = Math.min(leftSlack, this.getSlackOnTheLeft(v));
+                }
+                var rightNeighbour = this.graph.order.getRightNeighbour(v, this.graph.ranks[v]);
+                if (!set.hasOwnProperty(rightNeighbour)) {
+                    rightSlack = Math.min(rightSlack, this.getSlackOnTheRight(v));
+                }
+            }
+        }
+
+        return { "rightSlack": rightSlack, "leftSlack": leftSlack };
     }
 };
 

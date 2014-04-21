@@ -78,7 +78,7 @@ PositionedGraph.prototype = {
         // further algorithms
         this.GG = baseG.makeGWithSplitMultiRankEdges(this.ranks);
 
-        printObject( this.GG );
+        //printObject( this.GG );
 
         // 1.2)
         // twins should always be next to each other. The easiest and fastest way to accomodate that is by
@@ -824,7 +824,7 @@ PositionedGraph.prototype = {
                             this.GG.hasEdge(childhub, otherParent)) {             // and both twins have been re-inserted already
                             // the twin just re-inserted has a relationship with another twin (which has been re-inserted as well)
                             //console.log("RELAT between " + twin + " and " + otherParent);
-                            // TODO: can do a smarter thing and rearrange twins based on other relatiomnships.
+                            // TODO: can do a smarter thing and rearrange twins based on other relationships.
                             //       but since this is a rare case for now just do the simple improvement
                             var orderRel   = this.order.vOrder[rel];
                             var orderTwin1 = this.order.vOrder[twin];
@@ -1028,7 +1028,7 @@ PositionedGraph.prototype = {
         var bucket1     = 0;
         var bucket2     = 0;
 
-        var timer = new Timer();
+        //var timer = new Timer();
 
         for (var i = 0; i < buckets.length - 1; i++)
             for (var j = i + 1; j < buckets.length; j++)  {
@@ -1045,7 +1045,7 @@ PositionedGraph.prototype = {
                 }
             }
 
-        timer.printSinceLast("Compute distance between buckets: ");
+        //timer.printSinceLast("Compute distance between buckets: ");
 
         if (minDistance == Infinity)
             return false; // all buckets are unrelated. In theory should not happen
@@ -1421,8 +1421,23 @@ PositionedGraph.prototype = {
         for (var o = fromBetween; o <= toBetween; o++) {
             var b = order.order[rank][o];
 
-            if (this.GG.getInEdges(b).length > 0)
-                numNodes++;
+            if (this.GG.getInEdges(b).length > 0) {
+                // 1. edges which come from higher ranks create a crosing
+                // 2. edges that come from the same rank outside the order1-order2 interval create a crossing
+                for (var i = 0; i < this.GG.getInEdges(b).length; i++) {
+                    var u = this.GG.getInEdges(b)[i];
+
+                    if (this.ranks[u] != rank) {
+                        numNodes++;                     // 1. u is of higher rank
+                    }
+                    else {
+                        var orderOther = order.vOrder[u];
+                        if (orderOther < (fromBetween-1) || orderOther > (toBetween+1)) // +1 to skip vertex itself, e.g. multiple relationships
+                            numNodes++;                 // 2. same rank from outside [order1,order2];
+                    }
+                }
+                //numNodes++;
+            }
 
             if (this.GG.isPerson(b)) {
                 // count crossing twin's parental edge as a multiple crossing
@@ -1540,6 +1555,24 @@ PositionedGraph.prototype = {
     },
     //-------------------------------------------------------------------------[wmedian]-
 
+    placeChhubsInCorrectOrder: function(rank, order)
+    {
+        var GG = this.GG;
+        var byRelOrder = function(a,b) {
+               var above1 = GG.getInEdges(a)[0];
+               var above2 = GG.getInEdges(b)[0];
+               if (above1 == above2) {
+                   // keep existing order of pieces of virtual edges as well
+                   return order.vOrder[a] - order.vOrder[b];
+               }
+               return order.vOrder[above1] - order.vOrder[above2];
+            }
+        order.order[rank].sort(byRelOrder);
+
+        for (var i = 0; i < order.order[rank].length; i++)
+            order.vOrder[ order.order[rank][i] ] = i;
+    },
+
     transpose: function(order, doMinorImprovements, stopIfMoreThanCrossings)
     {
         // for each rank: goes over all vertices in the rank and tries to switch orders of two
@@ -1564,20 +1597,10 @@ PositionedGraph.prototype = {
 
             for (var r = 1; r <= this.maxRank; r++)
             {
-                var v0 = order.order[r][0];
-                var GG = this.GG;
-                if (this.GG.isChildhub(v0)) {
-                    // just assign all childhubs the same order as their relationships)
-                    var byRelOrder = function(a,b) {
-                           var rel1 = GG.getInEdges(a)[0];
-                           var rel2 = GG.getInEdges(b)[0];
-                           return order.vOrder[rel1] - order.vOrder[rel2];
-                        }
-                    order.order[r].sort(byRelOrder);
-
-                    for (var i = 0; i < order.order[r].length; i++)
-                        order.vOrder[ order.order[r][i] ] = i;
-
+                if (r%3 == 0) {
+                    // just place all childhubs in the same order as their relationships
+                    // (..and keep existing order of pieces of virtual edges at this rank)
+                    this.placeChhubsInCorrectOrder(r, order);
                     continue;
                 }
 
@@ -1926,14 +1949,10 @@ PositionedGraph.prototype = {
 
         this.removeRelationshipRanks();
 
-        // TODO: come up with heuristics which can be applied at this poinbt
-        // after re-ranking there may be some orderings which are equivalent in terms
-        // of the number of edge crossings, but more or less visually pleasing
-        // depending on what kinds of edges are crossing.
-        // Until re-ordering is done it is computationally harder to make these tests,
-        // but once reordering is complete it is easier in some cases
-        // (e.g: testcase 5A, relationship with both a parent and parent's child)
-        //this.improveOrdering();
+        // Fix ordering mistakes introduced by the re-ranking algorithm. It is easier to fix post-factum
+        // than to order correctly rigth away (e.g. generally the above algo is doing the same thing, but
+        // in some special cases can do better once everything is complete)
+        this.improveOrdering();
 
         // after re-ordering long edges are shorter, try to improve long edge placement again
         var edgeCrossings = this.edge_crossing(this.order, false, true);
@@ -1988,7 +2007,7 @@ PositionedGraph.prototype = {
             if (shouldBeLeftRelChild && this.GG.getInEdges(nextInOrder)[0] != chHubL)    // a child of `rightRel` must be to the left of one of the children of `leftRel` => quit
                 return;
 
-            // makre sure there are no relationships which will resulty in extra edge crossings if we swap order of children
+            // make sure there are no relationships which will result in extra edge crossings if we swap order of children
             var outEdges = this.GG.getOutEdges(nextInOrder);
             if (outEdges.length > 0) {
                 for (var j = 0; j < outEdges.length; j++) {
@@ -2060,14 +2079,105 @@ PositionedGraph.prototype = {
         }
     },
 
-    // TODO
-    //improveOrdering: function()
-    //{
-    //    ...
-    //},
+    improveOrdering: function()
+    {
+        // 1) fix re-ranking mistakes:
+        //
+        //    A) in a case like the one below "partner1" can be placed right next to "relationship1"
+        //                           /--------------\ /--------------- ...  ---[partner1]
+        //               -----------/---\            X
+        //      [person]/----[rel1]/     \--[rel2]--/ \____[partner1]
+        //
+        for (var r = 1; r <= this.maxRank; r+=1) {
+            for (var oo = 0; oo < this.order.order[r].length; oo++) {
+                var v = this.order.order[r][oo];
+                if (!this.GG.isPerson(v)) continue;
 
+                if (this.GG.getInEdges(v).length != 0) continue;  // skip nodes with parents
+
+    		    var relationships = this.GG.getOutEdges(v);
+    		    if (relationships.length != 1) continue;          // only when one and only one relationship
+
+    		    var rel = relationships[0];
+    		    if (this.ranks[rel] != r) continue;               // only when relationship is on the same rank
+
+    		    var orderV   = this.order.vOrder[v];
+    		    var orderRel = this.order.vOrder[rel];
+
+    		    if (Math.abs(orderRel - orderV) != 1) {
+    		        // not next to each other
+    		        if (orderRel > orderV) {
+                        this.order.move(r, orderV, (orderRel - orderV - 1));
+    		        } else {
+                        this.order.move(r, orderV, (orderRel - orderV + 1));
+    		        }
+    		    }
+    		}
+        }
+
+        // 2) TODO: come up with heuristics which can be applied at this point
+        //          (on a need-to-improve basis once an imperfection is discovered):
+        // after re-ranking there may be some orderings which are equivalent in terms
+        // of the number of edge crossings, but more or less visually pleasing
+        // depending on what kinds of edges are crossing.
+        // Until re-ordering is done it is computationally harder to make these tests,
+        // but once reordering is complete it is easier in some cases
+        // (e.g: testcase 5A, relationship with both a parent and parent's child)
+
+        // 3) make sure chhubs are ordered in the same way their relationships are
+        for (var r = 2; r <= this.maxRank; r+=2) {
+            // place all childhubs in the same order as their relationships
+            // (..and keep existing order of pieces of virtual edges at this rank)
+            this.placeChhubsInCorrectOrder(r, this.order);
+        }
+    },
 
     //=====================================================================[re-ordering]=
+
+    findConnectedComponent: function( v, edgeIncludedFunc, stopSet, maxSize )
+    {
+        // computes connected component which includes vertex v and all vertices reachable from v
+        // not using edges which do not pass the `edgeIncludedFunc()` test
+        //
+        // stops when a vertex from the `stopSet` set is found and includes `reachedStopSet` key in the response
+        // stops when component size exceeds `maxSize`
+
+        var component = {};
+        var size      = 0;
+        var stopFound = false;
+
+        var q = new Queue();
+        q.push(v);
+
+        while( q.size() > 0 ) {
+            var nextV = q.pop();
+
+            var allConnected = this.GG.getAllEdgesWithWeights(nextV);
+            for (var u in allConnected) {
+                if (!allConnected.hasOwnProperty(u)) continue;
+
+                var from = allConnected[u].out ? nextV : u;
+                var to   = allConnected[u].out ? u     : nextV;
+
+                if (edgeIncludedFunc(from, to) && !component.hasOwnProperty(u)) {
+                    component[u] = true;
+                    q.push(u);
+                    size++;
+
+                    if (stopSet.hasOwnProperty(u)) {
+                        stopFound = true;
+                        break;
+                    }
+                }
+
+                if (size > maxSize) {
+                    q.clear();
+                    break;
+                }
+            }
+        }
+        return { "component": component, "size": size, "stopSetReached": stopFound };
+    },
 
     //=[ancestors]=======================================================================
     findAllAncestors: function()
@@ -2143,7 +2253,7 @@ PositionedGraph.prototype = {
     positionVertically: function()
     {
         /*// debug: very useful debug case, which is very hard to reproduce without fiddling with
-          //        a normally-processed MS_004 graph. TODO: remove      
+          //        a normally-processed MS_004 graph. TODO: remove
           if (this.positions.length > 60) {
           this.positions[50] = 80;
           this.positions[51] = 193;
@@ -2167,16 +2277,17 @@ PositionedGraph.prototype = {
         //    for all person which has a relationship vertically position all outgoing relationship edges
         //    (within the rank, as a discrete integer "level") in a way to avoid overlaps between different relationship edges
 
-        /// TODO: computations below are to accomodate debugging when reRankRelationships() may be omitted
         var _startRank = 2;
         var _rankStep  = 2;
+        /*
+        // TODO: DEBUG: computations below are to accomodate debugging when reRankRelationships() may be omitted
         for (var i = 0; i<this.order.order[_startRank].length; i++)
             if ( !this.GG.isVirtual(this.order.order[_startRank][i]) && !this.GG.isChildhub( this.order.order[_startRank][i] ) )
             {
                 _startRank = 3;
                 _rankStep  = 3;
                 break;
-            }
+            }*/
 
         for (var r = 1; r <= this.maxRank; r+=1)
             verticalLevels.rankVerticalLevels[r] = 1;    // number of "vertical levels" (i.e. parallel horizontal edges) between rank r and r+1. Start with 1 for all ranks
@@ -2284,7 +2395,7 @@ PositionedGraph.prototype = {
             //   (*) where f(numEdgesThatCross) is (currently) numEdgesThatCross^numEdgesThatCross, e.g. f(5) = 3125
             var edgeLevels = optimizer.computeVerticalPositions( 5, 400 );
 
-            console.log("[rank " + r + "] Final vertical childedge levels: " +  stringifyObject(edgeLevels));
+            //console.log("[rank " + r + "] Final vertical childedge levels: " +  stringifyObject(edgeLevels));
 
             for (var v = 0; v < edgeInfo.length; v++) {
                 verticalLevels.childEdgeLevel[edgeInfo[v]["childhub"]] = edgeLevels[v];
@@ -2473,7 +2584,7 @@ PositionedGraph.prototype = {
 
                 console.log("[rank " + r + "] Final vertical relatioship levels: " +  stringifyObject(relEdgeLevels));
 
-                // save computed levels where they ultimately belong
+                // place computed levels where they ultimately belong
                 for (var i = 0; i < edgeInfo.length; i++) {
                     verticalLevels.outEdgeVerticalLevel[ edgeInfo[i].v ][ edgeInfo[i].u ].verticalLevel = relEdgeLevels[i];
                     if (relEdgeLevels[i] > numLevels)
@@ -2483,7 +2594,7 @@ PositionedGraph.prototype = {
 
             verticalLevels.rankVerticalLevels[r-1] += Math.max(0, (numLevels - 2));
         }
-        
+
         //console.log("Vert child:         " + stringifyObject(verticalLevels.childEdgeLevel));
         //console.log("Vert relationships: " + stringifyObject(verticalLevels.outEdgeVerticalLevel));
         //console.log("Vert levels:        " + stringifyObject(verticalLevels.rankVerticalLevels));
@@ -2627,11 +2738,11 @@ PositionedGraph.prototype = {
     },
 
     computeRelLineY: function( rank, attachLevel, verticalLevel )
-    {        
+    {
         var attachY = this.rankY[rank] - (attachLevel)*this.yAttachPortHeight;
-        
+
         var relLineY = this.rankY[rank];
-        
+
         if (verticalLevel == 1) {
             // going above another line
             relLineY -= (attachLevel)*this.yAttachPortHeight;
@@ -2641,7 +2752,7 @@ PositionedGraph.prototype = {
         } else {
             relLineY -= verticalLevel * this.yExtraPerHorizontalLine;
         }
-        
+
         return {"attachY":  attachY, "relLineY": relLineY };
     },
     //========================================[vertical separation for horizontal edges]=
@@ -2668,15 +2779,15 @@ PositionedGraph.prototype = {
 
     position: function()
     {
+        var longEdges = this.find_long_edges();  // pre-find long edges for performance reasons
+
         var xcoord = new XCoord(null, this);
         //printObject(xcoord.xcoord);
 
         //this.displayGraph(xcoord.xcoord, 'init');
 
         this.try_shift_right(xcoord, true, false);
-        this.try_shift_left (xcoord);
         this.try_shift_right(xcoord, false, true);
-        this.try_shift_left (xcoord);
         xcoord.normalize();
 
         //this.displayGraph(xcoord.xcoord, 'firstAdj');
@@ -2688,8 +2799,7 @@ PositionedGraph.prototype = {
         for ( var i = 0; i <= this.maxXcoordIterations; i++ )
         {
             this.try_shift_right(xcoord, true, true);
-            this.try_shift_left (xcoord);
-            this.try_straighten_long_edges(xcoord);
+            this.try_straighten_long_edges(longEdges, xcoord);
 
             //this.displayGraph(xcoord.xcoord, 'Adj' + i);
             xcoord.normalize();
@@ -2704,7 +2814,7 @@ PositionedGraph.prototype = {
                 break;
         }
 
-        this.displayGraph(xbest.xcoord, 'final');
+        //this.displayGraph(xbest.xcoord, 'final');
         printObject(xbest.xcoord);
 
         return xbest.xcoord;
@@ -2798,17 +2908,18 @@ PositionedGraph.prototype = {
     },
 
     edge_importance_to_straighten: function(fromV, toV) {
-        var coeff = 2.0;
+        if (this.GG.isRelationship(toV)) return 1.0;
 
-        if (!this.GG.isVirtual(fromV) && this.GG.isRelationship(toV)) coeff = 1.0;
+        if (!this.GG.isVirtual(fromV) && this.GG.isVirtual(toV)) return 1.5;
 
-        if (this.GG.isRelationship(fromV)) coeff = 8.0;
+        if (this.GG.isRelationship(fromV)) return 8.0;
 
-        if (this.GG.isVirtual(fromV) && this.GG.isVirtual(toV)) coeff = 16.0;
-        else
-        if (this.GG.isVirtual(fromV) || this.GG.isVirtual(toV)) coeff = 4.0;
+        if (this.GG.isVirtual(fromV)) {
+            if (this.GG.isVirtual(toV)) return 16.0;
+            return 4.0;
+        }
 
-        return coeff;
+        return 2.0;
     },
 
     try_shift_right: function(xcoord, scoreQualityOfNodesBelow, scoreQualityOfNodesAbove)
@@ -2919,8 +3030,6 @@ PositionedGraph.prototype = {
 
     compute_median: function (v, xcoord, considerAbove, considerBelow)
     {
-        var maxRealId = this.GG.getMaxRealVertexId();
-
         var positionsAbove = [];
         var positionsBelow = [];
 
@@ -2940,10 +3049,12 @@ PositionedGraph.prototype = {
                 var score = coeff * w;
 
                 for (var i = 0; i < score; i++) {
-                    if (this.ranks[u] <= this.ranks[v])
+                    if (this.ranks[u] <= this.ranks[v]) {
                         positionsAbove.push(xcoord.xcoord[u]);
-                    if (this.ranks[u] >= this.ranks[v])
+                    }
+                    if (this.ranks[u] >= this.ranks[v]) {
                         positionsBelow.push(xcoord.xcoord[u]);
+                    }
                 }
             }
         }
@@ -2954,30 +3065,31 @@ PositionedGraph.prototype = {
         var medianAbove = undefined;
         var medianBelow = undefined;
 
-        if (considerAbove && positionsAbove.length > 0) {
+        if ((considerAbove || this.GG.isVirtual(v)) && positionsAbove.length > 0) {
             positionsAbove.sort(numericSortFunc);
             var middle  = Math.ceil(positionsAbove.length/2);
-            if (middle >= positionsAbove.length)
+            if (middle >= positionsAbove.length) {
                 middle = positionsAbove.length - 1;
+            }
             if (positionsAbove.length % 2 == 0)
-                medianAbove = (positionsAbove[middle] + positionsAbove[middle-1])/2;
+                medianAbove = Math.floor((positionsAbove[middle] + positionsAbove[middle-1])/2);
             else
                 medianAbove = positionsAbove[middle];
         }
-        if (considerBelow && positionsBelow.length > 0) {
+        if ((considerBelow || this.GG.isVirtual(v)) && positionsBelow.length > 0) {
             positionsBelow.sort(numericSortFunc);
             var middle  = Math.ceil(positionsBelow.length/2);
             if (middle >= positionsBelow.length)
                 middle = positionsBelow.length - 1;
             if (positionsBelow.length % 2 == 0)
-                medianBelow = (positionsBelow[middle] + positionsBelow[middle-1])/2;
+                medianBelow = Math.floor((positionsBelow[middle] + positionsBelow[middle-1])/2);
             else
                 medianBelow = positionsBelow[middle];
         }
 
-        if (medianAbove && medianBelow)
+        if (medianAbove !== undefined && medianBelow !== undefined)
             median = Math.max(medianAbove, medianBelow);
-        else if (medianAbove)
+        else if (medianAbove !== undefined)
             median = medianAbove;
         else
             median = medianBelow;
@@ -2985,93 +3097,82 @@ PositionedGraph.prototype = {
         return Math.ceil(median);
     },
 
-    try_shift_left: function (xcoord)
-    {
-        // similar to try_shift_right, but attempts to shift left: searches positions from
-        // current to leftmost possible (withotu moving other vertices), looking for the locally
-        // best position.
-        // (note the diff. with try_shift_right which may produce new not-yet-seen arrangements is
-        //  that this shifts at most one vertex, while shift_right may shift many)
-
-        //this.displayGraph( xcoord.xcoord, "shiftleft-start" );
-
-        for (var r = 1; r <= this.maxRank; r++) {
-
-            var fromO = 0;
-            var toO   = this.order.order[r].length;
-
-            for (var i = fromO; i < toO; i++) {
-                //printObject(xcoord.xcoord);
-
-                var v = this.order.order[r][i];
-
-                var initScore = this.xcoord_score(xcoord, r, true, true, i);
-
-                // find min{same_order.left, all_parents.left, all_children.left)
-                var mostLeftLocation = this.find_left_boundary(v, xcoord);
-
-                var maxShift = xcoord.xcoord[v] - mostLeftLocation;
-                if (maxShift <= 0) continue;
-
-                var bestShift = 0;
-                var bestScore = initScore;
-                var shiftAmount = maxShift;
-
-                do
-                {
-                    xcoord.xcoord[v] -= shiftAmount;
-
-                    var newScore = this.xcoord_score(xcoord, r, true, true, i);
-
-                    xcoord.xcoord[v] += shiftAmount;
-
-                    if (newScore.isBettertThan(bestScore)) {
-                        bestShift = shiftAmount
-                        bestScore = newScore;
-                    }
-
-                    if (shiftAmount > 3)
-                        shiftAmount -= 2;
-                    else
-                        shiftAmount -= 1;
-                }
-                while (shiftAmount > 0);
-
-                if (bestScore.isBettertThan(initScore)) {
-                    //console.log("SHIFTING " + v + " LEFT by " + bestShift );
-                    xcoord.shiftLeftOneVertex(v, bestShift);
-                }
-            }
-
-            //this.displayGraph( xcoord.xcoord, "shiftleft-rank-" + r );
-        }
-    },
-
-    find_left_boundary: function(v, xcoord)
-    {
-        if (this.order.vOrder[v] > 0)
-            return xcoord.getLeftMostNoDisturbPosition(v);
-
-        var leftMost = xcoord.xcoord[v];
-
-        var outEdges = this.GG.getOutEdges(v);
-        for (var e = 0; e < outEdges.length; e++) {
-            var u = outEdges[e];
-            leftMost = Math.min(leftMost, xcoord.xcoord[u]);
-        }
-        var inEdges = this.GG.getInEdges(v);
-        for (var e = 0; e < inEdges.length; e++) {
-            var u = inEdges[e];
-            leftMost = Math.min(leftMost, xcoord.xcoord[u]);
-        }
-
-        return leftMost;
-    },
-
-    try_straighten_long_edges: function (xcoord)
+    try_straighten_long_edges: function (longEdges, xcoord)
     {
         // try to straigten long edges without moving any other vertices
         var improved = false;
+
+        for (var e = 0; e < longEdges.length; e++) {
+            var chain = longEdges[e];
+            console.log("trying to straighten edge " + stringifyObject(chain));
+
+            // 1) try to straighten by shifting the head
+
+            // go over all nodes from head to tail looking for a bend and trying
+            // to move the head to remove the bend
+            var currentCenter = xcoord.xcoord[chain[0]];
+            var corridorLeft  = xcoord.getLeftMostNoDisturbPosition(chain[0]);
+            var corridorRight = xcoord.getRightMostNoDisturbPosition(chain[0]);
+
+            // go over all nodes from head to tail looking for a bend
+            for (var i = 1; i < chain.length; i++) {
+                var nextV      = chain[i];
+                var nextCenter = xcoord.xcoord[nextV];
+                if (nextCenter != currentCenter) {
+                    if (nextCenter >= corridorLeft && nextCenter <= corridorRight) {
+                        // all the nodes above can be shifted to this location!
+                        for (var j = 0; j < i; j++) {
+                            xcoord.xcoord[chain[j]] = nextCenter;
+                        }
+                        improved      = true;
+                        currentCenter = nextCenter;
+                    }
+                    else break;
+                }
+                // narrow the coridor to the common available space including this vertex as well
+                corridorLeft  = Math.max(corridorLeft,  xcoord.getLeftMostNoDisturbPosition(nextV));
+                corridorRight = Math.min(corridorRight, xcoord.getRightMostNoDisturbPosition(nextV));
+                if (corridorRight < corridorLeft) break;  // no luck, can't straighten
+            }
+
+            // 2) try to straighten by shifting the tail
+
+            // go over all nodes from tail to head looking for a bend and trying
+            // to move the tail to remove the bend
+            var lastNode      = chain.length - 1;
+            var currentCenter = xcoord.xcoord[chain[lastNode]];
+            var corridorLeft  = xcoord.getLeftMostNoDisturbPosition(chain[lastNode]);
+            var corridorRight = xcoord.getRightMostNoDisturbPosition(chain[lastNode]);
+
+            // go over all nodes from head to tail looking for a bend
+            for (var i = lastNode - 1; i >= 0; i--) {
+                var nextV      = chain[i];
+                var nextCenter = xcoord.xcoord[nextV];
+                if (nextCenter != currentCenter) {
+                    if (nextCenter >= corridorLeft && nextCenter <= corridorRight) {
+                        // all the nodes below can be shifted to this location!
+                        for (var j = lastNode; j > i; j--) {
+                            xcoord.xcoord[chain[j]] = nextCenter;
+                        }
+                        improved      = true;
+                        currentCenter = nextCenter;
+                    }
+                    else break;
+                }
+                // narrow the coridor to the common available space including this vertex as well
+                corridorLeft  = Math.max(corridorLeft,  xcoord.getLeftMostNoDisturbPosition(nextV));
+                corridorRight = Math.min(corridorRight, xcoord.getRightMostNoDisturbPosition(nextV));
+                if (corridorRight < corridorLeft) break;  // no luck, can't straighten
+            }
+        }
+
+        return improved;
+    },
+    //========================================================================[position]=
+
+    find_long_edges: function()
+    {
+        var longEdges = [];
 
         var maxRealId = this.GG.getMaxRealVertexId();
         var numVert   = this.GG.getNumVertices();
@@ -3103,70 +3204,11 @@ PositionedGraph.prototype = {
             }
             while (this.GG.isVirtual(next));;
 
-            console.log("trying to straighten chain " + stringifyObject(chain));
-
-            // 1) try to straighten by shifting the head
-
-            // go over all nodes from head to tail looking for a bend and trying
-            // to move the head to remove the bend
-            var currentCenter = xcoord.xcoord[chain[0]];
-            var corridorLeft  = xcoord.getLeftMostNoDisturbPosition(chain[0]);
-            var corridorRight = xcoord.getRightMostNoDisturbPosition(chain[0]);
-
-            // go over all nodes from head to tail looking for a bend
-            for (var i = 1; i < chain.length; i++) {
-                var nextV      = chain[i];
-                var nextCenter = xcoord.xcoord[nextV];
-                if (nextCenter != currentCenter) {
-                    if (nextCenter >= corridorLeft && nextCenter <= corridorRight) {
-                        // all the nodes above can be shifted to this location!
-                        for (var j = 0; j < i; j++)
-                            xcoord.xcoord[chain[j]] = nextCenter;
-
-                        improved      = true;
-                        currentCenter = nextCenter;
-                    }
-                    else break;
-                }
-                // narrow the coridor to the common available space including this vertex as well
-                corridorLeft  = Math.max(corridorLeft,  xcoord.getLeftMostNoDisturbPosition(nextV));
-                corridorRight = Math.min(corridorRight, xcoord.getRightMostNoDisturbPosition(nextV));
-                if (corridorRight < corridorLeft) break;  // no luck, can't straighten
-            }
-
-            // 2) try to straighten by shifting the tail
-
-            // go over all nodes from tail to head looking for a bend and trying
-            // to move the tail to remove the bend
-            var lastNode      = chain.length - 1;
-            var currentCenter = xcoord.xcoord[chain[lastNode]];
-            var corridorLeft  = xcoord.getLeftMostNoDisturbPosition(chain[lastNode]);
-            var corridorRight = xcoord.getRightMostNoDisturbPosition(chain[lastNode]);
-
-            // go over all nodes from head to tail looking for a bend
-            for (var i = lastNode - 1; i >= 0; i--) {
-                var nextV      = chain[i];
-                var nextCenter = xcoord.xcoord[nextV];
-                if (nextCenter != currentCenter) {
-                    if (nextCenter >= corridorLeft && nextCenter <= corridorRight) {
-                        // all the nodes below can be shifted to this location!
-                        for (var j = lastNode; j > i; j--)
-                            xcoord.xcoord[chain[j]] = nextCenter;
-                        improved      = true;
-                        currentCenter = nextCenter;
-                    }
-                    else break;
-                }
-                // narrow the coridor to the common available space including this vertex as well
-                corridorLeft  = Math.max(corridorLeft,  xcoord.getLeftMostNoDisturbPosition(nextV));
-                corridorRight = Math.min(corridorRight, xcoord.getRightMostNoDisturbPosition(nextV));
-                if (corridorRight < corridorLeft) break;  // no luck, can't straighten
-            }
+            console.log("Found long edge " + stringifyObject(chain));
+            longEdges.push(chain);
         }
-
-        return improved;
+        return longEdges;
     }
-    //========================================================================[position]=
 };
 
 

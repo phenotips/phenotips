@@ -18,6 +18,10 @@ Queue.prototype = {
 
     size: function() {
         return this.data.length;
+    },
+
+    clear: function() {
+        this.data = [];
     }
 };
 

@@ -648,7 +648,6 @@ BaseGraph.prototype = {
             var u = outEdges[i];
             edgeToWeight[u] = {"weight": this.weights[v][u], "out": true };
         }
-
         var inEdges = this.getInEdges(v);
         for (var i = 0; i < inEdges.length; i++) {
             var u = inEdges[i];
@@ -656,6 +655,10 @@ BaseGraph.prototype = {
         }
 
         return edgeToWeight;
+    },
+
+    getAllEdges: function(v) {
+        return this.getOutEdges(v).concat(this.getInEdges(v));
     },
 
 	isRelationship: function(v) {
@@ -872,6 +875,29 @@ BaseGraph.prototype = {
             this.getTwinGroupId(toV) != null) return true;
 
         return false;
+    },
+
+    getAllAncestors: function(v)
+    {
+        var ancestors = {};
+        ancestors[v] = true;
+
+        var q = new Queue();
+        q.push(v);
+
+        while( q.size() > 0) {
+            var nextV = q.pop();
+
+            var inEdges = this.getInEdges(nextV);
+            for (var j = 0; j < inEdges.length; j++) {
+                var v = inEdges[j];
+                if ( !ancestors.hasOwnProperty(v) ) {
+                    q.push(v);
+                    ancestors[v] = true;
+                }
+            }
+        }
+        return ancestors;
     }
 };
 

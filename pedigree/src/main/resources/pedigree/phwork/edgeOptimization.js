@@ -16,7 +16,7 @@ VerticalPosIntOptimizer = function ( pairScoreFunc, initLevels, minLevels ) {
     }
 
     var precompute = this.computeComponents();
-    console.log("Precomputed: " + stringifyObject(precompute));
+    //console.log("Precomputed: " + stringifyObject(precompute));
     this.components = precompute.components;  // class             - mapping between edges and connected components; see Components class
     this.crosses    = precompute.crosses;     // array[array[int]] - for each edge the list of edges it directly intersects with (for performance optimization)
 };
@@ -198,11 +198,11 @@ VerticalPosIntOptimizer.prototype = {
         // fix component-by-component
         for (var compID = 0; compID < this.components.getNumComponents(); compID++) {
 
-            console.log("Optimizing next component [ID="+compID+"] with edges: " + stringifyObject(this.components.getComponentEdges(compID)));
+            //console.log("Optimizing next component [ID="+compID+"] with edges: " + stringifyObject(this.components.getComponentEdges(compID)));
 
-            console.log("CompID[" + compID + "]: MinPossiblePenalty: " + this.components.getMinPossiblePenalty(compID));
-            console.log("CompID[" + compID + "]: Initial Penalty:    " + this.componentScoreFunc(bestSoFar, compID));
-            console.log("CompID[" + compID + "]: Initial assignment: " + stringifyObject(bestSoFar));
+            //console.log("CompID[" + compID + "]: MinPossiblePenalty: " + this.components.getMinPossiblePenalty(compID));
+            //console.log("CompID[" + compID + "]: Initial Penalty:    " + this.componentScoreFunc(bestSoFar, compID));
+            //console.log("CompID[" + compID + "]: Initial assignment: " + stringifyObject(bestSoFar));
 
             // problem size for exhaustiveSearch ~= numEdges!, can't afford to try all combinations for large problems
             if ( this.components.getComponentEdges(compID).length <= maxFullSearchSize )
@@ -210,11 +210,11 @@ VerticalPosIntOptimizer.prototype = {
             else
                 bestSoFar = this.simulatedAnnellingOptimizer( compID, bestSoFar, maxSteps );
 
-            console.log("CompID[" + compID + "]: Final assignment: " + stringifyObject(bestSoFar));
-            console.log("CompID[" + compID + "]: Final Penalty:    " + this.componentScoreFunc(bestSoFar, compID));
+            //console.log("CompID[" + compID + "]: Final assignment: " + stringifyObject(bestSoFar));
+            //console.log("CompID[" + compID + "]: Final Penalty:    " + this.componentScoreFunc(bestSoFar, compID));
         }
 
-        console.log("Final assignment: " + stringifyObject(bestSoFar));
+        //console.log("Final assignment: " + stringifyObject(bestSoFar));
 
         return bestSoFar;
     },
@@ -228,7 +228,7 @@ VerticalPosIntOptimizer.prototype = {
 
         var result = this.recursiveExhaustiveSearch( componentID, bestSoFar.slice(0), 0, {"values":bestSoFar, "score":initScore} );
 
-        console.log("[fsearch] CompID[" + componentID + "]: Tried " +  this.checkedNumber + " combinations"); // TODO: debug
+        //console.log("[fsearch] CompID[" + componentID + "]: Tried " +  this.checkedNumber + " combinations"); // TODO: debug
 
         return result.values;
     },
@@ -246,7 +246,7 @@ VerticalPosIntOptimizer.prototype = {
             if (score < bestSoFar.score) {
                 bestSoFar.values = valuesSoFar.slice(0);
                 bestSoFar.score  = score;
-                console.log("[fsearch] New best: " + stringifyObject(bestSoFar.values) + " (score: " + bestSoFar.score + ")");
+                //console.log("[fsearch] New best: " + stringifyObject(bestSoFar.values) + " (score: " + bestSoFar.score + ")");
             }
             //console.log("best value at enter [" + level + "]: " + stringifyObject(valuesSoFar));
             this.checkedNumber++; // TODO: debug
@@ -298,8 +298,8 @@ VerticalPosIntOptimizer.prototype = {
             value++; // for next age to be different form this one
         }
 
-        console.log("[asearch] CompID[" + componentID + "]: Initial assignment:   " + stringifyObject(initLevels)    + ", score: " + this.componentScoreFunc(initLevels, componentID));
-        console.log("[asearch] CompID[" + componentID + "]: InitValid assignment: " + stringifyObject(newAssignemnt) + ", score: " + this.componentScoreFunc(newAssignemnt, componentID));
+        //console.log("[asearch] CompID[" + componentID + "]: Initial assignment:   " + stringifyObject(initLevels)    + ", score: " + this.componentScoreFunc(initLevels, componentID));
+        //console.log("[asearch] CompID[" + componentID + "]: InitValid assignment: " + stringifyObject(newAssignemnt) + ", score: " + this.componentScoreFunc(newAssignemnt, componentID));
         return newAssignemnt;
     },
 

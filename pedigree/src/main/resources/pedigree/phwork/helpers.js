@@ -13,7 +13,7 @@ if (!window.console) { var console = {log: function() {}}; }
 // For IE7 && IE8 again
 if(typeof String.prototype.trim !== 'function') {
   String.prototype.trim = function() {
-    return this.replace(/^\s+|\s+$/g, ''); 
+    return this.replace(/^\s+|\s+$/g, '');
   }
 }
 
@@ -98,13 +98,18 @@ function indexOfLastMinElementInArray(array) {
     return minIndex;
 }
 
+// Returns an array of unique values from the given array
+// Specific implementation is picked based on http://jsperf.com/array-unique2/19
 function filterUnique(array) {
-    var result = [];
-
-    for (var i = 0; i < array.length; i++)
-        if (i == arrayIndexOf(array, array[i]))
+    var hash   = {},
+        result = [],
+        i      = array.length;
+    while (i--) {
+        if (!hash[array[i]]) {
+            hash[array[i]] = true;
             result.push(array[i]);
-
+        }
+    }
     return result;
 }
 
@@ -134,6 +139,26 @@ function isInt(n) {
     //return !(n % 1);
     return (parseInt(n) == parseFloat(n));
 }
+
+function toObjectWithTrue(array) {
+  var obj = {};
+  for (var i = 0; i < array.length; ++i)
+    if (array[i] !== undefined) obj[array[i]] = true;
+  return obj;
+}
+
+/*function objectKeys(obj) {
+    if (Object.keys)
+        return Object.keyhs(obj);
+
+    var keys = [];
+    for (var i in obj) {
+      if (obj.hasOwnProperty(i)) {
+        keys.push(i);
+      }
+    }
+    return keys;
+}*/
 
 //-------------------------------------------------------------
 // Used during ordering for bucket order permutations
