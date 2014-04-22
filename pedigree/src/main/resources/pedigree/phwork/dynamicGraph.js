@@ -1353,11 +1353,19 @@ DynamicPositionedGraph.prototype = {
         if (this.DG.GG.type[edgeToV] == TYPE.CHILDHUB)
             crossingChildhubEdgesPenalty = true;
 
-        var desiredPosition = this.DG.order.order[rank].length;  // by default: the later in the order the better: fewer vertices shifted
+        var desiredOrder = 0;
+
+        var edgeToX = this.DG.positions[edgeToV];
+        for (var o = 0; o < this.DG.order.order[rank].length; o++) {
+            var uAtPos = this.DG.order.order[rank][o];
+            var uX     = this.DG.positions[uAtPos];
+            if (uX < edgeToX)
+                desiredOrder = o+1;
+        }
 
         // when inserting children below childhubs: next to other children
         if (this.DG.GG.type[edgeToV] == TYPE.CHILDHUB && rank > edgeToRank && this.DG.GG.getOutEdges(edgeToV).length > 0)
-            desiredPosition = this._findRightmostChildPosition(edgeToV) + 1;
+            desiredOrder = this._findRightmostChildPosition(edgeToV) + 1;
 
         var fromOrder = _fromOrder ? Math.max(_fromOrder,0) : 0;
         var toOrder   = _toOrder   ? Math.min(_toOrder,this.DG.order.order[rank].length) : this.DG.order.order[rank].length;
@@ -1392,11 +1400,11 @@ DynamicPositionedGraph.prototype = {
             //console.log("position: " + o + ", numCross: " + numCrossings);
 
             if ( numCrossings < bestCrossings ||                           // less crossings
-                 (numCrossings == bestCrossings && Math.abs(o - desiredPosition) <= bestDistance )   // closer to desired position
+                 (numCrossings == bestCrossings && Math.abs(o - desiredOrder) <= bestDistance )   // closer to desired position
                ) {
                bestInsertOrder = o;
                bestCrossings   = numCrossings;
-               bestDistance    = Math.abs(o - desiredPosition);
+               bestDistance    = Math.abs(o - desiredOrder);
             }
         }
 
@@ -2340,13 +2348,16 @@ Heuristics.prototype = {
                 var affectedInfoChildShift = this._findAffectedSet(shiftList, {}, toObjectWithTrue(childInfo.orderedChildren), {}, toObjectWithTrue([parents[0], v, childhub, parents[1]]),
                                                                    -misalignment, xcoord, true, false, 5, 3);
 
-                if (this._isShiftSizeAcceptable( affectedInfoParentShift, false, 5, 3) ||
-                    this._isShiftSizeAcceptable( affectedInfoChildShift,  false, 5, 3) ) {
+                var parentShiftAcceptable = this._isShiftSizeAcceptable( affectedInfoParentShift, false, 5, 3);
+                var childShiftAcceptable  = this._isShiftSizeAcceptable( affectedInfoChildShift,  false, 5, 3);
+
+                if (parentShiftAcceptable || childShiftAcceptable) {
 
                     improved = true;   // at least one of the shifts is OK
 
                     // pick which one to use
-                    if ( this._isShiftBetter(affectedInfoParentShift, affectedInfoChildShift) ) {
+                    if ( parentShiftAcceptable &&
+                         (!childShiftAcceptable || this._isShiftBetter(affectedInfoParentShift, affectedInfoChildShift)) ) {
                         var nodes = affectedInfoParentShift.nodes;
                         //console.log("["+id+"] Shifting parents by [" + misalignment + "]: " + stringifyObject(nodes));
                         for (var i = 0; i < nodes.length; i++)
@@ -2992,14 +3003,21 @@ Heuristics.prototype = {
 
         // find which nodes we need to shift to accomodate this insertion via "domino effect"
 
+        // each entry in the queue is a pair [node, moveAmount]. Once a node is popped from the queue
+        // some of the linked nodes are moved the same amount to keep the existing shape of the graph.
+        // That movement may in turn trigger anothe rmovement of the original node, so the same
+        // node may appear more than once in the queue at the same itme, with different corresponding
+        // move amounts. In theory there should be no circular dependencies (e.g. moving A requires moving B
+        // which requires moving A again), but in case there is a mistake there is a check which terminates
+        // the process after some time.
         var disturbedNodes = new Queue();
         disturbedNodes.push([newNodeId, shiftAmount]);
 
         var iterOuter = 0;
         var iter      = 0;
 
-        var ancestors  = this.DG.GG.getAllAncestors(newNodeId);
         var doNotTouch = {};
+        var ancestors  = this.DG.GG.getAllAncestors(newNodeId);
         for (var node in ancestors) {
             doNotTouch[node] = true;
             var rank  = this.DG.ranks[node];
@@ -3011,15 +3029,24 @@ Heuristics.prototype = {
         }
         //console.log("V:" + newNodeId + " -> DoNotTouch: " + stringifyObject(doNotTouch));
 
-        var totalMove     = {};   // for each node: how much it was in total this iteration
+        var totalMove = {};   // for each node: how much the node has been moved by this function
 
-        do {
+        // The movement algorithm is two-step:
+        //  1) first nodes "firmly" linked to each other are moved in the inner while loop
+        //  2) then some childhubs get moved depending on which of their children have been shifted -
+        //     which may trigger move moves in the inner loop
+
+        // Outer loop. Repeat at most 5 times, as more is likely a run-away algo due to some unexpected circular dependency
+        while ( disturbedNodes.size() > 0 && iterOuter < 5 ) {
             iterOuter++;
 
             var childrenMoved = {};   // for each childhub: which children have been moved (we only move a chldhub if all its children were moved)
 
-            // small loop 1: shift all vertices except childhubs, which only shift if all children shift
-            while ( disturbedNodes.size() > 0 && iter < 10000) {
+            var numNodes             = this.DG.ranks.length;
+            var maxExpectedMovements = numNodes*5;
+
+            // inner loop: shift all vertices except childhubs, which only shift if all their children shift
+            while ( disturbedNodes.size() > 0 && iter < maxExpectedMovements) {
                 iter++;  // prevent unexpected run-away due to some weird circular dependency (should not happen but TODO: check)
 
                 //console.log("Disturbed nodes: " + stringifyObject(disturbedNodes.data));
@@ -3036,8 +3063,6 @@ Heuristics.prototype = {
 
                 var position    = xcoord.xcoord[v];
                 var rightMostOK = xcoord.getRightMostNoDisturbPosition(v);
-
-                //console.log("iter: " + iter + ", v: " + v + ", pos: " + position + ", righNoDisturb: " + rightMostOK + ", shift: " + shiftAmount + ", al[7]: " + alreadyProcessed[7]);
 
                 if (position > rightMostOK) {
                     // the node to the right was disturbed: shift it
@@ -3193,12 +3218,7 @@ Heuristics.prototype = {
                 }
             }
 
-        // propagate this childhub movement and keep going
-        }
-        while ( disturbedNodes.size() > 0 && iterOuter < 3 );
-
-        //if (this.DEBUGNORMALIZE)
-        //    xcoord.normalize();  // normaly don't do normalization to minimize the number of moved nodes; UI is ok with negative coords
+        } // big outer while()
 
         //this.DG.displayGraph(xcoord.xcoord, "after-insert-"+newNodeId);
 
