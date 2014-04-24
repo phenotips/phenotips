@@ -713,7 +713,7 @@ BaseGraph.prototype = {
         var relationships = this.v[v];
 
         var result = [];
-        for (var r = 0; r < relationships.length; r++) {
+        for (var r = 0; r < relationships.length; ++r) {
             var edgeTo       = relationships[r];
             var relationship = this.downTheChainUntilNonVirtual(edgeTo);
             result.push(relationship);
@@ -728,7 +728,7 @@ BaseGraph.prototype = {
         var relationships = this.getAllRelationships(v);
 
         var result = [];
-        for (var r = 0; r < relationships.length; r++) {
+        for (var r = 0; r < relationships.length; ++r) {
             var partners = this.getParents(relationships[r]);
             if (partners[0] != v)
                 result.push(partners[0]);

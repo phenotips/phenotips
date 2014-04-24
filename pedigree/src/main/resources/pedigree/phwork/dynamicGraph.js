@@ -921,11 +921,11 @@ DynamicPositionedGraph.prototype = {
 
         nodeList.sort(function(a,b){return a-b});
 
-        console.log("nodeList: " + stringifyObject(nodeList));
+        //console.log("nodeList: " + stringifyObject(nodeList));
 
         for (var i = nodeList.length-1; i >= 0; i--) {
             var v = nodeList[i];
-            console.log("removing: " + v);
+            //console.log("removing: " + v);
 
             //// add person't relationship to the list of moved nodes
             //if (this.isPerson(v)) {
@@ -936,9 +936,9 @@ DynamicPositionedGraph.prototype = {
             //}
 
             this.DG.GG.remove(v);
-            console.log("order before: " + stringifyObject(this.DG.order));
+            //console.log("order before: " + stringifyObject(this.DG.order));
             this.DG.order.remove(v, this.DG.ranks[v]);
-            console.log("order after: " + stringifyObject(this.DG.order));
+            //console.log("order after: " + stringifyObject(this.DG.order));
             this.DG.ranks.splice(v,1);
             this.DG.positions.splice(v, 1);
 
@@ -1323,8 +1323,6 @@ DynamicPositionedGraph.prototype = {
 
         //connect last piece with personId
         this.DG.GG.addEdge(personId, prevPieceId, weight);
-
-        this._heuristics.optimizeLongEdgePlacement();
     },
 
 
@@ -2142,12 +2140,15 @@ Heuristics.prototype = {
                            this.DG.positions[firstOnPath] > this.DG.positions[ this.DG.order.order[rank][newOrder] ])
                         newOrder++;
 
-                    // fix common imprefetion when this edge will cross a node-relationship edge. Testcase 4e covers this case.
+                    // fix common imperfection when this edge will cross a node-relationship edge. Testcase 4e covers this case.
                     var toTheLeft  = this.DG.order.order[rank][newOrder-1];
                     var toTheRight = this.DG.order.order[rank][newOrder];
                     if (this.DG.GG.isRelationship(toTheLeft) && this.DG.GG.isPerson(toTheRight) &&
                         this.DG.GG.hasEdge(toTheRight, toTheLeft) && this.DG.GG.getOutEdges(toTheRight).length ==1 )
                         newOrder++;
+                    if (this.DG.GG.isRelationship(toTheRight) && this.DG.GG.isPerson(toTheLeft) &&
+                        this.DG.GG.hasEdge(toTheLeft, toTheRight) && this.DG.GG.getOutEdges(toTheLeft).length ==1 )
+                        newOrder--;
                 }
                 else {
                     while (newOrder > 0 &&
@@ -2160,6 +2161,9 @@ Heuristics.prototype = {
                     if (this.DG.GG.isRelationship(toTheRight) && this.DG.GG.isPerson(toTheLeft) &&
                         this.DG.GG.hasEdge(toTheLeft, toTheRight) && this.DG.GG.getOutEdges(toTheLeft).length ==1 )
                         newOrder--;
+                    if (this.DG.GG.isRelationship(toTheLeft) && this.DG.GG.isPerson(toTheRight) &&
+                        this.DG.GG.hasEdge(toTheRight, toTheLeft) && this.DG.GG.getOutEdges(toTheRight).length ==1 )
+                        newOrder++;
                 }
 
                 this.DG.order.insertAndShiftAllIdsAboveVByOne(newNodeId, rank, newOrder);
@@ -2186,7 +2190,6 @@ Heuristics.prototype = {
 
         // 2) fix some common layout imperfections
         var xcoord = new XCoord(this.DG.positions, this.DG);
-
         //this.DG.displayGraph(xcoord.xcoord, "after-long-edge-improvement");
 
         for (var v = 0; v <= this.DG.GG.getMaxRealVertexId(); v++) {
@@ -2342,14 +2345,14 @@ Heuristics.prototype = {
                 noUpSet[v] = true;
                 // findAffectedSet: function(v_list, dontmove_set, noUp_set, noDown_set, forbidden_set, shiftSize, xcoord, stopAtVirtual, minimizeMovement, stopAtPersons, stopAtRels)
                 var affectedInfoParentShift = this._findAffectedSet(shiftList, {}, noUpSet, toObjectWithTrue(shiftList), toObjectWithTrue(childInfo.orderedChildren),
-                                                                    misalignment, xcoord, true, false, 5, 3);
+                                                                    misalignment, xcoord, true, false, 7, 3);
 
                 var shiftList = childInfo.orderedChildren;
                 var affectedInfoChildShift = this._findAffectedSet(shiftList, {}, toObjectWithTrue(childInfo.orderedChildren), {}, toObjectWithTrue([parents[0], v, childhub, parents[1]]),
-                                                                   -misalignment, xcoord, true, false, 5, 3);
+                                                                   -misalignment, xcoord, true, false, 7, 3);
 
-                var parentShiftAcceptable = this._isShiftSizeAcceptable( affectedInfoParentShift, false, 5, 3);
-                var childShiftAcceptable  = this._isShiftSizeAcceptable( affectedInfoChildShift,  false, 5, 3);
+                var parentShiftAcceptable = this._isShiftSizeAcceptable( affectedInfoParentShift, false, 7, 3);
+                var childShiftAcceptable  = this._isShiftSizeAcceptable( affectedInfoChildShift,  false, 7, 3);
 
                 if (parentShiftAcceptable || childShiftAcceptable) {
 
@@ -2849,12 +2852,16 @@ Heuristics.prototype = {
 
         // 2) straighten long edges
         var xcoord = new XCoord(this.DG.positions, this.DG);
+        //this.DG.displayGraph(xcoord.xcoord, "pre-long-improve");
 
         var longEdges = this.DG.find_long_edges();
         this.DG.try_straighten_long_edges(longEdges, xcoord);   // does so without moving other nodes
 
-        this.straighten_long_edges(longEdges, xcoord);   // attempts to straigthen more agressively
+        var stillNotStraight = this.straighten_long_edges(longEdges, xcoord);   // attempts to straigthen more agressively
 
+        this.DG.try_straighten_long_edges(stillNotStraight, xcoord);
+
+        //this.DG.displayGraph(xcoord.xcoord, "past-long-improve");
         this.DG.positions = xcoord.xcoord;
     },
 
@@ -2862,6 +2869,8 @@ Heuristics.prototype = {
     // some nodes to make long edges look better (as when they don't, it looks more ugly than a regular non-straight edge)
     straighten_long_edges: function( longEdges, xcoord )
     {
+        var stillNotStraight = [];
+
         for (var e = 0; e < longEdges.length; e++) {
             var chain = longEdges[e];
             //this.DG.displayGraph(xcoord.xcoord, "pre-straighten-"+stringifyObject(chain));
@@ -2889,7 +2898,10 @@ Heuristics.prototype = {
                         var affectedInfoTailShift = this._findAffectedSet(tail, dontmove, {}, {}, {}, shiftTailSize, xcoord, true, true, 5, 3);
 
                         if (!this._isShiftSizeAcceptable( affectedInfoHeadShift, false, 5, 3) &&
-                            !this._isShiftSizeAcceptable( affectedInfoTailShift, false, 5, 3) ) break;  // too much distortion and/or distorting other virtual edges
+                            !this._isShiftSizeAcceptable( affectedInfoTailShift, false, 5, 3) ) {
+                            stillNotStraight.push(chain);
+                            break;  // too much distortion and/or distorting other virtual edges
+                        }
 
                         improved = true;   // at least one of the shifts is OK
 
@@ -2910,6 +2922,8 @@ Heuristics.prototype = {
                 }
             } while(improved);
         }
+
+        return stillNotStraight;
     },
 
     _isShiftSizeAcceptable: function( shiftInfo, allowShiftVirtual, maxPersonNodes, maxRelNodes )
@@ -3143,10 +3157,12 @@ Heuristics.prototype = {
 
                         if (typeU == TYPE.VIRTUALEDGE && xcoord.xcoord[u] == xcoord.xcoord[v]) continue;
 
-                        xcoord.xcoord[u] += shiftAmount;
-                        totalMove[u]      = totalMove.hasOwnProperty(u) ? totalMove[u] + shiftAmount : shiftAmount;
-                        disturbedNodes.push([u, shiftAmount]);
-                        //console.log("addINN: " + u + " (shift: " + shiftAmount + " -> " + xcoord.xcoord[u] + ")   by " + v);
+                        var shiftU = totalMove.hasOwnProperty(u) ? Math.min(shiftAmount, Math.max(totalMove[v] - totalMove[u], 0)) : shiftAmount;
+
+                        xcoord.xcoord[u] += shiftU;
+                        totalMove[u]      = totalMove.hasOwnProperty(u) ? totalMove[u] + shiftU : shiftU;
+                        disturbedNodes.push([u, shiftU]);
+                        //console.log("addINN: " + u + " (shift: " + shiftU + " -> " + xcoord.xcoord[u] + ")");
                     }
                 }
                 //---------
@@ -3166,7 +3182,7 @@ Heuristics.prototype = {
                 for (var i = 0; i < outEdges.length; i++) {
                     var u = outEdges[i];
 
-                    var shiftU = shiftAmount;
+                    var shiftU = totalMove.hasOwnProperty(u) ? Math.min(shiftAmount, Math.max(totalMove[v] - totalMove[u], 0)) : shiftAmount;
 
                     if (doNotTouch.hasOwnProperty(u)) continue;
                     if (totalMove.hasOwnProperty(u) && totalMove[u] >= totalMove[v]) continue;
@@ -3179,16 +3195,11 @@ Heuristics.prototype = {
                         if (diff < shiftU)
                             shiftU = diff;
                     }
-                    if (type == TYPE.CHILDHUB) {
-                        if (xcoord.xcoord[v] > xcoord.xcoord[u] && totalMove.hasOwnProperty(u) && totalMove[v] > totalMove[u]) {
-                            shiftU = Math.min(shiftU, totalMove[v] - totalMove[u]);
-                        }
-                    }
 
                     xcoord.xcoord[u] += shiftU;
                     totalMove[u]      = totalMove.hasOwnProperty(u) ? totalMove[u] + shiftU : shiftU;
                     disturbedNodes.push([u, shiftU]);
-                    //console.log("addOUT: " + u + " (shift: " + shiftU + " -> " + xcoord.xcoord[u] + ")   by " + v);
+                    //console.log("addOUT: " + u + " (shift: " + shiftU + " -> " + xcoord.xcoord[u] + ")");
                 }
                 //---------
             }

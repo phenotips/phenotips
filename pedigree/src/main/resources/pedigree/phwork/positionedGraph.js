@@ -384,14 +384,14 @@ PositionedGraph.prototype = {
         //useStack = true;
 
         while ( true ) {
-            var timer2 = new Timer();
+            //var timer2 = new Timer();
             for (var initOrderIter = 0; initOrderIter < permutationsRoots.length; initOrderIter++ ) {
                 initOrderIterTotal++;
 
                 order = this.init_order_top_to_bottom(permutationsRoots[initOrderIter], useStack);
 
                 this.transpose(order, false, bestCrossings*4 + 5);  // fix locally-fixable edge crossings,
-                                                                // but do not bother doing minor optimizations (for performance reasons)
+                                                                    // but do not bother doing minor optimizations (for performance reasons)
 
                 var numCrossings = this.edge_crossing(order);
 
@@ -530,7 +530,7 @@ PositionedGraph.prototype = {
             }
         }
 
-        console.log("Found rootless partners: " + stringifyObject(rootlessPartners));
+        //console.log("Found rootless partners: " + stringifyObject(rootlessPartners));
         return rootlessPartners;
     },
 
@@ -639,7 +639,7 @@ PositionedGraph.prototype = {
             }
         }
 
-        console.log("Found leaf siblings: " + stringifyObject(leafSiblings));
+        //console.log("Found leaf siblings: " + stringifyObject(leafSiblings));
         return leafSiblings;
     },
 
@@ -1295,18 +1295,19 @@ PositionedGraph.prototype = {
         var rankTo   = onlyRank ? onlyRank : this.maxRank;
 
         //printObject(order);
-        for (var r = rankFrom; r <= rankTo; r++) {
+        for (var r = rankFrom; r <= rankTo; ++r) {
             var numVert = order.order[r].length;
 
-            for (var i = 0; i < numVert - 1; i++) {   // -1 because we only check crossings of edges going out of vertices of higher orders
+            // TODO: investigate about person nodes at the last position, and not counting crossings due to its relationship
+            //       when "-1" is removed testcase "abraham" incorrectly places "rachel" on the other side of twins
+            for (var i = 0; i < numVert-1; ++i) {   // -1 because we only check crossings of edges going out of vertices of higher orders
                 var v = order.order[r][i];
 
+                var isChhub  = this.GG.isChildhub(v);
                 var outEdges = this.GG.getOutEdges(v);
                 var len      = outEdges.length;
 
-                var isChhub = this.GG.isChildhub(v);
-
-                for (var j = 0; j < len; j++) {
+                for (var j = 0; j < len; ++j) {
                     var targetV = outEdges[j];
 
                     // special considerations: after ordering is done all relationship nodes will be
@@ -1324,6 +1325,7 @@ PositionedGraph.prototype = {
                             numCrossings += crossings/2; // only assign it half a crossing because most will be fixed by transpose()
                                                          // - and if "1" is assigned transpose wont fix certain local cases
                         }
+                        //if (i == numVert-1) continue;
                     }
 
                     // so we have an edge v->targetV. Have to check how many edges
@@ -1332,7 +1334,8 @@ PositionedGraph.prototype = {
 
                     // special case: count edges from parents to twins twice
                     // (since all twins are combined into one, and this edge actually represents multiple parent-child edges)
-                    var twinCoeff = (isChhub && this.GG.isParentToTwinEdge(v, targetV)) ? 2.0 : 1.0;
+                    //var twinCoeff = (isChhub && this.GG.isParentToTwinEdge(v, targetV)) ? 2.0 : 1.0;
+                    var twinCoeff = (isChhub && this.GG.getTwinGroupId(targetV) != null) ? 2.0 : 1.0;
 
                     numCrossings += crossings * twinCoeff;
                 }
@@ -1357,48 +1360,47 @@ PositionedGraph.prototype = {
         // here we only count crossings in the 2nd case. The first case will be counted
         // when we process that other vertex
 
-        var crossings = 0;
-
         var rankV = this.ranks[v];
         var rankT = this.ranks[targetV];
 
         var orderV = order.vOrder[v];
         var orderT = order.vOrder[targetV];
 
-        if (rankV == rankT)
-        {
+        if (rankV == rankT) {
             return this.numNodesWithParentsInBetween(order, rankV, orderV, orderT);
         }
-        //if (rankV +1 != rankT) throw "Assertion failed: edge corssings";
+
+        var crossings = 0;
 
         var verticesAtRankV = order.order[ rankV ];    // all vertices at rank V
 
         // edges from rankV to rankT: only those after v (orderV+1)
-        for (var ord = orderV+1; ord < verticesAtRankV.length; ord++) {
+        for (var ord = orderV+1; ord < verticesAtRankV.length; ++ord) {
             var vertex = verticesAtRankV[ord];
 
-            var isChhub = this.GG.isChildhub(vertex);
-
+            var isChhub  = this.GG.isChildhub(vertex);
             var outEdges = this.GG.getOutEdges(vertex);
             var len      = outEdges.length;
 
-            for (var j = 0; j < len; j++) {
+            for (var j = 0; j < len; ++j) {
                 var target = outEdges[j];
 
-                var orderTarget = order.vOrder[target];
-
-                if (orderTarget < orderT) {
+                if (order.vOrder[target] < orderT) {
                     crossings++;
 
                     // special case: count edges from parents to twins twice
                     // (since all twins are combined into one, and this edge actually represents multiple parent-child edges)
-                    if (isChhub && this.GG.isParentToTwinEdge(vertex, target))
+                    //if (isChhub && this.GG.isParentToTwinEdge(vertex, target))
+                    if (isChhub && this.GG.getTwinGroupId(target) != null)
                         crossings++;
                 }
             }
         }
 
-        if (crossings > 0 && this.GG.isPerson(v) && this.GG.isVirtual(targetV))       // we prefer long edges to cross other edges at the point they originate from
+        // prefer long edges to cross other edges at the point they originate from, since
+        // this generaly results in better long edge placement once head segment on the same
+        // rank with person is added
+        if (crossings > 0 && this.GG.isPerson(v) && this.GG.isVirtual(targetV))
             crossings -= 0.1;
 
         return crossings;
@@ -1555,6 +1557,28 @@ PositionedGraph.prototype = {
     },
     //-------------------------------------------------------------------------[wmedian]-
 
+    isChhubsOrderOK: function(rank, order)
+    {
+        for (var i = 0; i < order.order[rank].length - 1; i++) {
+            var v = order.order[rank][i];
+            if (!this.GG.isChildhub(v)) continue;
+
+            // take the next childhub to the right: skip all virtual edge pieces
+            for (var next = i+1; next < order.order[rank].length; next++) {
+                if (this.GG.isChildhub(order.order[rank][next])) break;
+            }
+            var u = order.order[rank][next];
+            if (!this.GG.isChildhub(u)) continue;
+
+            var aboveV = this.GG.getInEdges(v)[0];
+            var aboveU = this.GG.getInEdges(u)[0];
+
+            if (order.vOrder[aboveV] > order.vOrder[aboveU])
+                return false;
+        }
+        return true;
+    },
+
     placeChhubsInCorrectOrder: function(rank, order)
     {
         var GG = this.GG;
@@ -1590,7 +1614,6 @@ PositionedGraph.prototype = {
         {
             iter++;
             if (!doMinorImprovements && iter > 4) break;
-
             if (iter > 100) { console.log("Assertion failed: too many iterations in transpose(), NumIter == " + iter); break; }
 
             improved = false;
@@ -1613,14 +1636,7 @@ PositionedGraph.prototype = {
                 var rankImproved = false;
 
                 var maxIndex = order.order[r].length - 1;
-                for (var i = 0; i < maxIndex; i++) {
-
-                    var v1 = order.order[r][i];
-                    var v2 = order.order[r][i+1];
-
-                    //if (v1 == 23 && v2 == 20)
-                    //if (doMinorImprovements)
-                    //    console.log("trying: " + v1 + "  <-> " + v2);
+                for (var i = 0; i < maxIndex; ++i) {
 
                     order.exchange(r, i, i+1);
 
@@ -1628,14 +1644,12 @@ PositionedGraph.prototype = {
                     var newLengthScore   = doMinorImprovements ? this.edge_length_score(order,r) : 0;
 
                     //if (doMinorImprovements)
+                    //    console.log("trying: " + v1 + "  <-> " + v2);
                     //if ( v1 == 8 || v1 == 9 )  {
                     //    console.log("v = " + v1 + ", u = " + v2 + ", newScore= " + newEdgeCrossings +
                     //                ", lenScore= " + newLengthScore + ", oldScore= " + numEdgeCrossings +
                     //                ", oldLenScore= " + edgeLengthScore);
                     //}
-
-                    // TODO: also transpose if more males/females end up on the preferred
-                    //var maleFemaleScore  = ...
 
                     if (newEdgeCrossings < numEdgeCrossings ||
                         (newEdgeCrossings == numEdgeCrossings && newLengthScore < edgeLengthScore) ) {
@@ -1662,7 +1676,6 @@ PositionedGraph.prototype = {
                 if (rankImproved) r--; // repeat again for the same rank
             }
         }
-
         //if (doMinorImprovements) printObject(order);
     },
 
@@ -1730,19 +1743,22 @@ PositionedGraph.prototype = {
                     //console.log("chain piece " + piece1 + ", " + piece2 + ", " + piece3);
 
                     for (var move1 = -4; move1 <= 4; move1++ ) {
+                        if (!order.canMove(rank1, ord1, move1)) continue;
                         for (var move2 = -4; move2 <= 4; move2++ ) {
+                            if (!order.canMove(rank2, ord2, move2)) continue;
                             for (var move3 = -4; move3 <= 4; move3++ ) {
                                 if (move1 == 0 && move2 == 0 && move3 == 0) continue;
+                                if (!order.canMove(rank3, ord3, move3)) continue;
 
                                 var newOrder = order.copy();
-                                if (!newOrder.move(rank1, ord1, move1)) continue;
-                                if (!newOrder.move(rank2, ord2, move2)) continue;
-                                if (!newOrder.move(rank3, ord3, move3)) continue;
+                                newOrder.move(rank1, ord1, move1);
+                                newOrder.move(rank2, ord2, move2);
+                                newOrder.move(rank3, ord3, move3);
 
                                 // TODO: performance: only count crossings caused by the long edge itself?
                                 var newCross = this.edge_crossing(newOrder, false, postReRanking);
                                 if (newCross < bestScore) {
-                                    console.log("+");
+                                    //console.log("+");
                                     bestScore = newCross;
                                     bestOrder = [rank1, ord1, move1, rank2, ord2, move2, rank3, ord3, move3];
                                 }
@@ -1757,9 +1773,9 @@ PositionedGraph.prototype = {
             }
 
             if (bestScore < numCrossings) {
-                if (!order.move(bestOrder[0], bestOrder[1], bestOrder[2])) throw "assert";
-                if (!order.move(bestOrder[3], bestOrder[4], bestOrder[5])) throw "assert";
-                if (!order.move(bestOrder[6], bestOrder[7], bestOrder[8])) throw "assert";
+                order.move(bestOrder[0], bestOrder[1], bestOrder[2]);
+                order.move(bestOrder[3], bestOrder[4], bestOrder[5]);
+                order.move(bestOrder[6], bestOrder[7], bestOrder[8]);
                 numCrossings = bestScore;
             }
 
@@ -1783,7 +1799,7 @@ PositionedGraph.prototype = {
         //        (see removeRelationshipRanks())
 
         //console.log("GG: "  + stringifyObject(this.GG));
-        console.log("Orders: " + stringifyObject(this.order));
+        //console.log("Orders: " + stringifyObject(this.order));
 
         if (this.maxRank === undefined || this.GG.v.length == 0) return;
 
@@ -1873,7 +1889,7 @@ PositionedGraph.prototype = {
                 //console.log("p0busy: " + p0busy + ", p1busy: " + p1busy);
 
                 if (p1busy && p0busy) {
-                    // TODO: test this case
+                    // TODO: testcase 5K, relationship with ID=15 is inserted not optimaly
                     // both busy: find position which does not disturb "nice" relationship nodes
                     for (var o = order1+2; o <= order2-1; o++ ) {
                         var next = this.order.order[rank][o];
@@ -1916,7 +1932,7 @@ PositionedGraph.prototype = {
                 if (oldOrder > 0) {
                     var oldNeighbourLeft = initialOrdering.order[r][oldOrder-1];
                     if (this.GG.isRelationship(oldNeighbourLeft) && this.order.vOrder[oldNeighbourLeft] > this.order.vOrder[i] && this.ranks[oldNeighbourLeft] == this.ranks[i]) {
-                        console.log("L: " + oldNeighbourLeft);
+                        //console.log("L: " + oldNeighbourLeft);
                         // fix the case when two relationships switched order during re-ranking - we may want to change the order of children as well
                         this.swapChildrenIfAllAToTheLeftOfB( oldNeighbourLeft, i );
 
@@ -1931,7 +1947,7 @@ PositionedGraph.prototype = {
                 if (oldOrder < initialOrdering.order[rank+1].length - 1) {
                     var oldNeighbourRight = initialOrdering.order[r][oldOrder+1];
                     if (this.GG.isRelationship(oldNeighbourRight) && this.order.vOrder[oldNeighbourRight] < this.order.vOrder[i] && this.ranks[oldNeighbourRight] == this.ranks[i]) {
-                        console.log("R: " + oldNeighbourRight);
+                        //console.log("R: " + oldNeighbourRight);
                         // same as above, but switch right-to-left instead of left-to-right
                         this.swapChildrenIfAllAToTheLeftOfB( i, oldNeighbourRight );
 
@@ -1990,7 +2006,7 @@ PositionedGraph.prototype = {
         var order   = this.order;
         var byOrder = function(a,b) { return order.vOrder[a] - order.vOrder[b]; }
         allChildren.sort(byOrder);
-        console.log("all children sorted by order: " + stringifyObject(allChildren));
+        //console.log("all children sorted by order: " + stringifyObject(allChildren));
 
         var childRank = this.ranks[allChildren[0]];
 
@@ -2012,6 +2028,8 @@ PositionedGraph.prototype = {
             if (outEdges.length > 0) {
                 for (var j = 0; j < outEdges.length; j++) {
                     var rel     = outEdges[j];
+                    if (this.GG.isVirtual(rel)) return; // do not touch long edges (TODO: can improve, see tescase HUGE1 and nodes with IDs 23 & 4)
+
                     var parents = this.GG.getParents(rel);
 
                     for (var k = 0; k < parents.length; k++) {
@@ -2026,7 +2044,7 @@ PositionedGraph.prototype = {
         }
 
         // swap by inverting the order
-        console.log("Performing swap");
+        //console.log("Performing swap");
         var middle = Math.floor((leftMostOrder + rightMostOrder)/2);
 
         for (var i = leftMostOrder; i <= middle; i++) {
@@ -2128,7 +2146,13 @@ PositionedGraph.prototype = {
         for (var r = 2; r <= this.maxRank; r+=2) {
             // place all childhubs in the same order as their relationships
             // (..and keep existing order of pieces of virtual edges at this rank)
-            this.placeChhubsInCorrectOrder(r, this.order);
+
+            // check if we need to do that: if they are already OK it is usually better not to mess with orders
+            // as chhubs will be OK anyway, but virtual edge pieces may get screwed
+            if (!this.isChhubsOrderOK(r, this.order)) {
+                //console.log("Fixing chhub order @ rank " + r);
+                this.placeChhubsInCorrectOrder(r, this.order);
+            }
         }
     },
 
@@ -2443,17 +2467,21 @@ PositionedGraph.prototype = {
                             var maxOrder = Math.max(vOrder[dest], vOrder[v]);
                             var minLevel = (minOrder == maxOrder) ? 0 : 1;  // 0 if next to each other, 1 if at least anything inbetween
                             //console.log("v: " + v + "(" + vOrder[v] + "),  dest: " + dest +  "(" + vOrder[dest] + "), minOrder: " + minOrder + ", maxOrder: " + maxOrder);
+                            var otherVirtualEdge = false;
                             for (var o = minOrder; o < maxOrder; o++) {
                                 var w = this.order.order[r][o];
                                 if (this.GG.isRelationship(w)) { minLevel = Math.max(minLevel, 2); }
                                 if (this.GG.isPerson(w))       { minLevel = Math.max(minLevel, 3); }
+                                if (this.GG.isVirtual(w) && this.GG.getInEdges(w)[0] != v) {
+                                    otherVirtualEdge = true;
+                                }
                             }
                             nextVerticalLevel = Math.max(nextVerticalLevel, minLevel);
                             //console.log("attaching ->" + dest + "(" + u + ") at attach port " + nextAttachPort + " and level " + nextVerticalLevel);
                             verticalLevels.outEdgeVerticalLevel[v][u] = { attachlevel: nextAttachPort, verticalLevel: nextVerticalLevel };
 
                             //------------------------------
-                            if (minLevel >= 2) {
+                            if (minLevel >= 2 || (minLevel == 1 && otherVirtualEdge) ) {
                                 // potentially crossing some other relatioship edges: add to the set of edges to be optimized
 
                                 var left_x    = Math.min( v_x, this.positions[dest] );
@@ -2580,7 +2608,7 @@ PositionedGraph.prototype = {
 
                 var optimizer = new VerticalPosIntOptimizer( pairScoreFunc, initLevels, initLevels );  // init level == min level
 
-                var relEdgeLevels = optimizer.computeVerticalPositions( 5, 400 );
+                var relEdgeLevels = optimizer.computeVerticalPositions( 5, 500 );
 
                 console.log("[rank " + r + "] Final vertical relatioship levels: " +  stringifyObject(relEdgeLevels));
 
@@ -2864,13 +2892,13 @@ PositionedGraph.prototype = {
             if (typeof(considerOnlyRank) != "undefined" && r == considerOnlyRank)
                 fromOrder = fromOrderOnRank;
 
-            for (var i = fromOrder; i < len; i++) {
+            for (var i = fromOrder; i < len; ++i) {
                 var v = this.order.order[r][i];
 
                 var outEdges = this.GG.getOutEdges(v);
                 var lenO     = outEdges.length;
 
-                for (var j = 0; j < lenO; j++) {
+                for (var j = 0; j < lenO; ++j) {
                     var u = outEdges[j];
 
                     if (typeof(considerOnlyRank) != "undefined") {
@@ -2918,7 +2946,6 @@ PositionedGraph.prototype = {
             if (this.GG.isVirtual(toV)) return 16.0;
             return 4.0;
         }
-
         return 2.0;
     },
 
@@ -3102,7 +3129,7 @@ PositionedGraph.prototype = {
         // try to straigten long edges without moving any other vertices
         var improved = false;
 
-        for (var e = 0; e < longEdges.length; e++) {
+        for (var e = 0; e < longEdges.length; ++e) {
             var chain = longEdges[e];
             console.log("trying to straighten edge " + stringifyObject(chain));
 
@@ -3115,13 +3142,13 @@ PositionedGraph.prototype = {
             var corridorRight = xcoord.getRightMostNoDisturbPosition(chain[0]);
 
             // go over all nodes from head to tail looking for a bend
-            for (var i = 1; i < chain.length; i++) {
+            for (var i = 1; i < chain.length; ++i) {
                 var nextV      = chain[i];
                 var nextCenter = xcoord.xcoord[nextV];
                 if (nextCenter != currentCenter) {
                     if (nextCenter >= corridorLeft && nextCenter <= corridorRight) {
                         // all the nodes above can be shifted to this location!
-                        for (var j = 0; j < i; j++) {
+                        for (var j = 0; j < i; ++j) {
                             xcoord.xcoord[chain[j]] = nextCenter;
                         }
                         improved      = true;
@@ -3145,7 +3172,7 @@ PositionedGraph.prototype = {
             var corridorRight = xcoord.getRightMostNoDisturbPosition(chain[lastNode]);
 
             // go over all nodes from head to tail looking for a bend
-            for (var i = lastNode - 1; i >= 0; i--) {
+            for (var i = lastNode - 1; i >= 0; --i) {
                 var nextV      = chain[i];
                 var nextCenter = xcoord.xcoord[nextV];
                 if (nextCenter != currentCenter) {
