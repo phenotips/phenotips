@@ -9,11 +9,11 @@
  */
 var PedigreeEditor = Class.create({
     initialize: function() {
-        //this.DEBUG_MODE = true;
+        this.DEBUG_MODE = true;
         window.editor = this;
 
         // initialize main data structure which holds the graph structure        
-        this._mainGraph = DynamicPositionedGraph.makeEmpty(PedigreeEditor.attributes.layoutRelativePersonWidth, PedigreeEditor.attributes.layoutRelativeOtherWidth);
+        this._graphModel = DynamicPositionedGraph.makeEmpty(PedigreeEditor.attributes.layoutRelativePersonWidth, PedigreeEditor.attributes.layoutRelativeOtherWidth);
 
         //initialize the elements of the app
         this._workspace = new Workspace();
@@ -24,7 +24,7 @@ var PedigreeEditor = Class.create({
         this._siblingSelectionBubble  = new NodetypeSelectionBubble(true);
         this._disorderLegend = new DisorgerLegend();
 
-        this._graphicsSet = new GraphicsSet();
+        this._view = new View();
 
         this._actionStack = new ActionStack();
         this._templateSelector = new TemplateSelector();
@@ -35,7 +35,7 @@ var PedigreeEditor = Class.create({
         // load proband data and load the graph after proband data is available
         this._probandData.load( this._saveLoadEngine.load.bind(this._saveLoadEngine) );
 
-        this._controller = new Controller();                
+        this._controller = new Controller();
 
         //attach actions to buttons on the top bar
         var undoButton = $('action-undo');
@@ -75,14 +75,14 @@ var PedigreeEditor = Class.create({
             //editor.getSaveLoadEngine().save();
             window.location=XWiki.currentDocument.getURL('edit');
         });
-        
+
         var unsupportedBrowserButton = $('action-readonlymessage');
         unsupportedBrowserButton && unsupportedBrowserButton.on("click", function(event) {
             alert("Your browser does not support all the features required for " +
                   "Pedigree Editor, so pedigree is displayed in read-only mode (and may have quirks).\n\n" +
                   "Supported browsers include Firefox v3.5+, Internet Explorer v9+, " +
                   "Chrome, Safari v4+, Opera v10.5+ and most mobile browsers.");
-        });        
+        });
 
         //this.startAutoSave(30);
     },
@@ -94,29 +94,29 @@ var PedigreeEditor = Class.create({
      * @return {AbstractNode} the node whose id is nodeID
      */
     getNode: function(nodeID) {
-        return this.getGraphicsSet().getNode(nodeID);
+        return this.getView().getNode(nodeID);
     },
 
     /**
-     * @method getGraphicsGraph
-     * @return {Graph} (responsible for managing graphical representations of nodes in the editor)
+     * @method getView
+     * @return {View} (responsible for managing graphical representations of nodes in the editor)
      */
-    getGraphicsSet: function() {
-        return this._graphicsSet;
+    getView: function() {
+        return this._view;
     },
 
     /**
      * @method getGraph
-     * @return {PositionedGraph} (responsible for managing nodes and their positions)
+     * @return {DynamicPositionedGraph} (data model: responsible for managing nodes and their positions)
      */
     getGraph: function() {
-    	return this._mainGraph;
+        return this._graphModel;
     },
 
     /**
      * @method getController
      * @return {Controller} (responsible for managing data changes)
-     */        
+     */
     getController: function() {
         return this._controller;
     },
@@ -199,7 +199,7 @@ var PedigreeEditor = Class.create({
             //       => at that point all browsers which suport SVG but are treated as unsupported
             //          should theoreticaly start working (FF 3.0, Safari 3 & Opera 9/10 - need to test).
             //          IE7 does not support SVG and JSON and is completely out of the running;
-            alert("Your browser is not unsupported and is unable to load and display any pedigrees.\n\n" +
+            alert("Your browser is not supported and is unable to load and display any pedigrees.\n\n" +
                   "Suported browsers include Internet Explorer version 9 and higher, Safari version 4 and higher, "+
                   "Firefox version 3.6 and higher, Opera version 10.5 and higher, any version of Chrome and most "+
                   "other modern browsers (including mobile). IE8 is able to display pedigrees in read-only mode.");
@@ -506,7 +506,7 @@ var PedigreeEditor = Class.create({
      * @method initializeSave
      */
     startAutoSave: function(intervalInSeconds) {
-        setInterval(function(){editor.getGraphicsSet().save()}, intervalInSeconds*1000);
+        setInterval(function(){editor.getSaveLoadEngine().save()}, intervalInSeconds*1000);
     }
 });
 

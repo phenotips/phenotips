@@ -1,27 +1,26 @@
 /**
- * GraphicsSet is responsible for the adding and removal of nodes. It is also responsible for
- * node selection and interaction between nodes.
+ * View is responsible for graphical representation of th epedigree as well as user interaction
  *
- * @class GraphicsSet
+ * @class View
  * @constructor
  */
 
-var GraphicsSet = Class.create({
+var View = Class.create({
 
     initialize: function() {
-    	console.log("--- graph init ---");
-    	
+        console.log("--- view init ---");
+
         this.preGenerateGraphics();
-        
-    	this._nodeMap = {};    	// {nodeID} : {AbstractNode}
-    	
+
+        this._nodeMap = {};    // {nodeID} : {AbstractNode}
+
         this.hoverModeZones = editor.getPaper().set();
-        
+
         this._currentMarkedNew   = [];
-        this._currentGrownNodes  = [];             
+        this._currentGrownNodes  = [];
         this._currentHoveredNode = null;
-        this._currentDraggable   = null;  
-        
+        this._currentDraggable   = null;
+
         this._lineSet = new LineSet();   // used to track intersecting lines
     },
 
@@ -38,7 +37,7 @@ var GraphicsSet = Class.create({
         //   var path = "...";
         //   console.log("scaled path: " + Raphael.transformPath(path, ["s", iconScale, iconScale, 0, 0])); 
         //
-        
+
         // 1) menu button
         // nonScaledPath = "M2.021,9.748L2.021,9.748V9.746V9.748zM2.022,9.746l5.771,5.773l-5.772,5.771l2.122,2.123l7.894-7.895L4.143,7.623L2.022,9.746zM12.248,23.269h14.419V20.27H12.248V23.269zM16.583,17.019h10.084V14.02H16.583V17.019zM12.248,7.769v3.001h14.419V7.769H12.248z";        
         this.__menuButton_svgPath = "M1.213,5.849C1.213,5.849,1.213,5.849,1.213,5.849C1.213,5.849,1.213,5.848,1.213,5.848C1.213,5.848,1.213,5.849,1.213,5.849C1.213,5.849,1.213,5.849,1.213,5.849M1.213,5.848C1.213,5.848,4.676,9.3114,4.676,9.3114C4.676,9.3114,1.2126,12.774,1.2126,12.774C1.2126,12.774,2.486,14.048,2.486,14.048C2.486,14.048,7.222,9.311,7.222,9.311C7.222,9.311,2.486,4.574,2.486,4.574C2.486,4.574,1.213,5.848,1.213,5.8476C1.2131999999999998,5.8476,1.2131999999999998,5.8476,1.2131999999999998,5.8476M7.348799999999999,13.9614C7.348799999999999,13.9614,16.0002,13.9614,16.0002,13.9614C16.0002,13.9614,16.0002,12.161999999999999,16.0002,12.161999999999999C16.0002,12.161999999999999,7.348799999999999,12.161999999999999,7.348799999999999,12.161999999999999C7.348799999999999,12.161999999999999,7.348799999999999,13.9614,7.348799999999999,13.9614C7.348799999999999,13.9614,7.348799999999999,13.9614,7.348799999999999,13.9614M9.949799999999998,10.2114C9.949799999999998,10.2114,16.0002,10.2114,16.0002,10.2114C16.0002,10.2114,16.0002,8.411999999999999,16.0002,8.411999999999999C16.0002,8.411999999999999,9.949799999999998,8.411999999999999,9.949799999999998,8.411999999999999C9.949799999999998,8.411999999999999,9.949799999999998,10.2114,9.949799999999998,10.2114C9.949799999999998,10.2114,9.949799999999998,10.2114,9.949799999999998,10.2114M7.348799999999999,4.6613999999999995C7.348799999999999,4.6613999999999995,7.348799999999999,6.462,7.348799999999999,6.462C7.348799999999999,6.462,16.0002,6.462,16.0002,6.462C16.0002,6.462,16.0002,4.661,16.0,4.6614C16.0,4.6614,7.349,4.6614,7.349,4.6614C7.349,4.6614,7.349,4.6614,7.349,4.6614";
@@ -48,17 +47,17 @@ var GraphicsSet = Class.create({
         // nonScaledPath = var path = "M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z";
         this.__deleteButton_svgPath = "M14.867,12.851C14.867,12.851,11.566,9.55,11.566,9.55C11.566,9.55,14.866,6.249,14.866,6.249C14.866,6.249,13.169,4.551,13.169,4.551C13.169,4.551,9.868,7.852,9.868,7.852C9.868,7.852,6.567,4.551,6.567,4.551C6.567,4.551,4.87,6.249,4.87,6.249C4.87,6.249,8.171,9.55,8.171,9.55C8.171,9.55,4.87,12.851,4.870,12.851C4.870,12.851,6.568,14.549,6.568,14.549C6.568,14.549,9.868,11.248,9.868,11.248C9.868,11.248,13.169,14.549,13.169,14.549C13.169,14.549,14.867,12.851,14.867,12.851";
         this.__deleteButton_BBox    = Raphael.pathBBox(this.__deleteButton_svgPath);
-                
+
         // 3) twins button
         //this.__twinsButton_svgPath = "M0,15L8,0L16,15";
         //this.__twinsButton_BBox    = Raphael.pathBBox(this.__twinsButton_svgPath);
-        
+
         // 4) proband arrow
         this.__probandArrowPath = Raphael.transformPath("M7.589,20.935l-6.87,6.869l2.476,2.476l6.869-6.869l1.858,1.857l2.258-8.428l-8.428,2.258L7.589,20.935z", ["s", 1.1, 1.1, 0, 0]);
-        
+
         // 5) orbs
     },
-    
+
     /**
      * Returns a map of node IDs to nodes
      *
@@ -71,8 +70,8 @@ var GraphicsSet = Class.create({
      */
     getNodeMap: function() {
         return this._nodeMap;
-    },    
-   
+    },
+
     /**
      * Returns a node with the given node ID
      *
@@ -80,15 +79,16 @@ var GraphicsSet = Class.create({
      * @param {nodeId} id of the node to be returned
      * @return {AbstractNode}
      *
-     */    
+     */
     getNode: function(nodeId) {
         if (!this._nodeMap.hasOwnProperty(nodeId)) {
             console.log("ERROR: requesting non-existent node " + nodeId); 
+            throw "ERROR";
             return null;
         }
         return this._nodeMap[nodeId];
-    },    
-    
+    },
+
     getMaxNodeID: function() {
         var max = 0;
         for (node in this._nodeMap)
@@ -103,7 +103,7 @@ var GraphicsSet = Class.create({
      *
      * @method getPersonNodeNear
      * @return {Object} or null
-     */    
+     */
     getPersonNodeNear: function(x, y) {
         for (var nodeID in this._nodeMap) {
             if (this._nodeMap.hasOwnProperty(nodeID)) {
@@ -114,7 +114,7 @@ var GraphicsSet = Class.create({
         }
         return null;
     },
-    
+
     /**
      * Returns the node that is currently selected
      *
@@ -150,9 +150,9 @@ var GraphicsSet = Class.create({
      *
      * @method removeFromNodeMap
      * @param {nodeId} id of the node to be removed
-     */    
+     */
     removeFromNodeMap: function(nodeID) {
-        delete this.getNodeMap()[nodeID];        
+        delete this.getNodeMap()[nodeID];
     },
 
     /**
@@ -161,13 +161,13 @@ var GraphicsSet = Class.create({
      * In case the flat part intersects any existing known lines a special crossing is drawn and added to the set.
      *
      * @method drawCurvedLineWithCrossings
-     */    
+     */
     drawCurvedLineWithCrossings: function ( id, xFrom, yFrom, yTop, xTo, yTo, lastBend, attr, twoLines, secondLineBelow ) {
         //console.log("yFrom: " + yFrom + ", yTo: " + yTo + ", yTop: " + yTop);
-        
-        if (yFrom == yTop && yFrom == yTo)            
-            return editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xTo, yTo, attr, twoLines, secondLineBelow);
-        
+
+        if (yFrom == yTop && yFrom == yTo)
+            return this.drawLineWithCrossings(id, xFrom, yFrom, xTo, yTo, attr, twoLines, secondLineBelow);
+
         var cornerRadius     = PedigreeEditor.attributes.curvedLinesCornerRadius * 0.8;
         var goesRight        = ( xFrom > xTo );
         if (isFinite(lastBend)) {
@@ -176,25 +176,25 @@ var GraphicsSet = Class.create({
             var xBeforeFinalBend = goesRight ? xTo + lastBend + cornerRadius*2 : xTo - lastBend - cornerRadius*2;
         } else {
             var xBeforeFinalBend = xTo;
-        }        
+        }
         var xFromAndBit        = goesRight ? xFrom - cornerRadius/2        : xFrom + cornerRadius/2;
         var xFromAfterCorner   = goesRight ? xFromAndBit - cornerRadius    : xFromAndBit + cornerRadius;
         var xFromAfter2Corners = goesRight ? xFromAndBit - 2*cornerRadius  : xFromAndBit + 2 * cornerRadius;
-        
+
         //console.log("XFinalBend: " + xFinalBend + ", xTo : " + xTo);
-        
+
         if (yFrom <= yTop) {
-            editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xBeforeFinalBend, yFrom, attr, twoLines, !goesRight, true);
+            this.drawLineWithCrossings(id, xFrom, yFrom, xBeforeFinalBend, yFrom, attr, twoLines, !goesRight, true);
         }
         else {
-            editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xFromAndBit, yFrom, attr, twoLines, !goesRight, true);
-            
+            this.drawLineWithCrossings(id, xFrom, yFrom, xFromAndBit, yFrom, attr, twoLines, !goesRight, true);
+
             if (Math.abs(yFrom - yTop) >= cornerRadius*2) {
                 if (goesRight)
                     drawCornerCurve( xFromAndBit, yFrom, xFromAfterCorner, yFrom-cornerRadius, true, attr, twoLines, -2.5, 2.5, 2.5, -2.5 );
                 else
                     drawCornerCurve( xFromAndBit, yFrom, xFromAfterCorner, yFrom-cornerRadius, true, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );            
-                editor.getGraphicsSet().drawLineWithCrossings(id, xFromAfterCorner, yFrom-cornerRadius, xFromAfterCorner, yTop+cornerRadius, attr, twoLines, goesRight);
+                this.drawLineWithCrossings(id, xFromAfterCorner, yFrom-cornerRadius, xFromAfterCorner, yTop+cornerRadius, attr, twoLines, goesRight);
                 if (goesRight)
                     drawCornerCurve( xFromAfterCorner, yTop+cornerRadius, xFromAfter2Corners, yTop, false, attr, twoLines, -2.5, 2.5, 2.5, -2.5 );
                 else
@@ -206,18 +206,18 @@ var GraphicsSet = Class.create({
                 else
                     drawLevelChangeCurve( xFromAndBit, yFrom, xFromAfter2Corners, yTop, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );                
             }
-            editor.getGraphicsSet().drawLineWithCrossings(id, xFromAfter2Corners, yTop, xBeforeFinalBend, yTop, attr, twoLines, !goesRight, true);
+            this.drawLineWithCrossings(id, xFromAfter2Corners, yTop, xBeforeFinalBend, yTop, attr, twoLines, !goesRight, true);
         }
-        
+
         if (xBeforeFinalBend != xTo) {
             // curve down to yTo level
             if (Math.abs(yTo - yTop) >= cornerRadius*2) {
-                // draw corner        
+                // draw corner
                 if (goesRight)
                     drawCornerCurve( xBeforeFinalBend, yTop, xFinalBendVert, yTop+cornerRadius, true, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );
                 else
                     drawCornerCurve( xBeforeFinalBend, yTop, xFinalBendVert, yTop+cornerRadius, true, attr, twoLines, 2.5, -2.5, -2.5, 2.5 );
-                editor.getGraphicsSet().drawLineWithCrossings(id, xFinalBendVert, yTop+cornerRadius, xFinalBendVert, yTo-cornerRadius, attr, twoLines, !goesRight);
+                this.drawLineWithCrossings(id, xFinalBendVert, yTop+cornerRadius, xFinalBendVert, yTo-cornerRadius, attr, twoLines, !goesRight);
                 if (goesRight)
                     drawCornerCurve( xFinalBendVert, yTo-cornerRadius, xFinalBend, yTo, false, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );
                 else
@@ -229,18 +229,18 @@ var GraphicsSet = Class.create({
                 else
                     drawLevelChangeCurve( xBeforeFinalBend, yTop, xFinalBend, yTo, attr, twoLines, 2.5, -2.5, -2.5, 2.5 );
             }
-            editor.getGraphicsSet().drawLineWithCrossings(id, xFinalBend, yTo, xTo, yTo, attr, twoLines, !goesRight);
+            this.drawLineWithCrossings(id, xFinalBend, yTo, xTo, yTo, attr, twoLines, !goesRight);
         }
     },
-    
+
     /**
      * Creates a new set of raphael objects representing a line segment from (x1,y1) to (x2,y2).
      * In case this line segment intersects any existing known segments a special crossing is drawn and added to the set.
      *
      * @method drawLineWithCrossings
-     */    
+     */
     drawLineWithCrossings: function(owner, x1, y1, x2, y2, attr, twoLines, secondLineBelow, bothEndsGoDown) {
-        
+
         // make sure line goes from the left to the right (and if vertical from the top to the bottom):
         // this simplifies drawing the line piece by piece from intersection to intersection
         if (x1 > x2 || ((x1 == x2) && (y1 > y2))) {
@@ -249,28 +249,28 @@ var GraphicsSet = Class.create({
             x1 = x2;
             y1 = y2;
             x2 = tx;
-            y2 = ty;            
+            y2 = ty;
         }
-        
+
         var isHorizontal = (y1 == y2);
         var isVertical   = (x1 == x2);
-                                       
-        var intersections = this._lineSet.addLine( owner, x1, y1, x2, y2 );                        
-        
+
+        var intersections = this._lineSet.addLine( owner, x1, y1, x2, y2 );
+
         // sort intersections by distance form the start
         var compareDistanceToStart = function( p1, p2 ) {
                 var dist1 = (x1-p1.x)*(x1-p1.x) + (y1-p1.y)*(y1-p1.y);
                 var dist2 = (x1-p2.x)*(x1-p2.x) + (y1-p2.y)*(y1-p2.y);
                 return dist1 > dist2;
             };
-        intersections.sort(compareDistanceToStart);        
+        intersections.sort(compareDistanceToStart);
         //console.log("intersection points: " + stringifyObject(intersections));
-        
-        for (var lineNum = 0; lineNum < (twoLines ? 2 : 1); lineNum++) { 
-            
+
+        for (var lineNum = 0; lineNum < (twoLines ? 2 : 1); lineNum++) {
+
             // TODO: this is a bit hairy, just a quick hack to make two nice parallel curves
-            //       for consang. relatiomnships: simple raphael.transform() does not work well
-            //       because then the curves around crossings wont be exactly above the crossing then
+            //       for consang. relationships: simple raphael.transform() does not work well
+            //       because then the curves around crossings wont be exactly above the crossing
             if (twoLines) {
                 if (!bothEndsGoDown) {
                     x1 += (-2.5 + lineNum * 7.5);
@@ -279,7 +279,7 @@ var GraphicsSet = Class.create({
                     x1 -= 2.5;
                     x2 += 2.5;
                 }
-                
+
                 if (secondLineBelow) {
                     y1 += ( 2.5 - lineNum * 7.5);
                     y2 += ( 2.5 - lineNum * 7.5);
@@ -289,17 +289,20 @@ var GraphicsSet = Class.create({
                     y2 += (-2.5 + lineNum * 7.5);
                 }
             }
-            
-            var raphaelPath = "M " + x1 + " " + y1;            
+
+            var raphaelPath = "M " + x1 + " " + y1;
             for (var i = 0; i < intersections.length; i++) {
                 var intersectPoint = intersections[i];
-                
+
                 var distance = function(p1, p2) {
                     return (p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y);
-                };                
-                if (distance(intersectPoint, {"x": x1, "y": y1}) < 20*20)
+                };
+
+                var noCrossSymbolProximity = isHorizontal ? 20*20 : 9*9;
+                
+                if (distance(intersectPoint, {"x": x1, "y": y1}) < noCrossSymbolProximity)
                     continue;
-                if (distance(intersectPoint, {"x": x2, "y": y2}) < 17*17)
+                if (distance(intersectPoint, {"x": x2, "y": y2}) < noCrossSymbolProximity)
                     continue;
                 
                 if (isHorizontal) {                    
@@ -614,13 +617,13 @@ var GraphicsSet = Class.create({
                             changeSet.moved.push(node);
                     }
                 }
-            }                        
-               
+            }
+
             // move actual nodes
             for (var i = 0; i < changeSet.moved.length; i++) {
-                var nextMoved = changeSet.moved[i];                
+                var nextMoved = changeSet.moved[i];
                 if (editor.getGraph().isRelationship(nextMoved))
-                    movedRelationships.push(nextMoved);                                       
+                    movedRelationships.push(nextMoved);
                 else
                     movedPersons.push(nextMoved);
             }
@@ -628,42 +631,42 @@ var GraphicsSet = Class.create({
         console.log("moved: " + stringifyObject(changeSet.moved));
         if (changeSet.hasOwnProperty("new")) {
             for (var i = 0; i < changeSet["new"].length; i++) {
-                var nextNew = changeSet["new"][i];                
+                var nextNew = changeSet["new"][i];
                 if (editor.getGraph().isRelationship(nextNew))
                     newRelationships.push(nextNew);
                 else
                     newPersons.push(nextNew);
             }
-        }      
-        
+        }
+
         timer.printSinceLast("=== Bookkeeping/sorting runtime: ");
-        
-        
+
+
         for (var i = 0; i < movedPersons.length; i++)
-            editor.getGraphicsSet().moveNode(movedPersons[i], animate.hasOwnProperty(movedPersons[i]));
-        
+            this.moveNode(movedPersons[i], animate.hasOwnProperty(movedPersons[i]));
+
         timer.printSinceLast("=== Move persons runtime: ");
-        
+
         for (var i = 0; i < newPersons.length; i++) {            
-            var newPerson = editor.getGraphicsSet().addNode(newPersons[i]);
+            var newPerson = this.addNode(newPersons[i]);
             if (markNew) {
                 newPerson.getGraphics().markPermanently();
                 this._currentMarkedNew.push(newPersons[i]);
             }
         }
-        
+
         timer.printSinceLast("=== New persons runtime: ");
-        
+
         for (var i = 0; i < movedRelationships.length; i++)
-            editor.getGraphicsSet().moveNode(movedRelationships[i]);
-        
+            this.moveNode(movedRelationships[i]);
+
         timer.printSinceLast("=== Move rels runtime: ");
-        
+
         for (var i = 0; i < newRelationships.length; i++)
-            editor.getGraphicsSet().addNode(newRelationships[i]);
-        
+            this.addNode(newRelationships[i]);
+
         timer.printSinceLast("=== New rels runtime: ");
-                
+
         if (changeSet.hasOwnProperty("highlight")) {
             for (var i = 0; i < changeSet.highlight.length; i++) {
                 var nextHighlight = changeSet.highlight[i];
@@ -671,9 +674,9 @@ var GraphicsSet = Class.create({
                 this._currentMarkedNew.push(nextHighlight);                
             }
         }
-        
+
         timer.printSinceLast("=== highlight: ");
-        
+
         // re-evaluate which buttons & handles are appropriate for the nodes (e.g. twin button appears/disappears)
         for (nodeID in this._nodeMap)
             if (this._nodeMap.hasOwnProperty(nodeID))
@@ -683,12 +686,12 @@ var GraphicsSet = Class.create({
                 }
 
         // TODO: move the viewport to make changeSet.makevisible nodes visible on screen
-        
+
         timer.printSinceLast("=== update handles & butons runtime: ");
         timer2.printSinceLast("=== Total apply changes runtime: ");
-        
+
         } catch(err) {
-            console.log("err: " + err);
-        }           
+            console.log("[view] update error: " + err);
+        }
     }
 });
