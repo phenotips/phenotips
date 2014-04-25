@@ -20,7 +20,7 @@
  */
 NodeMenu = Class.create({
     initialize : function(data) {
-        console.log("nodeMenu initialize");
+        //console.log("nodeMenu initialize");
         this.canvas = editor.getWorkspace().canvas || $('body');
         this.menuBox = new Element('div', {'class' : 'menu-box'});
 

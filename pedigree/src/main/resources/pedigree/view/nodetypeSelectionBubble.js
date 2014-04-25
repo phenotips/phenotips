@@ -311,7 +311,7 @@ var NodetypeSelectionBubble = Class.create({
      * @private
      */
     _onClickOutside: function (event) {
-        console.log("observe clickoutside nodetype");
+        //console.log("observe clickoutside nodetype");
         if (!event.findElement('.callout')) {
             this.hide();
         }
@@ -387,11 +387,11 @@ var NodetypeSelectionBubble = Class.create({
         var plusBtn = new Element("span", {
             "class": 'plus-button value-control-button'
         }).update("+");
-        minusBtn.observe("click", function() { console.log("observeMinus1"); me._decrementNumNodes(); svgContainer.update(generateIcon())});
-        plusBtn.observe("click", function() { console.log("observePlus1"); me._incrementNumNodes(); svgContainer.update(generateIcon())});
+        minusBtn.observe("click", function() { me._decrementNumNodes(); svgContainer.update(generateIcon())});
+        plusBtn.observe ("click", function() { me._incrementNumNodes(); svgContainer.update(generateIcon())});
         createBtn.observe("click", function() {
-            console.log("observeCreate1");
-            me.handleCreateAction(me.buttonsDefs[5]);             
+            //console.log("observeCreate1");
+            me.handleCreateAction(me.buttonsDefs[5]);
         });
         this.expandedOptionsContainer.insert(minusBtn);
         this.expandedOptionsContainer.insert(svgContainer);
@@ -426,11 +426,11 @@ var NodetypeSelectionBubble = Class.create({
         var plusBtn = new Element("span", {
             "class": 'plus-button value-control-button'
         }).update("+");
-        minusBtn.observe("click", function() { console.log("observeMinus2"); me._decrementNumTwins(); svgContainer.update(generateIcon())});
-        plusBtn.observe("click", function() { console.log("observePlus2"); me._incrementNumTwins(); svgContainer.update(generateIcon())});        
+        minusBtn.observe("click", function() { me._decrementNumTwins(); svgContainer.update(generateIcon())});
+        plusBtn.observe("click",  function() { me._incrementNumTwins(); svgContainer.update(generateIcon())});        
         createBtn.observe("click", function() {
             console.log("observeCreate2");
-            me.handleCreateAction(me.buttonsDefs[3]);            
+            me.handleCreateAction(me.buttonsDefs[3]);
         });
         this.expandedOptionsContainer.insert(minusBtn);
         this.expandedOptionsContainer.insert(svgContainer);

@@ -1,7 +1,6 @@
 /**
- * A stub howerbox used when generating read-only pedigrees
+ * A stub hoverbox used when generating read-only pedigrees
  */
-
 var ReadOnlyHoverbox = Class.create(AbstractHoverbox, {
 
     initialize: function($super, node, x, y, shapes) {

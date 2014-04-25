@@ -208,7 +208,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
 
                 // if necessary, mark first segment on the left as broken
                 if (i == 0 && goesLeft && this.getNode().getBrokenStatus()) {
-                    editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xFrom-16, yFrom, lineAttr, consangr, goesLeft);
+                    editor.getView().drawLineWithCrossings(id, xFrom, yFrom, xFrom-16, yFrom, lineAttr, consangr, goesLeft);
                     editor.getPaper().path("M " + (xFrom-29) + " " + (yFrom+9) + " L " + (xFrom-15) + " " + (yFrom-9)).attr(lineAttr).toBack();
                     editor.getPaper().path("M " + (xFrom-24) + " " + (yFrom+9) + " L " + (xFrom-10) + " " + (yFrom-9)).attr(lineAttr).toBack();
                     xFrom -= 23;
@@ -217,7 +217,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 //console.log("angled: " + angled + ", changes: " + changesDirection);
                         
                 if (changesDirection) {  // finish drawing the current segment
-                    editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xTo, yTo, lineAttr, consangr, goesLeft);
+                    editor.getView().drawLineWithCrossings(id, xFrom, yFrom, xTo, yTo, lineAttr, consangr, goesLeft);
                     xFrom = xTo;
                     yFrom = yTo;
                 }
@@ -230,7 +230,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 //------------------
                 // note: assume that we always draw bottom to top, as relationship nodes are always at or below partner level                
                 
-                if (smoothCorners && ( (!wasAngle && !angled) || (position.y == yTop)) ) {
+                if (smoothCorners && ( (!wasAngle && !angled) || (i >= path.length - 2 && path.length > 1)) ) {
                     //console.log("corner from " + xFrom + "," + yFrom + ", newVert: " + newVertical );
                     if (newVertical && !vertical) {
                         // was horizontal, now vertical - draw the smooth corner Horiz->Vert (curve bends down)
@@ -277,11 +277,11 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             }
             
             if (yFrom >= finalPosition.y + cornerRadius*2)
-                editor.getGraphicsSet().drawLineWithCrossings(id, xFrom, yFrom, xTo, finalYTo, lineAttr, consangr, false);
+                editor.getView().drawLineWithCrossings(id, xFrom, yFrom, xTo, finalYTo, lineAttr, consangr, false);
             else
                 // draw a line/curve from (xFrom, yFrom) trough (..., yTop) to (xTo, yTo).
                 // It may be a line if all y are the same, a line with one bend or a line with two bends
-                editor.getGraphicsSet().drawCurvedLineWithCrossings( id, xFrom, yFrom, yTop, xTo, finalYTo, lastBend, lineAttr, consangr, goesLeft );
+                editor.getView().drawCurvedLineWithCrossings( id, xFrom, yFrom, yTop, xTo, finalYTo, lastBend, lineAttr, consangr, goesLeft );
         }
         
         this._partnerConnections = editor.getPaper().setFinish().toBack();
@@ -330,22 +330,22 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 currentTwinGroup = twinGroupId;
                 
                 var allTwins  = positionedGraph.getAllTwinsSortedByOrder(child);
-                var positionL = editor.getGraphicsSet().getNode(allTwins[0]).getX();
-                var positionR = editor.getGraphicsSet().getNode(allTwins[allTwins.length-1]).getX();
-                var positionY = editor.getGraphicsSet().getNode(allTwins[0]).getY();
+                var positionL = editor.getView().getNode(allTwins[0]).getX();
+                var positionR = editor.getView().getNode(allTwins[allTwins.length-1]).getX();
+                var positionY = editor.getView().getNode(allTwins[0]).getY();
                 currentTwinGroupCenterX = (positionL + positionR)/2;
                 if (allTwins.length == 3)
-                    currentTwinGroupCenterX = editor.getGraphicsSet().getNode(allTwins[1]).getX();
-                editor.getGraphicsSet().drawLineWithCrossings( id, currentTwinGroupCenterX, childlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, PedigreeEditor.attributes.partnershipLines);
+                    currentTwinGroupCenterX = editor.getView().getNode(allTwins[1]).getX();
+                editor.getView().drawLineWithCrossings( id, currentTwinGroupCenterX, childlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, PedigreeEditor.attributes.partnershipLines);
                 
-                currentIsMonozygothic = editor.getGraphicsSet().getNode(allTwins[0]).getMonozygotic();
+                currentIsMonozygothic = editor.getView().getNode(allTwins[0]).getMonozygotic();
                 
                 // draw the monozygothinc line, if necessary
                 if (currentIsMonozygothic) {
                     var twinlineY   = childlineY+PedigreeEditor.attributes.twinMonozygothicLineShiftY;
                     var xIntercept1 = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, positionL, positionY);
                     var xIntercept2 = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, positionR, positionY);
-                    editor.getGraphicsSet().drawLineWithCrossings( id, xIntercept1, twinlineY, xIntercept2, twinlineY, PedigreeEditor.attributes.partnershipLines); 
+                    editor.getView().drawLineWithCrossings( id, xIntercept1, twinlineY, xIntercept2, twinlineY, PedigreeEditor.attributes.partnershipLines); 
                 }
             }
             else if (twinGroupId == null) {
@@ -353,8 +353,8 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 currentIsMonozygothic = false;
             }
             
-            var childX = editor.getGraphicsSet().getNode(child).getX();
-            var childY = editor.getGraphicsSet().getNode(child).getY();
+            var childX = editor.getView().getNode(child).getX();
+            var childY = editor.getView().getNode(child).getY();
             
             var topLineX = (currentTwinGroup === null) ? childX     : currentTwinGroupCenterX;
             var topLineY = (currentTwinGroup === null) ? childlineY : childlineY + twinCommonVerticalPieceLength;
@@ -367,16 +367,16 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
             // draw regular child line - for all nodes which ar enot monozygothic twins and for the
             // rightmost and leftmost monozygothic twin
             if (!currentIsMonozygothic || childX == positionL || childX == positionR ) { 
-                editor.getGraphicsSet().drawLineWithCrossings( id, topLineX, topLineY, childX, childY, PedigreeEditor.attributes.partnershipLines);
+                editor.getView().drawLineWithCrossings( id, topLineX, topLineY, childX, childY, PedigreeEditor.attributes.partnershipLines);
             }
             else {                
                 var xIntercept = findXInterceptGivenLineAndY( twinlineY, currentTwinGroupCenterX, childlineY+twinCommonVerticalPieceLength, childX, childY);
-                editor.getGraphicsSet().drawLineWithCrossings( id, xIntercept, twinlineY, childX, childY, PedigreeEditor.attributes.partnershipLines);
+                editor.getView().drawLineWithCrossings( id, xIntercept, twinlineY, childX, childY, PedigreeEditor.attributes.partnershipLines);
             }
         }
 
-        editor.getGraphicsSet().drawLineWithCrossings( id, leftmostX, childlineY, rightmostX, childlineY, PedigreeEditor.attributes.partnershipLines);        
-        editor.getGraphicsSet().drawLineWithCrossings( id, this.getX(), this.getY(), this.getX(), childlineY, PedigreeEditor.attributes.partnershipLines);
+        editor.getView().drawLineWithCrossings( id, leftmostX, childlineY, rightmostX, childlineY, PedigreeEditor.attributes.partnershipLines);        
+        editor.getView().drawLineWithCrossings( id, this.getX(), this.getY(), this.getX(), childlineY, PedigreeEditor.attributes.partnershipLines);
         
         //draw small non-functional childhub junction orb
         if (numPregnancies > 1)

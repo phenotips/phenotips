@@ -9,7 +9,7 @@
  */
 var PedigreeEditor = Class.create({
     initialize: function() {
-        this.DEBUG_MODE = true;
+        //this.DEBUG_MODE = true;
         window.editor = this;
 
         // initialize main data structure which holds the graph structure        

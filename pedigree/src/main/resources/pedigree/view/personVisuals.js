@@ -91,8 +91,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.updateDisorderShapes();      
     },
     
-    generateProbandArrow: function() {        
-        var icon = editor.getPaper().path(editor.getGraphicsSet().__probandArrowPath).attr({fill: "#595959", stroke: "none", opacity: 1});        
+    generateProbandArrow: function() {
+        var icon = editor.getPaper().path(editor.getView().__probandArrowPath).attr({fill: "#595959", stroke: "none", opacity: 1});        
         icon.transform(["t" , this.getX()-this._shapeRadius-22, this.getY()+this._shapeRadius-11])
         return icon;
     },

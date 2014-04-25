@@ -418,7 +418,7 @@ var Workspace = Class.create({
      * @param {Number} nodeID The id of the node
      */
     centerAroundNode: function(nodeID, instant, xCenterShift, yCenterShift) {
-        var node = editor.getGraphicsSet().getNodeMap()[nodeID];
+        var node = editor.getNode[nodeID];
         if(node) {
             var x = node.getX(),
                 y = node.getY();
@@ -428,22 +428,5 @@ var Workspace = Class.create({
             var yOffset = this.getHeight()/this.zoomCoefficient;
             this.panTo(x - xOffset/2 - xCenterShift, y - yOffset/2 - yCenterShift, instant);
         }
-    },
-
-    /**
-     * Returns the current screen coordinates of the node with the given id
-     *
-     * @method getCurrentNodeLocation
-     * @param {Number} nodeID The id of the node
-     *    
-    getNodeShiftFromCenterOfScreen: function(nodeID) {
-        var node = editor.getGraphicsSet().getNodeMap()[nodeID];
-        if(node) {
-            var x = node.getX(),
-                y = node.getY();
-            ...
-            return {"x": xShift, "y": yShift}; 
-        }   
-        return {};
-    }*/
+    }
 });

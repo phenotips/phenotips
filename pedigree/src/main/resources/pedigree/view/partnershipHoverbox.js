@@ -34,7 +34,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         
         var x = this.getNodeX();
         var y = this.getNodeY();     
-        var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(4);
+        var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(PedigreeEditor.attributes.handleStrokeWidth);
 
         editor.getPaper().setStart();        
         //static part (going right below the node)            

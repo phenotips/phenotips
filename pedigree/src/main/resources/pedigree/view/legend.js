@@ -135,7 +135,7 @@ var DisorgerLegend = Class.create( {
         if (this._hasAffectedNodes(disorderID)) {
             this._affectedNodes[disorderID] = this._affectedNodes[disorderID].without(nodeID);
             if(this._affectedNodes[disorderID].length == 0) {
-                console.log("no more disorders with id = " + disorderID); 
+                //console.log("no more disorders with id = " + disorderID); 
                 delete this._affectedNodes[disorderID];
                 delete this._disorderColors[disorderID];
                 $('disorder-' + disorderID).remove();                
@@ -251,14 +251,14 @@ var DisorgerLegend = Class.create( {
     _onDropDisorder: function(disorderLabel, target, event) {
         var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
         var pos = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
-        var node = editor.getGraphicsSet().getPersonNodeNear(pos.x, pos.y);
+        var node = editor.getView().getPersonNodeNear(pos.x, pos.y);
         //console.log("Position x: " + pos.x + " position y: " + pos.y);
         if (node) {
             var disorderID = disorderLabel.id.substring( disorderLabel.id.indexOf('-') + 1);
             var currentDisorders = node.getDisorders();
             if (currentDisorders.indexOf(disorderID) == -1) {   // only if the node does not have this disorder yet
                 currentDisorders.push(disorderID);
-                editor.getGraphicsSet().unmarkAll();
+                editor.getView().unmarkAll();
                 var properties = { "setDisorders": currentDisorders };
                 var event = { "nodeID": node.getID(), "properties": properties };
                 document.fire("pedigree:node:setproperty", event);
