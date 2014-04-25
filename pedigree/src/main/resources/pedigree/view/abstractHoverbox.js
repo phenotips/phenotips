@@ -250,8 +250,6 @@ var AbstractHoverbox = Class.create({
      * @return {Raphael.st} The generated button
      */
     createButton: function(x, y, svgPath, svgPathBBox, attributes, onClick, className, title) {
-        
-        var timer = new Timer();
         var icon = editor.getPaper().path(svgPath).attr(attributes);
         icon.transform(["t" , x , y]);
         
@@ -318,7 +316,7 @@ var AbstractHoverbox = Class.create({
         var attributes = PedigreeEditor.attributes.menuBtnIcon;
         var x = this.getX() + this.getWidth() - 20 - this.getWidth()/40;
         var y = this.getY() + this.getHeight()/40;
-        this.createButton(x, y, editor.getGraphicsSet().__menuButton_svgPath, editor.getGraphicsSet().__menuButton_BBox,
+        this.createButton(x, y, editor.getView().__menuButton_svgPath, editor.getView().__menuButton_BBox,
                           attributes, action, "menu-trigger", "node properties");
         
     },
@@ -338,7 +336,7 @@ var AbstractHoverbox = Class.create({
         var attributes = PedigreeEditor.attributes.deleteBtnIcon;
         var x = this.getX() + this.getWidth()/40;
         var y = this.getY() + this.getHeight()/40;
-        this.createButton(x, y, editor.getGraphicsSet().__deleteButton_svgPath, editor.getGraphicsSet().__deleteButton_BBox,
+        this.createButton(x, y, editor.getView().__deleteButton_svgPath, editor.getView().__deleteButton_BBox,
                           attributes, action, "delete", "remove node");        
     },
 
@@ -428,7 +426,7 @@ var AbstractHoverbox = Class.create({
      * @param {Number} orbY The y coordinate of the orb
      * @return {Raphael.st} Raphael set of elements that make up the handle
      */
-    generateHandle: function(type, startX, startY, orbX, orbY, title, orbShapeGender, toHide) {        
+    generateHandle: function(type, startX, startY, orbX, orbY, title, orbShapeGender, toHide) {
         if (!orbShapeGender)
             orbShapeGender = "F";
         var strokeWidth = editor.getWorkspace().getSizeNormalizedToDefaultZoom(PedigreeEditor.attributes.handleStrokeWidth);
@@ -461,31 +459,50 @@ var AbstractHoverbox = Class.create({
             if (!inHoverMode) {
                 //console.log("on drag");
                 inHoverMode = true;
-                if (editor.getGraphicsSet().getCurrentDraggable() !== null)
-                    editor.getGraphicsSet().enterHoverMode(me.getNode(), type);
+                if (editor.getView().getCurrentDraggable() !== null)
+                    editor.getView().enterHoverMode(me.getNode(), type);
                 toHide && toHide.hide();
             }
         };
 
-        var start = function() {
-        	//console.log("handle: start");
+        // is true when any button other than the left mouse button is presses
+        var wrongClick = false;
+        var start = function(x,y,e) {            
+        	//console.log("handle: start: " + e.button);
+        	wrongClick = false;
+        	if (e.button != 0) {
+        	    wrongClick = true;
+        	    end();
+        	    return;
+        	}
             connection.toFront();
+            orb.stop();
             orb.toFront();        	
         	inHoverMode = false;
             me.disable();
             me.getFrontElements().toFront();
-            orb.ox = orb[0].attr(orbAttrX);
-            orb.oy = orb[0].attr(orbAttrY);
-            orb.ot = orb[0].transform();
+            if (!orb.ot) {
+                orb.ot = orb[0].transform();
+                orb.ox = orb[0].attr(orbAttrX);
+                orb.oy = orb[0].attr(orbAttrY);                
+            } else {
+                // revert to base transformation if next click started while "end" animation was still running
+                orb.transform("");
+                orb.attr(orbAttrX, orb.ox);
+                orb.attr(orbAttrY, orb.oy);                
+                orb.transform(orb.ot);
+            }
             connection.ox = connection.oPath[1][1];
             connection.oy = connection.oPath[1][2];            
             handle.isDragged = false;
-            editor.getGraphicsSet().setCurrentDraggable(me.getNode().getID());
+            editor.getView().setCurrentDraggable(me.getNode().getID());
             // highlight valid targets (after a small delay - so that nothing gets annoyingly highlighted
             // and instantly un-highlighted if the person just clicks the orb without dragging)
             setTimeout(onDragHandle, 100);
         };
         var move = function(dx, dy) {
+            if (wrongClick) return;
+            //console.log("handle: move");
             onDragHandle();
             dx = dx/editor.getWorkspace().zoomCoefficient;
             dy = dy/editor.getWorkspace().zoomCoefficient;
@@ -499,16 +516,17 @@ var AbstractHoverbox = Class.create({
             if(dx > 1 || dx < 1 || dy > 1 || dy < -1 ) {
                 handle.isDragged = true;
             }            
-            //console.log("currentHover: " + editor.getGraphicsSet()._currentHoveredNode + ", currentDrag: " + editor.getGraphicsSet()._currentDraggable);
+            //console.log("currentHover: " + editor.getView()._currentHoveredNode + ", currentDrag: " + editor.getView()._currentDraggable);
         };
         var end = function() {    
-            inHoverMode = false;
-            var curHoveredId = editor.getGraphicsSet().getCurrentHoveredNode()
+            inHoverMode = false;            
                         
-            editor.getGraphicsSet().setCurrentDraggable(null);
-            editor.getGraphicsSet().exitHoverMode();            
+            var curHoveredId = editor.getView().getCurrentHoveredNode()
             
-            if(handle.isDragged) {
+            editor.getView().setCurrentDraggable(null);
+            editor.getView().exitHoverMode();            
+                        
+            if(handle.isDragged) {                
                 if (orb.ot.length == 0) {
                     var finalPosition = {};
                     finalPosition[orbAttrX] = orb.ox;
@@ -519,12 +537,14 @@ var AbstractHoverbox = Class.create({
                     // animation for shapes with transformations (movement and animation via transform() could have been
                     // used in all cases, but works noticeably slower than plain coordinate manipulation in some browsers)
                     var dx = orb.ox - orb[0].attr(orbAttrX);
-                    var dy = orb.oy - orb[0].attr(orbAttrY);                    
+                    var dy = orb.oy - orb[0].attr(orbAttrY);
+                    console.log("end");
                     orb.animate( {"transform": "T" + dx + "," + dy + "R45"}, 1000, "elastic", function() { 
                         orb.transform("");
                         orb.attr(orbAttrX, orb.ox);
                         orb.attr(orbAttrY, orb.oy);
-                        orb.transform(orb.ot); });
+                        orb.transform(orb.ot);
+                        console.log("stop"); });                        
                 }
             }
                                    
@@ -536,6 +556,8 @@ var AbstractHoverbox = Class.create({
             connection.insertBefore(me.getHoverZoneMask());
             
             me.enable();            
+            
+            if (wrongClick) return;
             
             if (!handle.isDragged || curHoveredId != null)
                 me.handleAction(handle.type, handle.isDragged, curHoveredId);
@@ -588,7 +610,7 @@ var AbstractHoverbox = Class.create({
      */
     animateDrawHoverZone: function() {     
         this._hidden = false;        
-        if (editor.getGraphicsSet().getCurrentDraggable() !== null) return; // do not redraw when dragging
+        if (editor.getView().getCurrentDraggable() !== null) return; // do not redraw when dragging
         //console.log("node: " + this.getNode().getID() + " -> show HB");
                 
         this.getNode().getGraphics().setSelected(true);
@@ -612,13 +634,13 @@ var AbstractHoverbox = Class.create({
      * @method animateHideHoverZone
      */
     animateHideHoverZone: function() {
-        this._hidden = true;        
-        if (editor.getGraphicsSet().getCurrentDraggable() !== null) return; // do not hide when dragging
+        this._hidden = true;
+        if (editor.getView().getCurrentDraggable() !== null) return; // do not hide when dragging
         //console.log("node: " + this.getNode().getID() + " -> hide HB");
-        
+
         this.getNode().getGraphics().setSelected(false);
         this.getBoxOnHover().stop().animate({opacity:0}, 200);
-                
+
         this.hideButtons();
         this.hideHandles();
     },
