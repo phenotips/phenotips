@@ -949,6 +949,8 @@ DynamicPositionedGraph.prototype = {
             //}
         }
 
+        this.DG.maxRank = Math.max.apply(null, this.DG.ranks);
+
         this.DG.GG.validate();
 
         // note: do not update rankY, as we do not want to move anything (we know we don't need more Y space after a deletion)

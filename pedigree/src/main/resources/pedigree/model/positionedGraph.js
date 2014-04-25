@@ -2289,8 +2289,6 @@ PositionedGraph.prototype = {
 
         var verticalLevels = new VerticalLevels();
 
-        if (this.GG.v.length <= 1) return verticalLevels;
-
         // for all ranks:
         //
         // 1) if rank has childhub nodes:
@@ -2315,6 +2313,8 @@ PositionedGraph.prototype = {
 
         for (var r = 1; r <= this.maxRank; r+=1)
             verticalLevels.rankVerticalLevels[r] = 1;    // number of "vertical levels" (i.e. parallel horizontal edges) between rank r and r+1. Start with 1 for all ranks
+
+        if (this.GG.v.length <= 1) return verticalLevels;
 
         //console.log("GG: " + stringifyObject(this.GG));
         //console.log("Order: " + stringifyObject(this.order));
