@@ -514,6 +514,7 @@ var editor;
 
 //attributes for graphical elements in the editor
 PedigreeEditor.attributes = {
+    propagateLastName: true,   // when true, father's last name is propagated as "last name at birth" to descendants 
     radius: 40,
     personHoverBoxRadius: 90,  // 80    for old handles, 90 for new
     newHandles: true,          // false for old handles

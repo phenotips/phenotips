@@ -111,8 +111,7 @@ var Controller = Class.create({
     },
     
     handleSetProperty: function(event)
-    {
-        try {
+    {       
         console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
         var nodeID     = event.memo.nodeID;
         var properties = event.memo.properties;
@@ -130,18 +129,29 @@ var Controller = Class.create({
                 var propValue = properties[propertySetFunction];  
                                
                 //console.log("attmepting to set property " + propertySetFunction + " to " + propValue);
-                if (Controller._validatePropertyValue( nodeID, propertySetFunction, propValue)) {
-                    //console.log("validated");
-                    
-                    // prepare undo event
-                    var propertyGetFunction =  propertySetFunction.replace("set","get");
-                    var oldValue = node[propertyGetFunction]();
-                    undoEvent.memo.properties[propertySetFunction] = oldValue;
-                    if (oldValue != propValue) changed = true;
-                        
-                    node[propertySetFunction](propValue);
-                }
+                if (!Controller._validatePropertyValue( nodeID, propertySetFunction, propValue)) continue;
                 
+                //console.log("validated");
+                // prepare undo event
+                var propertyGetFunction =  propertySetFunction.replace("set","get");
+                var oldValue = node[propertyGetFunction]();
+                undoEvent.memo.properties[propertySetFunction] = oldValue;
+                if (oldValue != propValue) changed = true;
+
+                node[propertySetFunction](propValue);
+
+                if (propertySetFunction == "setLastName") {
+                    if (PedigreeEditor.attributes.propagateLastName) {
+                        if (node.getGender(nodeID) == 'M') {
+                            if (propValue != "" && oldValue == "") {
+                                // propagate last name as "last name at birth" to all descendants (by the male line)
+                                Controller._propagateLastNameAtBirth(nodeID, propValue);
+                                undoEvent = null; // there is no easy undo other than just remember the previous graph state
+                            }
+                        }
+                    }
+                }
+
                 if (propertySetFunction == "setAdopted") {
                     needUpdateAncestors = true;
                     if (!twinUpdate) twinUpdate = {};
@@ -201,12 +211,8 @@ var Controller = Class.create({
         console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
         if (!event.memo.noUndoRedo && changed)
             editor.getActionStack().addState( event, undoEvent );
-        
-        } catch(err) {
-            console.log("err: " + err);
-        }        
     },
-
+    
     handleModification: function(event)
     {
         try {
@@ -229,7 +235,7 @@ var Controller = Class.create({
                         var changeSet = editor.getGraph().addTwin( nodeID, twinProperty );        
                         editor.getView().applyChanges(changeSet, true);
                     }                    
-                    editor.getView().getNode(nodeID).assignProperties(editor.getGraph().getProperties(nodeID));
+                    node.assignProperties(editor.getGraph().getProperties(nodeID));
                 }
                 
                 if (modificationType == "makePlaceholder") {
@@ -460,3 +466,20 @@ Controller._validatePropertyValue = function( nodeID, propertySetFunction, propV
     }
     return true;
 } 
+
+Controller._propagateLastNameAtBirth = function( parentID, parentLastName )
+{
+    var children = editor.getGraph().getAllChildren(parentID);
+    
+    for (var i = 0; i < children.length; i++) {
+        var childID   = children[i];
+        var childNode = editor.getView().getNode(childID);
+        
+        if (childNode.getLastName() == "" && childNode.getLastNameAtBirth() == "") {
+            childNode.setLastNameAtBirth(parentLastName);
+            if (childNode.getGender() == 'M') {
+                Controller._propagateLastNameAtBirth(childID, parentLastName);
+            }
+        }
+    }
+}

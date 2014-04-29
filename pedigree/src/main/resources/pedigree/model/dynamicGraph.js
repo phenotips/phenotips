@@ -212,6 +212,23 @@ DynamicPositionedGraph.prototype = {
 
         return children;
     },
+    
+    getAllChildren: function( v )
+    {
+        if (!this.isPerson(v))
+            throw "Assertion failed: getAllChildren() is applied to a non-relationship";
+        
+        var rels = this.DG.GG.getAllRelationships(v);
+        
+        var allChildren = [];        
+        for (var i = 0; i < rels.length; i++) {
+            var chhub    = this.DG.GG.getOutEdges(rels[i])[0];
+            var children = this.DG.GG.getOutEdges(chhub);
+            
+            allChildren = allChildren.concat(children); 
+        }
+        return allChildren;
+    },
 
     hasNonPlaceholderNonAdoptedChildren: function( v )
     {
@@ -270,7 +287,7 @@ DynamicPositionedGraph.prototype = {
 
         var knownGenderPartner = undefined;
         for (var i = 0; i < partners.length; i++) {
-            var partnerGender = this.getProperties(partners[i])["gender"];
+            var partnerGender = this.getGender(partners[i]);
             if (partnerGender != "U") {
                 possible[partnerGender] = false;
                 break;
@@ -347,6 +364,14 @@ DynamicPositionedGraph.prototype = {
 
         return this.DG.GG.getOppositeGender(v);
     },
+    
+    getGender: function( v )
+    {
+        if (!this.isPerson(v))
+            throw "Assertion failed: getGender() is applied to a non-person";
+
+        return this.DG.GG.getGender(v);
+    },    
 
     getDisconnectedSetIfNodeRemoved: function( v )
     {
@@ -1049,6 +1074,7 @@ DynamicPositionedGraph.prototype = {
 
     toJSON: function ()
     {
+        //var timer = new Timer();        
         var output = {};
 
         // note: need to save GG not base G becaus eof the graph was dynamically modified
@@ -1064,7 +1090,8 @@ DynamicPositionedGraph.prototype = {
 
         // note: everything else can be recomputed based on the information above
 
-        console.log("JSON represenation: " + JSON.stringify(output));
+        console.log("JSON represenation: " + JSON.stringify(output));               
+        //timer.printSinceLast("=== to JSON: ");        
 
         return JSON.stringify(output);
     },
