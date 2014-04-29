@@ -83,7 +83,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         if(this.getNode().isProband()) {
             this._genderGraphics.push(this.generateProbandArrow());
             this.getGenderShape().transform(["...s", 1.08]);
-            this.getGenderShape().attr("stroke-width", 5);
+            this.getGenderShape().attr("stroke-width", 5.5);
         }
         if(this.getHoverBox()) {
             this._genderGraphics.flatten().insertBefore(this.getFrontElements().flatten());
@@ -93,7 +93,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     
     generateProbandArrow: function() {
         var icon = editor.getPaper().path(editor.getView().__probandArrowPath).attr({fill: "#595959", stroke: "none", opacity: 1});        
-        icon.transform(["t" , this.getX()-this._shapeRadius-22, this.getY()+this._shapeRadius-11])
+        icon.transform(["t" , this.getX()-this._shapeRadius-26, this.getY()+this._shapeRadius-12])
         return icon;
     },
 
