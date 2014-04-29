@@ -100,6 +100,7 @@ var SaveLoadEngine = Class.create( {
                 var genderOk = positionedGraph.setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
                 if (!genderOk)
                     alert("Gender defined in phenotips is incompatible with this pedigree. Setting proband gender to 'Unknown'");
+                JSONString = positionedGraph.toJSON();
             }
 
             if (editor.getView().applyChanges(changeSet, false)) {

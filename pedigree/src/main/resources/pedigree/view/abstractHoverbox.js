@@ -537,14 +537,12 @@ var AbstractHoverbox = Class.create({
                     // animation for shapes with transformations (movement and animation via transform() could have been
                     // used in all cases, but works noticeably slower than plain coordinate manipulation in some browsers)
                     var dx = orb.ox - orb[0].attr(orbAttrX);
-                    var dy = orb.oy - orb[0].attr(orbAttrY);
-                    console.log("end");
+                    var dy = orb.oy - orb[0].attr(orbAttrY);                    
                     orb.animate( {"transform": "T" + dx + "," + dy + "R45"}, 1000, "elastic", function() { 
                         orb.transform("");
                         orb.attr(orbAttrX, orb.ox);
                         orb.attr(orbAttrY, orb.oy);
-                        orb.transform(orb.ot);
-                        console.log("stop"); });                        
+                        orb.transform(orb.ot); });                        
                 }
             }
                                    

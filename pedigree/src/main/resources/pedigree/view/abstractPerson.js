@@ -76,7 +76,6 @@ var AbstractPerson = Class.create(AbstractNode, {
         if (this._gender != gender) {
             this._gender = gender;
             this.getGraphics().setGenderGraphics();
-
             this.getGraphics().getHoverBox().regenerateHandles();
         }
     },

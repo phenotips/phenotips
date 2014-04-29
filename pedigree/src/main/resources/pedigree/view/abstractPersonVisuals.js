@@ -259,6 +259,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * @method setGenderGraphics
      */
     setGenderGraphics: function() {
+        this.unmark();
         this._genderGraphics && this._genderGraphics.remove();
 
         this._shapeRadius = (this.getNode().getGender() == 'U') ? PedigreeEditor.attributes.radius * 1.1 / Math.sqrt(2) : PedigreeEditor.attributes.radius;            

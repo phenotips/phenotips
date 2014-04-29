@@ -145,8 +145,8 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      *
      * @method toggleMenu
      */
-    toggleMenu: function(isMenuToggled) {        
-        console.log("toggle menu: current = " + this._isMenuToggled);        
+    toggleMenu: function(isMenuToggled) {
+        //console.log("toggle menu: current = " + this._isMenuToggled);
         this._isMenuToggled = isMenuToggled;
         if(isMenuToggled) {
             this.getNode().getGraphics().unmark();

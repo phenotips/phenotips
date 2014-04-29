@@ -471,7 +471,19 @@ var Person = Class.create(AbstractPerson, {
         
         var cantChangeAdopted = this.isFetus() || editor.getGraph().hasToBeAdopted(this.getID());
         
-        var ignoreTwinOptions = (this._twinGroup == null);
+        var disableMonozygothic = true;
+        var twins = editor.getGraph().getAllTwinsSortedByOrder(this.getID());
+        if (twins.length > 1) {
+            // check that there are twins and that all twins
+            // have the same gender, otherwise can't be monozygothic
+            disableMonozygothic = false;            
+            for (var i = 0; i < twins.length; i++) {
+                if (editor.getGraph().getGender(twins[i]) != this.getGender()) {
+                    disableMonozygothic = true;
+                    break;
+                }
+            }
+        }
             
         return {
             identifier:    {value : this.getID()},
@@ -488,7 +500,7 @@ var Person = Class.create(AbstractPerson, {
             childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive : childlessInactive},
             childlessText :   {value : this.getChildlessReason() ? this.getChildlessReason() : undefined, inactive : childlessInactive, disabled : !this.getChildlessStatus()},
             placeholder:   {value : false, inactive: true },
-            monozygotic:   {value : this.getMonozygotic(), inactive: ignoreTwinOptions }
+            monozygotic:   {value : this.getMonozygotic(), inactive: disableMonozygothic }
         };
     },
 

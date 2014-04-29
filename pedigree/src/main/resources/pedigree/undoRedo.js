@@ -102,7 +102,7 @@ var ActionStack = Class.create({
              currentState && currentState.eventToGetToThisState &&
              currentState.eventToGetToThisState.eventName == "pedigree:node:setproperty" &&
              this._combinableEvents(currentState.eventToGetToThisState, eventToGetToThisState) ) {
-            console.log("combining state chnages");
+            //console.log("[UNDOREDO] combining state changes");
             currentState.eventToGetToThisState = eventToGetToThisState;
             currentState.serializedState       = serializedState;
             //this._debug_print_states();

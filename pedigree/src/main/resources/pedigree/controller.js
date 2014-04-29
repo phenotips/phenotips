@@ -152,6 +152,13 @@ var Controller = Class.create({
                     }
                 }
 
+                if (propertySetFunction == "setGender") {
+                    if (node.getMonozygotic()) {
+                        if (!twinUpdate) twinUpdate = {};
+                        twinUpdate[propertySetFunction] = propValue;
+                    }
+                }                
+                
                 if (propertySetFunction == "setAdopted") {
                     needUpdateAncestors = true;
                     if (!twinUpdate) twinUpdate = {};
