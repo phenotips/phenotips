@@ -497,8 +497,6 @@ var Person = Class.create(AbstractPerson, {
                 }
             }
         }
-            
-        console.log("Comments: " + this.getComments());
         
         return {
             identifier:    {value : this.getID()},

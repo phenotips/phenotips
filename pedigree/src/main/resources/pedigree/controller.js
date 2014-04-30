@@ -144,9 +144,9 @@ var Controller = Class.create({
                 if (propertySetFunction == "setLastName") {
                     if (PedigreeEditor.attributes.propagateLastName) {
                         if (node.getGender(nodeID) == 'M') {
-                            if (propValue != "" && oldValue == "") {
+                            if (propValue != "") {
                                 // propagate last name as "last name at birth" to all descendants (by the male line)
-                                Controller._propagateLastNameAtBirth(nodeID, propValue);
+                                Controller._propagateLastNameAtBirth(nodeID, propValue, oldValue);
                                 undoEvent = null; // there is no easy undo other than just remember the previous graph state
                             }
                         }
@@ -475,7 +475,7 @@ Controller._validatePropertyValue = function( nodeID, propertySetFunction, propV
     return true;
 } 
 
-Controller._propagateLastNameAtBirth = function( parentID, parentLastName )
+Controller._propagateLastNameAtBirth = function( parentID, parentLastName, changeIfEqualTo )
 {
     var children = editor.getGraph().getAllChildren(parentID);
     
@@ -483,10 +483,13 @@ Controller._propagateLastNameAtBirth = function( parentID, parentLastName )
         var childID   = children[i];
         var childNode = editor.getView().getNode(childID);
         
-        if (childNode.getLastName() == "" && childNode.getLastNameAtBirth() == "") {
+        if (childNode.getLastName() == "" &&
+            (childNode.getLastNameAtBirth() == "" || childNode.getLastNameAtBirth() == changeIfEqualTo)) {
             childNode.setLastNameAtBirth(parentLastName);
+            var allProperties = childNode.getProperties();              
+            editor.getGraph().setProperties( childID, allProperties );            
             if (childNode.getGender() == 'M') {
-                Controller._propagateLastNameAtBirth(childID, parentLastName);
+                Controller._propagateLastNameAtBirth(childID, parentLastName, changeIfEqualTo);
             }
         }
     }
