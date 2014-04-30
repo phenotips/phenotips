@@ -137,6 +137,19 @@ var Person = Class.create(AbstractPerson, {
     },    
 
     /**
+     * Replaces free-form comments associated with the node and redraws the label
+     *
+     * @method setComments
+     * @param comment
+     */    
+    setComments: function($super, comment) {
+        if (comment.strip() != this.getComments()) {
+            $super(comment);
+            this.getGraphics().updateCommentsLabel();
+        }
+    },
+    
+    /**
      * Sets the type of twin
      *
      * @method setMonozygotic
@@ -495,7 +508,8 @@ var Person = Class.create(AbstractPerson, {
             disorders:     {value : disorders},
             adopted:       {value : this.isAdopted(), inactive: cantChangeAdopted},
             state:         {value : this.getLifeStatus(), inactive: inactiveStates},
-            date_of_death: {value : this.getDeathDate(), inactive: this.getLifeStatus() != 'deceased'},
+            date_of_death: {value : this.getDeathDate(), inactive: this.isFetus()},
+            comments:      {value : this.getComments(), inactive: false},
             gestation_age: {value : this.getGestationAge(), inactive : !this.isFetus()},
             childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive : childlessInactive},
             childlessText :   {value : this.getChildlessReason() ? this.getChildlessReason() : undefined, inactive : childlessInactive, disabled : !this.getChildlessStatus()},
