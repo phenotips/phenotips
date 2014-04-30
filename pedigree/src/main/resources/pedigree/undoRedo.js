@@ -126,7 +126,7 @@ var ActionStack = Class.create({
      * @return {Number}
      */    
     _combinableEvents: function ( event1, event2 ) {
-        if (!event1.memo.nodeID || !event2.memo.nodeID || event1.memo.nodeID != event2.memo.nodeID)
+        if (!event1.memo.hasOwnProperty("nodeID") || !event2.memo.hasOwnProperty("nodeID") || event1.memo.nodeID != event2.memo.nodeID)
             return false;        
         if (event1.memo.properties.hasOwnProperty("setFirstName") &&
             event2.memo.properties.hasOwnProperty("setFirstName") )
@@ -136,6 +136,9 @@ var ActionStack = Class.create({
             return true;
         if (event1.memo.properties.hasOwnProperty("setLastNameAtBirth") &&
             event2.memo.properties.hasOwnProperty("setLastNameAtBirth") )
+            return true;
+        if (event1.memo.properties.hasOwnProperty("setComments") &&
+            event2.memo.properties.hasOwnProperty("setComments") )
             return true;        
         return false;
     },

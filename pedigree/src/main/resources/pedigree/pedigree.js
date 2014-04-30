@@ -251,6 +251,7 @@ var PedigreeEditor = Class.create({
                 'name' : 'gender',
                 'label' : 'Gender',
                 'type' : 'radio',
+                'columns': 3,
                 'values' : [
                     { 'actual' : 'M', 'displayed' : 'Male' },
                     { 'actual' : 'F', 'displayed' : 'Female' },
@@ -276,6 +277,19 @@ var PedigreeEditor = Class.create({
                 'label': 'Last name at birth',
                 'type' : 'text',
                 'function' : 'setLastNameAtBirth'
+            },
+            {
+                'name' : 'disorders',
+                'label' : 'Known disorders of this individual',
+                'type' : 'disease-picker',
+                'function' : 'setDisorders'
+            },
+            {
+                'name' : 'comments',
+                'label' : 'Comments',
+                'type' : 'textarea',
+                'rows' : 2,
+                'function' : 'setComments'
             },            
             {
                 'name' : 'date_of_birth',
@@ -290,12 +304,6 @@ var PedigreeEditor = Class.create({
                 'type' : 'date-picker',
                 'format' : 'dd/MM/yyyy',
                 'function' : 'setDeathDate'
-            },
-            {
-                'name' : 'disorders',
-                'label' : 'Known disorders of this individual',
-                'type' : 'disease-picker',
-                'function' : 'setDisorders'
             },
             {
                 'name' : 'gestation_age',
@@ -380,6 +388,7 @@ var PedigreeEditor = Class.create({
                 'name' : 'gender',
                 'label' : 'Gender',
                 'type' : 'radio',
+                'columns': 3,              
                 'values' : [
                     { 'actual' : 'M', 'displayed' : 'Male' },
                     { 'actual' : 'F', 'displayed' : 'Female' },
@@ -547,6 +556,7 @@ PedigreeEditor.attributes = {
     descendantGroupLabel: {'font-size': 21, 'font-family': 'Tahoma'},
     label: {'font-size': 20, 'font-family': 'Arial'},
     nameLabels: {'font-size': 20, 'font-family': 'Arial'},    
+    commentLabel: {'font-size': 19, 'font-family': 'Arial' },
     disorderShapes: {},
     partnershipRadius: 6,
         partnershipLines :         {"stroke-width": 1.25, stroke : '#303058'},

@@ -213,6 +213,10 @@ function findXInterceptGivenLineAndY(crossY, x1, y1, x2, y2) {
     return interceptX;
 }
 
+function getElementHalfHeight(t) {
+    return Math.floor(t.getBBox().height/2);
+}
+
 /**
  * Joins all the subsets into one set and returns it.
  * @return {Raphael.st}

@@ -10,7 +10,7 @@
     {
         'name' : the name of the menu item,
         'label' : the text label above this menu option,
-        'type' : the type of form input. (eg. 'radio', 'date-picker', 'text', 'disease-picker', 'select'),
+        'type' : the type of form input. (eg. 'radio', 'date-picker', 'text', 'textarea', 'disease-picker', 'select'),
         'values' : [
                     {'actual' : actual value of the option, 'displayed' : the way the option will be seen in the menu} ...
                     ]
@@ -154,24 +154,24 @@ NodeMenu = Class.create({
               properties[method] = _this.fieldMap[field.name].crtValue;
               var event = { "nodeID": target.getID(), "modifications": properties };
               document.fire("pedigree:node:modify", event);              
-          }          
+          }
           field.fire('pedigree:change');
         });
       });
     },
-    
+
     update: function(newTarget) {
-        console.log("Node menu: update");
+        //console.log("Node menu: update");
         if (newTarget)
             this.targetNode = newTarget;
-        
+
         if (this.targetNode) {
             this._updating = true;   // needed to avoid infinite loop: update -> _attachFieldEventListeners -> update -> ...
             this._setCrtData(this.targetNode.getSummary());
             delete this._updating;
-        }        
-    },    
-    
+        }
+    },
+
     _attachDependencyBehavior : function(field, data) {
         if (data.dependency) {
             var dependency = data.dependency.split(' ', 3);
@@ -202,7 +202,8 @@ NodeMenu = Class.create({
     _generateField : {
         'radio' : function (data) {
             var result = this._generateEmptyField(data);
-            var values = new Element('div', {'class' : 'field-values'});
+            var columnClass = data.columns ? "field-values-" + data.columns + "-columns" : "field-values";
+            var values = new Element('div', {'class' : columnClass});
             result.inputsContainer.insert(values);
             var _this = this;
             var _generateRadioButton = function(v) {
@@ -226,7 +227,6 @@ NodeMenu = Class.create({
             this._attachFieldEventListeners(checkbox, ['click']);
             return result;
         },
-
         'text' : function (data) {
             var result = this._generateEmptyField(data);
             var text = new Element('input', {type: 'text', name: data.name});
@@ -236,11 +236,21 @@ NodeMenu = Class.create({
             result.inputsContainer.insert(text);
             text.wrap('span');
             text._getValue = function() { return [this.value]; }.bind(text);
-            this._attachFieldEventListeners(text, ['keypress', 'keyup'], [true]);
+            //this._attachFieldEventListeners(text, ['keypress', 'keyup'], [true]);
+            this._attachFieldEventListeners(text, ['keyup'], [true]);
             this._attachDependencyBehavior(text, data);
             return result;
         },
-
+        'textarea' : function (data) {
+            var result = this._generateEmptyField(data);
+            var text = new Element('textarea', {name: data.name, class: "textarea-"+data.rows+"-rows"});                       
+            result.inputsContainer.insert(text);            
+            //text.wrap('span');            
+            text._getValue = function() { return [this.value]; }.bind(text);
+            this._attachFieldEventListeners(text, ['keyup'], [true]);
+            this._attachDependencyBehavior(text, data);
+            return result;
+        },
         'date-picker' : function (data) {
             var result = this._generateEmptyField(data);
             var datePicker = new Element('input', {type: 'text', 'class': 'xwiki-date', name: data.name, 'title': data.format, alt : '' });
@@ -398,6 +408,12 @@ NodeMenu = Class.create({
                 target.value = value;
             }
         },
+        'textarea' : function (container, value) {
+            var target = container.down('textarea');
+            if (target) {
+                target.value = value;
+            }
+        },        
         'date-picker' : function (container, value) {
             var target = container.down('input[type=text].xwiki-date');
             if (target) {
@@ -450,10 +466,16 @@ NodeMenu = Class.create({
             } else {
                 container.removeClassName('hidden');
                 container.select('input[type=radio]').each(function(item) {                    
-                    if (inactive && Object.prototype.toString.call(inactive) === '[object Array]')                        
+                    if (inactive && Object.prototype.toString.call(inactive) === '[object Array]') {                        
                         item.disabled = (inactive.indexOf(item.value) >= 0);
-                    if (!inactive)
+                        if (item.disabled)
+                            item.up().addClassName('hidden');
+                        else
+                            item.up().removeClassName('hidden');
+                    } else if (!inactive) {
                         item.disabled = false;
+                        item.up().removeClassName('hidden');
+                    }
                 });
             }
         },
@@ -461,6 +483,9 @@ NodeMenu = Class.create({
             this._toggleFieldVisibility(container, inactive);
         },
         'text' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
+        'textarea' : function (container, inactive) {
             this._toggleFieldVisibility(container, inactive);
         },
         'date-picker' : function (container, inactive) {
@@ -489,6 +514,9 @@ NodeMenu = Class.create({
             if (target) {
                 target.disabled = disabled;
             }
+        },
+        'textarea' : function (container, inactive) {
+            // FIXME: Not implemented
         },
         'date-picker' : function (container, inactive) {
             // FIXME: Not implemented

@@ -294,7 +294,8 @@
  */
 .menu-box {
   position: absolute;
-  width: 300px;
+  width: 320px;
+  color: #000000;
 }
 .menu-box form:hover {
   box-shadow: 0 0 6px #FF9, 0 0 25px #DDDDDD inset;
@@ -309,11 +310,11 @@
 .menu-box .close-button {
   cursor: pointer;
   float: right;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: bold;
   height: 12px;
-  line-height: 8px;
-  margin: .3em .2em;
+  line-height: 9px;
+  margin: .3em .3em;
   text-align: center;
   width: 12px;
 }
@@ -324,7 +325,23 @@
   width: 99%;
 }
 .menu-box .field-box input[type=text]:focus {
-  border: 1px solif #333;
+  border: 1px solid #DDD;
+}
+.menu-box .field-box textarea {
+  width: 99%;
+  resize: none;
+  border: 1px solid #E8E8E8;
+}
+/* 3.3em height is set because firefox does not respect the rows qualifier for the textarea,
+   displaying one more line than most other browsers. Less than 3.3em and there is no scrollbar in FF */
+.menu-box .field-box .textarea-2-rows {
+  height: 3.3em;
+}
+.menu-box .field-box .textarea-3-rows {
+  height: 4.3em;
+}
+.menu-box .field-box textarea:focus {
+  border: 1px solid #DDD;
 }
 .menu-box .field-name {
   display: block;
@@ -351,6 +368,14 @@
   -webkit-column-count: 2;
   column-count: 2;
 }
+.field-values-3-columns {
+  -moz-column-count: 3;
+  -webkit-column-count: 3;
+  column-count: 3;
+}
+.field-values-3-columns label {
+  display: block;
+}
 
 .field-inputs {
   display: table;
@@ -368,6 +393,24 @@
   width: 50%;
   float: right;
 }
+.menu-box .field-date_of_birth {
+  width: 48%;
+  float: left;
+}
+.menu-box .field-date_of_death {
+  width: 48%;
+  float: right;
+}
+.menu-box .accepted-suggestions {
+  margin: 0px 0px 0.3em !important;
+}
+.menu-box .field-childlessText {
+  padding: 0 0;
+}
+.menu-box .field-monozygotic {
+  padding: 0.3em 0;
+}
+
 /* ===========================================
  * NODE TYPE OPTIONS
  */

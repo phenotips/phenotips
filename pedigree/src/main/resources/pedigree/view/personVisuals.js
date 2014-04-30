@@ -18,6 +18,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._nameLabel = null;
         this._stillBirthLabel = null;
         this._ageLabel = null;
+        this._commentsLabel = null;
         this._childlessStatusLabel = null;
         this._disorderShapes = null;
         this._deadShape = null;
@@ -367,11 +368,41 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * @method updateSBLabel
      */
     updateSBLabel: function() {
-        this.getSBLabel() && this.getSBLabel().remove();
-        if (this.getNode().getLifeStatus() != 'stillborn') return;        
-        this._stillBirthLabel = editor.getPaper().text(this.getX(), this.getY(), "SB").attr(PedigreeEditor.attributes.label);
+        this.getSBLabel() && this.getSBLabel().remove();        
+        if (this.getNode().getLifeStatus() != 'stillborn') {        
+            this._stillBirthLabel = editor.getPaper().text(this.getX(), this.getY(), "SB").attr(PedigreeEditor.attributes.label);
+        } else {
+            this._stillBirthLabel = null;
+        }
         this.drawLabels();
     },
+    
+    /**
+     * Returns this Person's comments label
+     *
+     * @method getCommentsLabel
+     * @return {Raphael.el}
+     */
+    getCommentsLabel: function() {
+        return this._commentsLabel;
+    },
+
+    /**
+     * Updates the stillbirth label for this Person
+     *
+     * @method updateCommentsLabel
+     */
+    updateCommentsLabel: function() {
+        this.getCommentsLabel() && this.getCommentsLabel().remove();        
+        if (this.getNode().getComments() != "") {       
+            var text = this.getNode().getComments(); //.replace(/\n/g, '<br />');
+            this._commentsLabel = editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditor.attributes.commentLabel);
+            this._commentsLabel.alignTop = true;
+        } else {
+            this._commentsLabel = null;
+        }
+        this.drawLabels();
+    },    
 
     /**
      * Displays the correct graphics to represent the current life status for this Person.
@@ -451,6 +482,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this.getSBLabel() && labels.push(this.getSBLabel());
         this.getNameLabel() && labels.push(this.getNameLabel());
         this.getAgeLabel() && labels.push(this.getAgeLabel());
+        this.getCommentsLabel() && labels.push(this.getCommentsLabel());
         return labels;
     },
 
@@ -468,8 +500,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         var lowerBound = PedigreeEditor.attributes.radius * (this.getNode().isPersonGroup() ? PedigreeEditor.attributes.groupNodesScale : 1.0);
         var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset;
         for (var i = 0; i < labels.length; i++) {
-            labels[i].attr("y", startY);
-            //labels[i].attr(PedigreeEditor.attributes.label);
+            var offset = (labels[i].alignTop) ? getElementHalfHeight(labels[i]) : 0;
+            labels[i].attr("y", startY + offset);                      
             labels[i].oy = (labels[i].attr("y") - selectionOffset);
             startY = labels[i].getBBox().y2 + 11;
         }

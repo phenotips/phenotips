@@ -143,7 +143,7 @@ var Person = Class.create(AbstractPerson, {
      * @param comment
      */    
     setComments: function($super, comment) {
-        if (comment.strip() != this.getComments()) {
+        if (comment != this.getComments()) {
             $super(comment);
             this.getGraphics().updateCommentsLabel();
         }
@@ -498,6 +498,8 @@ var Person = Class.create(AbstractPerson, {
             }
         }
             
+        console.log("Comments: " + this.getComments());
+        
         return {
             identifier:    {value : this.getID()},
             first_name:    {value : this.getFirstName()},

@@ -14,6 +14,7 @@ var AbstractNode = Class.create( {
     initialize: function(x, y, id) {
     	//console.log("abstract node");
     	this._id = id;
+    	this._comments = "";
         !this._type && (this._type = "AbstractNode");        
         this._graphics = this._generateGraphics(x, y);
         //console.log("abstract node end");
@@ -120,6 +121,26 @@ var AbstractNode = Class.create( {
     },
 
     /**
+     * Returns any free-form comments associated with the node
+     *
+     * @method getComments
+     * @return {String}
+     */
+    getComments: function() {
+        return this._comments;
+    },
+
+    /**
+     * Replaces free-form comments associated with the node
+     *
+     * @method setComments
+     * @param comment
+     */
+    setComments: function(comment) {
+        this._comments = comment;        
+    },
+    
+    /**
      * Returns an object containing all the properties of this node
      * except id, x, y & type
      *
@@ -128,7 +149,10 @@ var AbstractNode = Class.create( {
      *
      */
     getProperties: function() {
-        return {};
+        var info = {};
+        if (this.getComments() != "")
+            info['comments'] = this.getComments();
+        return info;;
     },
 
     /**
@@ -136,9 +160,12 @@ var AbstractNode = Class.create( {
      *
      * @method assignProperties
      * @param properties Object
-     * @return {Boolean} True if info was successfully assigned
+     * @return {Boolean} True if properties were successfully assigned (i.e. no conflicts/invalid values)
      */
     assignProperties: function(properties) {
+        if (properties.hasOwnProperty("comments") && this.getComments() != properties.comments) {
+            this.setComments(properties.comments);
+        }
         return true;
     },
 

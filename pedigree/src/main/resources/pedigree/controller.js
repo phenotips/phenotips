@@ -135,8 +135,9 @@ var Controller = Class.create({
                 // prepare undo event
                 var propertyGetFunction =  propertySetFunction.replace("set","get");
                 var oldValue = node[propertyGetFunction]();
+                if (oldValue == propValue) continue;
+                
                 undoEvent.memo.properties[propertySetFunction] = oldValue;
-                if (oldValue != propValue) changed = true;
 
                 node[propertySetFunction](propValue);
 
@@ -215,8 +216,8 @@ var Controller = Class.create({
         editor.getNodeMenu().update();  // for example, user selected a wrong gender in the nodeMenu, which
                                         // gets reverted back - need to select the correct one in the nodeMenu as well
         
-        console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
-        if (!event.memo.noUndoRedo && changed)
+        //console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
+        if (!event.memo.noUndoRedo)
             editor.getActionStack().addState( event, undoEvent );
     },
     
