@@ -227,6 +227,7 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
           <requires>
             <require>java &gt;= 0:1.6.0</require>
             <require>tomcat6</require>
+            <require>unzip</require>
           </requires>
           <mappings>
             <!-- Copy the main PhenoTips war into Tomcat's webapps directory -->
