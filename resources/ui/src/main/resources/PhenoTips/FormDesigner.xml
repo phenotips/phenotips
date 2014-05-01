@@ -759,6 +759,20 @@ document.observe("xwiki:dom:loaded", function(){
       #set ($discard = $disabledUixs.put($uix.id, true))
     #end
     #set ($uixs = $tmpUixs)
+  #elseif("$!{selectionOverride}" != '' &amp;&amp; $selectionOverride.size() == 0)
+    #set ($tempList = [])
+    #foreach($uix in $uixs)
+        #set ($enabled = $uix.getParameters().get("enabled"))
+        #if ("$!{enabled}" == "false" || "$!{enabled}" == "0" || "$!{enabled}" == "no")
+            #set ($enabled = false)
+        #else
+            #set ($enabled = true)
+        #end
+        #if ($enabled)
+            #set($discard = $tempList.add($uix))
+        #end
+    #end
+    #set ($uixs = $tempList)
   #end
   #foreach ($uix in $uixs)
     #set ($title = $uix.getParameters().get("title"))
@@ -926,6 +940,13 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.
     "${prefix}fields" : "",
     "${prefix}mapping" : ""
   })
+#end
+#if($studyConfig)
+    #set($groupConfig = $studyConfig)
+    #if (!$groupConfig.getProperty('sections') &amp;&amp; !$groupConfig.getProperty('fields'))
+        $groupConfig.getXWikiObject().setDBStringListValue('sections', [])
+        $groupConfig.getXWikiObject().setDBStringListValue('fields', [])
+    #end
 #end
 
 ## ----------------------------------------------------------------------
@@ -1112,4 +1133,5 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##
 #end
 {{/velocity}}
 </content>
+  <renderedcontent>&lt;div class="box warningmessage"&gt;You don't have permission to access this configuration.&lt;/div&gt;</renderedcontent>
 </xwikidoc>
