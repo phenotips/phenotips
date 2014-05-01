@@ -90,8 +90,7 @@ var Partnership = Class.create(AbstractNode, {
      */    
     setBrokenStatus: function(value) {
         if (this._broken != value) {
-            this._broken = value;
-            this.getGraphics().updatePartnerConnections();
+            this._broken = value;            
         }
     },
     

@@ -11,16 +11,15 @@
  * @param {String} gender Either 'M', 'F' or 'U' depending on the gender
  * @param {Number} id Unique ID number
  */
-
 var PersonGroup = Class.create(Person, {
 
     initialize: function($super, x, y, gender, id, numPersons) {
         this._numPersons = numPersons;
         this._comment    = "";
-        $super(x, y, "U", id);        
-        this._type = "PersonGroup";        
+        this._type       = "PersonGroup";
+        $super(x, y, "U", id);
     },
-    
+
     /**
      * Initializes the object responsible for creating graphics for this PersonGroup
      *

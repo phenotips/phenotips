@@ -40,8 +40,8 @@ PositionedGraph.prototype = {
     horizontalPersonSeparationDist: 10,
     horizontalTwinSeparationDist:    8,
     horizontalRelSeparationDist:     6,
-    yDistanceNodeToChildhub:        17,
-    yDistanceChildhubToNode:        17,
+    yDistanceNodeToChildhub:        20,
+    yDistanceChildhubToNode:        14,
     yExtraPerHorizontalLine:         4,
     yAttachPortHeight:             1.5,
 
@@ -2352,13 +2352,18 @@ PositionedGraph.prototype = {
                     right_x = Math.max( right_x, child_x );
                 }
 
-                // special case improvement: single child which is leftmost on the rank and its parent is to the right of it
-                // (this may not produce less edge crossings, but is more visually pleasing)
-                var needTopmost = (outEdges.length == 1) &&
-                                  ( ( (this.order.vOrder[outEdges[0]] == 0) && (top_x > this.positions[outEdges[0]]) ) ||
-                                    ( (this.order.vOrder[outEdges[0]] == this.order.vOrder.length -1) && (top_x < this.positions[outEdges[0]]) ) );
-                edgeInfo.push( { "childhub": v, "top_x": top_x, "left_x": left_x, "right_x": right_x, "childCoords": childCoords, "needTopmost": needTopmost} );
-                initLevels.push(1);
+                if (left_x == right_x) {
+                    // no horizontal part, just  astraight line - no need to optimize anything
+                    verticalLevels.childEdgeLevel[v] = 0;
+                } else {
+                    // special case improvement: single child which is leftmost on the rank and its parent is to the right of it
+                    // (this may not produce less edge crossings, but is more visually pleasing)
+                    var needTopmost = (outEdges.length == 1) &&
+                                      ( ( (this.order.vOrder[outEdges[0]] == 0) && (top_x > this.positions[outEdges[0]]) ) ||
+                                        ( (this.order.vOrder[outEdges[0]] == this.order.vOrder.length -1) && (top_x < this.positions[outEdges[0]]) ) );
+                    edgeInfo.push( { "childhub": v, "top_x": top_x, "left_x": left_x, "right_x": right_x, "childCoords": childCoords, "needTopmost": needTopmost} );
+                    initLevels.push(1);
+                }
             }
             //console.log("EdgeInfo: " + stringifyObject(edgeInfo));
 
@@ -2512,7 +2517,7 @@ PositionedGraph.prototype = {
                             nextVerticalLevel++;
                         }
 
-                        return nextVerticalLevel;
+                        return (nextVerticalLevel-1);
                     }.bind(this);
 
                     var partnerInfo = this._findLeftAndRightPartners(v);
@@ -2612,6 +2617,7 @@ PositionedGraph.prototype = {
 
                 console.log("[rank " + r + "] Final vertical relatioship levels: " +  stringifyObject(relEdgeLevels));
 
+                numLevels = 0;
                 // place computed levels where they ultimately belong
                 for (var i = 0; i < edgeInfo.length; i++) {
                     verticalLevels.outEdgeVerticalLevel[ edgeInfo[i].v ][ edgeInfo[i].u ].verticalLevel = relEdgeLevels[i];
@@ -2742,7 +2748,7 @@ PositionedGraph.prototype = {
             // note: yExtraPerHorizontalLine * vertLevel.rankVerticalLevels[r] part comes from the idea that if there are many
             //       horizontal lines (childlines & relationship lines) between two ranks it is good to separate those ranks vertically
             //       more than ranks with less horizontal lines between them
-            rankY[r] = rankY[r-1] + yDistance + this.yExtraPerHorizontalLine*(Math.max(this.vertLevel.rankVerticalLevels[r-1],2) - 2);
+            rankY[r] = rankY[r-1] + yDistance + this.yExtraPerHorizontalLine*(Math.max(this.vertLevel.rankVerticalLevels[r-1],1) - 1);
         }
 
         if (oldRanks && oldRankY) {

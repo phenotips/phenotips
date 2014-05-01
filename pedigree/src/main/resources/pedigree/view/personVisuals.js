@@ -312,9 +312,13 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         else {
             var prefix = (person.getConceptionDate()) ? '' : "d. ";
             if(person.getDeathDate() && person.getBirthDate()) {
-                text = prefix + getAge(person.getBirthDate(), person.getDeathDate());
+                //if (person.getDeathDate().getFullYear() - person.getBirthDate().getFullYear() > 20) {
+                //    text =  '' + person.getBirthDate().getFullYear() + " - " + person.getDeathDate().getFullYear();
+                //} else {
+                    text = prefix + getAge(person.getBirthDate(), person.getDeathDate());
+                //}
             }
-            else if(person.getDeathDate() && person.getConceptionDate()) {
+            else if (person.getDeathDate() && person.getConceptionDate()) {
                 text = prefix + getAge(person.getConceptionDate(), person.getDeathDate());
             }
             else if (person.getDeathDate()) {
@@ -428,6 +432,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         else if (status == 'unborn') {
             this.drawUnbornShape();
         }        
+        this.updateAgeLabel();
     },
 
     /**
@@ -500,7 +505,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         var lowerBound = PedigreeEditor.attributes.radius * (this.getNode().isPersonGroup() ? PedigreeEditor.attributes.groupNodesScale : 1.0);
         var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset;
         for (var i = 0; i < labels.length; i++) {
-            var offset = (labels[i].alignTop) ? getElementHalfHeight(labels[i]) : 0;
+            var offset = (labels[i].alignTop) ? (getElementHalfHeight(labels[i]) - 7) : 0;
             labels[i].attr("y", startY + offset);                      
             labels[i].oy = (labels[i].attr("y") - selectionOffset);
             startY = labels[i].getBBox().y2 + 11;

@@ -20,7 +20,7 @@ var Person = Class.create(AbstractPerson, {
         //var timer = new Timer();
     	//console.log("person");            
         this._isProband = (id == 0);
-        this._type = "Person";
+        !this._type && (this._type = "Person");
         this._setDefault();
         $super(x, y, gender, id);   // called after all the other variables are initialized because
                                     // one of the classes initializes graphics, which uses some of those
@@ -35,6 +35,7 @@ var Person = Class.create(AbstractPerson, {
         this._birthDate = "";
         this._deathDate = "";
         this._conceptionDate = "";
+        this._gestationAge = "";
         this._isAdopted = false;
         this._lifeStatus = 'alive';
         this._childlessStatus = null;
@@ -293,8 +294,10 @@ var Person = Class.create(AbstractPerson, {
             this.setConceptionDate(d);
         }
         else {
+            this._gestationAge = "";
             this.setConceptionDate(null);
         }
+        this.getGraphics().updateAgeLabel();
     },
 
     /**

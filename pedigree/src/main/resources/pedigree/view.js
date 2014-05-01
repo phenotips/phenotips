@@ -677,7 +677,7 @@ var View = Class.create({
             }
         }
 
-        timer.printSinceLast("=== highlight: ");
+        //timer.printSinceLast("=== highlight: ");
 
         // re-evaluate which buttons & handles are appropriate for the nodes (e.g. twin button appears/disappears)
         for (nodeID in this._nodeMap)
@@ -689,7 +689,7 @@ var View = Class.create({
 
         // TODO: move the viewport to make changeSet.makevisible nodes visible on screen
 
-        timer.printSinceLast("=== update handles & butons runtime: ");
+        timer.printSinceLast("=== highlight & update handles runtime: ");
         timer2.printSinceLast("=== Total apply changes runtime: ");
 
         } catch(err) {

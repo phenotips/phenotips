@@ -139,7 +139,10 @@ var ActionStack = Class.create({
             return true;
         if (event1.memo.properties.hasOwnProperty("setComments") &&
             event2.memo.properties.hasOwnProperty("setComments") )
-            return true;        
+            return true;
+        if (event1.memo.properties.hasOwnProperty("setChildlessReason") &&
+            event2.memo.properties.hasOwnProperty("setChildlessReason") )
+            return true;                        
         return false;
     },
 

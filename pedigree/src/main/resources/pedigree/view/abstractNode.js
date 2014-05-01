@@ -223,8 +223,7 @@ var ChildlessBehavior = {
      */
     setChildlessReason: function(reason) {
         if(this.getChildlessStatus() == null)
-            reson = null;
-        
+            reson = "";        
         this._childlessReason = reason;
         this.getGraphics().updateChildlessStatusLabel();
     }

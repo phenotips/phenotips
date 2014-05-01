@@ -689,11 +689,11 @@ BaseGraph.prototype = {
             throw "Assertion failed: attempting to get gender of a non-person";
         return this.properties[v]["gender"];
     },
-    
+
     getOppositeGender: function(v) {
         if (!this.isPerson(v))
             throw "Assertion failed: attempting to get gender of a non-person";
-        
+
         if (this.getGender(v) == "U") {
             return "U";
         }

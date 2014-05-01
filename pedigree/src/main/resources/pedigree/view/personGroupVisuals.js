@@ -11,9 +11,9 @@
 
 var PersonGroupVisuals = Class.create(PersonVisuals, {
 
-    initialize: function($super, node, x, y) {
-        $super(node,x,y);
-        this.setNumPersons(node.getNumPersons());        
+    initialize: function($super, node, x, y) {        
+        $super(node,x,y);                
+        this.setNumPersons(node.getNumPersons());
     },
 
     generateHoverbox: function(x, y) {

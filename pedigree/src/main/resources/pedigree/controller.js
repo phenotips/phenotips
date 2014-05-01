@@ -139,8 +139,25 @@ var Controller = Class.create({
                 
                 undoEvent.memo.properties[propertySetFunction] = oldValue;
 
+                // sometimes UNDO includes more then the property itself: e.g. changing life status
+                // from "dead" to "alive" also clears the death date. Need to add it to the "undo" event
+                if (propertySetFunction == "setLifeStatus" && oldValue != "alive") {
+                    if (oldValue == "deceased" && node.getDeathDate() != "") {
+                        undoEvent.memo.properties["setDeathDate"] = node.getDeathDate(); 
+                    } else {
+                        // aborted/unborn/stillborn
+                        if (node.getGestationAge() != "")
+                            undoEvent.memo.properties["setGestationAge"] = node.getGestationAge();
+                    }
+                }
+                if (propertySetFunction == "setChildlessStatus" && oldValue != 'none') {
+                    if (node.getChildlessReason() && node.getChildlessReason() != "") {
+                        undoEvent.memo.properties["setChildlessReason"] = node.getChildlessReason();
+                    }
+                }
+                
                 node[propertySetFunction](propValue);
-
+                
                 if (propertySetFunction == "setLastName") {
                     if (PedigreeEditor.attributes.propagateLastName) {
                         if (node.getGender(nodeID) == 'M') {
@@ -172,7 +189,9 @@ var Controller = Class.create({
                     twinUpdate[propertySetFunction] = propValue;
                 }
                 
-                if (propertySetFunction == "setConsanguinity") {
+                if (propertySetFunction == "setConsanguinity" || propertySetFunction == "setBrokenStatus") {
+                    // this updates the relationship lines, as well as any lines
+                    // crossed by the relationship llines to maintain correct crossing graphics
                     needUpdateRelationship = true;
                 }
             }
@@ -208,7 +227,7 @@ var Controller = Class.create({
         }
         
         if (needUpdateRelationship) {
-            var relID =editor.getGraph().isRelationship(nodeID) ? nodeID : editor.getGraph().getParentRelationship(nodeID);
+            var relID = editor.getGraph().isRelationship(nodeID) ? nodeID : editor.getGraph().getParentRelationship(nodeID);
             var changeSet = {"moved": [relID]};
             editor.getView().applyChanges(changeSet, true);
         }
@@ -216,7 +235,8 @@ var Controller = Class.create({
         editor.getNodeMenu().update();  // for example, user selected a wrong gender in the nodeMenu, which
                                         // gets reverted back - need to select the correct one in the nodeMenu as well
         
-        //console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
+        //console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));        
+        //console.log("Undo event: " + stringifyObject(undoEvent));
         if (!event.memo.noUndoRedo)
             editor.getActionStack().addState( event, undoEvent );
     },
