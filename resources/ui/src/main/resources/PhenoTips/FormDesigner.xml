@@ -818,14 +818,14 @@ document.observe("xwiki:dom:loaded", function(){
 ## Place the data in $result
 ## See #_formDesigner__getExtensionsData
 ## ----------------------------------------------------------------------
-#macro(_formDesigner__getSectionsData $result)#_formDesigner__getExtensionsData('section', 'extensionPointId', $sectionExtensionPointId, $sectionExtensionPointId, $!groupConfig.getProperty('sections').value, $result)#end
+#macro(_formDesigner__getSectionsData $result)#_formDesigner__getExtensionsData('section', 'extensionPointId', $sectionExtensionPointId, $sectionExtensionPointId, $!customConfig.getProperty('sections').value, $result)#end
 
 ## ----------------------------------------------------------------------
 ## Retrieve and organize the data corresponding to field extensions from a specific section
 ## Place the data in $result
 ## See #_formDesigner__getExtensionsData
 ## ----------------------------------------------------------------------
-#macro(_formDesigner__getFieldsData $extensionPointId $result)#_formDesigner__getExtensionsData('field', 'extensionPointId', $extensionPointId, $extensionPointId, $!groupConfig.getProperty('fields').value, $result)#end
+#macro(_formDesigner__getFieldsData $extensionPointId $result)#_formDesigner__getExtensionsData('field', 'extensionPointId', $extensionPointId, $extensionPointId, $!customConfig.getProperty('fields').value, $result)#end
 
 ## ----------------------------------------------------------------------
 ## Global configuration: update extensions
@@ -942,10 +942,12 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.
   })
 #end
 #if($studyConfig)
-    #set($groupConfig = $studyConfig)
-    #if (!$groupConfig.getProperty('sections') &amp;&amp; !$groupConfig.getProperty('fields'))
-        $groupConfig.getXWikiObject().setDBStringListValue('sections', [])
-        $groupConfig.getXWikiObject().setDBStringListValue('fields', [])
+    #set($customConfig = $studyConfig)
+    #if (!$customConfig.getProperty('sections'))
+      $customConfig.getXWikiObject().setDBStringListValue('sections', [])
+    #end
+    #if (!$customConfig.getProperty('fields'))
+      $customConfig.getXWikiObject().setDBStringListValue('fields', [])
     #end
 #end
 
@@ -1133,5 +1135,4 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##
 #end
 {{/velocity}}
 </content>
-  <renderedcontent>&lt;div class="box warningmessage"&gt;You don't have permission to access this configuration.&lt;/div&gt;</renderedcontent>
 </xwikidoc>
