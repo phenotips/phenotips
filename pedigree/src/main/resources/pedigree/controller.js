@@ -141,13 +141,18 @@ var Controller = Class.create({
 
                 // sometimes UNDO includes more then the property itself: e.g. changing life status
                 // from "dead" to "alive" also clears the death date. Need to add it to the "undo" event
-                if (propertySetFunction == "setLifeStatus" && oldValue != "alive") {
-                    if (oldValue == "deceased" && node.getDeathDate() != "") {
-                        undoEvent.memo.properties["setDeathDate"] = node.getDeathDate(); 
-                    } else {
-                        // aborted/unborn/stillborn
-                        if (node.getGestationAge() != "")
-                            undoEvent.memo.properties["setGestationAge"] = node.getGestationAge();
+                if (propertySetFunction == "setLifeStatus") {
+                    if (oldValue != "alive") {
+                        if (oldValue == "deceased" && node.getDeathDate() != "") {
+                            undoEvent.memo.properties["setDeathDate"] = node.getDeathDate(); 
+                        } else {
+                            // aborted/unborn/stillborn
+                            if (node.getGestationAge() != "")
+                                undoEvent.memo.properties["setGestationAge"] = node.getGestationAge();
+                        }
+                    } else {                        
+                        undoEvent.memo.properties["setBirthDate"] = node.getBirthDate();
+                        undoEvent.memo.properties["setAdopted"]   = node.getAdopted();
                     }
                 }
                 if (propertySetFunction == "setChildlessStatus" && oldValue != 'none') {

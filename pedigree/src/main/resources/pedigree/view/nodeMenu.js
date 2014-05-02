@@ -168,6 +168,7 @@ NodeMenu = Class.create({
         if (this.targetNode) {
             this._updating = true;   // needed to avoid infinite loop: update -> _attachFieldEventListeners -> update -> ...
             this._setCrtData(this.targetNode.getSummary());
+            this.reposition();
             delete this._updating;
         }
     },
@@ -348,9 +349,19 @@ NodeMenu = Class.create({
     },
 
     reposition : function(x, y) {
-      this.menuBox.style.height = '';
-      this.menuBox.style.overflow = '';
-      this.menuBox.style.left = x + 'px';
+      if (x !== undefined ) {
+          this._currentX = x;
+          this._currentY = y;
+          this._height   = this.menuBox.getHeight();
+          this.menuBox.style.height   = '';
+          this.menuBox.style.overflow = '';
+          this.menuBox.style.left = x + 'px';          
+      } else {
+          if (this.menuBox.getHeight() <= this._height) return;
+          this._height = this.menuBox.getHeight();
+          x = this._currentX;
+          y = this._currentY;
+      }
       // Make sure the menu fits inside the screen
       if (this.canvas && this.menuBox.getHeight() >= this.canvas.getHeight()) {
         this.menuBox.style.top = 0;
