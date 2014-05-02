@@ -759,6 +759,20 @@ document.observe("xwiki:dom:loaded", function(){
       #set ($discard = $disabledUixs.put($uix.id, true))
     #end
     #set ($uixs = $tmpUixs)
+  #elseif("$!{selectionOverride}" != '' &amp;&amp; $selectionOverride.size() == 0)
+    #set ($tempList = [])
+    #foreach($uix in $uixs)
+      #set ($enabled = $uix.getParameters().get("enabled"))
+      #if ("$!{enabled}" == "false" || "$!{enabled}" == "0" || "$!{enabled}" == "no")
+          #set ($enabled = false)
+      #else
+          #set ($enabled = true)
+      #end
+      #if ($enabled)
+          #set($discard = $tempList.add($uix))
+      #end
+    #end
+    #set ($uixs = $tempList)
   #end
   #foreach ($uix in $uixs)
     #set ($title = $uix.getParameters().get("title"))
@@ -804,14 +818,14 @@ document.observe("xwiki:dom:loaded", function(){
 ## Place the data in $result
 ## See #_formDesigner__getExtensionsData
 ## ----------------------------------------------------------------------
-#macro(_formDesigner__getSectionsData $result)#_formDesigner__getExtensionsData('section', 'extensionPointId', $sectionExtensionPointId, $sectionExtensionPointId, $!groupConfig.getProperty('sections').value, $result)#end
+#macro(_formDesigner__getSectionsData $result)#_formDesigner__getExtensionsData('section', 'extensionPointId', $sectionExtensionPointId, $sectionExtensionPointId, $!customConfig.getProperty('sections').value, $result)#end
 
 ## ----------------------------------------------------------------------
 ## Retrieve and organize the data corresponding to field extensions from a specific section
 ## Place the data in $result
 ## See #_formDesigner__getExtensionsData
 ## ----------------------------------------------------------------------
-#macro(_formDesigner__getFieldsData $extensionPointId $result)#_formDesigner__getExtensionsData('field', 'extensionPointId', $extensionPointId, $extensionPointId, $!groupConfig.getProperty('fields').value, $result)#end
+#macro(_formDesigner__getFieldsData $extensionPointId $result)#_formDesigner__getExtensionsData('field', 'extensionPointId', $extensionPointId, $extensionPointId, $!customConfig.getProperty('fields').value, $result)#end
 
 ## ----------------------------------------------------------------------
 ## Global configuration: update extensions
@@ -926,6 +940,15 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.
     "${prefix}fields" : "",
     "${prefix}mapping" : ""
   })
+#end
+#if($studyConfig)
+    #set($customConfig = $studyConfig)
+    #if (!$customConfig.getProperty('sections'))
+      $customConfig.getXWikiObject().setDBStringListValue('sections', [])
+    #end
+    #if (!$customConfig.getProperty('fields'))
+      $customConfig.getXWikiObject().setDBStringListValue('fields', [])
+    #end
 #end
 
 ## ----------------------------------------------------------------------
