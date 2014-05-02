@@ -762,15 +762,15 @@ document.observe("xwiki:dom:loaded", function(){
   #elseif("$!{selectionOverride}" != '' &amp;&amp; $selectionOverride.size() == 0)
     #set ($tempList = [])
     #foreach($uix in $uixs)
-        #set ($enabled = $uix.getParameters().get("enabled"))
-        #if ("$!{enabled}" == "false" || "$!{enabled}" == "0" || "$!{enabled}" == "no")
-            #set ($enabled = false)
-        #else
-            #set ($enabled = true)
-        #end
-        #if ($enabled)
-            #set($discard = $tempList.add($uix))
-        #end
+      #set ($enabled = $uix.getParameters().get("enabled"))
+      #if ("$!{enabled}" == "false" || "$!{enabled}" == "0" || "$!{enabled}" == "no")
+          #set ($enabled = false)
+      #else
+          #set ($enabled = true)
+      #end
+      #if ($enabled)
+          #set($discard = $tempList.add($uix))
+      #end
     #end
     #set ($uixs = $tempList)
   #end
