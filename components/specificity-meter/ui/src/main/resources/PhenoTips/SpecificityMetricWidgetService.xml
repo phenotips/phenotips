@@ -109,7 +109,7 @@ def monarchScore() {
       data.features.add(["id" : value, "isPresent" : false])
     }
   }
-  def url = 'http://tartini.crbs.ucsd.edu/score?annotation_profile=' + JsonOutput.toJson(data)
+  def url = 'http://monarchinitiative.org/score?annotation_profile=' + JsonOutput.toJson(data)
 
   def score = url.toURL().text
   if (score) {
