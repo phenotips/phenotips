@@ -255,7 +255,7 @@ var DisorgerLegend = Class.create( {
         //console.log("Position x: " + pos.x + " position y: " + pos.y);
         if (node) {
             var disorderID = disorderLabel.id.substring( disorderLabel.id.indexOf('-') + 1);
-            var currentDisorders = node.getDisorders();
+            var currentDisorders = node.getDisorders().slice(0);
             if (currentDisorders.indexOf(disorderID) == -1) {   // only if the node does not have this disorder yet
                 currentDisorders.push(disorderID);
                 editor.getView().unmarkAll();

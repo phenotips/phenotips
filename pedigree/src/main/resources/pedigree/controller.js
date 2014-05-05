@@ -124,6 +124,8 @@ var Controller = Class.create({
         var needUpdateAncestors = false;
         var needUpdateRelationship = false;
         
+        var changedValue = false;
+        
         for (var propertySetFunction in properties) {
             if (properties.hasOwnProperty(propertySetFunction)) {
                 var propValue = properties[propertySetFunction];  
@@ -137,8 +139,9 @@ var Controller = Class.create({
                 var oldValue = node[propertyGetFunction]();
                 if (oldValue == propValue) continue;
                 
-                if (Object.prototype.toString.call(oldValue) === '[object Array]')                    
+                if (Object.prototype.toString.call(oldValue) === '[object Array]') {                    
                     oldValue = oldValue.slice(0);
+                }
 
                 undoEvent.memo.properties[propertySetFunction] = oldValue;
 
@@ -158,6 +161,9 @@ var Controller = Class.create({
                         undoEvent.memo.properties["setAdopted"]   = node.getAdopted();
                     }
                 }
+                if (propertySetFunction == "setDeathDate" && node.getLifeStatus() != "deceased") {
+                    undoEvent.memo.properties["setLifeStatus"] = node.getLifeStatus(); 
+                }
                 if (propertySetFunction == "setChildlessStatus" && oldValue != 'none') {
                     if (node.getChildlessReason() && node.getChildlessReason() != "") {
                         undoEvent.memo.properties["setChildlessReason"] = node.getChildlessReason();
@@ -166,6 +172,13 @@ var Controller = Class.create({
                 
                 node[propertySetFunction](propValue);
                 
+                if (propertySetFunction == "setDisorders") {
+                    var newDisorders = node[propertyGetFunction]();
+                    if (JSON.stringify(oldValue) == JSON.stringify(newDisorders)) continue;
+                }
+                
+                changedValue = true;
+                                
                 if (propertySetFunction == "setLastName") {
                     if (PedigreeEditor.attributes.propagateLastName) {
                         if (node.getGender(nodeID) == 'M') {
@@ -245,7 +258,7 @@ var Controller = Class.create({
         
         //console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));        
         //console.log("Undo event: " + stringifyObject(undoEvent));
-        if (!event.memo.noUndoRedo)
+        if (!event.memo.noUndoRedo && changedValue)
             editor.getActionStack().addState( event, undoEvent );
     },
     
