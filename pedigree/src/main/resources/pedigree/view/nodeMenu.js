@@ -17,6 +17,9 @@
     }, ...
  ]
  }
+ 
+ Note: when an item is specified as "inactive" it is completely removed from the menu; when it
+       is specified as "disabled" it is greyed-out and does not allow selection, but is still visible.
  */
 NodeMenu = Class.create({
     initialize : function(data) {
@@ -349,7 +352,14 @@ NodeMenu = Class.create({
     },
 
     reposition : function(x, y) {
+      x = Math.floor(x);
+      y = Math.floor(y);
       if (x !== undefined ) {
+          if (this.canvas && x + this.menuBox.getWidth() > (this.canvas.getWidth() + 10)) {              
+              var delta = x + this.menuBox.getWidth() - this.canvas.getWidth();
+              editor.getWorkspace().panByX(delta, true);
+              x -= delta;              
+          }              
           this._currentX = x;
           this._currentY = y;
           this._height   = this.menuBox.getHeight();
@@ -363,7 +373,7 @@ NodeMenu = Class.create({
           y = this._currentY;
       }
       // Make sure the menu fits inside the screen
-      if (this.canvas && this.menuBox.getHeight() >= this.canvas.getHeight()) {
+      if (this.canvas && this.menuBox.getHeight() >= (this.canvas.getHeight() + 5)) {
         this.menuBox.style.top = 0;
         this.menuBox.style.height = this.canvas.getHeight() + 'px';
         this.menuBox.style.overflow = 'auto';
@@ -514,11 +524,24 @@ NodeMenu = Class.create({
     },
 
     _setFieldDisabled : {
-        'radio' : function (container, inactive) {
-            // FIXME: Not implemented
+        'radio' : function (container, disabled) {
+            if (disabled === true) {
+                container.addClassName('hidden');
+            } else {
+                container.removeClassName('hidden');
+                container.select('input[type=radio]').each(function(item) {                    
+                    if (disabled && Object.prototype.toString.call(disabled) === '[object Array]')                        
+                        item.disabled = (inactive.indexOf(item.value) >= 0);
+                    if (!disabled)
+                        item.disabled = false;
+                });
+            }            
         },
-        'checkbox' : function (container, inactive) {
-            // FIXME: Not implemented
+        'checkbox' : function (container, disabled) {
+            var target = container.down('input[type=checkbox]');
+            if (target) {
+                target.disabled = disabled;
+            }
         },
         'text' : function (container, disabled) {
             var target = container.down('input[type=text]');

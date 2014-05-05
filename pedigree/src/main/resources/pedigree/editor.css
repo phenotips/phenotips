@@ -294,14 +294,14 @@
  */
 .menu-box {
   position: absolute;
-  width: 320px;
+  width: 330px;
   color: #000000;
 }
 .menu-box form:hover {
   box-shadow: 0 0 6px #FF9, 0 0 25px #DDDDDD inset;
 }
 .menu-box form {
-  padding: .5em 1.5em 1em;
+  padding: .3em 1.3em 0.7em;
   border: 1px solid #F5F5F5;
   border-radius: 0 .75em .75em .75em;
   background: #EEE;
@@ -349,7 +349,8 @@
 }
 .menu-box .accepted-suggestions li {
   line-height: 1em;
-  padding: .2em 1em .2em 0;
+  padding: .2em 1em .1em 0;
+  font-size: 85%
 }
 .menu-box .accepted-suggestions li:hover {
   background-color: #FFEE99;
@@ -386,19 +387,19 @@
 }
 
 .menu-box .field-first_name {
-  width: 50%;
+  width: 49%;
   float: left;
 }
 .menu-box .field-last_name {
-  width: 50%;
+  width: 49%;
   float: right;
 }
 .menu-box .field-date_of_birth {
-  width: 48%;
+  width: 49%;
   float: left;
 }
 .menu-box .field-date_of_death {
-  width: 48%;
+  width: 49%;
   float: right;
 }
 .menu-box .accepted-suggestions {
@@ -407,8 +408,38 @@
 .menu-box .field-childlessText {
   padding: 0 0;
 }
+.menu-box .field-adopted {
+  padding: 0.26em 0;
+}
 .menu-box .field-monozygotic {
+  padding: 0.26em 0;
+}
+.menu-box .field-placeholder {
+  padding: 0.26em 0;
+}
+.menu-box .field-gestation_age {
+  padding: 0.48em 0;
+}
+.menu-box .field-evaluated {
+  padding-top: 0;
+  padding-bottom: 0.5em;
+  padding-right: 0;
+  padding-left: 0.12em;
+}
+.menu-box .field-evaluated .field-name {
+  font-weight: normal;
+}
+.menu-box .field-carrier {
+  padding: 0.4em 0;
+}
+.menu-box .field-comments {
   padding: 0.3em 0;
+}
+.menu-box .field-disorders {
+  padding: 0.6em 0;
+}
+.menu-box .field-identifier {
+  padding: 0.2em 0;
 }
 
 /* ===========================================

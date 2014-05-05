@@ -32,6 +32,9 @@ var Workspace = Class.create({
 
         //Initialize pan by dragging
         var start = function() {
+            if (editor.isAnyMenuVisible()) {
+                return;
+            }            
             me.background.ox = me.background.attr("x");
             me.background.oy = me.background.attr("y");
             //me.background.attr({cursor: 'url(https://mail.google.com/mail/images/2/closedhand.cur)'});
@@ -49,7 +52,7 @@ var Workspace = Class.create({
         var end = function() {
             me.viewBoxX = me.background.ox;
             me.viewBoxY = me.background.oy;
-            me.background.attr({cursor: 'default'});
+            me.background.attr({cursor: 'default'});      
         };
         me.background.drag(move, start, end);
         
@@ -60,19 +63,24 @@ var Workspace = Class.create({
                     evt.preventDefault();
                 else
                     evt.returnValue = false;
-                    
-                    var delta;    
-                    if (evt.wheelDelta)
-                        delta = -evt.wheelDelta; // Chrome/Safari
-                    else
-                        delta = evt.detail; // Mozilla
-                    
-                    //console.log("Mouse wheel: " + delta);                    
-                    if (delta > 0) {
-                        me.zoomSlider.setValue(1 - (me.__zoom.__crtValue - .25))
-                    } else {
-                        me.zoomSlider.setValue(1 - (me.__zoom.__crtValue + .25))
-                    }
+
+                // disable while menu is active - too easy to scroll and get the active node out of sight, which is confusing
+                if (editor.isAnyMenuVisible()) {
+                    return;
+                }
+                                        
+                var delta;    
+                if (evt.wheelDelta)
+                    delta = -evt.wheelDelta; // Chrome/Safari
+                else
+                    delta = evt.detail; // Mozilla
+                
+                //console.log("Mouse wheel: " + delta);                    
+                if (delta > 0) {
+                    me.zoomSlider.setValue(1 - (me.__zoom.__crtValue - .25))
+                } else {
+                    me.zoomSlider.setValue(1 - (me.__zoom.__crtValue + .25))
+                }
             }
                     
             if (navigator.userAgent.toLowerCase().indexOf('webkit') >= 0) {
@@ -221,16 +229,16 @@ var Workspace = Class.create({
             _this.__pan.insert(_this.__pan[direction]);
             _this.__pan[direction].observe('click', function(event) {
                 if(direction == 'up') {
-                    _this.panTo(_this.viewBoxX, _this.viewBoxY - 400);
+                    _this.panTo(_this.viewBoxX, _this.viewBoxY - 300);
                 }
                 else if(direction == 'down') {
-                    _this.panTo(_this.viewBoxX, _this.viewBoxY + 400);
+                    _this.panTo(_this.viewBoxX, _this.viewBoxY + 300);
                 }
                 else if(direction == 'left') {
-                    _this.panTo(_this.viewBoxX - 400, _this.viewBoxY);
+                    _this.panTo(_this.viewBoxX - 300, _this.viewBoxY);
                 }
                 else {
-                    _this.panTo(_this.viewBoxX + 400, _this.viewBoxY);
+                    _this.panTo(_this.viewBoxX + 300, _this.viewBoxY);
                 }
             })
         });
@@ -371,11 +379,13 @@ var Workspace = Class.create({
             xDisplacement = x - oX,
             yDisplacement = y - oY;
         
-        var numSeconds = instant ? 0 : .5;
-        var frames     = instant ? 1 : 25;
+        var numSeconds = instant ? 0 : .4;
+        var frames     = instant ? 1 : 11;
         
         var xStep = xDisplacement/frames,
             yStep = yDisplacement/frames;
+        
+        if (xStep == 0 && yStep == 0) return;
         
         var progress = 0;
 
@@ -385,10 +395,21 @@ var Workspace = Class.create({
                     me.viewBoxX += xStep;
                     me.viewBoxY += yStep;
                     me.getPaper().setViewBox(me.viewBoxX, me.viewBoxY, me.width/me.zoomCoefficient, me.height/me.zoomCoefficient);
-                    draw();
+                    me.background.attr({x: me.viewBoxX, y: me.viewBoxY });
+                    draw();        
                 }
             }, 1000 * numSeconds / frames);
         })();
+    },
+
+    /**
+     * Animates a transformation of the viewbox by the given delta in the X direction
+     *
+     * @method panTo
+     * @param {Number} deltaX The move size
+     */
+    panByX: function(deltaX, instant) {
+        this.panTo(this.viewBoxX + Math.floor(deltaX/this.zoomCoefficient), this.viewBoxY, instant);
     },
 
     /**

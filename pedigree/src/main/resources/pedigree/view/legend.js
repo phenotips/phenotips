@@ -108,7 +108,8 @@ var DisorgerLegend = Class.create( {
             this._disorderCache[disorderID] = new Disorder(disorderID, disorderName);
                                 
         if(Object.keys(this._affectedNodes).length == 0) {
-            (new Effect.Opacity('legend-box', { from: 0, to:.9, duration: 0.5 }));
+            this._legendBox.setOpacity(0.9);
+            //(new Effect.Opacity('legend-box', { from: 0, to:.9, duration: 0.5 }));
         }
         if(!this._hasAffectedNodes(disorderID)) {
             this._affectedNodes[disorderID] = [nodeID];
@@ -140,7 +141,8 @@ var DisorgerLegend = Class.create( {
                 delete this._disorderColors[disorderID];
                 $('disorder-' + disorderID).remove();                
                 if(Object.keys(this._affectedNodes).length == 0) {
-                    new Effect.Opacity('legend-box', { from:.9, to:0, duration: 0.5 });
+                    this._legendBox.setOpacity(0);
+                    //new Effect.Opacity('legend-box', { from:.9, to:0, duration: 0.5 });
                 }
             }
             else
@@ -269,7 +271,7 @@ var DisorgerLegend = Class.create( {
     },
 
     /**
-     * Generates a CSS color. Has preference for 5 colors that can be distinguished in gray-scale.
+     * Generates a CSS color. Has preference for 7 colors that can be distinguished in gray-scale.
      *
      * @method generateColor
      * @return {String} CSS color
@@ -279,7 +281,7 @@ var DisorgerLegend = Class.create( {
             return this._disorderColors[disorderID];
         }        
         var usedColors = Object.values(this._disorderColors),
-            prefColors = ["#FEE090", '#E0F3F8', '#91BFDB', '#4575B4'];
+            prefColors = ["#FEE090", '#E0F8F8', '#8ebbd6', '#4575B4', '#fca860', '#9a4500', '#81a270'];
         usedColors.each( function(color) {
             prefColors = prefColors.without(color);
         });

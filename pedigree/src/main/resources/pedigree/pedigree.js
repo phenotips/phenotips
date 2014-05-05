@@ -234,6 +234,18 @@ var PedigreeEditor = Class.create({
     },
 
     /**
+     * Returns true if any of the node menus are visible
+     * (since some UI interactions should be disabled while menu is active - e.g. mouse wheel zoom).
+     *.
+     * @method isAnyMenuVisible
+     */
+    isAnyMenuVisible: function() {
+        if (this.getNodeMenu().isVisible() || this.getNodeGroupMenu().isVisible() || this.getPartnershipMenu().isVisible()) {
+            return;
+        }
+    },
+
+    /**
      * Creates the context menu for Person nodes
      *
      * @method generateNodeMenu
@@ -317,16 +329,17 @@ var PedigreeEditor = Class.create({
                 'name' : 'state',
                 'label' : 'Individual is',
                 'type' : 'radio',
+                'columns': 3,
                 'values' : [
                     { 'actual' : 'alive', 'displayed' : 'Alive' },
-                    { 'actual' : 'deceased', 'displayed' : 'Deceased' },
                     { 'actual' : 'stillborn', 'displayed' : 'Stillborn' },
+                    { 'actual' : 'deceased', 'displayed' : 'Deceased' },..
                     { 'actual' : 'aborted', 'displayed' : 'Aborted' },
                     { 'actual' : 'unborn', 'displayed' : 'Unborn' }
                 ],
                 'default' : 'alive',
                 'function' : 'setLifeStatus'
-            },           
+            },
             {
                 'label' : 'Heredity options',
                 'name' : 'childlessSelect',
@@ -352,13 +365,13 @@ var PedigreeEditor = Class.create({
                 'label' : 'Monozygotic twin',
                 'type' : 'checkbox',
                 'function' : 'setMonozygotic'
-            },            
+            },
             {
                 'name' : 'placeholder',
                 'label' : 'Placeholder node',
                 'type' : 'checkbox',
                 'function' : 'makePlaceholder'
-            }          
+            }
         ]);
     },
 
