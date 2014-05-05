@@ -137,6 +137,9 @@ var Controller = Class.create({
                 var oldValue = node[propertyGetFunction]();
                 if (oldValue == propValue) continue;
                 
+                if (Object.prototype.toString.call(oldValue) === '[object Array]')                    
+                    oldValue = oldValue.slice(0);
+
                 undoEvent.memo.properties[propertySetFunction] = oldValue;
 
                 // sometimes UNDO includes more then the property itself: e.g. changing life status
