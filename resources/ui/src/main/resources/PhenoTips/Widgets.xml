@@ -1436,10 +1436,10 @@
   },
 
   acceptSuggestion : function(obj) {
+    this.input.value = this.input.defaultValue || "";
     if (this.acceptAddItem(obj.id || obj.value, obj.negative)) {
       this.addItem(obj.id || obj.value, obj.value, obj.info, obj.category);
     }
-    this.input.value = this.input.defaultValue || "";
     return false;
   },
 
