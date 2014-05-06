@@ -3460,7 +3460,7 @@ hr {
   letter-spacing: 2px;
   margin: 0;
   padding: 0.4em 11px;
-  text-shadow: 0 0 1px $theme;
+  text-shadow: 0 0 1px $theme.buttonPrimaryTextColor;
   text-transform: uppercase;
 }
 
