@@ -2318,7 +2318,7 @@ document.observe('xwiki:dom:loaded', function() {
                } else {
                  var existingValue = $(service.suggestFor.id + '_' + input.value);
                  if (existingValue) {
-                   existingValue.checked = false;
+                   existingValue.up('li').remove();
                    new XWiki.widgets.Notification('Removed "' + input.__suggestion.value + '"', 'done');
                  }
                }
