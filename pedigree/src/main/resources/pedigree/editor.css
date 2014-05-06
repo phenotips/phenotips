@@ -424,13 +424,16 @@
   padding-top: 0;
   padding-bottom: 0.5em;
   padding-right: 0;
-  padding-left: 0.12em;
+  padding-left: 0.08em;
 }
 .menu-box .field-evaluated .field-name {
   font-weight: normal;
 }
 .menu-box .field-carrier {
-  padding: 0.4em 0;
+  padding-top: 0.4em;
+  padding-bottom: 0.2em;
+  padding-right: 0;
+  padding-left: 0;
 }
 .menu-box .field-comments {
   padding: 0.3em 0;

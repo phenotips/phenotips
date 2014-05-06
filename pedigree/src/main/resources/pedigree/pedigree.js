@@ -120,7 +120,7 @@ var PedigreeEditor = Class.create({
     getController: function() {
         return this._controller;
     },
-    
+
     /**
      * @method getActionStack
      * @return {ActionStack} (responsible undoing and redoing actions)
@@ -168,19 +168,18 @@ var PedigreeEditor = Class.create({
     getPaper: function() {
         return this.getWorkspace().getPaper();
     },
-    
+
     /**
      * @method isReadOnlyMode
      * @return {Boolean} True iff pedigree drawn should be read only with no handles
      *                   (read-only mode is used for IE8 as well as for template display and
      *                   print and export versions).
-     */    
+     */
     isReadOnlyMode: function() {
         if (this.isUnsupportedBrowser()) return true;
-        
         return false;
     },
-    
+
     isUnsupportedBrowser: function() {
         // http://voormedia.com/blog/2012/10/displaying-and-detecting-support-for-svg-images
         if (!document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1")) {
@@ -235,8 +234,8 @@ var PedigreeEditor = Class.create({
 
     /**
      * Returns true if any of the node menus are visible
-     * (since some UI interactions should be disabled while menu is active - e.g. mouse wheel zoom).
-     *.
+     * (since some UI interactions should be disabled while menu is active - e.g. mouse wheel zoom) 
+     * 
      * @method isAnyMenuVisible
      */
     isAnyMenuVisible: function() {
@@ -291,6 +290,26 @@ var PedigreeEditor = Class.create({
                 'function' : 'setLastNameAtBirth'
             },
             {
+                'name' : 'carrier',
+                'label' : 'Carrier status',
+                'type' : 'radio',
+                'values' : [
+                    { 'actual' : '', 'displayed' : 'Not affected' },
+                    { 'actual' : 'carrier', 'displayed' : 'Carrier' },
+                    //{ 'actual' : 'obligate', 'displayed' : 'Obligate carrier' },
+                    { 'actual' : 'affected', 'displayed' : 'Affected' },
+                    { 'actual' : 'presymptomatic', 'displayed' : 'Pre-symptomatic' }
+                ],
+                'default' : '',
+                'function' : 'setCarrierStatus'
+            },
+            {
+                'name' : 'evaluated',
+                'label' : 'Documented evaluation',
+                'type' : 'checkbox',
+                'function' : 'setEvaluated'
+            },
+            {
                 'name' : 'disorders',
                 'label' : 'Known disorders of this individual',
                 'type' : 'disease-picker',
@@ -302,7 +321,7 @@ var PedigreeEditor = Class.create({
                 'type' : 'textarea',
                 'rows' : 2,
                 'function' : 'setComments'
-            },            
+            },
             {
                 'name' : 'date_of_birth',
                 'label' : 'Date of birth',
@@ -333,7 +352,7 @@ var PedigreeEditor = Class.create({
                 'values' : [
                     { 'actual' : 'alive', 'displayed' : 'Alive' },
                     { 'actual' : 'stillborn', 'displayed' : 'Stillborn' },
-                    { 'actual' : 'deceased', 'displayed' : 'Deceased' },..
+                    { 'actual' : 'deceased', 'displayed' : 'Deceased' },  
                     { 'actual' : 'aborted', 'displayed' : 'Aborted' },
                     { 'actual' : 'unborn', 'displayed' : 'Unborn' }
                 ],
@@ -389,7 +408,7 @@ var PedigreeEditor = Class.create({
      * @method generateNodeGroupMenu
      * @return {NodeMenu}
      */
-    generateNodeGroupMenu: function() {        
+    generateNodeGroupMenu: function() {
         var _this = this;
         return new NodeMenu([
             {
@@ -401,7 +420,7 @@ var PedigreeEditor = Class.create({
                 'name' : 'gender',
                 'label' : 'Gender',
                 'type' : 'radio',
-                'columns': 3,              
+                'columns': 3,
                 'values' : [
                     { 'actual' : 'M', 'displayed' : 'Male' },
                     { 'actual' : 'F', 'displayed' : 'Female' },
@@ -423,8 +442,8 @@ var PedigreeEditor = Class.create({
                 'values' : [{'actual': 1, displayed: 'N'}, {'actual': 2, displayed: '2'}, {'actual': 3, displayed: '3'},
                             {'actual': 4, displayed: '4'}, {'actual': 5, displayed: '5'}, {'actual': 6, displayed: '6'},
                             {'actual': 7, displayed: '7'}, {'actual': 8, displayed: '8'}, {'actual': 9, displayed: '9'}],                
-                'function' : 'setNumPersons'                
-            },            
+                'function' : 'setNumPersons'
+            },
             {
                 'name' : 'disorders',
                 'label' : 'Known disorders common to all individuals in the group',
@@ -437,12 +456,12 @@ var PedigreeEditor = Class.create({
                 'type' : 'radio',
                 'values' : [
                     { 'actual' : 'alive', 'displayed' : 'Alive' },
-                    { 'actual' : 'deceased', 'displayed' : 'Deceased' },
-                    { 'actual' : 'aborted', 'displayed' : 'Aborted' }
+                    { 'actual' : 'aborted', 'displayed' : 'Aborted' },
+                    { 'actual' : 'deceased', 'displayed' : 'Deceased' }
                 ],
                 'default' : 'alive',
                 'function' : 'setLifeStatus'
-            },           
+            },
             {
                 'name' : 'adopted',
                 'label' : 'Adopted in',
@@ -459,7 +478,7 @@ var PedigreeEditor = Class.create({
     getNodeGroupMenu: function() {
         return this._nodeGroupMenu;
     },
-    
+
     /**
      * Creates the context menu for Partnership nodes
      *
@@ -555,6 +574,10 @@ PedigreeEditor.attributes = {
     twinMonozygothicLineShiftY: 24,
     curvedLinesCornerRadius: 25,
     unbornShape: {'font-size': 50, 'font-family': 'Cambria'},
+    carrierShape: {'font-size': 40, 'font-family': 'Cambria', fill : '#595959'},
+    presymptomaticShape: {fill : '#777777', "stroke": "#777777"},
+    presymptomaticShapeWidth: 8,
+    evaluationShape: {'font-size': 40, 'font-family': 'Arial', "font-style": "bold"},
     nodeShape:     {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},    
     nodeShapeDiag: {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
     boxOnHover : {fill: "gray", stroke: "none", opacity: 1, "fill-opacity":.35},
@@ -576,7 +599,7 @@ PedigreeEditor.attributes = {
         consangrPartnershipLines : {"stroke-width": 1.25, stroke : '#402058'},
         partnershipHandleBreakY: 15,
         partnershipHandleLength: 36,
-    graphToCanvasScale: 12,    
+    graphToCanvasScale: 12,
     layoutRelativePersonWidth: 10,
     layoutRelativeOtherWidth: 2,
     layoutScale: { xscale: 12.0, yscale: 8 }

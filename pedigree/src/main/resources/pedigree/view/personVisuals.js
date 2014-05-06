@@ -25,6 +25,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._unbornShape = null;
         this._childlessShape = null;
         this._isSelected = false;
+        this._carrierGraphic = null;
+        this._evalLabel = null;
         //console.log("person visuals end");
         //timer.printSinceLast("Person visuals time");
     },
@@ -89,7 +91,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         if(this.getHoverBox()) {
             this._genderGraphics.flatten().insertBefore(this.getFrontElements().flatten());
         }        
-        this.updateDisorderShapes();      
+        this.updateDisorderShapes();
+        this.updateCarrierGraphic();
+        this.updateEvaluationLabel();        
     },
     
     generateProbandArrow: function() {
@@ -172,20 +176,18 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     updateDisorderShapes: function() {
         this._disorderShapes && this._disorderShapes.remove();
-        if (this.getNode().getDisorders().length == 0) return;
+        var disorders = this.getNode().getDisorders();
+        if (disorders.length == 0) return;
         
         var gradient = function(color, angle) {
             var hsb = Raphael.rgb2hsb(color),
                 darker = Raphael.hsb2rgb(hsb['h'],hsb['s'],hsb['b']-.25)['hex'];
             return angle +"-"+darker+":0-"+color+":100";
         };
-        var disorderShapes = editor.getPaper().set(),
-            person = this.getNode(),
-            delta,
-            color;
+        var disorderShapes = editor.getPaper().set();
+        var delta, color;
 
-        if(this.getNode().getLifeStatus() == 'aborted') {
-
+        if (this.getNode().getLifeStatus() == 'aborted') {
             var radius = PedigreeEditor.attributes.radius;
             if (this.getNode().isPersonGroup())
                 radius *= PedigreeEditor.attributes.groupNodesScale;
@@ -194,9 +196,9 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 height = side/Math.sqrt(2),
                 x1 = this.getX() - height,
                 y1 = this.getY();
-            delta = (height * 2)/(person.getDisorders().length);
+            delta = (height * 2)/(disorders.length);
 
-            for(var k = 0; k < person.getDisorders().length; k++) {
+            for(var k = 0; k < disorders.length; k++) {
                 var corner = [];
                 var x2 = x1 + delta;
                 var y2 = this.getY() - (height - Math.abs(x2 - this.getX()));
@@ -204,7 +206,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                     corner = ["L", this.getX(), this.getY()-height];
                 }
                 var slice = editor.getPaper().path(["M", x1, y1, corner,"L", x2, y2, 'L',this.getX(), this.getY(),'z']);
-                color = gradient(editor.getDisorderLegend().getDisorderColor(this.getNode().getDisorders()[k]), 70);
+                color = gradient(editor.getDisorderLegend().getDisorderColor(disorders[k]), 70);
                 disorderShapes.push(slice.attr({fill: color, 'stroke-width':.5, stroke: 'none' }));
                 x1 = x2;
                 y1 = y2;
@@ -214,19 +216,19 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             }
         }
         else {
-            var disorderAngle = (360/person.getDisorders().length).round();
-            delta = (360/(person.getDisorders().length))/2;
-            if (person.getDisorders().length == 1 && this.getNode().getGender() == 'U')
+            var disorderAngle = (360/disorders.length).round();
+            delta = (360/(disorders.length))/2;
+            if (disorders.length == 1 && this.getNode().getGender() == 'U')
                 delta -= 45; // since this will be rotated by shape transform later
             
             var radius = (this._shapeRadius-0.6);    // -0.6 to avoid disorder fills to overlap with shape borders (due to aliasing/Raphael pixel layout)
             if (this.getNode().getGender() == 'U')
                 radius *= 1.155;                     // TODO: magic number hack: due to a Raphael transform bug (?) just using correct this._shapeRadius does not work
             
-            for(var i = 0; i < person.getDisorders().length; i++) {
-                color = gradient(editor.getDisorderLegend().getDisorderColor(person.getDisorders()[i]), (i * disorderAngle)+delta);
+            for(var i = 0; i < disorders.length; i++) {
+                color = gradient(editor.getDisorderLegend().getDisorderColor(disorders[i]), (i * disorderAngle)+delta);
                 disorderShapes.push(sector(editor.getPaper(), this.getX(), this.getY(), radius,
-                    person.getGender(), i * disorderAngle, (i+1) * disorderAngle, color));
+                                    this.getNode().getGender(), i * disorderAngle, (i+1) * disorderAngle, color));
             }
 
             (disorderShapes.length < 2) ? disorderShapes.attr('stroke', 'none') : disorderShapes.attr({stroke: '#595959', 'stroke-width':.03});
@@ -353,9 +355,95 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         if(this.getNode().getLifeStatus() == 'unborn') {
             this._unbornShape = editor.getPaper().text(this.getX(), this.getY(), "P").attr(PedigreeEditor.attributes.unbornShape);
             this._unbornShape.insertBefore(this.getHoverBox().getFrontElements());
+        } else {
+            this._unbornShape = null;
         }
     },
 
+    /**
+     * Draws the evaluation status symbol for this Person
+     *
+     * @method updateEvaluationLabel
+     */
+    updateEvaluationLabel: function() {
+        this._evalLabel && this._evalLabel.remove();
+        if (this.getNode().getEvaluated()) {
+            var mult = 1.1;
+            if (this.getNode().getGender() == 'U') mult = 1.3;
+            else if (this.getNode().getGender() == 'M') mult = 1.4;
+            if (this.getNode().isProband) mult *= 1.1;
+            this._evalLabel = editor.getPaper().text(this.getX() + this._shapeRadius*mult - 5, this.getY() + this._shapeRadius*mult, "*").attr(PedigreeEditor.attributes.evaluationShape).toBack();
+        } else {
+            this._evalLabel = null;
+        }
+    },
+
+    /**
+     * Returns this Person's evaluation label
+     *
+     * @method getEvaluationGraphics
+     * @return {Raphael.el}
+     */    
+    getEvaluationGraphics: function() {
+        return this._evalLabel;
+    },
+
+    /**
+     * Draws various distorder carrier graphics such as a dot (for carriers) or
+     * a vertical line (for pre-symptomatic)
+     *
+     * @method updateCarrierGraphic
+     */    
+    updateCarrierGraphic: function() {
+        this._carrierGraphic && this._carrierGraphic.remove();
+        var status = this.getNode().getCarrierStatus();
+        
+        if (status != '' && status != 'affected') {
+            if (status == 'carrier') {
+                if (this.getNode().getLifeStatus() == 'aborted') {
+                    x = this.getX();
+                    y = this.getY() - this._radius/2;                    
+                } else {
+                    x = this.getX();
+                    y = this.getY();
+                }
+                this._carrierGraphic = editor.getPaper().text(x, y, "●").attr(PedigreeEditor.attributes.carrierShape);
+            } else if (status == 'presymptomatic') {
+                if (this.getNode().getLifeStatus() == 'aborted') {
+                    this._carrierGraphic = null;
+                    return;
+                }           
+                editor.getPaper().setStart();
+                var startX = (this.getX()-PedigreeEditor.attributes.presymptomaticShapeWidth/2);
+                var startY = this.getY()-this._radius;
+                editor.getPaper().rect(startX, startY, PedigreeEditor.attributes.presymptomaticShapeWidth, this._radius*2).attr(PedigreeEditor.attributes.presymptomaticShape);
+                if (this.getNode().getGender() == 'U') {
+                    editor.getPaper().path("M "+startX + " " + startY +
+                                           "L " + (this.getX()) + " " + (this.getY()-this._radius*1.1) +
+                                           "L " + (startX + PedigreeEditor.attributes.presymptomaticShapeWidth) + " " + (startY) + "Z").attr(PedigreeEditor.attributes.presymptomaticShape);
+                    var endY = this.getY()+this._radius;
+                    editor.getPaper().path("M "+startX + " " + endY +
+                                           "L " + (this.getX()) + " " + (this.getY()+this._radius*1.1) +
+                                           "L " + (startX + PedigreeEditor.attributes.presymptomaticShapeWidth) + " " + endY + "Z").attr(PedigreeEditor.attributes.presymptomaticShape);
+                }   
+                this._carrierGraphic = editor.getPaper().setFinish();
+            }
+            this._carrierGraphic.insertBefore(this.getHoverBox().getFrontElements());
+        } else {
+            this._carrierGraphic = null;
+        }
+    },
+
+    /**
+     * Returns this Person's disorder carrier graphics
+     *
+     * @method getCarrierGraphics
+     * @return {Raphael.el}
+     */    
+    getCarrierGraphics: function() {
+        return this._carrierGraphic;
+    },
+    
     /**
      * Returns this Person's stillbirth label
      *
@@ -373,14 +461,14 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     updateSBLabel: function() {
         this.getSBLabel() && this.getSBLabel().remove();        
-        if (this.getNode().getLifeStatus() != 'stillborn') {        
+        if (this.getNode().getLifeStatus() == 'stillborn') {        
             this._stillBirthLabel = editor.getPaper().text(this.getX(), this.getY(), "SB").attr(PedigreeEditor.attributes.label);
         } else {
             this._stillBirthLabel = null;
         }
         this.drawLabels();
     },
-    
+       
     /**
      * Returns this Person's comments label
      *
@@ -413,14 +501,18 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      *
      * @method updateLifeStatusShapes
      */
-    updateLifeStatusShapes: function() {
+    updateLifeStatusShapes: function(oldStatus) {
         var status = this.getNode().getLifeStatus();
         
         this.getDeadShape()   && this.getDeadShape().remove();
         this.getUnbornShape() && this.getUnbornShape().remove();
         this.getSBLabel()     && this.getSBLabel().remove();
         
-        this.setGenderGraphics();
+        // save some redraws if possible
+        var oldShapeType = (oldStatus == 'aborted');
+        var newShapeType = (status    == 'aborted');
+        if (oldShapeType != newShapeType)
+            this.setGenderGraphics();
         
         if(status == 'deceased' || status == 'aborted') {
             this.drawDeadShape();
@@ -543,7 +635,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     getAllGraphics: function($super) {
         //console.log("Node " + this.getNode().getID() + " getAllGraphics");
-        return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this.getHoverBox().getFrontElements());
+        return $super().push(this.getHoverBox().getBackElements(), this.getLabels(), this.getCarrierGraphics(), this.getEvaluationGraphics(), this.getHoverBox().getFrontElements());
     },
 
     /**

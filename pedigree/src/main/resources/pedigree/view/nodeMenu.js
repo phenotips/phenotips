@@ -531,7 +531,7 @@ NodeMenu = Class.create({
                 container.removeClassName('hidden');
                 container.select('input[type=radio]').each(function(item) {                    
                     if (disabled && Object.prototype.toString.call(disabled) === '[object Array]')                        
-                        item.disabled = (inactive.indexOf(item.value) >= 0);
+                        item.disabled = (disabled.indexOf(item.value) >= 0);
                     if (!disabled)
                         item.disabled = false;
                 });

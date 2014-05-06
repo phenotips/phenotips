@@ -148,26 +148,19 @@ var Controller = Class.create({
                 // sometimes UNDO includes more then the property itself: e.g. changing life status
                 // from "dead" to "alive" also clears the death date. Need to add it to the "undo" event
                 if (propertySetFunction == "setLifeStatus") {
-                    if (oldValue != "alive") {
-                        if (oldValue == "deceased" && node.getDeathDate() != "") {
-                            undoEvent.memo.properties["setDeathDate"] = node.getDeathDate(); 
-                        } else {
-                            // aborted/unborn/stillborn
-                            if (node.getGestationAge() != "")
-                                undoEvent.memo.properties["setGestationAge"] = node.getGestationAge();
-                        }
-                    } else {                        
-                        undoEvent.memo.properties["setBirthDate"] = node.getBirthDate();
-                        undoEvent.memo.properties["setAdopted"]   = node.getAdopted();
-                    }
+                    undoEvent.memo.properties["setDeathDate"]    = node.getDeathDate(); 
+                    undoEvent.memo.properties["setGestationAge"] = node.getGestationAge();
+                    undoEvent.memo.properties["setBirthDate"]    = node.getBirthDate();
+                    undoEvent.memo.properties["setAdopted"]      = node.getAdopted();
                 }
-                if (propertySetFunction == "setDeathDate" && node.getLifeStatus() != "deceased") {
+                if (propertySetFunction == "setDeathDate") {
                     undoEvent.memo.properties["setLifeStatus"] = node.getLifeStatus(); 
                 }
-                if (propertySetFunction == "setChildlessStatus" && oldValue != 'none') {
-                    if (node.getChildlessReason() && node.getChildlessReason() != "") {
-                        undoEvent.memo.properties["setChildlessReason"] = node.getChildlessReason();
-                    }
+                if (propertySetFunction == "setChildlessStatus") {
+                    undoEvent.memo.properties["setChildlessReason"] = node.getChildlessReason();
+                }
+                if (propertySetFunction == "setDisorders") {
+                    undoEvent.memo.properties["setCarrierStatus"] = node.getCarrierStatus(); 
                 }
                 
                 node[propertySetFunction](propValue);

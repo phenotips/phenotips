@@ -40,10 +40,12 @@ var Person = Class.create(AbstractPerson, {
         this._lifeStatus = 'alive';
         this._childlessStatus = null;
         this._childlessReason = "";
+        this._carrierStatus = "";
         this._disorders = [];
         this._evaluations = [];    
         this._twinGroup = null;
         this._monozygotic = false;
+        this._evaluated = false;
     },
 
     /**
@@ -135,7 +137,7 @@ var Person = Class.create(AbstractPerson, {
         this._lastNameAtBirth = lastNameAtBirth;
         this.getGraphics().updateNameLabel();
         return lastNameAtBirth;
-    },    
+    },
 
     /**
      * Replaces free-form comments associated with the node and redraws the label
@@ -161,6 +163,27 @@ var Person = Class.create(AbstractPerson, {
     },
     
     /**
+     * Returns the documented evaluation status
+     *
+     * @method getEvaluated
+     * @return {Boolean}
+     */
+    getEvaluated: function() {
+        return this._evaluated;
+    },
+    
+    /**
+     * Sets the documented evaluation status
+     *
+     * @method setEvaluated
+     */
+    setEvaluated: function(evaluationStatus) {
+        if (evaluationStatus == this._evaluated) return; 
+        this._evaluated = evaluationStatus;
+        this.getGraphics().updateEvaluationLabel();
+    },
+    
+    /**
      * Returns the type of twin: monozygotic or not
      * (always false for non-twins)
      *
@@ -169,7 +192,7 @@ var Person = Class.create(AbstractPerson, {
      */
     getMonozygotic: function() {
         return this._monozygotic;
-    },
+    },    
 
     /**
      * Assigns this node to the given twin group
@@ -222,10 +245,13 @@ var Person = Class.create(AbstractPerson, {
      * @param {String} newStatus "alive", "deceased", "stillborn", "unborn" or "aborted"
      */
     setLifeStatus: function(newStatus) {
-        if(this._isValidLifeStatus(newStatus)) {
+        if(this._isValidLifeStatus(newStatus)) {            
+            var oldStatus = this._lifeStatus; 
+            
             this._lifeStatus = newStatus;
 
             (newStatus != 'deceased') && this.setDeathDate("");
+            (newStatus == 'alive') && this.setGestationAge();
             this.getGraphics().updateSBLabel();
 
             if(this.isFetus()) {
@@ -233,7 +259,7 @@ var Person = Class.create(AbstractPerson, {
                 this.setAdopted(false);
                 this.setChildlessStatus(null);
             }
-            this.getGraphics().updateLifeStatusShapes();
+            this.getGraphics().updateLifeStatusShapes(oldStatus);
             this.getGraphics().getHoverBox().regenerateHandles();
         }
     },
@@ -351,6 +377,48 @@ var Person = Class.create(AbstractPerson, {
         return this.getDeathDate();
     },
 
+    _isValidCarrierStatus: function(status) {
+        return (status == '' || status == 'carrier'
+            || status == 'affected' || status == 'presymptomatic');
+    },
+    
+    /**
+     * Sets the global disorder carrier status for this Person
+     *
+     * @method setCarrier
+     * @param status One of {'', 'carrier', 'affected', 'presymptomatic'}
+     */    
+    setCarrierStatus: function(status) {
+        if (status === undefined || status === null) {
+            status = this.getCarrierStatus();
+        }
+        
+        if (!this._isValidCarrierStatus(status)) return;
+        
+        var numDisorders = this.getDisorders().length;
+                
+        if (numDisorders > 0 && status == '') {
+            status = 'affected';
+        } else if (numDisorders == 0 && status == 'affected') {
+            status = '';
+        }
+        
+        if (status != this._carrierStatus) {
+            this._carrierStatus = status;
+            this.getGraphics().updateCarrierGraphic();
+        }
+    },
+
+    /**
+     * Returns the global disorder carrier status for this person.
+     *
+     * @method getCarrier
+     * @return {String} Dissorder carrier status
+     */    
+    getCarrierStatus: function() {
+        return this._carrierStatus;
+    },
+    
     /**
      * Returns a list of disorders of this person.
      *
@@ -358,6 +426,7 @@ var Person = Class.create(AbstractPerson, {
      * @return {Array} List of Disorder objects.
      */
     getDisorders: function() {
+        //console.log("Get disorders: " + stringifyObject(this._disorders)); 
         return this._disorders;
     },
 
@@ -415,6 +484,7 @@ var Person = Class.create(AbstractPerson, {
             this.addDisorder( disorder );
         }        
         this.getGraphics().updateDisorderShapes();
+        this.setCarrierStatus(); // update carrier status
     },
 
     /**
@@ -487,12 +557,14 @@ var Person = Class.create(AbstractPerson, {
         
         var cantChangeAdopted = this.isFetus() || editor.getGraph().hasToBeAdopted(this.getID());
         
-        var disableMonozygothic = true;
+        var inactiveMonozygothic = true;
+        var disableMonozygothic  = true;
         var twins = editor.getGraph().getAllTwinsSortedByOrder(this.getID());
         if (twins.length > 1) {
             // check that there are twins and that all twins
             // have the same gender, otherwise can't be monozygothic
-            disableMonozygothic = false;            
+            inactiveMonozygothic = false;
+            disableMonozygothic  = false;            
             for (var i = 0; i < twins.length; i++) {
                 if (editor.getGraph().getGender(twins[i]) != this.getGender()) {
                     disableMonozygothic = true;
@@ -501,6 +573,14 @@ var Person = Class.create(AbstractPerson, {
             }
         }
         
+        var inactiveCarriers = false;
+        if (disorders.length == 0) {
+            inactiveCarriers = ['affected'];            
+        } else {
+            inactiveCarriers = [''];
+        }
+        
+        
         return {
             identifier:    {value : this.getID()},
             first_name:    {value : this.getFirstName()},
@@ -508,6 +588,7 @@ var Person = Class.create(AbstractPerson, {
             last_name_birth: {value: this.getLastNameAtBirth()}, //, inactive: (this.getGender() != 'F')},
             gender:        {value : this.getGender(), inactive: inactiveGenders},
             date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus()},
+            carrier:       {value : this.getCarrierStatus(), disabled: inactiveCarriers},
             disorders:     {value : disorders},
             adopted:       {value : this.isAdopted(), inactive: cantChangeAdopted},
             state:         {value : this.getLifeStatus(), inactive: inactiveStates},
@@ -517,7 +598,8 @@ var Person = Class.create(AbstractPerson, {
             childlessSelect : {value : this.getChildlessStatus() ? this.getChildlessStatus() : 'none', inactive : childlessInactive},
             childlessText :   {value : this.getChildlessReason() ? this.getChildlessReason() : undefined, inactive : childlessInactive, disabled : !this.getChildlessStatus()},
             placeholder:   {value : false, inactive: true },
-            monozygotic:   {value : this.getMonozygotic(), inactive: disableMonozygothic }
+            monozygotic:   {value : this.getMonozygotic(), inactive: inactiveMonozygothic, disabled: disableMonozygothic },
+            evaluated:     {value : this.getEvaluated() }
         };
     },
 
@@ -559,7 +641,11 @@ var Person = Class.create(AbstractPerson, {
         if (this._twinGroup !== null)
             info['twinGroup'] = this._twinGroup;
         if (this._monozygotic)
-            info['monozygotic'] = this._monozygotic;        
+            info['monozygotic'] = this._monozygotic;
+        if (this._evaluated)
+            info['evaluated'] = this._evaluated;
+        if (this._carrierStatus)
+            info['carrierStatus'] = this._carrierStatus;        
         return info;
      },
 
@@ -613,6 +699,12 @@ var Person = Class.create(AbstractPerson, {
             if(info.hasOwnProperty("monozygotic") && this._monozygotic != info.monozygotic) {
                 this.setMonozygotic(info.monozygotic);
             }
+            if(info.hasOwnProperty("evaluated") && this._evaluated != info.evaluated) {
+                this.setEvaluated(info.evaluated);
+            }            
+            if(info.hasOwnProperty("carrierStatus") && this._carrierStatus != info.carrierStatus) {
+                this.setCarrierStatus(info.carrierStatus);
+            }                        
             return true;
         }
         return false;
