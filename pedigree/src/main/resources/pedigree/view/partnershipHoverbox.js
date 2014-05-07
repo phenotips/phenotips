@@ -16,7 +16,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
 
     initialize: function($super, partnership, junctionX, junctionY, nodeShapes) {
         var radius = PedigreeEditor.attributes.radius;        
-        $super(partnership, -radius/1.5, -radius/1.5, radius*(4/3), radius*2.1, junctionX, junctionY, nodeShapes);
+        $super(partnership, -radius*0.65, -radius*0.8, radius*1.3, radius*2.3, junctionX, junctionY, nodeShapes);
         this._isMenuToggled = false;
     },
 
@@ -56,6 +56,28 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         this.generateDeleteBtn();
         this.generateMenuBtn();        
     },
+    
+    /**
+     * Creates a node-shaped show-menu button
+     *
+     * @method generateMenuBtn
+     * @return {Raphael.st} The generated button
+     */
+    generateMenuBtn: function() {
+        var me = this;
+        var action = function() {
+            me.toggleMenu(!me.isMenuToggled());
+        };        
+        var junctionShapedButton = this.getNode().getGraphics().getJunctionShape().clone();
+        junctionShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOffPartner);
+        junctionShapedButton.click(action);
+        junctionShapedButton.hover(function() { junctionShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOnPartner)},
+                                   function() { junctionShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOffPartner)});
+        this._currentButtons.push(junctionShapedButton);
+        this.disable();
+        this.getFrontElements().push(junctionShapedButton);        
+        this.enable();           
+    },     
 
     /**
      * Returns true if the menu is toggled for this partnership node
@@ -74,6 +96,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
      * @param {Boolean} isMenuToggled Set to True to make the menu visible
      */
     toggleMenu: function(isMenuToggled) {
+        if (this._justClosedMenu) return;
         this._isMenuToggled = isMenuToggled;
         if(isMenuToggled) {
             var optBBox = this.getBoxOnHover().getBBox();
@@ -81,9 +104,6 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
             var y = optBBox.y;
             var position = editor.getWorkspace().canvasToDiv(x+5, y);
             editor.getPartnershipMenu().show(this.getNode(), position.x, position.y);
-        }
-        else {
-            editor.getPartnershipMenu().hide();
         }
     },
     

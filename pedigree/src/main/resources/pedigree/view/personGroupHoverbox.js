@@ -45,7 +45,7 @@ var PersonGroupHoverbox = Class.create(PersonHoverbox, {
         this.generateMenuBtn();
         this.generateDeleteBtn();
     },
-    
+
     /**
      * Returns true if the menu for this node is open
      *
@@ -62,7 +62,7 @@ var PersonGroupHoverbox = Class.create(PersonHoverbox, {
      * @method toggleMenu
      */
     toggleMenu: function(isMenuToggled) {
-        console.log("toggle menu");
+        if (this._justClosedMenu) return;        
         this._isMenuToggled = isMenuToggled;
         if(isMenuToggled) {
             this.getNode().getGraphics().unmark();
@@ -71,9 +71,6 @@ var PersonGroupHoverbox = Class.create(PersonHoverbox, {
             var y = optBBox.y;
             var position = editor.getWorkspace().canvasToDiv(x+5, y);
             editor.getNodeGroupMenu().show(this.getNode(), position.x, position.y);
-        }
-        else {
-            editor.getNodeMenu().hide();
         }
     },
     

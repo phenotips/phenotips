@@ -245,9 +245,9 @@ var Person = Class.create(AbstractPerson, {
      * @param {String} newStatus "alive", "deceased", "stillborn", "unborn" or "aborted"
      */
     setLifeStatus: function(newStatus) {
-        if(this._isValidLifeStatus(newStatus)) {            
-            var oldStatus = this._lifeStatus; 
-            
+        if(this._isValidLifeStatus(newStatus)) {
+            var oldStatus = this._lifeStatus;
+
             this._lifeStatus = newStatus;
 
             (newStatus != 'deceased') && this.setDeathDate("");
@@ -261,6 +261,7 @@ var Person = Class.create(AbstractPerson, {
             }
             this.getGraphics().updateLifeStatusShapes(oldStatus);
             this.getGraphics().getHoverBox().regenerateHandles();
+            this.getGraphics().getHoverBox().regenerateButtons();
         }
     },
 

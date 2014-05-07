@@ -55,10 +55,10 @@ var Partnership = Class.create(AbstractNode, {
             this.setChildlessReason(null);
             this.getGraphics().updateChildlessShapes();
             this.getGraphics().updateChildhubConnection();
-            this.getGraphics().getHoverBox().regenerateHandles();
+            this.getGraphics().getHoverBox().regenerateHandles();            
         }
                 
-        return this.getChildlessStatus();
+        return this.getChildlessStatus();        
     },
     
     /**
@@ -72,6 +72,7 @@ var Partnership = Class.create(AbstractNode, {
         if (this._consangrMode != value) {
             this._consangrMode = value;
         }
+        this.getGraphics().getHoverBox().regenerateButtons();
     },
     
     /**
@@ -91,7 +92,7 @@ var Partnership = Class.create(AbstractNode, {
     setBrokenStatus: function(value) {
         if (this._broken != value) {
             this._broken = value;            
-        }
+        }        
     },
     
     /**

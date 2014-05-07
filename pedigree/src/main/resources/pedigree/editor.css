@@ -297,6 +297,9 @@
   width: 330px;
   color: #000000;
 }
+.relationship-menu {
+  width: 290px;
+}
 .menu-box form:hover {
   box-shadow: 0 0 6px #FF9, 0 0 25px #DDDDDD inset;
 }

@@ -15,7 +15,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         $super(partnership, x,y);
         this._childlessShape = null;
         this._childlessStatusLabel = null;
-        this._junctionShape = editor.getPaper().circle(x,y, PedigreeEditor.attributes.partnershipRadius).attr({fill: '#EA5E48', stroke: 'black', 'stroke-width':2});
+        this._junctionShape = editor.getPaper().circle(x,y, PedigreeEditor.attributes.partnershipRadius).attr(PedigreeEditor.attributes.partnershipNode);
 
         if (editor.isReadOnlyMode()) {
             this._hoverBox = new ReadOnlyHoverbox(partnership, x, y, this.getShapes());
@@ -284,7 +284,11 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
                 editor.getView().drawCurvedLineWithCrossings( id, xFrom, yFrom, yTop, xTo, finalYTo, lastBend, lineAttr, consangr, goesLeft );
         }
         
-        this._partnerConnections = editor.getPaper().setFinish().toBack();
+        this._partnerConnections = editor.getPaper().setFinish().toBack(); 
+        if (this.getNode().getGraphics()) {
+            this.getHoverBox().regenerateHandles();
+            this.getHoverBox().regenerateButtons();
+        }
     },
 
     /**

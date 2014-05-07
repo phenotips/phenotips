@@ -16,8 +16,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
 
     initialize: function($super, personNode, centerX, centerY, nodeShapes) {
         var radius = PedigreeEditor.attributes.personHoverBoxRadius;        
-        $super(personNode, -radius, -radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);
-        this._isMenuToggled = false;        
+        $super(personNode, -radius, -radius, radius * 2, radius * 2, centerX, centerY, nodeShapes);                
     },
 
     /**
@@ -122,12 +121,34 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
     generateButtons: function($super) {  
         if (this._currentButtons !== null) return;
         $super();
-        
+
         this.generateMenuBtn();
-        
+
         // proband can't be removed
         if (!this.getNode().isProband())
             this.generateDeleteBtn();
+    },
+
+    /**
+     * Creates a node-shaped show-menu button
+     *
+     * @method generateMenuBtn
+     * @return {Raphael.st} The generated button
+     */
+    generateMenuBtn: function() {
+        var me = this;
+        var action = function() {
+            me.toggleMenu(!me.isMenuToggled());
+        };
+        var genderShapedButton = this.getNode().getGraphics().getGenderShape().clone();
+        genderShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOff);
+        genderShapedButton.click(action);
+        genderShapedButton.hover(function() { genderShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOn)},
+                                 function() { genderShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOff)});
+        this._currentButtons.push(genderShapedButton);
+        this.disable();
+        this.getFrontElements().push(genderShapedButton);
+        this.enable();
     },
 
     /**
@@ -146,6 +167,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
      * @method toggleMenu
      */
     toggleMenu: function(isMenuToggled) {
+        if (this._justClosedMenu) return;
         //console.log("toggle menu: current = " + this._isMenuToggled);
         this._isMenuToggled = isMenuToggled;
         if(isMenuToggled) {
@@ -155,9 +177,6 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
             var y = optBBox.y;
             var position = editor.getWorkspace().canvasToDiv(x+5, y);
             editor.getNodeMenu().show(this.getNode(), position.x, position.y);
-        }
-        else {
-            editor.getNodeMenu().hide();
         }
     },
 

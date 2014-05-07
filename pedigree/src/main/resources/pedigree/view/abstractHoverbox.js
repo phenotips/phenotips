@@ -49,6 +49,8 @@ var AbstractHoverbox = Class.create({
         this.getBoxOnHover().attr({opacity:0});        
         this.enable();
         //timer.printSinceLast("=== abstract howerbox runtime: ");
+        this._isMenuToggled  = false;
+        this._justClosedMenu = false;        
     },
 
     /**
@@ -140,6 +142,11 @@ var AbstractHoverbox = Class.create({
         this._currentButtons = [];        
     },
     
+    regenerateButtons: function() {
+        this.removeButtons();
+        this.generateButtons();
+    },
+    
     removeButtons: function () {
         if (!this._currentButtons) return;
         
@@ -157,7 +164,9 @@ var AbstractHoverbox = Class.create({
     hideButtons: function() {
         if (!this._currentButtons) return;
         for (var i = 0; i < this._currentButtons.length; i++) {
-            this._currentButtons[i].mask.attr(PedigreeEditor.attributes.btnMaskHoverOff);
+            if (this._currentButtons[i].hasOwnProperty("mask")) {
+                this._currentButtons[i].mask.attr(PedigreeEditor.attributes.btnMaskHoverOff);
+            }
             this._currentButtons[i].hide();
         }        
     },
@@ -229,8 +238,8 @@ var AbstractHoverbox = Class.create({
      * @method regenerateHandles
      */    
     regenerateHandles: function() {
-        if (!this._currentHandles) return;
-        this.removeHandles();
+        if (this._currentHandles)
+            this.removeHandles();
         if (!this._hidden || this.isMenuToggled())
             this.generateHandles();
     },
@@ -295,6 +304,8 @@ var AbstractHoverbox = Class.create({
         });
         button.icon = icon;
         button.mask = mask;
+        if (this._hidden && !this.isMenuToggled())
+            button.hide();
         
         this._currentButtons.push(button);
         this.disable();
@@ -334,7 +345,7 @@ var AbstractHoverbox = Class.create({
             document.fire("pedigree:node:remove", event);            
         };        
         var attributes = PedigreeEditor.attributes.deleteBtnIcon;
-        var x = this.getX() + this.getWidth()/40;
+        var x = this.getX() + this.getWidth() - 20 - this.getWidth()/40;
         var y = this.getY() + this.getHeight()/40;
         this.createButton(x, y, editor.getView().__deleteButton_svgPath, editor.getView().__deleteButton_BBox,
                           attributes, action, "delete", "remove node");        
@@ -617,7 +628,9 @@ var AbstractHoverbox = Class.create({
         this.generateButtons();
         this.showButtons();
         this.getCurrentButtons().forEach(function(button) {
-            button.icon.stop().animate({opacity:1}, 200);
+            if (button.hasOwnProperty("icon")) {
+                button.icon.stop().animate({opacity:1}, 200);
+            }
         });
         
         if (this._handlesZoomSz  != editor.getWorkspace().getCurrentZoomLevel())
@@ -685,7 +698,12 @@ var AbstractHoverbox = Class.create({
      * @method onWidgetHide
      */
     onWidgetHide: function() {
-        this._isMenuToggled = false;    
+        this._isMenuToggled  = false;
+        // prevent menu from closing and opening right away upon a click on the menu button while menu is open
+        this._justClosedMenu = true;
+        var me = this;
+        setTimeout(function() { me._justClosedMenu = false; }, 100);
+        
         if (this._hidden)
             this.animateHideHoverZone();
         else

@@ -251,6 +251,7 @@ var PedigreeEditor = Class.create({
      * @return {NodeMenu}
      */
     generateNodeMenu: function() {
+        if (this.isReadOnlyMode()) return null;
         var _this = this;
         return new NodeMenu([
             {
@@ -409,6 +410,7 @@ var PedigreeEditor = Class.create({
      * @return {NodeMenu}
      */
     generateNodeGroupMenu: function() {
+        if (this.isReadOnlyMode()) return null;
         var _this = this;
         return new NodeMenu([
             {
@@ -486,6 +488,7 @@ var PedigreeEditor = Class.create({
      * @return {NodeMenu}
      */
     generatePartnershipMenu: function() {
+        if (this.isReadOnlyMode()) return null;
         var _this = this;
         return new NodeMenu([
             {
@@ -520,7 +523,7 @@ var PedigreeEditor = Class.create({
                 'type' : 'checkbox',
                 'function' : 'setBrokenStatus'
             }
-        ]);
+        ], "relationship-menu");
     },
 
     /**
@@ -577,8 +580,12 @@ PedigreeEditor.attributes = {
     carrierShape: {'font-size': 40, 'font-family': 'Cambria', fill : '#595959'},
     presymptomaticShape: {fill : '#777777', "stroke": "#777777"},
     presymptomaticShapeWidth: 8,
-    evaluationShape: {'font-size': 40, 'font-family': 'Arial', "font-style": "bold"},
-    nodeShape:     {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},    
+    evaluationShape: {'font-size': 40, 'font-family': 'Arial'},
+    nodeShape:     {fill: "0-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
+    nodeShapeMenuOn:  {fill: "#000", stroke: "#444444", "fill-opacity": 0.06},
+    nodeShapeMenuOff: {fill: "#000", stroke: "#595959", "fill-opacity": 0},
+    nodeShapeMenuOnPartner:  {fill: "#000", stroke: "#001155", "fill-opacity": 0.1},
+    nodeShapeMenuOffPartner: {fill: "#000", stroke: "black",   "fill-opacity": 0},        
     nodeShapeDiag: {fill: "45-#ffffff:0-#B8B8B8:100", stroke: "#595959"},
     boxOnHover : {fill: "gray", stroke: "none", opacity: 1, "fill-opacity":.35},
     menuBtnIcon : {fill: "#1F1F1F", stroke: "none"},
@@ -592,9 +599,10 @@ PedigreeEditor.attributes = {
     descendantGroupLabel: {'font-size': 21, 'font-family': 'Tahoma'},
     label: {'font-size': 20, 'font-family': 'Arial'},
     nameLabels: {'font-size': 20, 'font-family': 'Arial'},    
-    commentLabel: {'font-size': 19, 'font-family': 'Arial' }, // "font-style": "italic"
+    commentLabel: {'font-size': 19, 'font-family': 'Arial' },
     disorderShapes: {},
-    partnershipRadius: 6,
+    partnershipNode: {fill: '#dc7868', stroke: 'black', 'stroke-width':2},  //#E25740
+    partnershipRadius: 6.5,
         partnershipLines :         {"stroke-width": 1.25, stroke : '#303058'},
         consangrPartnershipLines : {"stroke-width": 1.25, stroke : '#402058'},
         partnershipHandleBreakY: 15,

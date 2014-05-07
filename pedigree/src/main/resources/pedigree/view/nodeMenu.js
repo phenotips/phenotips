@@ -22,10 +22,12 @@
        is specified as "disabled" it is greyed-out and does not allow selection, but is still visible.
  */
 NodeMenu = Class.create({
-    initialize : function(data) {
+    initialize : function(data, otherCSSClass) {
         //console.log("nodeMenu initialize");
         this.canvas = editor.getWorkspace().canvas || $('body');
-        this.menuBox = new Element('div', {'class' : 'menu-box'});
+        var cssClass = 'menu-box';
+        if (otherCSSClass) cssClass += " " + otherCSSClass;
+        this.menuBox = new Element('div', {'class' : cssClass});
 
         this.closeButton = new Element('span', {'class' : 'close-button'}).update('×');
         this.menuBox.insert({'top': this.closeButton});
@@ -247,7 +249,9 @@ NodeMenu = Class.create({
         },
         'textarea' : function (data) {
             var result = this._generateEmptyField(data);
-            var text = new Element('textarea', {name: data.name, class: "textarea-"+data.rows+"-rows"});                       
+            var properties = {name: data.name};
+            properties["class"] = "textarea-"+data.rows+"-rows"; // for compatibiloity with older browsers not accepting {class: ...}
+            var text = new Element('textarea', properties);                       
             result.inputsContainer.insert(text);            
             //text.wrap('span');            
             text._getValue = function() { return [this.value]; }.bind(text);

@@ -82,7 +82,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         else {
             $super();
         }
-        
+
         if(this.getNode().isProband()) {
             this._genderGraphics.push(this.generateProbandArrow());
             this.getGenderShape().transform(["...s", 1.08]);
@@ -90,15 +90,21 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         if(this.getHoverBox()) {
             this._genderGraphics.flatten().insertBefore(this.getFrontElements().flatten());
-        }        
+        }
         this.updateDisorderShapes();
         this.updateCarrierGraphic();
         this.updateEvaluationLabel();        
     },
-    
+
     generateProbandArrow: function() {
-        var icon = editor.getPaper().path(editor.getView().__probandArrowPath).attr({fill: "#595959", stroke: "none", opacity: 1});        
-        icon.transform(["t" , this.getX()-this._shapeRadius-26, this.getY()+this._shapeRadius-12])
+        var icon = editor.getPaper().path(editor.getView().__probandArrowPath).attr({fill: "#595959", stroke: "none", opacity: 1});
+        var x = this.getX()-this._shapeRadius-26;
+        var y = this.getY()+this._shapeRadius-12;
+        if (this.getNode().getGender() == 'F') {
+            x += 5;
+            y -= 5;
+        }
+        icon.transform(["t" , x, y])
         return icon;
     },
 
@@ -368,11 +374,19 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
     updateEvaluationLabel: function() {
         this._evalLabel && this._evalLabel.remove();
         if (this.getNode().getEvaluated()) {
-            var mult = 1.1;
-            if (this.getNode().getGender() == 'U') mult = 1.3;
-            else if (this.getNode().getGender() == 'M') mult = 1.4;
-            if (this.getNode().isProband) mult *= 1.1;
-            this._evalLabel = editor.getPaper().text(this.getX() + this._shapeRadius*mult - 5, this.getY() + this._shapeRadius*mult, "*").attr(PedigreeEditor.attributes.evaluationShape).toBack();
+            if (this.getNode().getLifeStatus() == 'aborted') {
+                var x = this.getX() + this._shapeRadius * 2.0;
+                var y = this.getY() + this._shapeRadius * 0.7;                
+            }
+            else {
+                var mult = 1.1;
+                if (this.getNode().getGender() == 'U') mult = 1.3;
+                else if (this.getNode().getGender() == 'M') mult = 1.4;
+                if (this.getNode().isProband) mult *= 1.1;
+                var x = this.getX() + this._shapeRadius*mult - 5;
+                var y = this.getY() + this._shapeRadius*mult;
+            }
+            this._evalLabel = editor.getPaper().text(x, y, "*").attr(PedigreeEditor.attributes.evaluationShape).toBack();
         } else {
             this._evalLabel = null;
         }
@@ -428,7 +442,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 }   
                 this._carrierGraphic = editor.getPaper().setFinish();
             }
-            this._carrierGraphic.insertBefore(this.getHoverBox().getFrontElements());
+            if (editor.isReadOnlyMode())
+                this._carrierGraphic.toFront();
+            else
+                this._carrierGraphic.insertBefore(this.getHoverBox().getFrontElements());
         } else {
             this._carrierGraphic = null;
         }
