@@ -57,6 +57,7 @@
 ##
 ##
 #set ($targetClassName = 'PhenoTips.PatientClass')
+#set ($ownerClassName = 'PhenoTips.OwnerClass')
 #set ($targetClass = $xwiki.getClass($targetClassName))
 #set ($activeFields = $services.recordConfiguration.activeConfiguration.enabledFieldNames)
 #set ($dateFormat = $xwiki.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy'))
@@ -81,6 +82,23 @@
 #end
 #if (!$isFirstReferrer)
   #set ($query = $query.concat(')'))
+#end
+#set ($isFirstOwner = true)
+#foreach ($owner in $request.getParameterValues('owner'))
+  #if ($owner != '')
+    #if ($isFirstOwner)
+      #set ($query = $query.concat(' and ('))
+      #set ($isFirstOwner = false)
+    #else
+      #set ($query = $query.concat(' or '))
+    #end
+    #set ($query = $query.concat('owner.value = ?'))
+    #set ($discard = $parameters.add($services.model.resolveDocument($owner).toString()))
+  #end
+#end
+#if (!$isFirstOwner)
+  #set ($query = $query.concat(')'))
+  #set ($query = ", BaseObject ownerobj, StringProperty owner" + $query + " and ownerobj.className = '$ownerClassName' and owner.name = 'owner' and owner.id.id=ownerobj.id and ownerobj.name = doc.fullName")
 #end
 #set ($isFirstAuthor = true)
 #foreach ($author in $request.getParameterValues('doc.author'))
