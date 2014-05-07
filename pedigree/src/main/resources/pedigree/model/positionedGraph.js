@@ -2172,6 +2172,7 @@ PositionedGraph.prototype = {
 
         var q = new Queue();
         q.push(v);
+        component[v] = true;
 
         while( q.size() > 0 ) {
             var nextV = q.pop();
