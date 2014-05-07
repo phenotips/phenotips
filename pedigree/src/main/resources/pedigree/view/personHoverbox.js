@@ -145,6 +145,7 @@ var PersonHoverbox = Class.create(AbstractHoverbox, {
         genderShapedButton.click(action);
         genderShapedButton.hover(function() { genderShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOn)},
                                  function() { genderShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOff)});
+        genderShapedButton.attr("cursor", "pointer");
         this._currentButtons.push(genderShapedButton);
         this.disable();
         this.getFrontElements().push(genderShapedButton);

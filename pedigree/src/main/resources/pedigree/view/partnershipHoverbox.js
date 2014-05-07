@@ -73,6 +73,7 @@ var PartnershipHoverbox = Class.create(AbstractHoverbox, {
         junctionShapedButton.click(action);
         junctionShapedButton.hover(function() { junctionShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOnPartner)},
                                    function() { junctionShapedButton.attr(PedigreeEditor.attributes.nodeShapeMenuOffPartner)});
+        junctionShapedButton.attr("cursor", "pointer");
         this._currentButtons.push(junctionShapedButton);
         this.disable();
         this.getFrontElements().push(junctionShapedButton);        
