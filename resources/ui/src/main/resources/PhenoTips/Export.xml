@@ -92,13 +92,8 @@
     #else
       #set ($query = $query.concat(' or '))
     #end
-    #if ($referrer.contains(':'))
-      #set ($query = $query.concat('owner = ? or '))
-      #set ($discard = $parameters.add($stringtool.substringAfter($owner, ':')))
-    #end
     #set ($query = $query.concat('owner.value = ?'))
-    #set ($owner = $context.database + ":" + $owner)
-    #set ($discard = $parameters.add($owner))
+    #set ($discard = $parameters.add($services.model.resolveDocument($owner).toString()))
   #end
 #end
 #if (!$isFirstOwner)
