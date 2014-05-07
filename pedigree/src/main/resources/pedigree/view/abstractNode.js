@@ -137,9 +137,9 @@ var AbstractNode = Class.create( {
      * @param comment
      */
     setComments: function(comment) {
-        this._comments = comment;        
+        this._comments = comment;
     },
-    
+
     /**
      * Returns an object containing all the properties of this node
      * except id, x, y & type

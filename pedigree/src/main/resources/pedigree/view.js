@@ -365,22 +365,19 @@ var View = Class.create({
         
         if (positionedGraph.isRelationship(id)) {
             //console.log("-> add partnership");
-            node = new Partnership(position.x, position.y, id);
+            node = new Partnership(position.x, position.y, id, properties);
         }
         else if (positionedGraph.isPersonGroup(id)) {
             //console.log("-> add person group");
-            node = new PersonGroup(position.x, position.y, properties["gender"], id, properties["numPersons"]);
+            node = new PersonGroup(position.x, position.y, id, properties);
         }        
         else if (positionedGraph.isPerson(id)) {
             //console.log("-> add person");
-            node = new Person(position.x, position.y, properties["gender"], id);
+            node = new Person(position.x, position.y, id, properties);
         }
         else {
             throw "addNode(): unsupported node type";
         }
-        
-        //console.log("properties: " + stringifyObject(properties));
-        node.assignProperties(properties);
         
         this.getNodeMap()[id] = node;
         

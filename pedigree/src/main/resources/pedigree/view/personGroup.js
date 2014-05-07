@@ -13,11 +13,12 @@
  */
 var PersonGroup = Class.create(Person, {
 
-    initialize: function($super, x, y, gender, id, numPersons) {
-        this._numPersons = numPersons;
+    initialize: function($super, x, y, id, properties) {
+        this._numPersons = 1;
         this._comment    = "";
         this._type       = "PersonGroup";
-        $super(x, y, "U", id);
+        $super(x, y, id, properties);
+        this.assignProperties(properties);
     },
 
     /**
@@ -70,7 +71,7 @@ var PersonGroup = Class.create(Person, {
      */
     setLifeStatus: function($super, newStatus) {
         $super(newStatus);
-        this.getGraphics().setNumPersons(this._numPersons); // force redraw N in the new ocation
+        this.getGraphics().setNumPersons(this._numPersons); // force-redraw of the "N" symbol on top of the new shape
     },
         
     /**

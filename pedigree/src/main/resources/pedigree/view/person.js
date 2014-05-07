@@ -16,16 +16,22 @@
 
 var Person = Class.create(AbstractPerson, {
 
-    initialize: function($super, x, y, gender, id) {
+    initialize: function($super, x, y, id, properties) {
         //var timer = new Timer();
     	//console.log("person");            
         this._isProband = (id == 0);
         !this._type && (this._type = "Person");
         this._setDefault();
-        $super(x, y, gender, id);   // called after all the other variables are initialized because
-                                    // one of the classes initializes graphics, which uses some of those
+        var gender = properties.hasOwnProperty("gender") ? properties['gender'] : "U"; 
+        $super(x, y, gender, id);
+        
+        // need to assign after super() and explicitly pass gender to super()
+        // because changing properties requires a redraw, which relies on gender
+        // shapes being there already
+        this.assignProperties(properties);
+        
         //console.log("person end");
-        //timer.printSinceLast("=== new person runtime: ");
+        //timer.printSinceLast("=== new person runtime: ");        
     },
     
     _setDefault: function() {

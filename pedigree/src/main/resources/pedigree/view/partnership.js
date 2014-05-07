@@ -14,16 +14,24 @@
 
 var Partnership = Class.create(AbstractNode, {
 
-   initialize: function($super, x, y, id) {
+   initialize: function($super, x, y, id, properties) {
        //console.log("partnership");
        this._childlessStatus = null;
        this._childlessReason = "";
        this._type            = 'Partnership';
-       this._broken          = false;
-       this._consangrMode    = "A";           // "Autodetect" mode: determine base don the current pedigree.
-                                              //  Can be either "A", "Y" (always consider consangr.) or "N" (never)
-       $super(x, y, id);       
-       //console.log("partnership end");
+       
+       this._broken       = false;
+       this._consangrMode = "A";    //  Can be either "A" (autodetect), "Y" (always consider consangr.) or "N" (never)
+                                    // "Autodetect": derived from the current pedigree                                    
+       
+       // assign some properties before drawing so that relationship lines are drawn properly
+       this.setBrokenStatus (properties["broken"]);
+       this.setConsanguinity(properties["consangr"]);
+       
+       $super(x, y, id);
+       
+       this.assignProperties(properties);       
+       //console.log("partnership end");       
    },
 
     /**
@@ -55,7 +63,7 @@ var Partnership = Class.create(AbstractNode, {
             this.setChildlessReason(null);
             this.getGraphics().updateChildlessShapes();
             this.getGraphics().updateChildhubConnection();
-            this.getGraphics().getHoverBox().regenerateHandles();            
+            this.getGraphics().getHoverBox().regenerateHandles();
         }
                 
         return this.getChildlessStatus();        
@@ -72,7 +80,7 @@ var Partnership = Class.create(AbstractNode, {
         if (this._consangrMode != value) {
             this._consangrMode = value;
         }
-        this.getGraphics().getHoverBox().regenerateButtons();
+        this.getGraphics() && this.getGraphics().getHoverBox().regenerateButtons();
     },
     
     /**
@@ -90,6 +98,8 @@ var Partnership = Class.create(AbstractNode, {
      * @method getBrokenStatus
      */    
     setBrokenStatus: function(value) {
+        if (value === undefined)
+            value = false;
         if (this._broken != value) {
             this._broken = value;            
         }        
