@@ -20,7 +20,9 @@
 package org.phenotips.data.permissions.internal;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.observation.event.Event;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.lang.reflect.InvocationTargetException;
@@ -31,12 +33,14 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.BDDMockito;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -62,12 +66,14 @@ public class RightsUpdateEventListenerTest
     {
         testComponent = mocker.getComponentUnderTest();
     }
+
     /** Basic test for {@link RightsUpdateEventListener#findRights} */
     @Test
     public void findRightsTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
     {
         Class[] args = new Class[1];
         args[0] = XWikiDocument.class;
+        //FIXME (if you can) reflection.
         Method testMethod = testComponent.getClass().getDeclaredMethod("findRights", args);
         testMethod.setAccessible(true);
 
@@ -80,5 +86,39 @@ public class RightsUpdateEventListenerTest
         when(mockRightIterator.next()).thenReturn(mockRightObject);
 
         testMethod.invoke(testComponent, doc);
+    }
+
+    @Test
+    public void onEventIsNotPatientTest()
+    {
+        Event mockEvent = mock(Event.class);
+        XWikiDocument mockDoc = mock(XWikiDocument.class);
+        XWikiContext mockContext = mock(XWikiContext.class);
+
+        //Well, it would be great to do some assertions here, but all the methods are private,
+        // and it's not proper to test private methods
+
+        testComponent.onEvent(mockEvent, mockDoc, mockContext);
+    }
+
+    @Test
+    public void onEventIsPatientTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
+    {
+        Event mockEvent = mock(Event.class);
+        XWikiDocument mockDoc = mock(XWikiDocument.class);
+        XWikiContext mockContext = mock(XWikiContext.class);
+        BaseObject mockBaseObject = mock(BaseObject.class);
+        DocumentReference mockDocRef = mock(DocumentReference.class);
+
+//FIXME. My programming skills were no match to the task of writing this test, without declaring 'isPatient' protected
+
+        doReturn(null).when(mockDoc).getXObject(any(EntityReference.class));
+        BDDMockito.given(testComponent.isPatient(mockDoc)).willReturn(false);
+//        doReturn(false).when(testComponent).isPatient(mockDoc);
+//        when(mockDoc.getXObject(any(EntityReference.class))).thenReturn(mockBaseObject);
+//        when(mockDoc.getDocumentReference()).thenReturn(mockDocRef);
+//        when(any(String.class).equals(any(String.class))).thenReturn(true);
+//
+        testComponent.onEvent(mockEvent, mockDoc, mockContext);
     }
 }
