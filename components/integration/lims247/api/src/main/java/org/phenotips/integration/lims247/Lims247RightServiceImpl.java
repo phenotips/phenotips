@@ -80,7 +80,7 @@ public class Lims247RightServiceImpl extends XWikiCachingRightService implements
     public boolean hasAccessLevel(String right, String username, String docname, XWikiContext context)
         throws XWikiException
     {
-        if (context != null && context.getRequest() != null) {
+        if (context != null && context.getRequest() != null && context.getRequest().getSession() != null) {
             LimsAuthentication limsAuth =
                 (LimsAuthentication) context.getRequest().getSession().getAttribute(Lims247AuthServiceImpl.SESSION_KEY);
             @SuppressWarnings("deprecation")
