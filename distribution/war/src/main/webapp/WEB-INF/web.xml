@@ -280,6 +280,10 @@
     <error-code>404</error-code>
     <location>/bin/Main/DocumentDoesNotExist</location>
   </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/bin/ServerError</location>
+  </error-page>
 
   <!-- Uncomment if you wish to use a DataSource to define the Database connection
   <resource-ref>
