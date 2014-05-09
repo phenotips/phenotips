@@ -239,7 +239,7 @@
    formDataWrapper.insert(submitButton);
    var cancelButton = new Element('input', {type : 'button', value : 'Cancel', 'class' : 'button secondary'});
    formDataWrapper.insert(' ').insert(cancelButton);
-   var modalBox = new MS.widgets.ModalPopup(templateSelectionForm, false, {'title': 'Study selection', 'verticalPosition': 'top', 'removeOnClose': false});
+   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': 'Study selection', 'verticalPosition': 'top', 'removeOnClose': false});
    cancelButton.observe('click', function(event) {
      modalBox.closeDialog();
    });
@@ -372,7 +372,7 @@
    formDataWrapper.insert(submitButton);
    var cancelButton = new Element('input', {type : 'button', value : 'Cancel', 'class' : 'button secondary'});
    formDataWrapper.insert(' ').insert(cancelButton);
-   var modalBox = new MS.widgets.ModalPopup(templateSelectionForm, false, {'title': 'Study selection', 'verticalPosition': 'top', 'removeOnClose': false});
+   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': 'Study selection', 'verticalPosition': 'top', 'removeOnClose': false});
    cancelButton.observe('click', function(event) {
      modalBox.closeDialog();
    });
