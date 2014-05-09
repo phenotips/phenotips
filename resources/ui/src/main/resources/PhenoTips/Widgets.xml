@@ -120,9 +120,9 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>var MS = (function(MS){
+      <code>var PhenoTips = (function(PhenoTips){
 
- var widgets = MS.widgets = MS.widgets || {};
+ var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
 
  if (typeof XWiki.widgets.XList == 'undefined') {
   if (typeof console != "undefined" &amp;&amp; typeof console.warn == "function") {
@@ -453,7 +453,7 @@
         }.bind(this),
         onSuccess: this.setSuggestions.bindAsEventListener(this, source, requestId),
         onFailure: function (response) {
-          //new MS.widgets.Notification("Failed to retrieve suggestions : ')" + response.statusText, "error", {timeout: 5});
+          //new PhenoTips.widgets.Notification("Failed to retrieve suggestions : ')" + response.statusText, "error", {timeout: 5});
           alert("Failed to retrieve suggestions : " + response.statusText);
         },
         onComplete : function () {
@@ -906,7 +906,7 @@
   },
 
   createListElement : function(arr, pointer) {
-    var list = new MS.widgets.XList([], {
+    var list = new PhenoTips.widgets.XList([], {
        icon: this.options.icon,
        classes: 'suggestList',
        eventListeners: {
@@ -925,7 +925,7 @@
     // no results
     if (arr.length == 0)
     {
-      list.addItem( new MS.widgets.XListItem(this.options.noresults, {
+      list.addItem( new PhenoTips.widgets.XListItem(this.options.noresults, {
                           'classes' : 'noSuggestion',
                           noHighlight :true }) );
     }
@@ -971,7 +971,7 @@
             .insert(new Element('span', {'class':'suggestValue'}).update(data.value))
             .insert(new Element('div', {'class':'suggestCategory'}).update(data.category));
 
-    var item = new MS.widgets.XListItem( displayNode , {
+    var item = new PhenoTips.widgets.XListItem( displayNode , {
         containerClasses: 'suggestItem ' + (cssClass || ''),
         value: valueNode,
         noHighlight: true // we do the highlighting ourselves
@@ -1252,9 +1252,9 @@
 
  }
 
- return MS;
+ return PhenoTips;
 
-})(MS || {});</code>
+})(PhenoTips || {});</code>
     </property>
     <property>
       <name>Modified suggest widget</name>
@@ -1346,8 +1346,8 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>var MS = (function (MS) {
-  var widgets = MS.widgets = MS.widgets || {};
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.SuggestPicker = Class.create({
 
   options : {
@@ -1600,8 +1600,8 @@
     });
   }
 });
-  return MS;
-}(MS || {}));</code>
+  return PhenoTips;
+}(PhenoTips || {}));</code>
     </property>
     <property>
       <name>Multi-suggest</name>
@@ -1693,9 +1693,9 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>var MS = (function (MS) {
-// Start MS augmentation.
-var widgets = MS.widgets = MS.widgets || {};
+      <code>var PhenoTips = (function (PhenoTips) {
+// Start PhenoTips augmentation.
+var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
 widgets.ModalPopup = Class.create({
   /** Configuration. Empty values will fall back to the CSS. */
   options : {
@@ -1995,9 +1995,9 @@ widgets.ModalPopup = Class.create({
 });
 /** Whether or not the dialog is already active (or activating). */
 widgets.ModalPopup.active = false;
-// End MS augmentation.
-return MS;
-}(MS || {}));
+// End PhenoTips augmentation.
+return PhenoTips;
+}(PhenoTips || {}));
 </code>
     </property>
     <property>
@@ -2090,8 +2090,8 @@ return MS;
       <cache>long</cache>
     </property>
     <property>
-      <code>var MS = (function (MS) {
-  var widgets = MS.widgets = MS.widgets || {};
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.SolrQueryProcessor = Class.create({
   initialize: function(queryFields, restriction) {
     this.queryFields = queryFields;
@@ -2203,8 +2203,8 @@ return MS;
     return result.strip();
   }
 });
-  return MS;
-}(MS || {}));</code>
+  return PhenoTips;
+}(PhenoTips || {}));</code>
     </property>
     <property>
       <name>Solr Qoery Processor</name>
@@ -2296,8 +2296,8 @@ return MS;
       <cache>long</cache>
     </property>
     <property>
-      <code>var MS = (function (MS) {
-  var widgets = MS.widgets = MS.widgets || {};
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.OntologyBrowser = Class.create({
   options : {
     script : "${xwiki.getURL('PhenoTips.SolrService', 'get', 'sort=nameSort asc&amp;start=0&amp;rows=10000')}&amp;",
@@ -2340,11 +2340,11 @@ return MS;
       }
     },
     noresults: "No sub-terms",
-    targetQueryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
+    targetQueryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
                            'id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}},
                            'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1, 'stubTrigger': true}
                          }),
-    expandQueryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
+    expandQueryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
                            'is_a' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}},
                            'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1, 'stubTrigger': true}
                          }),
@@ -2365,7 +2365,7 @@ return MS;
     if (container) {
       this.container = container;
     } else {
-      this.container = new MS.widgets.ModalPopup(this.loadingMessage, {}, {
+      this.container = new PhenoTips.widgets.ModalPopup(this.loadingMessage, {}, {
         idPrefix : 'ontology-browser-window-',
         title : "Related terms",
         backgroundColor: "#ffffff",
@@ -2897,8 +2897,8 @@ console.log(categories);
   }
   });
 
-  return MS;
-}(MS || {}));</code>
+  return PhenoTips;
+}(PhenoTips || {}));</code>
     </property>
     <property>
       <name>Ontology browser</name>
@@ -2990,8 +2990,8 @@ console.log(categories);
       <cache>long</cache>
     </property>
     <property>
-      <code>var MS = (function (MS) {
-  var widgets = MS.widgets = MS.widgets || {};
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.DropDown = Class.create({
   options : {},
   initialize : function (element) {
@@ -3020,8 +3020,8 @@ console.log(categories);
     //this.dropdown.remove();
   }
   });
-  return MS;
-}(MS || {}));</code>
+  return PhenoTips;
+}(PhenoTips || {}));</code>
     </property>
     <property>
       <name>Dropdown ontology browser</name>
@@ -3318,8 +3318,8 @@ console.log(categories);
       <cache>long</cache>
     </property>
     <property>
-      <code>var MS = (function (MS) {
-  var widgets = MS.widgets = MS.widgets || {};
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
   widgets.FreeMultiselect = Class.create({
     counter : 1,
     options : {
@@ -3433,12 +3433,12 @@ console.log(categories);
     }
 
   });
-  return MS;
-}(MS || {}));
+  return PhenoTips;
+}(PhenoTips || {}));
 
 document.observe("xwiki:dom:loaded", function() {
   $$('.xwiki-free-multiselect').each(function(element) {
-    new MS.widgets.FreeMultiselect(element);
+    new PhenoTips.widgets.FreeMultiselect(element);
   });
 });</code>
     </property>

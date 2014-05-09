@@ -443,7 +443,7 @@ document.observe('xwiki:dom:loaded', function() {
     var suggestionsMapping = {
         "hpo" : {
             script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get") + "?",
-            queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
+            queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
                            'name' : {'wordBoost': 10, 'phraseBoost': 20},
                            'nameSpell' : {'wordBoost': 18, 'phraseBoost': 36, 'stubBoost': 14},
                            'nameExact' : {'phraseBoost': 100},
@@ -470,7 +470,7 @@ document.observe('xwiki:dom:loaded', function() {
             resultInfo : {
                  "Browse related terms..." : {"extern" : true,
                                               "processor" : function(trigger) {
-                                                              trigger._obrowser = new MS.widgets.OntologyBrowser(this, null, {
+                                                              trigger._obrowser = new PhenoTips.widgets.OntologyBrowser(this, null, {
                                                                  isTermSelected : isPhenotypeSelected,
                                                                  unselectTerm : unselectPhenotype
                                                               });
@@ -491,7 +491,7 @@ document.observe('xwiki:dom:loaded', function() {
         },
         "omim" : {
             script: new XWiki.Document('OmimService', 'PhenoTips').getURL("get", "outputSyntax=plain") + "&amp;",
-            queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
+            queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
                            'name' : {'wordBoost': 20, 'phraseBoost': 40},
                            'nameSpell' : {'wordBoost': 50, 'phraseBoost': 100, 'stubBoost': 20},
                            'keywords' : {'wordBoost': 2, 'phraseBoost': 6, 'stubBoost': 2},
@@ -896,7 +896,7 @@ document.observe('xwiki:dom:loaded', function() {
     // -----------------------------------------------------------------
     // Create and attach the suggests
     // -----------------------------------------------------------------
-    if (typeof(MS.widgets.Suggest) != "undefined") {
+    if (typeof(PhenoTips.widgets.Suggest) != "undefined") {
       var keys = Object.keys(suggestionsMapping);
       var specialClasses = Object.keys(pickerSpecialClassOptions);
       for (var i = 0; i &lt; keys.length; i++) {
@@ -920,8 +920,8 @@ document.observe('xwiki:dom:loaded', function() {
               }
             }
             // Create the Suggest.
-            item._suggest = new MS.widgets.Suggest(item, item._customOptions);
-            if (item.hasClassName('multi') &amp;&amp; typeof(MS.widgets.SuggestPicker) != "undefined") {
+            item._suggest = new PhenoTips.widgets.Suggest(item, item._customOptions);
+            if (item.hasClassName('multi') &amp;&amp; typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
               var multiSuggestOptions = {};
               for (var j = 0; j &lt; specialClasses.length; j++) {
                 if (item.hasClassName(specialClasses[j])) {
@@ -930,7 +930,7 @@ document.observe('xwiki:dom:loaded', function() {
                   break;
                 }
               }
-              var suggestPicker = new MS.widgets.SuggestPicker(item, item._suggest, multiSuggestOptions);
+              var suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, multiSuggestOptions);
               item._suggestPicker = suggestPicker;
 
               // Integrate the custom fields
@@ -1059,14 +1059,14 @@ document.observe('xwiki:dom:loaded', function() {
                  // TODO: ensure single select within this group
               }
             } else {
-            item._dropDown = new MS.widgets.DropDown(item.up('.term-entry'));
-            item._trigger = new Element('span', {'class' : 'expand-tool'}).update(MS.widgets.OntologyBrowser.prototype._getExpandCollapseSymbol(true));
+            item._dropDown = new PhenoTips.widgets.DropDown(item.up('.term-entry'));
+            item._trigger = new Element('span', {'class' : 'expand-tool'}).update(PhenoTips.widgets.OntologyBrowser.prototype._getExpandCollapseSymbol(true));
             item._trigger._source = item;
             item._trigger._root = item.up('.term-entry');
             item._trigger._root.insert({'top' : item._trigger});
 
             var __loadOntologyBranch = function(source, doExpand) {
-              source._ontologyBrowser || (source._ontologyBrowser = new MS.widgets.OntologyBrowser(
+              source._ontologyBrowser || (source._ontologyBrowser = new PhenoTips.widgets.OntologyBrowser(
                 sugestedInput._suggest,
                 source._dropDown,
                 {

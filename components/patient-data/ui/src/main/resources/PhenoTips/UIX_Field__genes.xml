@@ -377,10 +377,10 @@
   // Create and attach the suggests
   // -----------------------------------------------------------------
   var attachPickers = function() {
-    if (typeof(MS.widgets.Suggest) != "undefined") {
+    if (typeof(PhenoTips.widgets.Suggest) != "undefined") {
       $$('input.suggest-gene').each(function(item) {
         if (!item.hasClassName('initialized')) {
-          item._suggest = new MS.widgets.Suggest(item, geneSuggestOptions);
+          item._suggest = new PhenoTips.widgets.Suggest(item, geneSuggestOptions);
           item.addClassName('initialized');
         }
       });

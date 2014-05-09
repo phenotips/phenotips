@@ -64,7 +64,7 @@ NodeMenu = Class.create({
         this.form.select('input.suggest-omim').each(function(item) {
             if (!item.hasClassName('initialized')) {
                 // Create the Suggest.
-                item._suggest = new MS.widgets.Suggest(item, {
+                item._suggest = new PhenoTips.widgets.Suggest(item, {
                     script: "$xwiki.getURL('PhenoTips.OmimService', 'get')?outputSyntax=plain&",
                     varname: "q",
                     noresults: "No matching terms",
@@ -78,8 +78,8 @@ NodeMenu = Class.create({
                     timeout : 30000,
                     parentContainer : $('body')
                 });
-                if (item.hasClassName('multi') && typeof(MS.widgets.SuggestPicker) != "undefined") {
-                    item._suggestPicker = new MS.widgets.SuggestPicker(item, item._suggest, {
+                if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
+                    item._suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, {
                         'showKey' : false,
                         'showTooltip' : false,
                         'showDeleteTool' : true,

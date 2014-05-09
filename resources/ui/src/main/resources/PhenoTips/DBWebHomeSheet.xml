@@ -262,7 +262,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
   var suggestionsMapping = {
         "hpo" : {
             script: "$xwiki.getURL('PhenoTips.SolrService', 'get')?",
-            queryProcessor: typeof(MS.widgets.SolrQueryProcessor) == "undefined" ? null : new MS.widgets.SolrQueryProcessor({
+            queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
                            'name' : {'wordBoost': 10, 'phraseBoost': 20},
                            'nameSpell' : {'wordBoost': 18, 'phraseBoost': 36, 'stubBoost': 14},
                            'nameExact' : {'phraseBoost': 100},
@@ -288,7 +288,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
             resultInfo : {
                  "Browse related terms..." : {"extern" : true,
                                               "processor" : function(trigger) {
-                                                              trigger._obrowser = new MS.widgets.OntologyBrowser(this, null, {});
+                                                              trigger._obrowser = new PhenoTips.widgets.OntologyBrowser(this, null, {});
                                                               trigger.observe('click', function(event){
                                                                 event.stop();
                                                                 event.element()._obrowser.show(
@@ -347,7 +347,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
   var enhanceDialog = function(content) {
     // =============================================================================
     // Phenotype suggest
-    if (typeof(MS.widgets.Suggest) != "undefined") {
+    if (typeof(PhenoTips.widgets.Suggest) != "undefined") {
       var keys = Object.keys(suggestionsMapping);
       var specialClasses = Object.keys(pickerSpecialClassOptions);
       for (var i = 0; i &lt; keys.length; i++) {
@@ -371,8 +371,8 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
               }
             }
             // Create the Suggest.
-            item._suggest = new MS.widgets.Suggest(item, item._customOptions);
-            if (item.hasClassName('multi') &amp;&amp; typeof(MS.widgets.SuggestPicker) != "undefined") {
+            item._suggest = new PhenoTips.widgets.Suggest(item, item._customOptions);
+            if (item.hasClassName('multi') &amp;&amp; typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
               var multiSuggestOptions = {};
               for (var j = 0; j &lt; specialClasses.length; j++) {
                 if (item.hasClassName(specialClasses[j])) {
@@ -380,7 +380,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
                   break;
                 }
               }
-              var suggestPicker = new MS.widgets.SuggestPicker(item, item._suggest, multiSuggestOptions);
+              var suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, multiSuggestOptions);
               item._suggestPicker = suggestPicker;
 
               // Format the predefined value
@@ -467,7 +467,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
   if (exportTool) {
     exportTool.observe('click', function(event) {
       event.stop();
-      var dialog = new MS.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': 'Export options', 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
+      var dialog = new PhenoTips.widgets.ModalPopup('&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')"/&gt;', false, {'title': 'Export options', 'verticalPosition': 'top', 'removeOnClose': true, 'extraClassName': 'export-dialog'});
       dialog.showDialog();
       // =================================================================================
       // Generate the dialog content

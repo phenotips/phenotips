@@ -207,7 +207,7 @@
       this._initServerSelector();
       this._initMainFormActions();
 
-      this._dialog = new MS.widgets.ModalPopup(this._container, false, {'title': 'Pushing ' + this._patientId +
+      this._dialog = new PhenoTips.widgets.ModalPopup(this._container, false, {'title': 'Pushing ' + this._patientId +
                                                                         ' to a remote database...', 'verticalPosition': 'top', 'removeOnClose': false});
     },
 
