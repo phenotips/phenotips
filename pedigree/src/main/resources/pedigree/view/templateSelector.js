@@ -13,7 +13,7 @@ var TemplateSelector = Class.create( {
         this.mainDiv = new Element('div', {'class': 'template-picture-container'});
         this.mainDiv.update("Loading list of templates...");
         var closeShortcut = isStartupTemplateSelector ? [] : ['Esc'];
-        this.dialog = new MS.widgets.ModalPopup(this.mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-template-chooser", title: "Please select a pedigree template", displayCloseButton: !isStartupTemplateSelector});
+        this.dialog = new PhenoTips.widgets.ModalPopup(this.mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-template-chooser", title: "Please select a pedigree template", displayCloseButton: !isStartupTemplateSelector});
         isStartupTemplateSelector && this.dialog.show();
         new Ajax.Request(new XWiki.Document('WebHome').getRestURL('objects/PhenoTips.PedigreeClass/'), {
             method: 'GET',

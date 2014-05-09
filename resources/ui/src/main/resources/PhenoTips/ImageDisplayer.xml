@@ -360,7 +360,7 @@
         url += '?';
       }
       url += "&amp;xpage=plain&amp;dprefix="+ XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX;
-      dialog = new MS.widgets.ModalPopup(
+      dialog = new PhenoTips.widgets.ModalPopup(
         loading, {}, {
           'verticalPosition' : 'top',
           'removeOnClose' : true,
