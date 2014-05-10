@@ -172,7 +172,9 @@ public class PhenoTipsPatient implements Patient
     {
         for (PatientDataController<?> serializer : this.serializers) {
             PatientData<?> data = serializer.load(this);
-            this.extraData.put(data.getName(), data);
+            if (data != null) {
+                this.extraData.put(data.getName(), data);
+            }
         }
     }
 
