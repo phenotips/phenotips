@@ -72,19 +72,25 @@ public class PhenoTipsPatient implements Patient
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     /** used for generating JSON and reading from JSON. */
-    protected static final String JSON_KEY_FEATURES  = "features";
+    protected static final String JSON_KEY_FEATURES = "features";
+
     protected static final String JSON_KEY_DISORDERS = "disorders";
-    protected static final String JSON_KEY_ID        = "id";
-    protected static final String JSON_KEY_REPORTER  = "reporter";
+
+    protected static final String JSON_KEY_ID = "id";
+
+    protected static final String JSON_KEY_REPORTER = "reporter";
 
     /** Known phenotype properties. */
     private static final String PHENOTYPE_POSITIVE_PROPERTY = "phenotype";
+
     private static final String PHENOTYPE_NEGATIVE_PROPERTY = "negative_phenotype";
-    private static final String[] PHENOTYPE_PROPERTIES = new String[]{PHENOTYPE_POSITIVE_PROPERTY,
-                                                                      PHENOTYPE_NEGATIVE_PROPERTY};
+
+    private static final String[] PHENOTYPE_PROPERTIES =
+        new String[] {PHENOTYPE_POSITIVE_PROPERTY, PHENOTYPE_NEGATIVE_PROPERTY};
 
     private static final String DISORDER_PROPERTIES_OMIMID = "omim_id";
-    private static final String[] DISORDER_PROPERTIES = new String[]{DISORDER_PROPERTIES_OMIMID};
+
+    private static final String[] DISORDER_PROPERTIES = new String[] {DISORDER_PROPERTIES_OMIMID};
 
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
@@ -148,7 +154,7 @@ public class PhenoTipsPatient implements Patient
         }
 
         // Read-only from now on
-        this.features  = Collections.unmodifiableSet(this.features);
+        this.features = Collections.unmodifiableSet(this.features);
         this.disorders = Collections.unmodifiableSet(this.disorders);
 
         loadSerializers();
@@ -198,9 +204,7 @@ public class PhenoTipsPatient implements Patient
     public String getExternalId()
     {
         try {
-            for (ImmutablePair<String, String> identifier : this
-                .<ImmutablePair<String, String>>getData("identifiers"))
-            {
+            for (ImmutablePair<String, String> identifier : this.<ImmutablePair<String, String>> getData("identifiers")) {
                 if (identifier.getKey().equalsIgnoreCase("external_id")) {
                     return identifier.getValue();
                 }
@@ -382,8 +386,8 @@ public class PhenoTipsPatient implements Patient
             Execution execution = ComponentManagerRegistry.getContextComponentManager().getInstance(Execution.class);
             XWikiContext context = (XWikiContext) execution.getContext().getProperty("xwikicontext");
 
-            DocumentAccessBridge documentAccessBridge = ComponentManagerRegistry.getContextComponentManager().
-                getInstance(DocumentAccessBridge.class);
+            DocumentAccessBridge documentAccessBridge =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(DocumentAccessBridge.class);
             XWikiDocument doc = (XWikiDocument) documentAccessBridge.getDocument(getDocument());
 
             BaseObject data = doc.getXObject(CLASS_REFERENCE);
