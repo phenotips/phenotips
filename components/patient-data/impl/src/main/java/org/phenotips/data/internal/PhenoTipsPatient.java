@@ -122,9 +122,6 @@ public class PhenoTipsPatient implements Patient
             return;
         }
 
-        loadSerializers();
-        readPatientData();
-
         try {
             for (String property : PHENOTYPE_PROPERTIES) {
                 DBStringListProperty values = (DBStringListProperty) data.get(property);
@@ -153,6 +150,9 @@ public class PhenoTipsPatient implements Patient
         // Read-only from now on
         this.features  = Collections.unmodifiableSet(this.features);
         this.disorders = Collections.unmodifiableSet(this.disorders);
+
+        loadSerializers();
+        readPatientData();
     }
 
     private void loadSerializers()
