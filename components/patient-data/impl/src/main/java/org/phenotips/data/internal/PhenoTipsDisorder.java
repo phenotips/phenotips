@@ -19,12 +19,13 @@
  */
 package org.phenotips.data.internal;
 
-import net.sf.json.JSONObject;
-
 import org.phenotips.data.Disorder;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.xpn.xwiki.objects.ListProperty;
+
+import net.sf.json.JSONObject;
 
 /**
  * Implementation of patient data based on the XWiki data model, where disorder data is represented by properties in
