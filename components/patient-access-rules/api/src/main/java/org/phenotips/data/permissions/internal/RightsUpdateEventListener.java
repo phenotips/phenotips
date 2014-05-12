@@ -130,7 +130,7 @@ public class RightsUpdateEventListener implements EventListener
         }
     }
 
-    protected boolean isPatient(XWikiDocument doc)
+    private boolean isPatient(XWikiDocument doc)
     {
         return (doc.getXObject(Patient.CLASS_REFERENCE) != null)
             && !"PatientTemplate".equals(doc.getDocumentReference().getName());
@@ -239,9 +239,6 @@ public class RightsUpdateEventListener implements EventListener
     {
         String ownerPermissions = "view,edit,delete";
         DocumentReference owner = getOwner(doc);
-        if (owner == null || !(isUser(owner) || isGroup(owner))) {
-            return;
-        }
         BaseObject right = rightsObjects.get(ownerPermissions);
         if (isUser(owner)) {
             setRights(right, USERS, owner.toString());
