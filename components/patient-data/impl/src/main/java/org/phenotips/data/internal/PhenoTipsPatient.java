@@ -53,6 +53,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.BaseProperty;
 import com.xpn.xwiki.objects.ListProperty;
 
 import net.sf.json.JSONArray;
@@ -129,13 +130,17 @@ public class PhenoTipsPatient implements Patient
         }
 
         try {
-            for (String property : PHENOTYPE_PROPERTIES) {
-                ListProperty values = (ListProperty) data.get(property);
-                if (values != null) {
-                    for (String value : values.getList()) {
-                        if (StringUtils.isNotBlank(value)) {
-                            this.features.add(new PhenoTipsFeature(doc, values, value));
-                        }
+            @SuppressWarnings("unchecked")
+            Collection<BaseProperty<EntityReference>> fields = data.getFieldList();
+            for (BaseProperty<EntityReference> field : fields) {
+                if (field == null || !field.getName().matches("(.*_)?phenotype")
+                    || field.getName().startsWith("extended_") || !ListProperty.class.isInstance(field)) {
+                    continue;
+                }
+                ListProperty values = (ListProperty) field;
+                for (String value : values.getList()) {
+                    if (StringUtils.isNotBlank(value)) {
+                        this.features.add(new PhenoTipsFeature(doc, values, value));
                     }
                 }
             }
