@@ -169,7 +169,7 @@
       </use>
     </class>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>var PhenoTips = (function (PhenoTips) {
@@ -436,7 +436,7 @@
       </use>
     </class>
     <property>
-      <cache>forbid</cache>
+      <cache>long</cache>
     </property>
     <property>
       <code>#template('colorThemeInit.vm')
