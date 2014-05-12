@@ -20,29 +20,40 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>SpecificityMetricWidgetTranslations</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.SpecificityMetricWidget</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1399655493000</creationDate>
+  <parent>PhenoTips.SpecificityMetricWidget</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1389728833000</creationDate>
-  <date>1394847136000</date>
-  <contentUpdateDate>1394847136000</contentUpdateDate>
+  <date>1399655493000</date>
+  <contentUpdateDate>1399655493000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content>phenotips.specificityMeter.label=How informative is your phenotypic description:
+phenotips.specificityMeter.level.0=None
+phenotips.specificityMeter.level.1=Poor
+phenotips.specificityMeter.level.2=Fair
+phenotips.specificityMeter.level.3=Good
+phenotips.specificityMeter.level.4=Very good
+phenotips.specificityMeter.level.5=Excellent
+phenotips.specificityMeter.info.label=What's this?
+phenotips.specificityMeter.info.title=About the Monarch phenotype specificity meter
+phenotips.specificityMeter.info=This meter assesses the breadth and depth of your phenotype annotation profile for a given patient in the context of all curated human and model organism phenotypes integrated within Monarch. The goal is to make your annotation profile specific enough to exclude similar diseases and to identify model organisms with similar phenotypes that may have mutations in relevant genes or pathways. The patient annotation profile is also used to aid exome prioritization using the same technology.</content>
   <object>
+    <name>PhenoTips.SpecificityMetricWidgetTranslations</name>
+    <number>0</number>
+    <className>XWiki.TranslationDocumentClass</className>
+    <guid>57c7d51f-0857-42ca-99aa-1e37fc9be119</guid>
     <class>
       <name>XWiki.TranslationDocumentClass</name>
       <customClass/>
@@ -69,22 +80,8 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.SpecificityMetricWidgetTranslations</name>
-    <number>0</number>
-    <className>XWiki.TranslationDocumentClass</className>
-    <guid>57c7d51f-0857-42ca-99aa-1e37fc9be119</guid>
     <property>
       <scope>WIKI</scope>
     </property>
   </object>
-  <content>phenotips.specificityMeter.label=How informative is your phenotypic description:
-phenotips.specificityMeter.level.0=None
-phenotips.specificityMeter.level.1=Poor
-phenotips.specificityMeter.level.2=Fair
-phenotips.specificityMeter.level.3=Good
-phenotips.specificityMeter.level.4=Very good
-phenotips.specificityMeter.level.5=Excellent
-phenotips.specificityMeter.info.label=What's this?
-phenotips.specificityMeter.info.title=About the Monarch phenotype specificity meter
-phenotips.specificityMeter.info=This meter assesses the breadth and depth of your phenotype annotation profile for a given patient in the context of all curated human and model organism phenotypes integrated within Monarch. The goal is to make your annotation profile specific enough to exclude similar diseases and to identify model organisms with similar phenotypes that may have mutations in relevant genes or pathways. The patient annotation profile is also used to aid exome prioritization using the same technology.</content>
 </xwikidoc>

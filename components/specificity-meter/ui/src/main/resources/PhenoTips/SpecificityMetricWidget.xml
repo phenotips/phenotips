@@ -20,71 +20,51 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>SpecificityMetricWidget</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1399655494000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1389484064000</creationDate>
-  <date>1394851167000</date>
-  <contentUpdateDate>1390580849000</contentUpdateDate>
+  <date>1399655494000</date>
+  <contentUpdateDate>1399655494000</contentUpdateDate>
   <version>1.1</version>
   <title>SpecificityMetricWidget</title>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content>(% style="text-align: center" %)((([[[[image:http://monarchinitiative.org/sites/all/themes/monarch/logo.png||alt="Monarch Initiative"]]&gt;&gt;http://monarchinitiative.org/]])))
+
+{{translation key='phenotips.specificityMeter.info'/}}</content>
   <attachment>
     <filename>5star-c.png</filename>
-    <filesize>833</filesize>
     <author>xwiki:XWiki.Admin</author>
     <date>1390580848000</date>
     <version>1.1</version>
     <comment/>
-    <content>iVBORw0KGgoAAAANSUhEUgAAAG4AAAAWCAYAAAAhKqlXAAADCElEQVR4Xu3ZfUhTaxzA8celoCJL
-CsvSjEpWQZkJkZjRopd7iV6gF5rbHxmkM9F0pSUX05GRXC52rXmmjHRubtPVfMlNC51zO7rNtOxO
-uuqOTisSeqH+ulBK9WsnkGXlVQI9E54ffP84HM6HA+ccDuc8CM/MibnIZzqA4KOAqgw2C3nr3EoK
-Lp4ewK4kAflKBb4+XnW+RAKKt6mFbw2FcZcWjotdVH1hnZYiC8GuPvNGzEW+C8DF7k0BCrepTrmG
-OgrAaSkAXd7m697vYhdpzkfInGT+J4oUA51dk/jq70QU7MUuduWJyL+j8uRzisyFyZyWXNDmcCq9
-18UuUqQv/2PAlPWZInPg27prBGPECRTpBS52reoDq9tKuJntsv06S/mhvgc1vNeO5rPjFJkFP+sf
-vfB9923Bmw75kREjsfuh4VrMvZqLEUrZ6QCJJAEVzp2L3a+gKn2Z0tGcPN5vEsFAuwgGzSJwWkRu
-4Neya46/VCYHRMydi10AMQsRJ1Co7jKn1mlOnaA6zsFsG2xPAYeeDz3aw2BT7ANSthNab8S5ZEl+
-2xBCc+xiF03idWJOLUWmTLjs6fB9w52p4Gg8BtaKHdBatB4a80KgNjtwSkqhXxfBR0dpb15c7Hrw
-6othlS678L+nPWkw0pUKj+sPglkaBYYrIaDPXzJtt7PZRgkPiWhnXl3senCtG390Z++7tuuroeXP
-lTPWdCVEX5KAimiAERe7HlyRElhnlqyB2VQqYMno7xHGXOx6UmWwrfbyjTCbKoT+Ghpg2MUufUc0
-5Ic6emu2wmxSZy5uZdTFrmeJwSzlPH9yNxYm667aAg35K6BHFU1vT0lfEGajf5Qy62IX3eQtSnLU
-bv84ZOQC1bILjMWR7oPD+7oUMVHuqy/VX1010t8cD/R+OmvFpuESHtrDrItdJE8OLHtm+x3+bdoJ
-9XmhY/f/Wsv/4eWaFqQ2ERtGRzt/g8EW7odSPusssy52UXXWkjoTsfGFNntp+f8t6hF8FF2VwTb0
-6mKH5SlBZQy42MUtvPkCb6MAFz0+AHIAAAAASUVORK5CYII=
-</content>
+    <content>iVBORw0KGgoAAAANSUhEUgAAAG4AAAAWCAYAAAAhKqlXAAADCElEQVR4Xu3ZfUhTaxzA8celoCJLCsvSjEpWQZkJkZjRopd7iV6gF5rbHxmkM9F0pSUX05GRXC52rXmmjHRubtPVfMlNC51zO7rNtOxOuuqOTisSeqH+ulBK9WsnkGXlVQI9E54ffP84HM6HA+ccDuc8CM/MibnIZzqA4KOAqgw2C3nr3EoKLp4ewK4kAflKBb4+XnW+RAKKt6mFbw2FcZcWjotdVH1hnZYiC8GuPvNGzEW+C8DF7k0BCrepTrmGOgrAaSkAXd7m697vYhdpzkfInGT+J4oUA51dk/jq70QU7MUuduWJyL+j8uRzisyFyZyWXNDmcCq918UuUqQv/2PAlPWZInPg27prBGPECRTpBS52reoDq9tKuJntsv06S/mhvgc1vNeO5rPjFJkFP+sfvfB9923Bmw75kREjsfuh4VrMvZqLEUrZ6QCJJAEVzp2L3a+gKn2Z0tGcPN5vEsFAuwgGzSJwWkRu4Neya46/VCYHRMydi10AMQsRJ1Co7jKn1mlOnaA6zsFsG2xPAYeeDz3aw2BT7ANSthNab8S5ZEl+2xBCc+xiF03idWJOLUWmTLjs6fB9w52p4Gg8BtaKHdBatB4a80KgNjtwSkqhXxfBR0dpb15c7Hrw6othlS678L+nPWkw0pUKj+sPglkaBYYrIaDPXzJtt7PZRgkPiWhnXl3senCtG390Z++7tuuroeXPlTPWdCVEX5KAimiAERe7HlyRElhnlqyB2VQqYMno7xHGXOx6UmWwrfbyjTCbKoT+Ghpg2MUufUc05Ic6emu2wmxSZy5uZdTFrmeJwSzlPH9yNxYm667aAg35K6BHFU1vT0lfEGajf5Qy62IX3eQtSnLUbv84ZOQC1bILjMWR7oPD+7oUMVHuqy/VX1010t8cD/R+OmvFpuESHtrDrItdJE8OLHtm+x3+bdoJ9XmhY/f/Wsv/4eWaFqQ2ERtGRzt/g8EW7odSPusssy52UXXWkjoTsfGFNntp+f8t6hF8FF2VwTb06mKH5SlBZQy42MUtvPkCb6MAFz0+AHIAAAAASUVORK5CYII=</content>
+    <filesize>833</filesize>
   </attachment>
   <attachment>
     <filename>5star-g.png</filename>
-    <filesize>461</filesize>
     <author>xwiki:XWiki.Admin</author>
     <date>1390580849000</date>
     <version>1.1</version>
     <comment/>
-    <content>iVBORw0KGgoAAAANSUhEUgAAAG4AAAAWCAQAAACLI2HcAAABlElEQVRYw93STUsCQRjA8VE82K2j
-B6lL5+jSzVvfoGP3Dt3qFPQFkqAIgmYUhG1Jw0htS7G0FzQzSZMURPBlFyyz1DXBoAzraTVFwaCL
-B2efP3uY5cfAMIPQ0I1e0bsiI3vKgW7Pbg6XxSqjYkD7Yp0gBpbladGRtQZCSa+SocVaPluDKng2
-5GeR3Vj9qkpYeCGjMrMmdSrXpM1cjLws2l8Rv1/hNyGPJ2Rgk+PRxdhBIs4XC/UKdHt6F0pJPhrx
-uTmW2cKrdNnm2dlCvQziv6Wf2TG6bEOJsObEVv78GxThAdKQgHu4zTLTiDqLOrx7uSLkIAZX4ARb
-u50QmUVU2hY/ZMS3qgR5CIFbYr3ZzvASota2OMekKj4478t9jNcR1bbFWfsp9GcwmtS0W2nM1xfQ
-H2NB9FusccQC0J/FS79FROfNhaCZHxzSF2rHBYmWdovI/E0jCnfSq+Xi/knLNseHISp1mSEztFvE
-kDiEwZ53zXWufdfsEWIQ+TAs0G6R1e59tJrWVL3/DFNmZzDDEtqtLOcHu6lbW1ZFMNUAAAAASUVO
-RK5CYII=
-</content>
+    <content>iVBORw0KGgoAAAANSUhEUgAAAG4AAAAWCAQAAACLI2HcAAABlElEQVRYw93STUsCQRjA8VE82K2jB6lL5+jSzVvfoGP3Dt3qFPQFkqAIgmYUhG1Jw0htS7G0FzQzSZMURPBlFyyz1DXBoAzraTVFwaCLB2efP3uY5cfAMIPQ0I1e0bsiI3vKgW7Pbg6XxSqjYkD7Yp0gBpbladGRtQZCSa+SocVaPluDKng25GeR3Vj9qkpYeCGjMrMmdSrXpM1cjLws2l8Rv1/hNyGPJ2Rgk+PRxdhBIs4XC/UKdHt6F0pJPhrxuTmW2cKrdNnm2dlCvQziv6Wf2TG6bEOJsObEVv78GxThAdKQgHu4zTLTiDqLOrx7uSLkIAZX4ARbu50QmUVU2hY/ZMS3qgR5CIFbYr3ZzvASota2OMekKj4478t9jNcR1bbFWfsp9GcwmtS0W2nM1xfQH2NB9FusccQC0J/FS79FROfNhaCZHxzSF2rHBYmWdovI/E0jCnfSq+Xi/knLNseHISp1mSEztFvEkDiEwZ53zXWufdfsEWIQ+TAs0G6R1e59tJrWVL3/DFNmZzDDEtqtLOcHu6lbW1ZFMNUAAAAASUVORK5CYII=</content>
+    <filesize>461</filesize>
   </attachment>
   <object>
+    <name>PhenoTips.SpecificityMetricWidget</name>
+    <number>0</number>
+    <className>XWiki.DocumentSheetBinding</className>
+    <guid>9f0c7fe2-0b50-4b9a-b3fb-cbdea4372e62</guid>
     <class>
       <name>XWiki.DocumentSheetBinding</name>
       <customClass/>
@@ -108,15 +88,15 @@ RK5CYII=
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </sheet>
     </class>
-    <name>PhenoTips.SpecificityMetricWidget</name>
-    <number>0</number>
-    <className>XWiki.DocumentSheetBinding</className>
-    <guid>9f0c7fe2-0b50-4b9a-b3fb-cbdea4372e62</guid>
     <property>
       <sheet>PhenoTips.UIXSheet</sheet>
     </property>
   </object>
   <object>
+    <name>PhenoTips.SpecificityMetricWidget</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>a63b1624-c668-4ffb-917d-774fe9559841</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -188,10 +168,6 @@ RK5CYII=
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.SpecificityMetricWidget</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>a63b1624-c668-4ffb-917d-774fe9559841</guid>
     <property>
       <cache>forbid</cache>
     </property>
@@ -384,6 +360,10 @@ RK5CYII=
     </property>
   </object>
   <object>
+    <name>PhenoTips.SpecificityMetricWidget</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>fb644879-47e3-41e5-b26f-89dc7a347689</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -455,10 +435,6 @@ RK5CYII=
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.SpecificityMetricWidget</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>fb644879-47e3-41e5-b26f-89dc7a347689</guid>
     <property>
       <cache>forbid</cache>
     </property>
@@ -526,6 +502,10 @@ RK5CYII=
     </property>
   </object>
   <object>
+    <name>PhenoTips.SpecificityMetricWidget</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>d6a5842b-329a-4ee8-ac02-353f3ce65b22</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -590,10 +570,6 @@ RK5CYII=
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.SpecificityMetricWidget</name>
-    <number>0</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>d6a5842b-329a-4ee8-ac02-353f3ce65b22</guid>
     <property>
       <content>{{velocity}}
 $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})
@@ -618,7 +594,4 @@ $xwiki.jsx.use('PhenoTips.SpecificityMetricWidget')##
       <scope>wiki</scope>
     </property>
   </object>
-  <content>(% style="text-align: center" %)((([[[[image:http://monarchinitiative.org/sites/all/themes/monarch/logo.png||alt="Monarch Initiative"]]&gt;&gt;http://monarchinitiative.org/]])))
-
-{{translation key='phenotips.specificityMeter.info'/}}</content>
 </xwikidoc>
