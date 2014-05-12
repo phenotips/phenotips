@@ -127,6 +127,12 @@ public class PatientSpecificityScriptService implements ScriptService
         }
 
         @Override
+        public String getNotes()
+        {
+            return null;
+        }
+
+        @Override
         public JSONObject toJSON()
         {
             return null;

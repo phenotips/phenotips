@@ -59,6 +59,13 @@ public interface Feature extends OntologyProperty
     Map<String, ? extends FeatureMetadatum> getMetadata();
 
     /**
+     * Return optional notes/comments about this feature, entered as free text.
+     *
+     * @return a free hand text, may be {@code null} or the empty string if no notes are present
+     */
+    String getNotes();
+
+    /**
      * Retrieve all information about this feature and its associated metadata in a JSON format. For example:
      *
      * <pre>

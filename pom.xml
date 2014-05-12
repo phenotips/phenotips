@@ -259,6 +259,11 @@
               <differenceType>7012</differenceType>
               <method>java.lang.String getISODateFormat()</method>
             </difference>
+            <difference>
+              <className>**/data/Feature</className>
+              <differenceType>7012</differenceType>
+              <method>java.lang.String getNotes()</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
