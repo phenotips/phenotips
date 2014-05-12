@@ -24,7 +24,7 @@ import net.sf.json.JSONObject;
 import org.phenotips.data.Disorder;
 import org.apache.commons.lang3.StringUtils;
 
-import com.xpn.xwiki.objects.DBStringListProperty;
+import com.xpn.xwiki.objects.ListProperty;
 
 /**
  * Implementation of patient data based on the XWiki data model, where disorder data is represented by properties in
@@ -43,7 +43,7 @@ public class PhenoTipsDisorder extends AbstractPhenoTipsOntologyProperty impleme
      * @param property the disorder XProperty
      * @param value the specific value from the property represented by this object
      */
-    PhenoTipsDisorder(DBStringListProperty property, String value)
+    PhenoTipsDisorder(ListProperty property, String value)
     {
         super(StringUtils.equals(property.getName(), "omim_id") ? MIM_PREFIX + value : value);
     }

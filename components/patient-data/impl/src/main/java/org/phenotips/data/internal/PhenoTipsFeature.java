@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.DBStringListProperty;
+import com.xpn.xwiki.objects.ListProperty;
 import com.xpn.xwiki.objects.StringProperty;
 
 import net.sf.json.JSONArray;
@@ -87,7 +87,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
      * @param property the feature category XProperty
      * @param value the specific value from the property represented by this object
      */
-    PhenoTipsFeature(XWikiDocument doc, DBStringListProperty property, String value)
+    PhenoTipsFeature(XWikiDocument doc, ListProperty property, String value)
     {
         super(value);
         this.propertyName = property.getName();

@@ -53,7 +53,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.DBStringListProperty;
+import com.xpn.xwiki.objects.ListProperty;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -130,7 +130,7 @@ public class PhenoTipsPatient implements Patient
 
         try {
             for (String property : PHENOTYPE_PROPERTIES) {
-                DBStringListProperty values = (DBStringListProperty) data.get(property);
+                ListProperty values = (ListProperty) data.get(property);
                 if (values != null) {
                     for (String value : values.getList()) {
                         if (StringUtils.isNotBlank(value)) {
@@ -140,7 +140,7 @@ public class PhenoTipsPatient implements Patient
                 }
             }
             for (String property : DISORDER_PROPERTIES) {
-                DBStringListProperty values = (DBStringListProperty) data.get(property);
+                ListProperty values = (ListProperty) data.get(property);
                 if (values != null) {
                     for (String value : values.getList()) {
                         if (StringUtils.isNotBlank(value)) {
