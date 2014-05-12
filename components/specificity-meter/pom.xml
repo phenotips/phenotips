@@ -32,6 +32,7 @@
   <name>PhenoTips - Specificity Meter</name>
 
   <modules>
+    <module>api</module>
     <module>ui</module>
   </modules>
 </project>

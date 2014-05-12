@@ -702,6 +702,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>specificity-meter-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>pedigree-editor</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>

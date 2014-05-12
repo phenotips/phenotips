@@ -1,0 +1,5 @@
+org.phenotips.data.internal.DefaultPatientSpecificityService
+org.phenotips.data.internal.MonarchPatientScorer
+org.phenotips.data.internal.OmimInformationContentPatientScorer
+org.phenotips.data.internal.controller.SpecificityController
+org.phenotips.data.script.PatientSpecificityScriptService
