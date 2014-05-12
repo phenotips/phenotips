@@ -78,11 +78,14 @@ $!response.setContentType('application/json')##
   #set ($item.phenotype_HP_id = $feature.id)
   #set ($item.phenotype_name = $feature.label)
   #set ($item.is_present = $feature.observed)
-  #set ($discard = $rows.add($item))
   #foreach ($qualifier in $feature.qualifiers)
     #set ($discard = $item.put($stringtool.substringAfterLast($qualifier.type, '_').concat('_HP_id'), $qualifier.id))
     #set ($discard = $item.put($stringtool.substringAfterLast($qualifier.type, '_').concat('_name'), $qualifier.label))
   #end
+  #if ("$!feature.notes" != '')
+    #set ($item.comments = $feature.notes)
+  #end
+  #set ($discard = $rows.add($item))
 #end
 #set ($result.returnedrows = $patient.features.size())
 $jsontool.serialize($result)
