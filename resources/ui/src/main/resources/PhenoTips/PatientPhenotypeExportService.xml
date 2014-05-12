@@ -70,6 +70,8 @@ $!response.setContentType('application/json')##
   #set ($result.global_age_of_onset = {'id' : $onset.id, 'label' : $onset.name})
 #end
 #set ($patientJSON = $patient.toJSON())
+#set ($discard = $result.put('hpo_version', $patient.getData('versions').hpo_version))
+#set ($discard = $result.put('specificity', $patientJSON.specificity))
 #foreach ($feature in $patientJSON.features)
   #set ($item = {})
   #set ($item.type = $feature.type)
