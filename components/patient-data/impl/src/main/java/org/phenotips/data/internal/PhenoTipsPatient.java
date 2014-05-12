@@ -385,8 +385,8 @@ public class PhenoTipsPatient implements Patient
     public void updateFromJSON(JSONObject json)
     {
         try {
-            // TODO: check versions and throw if versions mismatch if necessary
-            // TODO: separe updateFrom JSON and saveToDB ? Move to PatientRepository?
+            // TODO: Check versions and throw if versions mismatch if necessary
+            // TODO: Separate updateFromJSON and saveToDB? Move to PatientRepository?
 
             Execution execution = ComponentManagerRegistry.getContextComponentManager().getInstance(Execution.class);
             XWikiContext context = (XWikiContext) execution.getContext().getProperty("xwikicontext");
