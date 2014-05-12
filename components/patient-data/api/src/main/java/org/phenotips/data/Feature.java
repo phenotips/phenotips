@@ -79,13 +79,11 @@ public interface Feature extends OntologyProperty
     JSONObject toJSON();
 
     /**
-     * Returns PhenoTips name of this feature.<p>
-     *
-     * In current implementation it is either the ID, or the name iff ID is null or empty.
-     *
-     * TODO: move to OntologyProperty and or implement a OntologyProperty-to-PhenotipsPropertName mapping service
+     * Returns PhenoTips name of this feature. In current implementation it is either the ID, or the name iff ID is null
+     * or empty.
      *
      * @return feature name
+     * @todo move to OntologyProperty and/or implement a OntologyProperty-to-PhenotipsPropertyName mapping service
      */
     String getValue();
 }
