@@ -55,15 +55,16 @@ $!response.setContentType('application/json')##
 #set ($result = {'rows': $rows, 'returnedrows': 0})
 #if ("$!request.id" != '')
   #set ($patient = $services.patients.getPatientById($request.id))
+  #set ($result.source = $patient.id)
 #elseif ("$!request.eid" != '')
   #set ($patient = $services.patients.getPatientByExternalId($request.eid))
+  #set ($result.source = $patient.externalId)
 #end
 #if (!$patient)
   #set ($discard = $result.put('error', 'Identifier not found.'))
   $jsontool.serialize($result)
   #break
 #end
-#set ($result.source = $patient.id)
 #set ($result.source_url = $xwiki.getDocument($patient.document).externalURL)
 #set ($onset = $patient.getData('global-qualifiers').global_age_of_onset)
 #if ($onset)
