@@ -226,7 +226,7 @@
     <className>XWiki.ConfigurableClass</className>
     <guid>0b66703e-b724-40f2-a0cd-3c9427a05851</guid>
     <property>
-      <advancedOnly>1</advancedOnly>
+      <advancedOnly>0</advancedOnly>
     </property>
     <property>
       <categoryPriority>0</categoryPriority>
