@@ -12,7 +12,7 @@ var PedigreeEditor = Class.create({
         //this.DEBUG_MODE = true;
         window.editor = this;
 
-        // initialize main data structure which holds the graph structure        
+        // initialize main data structure which holds the graph structure
         this._graphModel = DynamicPositionedGraph.makeEmpty(PedigreeEditor.attributes.layoutRelativePersonWidth, PedigreeEditor.attributes.layoutRelativeOtherWidth);
 
         //initialize the elements of the app
@@ -28,6 +28,7 @@ var PedigreeEditor = Class.create({
 
         this._actionStack = new ActionStack();
         this._templateSelector = new TemplateSelector();
+        this._importSelector = new ImportSelector();
         this._saveLoadIndicator = new SaveLoadIndicator();
         this._saveLoadEngine = new SaveLoadEngine();
         this._probandData = new ProbandDataLoader();
@@ -68,6 +69,10 @@ var PedigreeEditor = Class.create({
         var templatesButton = $('action-templates');
         templatesButton && templatesButton.on("click", function(event) {
             editor.getTemplateSelector().show();
+        });
+        var importButton = $('action-import');
+        importButton && importButton.on("click", function(event) {
+            editor.getImportSelector().show();
         });
 
         var closeButton = $('action-close');
@@ -231,6 +236,14 @@ var PedigreeEditor = Class.create({
     getTemplateSelector: function() {
         return this._templateSelector
     },
+    
+    /**
+     * @method getImportSelector
+     * @return {importSelector}
+     */
+    getImportSelector: function() {
+        return this._importSelector
+    },    
 
     /**
      * Returns true if any of the node menus are visible
@@ -290,6 +303,12 @@ var PedigreeEditor = Class.create({
                 'type' : 'text',
                 'function' : 'setLastNameAtBirth'
             },
+            {
+                'name' : 'external_id',
+                'label': 'External ID',
+                'type' : 'text',
+                'function' : 'setExternalID'
+            },            
             {
                 'name' : 'carrier',
                 'label' : 'Carrier status',
@@ -600,6 +619,7 @@ PedigreeEditor.attributes = {
     label: {'font-size': 20, 'font-family': 'Arial'},
     nameLabels: {'font-size': 20, 'font-family': 'Arial'},    
     commentLabel: {'font-size': 19, 'font-family': 'Arial' },
+    externalIDLabels: {'font-size': 18, 'font-family': 'Arial' },
     disorderShapes: {},
     partnershipNode: {fill: '#dc7868', stroke: 'black', 'stroke-width':2},  //#E25740
     partnershipRadius: 6.5,

@@ -21,8 +21,8 @@ BaseGraph = function ( defaultPersonNodeWidth, defaultNonPersonNodeWidth )
     this.properties = [];      // for each V a set of type-specific properties {"gender": "M"/"F"/"U", etc.}
 
     this.vWidth = [];
-    this.defaultPersonNodeWidth    = defaultPersonNodeWidth    ? defaultPersonNodeWidth    : 1;
-    this.defaultNonPersonNodeWidth = defaultNonPersonNodeWidth ? defaultNonPersonNodeWidth : 1;
+    this.defaultPersonNodeWidth    = defaultPersonNodeWidth    ? defaultPersonNodeWidth    : 10;
+    this.defaultNonPersonNodeWidth = defaultNonPersonNodeWidth ? defaultNonPersonNodeWidth : 2;
 };
 
 var TYPE = {
@@ -31,135 +31,6 @@ var TYPE = {
   PERSON:       3,
   VIRTUALEDGE:  4    // for nodes not present in the original graph used as intermediate steps in multi-rank edges
 };
-
-BaseGraph.init_from_user_graph = function(inputG, defaultPersonNodeWidth, defaultNonPersonNodeWidth, checkIDs)
-{
-    // note: serialize() produces the correct input for this function
-
-    var newG = new BaseGraph();
-
-    var nameToId = {};
-
-    if (defaultNonPersonNodeWidth) newG.defaultNonPersonNodeWidth = defaultNonPersonNodeWidth;
-    if (defaultPersonNodeWidth)    newG.defaultPersonNodeWidth    = defaultPersonNodeWidth;
-
-    var relationshipHasExplicitChHub = {};
-
-    // first pass: add all vertices and assign vertex IDs
-    for (var v = 0; v < inputG.length; v++) {
-
-        if (!inputG[v].hasOwnProperty("name") && !inputG[v].hasOwnProperty("id"))
-            throw "Invalid inpiut: a node without id and without name";
-
-        var type = TYPE.PERSON;
-        if ( inputG[v].hasOwnProperty('relationship') || inputG[v].hasOwnProperty('rel') ) {
-            type = TYPE.RELATIONSHIP;
-            // normally users wont specify childhubs explicitly - but save via JSON does
-            if (inputG[v].hasOwnProperty('hub') || inputG[v].hasOwnProperty('haschhub'))
-                relationshipHasExplicitChHub[v] = true;
-        }
-        else if ( inputG[v].hasOwnProperty('chhub') ) {
-            type = TYPE.CHILDHUB;
-        }
-        else if ( inputG[v].hasOwnProperty('virtual') || inputG[v].hasOwnProperty('virt')) {
-            type = TYPE.VIRTUALEDGE;
-        }
-
-        var properties = {};
-        if (inputG[v].hasOwnProperty('properties') || inputG[v].hasOwnProperty('prop'))
-            properties = inputG[v].hasOwnProperty('properties') ? inputG[v]["properties"] : inputG[v]["prop"];
-
-        if ( type == TYPE.PERSON ) {
-            if (!properties.hasOwnProperty("gender"))
-                properties["gender"] = "U";
-
-            if (inputG[v].hasOwnProperty("gender")) {
-                 var genderString = inputG[v]["gender"].toLowerCase();
-                 if( genderString == "female" || genderString == "fem" || genderString == "f")
-                    properties["gender"] = "F";
-                else if( genderString == "male" || genderString == "m")
-                    properties["gender"] = "M";
-            }
-        }
-
-        var width = inputG[v].hasOwnProperty('width') ?
-                    inputG[v].width :
-                    (type == TYPE.PERSON ? defaultPersonNodeWidth : defaultNonPersonNodeWidth);
-
-        var newID = newG._addVertex( null, type, properties, width );   // "null" since id is not known yet
-
-        if (inputG[v].hasOwnProperty("name")) {  // note: this means using user input (not produced by this.serialize)
-            if (nameToId[inputG[v].name])
-                throw "Invalid user input: multiple nodes with the same name";
-            if (type == TYPE.PERSON)
-                newG.properties[newID]["fName"] = inputG[v].name;
-            nameToId[inputG[v].name] = newID;
-        }
-
-        // should only be used for save/restore: to verify the new IDs match the old ones
-        if (checkIDs) {
-            if (!inputG[v].hasOwnProperty('id'))
-                throw "Can't check IDs - no IDs in input data!";
-            var expectID = inputG[v]['id'];
-            if (expectID != newID)
-                throw "Assertion failed: restored node ID (" + newID.toString() + ") does not match real node ID (" + expectID.toString() + ")!";
-        }
-
-        // when entered by user manually allow users to skip childhub nodes (and create them automatically)
-        // (but when saving/restoring from a JSON need to save/restore childhub nodes as they
-        //  may have some properties assigned by the user which we need to save/restore)
-        if ( type == TYPE.RELATIONSHIP && !relationshipHasExplicitChHub.hasOwnProperty(v) ) {
-            var chHubId = newG._addVertex(null, TYPE.CHILDHUB, null, width );
-            nameToId["_chhub_" + newID] = chHubId;
-        }
-    }
-
-    // second pass (once all vertex IDs are known): process edges
-    for (var v = 0; v < inputG.length; v++) {
-        var nextV = inputG[v];
-
-        var vID    = nextV.hasOwnProperty("id") ? nextV.id : nameToId[nextV.name];
-        var origID = vID;
-
-        var substitutedID = false;
-
-        if (newG.type[vID] == TYPE.RELATIONSHIP && !relationshipHasExplicitChHub.hasOwnProperty(vID)) {
-            // replace edges from rel node by edges from childhub node
-            var childhubID = nameToId["_chhub_" + vID];
-            vID = childhubID;
-            substitutedID = true;
-        }
-
-        var maxChildEdgeWeight = 0;
-
-        if (nextV.outedges) {
-            for (var outE = 0; outE < nextV.outedges.length; outE++) {
-                var target   = nextV.outedges[outE].to;
-                var targetID = nameToId[target] ? nameToId[target] : target;  // can specify target either by name or ID
-
-                if (!newG.isValidId(targetID))
-                    throw "Invalid input: invalid edge target (" + target + ")";
-
-                var weight = 1;
-                if (nextV.outedges[outE].hasOwnProperty('weight'))
-                    weight = nextV.outedges[outE].weight;
-                if ( weight > maxChildEdgeWeight )
-                    maxChildEdgeWeight = weight;
-
-                newG.addEdge( vID, targetID, weight );
-            }
-        }
-
-        if (substitutedID) {
-            newG.addEdge( origID, vID, maxChildEdgeWeight );
-        }
-    }
-
-    newG.validate();
-
-    return newG;
-}
-
 
 BaseGraph.prototype = {
 

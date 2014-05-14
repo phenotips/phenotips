@@ -18,6 +18,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._nameLabel = null;
         this._stillBirthLabel = null;
         this._ageLabel = null;
+        this._externalIDLabel = null;
         this._commentsLabel = null;
         this._childlessStatusLabel = null;
         this._disorderShapes = null;
@@ -128,6 +129,33 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         return this.getHoverBox().getFrontElements();
     },
 
+    /**
+     * Updates the external ID label for this Person
+     *
+     * @method updateExternalIDLabel
+     */    
+    updateExternalIDLabel: function() {
+        this._externalIDLabel && this._externalIDLabel.remove();
+                
+        if (this.getNode().getExternalID()) {
+            var text = '[' + this.getNode().getExternalID() + "]";
+            this._externalIDLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius, text).attr(PedigreeEditor.attributes.externalIDLabels);            
+        } else {
+            this._externalIDLabel = null;
+        }
+        this.drawLabels();        
+    },
+    
+    /**
+     * Returns the Person's external ID label
+     *
+     * @method getExternalIDLabel
+     * @return {Raphael.el}
+     */
+    getExternalIDLabel: function() {
+        return this._externalIDLabel;
+    },    
+    
     /**
      * Updates the name label for this Person
      *
@@ -595,7 +623,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         var labels = editor.getPaper().set();        
         this.getSBLabel() && labels.push(this.getSBLabel());
         this.getNameLabel() && labels.push(this.getNameLabel());
-        this.getAgeLabel() && labels.push(this.getAgeLabel());
+        this.getAgeLabel() && labels.push(this.getAgeLabel());        
+        this.getExternalIDLabel() && labels.push(this.getExternalIDLabel());
         this.getCommentsLabel() && labels.push(this.getCommentsLabel());
         return labels;
     },

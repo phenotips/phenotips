@@ -414,7 +414,8 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
         $super(x,y, animate, callback);
                 
         this.updatePartnerConnections();
-        this.updateChildhubConnection();        
+        this.updateChildhubConnection();
+        this.updateChildlessStatusLabel();
     },
 
     /**

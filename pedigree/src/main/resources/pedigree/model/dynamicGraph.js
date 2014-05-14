@@ -1020,18 +1020,22 @@ DynamicPositionedGraph.prototype = {
     {
         var removedNodes = this._getAllNodes(1);  // all nodes from 1 and up
 
-        var node0properties = this.getProperties(0);
+        var emptyGraph = (this.DG.GG.getNumVertices() == 0);
+                
+        var node0properties = emptyGraph ? {} : this.getProperties(0);
 
         // it is easier to create abrand new graph transferirng node 0 propertie sthna to remove on-by-one
         // each time updating ranks, orders, etc
 
-        var baseGraph = BaseGraph.init_from_user_graph(this._onlyProbandGraph,
-                                                       this.DG.GG.defaultPersonNodeWidth, this.DG.GG.defaultNonPersonNodeWidth);
+        var baseGraph = PedigreeImport.initFromPhenotipsInternal(this._onlyProbandGraph);
 
         this._recreateUsingBaseGraph(baseGraph);
 
         this.setProperties(0, node0properties);
 
+        if (emptyGraph)
+            return {"new": [0], "makevisible": [0]};
+            
         return {"removed": removedNodes, "moved": [0], "makevisible": [0]};
     },
 
@@ -1104,9 +1108,7 @@ DynamicPositionedGraph.prototype = {
 
         //console.log("Got serialization object: " + stringifyObject(serializedData));
 
-        this.DG.GG = BaseGraph.init_from_user_graph(serializedData["GG"],
-                                                    this.DG.GG.defaultPersonNodeWidth, this.DG.GG.defaultNonPersonNodeWidth,
-                                                    true);
+        this.DG.GG = PedigreeImport.initFromPhenotipsInternal(serializedData["GG"]);
 
         this.DG.ranks = serializedData["ranks"];
 
@@ -1119,6 +1121,23 @@ DynamicPositionedGraph.prototype = {
         this._updateauxiliaryStructures();
 
         this.screenRankShift = 0;
+
+        var newNodes = this._getAllNodes();
+
+        return {"new": newNodes, "removed": removedNodes};
+    },
+
+    fromPED: function (inputPED, linkageMod, acceptUnknownPhenotypes)
+    {
+        var removedNodes = this._getAllNodes();
+
+        this._debugPrintAll("before");
+
+        var baseGraph = PedigreeImport.initFromPED(inputPED, linkageMod, acceptUnknownPhenotypes);
+
+        if (!this._recreateUsingBaseGraph(baseGraph)) return {};  // no changes
+
+        this._debugPrintAll("after");
 
         var newNodes = this._getAllNodes();
 

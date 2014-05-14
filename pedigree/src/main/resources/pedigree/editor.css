@@ -92,7 +92,7 @@
   background-image: url("$xwiki.getSkinFile('icons/silk/printer.png')");
 }
 #editor-menu .save {
-  background-image: url("$xwiki.getSkinFile('icons/silk/disk.png')");
+  background-image: url("$xwiki.getSkinFile('icons/silk/disk.png')"); /* bullet_disk.png */
 }
 #editor-menu .export {
   background-image: url("$xwiki.getSkinFile('icons/silk/package.png')");
@@ -102,13 +102,19 @@
 }
 #editor-menu .readonlymessage {
   background-image: url("$xwiki.getSkinFile('icons/silk/bullet_error.png')");
-} 
+}
 #editor-menu .reload {
   background-image: url("$xwiki.getSkinFile('icons/silk/arrow_refresh_small.png')");
-} 
+}
 #editor-menu .templates {
   background-image: url("$xwiki.getSkinFile('icons/silk/bullet_star.png')"); /* star.png */
-} 
+}
+#editor-menu .import {
+  background-image: url("$xwiki.getSkinFile('icons/silk/shape_square_go.png')"); /* bullet_go.png, folder_go.png, page_white_go.png */
+}
+#editor-menu .settings {
+  background-image: url("$xwiki.getSkinFile('icons/silk/control_equalizer_blue.png')");
+}
 
 .loading-indicator {
     background-image: url("$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')");
@@ -343,6 +349,32 @@
 .menu-box .field-box .textarea-3-rows {
   height: 4.3em;
 }
+.import-selector .import-textarea {
+  height: 8em;
+  resize: none;
+  width: 85%;
+  /*border: 1px solid #E8E8E8;*/
+  margin: .2em 0 0.5em 0;
+}
+.import-block {
+  margin: 0 0 0.5em 0;
+  display: block;
+}
+.import-block-bottom {
+  margin: 1em 0 0.5em 0;
+}
+.import-section {
+  font-weight: bold;
+  float: left;
+}
+.import-type-label {
+  float: left;
+  margin: 0 1em 0 0.8em;
+}
+.import-config-label {
+  float: left;
+  margin: 0 1em 0 2.5em;
+}
 .menu-box .field-box textarea:focus {
   border: 1px solid #DDD;
 }
@@ -394,6 +426,14 @@
   float: left;
 }
 .menu-box .field-last_name {
+  width: 49%;
+  float: right;
+}
+.menu-box .field-last_name_birth {
+  width: 49%;
+  float: left;
+}
+.menu-box .field-external_id {
   width: 49%;
   float: right;
 }

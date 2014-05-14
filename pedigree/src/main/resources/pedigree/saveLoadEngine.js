@@ -86,42 +86,80 @@ var SaveLoadEngine = Class.create( {
 
     createGraphFromSerializedData: function(JSONString, noUndo, centerAround0) {
         console.log("---- load: parsing data ----");
-        var successfulLoad = false;
-
         document.fire("pedigree:load:start");
 
         try {
-            var positionedGraph = editor.getGraph(); 
-
-            var changeSet = positionedGraph.fromJSON(JSONString);
-
-            if (!noUndo) {
-                var probandData = editor.getProbandDataFromPhenotips();
-                var genderOk = positionedGraph.setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
-                if (!genderOk)
-                    alert("Gender defined in phenotips is incompatible with this pedigree. Setting proband gender to 'Unknown'");
-                JSONString = positionedGraph.toJSON();
-            }
-
-            if (editor.getView().applyChanges(changeSet, false)) {
-                successfulLoad = true;
-                editor.getWorkspace().adjustSizeToScreen();
-            }
-
-            if (centerAround0)
-                editor.getWorkspace().centerAroundNode(0);
-
-            if (!noUndo)
-                editor.getActionStack().addState(null, null, JSONString);
+            var changeSet = editor.getGraph().fromJSON(JSONString);
         }
         catch(err)
         {
             console.log("ERROR loading the graph: " + err);
+            alert("Error loading the graph");
+            document.fire("pedigree:graph:clear");
+            document.fire("pedigree:load:finish");
+            return;
+        }                    
+        
+        if (!noUndo) {
+            var probandData = editor.getProbandDataFromPhenotips();
+            var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
+            if (!genderOk)
+                alert("Proband gender defined in Phenotips is incompatible with this pedigree. Setting proband gender to 'Unknown'");
+            JSONString = editor.getGraph().toJSON();
         }
 
+        if (editor.getView().applyChanges(changeSet, false)) {
+            editor.getWorkspace().adjustSizeToScreen();
+        }
+
+        if (centerAround0)
+            editor.getWorkspace().centerAroundNode(0);
+
+        if (!noUndo)
+            editor.getActionStack().addState(null, null, JSONString);
+
         document.fire("pedigree:load:finish");
-        return successfulLoad;
     },
+    
+    createGraphFromImportData: function(inputString, noUndo, centerAround0, type, acceptUnknownPhenotypes) {
+        console.log("---- import: parsing data ----");
+        document.fire("pedigree:load:start");
+
+        try {            
+            if (type == "ped") {
+                var changeSet = editor.getGraph().fromPED(inputString, false, acceptUnknownPhenotypes);
+            } else if (type == "linkage") {
+                var changeSet = editor.getGraph().fromPED(inputString, true, acceptUnknownPhenotypes);
+            }
+        }
+        catch(err)
+        {
+            console.log("ERROR loading the graph: " + err);
+            alert("Error importing pedigree: " + err);
+            document.fire("pedigree:load:finish");            
+            return;                        
+        }            
+        
+        if (!noUndo) {
+            var probandData = editor.getProbandDataFromPhenotips();
+            var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
+            if (!genderOk)
+                alert("Proband gender defined in Phenotips is incompatible with the imported pedigree. Setting proband gender to 'Unknown'");
+            JSONString = editor.getGraph().toJSON();
+        }
+
+        if (editor.getView().applyChanges(changeSet, false)) {
+            editor.getWorkspace().adjustSizeToScreen();
+        }
+
+        if (centerAround0)
+            editor.getWorkspace().centerAroundNode(0);
+
+        if (!noUndo)
+            editor.getActionStack().addState(null, null, JSONString);
+
+        document.fire("pedigree:load:finish");
+    },    
 
     save: function() {
         if (this._saveInProgress)

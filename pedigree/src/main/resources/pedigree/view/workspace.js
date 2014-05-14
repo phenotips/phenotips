@@ -169,6 +169,7 @@ var Workspace = Class.create({
                 items: [
                     { key : 'save',      label : 'Save'},
                     { key : 'reload',    label : 'Reload'},
+                    { key : 'import',    label : 'Import'},
                     { key : 'templates', label : 'Templates'},
                     //{ key : 'print',     label : 'Printable version'},
                     { key : 'close',     label : 'Close'}

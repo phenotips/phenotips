@@ -57,6 +57,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/model/queues.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/xcoordclass.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/ordering.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/baseGraph.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/model/import.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/edgeOptimization.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/positionedGraph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/dynamicGraph.js')##
@@ -67,6 +68,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/view/graphicHelpers.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/legend.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/saveLoadIndicator.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/templateSelector.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/view/importSelector.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/abstractHoverbox.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/readonlyHoverbox.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/partnershipHoverbox.js')##

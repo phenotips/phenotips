@@ -43,6 +43,7 @@ var Person = Class.create(AbstractPerson, {
         this._conceptionDate = "";
         this._gestationAge = "";
         this._isAdopted = false;
+        this._externalID = "";
         this._lifeStatus = 'alive';
         this._childlessStatus = null;
         this._childlessReason = "";
@@ -121,6 +122,27 @@ var Person = Class.create(AbstractPerson, {
         this.getGraphics().updateNameLabel();
         return lastName;
     },
+    
+    /**
+     * Returns the externalID of this Person
+     *
+     * @method getExternalID
+     * @return {String}
+     */
+    getExternalID: function() {
+        return this._externalID;
+    },
+
+    /**
+     * Replaces the external ID of this Person with the given ID, and displays the label
+     *
+     * @method setExternalID
+     * @param externalID
+     */
+    setExternalID: function(externalID) {
+        this._externalID = externalID;
+        this.getGraphics().updateExternalIDLabel();
+    },    
     
     /**
      * Returns the last name at birth of this Person
@@ -430,11 +452,25 @@ var Person = Class.create(AbstractPerson, {
      * Returns a list of disorders of this person.
      *
      * @method getDisorders
-     * @return {Array} List of Disorder objects.
+     * @return {Array} List of disorder IDs.
      */
     getDisorders: function() {
         //console.log("Get disorders: " + stringifyObject(this._disorders)); 
         return this._disorders;
+    },
+    
+    /**
+     * Returns a list of disorders of this person, with non-scrambled IDs
+     *
+     * @method getDisordersForExport
+     * @return {Array} List of human-readable versions of disorder IDs
+     */
+    getDisordersForExport: function() {
+        var exportDisorders = this._disorders.slice(0);
+        for (var i = 0; i < exportDisorders.length; i++) {
+            exportDisorders[i] = Disorder.desanitizeID(exportDisorders[i]);
+        }
+        return exportDisorders;
     },
 
     /**
@@ -593,6 +629,7 @@ var Person = Class.create(AbstractPerson, {
             first_name:    {value : this.getFirstName()},
             last_name:     {value : this.getLastName()},
             last_name_birth: {value: this.getLastNameAtBirth()}, //, inactive: (this.getGender() != 'F')},
+            external_id:   {value : this.getExternalID()},
             gender:        {value : this.getGender(), inactive: inactiveGenders},
             date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus()},
             carrier:       {value : this.getCarrierStatus(), disabled: inactiveCarriers},
@@ -629,6 +666,8 @@ var Person = Class.create(AbstractPerson, {
             info['lName']       = this.getLastName();
         if (this.getLastNameAtBirth() != "")
             info['lNameAtB']    = this.getLastNameAtBirth();
+        if (this.getExternalID() != "")
+            info['externalID'] = this.getExternalID();        
         if (this.getBirthDate() != "") 
             info['dob']         = this.getBirthDate();
         if (this.isAdopted())
@@ -644,7 +683,7 @@ var Person = Class.create(AbstractPerson, {
             info['childlessReason'] = this.getChildlessReason();
         }
         if (this.getDisorders().length > 0)
-            info['disorders'] = this.getDisorders();
+            info['disorders'] = this.getDisordersForExport();
         if (this._twinGroup !== null)
             info['twinGroup'] = this._twinGroup;
         if (this._monozygotic)
@@ -675,6 +714,9 @@ var Person = Class.create(AbstractPerson, {
             }
             if(info.lNameAtB && this.getLastNameAtBirth() != info.lNameAtB) {
                 this.setLastNameAtBirth(info.lNameAtB);
+            }
+            if (info.externalID && this.getExternalID() != info.externalID) {
+                this.setExternalID(info.externalID);
             }
             if(info.dob && this.getBirthDate() != info.dob) {
                 this.setBirthDate(info.dob);
