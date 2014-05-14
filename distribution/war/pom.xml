@@ -805,6 +805,7 @@ extension.repositories=maven-phenotips:maven:http://nexus.cs.toronto.edu/nexus/c
 extension.repositories=extensions.xwiki.org:xwiki:http://extensions.xwiki.org/xwiki/rest/
 solr.type=remote
 solr.remote.url=http://localhost:8080/solr/xwiki/
+rendering.transformations=macro
                 </xwikiPropertiesAdditionalProperties>
               </properties>
             </configuration>
