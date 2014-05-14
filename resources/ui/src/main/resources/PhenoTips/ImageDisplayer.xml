@@ -616,7 +616,7 @@
       }
 
       this.MESSAGE_CONTAINER      = _getElt('');
-      this.INVALID_FILE_MESSAGE   = _getElt('errormessage', 'The selected file has an unsuported format.');
+      this.INVALID_FILE_MESSAGE   = _getElt('errormessage', 'The selected file has an unsupported format.');
       this.UNKNOWN_ERROR_MESSAGE  = _getElt('errormessage', 'An error occurred while uploading the file');
       this.UPLOAD_ABORTED_MESSAGE = _getElt('errormessage' , 'The upload has been canceled by the user or the browser dropped the connection');
       this.UPLOAD_SIZE_MESSAGE    = _getElt('errormessage' , 'The selected file is too large. Please choose files under ' + this.bytesToSize(this.options.maxFilesize));
