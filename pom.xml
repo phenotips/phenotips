@@ -253,17 +253,7 @@
                See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
           <ignored>
-            <!-- Remove the following ignores after we release 1.0-milestone-12 -->
-            <difference>
-              <className>**/configuration/RecordConfiguration</className>
-              <differenceType>7012</differenceType>
-              <method>java.lang.String getISODateFormat()</method>
-            </difference>
-            <difference>
-              <className>**/data/Feature</className>
-              <differenceType>7012</differenceType>
-              <method>java.lang.String getNotes()</method>
-            </difference>
+            <!-- Remove the following ignores after we release 1.0-rc-1 -->
             <difference>
               <className>**/script/OtologyScriptService</className>
               <differenceType>8001</differenceType>
