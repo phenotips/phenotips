@@ -41,7 +41,7 @@ import javax.inject.Singleton;
 @Component
 @Named("ontologies")
 @Singleton
-public class OtologyScriptService implements ScriptService
+public class OntologyScriptService implements ScriptService
 {
     /** The ontology manager that actually does all the work. */
     @Inject
