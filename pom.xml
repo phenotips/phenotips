@@ -264,6 +264,10 @@
               <differenceType>7012</differenceType>
               <method>java.lang.String getNotes()</method>
             </difference>
+            <difference>
+              <className>**/script/OtologyScriptService</className>
+              <differenceType>8001</differenceType>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
