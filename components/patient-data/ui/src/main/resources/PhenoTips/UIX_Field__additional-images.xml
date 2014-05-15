@@ -117,6 +117,8 @@
 {{include document="PhenoTips.TabelarDataMacros" /}}
 
 {{velocity}}
+$xwiki.ssx.use('PhenoTips.ImageDisplayer', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('PhenoTips.ImageDisplayer')##
 #set ($targetClassName = 'PhenoTips.ExternalImageClass')
 #if ($xcontext.action == 'edit' || $xcontext.action != 'export' &amp;&amp; $doc.getObject($targetClassName))
   === Imaging ===
