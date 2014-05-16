@@ -70,7 +70,7 @@ public class FormSection extends FormGroup
             return "";
         }
         String display = "";
-        if (this.elements.isEmpty()) {
+        if (this.elements.isEmpty() && DisplayMode.Edit.equals(mode)) {
             display = "display:none";
         }
         return String.format("<div class='%s-group' style='" + display + "'><h3 id='H%s'><span>%s</span></h3>"

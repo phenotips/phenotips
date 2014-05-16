@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.xpn.xwiki.api.Property;
@@ -200,6 +201,8 @@ public class PropertyDisplayer
             Map<String, Object> templateSection = new HashMap<String, Object>();
 
             String title = term.getName();
+            title = title.replace("Abnormality of the ", "").replace("Abnormality of ", "");
+            title = WordUtils.capitalizeFully(title);
             templateSection.put(TYPE_KEY, ITEM_TYPE_SECTION);
             templateSection.put(TITLE_KEY, title);
             templateSection.put(CATEGORIES_KEY, Arrays.asList(sectionId));
