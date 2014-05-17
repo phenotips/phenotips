@@ -1708,7 +1708,7 @@ widgets.ModalPopup = Class.create({
   initialize : function(content, shortcuts, options) {
     /** Shortcut configuration. Action name -&amp;gt; {method: function(evt), keys: string[]}. */
     this.shortcuts = {
-      "show" : { method : this.showDialog, keys : ['Ctrl+G', 'Meta+G']},
+      "show" : { method : this.showDialog, keys : []},
       "close" : { method : this.closeDialog, keys : ['Esc']}
     },
 
