@@ -1399,11 +1399,8 @@
   },
 
   acceptAddItem : function (key, negative) {
-    var input = $(this.getInputId(key, negative));
+    var input = this.list ? this.list.down('input[id="' + this.getInputId(key, negative).replace(/[^a-zA-Z0-9_-]/g, '\\$&amp;') + '"]') : $(this.getInputId(key, negative));
     if (input) {
-      if (this.list &amp;&amp; !this.list.down("#" + this.getInputId(key, negative).replace(/([ #;&amp;,.+*~\':"!^$[\]()=&gt;|\/])/g, '\\$1'))) {
-        return true;
-      }
       input.checked = true;
       Event.fire(input, 'suggest:change');
       //this.ensureVisible(input.up(), true);
@@ -1482,13 +1479,7 @@
       listItem.select('.expand-tool').invoke('observe', 'click', function(event){event.stop();});
     }
     this.list.insert(listItem);
-    var newItem;
-    if (this.list) {
-      var selector = "#" + id.replace(/([ #;&amp;,.+*~\':"!^$[\]()=&gt;|\/])/g, '\\$1');
-      newItem = this.list.down(selector);
-    } else {
-      newItem = $(id);
-    }
+    var newItem = this.list ? this.list.down('input[id="' + id.replace(/[^a-zA-Z0-9_-]/g, '\\$&amp;') + '"]') : $(id);
     //this.ensureVisible(newItem);
     this.synchronizeSelection(newItem);
     newItem.observe('change', this.synchronizeSelection.bind(this, newItem));
