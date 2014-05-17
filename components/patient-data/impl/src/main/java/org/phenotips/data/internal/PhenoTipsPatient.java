@@ -75,6 +75,8 @@ public class PhenoTipsPatient implements Patient
     /** used for generating JSON and reading from JSON. */
     protected static final String JSON_KEY_FEATURES = "features";
 
+    protected static final String JSON_KEY_NON_STANDARD_FEATURES = "nonstandard_features";
+
     protected static final String JSON_KEY_DISORDERS = "disorders";
 
     protected static final String JSON_KEY_ID = "id";
@@ -262,6 +264,21 @@ public class PhenoTipsPatient implements Patient
     {
         JSONArray featuresJSON = new JSONArray();
         for (Feature phenotype : this.features) {
+            if (StringUtils.isBlank(phenotype.getId())) {
+                continue;
+            }
+            featuresJSON.add(phenotype.toJSON());
+        }
+        return featuresJSON;
+    }
+
+    private JSONArray nonStandardFeaturesToJSON()
+    {
+        JSONArray featuresJSON = new JSONArray();
+        for (Feature phenotype : this.features) {
+            if (StringUtils.isNotBlank(phenotype.getId())) {
+                continue;
+            }
             featuresJSON.add(phenotype.toJSON());
         }
         return featuresJSON;
@@ -292,6 +309,9 @@ public class PhenoTipsPatient implements Patient
 
         if (!this.features.isEmpty() && isFieldIncluded(onlyFieldNames, PHENOTYPE_PROPERTIES)) {
             result.element(JSON_KEY_FEATURES, featuresToJSON());
+        }
+        if (!this.features.isEmpty() && isFieldIncluded(onlyFieldNames, PHENOTYPE_PROPERTIES)) {
+            result.element(JSON_KEY_NON_STANDARD_FEATURES, nonStandardFeaturesToJSON());
         }
 
         if (!this.disorders.isEmpty() && isFieldIncluded(onlyFieldNames, DISORDER_PROPERTIES)) {
