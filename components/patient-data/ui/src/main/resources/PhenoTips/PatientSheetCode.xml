@@ -178,10 +178,12 @@ var findPropertyField = function(name) {
   return null;
 }
 
-var findFormElementForPhenotype = function(id, negative) {
-  if ($('prefix'))
-    return $($('prefix').value + (negative ? 'negative_' : '') + 'phenotype_' + id);
-  return null;
+var findFormElementForPhenotype = function(id, negative, subtype) {
+  var result = null;
+  if ($('prefix')) {
+    result = $($('prefix').value + (negative ? 'negative_' : '') + (subtype ? subtype + '_' : '') + 'phenotype_' + id);
+  }
+  return result;
 };
 
 var isPhenotypeSelected = function (id, negative) {
@@ -1922,7 +1924,7 @@ document.observe('xwiki:dom:loaded', function() {
     // If we're collecting data about gestational age, select premature birth for low gestational ages
     var gaInput = $$('input[type="text"][name$="_gestation"]');
     gaInput = gaInput.size() &gt; 0 &amp;&amp; gaInput[0] || '';
-    var pbInput = findFormElementForPhenotype('HP:0001622');
+    var pbInput = findFormElementForPhenotype('HP:0001622', false, 'prenatal');
     if (gaInput &amp;&amp; pbInput) {
       gaInput.observe('blur', function (event) {
         var ga = parseInt(gaInput.value);
