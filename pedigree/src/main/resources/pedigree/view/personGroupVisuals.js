@@ -34,26 +34,6 @@ var PersonGroupVisuals = Class.create(PersonVisuals, {
     getAllGraphics: function ($super) {
         return $super().push(this._label);
     },
-    
-    /**
-     * Updates the name label for this Person
-     *
-     * @method updateNameLabel
-     */
-    updateNameLabel: function() {
-        this._nameLabel && this._nameLabel.remove();
-        var text =  "";
-        this.getNode().getFirstName() && (text = "(" + this.getNode().getFirstName() + ")");        
-        this._nameLabel && this._nameLabel.remove();
-        if(text.strip() != '') {
-            this._nameLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditor.attributes.radius*PedigreeEditor.attributes.groupNodesScale, text);
-            this.getNameLabel().attr(PedigreeEditor.attributes.nameLabels);
-        }
-        else {
-            this._nameLabel = null;
-        }
-        this.drawLabels();
-    },    
 
     /**
      * Changes the label for the number of people in this group

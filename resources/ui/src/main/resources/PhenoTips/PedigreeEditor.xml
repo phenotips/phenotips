@@ -43,7 +43,6 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity output=false}}
-$xwiki.jsfx.use('js/scriptaculous/controls.js')##
 $xwiki.jsfx.use('js/scriptaculous/slider.js')##
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/raphael.js')##
@@ -61,7 +60,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/model/import.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/edgeOptimization.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/positionedGraph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/dynamicGraph.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/nodeMenu.js', true)##
+$xwiki.jsfx.use('uicomponents/pedigree/view/nodeMenu.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/nodetypeSelectionBubble.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/ageCalc.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/graphicHelpers.js')##
@@ -88,6 +87,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/view/lineSet.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/workspace.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/saveLoadIndicator.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/disorder.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/versionUpdater.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/saveLoadEngine.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/controller.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view.js')##

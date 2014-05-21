@@ -167,7 +167,7 @@ PedigreeImport.initFromPhenotipsInternal = function(inputG)
    ==================================================================================================
 */
 
-PedigreeImport.initFromPED = function(inputText, linkageMod, acceptOtherPhenotypes, affectedCodeOne, disorderNames)
+PedigreeImport.initFromPED = function(inputText, linkageMod, acceptOtherPhenotypes, markEvaluated, affectedCodeOne, disorderNames)
 {
     var inputLines = inputText.match(/[^\r\n]+/g);
 
@@ -281,10 +281,12 @@ PedigreeImport.initFromPED = function(inputText, linkageMod, acceptOtherPhenotyp
             var disorder = disorderNames.hasOwnProperty(phenotype) ? disorderNames[phenotype] : "affected";
             newG.properties[id]["carrierStatus"] = 'affected';
             newG.properties[id]["disorders"]     = [disorder];
-            newG.properties[id]["evaluated"]     = true;
+            if (markEvaluated)
+                newG.properties[id]["evaluated"] = true;
         } else if (unaffectedValues.hasOwnProperty(phenotype)) {
             newG.properties[id]["carrierStatus"] = '';
-            newG.properties[id]["evaluated"]     = true;
+            if (markEvaluated)
+                newG.properties[id]["evaluated"] = true;
         } else if (!missingValues.hasOwnProperty(phenotype)) {
             //treat all unsupported values as "unknown/no evaluation"
             //throw "Individual with ID [" + thisPersonName + "] has unsupported phenotype value [" + phenotype + "]";

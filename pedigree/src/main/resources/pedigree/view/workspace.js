@@ -146,7 +146,6 @@ var Workspace = Class.create({
                 name : 'internal',
                 items: [
                     { key : 'readonlymessage', label : 'Unsuported browser mode'},
-                    { key : 'layout',          label : 'Automatic layout'},
                 ]
             }, {
                 name : 'external',

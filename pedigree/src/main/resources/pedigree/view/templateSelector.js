@@ -61,7 +61,7 @@ var TemplateSelector = Class.create( {
      */
     _onTemplateAvailable: function(pictureBox, response) {
         pictureBox.innerHTML = getSubSelectorTextFromXML(response.responseXML, "property", "name", "data", "value").replace(/&amp;/, '&');
-        var value = pictureBox.innerText || pictureBox.text || pictureBox.textContent; // damn IE ;)
+        var value = pictureBox.innerText || pictureBox.text || pictureBox.textContent; // damn IE ;)        
         var db_data = JSON.parse(value);
         // TODO
         // HACK until DB is updated: hardcoded templates
@@ -79,7 +79,7 @@ var TemplateSelector = Class.create( {
         // TODO: render images with JavaScript instead
         if (window.SVGSVGElement &&
             document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Image", "1.1")) {
-            pictureBox.update(getSubSelectorTextFromXML(response.responseXML, "property", "name", "image", "value"));
+            pictureBox.innerHTML = unescapeRestData(getSubSelectorTextFromXML(response.responseXML, "property", "name", "image", "value"));
         } else {
             pictureBox.innerHTML = "<table bgcolor='#FFFAFA'><tr><td><br>&nbsp;" + pictureBox.description + "&nbsp;<br><br></td></tr></table>";
         }

@@ -38,7 +38,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         } else {
             return new PersonHoverbox(this.getNode(), x, y, this.getGenderGraphics());
         }
-    },    
+    },
  
     /**
      * Draws the icon for this Person depending on the gender, life status and whether this Person is the proband.
@@ -46,15 +46,16 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      *
      * @method setGenderGraphics
      */
-    setGenderGraphics: function($super) {        
+    setGenderGraphics: function($super) {
         //console.log("set gender graphics");
         if(this.getNode().getLifeStatus() == 'aborted') {
             this._genderGraphics && this._genderGraphics.remove();
-            
+
             var radius = PedigreeEditor.attributes.radius;
             if (this.getNode().isPersonGroup())
-                radius *= PedigreeEditor.attributes.groupNodesScale;  
-            
+                radius *= PedigreeEditor.attributes.groupNodesScale;
+            this._shapeRadius = radius;
+
             var side = radius * Math.sqrt(3.5),
                 height = side/Math.sqrt(2),
                 x = this.getX() - height,
@@ -89,12 +90,12 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             this.getGenderShape().transform(["...s", 1.08]);
             this.getGenderShape().attr("stroke-width", 5.5);
         }
-        if(this.getHoverBox()) {
+        if(!editor.isUnsupportedBrowser() && this.getHoverBox()) {
             this._genderGraphics.flatten().insertBefore(this.getFrontElements().flatten());
         }
         this.updateDisorderShapes();
         this.updateCarrierGraphic();
-        this.updateEvaluationLabel();        
+        this.updateEvaluationLabel();
     },
 
     generateProbandArrow: function() {
@@ -212,7 +213,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._disorderShapes && this._disorderShapes.remove();
         var disorders = this.getNode().getDisorders();
         if (disorders.length == 0) return;
-        
+
         var gradient = function(color, angle) {
             var hsb = Raphael.rgb2hsb(color),
                 darker = Raphael.hsb2rgb(hsb['h'],hsb['s'],hsb['b']-.25)['hex'];
@@ -225,7 +226,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             var radius = PedigreeEditor.attributes.radius;
             if (this.getNode().isPersonGroup())
                 radius *= PedigreeEditor.attributes.groupNodesScale;
-            
+
             var side = radius * Math.sqrt(3.5),
                 height = side/Math.sqrt(2),
                 x1 = this.getX() - height,
@@ -287,11 +288,11 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             var height = side/Math.sqrt(2);
             if (this.getNode().isPersonGroup())
                 height *= PedigreeEditor.attributes.groupNodesScale;
-            
+
             var x = this.getX() - height/1.5;
             if (this.getNode().isPersonGroup())
                 x -= PedigreeEditor.attributes.radius/4;
-            
+
             var y = this.getY() + height/3;
             this._deadShape = editor.getPaper().path(["M", x, y, 'l', height + height/3, -(height+ height/3), "z"]);
             this._deadShape.attr("stroke-width", strokeWidth);
@@ -306,8 +307,10 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
                 y2 = y - coeff * PedigreeEditor.attributes.radius;
             this._deadShape = editor.getPaper().path(["M", x1,y1,"L",x2, y2]).attr("stroke-width", strokeWidth);
         }
-        this._deadShape.toFront();
-        this._deadShape.node.setAttribute("class", "no-mouse-interaction");
+        if(!editor.isUnsupportedBrowser()) {
+            this._deadShape.toFront();
+            this._deadShape.node.setAttribute("class", "no-mouse-interaction");
+        }
     },
 
     /**
@@ -388,7 +391,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._unbornShape && this._unbornShape.remove();
         if(this.getNode().getLifeStatus() == 'unborn') {
             this._unbornShape = editor.getPaper().text(this.getX(), this.getY(), "P").attr(PedigreeEditor.attributes.unbornShape);
-            this._unbornShape.insertBefore(this.getHoverBox().getFrontElements());
+            if(!editor.isUnsupportedBrowser())
+                this._unbornShape.insertBefore(this.getHoverBox().getFrontElements());
         } else {
             this._unbornShape = null;
         }
@@ -403,8 +407,8 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         this._evalLabel && this._evalLabel.remove();
         if (this.getNode().getEvaluated()) {
             if (this.getNode().getLifeStatus() == 'aborted') {
-                var x = this.getX() + this._shapeRadius * 2.0;
-                var y = this.getY() + this._shapeRadius * 0.7;                
+                var x = this.getX() + this._shapeRadius * 1.6;
+                var y = this.getY() + this._shapeRadius * 0.6;
             }
             else {
                 var mult = 1.1;
@@ -435,26 +439,26 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      * a vertical line (for pre-symptomatic)
      *
      * @method updateCarrierGraphic
-     */    
+     */
     updateCarrierGraphic: function() {
         this._carrierGraphic && this._carrierGraphic.remove();
         var status = this.getNode().getCarrierStatus();
-        
+
         if (status != '' && status != 'affected') {
             if (status == 'carrier') {
                 if (this.getNode().getLifeStatus() == 'aborted') {
                     x = this.getX();
-                    y = this.getY() - this._radius/2;                    
+                    y = this.getY() - this._radius/2;
                 } else {
                     x = this.getX();
                     y = this.getY();
                 }
-                this._carrierGraphic = editor.getPaper().text(x, y, "●").attr(PedigreeEditor.attributes.carrierShape);
+                this._carrierGraphic = editor.getPaper().circle(x, y, PedigreeEditor.attributes.carrierDotRadius).attr(PedigreeEditor.attributes.carrierShape);
             } else if (status == 'presymptomatic') {
                 if (this.getNode().getLifeStatus() == 'aborted') {
                     this._carrierGraphic = null;
                     return;
-                }           
+                }
                 editor.getPaper().setStart();
                 var startX = (this.getX()-PedigreeEditor.attributes.presymptomaticShapeWidth/2);
                 var startY = this.getY()-this._radius;
@@ -548,17 +552,17 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
      */
     updateLifeStatusShapes: function(oldStatus) {
         var status = this.getNode().getLifeStatus();
-        
+
         this.getDeadShape()   && this.getDeadShape().remove();
         this.getUnbornShape() && this.getUnbornShape().remove();
         this.getSBLabel()     && this.getSBLabel().remove();
-        
+
         // save some redraws if possible
         var oldShapeType = (oldStatus == 'aborted');
         var newShapeType = (status    == 'aborted');
         if (oldShapeType != newShapeType)
             this.setGenderGraphics();
-        
+
         if(status == 'deceased' || status == 'aborted') {
             this.drawDeadShape();
         }
@@ -568,7 +572,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         }
         else if (status == 'unborn') {
             this.drawUnbornShape();
-        }        
+        }
         this.updateAgeLabel();
     },
 
@@ -641,6 +645,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
         childlessOffset += ((this.getNode().getChildlessStatus() !== null) ? (PedigreeEditor.attributes.infertileMarkerHeight + 2) : 0);
                     
         var lowerBound = PedigreeEditor.attributes.radius * (this.getNode().isPersonGroup() ? PedigreeEditor.attributes.groupNodesScale : 1.0);
+                
         var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset;
         for (var i = 0; i < labels.length; i++) {
             var offset = (labels[i].alignTop) ? (getElementHalfHeight(labels[i]) - 7) : 0;
@@ -648,11 +653,16 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             labels[i].oy = (labels[i].attr("y") - selectionOffset);
             startY = labels[i].getBBox().y2 + 11;
         }
-        labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
+        if(!editor.isUnsupportedBrowser())
+            labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
     },
     
     _labelSelectionOffset: function() {
         var selectionOffset = this.isSelected() ? PedigreeEditor.attributes.radius/1.4 : 0;
+
+        if (this.isSelected() && this.getNode().isPersonGroup())
+            selectionOffset += PedigreeEditor.attributes.radius * (1-PedigreeEditor.attributes.groupNodesScale) + 5;
+        
         if (this.getChildlessStatusLabel())
             selectionOffset = selectionOffset/2;
         return selectionOffset;        
@@ -705,21 +715,7 @@ var PersonVisuals = Class.create(AbstractPersonVisuals, {
             };
         }
         $super(x, y, animate, funct);
-    },
-
-    /**
-     * [Helper for setPos] Saves the x and y values as current coordinates and updates connections with the new position
-     *
-     * @method _updatePositionData
-     * @param [$super]
-     * @param {Number} x The new x coordinate
-     * @param {Number} y The new y coordinate
-     * @private
-     */
-    //_updatePositionData: function($super, x, y) {
-    //    this.getHoverBox().enable.bind(this.getHoverBox());
-    //    $super(x, y)
-    //}
+    }
 });
 
 //ATTACHES CHILDLESS BEHAVIOR METHODS

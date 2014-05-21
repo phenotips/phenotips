@@ -135,7 +135,7 @@ NodeMenu = Class.create({
         return result;
     },
 
-    _attachFieldEventListeners : function (field, eventNames, values) {        
+    _attachFieldEventListeners : function (field, eventNames, values) {
       var _this = this;
       eventNames.each(function(eventName) {
         field.observe(eventName, function(event) {
@@ -144,21 +144,21 @@ NodeMenu = Class.create({
           if (!target) return;
           _this.fieldMap[field.name].crtValue = field._getValue && field._getValue()[0];
           var method = _this.fieldMap[field.name]['function'];
-          
+
           if (target.getSummary()[field.name].value == _this.fieldMap[field.name].crtValue)
               return;
-                                           
+
           if (method.indexOf("set") == 0 && typeof(target[method]) == 'function') {
               var properties = {};
               properties[method] = _this.fieldMap[field.name].crtValue;
               var event = { "nodeID": target.getID(), "properties": properties };
               document.fire("pedigree:node:setproperty", event);
-          }          
+          }
           else {
               var properties = {};
               properties[method] = _this.fieldMap[field.name].crtValue;
               var event = { "nodeID": target.getID(), "modifications": properties };
-              document.fire("pedigree:node:modify", event);              
+              document.fire("pedigree:node:modify", event);
           }
           field.fire('pedigree:change');
         });
@@ -222,7 +222,7 @@ NodeMenu = Class.create({
                 _this._attachDependencyBehavior(radioButton, data);
             };
             data.values.each(_generateRadioButton);
-            
+
             return result;
         },
         'checkbox' : function (data) {
@@ -251,9 +251,9 @@ NodeMenu = Class.create({
             var result = this._generateEmptyField(data);
             var properties = {name: data.name};
             properties["class"] = "textarea-"+data.rows+"-rows"; // for compatibiloity with older browsers not accepting {class: ...}
-            var text = new Element('textarea', properties);                       
-            result.inputsContainer.insert(text);            
-            //text.wrap('span');            
+            var text = new Element('textarea', properties);
+            result.inputsContainer.insert(text);
+            //text.wrap('span');
             text._getValue = function() { return [this.value]; }.bind(text);
             this._attachFieldEventListeners(text, ['keyup'], [true]);
             this._attachDependencyBehavior(text, data);

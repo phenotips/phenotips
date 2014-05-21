@@ -456,27 +456,27 @@ var View = Class.create({
      */
     exitHoverMode: function() {
         this._currentHoveredNode = null;
-        
+
         this.hoverModeZones.remove();
-        
+
         var me = this;
         this._currentGrownNodes.each(function(nodeID) {
             var node = me.getNode(nodeID)
             node.getGraphics().shrink();
-            node.getGraphics().getHoverBox().setHighlighted(false);            
+            node.getGraphics().getHoverBox().setHighlighted(false);
         });
-        
+
         this._currentGrownNodes = [];
     },
-    
+
     unmarkAll: function() {
         for (var i = 0; i < this._currentMarkedNew.length; i++) {
             var node = this.getNode(this._currentMarkedNew[i]);
             node.getGraphics().unmark();
         }
-        this._currentMarkedNew = [];        
+        this._currentMarkedNew = [];
     },
-    
+
     getValidDragTargets: function(sourceNodeID, hoverType) {
         var result = [];
         switch (hoverType) {
@@ -502,21 +502,21 @@ var View = Class.create({
             throw "TODO";
         default:
             throw "Incorrect hoverType";
-        }     
+        }
         return result;
     },
-    
+
     applyChanges: function( changeSet, markNew ) {
         // applies change set of the form {"new": {list of nodes}, "moved": {list of nodes} }        
         console.log("Change set: " + stringifyObject(changeSet));
-        
+
         var timer = new Timer();
         var timer2 = new Timer();
-        
+
         try {
-        
+
         this.unmarkAll();
-        
+
         // to simplify code which deals woith removed nodes making other mnodes to move
         if (!changeSet.hasOwnProperty("moved"))
             changeSet["moved"] = [];               
@@ -524,7 +524,7 @@ var View = Class.create({
             changeSet["removed"] = []; 
         if (!changeSet.hasOwnProperty("removedInternally"))        
             changeSet["removedInternally"] = [];
-        
+
         // 0. remove all removed
         //
         // 1. move all person nodes
@@ -598,10 +598,10 @@ var View = Class.create({
             for (var i = 0; i < changeSet.animate.length; i++) {                
                 //animate[changeSet.animate[i]] = true;     // TODO: animations disabled because hoverboxes & labels behave strangely
             }
-        }        
-        
+        }
+
         //console.log("moved: " + stringifyObject(changeSet.moved));
-                
+
         if (changeSet.hasOwnProperty("moved")) {
             // remove all lines so that we start drawing anew
             for (var i = 0; i < changeSet.moved.length; i++) {
@@ -668,7 +668,7 @@ var View = Class.create({
             for (var i = 0; i < changeSet.highlight.length; i++) {
                 var nextHighlight = changeSet.highlight[i];
                 this.getNode(nextHighlight).getGraphics().markPermanently();
-                this._currentMarkedNew.push(nextHighlight);                
+                this._currentMarkedNew.push(nextHighlight);
             }
         }
 

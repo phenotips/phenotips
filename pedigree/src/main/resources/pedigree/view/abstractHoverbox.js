@@ -84,7 +84,7 @@ var AbstractHoverbox = Class.create({
         //       however node may have been moved later, in which case we need to use current graphics X
         var nodeGraphics = this.getNode().getGraphics();
         if (nodeGraphics)
-            this._nodeX = nodeGraphics.getX();        
+            this._nodeX = nodeGraphics.getX();
         return this._nodeX;
     },
 
@@ -97,7 +97,7 @@ var AbstractHoverbox = Class.create({
     getNodeY: function() {
         var nodeGraphics = this.getNode().getGraphics();
         if (nodeGraphics)
-            this._nodeY = nodeGraphics.getY();          
+            this._nodeY = nodeGraphics.getY();
         return this._nodeY;
     },
 
@@ -137,22 +137,22 @@ var AbstractHoverbox = Class.create({
      * @method generateButtons
      * @return {Raphael.st} A set of buttons
      */
-    generateButtons: function() {        
+    generateButtons: function() {
         if (this._currentButtons !== null) return;
-        this._currentButtons = [];        
+        this._currentButtons = [];
     },
-    
+
     regenerateButtons: function() {
         this.removeButtons();
         this.generateButtons();
     },
-    
+
     removeButtons: function () {
         if (!this._currentButtons) return;
-        
+
         var enableState = this._enabled;
-        
-        enableState && this.disable();        
+
+        enableState && this.disable();
         for (var i = 0; i < this._currentButtons.length; i++) {
             this.getFrontElements().exclude(this._currentButtons[i]);
             this._currentButtons[i].remove();
@@ -160,7 +160,7 @@ var AbstractHoverbox = Class.create({
         this._currentButtons = null;
         enableState && this.enable();
     },
-    
+
     hideButtons: function() {
         if (!this._currentButtons) return;
         for (var i = 0; i < this._currentButtons.length; i++) {
@@ -175,8 +175,8 @@ var AbstractHoverbox = Class.create({
         if (!this._currentButtons) return;
         for (var i = 0; i < this._currentButtons.length; i++) {
             this._currentButtons[i].show();
-        }        
-    },    
+        }
+    },
 
     /**
      * Returns Raphael set of the buttons in this hoverbox
@@ -186,40 +186,40 @@ var AbstractHoverbox = Class.create({
      */
     getCurrentButtons: function() {
         return this._currentButtons;
-    },       
+    },
 
     /**
      * Removes all handles currently used in this hoverbox
      *
      * @method removeHandles
-     */    
+     */
     removeHandles: function () {
         if (!this._currentHandles) return;
-        
+
         var enableState = this._enabled;
-        enableState && this.disable();        
+        enableState && this.disable();
         for (var i = 0; i < this._currentOrbs.length; i++)
             this.getFrontElements().exclude(this._currentOrbs[i]);
         this._currentOrbs = null;
         enableState && this.enable();
-        
+
         for (var i = 0; i < this._currentHandles.length; i++)
-            this._currentHandles[i].remove();        
-        this._currentHandles = null;                               
+            this._currentHandles[i].remove();
+        this._currentHandles = null;
     },
-    
+
     hideHandles: function() {
-        if (!this._currentHandles) return;        
+        if (!this._currentHandles) return;
         for (var i = 0; i < this._currentHandles.length; i++)
-            this._currentHandles[i].hide();                                       
+            this._currentHandles[i].hide();
     },
 
     showHandles: function() {
-        if (!this._currentHandles) return;        
+        if (!this._currentHandles) return;
         for (var i = 0; i < this._currentHandles.length; i++)
-            this._currentHandles[i].show();                                       
+            this._currentHandles[i].show();
     },
-    
+
     /**
      * Creates the handles used in this hoverbox. Returns a list of handles 
      *
@@ -231,12 +231,12 @@ var AbstractHoverbox = Class.create({
         this._currentOrbs    = [];
         this._handlesZoomSz  = editor.getWorkspace().getCurrentZoomLevel();
     },
-    
+
     /**
      * Iff handles are present, removes all and creates new set of handles 
      *
      * @method regenerateHandles
-     */    
+     */
     regenerateHandles: function() {
         if (this._currentHandles)
             this.removeHandles();

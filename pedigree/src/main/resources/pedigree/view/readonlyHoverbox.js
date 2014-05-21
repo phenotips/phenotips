@@ -22,31 +22,31 @@ var ReadOnlyHoverbox = Class.create(AbstractHoverbox, {
         return this._node;
     },
 
-    generateButtons: function() {      
+    generateButtons: function() {
     },
-    
+
     removeButtons: function () {
     },
-    
+
     hideButtons: function() {
     },
-    
+
     showButtons: function() {
-    },    
+    },
 
     getCurrentButtons: function() {
         return this._currentButtons;
-    },       
-
-    removeHandles: function () {                         
-    },
-    
-    hideHandles: function() {                                   
     },
 
-    showHandles: function() {                                    
+    removeHandles: function () {
     },
-    
+
+    hideHandles: function() {
+    },
+
+    showHandles: function() {
+    },
+
     generateHandles: function() {
     },
 
@@ -82,7 +82,7 @@ var ReadOnlyHoverbox = Class.create(AbstractHoverbox, {
     isMenuToggled: function() {
         return false;
     },
-    
+
     animateDrawHoverZone: function() {
     },
 
@@ -100,7 +100,7 @@ var ReadOnlyHoverbox = Class.create(AbstractHoverbox, {
 
     onWidgetHide: function() {
     },
-    
+
     onWidgetShow: function() {
-    }        
+    }
 });

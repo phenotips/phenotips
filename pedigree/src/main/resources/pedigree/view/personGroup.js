@@ -18,7 +18,8 @@ var PersonGroup = Class.create(Person, {
         this._comment    = "";
         this._type       = "PersonGroup";
         $super(x, y, id, properties);
-        this.assignProperties(properties);
+        // already done as the last step in super():
+        // this.assignProperties(properties);  
     },
 
     /**
@@ -73,7 +74,7 @@ var PersonGroup = Class.create(Person, {
         $super(newStatus);
         this.getGraphics().setNumPersons(this._numPersons); // force-redraw of the "N" symbol on top of the new shape
     },
-        
+
     /**
      * Returns an object containing all the properties of this node
      * except id, x, y & type 
@@ -84,8 +85,8 @@ var PersonGroup = Class.create(Person, {
      {
        property: value
      }
-     */    
-    getProperties: function($super) {    
+     */
+    getProperties: function($super) {
         var info = $super();
         info['numPersons'] = this.getNumPersons();
         return info;
@@ -107,7 +108,7 @@ var PersonGroup = Class.create(Person, {
         }
         return false;
     },
-    
+
     /**
      * Returns an object (to be accepted by the menu) with information about this Person
      *
@@ -124,13 +125,16 @@ var PersonGroup = Class.create(Person, {
         var cantChangeAdopted = this.isFetus() || editor.getGraph().hasToBeAdopted(this.getID());
         
         return {
-            identifier:    {value : this.getID()},
-            comment:       {value : this.getFirstName()},
-            gender:        {value : this.getGender()},
-            disorders:     {value : disorders},
-            adopted:       {value : this.isAdopted(), inactive: cantChangeAdopted},
-            state:         {value : this.getLifeStatus()},
-            numInGroup:    {value : this.getNumPersons()}
+            identifier:   {value : this.getID()},
+            comment:      {value : this.getFirstName()},
+            gender:       {value : this.getGender()},
+            external_ids: {value : this.getExternalID()},
+            disorders:    {value : disorders},
+            adopted:      {value : this.isAdopted(), inactive: cantChangeAdopted},
+            comments:     {value : this.getComments(), inactive: false},
+            state:        {value : this.getLifeStatus()},
+            numInGroup:   {value : this.getNumPersons()},
+            evaluatedGrp: {value : this.getEvaluated() }
         };
-    }    
+    }
 });

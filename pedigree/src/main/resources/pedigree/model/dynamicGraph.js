@@ -1076,16 +1076,39 @@ DynamicPositionedGraph.prototype = {
         return {"new": newList, "moved": movedNodes, "highlight": reRanked, "animate": animateList};
     },
 
+    // remove empty-values optional properties, e.g. "fName: ''" or "disorders: []"
+    stripUnusedProperties: function() {
+        for (var i = 0; i <= this.DG.GG.getMaxRealVertexId(); i++) {
+            if (this.isPerson(i)) {
+                this.deleteEmptyProperty(i, "fName");
+                this.deleteEmptyProperty(i, "lName");
+                this.deleteEmptyProperty(i, "gestationAge");
+                this.deleteEmptyProperty(i, "carrierStatus");
+                this.deleteEmptyProperty(i, "comments");
+                this.deleteEmptyProperty(i, "disorders");
+            }            
+         }
+    },
+    
+    deleteEmptyProperty: function(nodeID, propName) {        
+        if (this.DG.GG.properties[nodeID].hasOwnProperty(propName)) {
+            if (Object.prototype.toString.call(this.DG.GG.properties[nodeID][propName]) === '[object Array]' &&
+                this.DG.GG.properties[nodeID][propName].length == 0) {
+                delete this.DG.GG.properties[nodeID][propName];
+            } else if (this.DG.GG.properties[nodeID][propName] == "") { 
+                delete this.DG.GG.properties[nodeID][propName];
+            }
+        }
+    },
+    
     toJSON: function ()
     {
+        this.stripUnusedProperties();
+        
         //var timer = new Timer();
         var output = {};
-
-        // note: need to save GG not base G becaus eof the graph was dynamically modified
-        //       some new virtual edges may have different ID than if underlying G were
-        //       converted to GG (as during such a conversion ranks would be correctly
-        //       recomputed, but orders may mismatch). Thus to keep ordering valid need
-        //       to save GG and restore G from it on de-serialization
+        
+        // note: when saving positioned graph, need to save the version of the graph which has virtual edge pieces
         output["GG"] = this.DG.GG.serialize();
 
         output["ranks"]     = this.DG.ranks;
@@ -1127,17 +1150,17 @@ DynamicPositionedGraph.prototype = {
         return {"new": newNodes, "removed": removedNodes};
     },
 
-    fromPED: function (inputPED, linkageMod, acceptUnknownPhenotypes)
+    fromPED: function (inputPED, linkageMod, acceptUnknownPhenotypes, markEvaluated)
     {
         var removedNodes = this._getAllNodes();
 
-        this._debugPrintAll("before");
+        //this._debugPrintAll("before");
 
-        var baseGraph = PedigreeImport.initFromPED(inputPED, linkageMod, acceptUnknownPhenotypes);
+        var baseGraph = PedigreeImport.initFromPED(inputPED, linkageMod, acceptUnknownPhenotypes, markEvaluated);
 
         if (!this._recreateUsingBaseGraph(baseGraph)) return {};  // no changes
 
-        this._debugPrintAll("after");
+        //this._debugPrintAll("after");
 
         var newNodes = this._getAllNodes();
 

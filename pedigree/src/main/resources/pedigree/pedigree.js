@@ -30,6 +30,7 @@ var PedigreeEditor = Class.create({
         this._templateSelector = new TemplateSelector();
         this._importSelector = new ImportSelector();
         this._saveLoadIndicator = new SaveLoadIndicator();
+        this._versionUpdater = new VersionUpdater();
         this._saveLoadEngine = new SaveLoadEngine();
         this._probandData = new ProbandDataLoader();
 
@@ -108,6 +109,14 @@ var PedigreeEditor = Class.create({
      */
     getView: function() {
         return this._view;
+    },
+    
+    /**
+     * @method getVersionUpdater
+     * @return {VersionUpdater}
+     */    
+    getVersionUpdater: function() {
+        return this._versionUpdater;
     },
 
     /**
@@ -451,12 +460,6 @@ var PedigreeEditor = Class.create({
                 'function' : 'setGender'
             },
             {
-                'name' : 'comment',
-                'label': 'Comment',
-                'type' : 'text',
-                'function' : 'setFirstName'
-            },
-            {
                 'name' : 'numInGroup',
                 'label': 'Number of persons in this group',
                 'type' : 'select',
@@ -466,10 +469,23 @@ var PedigreeEditor = Class.create({
                 'function' : 'setNumPersons'
             },
             {
+                'name' : 'external_ids',
+                'label': 'External ID(s)',
+                'type' : 'text',
+                'function' : 'setExternalID'
+            },
+            {
                 'name' : 'disorders',
                 'label' : 'Known disorders common to all individuals in the group',
                 'type' : 'disease-picker',
                 'function' : 'setDisorders'
+            },
+            {
+                'name' : 'comments',
+                'label' : 'Comments',
+                'type' : 'textarea',
+                'rows' : 2,
+                'function' : 'setComments'
             },
             {
                 'name' : 'state',
@@ -483,6 +499,12 @@ var PedigreeEditor = Class.create({
                 'default' : 'alive',
                 'function' : 'setLifeStatus'
             },
+            {
+                'name' : 'evaluatedGrp',
+                'label' : 'Documented evaluation',
+                'type' : 'checkbox',
+                'function' : 'setEvaluated'
+            },            
             {
                 'name' : 'adopted',
                 'label' : 'Adopted in',
@@ -596,7 +618,8 @@ PedigreeEditor.attributes = {
     twinMonozygothicLineShiftY: 24,
     curvedLinesCornerRadius: 25,
     unbornShape: {'font-size': 50, 'font-family': 'Cambria'},
-    carrierShape: {'font-size': 40, 'font-family': 'Cambria', fill : '#595959'},
+    carrierShape: {fill : '#595959'},
+    carrierDotRadius: 8,
     presymptomaticShape: {fill : '#777777', "stroke": "#777777"},
     presymptomaticShapeWidth: 8,
     evaluationShape: {'font-size': 40, 'font-family': 'Arial'},

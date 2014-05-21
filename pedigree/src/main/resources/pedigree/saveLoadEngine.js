@@ -48,7 +48,7 @@ var ProbandDataLoader = Class.create( {
         this.probandData = undefined;
     },
 
-    load: function(callWhenReady) {       
+    load: function(callWhenReady) {
         new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PatientClass/0'), {
             method: "GET",
             onSuccess: this.onProbandDataReady.bind(this),
@@ -56,7 +56,7 @@ var ProbandDataLoader = Class.create( {
         });
     },
 
-    onProbandDataReady : function(response) {        
+    onProbandDataReady : function(response) {
         var responseXML = response.responseXML;  //documentElement.
         this.probandData = {};
         this.probandData.firstName = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "first_name", "value"));
@@ -98,8 +98,8 @@ var SaveLoadEngine = Class.create( {
             document.fire("pedigree:graph:clear");
             document.fire("pedigree:load:finish");
             return;
-        }                    
-        
+        }
+
         if (!noUndo) {
             var probandData = editor.getProbandDataFromPhenotips();
             var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
@@ -120,26 +120,26 @@ var SaveLoadEngine = Class.create( {
 
         document.fire("pedigree:load:finish");
     },
-    
-    createGraphFromImportData: function(inputString, noUndo, centerAround0, type, acceptUnknownPhenotypes) {
+
+    createGraphFromImportData: function(inputString, noUndo, centerAround0, type, acceptUnknownPhenotypes, markEvaluated) {
         console.log("---- import: parsing data ----");
         document.fire("pedigree:load:start");
 
-        try {            
+        try {
             if (type == "ped") {
-                var changeSet = editor.getGraph().fromPED(inputString, false, acceptUnknownPhenotypes);
+                var changeSet = editor.getGraph().fromPED(inputString, false, acceptUnknownPhenotypes, markEvaluated);
             } else if (type == "linkage") {
-                var changeSet = editor.getGraph().fromPED(inputString, true, acceptUnknownPhenotypes);
+                var changeSet = editor.getGraph().fromPED(inputString, true, acceptUnknownPhenotypes, markEvaluated);
             }
         }
         catch(err)
         {
             console.log("ERROR loading the graph: " + err);
             alert("Error importing pedigree: " + err);
-            document.fire("pedigree:load:finish");            
-            return;                        
-        }            
-        
+            document.fire("pedigree:load:finish");
+            return;
+        }
+
         if (!noUndo) {
             var probandData = editor.getProbandDataFromPhenotips();
             var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
@@ -159,7 +159,7 @@ var SaveLoadEngine = Class.create( {
             editor.getActionStack().addState(null, null, JSONString);
 
         document.fire("pedigree:load:finish");
-    },    
+    },
 
     save: function() {
         if (this._saveInProgress)
@@ -207,6 +207,9 @@ var SaveLoadEngine = Class.create( {
                 var jsonData = unescapeRestData(rawdata);
                 if (jsonData.trim()) {
                     console.log("[LOAD] recived JSON: " + stringifyObject(jsonData));
+
+                    jsonData = editor.getVersionUpdater().updateToCurrentVersion(jsonData);
+
                     this.createGraphFromSerializedData(jsonData);
                 } else {
                     new TemplateSelector(true);
