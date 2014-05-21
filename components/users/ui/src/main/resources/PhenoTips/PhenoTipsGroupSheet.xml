@@ -208,13 +208,13 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.
       <cache>long</cache>
     </property>
     <property>
-      <code>$("manage-administrators").observe("click", function(e){
+      <code>$("manage-administrators") &amp;&amp; $("manage-administrators").observe("click", function(e) {
   var link = this.href;
-  document.observe("xwiki:document:saved", function(e) {
+  document.observe("xwiki:document:saved", function() {
     window.location.href = link;
-    //If this function, at some point in time, stops redirecting the browser, don't forget to unhook this listener, just in case.
+    // If this function, at some point in time, stops redirecting the browser, don't forget to unhook this listener, just in case.
   });
-  document.fire("xwiki:actions:save", Object.extend({originalEvent: e,form: e.findElement('form')}, {"continue": true}));
+  document.fire("xwiki:actions:save", Object.extend({originalEvent: e, form: e.findElement('form')}, {"continue": true}));
 });</code>
     </property>
     <property>
