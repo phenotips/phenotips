@@ -1698,7 +1698,7 @@ document.observe('xwiki:dom:loaded', function() {
          evaluation : 'td.weight_evaluation',
          valueHooks : {
            'extreme-below-normal': findFormElementForPhenotype('HP:0004325'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0001513')
+           'extreme-above-normal': findFormElementForPhenotype('HP:0004324')
          }
        },
        height : {
@@ -1722,7 +1722,11 @@ document.observe('xwiki:dom:loaded', function() {
          evaluation : 'td.icd_evaluation'
        },
        pfl : {
-         evaluation : 'td.pfl_evaluation'
+         evaluation : 'td.pfl_evaluation',
+         valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0000637'),
+           'extreme-above-normal': findFormElementForPhenotype('HP:0012745')
+         }
        },
        ipd : {
          evaluation : 'td.ipd_evaluation',
@@ -1732,42 +1736,58 @@ document.observe('xwiki:dom:loaded', function() {
          }
        },
        ear : {
-         evaluation : 'td.ear_evaluation'
+         evaluation : 'td.ear_evaluation',
+         valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0008551'),
+           'extreme-above-normal': findFormElementForPhenotype('HP:0000400')
+         }
        },
        hand : {
          evaluation : 'td.hand_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0004279'),
+           'extreme-below-normal': findFormElementForPhenotype('HP:0200055'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001176')
          }
        },
        palm : {
-         evaluation : 'td.palm_evaluation'
+         evaluation : 'td.palm_evaluation',
+         valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0004279'),
+           'extreme-above-normal': findFormElementForPhenotype('HP:0011302')
+         }
        },
        foot : {
          evaluation : 'td.foot_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0001764'),
+           'extreme-below-normal': findFormElementForPhenotype('HP:0001773'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001833')
          }
        },
        ear_right : {
-         evaluation : 'td.ear_right_evaluation'
+         evaluation : 'td.ear_right_evaluation',
+         valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0008551'),
+           'extreme-above-normal': findFormElementForPhenotype('HP:0000400')
+         }
        },
        hand_right : {
          evaluation : 'td.hand_right_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0004279'),
+           'extreme-below-normal': findFormElementForPhenotype('HP:0200055'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001176')
          }
        },
        palm_right : {
-         evaluation : 'td.palm_right_evaluation'
+         evaluation : 'td.palm_right_evaluation',
+         valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0004279'),
+           'extreme-above-normal': findFormElementForPhenotype('HP:0011302')
+         }
        },
        foot_right : {
          evaluation : 'td.foot_right_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0001764'),
+           'extreme-below-normal': findFormElementForPhenotype('HP:0001773'),
            'extreme-above-normal': findFormElementForPhenotype('HP:0001833')
          }
        },
