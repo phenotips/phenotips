@@ -731,6 +731,12 @@ $xwiki.ssx.use($serviceDocName)
     #set ($ownerName = $xwiki.getUserName("$ownerReference", false))
   #end
   #set ($canTransfer = $patientAccess.hasAccessLevel('owner'))
+  #if ($owner.isGroup())
+    #set ($adminGroup = $context.getDatabase() + ":Groups." + $owner.getUsername() + " Administrators")
+    #if (!$xwiki.getUser().isUserInGroup($adminGroup))
+      #set ($canTransfer = false)
+    #end
+  #end
   #set ($canManage = $patientAccess.hasAccessLevel('manage'))
   (% id="access-rights-summary" %)(((
     This case is owned by (% class="access-rights-info" %){{html wiki="true" clean="false"}}{{icon name="user"/}}&lt;span class="owner"&gt;$ownerName&lt;/span&gt;{{/html}}(%%)##
