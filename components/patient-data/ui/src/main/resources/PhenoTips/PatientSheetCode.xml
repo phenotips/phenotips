@@ -1933,7 +1933,7 @@ document.observe('xwiki:dom:loaded', function() {
           if (ga &lt; 37) {
             if (!targetElt.checked) {
               if (targetElt._ynpicker) {
-                targetElt._ynpicker._onYes();
+                targetElt._ynpicker._onClick(false, 'yes');
               } else {
                 targetElt.checked = true;
               }
@@ -1941,7 +1941,7 @@ document.observe('xwiki:dom:loaded', function() {
             }
           } else {
             if (targetElt._ynpicker) {
-              targetElt._ynpicker._onNo();
+              targetElt._ynpicker._onClick(false, 'no');
               highlightChecked(targetElt);
             }
           }
