@@ -214,7 +214,7 @@ $xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.
     window.location.href = link;
     // If this function, at some point in time, stops redirecting the browser, don't forget to unhook this listener, just in case.
   });
-  document.fire("xwiki:actions:save", Object.extend({originalEvent: e, form: e.findElement('form')}, {"continue": true}));
+  document.fire("xwiki:actions:save", {originalEvent: e, form: e.findElement('form'), "continue": true});
 });</code>
     </property>
     <property>
