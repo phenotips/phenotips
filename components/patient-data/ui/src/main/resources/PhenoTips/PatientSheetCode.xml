@@ -1792,7 +1792,11 @@ document.observe('xwiki:dom:loaded', function() {
          }
        },
        philtrum : {
-         evaluation : 'td.philtrum_evaluation'
+         evaluation : 'td.philtrum_evaluation',
+         valueHooks : {
+           'extreme-below-normal': findFormElementForPhenotype('HP:0000322'),
+           'extreme-above-normal': findFormElementForPhenotype('HP:0000343')
+         }
        },
        armspan : {
          evaluation : 'td.armspan_evaluation'
