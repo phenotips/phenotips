@@ -1636,12 +1636,14 @@ document.observe('xwiki:dom:loaded', function() {
             _this._updateValue(cell, values[p][value], (value == 'evaluation') &amp;&amp; values[p]['valCategory']);
             var target = _info[p];
             if (value == 'evaluation' &amp;&amp; target['valueHooks'] &amp;&amp; _this._getMostRecentEntry() == cell.up('tr.data-row')) {
-              var targetElt = values[p]['valCategory'] &amp;&amp; target['valueHooks'][values[p]['valCategory']];
+              var targetElt = values[p]['valCategory'] &amp;&amp; (target['valueHooks'][values[p]['valCategory']] || target['valueHooks']["extreme-" + values[p]['valCategory']]);
               _this._selectMeasurementTerm(targetElt);
-              ['extreme-below-normal', 'extreme-above-normal'].without(values[p]['valCategory'] || '').each(function(val) {
-                var elt = target['valueHooks'][val];
-                _this._unselectMeasurementTerm(elt);
-              });
+              if (values[p]['valCategory']) {
+                ['extreme-below-normal', 'extreme-above-normal'].without(values[p]['valCategory'], "extreme-" + values[p]['valCategory']).each(function(val) {
+                  var elt = target['valueHooks'][val];
+                  _this._unselectMeasurementTerm(elt);
+                });
+              }
             }
           }
         });
