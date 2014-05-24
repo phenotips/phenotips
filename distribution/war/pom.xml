@@ -61,6 +61,11 @@
       <artifactId>xwiki-platform-container-servlet</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-skin-skinx</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
     <!-- XWiki dependencies -->
     <!-- Depend on the platform WAR to get all web resources. We then need to add all libraries we need for XE. -->
     <dependency>
@@ -374,13 +379,6 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-messagestream-api</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <!-- Skin Extension -->
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-skin-skinx</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
