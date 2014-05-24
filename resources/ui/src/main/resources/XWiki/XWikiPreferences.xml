@@ -1446,10 +1446,10 @@
       <allow>1</allow>
     </property>
     <property>
-      <groups>XWiki.XWikiAllGroup,</groups>
+      <groups>XWiki.XWikiAllGroup</groups>
     </property>
     <property>
-      <levels>view,edit,comment,undelete,register</levels>
+      <levels>view,comment</levels>
     </property>
     <property>
       <users/>
