@@ -165,8 +165,7 @@ public class PhenoTipsPatientRepository implements PatientRepository
                 this.logger.error("Failed to get initializers", e);
             }
 
-            for (PatientRecordInitializer initializer : initializers)
-            {
+            for (PatientRecordInitializer initializer : initializers) {
                 try {
                     initializer.initialize(patient);
                 } catch (Exception ex) {
