@@ -154,7 +154,12 @@ var restoreCategory = function (element) {
       selector += 'input.suggested[name^="' + (originalName &amp;&amp; originalName.value || element.name) + '"] + input[type=hidden][name=_category][value*="' + item.value +'"], '
     });
   }
-  var matchingCategory = document.documentElement.down(selector);
+  var chapter = parentElement.up(".chapter");
+  if (chapter != undefined) {
+    var matchingCategory = chapter.down(selector);
+  } else {
+    var matchingCategory = document.documentElement.down(selector);
+  }
   if (matchingCategory) {
     var matchingList = matchingCategory.previous('ul.accepted-suggestions');
     if (matchingList) {
