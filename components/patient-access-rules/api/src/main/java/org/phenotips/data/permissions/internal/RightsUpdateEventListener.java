@@ -240,7 +240,9 @@ public class RightsUpdateEventListener implements EventListener
         String ownerPermissions = "view,edit,delete";
         DocumentReference owner = getOwner(doc);
         BaseObject right = rightsObjects.get(ownerPermissions);
-        if (isUser(owner)) {
+        if (owner == null) {
+            setRights(right, USERS, "");
+        } else if (isUser(owner)) {
             setRights(right, USERS, owner.toString());
         } else if (isGroup(owner)) {
             setRights(right, GROUPS, owner.toString());
@@ -297,8 +299,6 @@ public class RightsUpdateEventListener implements EventListener
         }
         if (StringUtils.isNotBlank(owner)) {
             return this.stringEntityResolver.resolve(owner);
-        } else if (doc.getCreatorReference() != null) {
-            return doc.getCreatorReference();
         }
         return null;
     }

@@ -145,7 +145,7 @@ public class ContactInformationController implements PatientDataController<Immut
     private List<ImmutablePair<String, String>> getContactInfo(Owner owner)
     {
         List<ImmutablePair<String, String>> contactInfo = new LinkedList<ImmutablePair<String, String>>();
-        if (owner == null) {
+        if (owner == null || owner.getUser() == null) {
             return null;
         }
         if (owner.isGroup()) {

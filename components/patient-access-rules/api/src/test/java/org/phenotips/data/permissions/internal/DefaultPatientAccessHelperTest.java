@@ -187,28 +187,17 @@ public class DefaultPatientAccessHelperTest
         Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
     }
 
-    /** {@link PatientAccessHelper#getOwner(Patient)} returns the referrer when the owner isn't specified. */
-    @Test
-    public void getOwnerWithMissingOwner() throws ComponentLookupException
-    {
-        when(this.patient.getReporter()).thenReturn(OWNER);
-        when(this.bridge.getProperty(PATIENT_REFERENCE, OWNER_CLASS, "owner")).thenReturn(null);
-        Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
-
-        when(this.bridge.getProperty(PATIENT_REFERENCE, OWNER_CLASS, "owner")).thenReturn("");
-        Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
-    }
-
-    /** {@link PatientAccessHelper#getOwner(Patient)} returns null when the owner and the referrer aren't specified. */
+    /** {@link PatientAccessHelper#getOwner(Patient)} returns a null user when the owner isn't specified. */
     @Test
     public void getOwnerWithMissingOwnerAndReferrer() throws ComponentLookupException
     {
-        when(this.patient.getReporter()).thenReturn(null);
         when(this.bridge.getProperty(PATIENT_REFERENCE, OWNER_CLASS, "owner")).thenReturn(null);
-        Assert.assertNull(this.mocker.getComponentUnderTest().getOwner(this.patient));
+        Assert.assertNull(this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
 
         when(this.bridge.getProperty(PATIENT_REFERENCE, OWNER_CLASS, "owner")).thenReturn("");
-        Assert.assertNull(this.mocker.getComponentUnderTest().getOwner(this.patient));
+        Assert.assertNull(this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
+
+        Mockito.verify(this.patient, Mockito.never()).getReporter();
     }
 
     /** {@link PatientAccessHelper#getOwner(Patient)} returns {@code null} when the patient is missing. */
