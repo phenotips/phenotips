@@ -60,7 +60,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/model/import.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/edgeOptimization.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/positionedGraph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/dynamicGraph.js')##
-$xwiki.jsfx.use('uicomponents/pedigree/view/nodeMenu.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/view/nodeMenu.js', true)##
 $xwiki.jsfx.use('uicomponents/pedigree/view/nodetypeSelectionBubble.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/ageCalc.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/graphicHelpers.js')##
