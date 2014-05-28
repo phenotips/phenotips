@@ -19,10 +19,14 @@
  */
 package org.phenotips.tools;
 
+import org.phenotips.ontology.OntologyService;
+import org.phenotips.ontology.OntologyTerm;
+
 import org.xwiki.xml.XMLUtils;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Vector;
 
@@ -64,7 +68,10 @@ public class PropertyDisplayerTest
         Mockito.when(doc.getObjects("PhenoTips.PhenotypeMetaClass")).thenReturn(new Vector<com.xpn.xwiki.api.Object>());
         configuration.setPositiveFieldName("PhenoTips.PatientClass_0_phenotype");
         Collection<Map<String, ?>> data = Collections.emptySet();
-        PropertyDisplayer displayer = new PropertyDisplayer(data, configuration, null);
+        OntologyService ontologyService = Mockito.mock(OntologyService.class);
+        Mockito.doReturn(new HashSet<OntologyTerm>()).when(ontologyService).search(Mockito.any(Map.class));
+
+        PropertyDisplayer displayer = new PropertyDisplayer(data, configuration, ontologyService);
         String output = displayer.display();
         Assert.assertTrue(StringUtils.isNotBlank(output));
         LSInput input = this.domls.createLSInput();
@@ -78,7 +85,7 @@ public class PropertyDisplayerTest
         Assert.assertEquals("hidden", positive.getAttribute("type"));
 
         configuration.setNegativeFieldName("PhenoTips.PatientClass_0_negative_phenotype");
-        displayer = new PropertyDisplayer(data, configuration, null);
+        displayer = new PropertyDisplayer(data, configuration, ontologyService);
         output = displayer.display();
         Assert.assertTrue(StringUtils.isNotBlank(output));
         input = this.domls.createLSInput();
@@ -96,7 +103,7 @@ public class PropertyDisplayerTest
         Assert.assertEquals("hidden", negative.getAttribute("type"));
 
         configuration.setMode(DisplayMode.View);
-        displayer = new PropertyDisplayer(data, configuration, null);
+        displayer = new PropertyDisplayer(data, configuration, ontologyService);
         output = displayer.display();
         Assert.assertTrue(StringUtils.isBlank(output));
     }

@@ -22,13 +22,18 @@ package org.phenotips.tools;
 import org.phenotips.ontology.OntologyService;
 import org.phenotips.ontology.OntologyTerm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.xpn.xwiki.api.Property;
@@ -88,6 +93,8 @@ public class PropertyDisplayer
         if (data.getNegativeFieldName() != null && data.getSelectedNegativeValues() != null) {
             customNoSelected.addAll(data.getSelectedNegativeValues());
         }
+
+        template = replaceOtherWithTopSections(template);
         for (Map<String, ?> sectionTemplate : template) {
             if (isSection(sectionTemplate)) {
                 this.sections.add(generateSection(sectionTemplate, customYesSelected, customNoSelected));
@@ -140,6 +147,71 @@ public class PropertyDisplayer
             }
         }
         return str.toString();
+    }
+
+    /**
+     * Adds top sections (direct children of HP:0000118) to a copy of the existing templates list, if those are not
+     * present. Also deletes any categories that are HP:0000118.
+     * @param originalTemplate the existing templates list
+     * @return a modified templates list
+     */
+    protected Collection<Map<String, ?>> replaceOtherWithTopSections(Collection<Map<String, ?>> originalTemplate)
+    {
+        //Need to work with a copy to prevent concurrency problems.
+        List<Map<String, ?>> template = new LinkedList<Map<String, ?>>();
+        template.addAll(originalTemplate);
+
+        Map<String, String> m = new HashMap<String, String>();
+        m.put("is_a", "HP:0000118");
+        Set<OntologyTerm> topSections = ontologyService.search(m);
+        Set<String> topSectionsId = new HashSet<String>();
+        for (OntologyTerm section : topSections) {
+            topSectionsId.add(section.getId());
+        }
+
+        for (Map<String, ?> sectionTemplate : template) {
+            try {
+                Object templateCategoriesUC = sectionTemplate.get("categories");
+                if (templateCategoriesUC instanceof ArrayList) {
+                    ArrayList<String> templateCategories = (ArrayList<String>) templateCategoriesUC;
+                    for (String category : templateCategories) {
+                        topSectionsId.remove(category);
+                    }
+                    templateCategories.remove("HP:0000118");
+                    if (templateCategories.isEmpty()) {
+                        template.remove(sectionTemplate);
+                    }
+                } else {
+                    String templateCategory = (String) templateCategoriesUC;
+                    if (StringUtils.equals(templateCategory, "HP:0000118")) {
+                       template.remove(sectionTemplate);
+                    } else {
+                       topSectionsId.remove(templateCategory);
+                    }
+                }
+            } catch (Exception ex) {
+                continue;
+            }
+            if (topSectionsId.isEmpty()) {
+                break;
+            }
+        }
+        for (String sectionId : topSectionsId) {
+            OntologyTerm term = ontologyService.getTerm(sectionId);
+            Map<String, Object> templateSection = new HashMap<String, Object>();
+
+            String title = term.getName();
+            title = title.replace("Abnormality of the ", "").replace("Abnormality of ", "");
+            title = WordUtils.capitalizeFully(title);
+            templateSection.put(TYPE_KEY, ITEM_TYPE_SECTION);
+            templateSection.put(TITLE_KEY, title);
+            templateSection.put(CATEGORIES_KEY, Arrays.asList(sectionId));
+            templateSection.put(DATA_KEY, new ArrayList<Map<String, String>>());
+
+            template.add(templateSection);
+        }
+
+        return template;
     }
 
     private boolean isSection(Map<String, ?> item)

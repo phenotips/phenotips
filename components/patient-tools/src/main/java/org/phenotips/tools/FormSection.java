@@ -69,7 +69,11 @@ public class FormSection extends FormGroup
             && StringUtils.isBlank(customValueDisplay)) {
             return "";
         }
-        return String.format("<div class='%s-group'><h3 id='H%s'><span>%s</span></h3>"
+        String display = "";
+        if (this.elements.isEmpty() && DisplayMode.Edit.equals(mode)) {
+            display = "display:none";
+        }
+        return String.format("<div class='%s-group' style='" + display + "'><h3 id='H%s'><span>%s</span></h3>"
             + "<div class='%1$s-main predefined-entries'>%s</div>"
             + "<div class='%1$s-other custom-entries'>%s%s</div></div>",
             this.getPropertyName(), this.title.replaceAll("[^a-zA-Z0-9]+", "-"),
