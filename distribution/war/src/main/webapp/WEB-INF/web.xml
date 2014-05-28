@@ -75,7 +75,7 @@
     <filter-class>com.xpn.xwiki.web.ActionFilter</filter-class>
   </filter>
 
-  <!-- This filter is used to initialize the XWiki context before processing a XML-RPC request. -->
+  <!-- This filter is used to initialize the XWiki context before processing a request. -->
   <filter>
     <filter-name>XWikiContextInitializationFilter</filter-name>
     <filter-class>com.xpn.xwiki.web.XWikiContextInitializationFilter</filter-class>
