@@ -59,7 +59,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for the {@link OwnerUpdateEventListener}
+ * Tests for the {@link R54590PhenoTips931DataMigration}.
  * 
  * @version $Id$
  */
