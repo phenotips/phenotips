@@ -39,6 +39,9 @@ public interface Owner
     EntityReference CLASS_REFERENCE = new EntityReference("OwnerClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
+    /** The name of the property used to store the owner in the XClass. */
+    String PROPERTY_NAME = "owner";
+
     String getType();
 
     boolean isUser();

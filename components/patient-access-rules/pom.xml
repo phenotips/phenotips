@@ -33,6 +33,7 @@
 
   <modules>
     <module>api</module>
+    <module>migrations</module>
     <module>ui</module>
   </modules>
 </project>
