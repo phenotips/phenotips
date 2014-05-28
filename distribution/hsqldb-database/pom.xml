@@ -84,11 +84,6 @@
               <version>${xwiki.version}</version>
             </dependency>
             <dependency>
-              <groupId>org.xwiki.platform</groupId>
-              <artifactId>xwiki-platform-annotation-io</artifactId>
-              <version>${xwiki.version}</version>
-            </dependency>
-            <dependency>
               <groupId>${project.groupId}</groupId>
               <artifactId>application-configuration-migrations</artifactId>
               <version>${project.version}</version>
