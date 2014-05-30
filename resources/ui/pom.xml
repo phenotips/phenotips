@@ -156,6 +156,8 @@
           </includes>
           <excludes>
             <exclude>**/Main/Welcome*.xml</exclude>
+            <exclude>**/Main/Solr*.xml</exclude>
+            <exclude>**/XWiki/Solr*.xml</exclude>
             <exclude>**/ColorThemes/Dusk.xml</exclude>
             <exclude>**/ColorThemes/DefaultColorTheme.xml</exclude>
             <exclude>**/ColorThemes/Mint.xml</exclude>

@@ -414,18 +414,6 @@
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-search-solr-api</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-search-solr-query</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
     <!-- JODA Time -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
