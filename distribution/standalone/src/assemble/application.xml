@@ -63,15 +63,6 @@
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
-    <!-- Use Logback instead of Java SE logging -->
-    <dependencySet>
-      <includes>
-        <include>ch.qos.logback:*</include>
-      </includes>
-      <outputDirectory>webapps/solr/WEB-INF/lib</outputDirectory>
-      <unpack>false</unpack>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
     <!-- Unpack Jetty files -->
     <dependencySet>
       <includes>
