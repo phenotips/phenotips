@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,10 +16,28 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.phenotips.ontology;
 
-<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
-<Configure class="org.eclipse.jetty.webapp.WebAppContext">
-  <Set name="contextPath">/solr</Set>
-  <Set name="war"><SystemProperty name="jetty.home" default="."/>/../webapps/solr</Set>
-</Configure>
+import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
+
+import org.apache.solr.core.CoreContainer;
+
+/**
+ * Provides access to the configured Solr data.
+ *
+ * @version $Id$
+ * @since 1.0RC1
+ */
+@Unstable
+@Role
+public interface SolrCoreContainerHandler
+{
+    /**
+     * Gets the embedded Solr core container.
+     *
+     * @return a loaded core container instance
+     */
+    CoreContainer getContainer();
+}

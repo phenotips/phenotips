@@ -40,7 +40,6 @@
   <modules>
     <module>hsqldb-database</module>
     <module>war</module>
-    <module>solr-war</module>
     <module>standalone</module>
   </modules>
 

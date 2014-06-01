@@ -45,21 +45,12 @@
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
-    <!-- "solr" webapp. -->
-    <dependencySet>
-      <includes>
-        <include>${project.groupId}:solr-war</include>
-      </includes>
-      <outputDirectory>webapps/solr</outputDirectory>
-      <unpack>true</unpack>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
     <!-- Solr configuration. -->
     <dependencySet>
       <includes>
         <include>${project.groupId}:solr-configuration</include>
       </includes>
-      <outputDirectory>solrconfig/</outputDirectory>
+      <outputDirectory>/data/solr/</outputDirectory>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>

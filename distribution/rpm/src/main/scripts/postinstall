@@ -6,26 +6,22 @@ if [ "$1" = 1 ]
 then
   # Initial installation, extract the original configuration
   unzip -qq -d /var/lib/phenotips/data/ /var/lib/phenotips/next/database-zip*.zip
-  unzip -qq -d /var/lib/phenotips/solrconfig/ /var/lib/phenotips/next/solr-config*.jar
+  unzip -qq -d /var/lib/phenotips/data/solr/ /var/lib/phenotips/next/solr-config*.jar
 else
   # Upgrade, update all Solr core configurations and only update specific Solr indexes
-  unzip -q -d /var/lib/phenotips/next/solrconfig /var/lib/phenotips/next/solr-config*.jar
-  rm -rf /var/lib/phenotips/solrconfig/hpo/ /var/lib/phenotips/solrconfig/omim/ /var/lib/phenotips/solrconfig/ethnicity/
-  mv -t /var/lib/phenotips/solrconfig/ /var/lib/phenotips/next/solrconfig/hpo/ /var/lib/phenotips/next/solrconfig/omim/ /var/lib/phenotips/next/solrconfig/ethnicity
-  if [[ -d /var/lib/phenotips/solrconfig/patients/ ]]
+  unzip -q -d /var/lib/phenotips/next/solr /var/lib/phenotips/next/solr-config*.jar
+  mv -t /var/lib/phenotips/data/solr/ /var/lib/phenotips/next/solr/solr.xml
+  rm -rf /var/lib/phenotips/data/solr/hpo/ /var/lib/phenotips/data/solr/omim/ /var/lib/phenotips/data/solr/ethnicity/
+  mv -t /var/lib/phenotips/data/solr/ /var/lib/phenotips/next/solr/hpo/ /var/lib/phenotips/next/solr/omim/ /var/lib/phenotips/next/solr/ethnicity
+  if [[ -d /var/lib/phenotips/data/solr/patients/ ]]
   then
-    rm -rf /var/lib/phenotips/solrconfig/patients/conf/
-    mv -t /var/lib/phenotips/solrconfig/patients/ /var/lib/phenotips/next/solrconfig/patients/conf/
+    rm -rf /var/lib/phenotips/data/solr/patients/conf/
+    mv -t /var/lib/phenotips/data/solr/patients/ /var/lib/phenotips/next/solr/patients/conf/
   else
-    mv -t /var/lib/phenotips/solrconfig/ /var/lib/phenotips/next/solrconfig/patients/
+    mv -t /var/lib/phenotips/data/solr/ /var/lib/phenotips/next/solr/patients/
   fi
-  if [[ -d /var/lib/phenotips/solrconfig/xwiki/ ]]
-  then
-    rm -rf /var/lib/phenotips/solrconfig/xwiki/conf/
-    mv -t /var/lib/phenotips/solrconfig/xwiki/ /var/lib/phenotips/next/solrconfig/xwiki/conf/
-  else
-    mv -t /var/lib/phenotips/solrconfig/ /var/lib/phenotips/next/solrconfig/xwiki/
-  fi
+  # Deprecated core, remove
+  rm -rf /var/lib/phenotips/data/solr/xwiki/
 fi
 
 

@@ -90,9 +90,6 @@ START_OPTS="$START_OPTS -DSTOP.KEY=phenotipsstop -DSTOP.PORT=$JETTY_STOPPORT"
 # Force UTF8 as the global JVM encoding
 START_OPTS="$START_OPTS -Dfile.encoding=UTF8"
 
-# Path to the solr configuration
-START_OPTS="$START_OPTS -Dsolr.solr.home=${PRGDIR}/solrconfig/"
-
 # Optional: enable remote debugging
 # START_OPTS="$START_OPTS -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
 

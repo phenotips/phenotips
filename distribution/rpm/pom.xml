@@ -34,10 +34,8 @@
 
   <properties>
     <ptwar.path>${project.build.directory}/ptwar</ptwar.path>
-    <solrwar.path>${project.build.directory}/solrwar</solrwar.path>
     <data.path>${project.build.directory}/phenotips</data.path>
     <db.path>${data.path}/data</db.path>
-    <solr.path>${data.path}/data/solrconfig</solr.path>
     <xwiki.properties.environment.permanentDirectory>/var/lib/phenotips/data</xwiki.properties.environment.permanentDirectory>
   </properties>
 
@@ -45,13 +43,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-war</artifactId>
-      <version>${project.version}</version>
-      <type>war</type>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>solr-war</artifactId>
       <version>${project.version}</version>
       <type>war</type>
     </dependency>
@@ -96,25 +87,6 @@
               </artifactItems>
               <excludes>**\/xwiki.cfg,**/xwiki.properties,**/hibernate.cfg.xml</excludes>
               <outputDirectory>${ptwar.path}</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unzip-solr</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>${project.groupId}</groupId>
-                  <artifactId>solr-war</artifactId>
-                  <version>${project.version}</version>
-                  <type>war</type>
-                </artifactItem>
-              </artifactItems>
-              <excludes>**/web.xml</excludes>
-              <outputDirectory>${solrwar.path}</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -192,8 +164,6 @@ model.reference.default.space=data
 extension.repositories=maven-xwiki:maven:http://nexus.xwiki.org/nexus/content/groups/public
 extension.repositories=maven-phenotips:maven:http://nexus.cs.toronto.edu/nexus/content/repositories/releases/
 extension.repositories=extensions.xwiki.org:xwiki:http://extensions.xwiki.org/xwiki/rest/
-solr.type=remote
-solr.remote.url=http://localhost:8080/phenotips-solr/xwiki/
                 </xwikiPropertiesAdditionalProperties>
               </properties>
             </configuration>
@@ -240,16 +210,6 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
                 </source>
               </sources>
             </mapping>
-            <!-- Copy the Solr war into Tomcat's webapps directory -->
-            <mapping>
-              <directory>/var/lib/tomcat6/webapps/phenotips-solr</directory>
-              <recurseDirectories>true</recurseDirectories>
-              <sources>
-                <source>
-                  <location>${solrwar.path}</location>
-                </source>
-              </sources>
-            </mapping>
             <!-- Copy the custom PhenoTips/XWiki configuration files into the webapp -->
             <mapping>
               <directory>/var/lib/tomcat6/webapps/phenotips/WEB-INF/</directory>
@@ -262,19 +222,6 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
                     <include>xwiki.cfg</include>
                     <include>xwiki.properties</include>
                     <include>hibernate.cfg.xml</include>
-                  </includes>
-                </source>
-              </sources>
-            </mapping>
-            <!-- Copy the custom Solr webapp configuration -->
-            <mapping>
-              <directory>/var/lib/tomcat6/webapps/phenotips-solr/WEB-INF/</directory>
-              <directoryIncluded>false</directoryIncluded>
-              <sources>
-                <source>
-                  <location>${project.build.outputDirectory}/</location>
-                  <includes>
-                    <include>web.xml</include>
                   </includes>
                 </source>
               </sources>
@@ -302,16 +249,6 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
             <scriptFile>src/main/scripts/postremove</scriptFile>
             <fileEncoding>utf-8</fileEncoding>
           </postremoveScriptlet>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.mycila</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <!-- Comes from Apache Solr and shouldn't use our license/copyright -->
-            <exclude>src/main/resources/web.xml</exclude>
-          </excludes>
         </configuration>
       </plugin>
     </plugins>

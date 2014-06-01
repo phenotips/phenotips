@@ -19,6 +19,8 @@
  */
 package org.phenotips.solr;
 
+import org.phenotips.ontology.SolrOntologyServiceInitializer;
+
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
@@ -39,7 +41,6 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -84,6 +85,9 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     /** The Solr server instance used. */
     protected SolrServer server;
 
+    @Inject
+    protected SolrOntologyServiceInitializer initializer;
+
     /**
      * Cache for the recently accessed documents; useful since the ontology rarely changes, so a search should always
      * return the same thing.
@@ -102,9 +106,9 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     public void initialize() throws InitializationException
     {
         try {
-            this.server = new HttpSolrServer(this.getSolrLocation() + this.getName() + URL_PATH_SEPARATOR);
+            this.initializer.initialize(getName());
+            this.server = this.initializer.getServer();
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
-
         } catch (RuntimeException ex) {
             throw new InitializationException("Invalid URL specified for the Solr server: {}");
         } catch (final CacheException ex) {

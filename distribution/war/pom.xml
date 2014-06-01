@@ -414,6 +414,26 @@
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <!-- Request newer versions of Lucene modules, compatible with the Solr version in use -->
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>${solr.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analyzers-common</artifactId>
+      <version>${solr.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-queryparser</artifactId>
+      <version>${solr.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
     <!-- JODA Time -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
