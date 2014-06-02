@@ -971,6 +971,7 @@ document.observe('xwiki:dom:loaded', function() {
             if (item.hasClassName('generateYesNo')) {
               item.observe("ms:suggest:suggestionCreated", function(event) {
                 var negativeName = item.name.replace(/(_\d+)_/, "$1_negative_").replace(/__suggested$/, '');
+                var positiveName = item.name.replace(/__suggested$/, '');
                 var suggestion = event.memo &amp;&amp; event.memo.element;
                 if (suggestion) {
                   var suggest = event.memo.suggest;
@@ -999,6 +1000,24 @@ document.observe('xwiki:dom:loaded', function() {
                   suggestion.down('label.no').observe('mouseout', function(event) {
                     event.findElement().removeClassName('highlighted');
                   })
+
+                  suggestion.observe('click', function(event) {
+                    if (event.target == ynpicker.down('.no')) {
+                      return;
+                    }
+                    var predefinedCheckBox = $(positiveName + "_" + value);
+                    if (predefinedCheckBox &amp;&amp; !predefinedCheckBox.checked) {
+                      predefinedCheckBox._ynpicker._onYes();
+                      suggest.clearSuggestions();
+                      suggest.fld.value = '';
+                      suggest.fld.focus();
+                      suggest.fld.blur();
+                      event.stop();
+                    }
+                    suggestion.down('.suggestCategory').insert({
+                      top : new Element('input', {type: 'hidden', name : 'fieldName', value : positiveName, 'class' : 'yes'})
+                    });
+                  });
 
                   // Keep the default behavior for the Y button
                   //  but capture the N button clicks and make sure the value is selected for the negative property field
