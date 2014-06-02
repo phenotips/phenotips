@@ -1359,6 +1359,7 @@
     'inputType': 'hidden',
     'listInsertionElt' : null,
     'listInsertionPosition' : 'after',
+    'predefinedEntries' : null,
     'acceptFreeText' : false
   },
   initialize: function(element, suggest, options, serializedDataInput) {
@@ -1388,6 +1389,7 @@
     var insertion = {};
     insertion[this.options.listInsertionPosition] = this.list;
     listInsertionElement.insert(insertion);
+    this.predefinedEntries = this.options.predefinedEntries ? $(this.options.predefinedEntries) : null;
     if (this.options.showClearTool) {
       this.clearTool = new Element('span', {'class' : 'clear-tool delete-tool invisible', 'title' : 'Clear the list of selected suggestions'}).update('Delete all &amp;#x2716;');
       this.clearTool.observe('click', this.clearAcceptedList.bindAsEventListener(this));
@@ -1399,7 +1401,8 @@
   },
 
   acceptAddItem : function (key, negative) {
-    var input = this.list ? this.list.down('input[id="' + this.getInputId(key, negative).replace(/[^a-zA-Z0-9_-]/g, '\\$&amp;') + '"]') : $(this.getInputId(key, negative));
+    var searchFor = 'input[id="' + this.getInputId(key, negative).replace(/[^a-zA-Z0-9_-]/g, '\\$&amp;') + '"]';
+    var input = this.predefinedEntries ? this.predefinedEntries.down(searchFor) : this.list ? this.list.down(searchFor) : $(this.getInputId(key, negative));
     if (input) {
       input.checked = true;
       Event.fire(input, 'suggest:change');
