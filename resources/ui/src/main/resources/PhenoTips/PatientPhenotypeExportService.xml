@@ -39,9 +39,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{include document="PhenoTips.JSONMacros" /}}
-
-{{velocity}}
+  <content>{{velocity}}
 #if ($xcontext.action != 'get')
   #break
 #end
