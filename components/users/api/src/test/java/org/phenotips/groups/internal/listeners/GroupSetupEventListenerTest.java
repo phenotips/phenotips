@@ -166,6 +166,25 @@ public class GroupSetupEventListenerTest
     }
 
     @Test
+    public void onEventWithTemplate() throws ComponentLookupException, XWikiException
+    {
+        Utils.setComponentManager(this.mocker);
+
+        DocumentReference docReference = new DocumentReference("xwiki", "PhenoTips", "PhenoTipsGroupTemplate");
+        XWikiContext context = mock(XWikiContext.class);
+        XWikiDocument doc = mock(XWikiDocument.class);
+        when(doc.getXObject(Group.CLASS_REFERENCE)).thenReturn(mock(BaseObject.class));
+        when(doc.getDocumentReference()).thenReturn(docReference);
+
+        this.mocker.getComponentUnderTest().onEvent(new DocumentCreatingEvent(docReference), doc, context);
+
+        Mockito.verifyZeroInteractions(context);
+        Mockito.verify(doc).getXObject(Group.CLASS_REFERENCE);
+        Mockito.verify(doc).getDocumentReference();
+        Mockito.verifyNoMoreInteractions(doc);
+    }
+
+    @Test
     public void onEventWithExceptions() throws ComponentLookupException, XWikiException
     {
         Utils.setComponentManager(this.mocker);
