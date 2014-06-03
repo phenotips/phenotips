@@ -26,9 +26,9 @@ import org.xwiki.stability.Unstable;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import net.sf.json.JSONObject;
-import groovy.lang.Singleton;
 
 /**
  * API that allows receiving patient data from a remote PhenoTips instance.

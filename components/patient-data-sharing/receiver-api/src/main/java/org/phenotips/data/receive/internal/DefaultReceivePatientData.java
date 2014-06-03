@@ -23,6 +23,7 @@ import java.net.URLDecoder;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import java.util.List;
 import java.util.Set;
@@ -63,8 +64,6 @@ import org.xwiki.users.User;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
 import org.apache.commons.lang3.StringUtils;
-
-import groovy.lang.Singleton;
 
 /**
  * Default implementation for the {@link ReceivePatientData} component.

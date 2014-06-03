@@ -33,11 +33,10 @@ import org.phenotips.data.push.PatientPushHistory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import java.util.Map;
 import java.util.Set;
-
-import groovy.lang.Singleton;
 
 /**
  * API that allows pushing patient data to a remote PhenoTips instance

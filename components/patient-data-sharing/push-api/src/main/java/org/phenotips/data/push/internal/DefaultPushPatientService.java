@@ -48,6 +48,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
@@ -56,7 +57,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
-import groovy.lang.Singleton;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 

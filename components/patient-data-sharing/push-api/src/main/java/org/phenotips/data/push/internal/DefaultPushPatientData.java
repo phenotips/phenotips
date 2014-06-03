@@ -36,6 +36,7 @@ import java.net.URLEncoder;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -49,7 +50,6 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
-import groovy.lang.Singleton;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
