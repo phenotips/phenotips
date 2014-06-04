@@ -27,17 +27,14 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1385047495000</creationDate>
+  <creationDate>1401822157000</creationDate>
   <parent>Main.XWikiUsers</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1385071571000</date>
-  <contentUpdateDate>1385071571000</contentUpdateDate>
+  <date>1401822157000</date>
+  <contentUpdateDate>1401822157000</contentUpdateDate>
   <version>1.1</version>
   <title>#set($userName="$!doc.getValue('first_name') $!doc.getValue('last_name')")#if($userName==' ')#set($userName=$doc.name)#{end}$services.localization.render('platform.core.profile.title', [$userName])</title>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>

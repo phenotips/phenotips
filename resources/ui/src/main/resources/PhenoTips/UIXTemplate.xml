@@ -20,29 +20,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>UIXTemplate</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.UIX Directory</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822217000</creationDate>
+  <parent>PhenoTips.UIX Directory</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1385320546000</creationDate>
-  <date>1385394088000</date>
-  <contentUpdateDate>1385317006000</contentUpdateDate>
+  <date>1401822217000</date>
+  <contentUpdateDate>1401822217000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content/>
   <object>
+    <name>PhenoTips.UIXTemplate</name>
+    <number>0</number>
+    <className>XWiki.DocumentSheetBinding</className>
+    <guid>d83f51ff-a672-4ff8-9b77-9a2a416ee20b</guid>
     <class>
       <name>XWiki.DocumentSheetBinding</name>
       <customClass/>
@@ -66,15 +68,15 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </sheet>
     </class>
-    <name>PhenoTips.UIXTemplate</name>
-    <number>0</number>
-    <className>XWiki.DocumentSheetBinding</className>
-    <guid>d83f51ff-a672-4ff8-9b77-9a2a416ee20b</guid>
     <property>
       <sheet>PhenoTips.UIXSheet</sheet>
     </property>
   </object>
   <object>
+    <name>PhenoTips.UIXTemplate</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>8fcec09a-ebce-4b2f-b121-7562b21f6865</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -146,10 +148,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.UIXTemplate</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>8fcec09a-ebce-4b2f-b121-7562b21f6865</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -167,6 +165,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.UIXTemplate</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>dcd85ffb-79dd-40d7-8152-0a441bb5c936</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -238,10 +240,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.UIXTemplate</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>dcd85ffb-79dd-40d7-8152-0a441bb5c936</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -259,6 +257,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.UIXTemplate</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>76b4de3d-f8f1-4454-8869-b14a6c2944bc</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -323,10 +325,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.UIXTemplate</name>
-    <number>0</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>76b4de3d-f8f1-4454-8869-b14a6c2944bc</guid>
     <property>
       <content/>
     </property>
@@ -343,5 +341,4 @@
       <scope>wiki</scope>
     </property>
   </object>
-  <content/>
 </xwikidoc>

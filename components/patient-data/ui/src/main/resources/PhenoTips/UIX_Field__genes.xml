@@ -20,29 +20,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>UIX_Field__genes</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.PatientSheet</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822202000</creationDate>
+  <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1393126448000</creationDate>
-  <date>1393560610000</date>
-  <contentUpdateDate>1393128786000</contentUpdateDate>
+  <date>1401822202000</date>
+  <contentUpdateDate>1401822202000</contentUpdateDate>
   <version>1.1</version>
   <title>Known affected genes</title>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content/>
   <object>
+    <name>PhenoTips.UIX_Field__genes</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>0c3e868a-743c-4714-ba1a-a04cbf6b0dd1</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -114,10 +116,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.UIX_Field__genes</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>0c3e868a-743c-4714-ba1a-a04cbf6b0dd1</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -240,6 +238,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.UIX_Field__genes</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>ddc20308-5638-42ba-9680-19944cc57e54</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -311,10 +313,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.UIX_Field__genes</name>
-    <number>1</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>ddc20308-5638-42ba-9680-19944cc57e54</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -401,6 +399,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.UIX_Field__genes</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>31ef03c0-7319-491e-8ee4-ac2863448012</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -472,10 +474,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.UIX_Field__genes</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>31ef03c0-7319-491e-8ee4-ac2863448012</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -499,6 +497,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.UIX_Field__genes</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>7b7c0c0e-2a31-4710-8479-891b7742595e</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -563,10 +565,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.UIX_Field__genes</name>
-    <number>0</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>7b7c0c0e-2a31-4710-8479-891b7742595e</guid>
     <property>
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
@@ -600,5 +598,4 @@ fields=</parameters>
       <scope>wiki</scope>
     </property>
   </object>
-  <content/>
 </xwikidoc>

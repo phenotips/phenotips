@@ -20,687 +20,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>FormDesigner</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.DBWebHomeSheet</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822218000</creationDate>
+  <parent>PhenoTips.DBWebHomeSheet</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1378748751000</creationDate>
-  <date>1378754305000</date>
-  <contentUpdateDate>1378754305000</contentUpdateDate>
+  <date>1401822218000</date>
+  <contentUpdateDate>1401822218000</contentUpdateDate>
   <version>1.1</version>
   <title>Patient form designer</title>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <object>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <name>PhenoTips.FormDesigner</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>f932f5b4-9eb5-4334-9fdf-d92946a5d6c5</guid>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>var PhenoTips = (function (PhenoTips) {
-  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
-  widgets.PatientFormDesigner = Class.create({
-
-    _ENHANCED_TOOL_CSS_CLASS : 'initialized',
-    _NEW_TOOL_SELECTOR: ':not(.initialized)',
-    
-    initialize : function (element) {
-      if (!element) return;
-      this._element = element;
-      this._form = element.up('form');
-      this._globalConfig = element.hasClassName('global');
-      this._enhanceExtensionTools();
-      this._handleSubmit();
-      this._handleNewSection();
-    },
-
-    _enhanceExtensionTools : function () {
-      this._silenceMoveButtons();
-      this._enableRequiredFlags();
-      this._enableAjaxDeletion();
-      this._enableSectionToggle();
-      this._enableSectionReorder();
-      this._enableFieldToggle();
-      if (this._globalConfig) {
-        this._enableFieldDragDrop();
-      } else {
-        this._enableFieldReorder();
-      }
-    },
-
-    _silenceMoveButtons : function () {
-      this._element.select('a.move' + this._NEW_TOOL_SELECTOR).invoke('observe', 'click', function(event) {
-        event.stop();
-      });
-      this._element.select('a.move' + this._NEW_TOOL_SELECTOR).invoke('addClassName', this._ENHANCED_TOOL_CSS_CLASS);
-    },
-
-    _enableRequiredFlags : function () {
-      var _this = this;
-      this._element.select('label.flag' + this._NEW_TOOL_SELECTOR).each(function(item) {
-        item._syncSource = item.down('input.uix-required');
-        if (item._syncSource.checked) {
-           item.addClassName('required');
-        } else {
-           item.removeClassName('required');
-        }
-        item.observe('click', function(event) {
-          var elt = event.findElement('label.flag');
-          if (elt._syncSource.checked) {
-            elt.addClassName('required');
-          } else {
-            elt.removeClassName('required');
-          }
-        });
-        item.addClassName(_this._ENHANCED_TOOL_CSS_CLASS);
-      });
-    },
-
-    _enableAjaxDeletion : function() {
-      var _this = this;
-      this._element.select('.section-maquette a.delete' + this._NEW_TOOL_SELECTOR + ', .extension-maquette a.delete' + this._NEW_TOOL_SELECTOR).invoke('observe', 'click', function(event) {
-        event.stop();
-        var trigger = event.findElement('a');
-        trigger.blur();
-        if (trigger.disabled) {
-          // Do nothing if the button was already clicked and it's waiting for a response from the server.
-          return;
-        }
-        var url = trigger.readAttribute('href') + "?confirm=1&amp;form_token=" + $$('meta[name=form_token]')[0].content + (Prototype.Browser.Opera ? "" : "&amp;ajax=1");
-        new XWiki.widgets.ConfirmedAjaxRequest(
-          /* Ajax request URL */
-          url,
-          /* Ajax request parameters */
-          {
-            onCreate : function() {
-              // Disable the button, to avoid a cascade of clicks from impatient users
-              trigger.disabled = true;
-            },
-            onSuccess : function() {
-              // remove the element
-              // move all extensions (if any) to the "available extenions" panel
-              var container = trigger.up('.section-maquette');
-              var extensionsPanel = _this._element.down('.designer-panel.extensions .section-contents');
-              if (container &amp;&amp; extensionsPanel) {
-                container.select('.extension-maquette').each(function(item) {
-                  extensionsPanel.insert(item);
-                });
-                _this._updateOrder(extensionsPanel, true);
-              }
-              trigger.up('.extension-maquette, .section-maquette').remove();
-            },
-            onFailure : function() {
-              // Better luck next time!
-              trigger.disabled = false;
-            }
-          },
-          /* Interaction parameters */
-          {
-            confirmationText: "$services.localization.render('core.recyclebin.confirm')"
-          }
-        );
-      });
-      this._element.select('.section-maquette a.delete' + this._NEW_TOOL_SELECTOR + ', .extension-maquette a.delete' + this._NEW_TOOL_SELECTOR).invoke('addClassName', this._ENHANCED_TOOL_CSS_CLASS);
-    },
-
-    _enableSectionToggle : function () {
-      this._enableExtensionToggle('.section-maquette', '.section-title input[type="checkbox"]');
-    },
-
-    _enableFieldToggle : function () {
-      this._enableExtensionToggle('.extension-maquette', '.extension-title input[type="checkbox"]');
-    },
-
-   _enableExtensionToggle : function (extensionSelector, toggleSelector) {
-      var _this = this;
-      var syncSectionAppearance = function(extension, enabled) {
-        if (enabled) {
-          extension.removeClassName('disabled');
-        } else {
-          extension.addClassName('disabled');
-        }
-      };
-      var activateSyncSectionAppearance = function(enablingElement) {
-        enablingElement.addClassName(_this._ENHANCED_TOOL_CSS_CLASS);
-        var extension = enablingElement.up(extensionSelector);
-        syncSectionAppearance(extension, enablingElement.checked);
-        enablingElement.observe('click', function(event) {
-          syncSectionAppearance(extension, enablingElement.checked);
-        });
-      };
-      this._element.select(extensionSelector + ' ' + toggleSelector + this._NEW_TOOL_SELECTOR).each(activateSyncSectionAppearance);
-    },
-
-    _enableSectionReorder : function () {
-       var sectionsPanel = this._element.down('.designer-panel.sections');
-       this._updateOrder(sectionsPanel)
-       var _this = this;
-       Sortable.destroy(sectionsPanel);
-       Sortable.create(sectionsPanel, {
-         tag : 'div',
-         only: 'section-maquette',
-         format: /^.*\.([^.]+)$/,
-         handle : 'move',
-         onUpdate : function(container) {
-           _this._updateOrder(container);
-         }
-       });
-    },
-
-    _enableFieldReorder : function () {
-       var _this = this;
-       this._element.select('.designer-panel.sections .section-maquette .section-contents').each (function (section) {
-         _this._updateOrder(section, true);
-         Sortable.create(section, {
-           tag : 'div',
-           only: 'extension-maquette',
-           format: /^.*\.([^.]+)$/,
-           handle : 'move',
-           onUpdate : function(container) {
-             _this._updateOrder(container, true);
-           }
-         });
-       });
-    },
-
-    _enableFieldDragDrop : function () {
-       var _this = this;
-       var sections = this._element.select('.designer-panel .section-maquette .section-contents');
-       sections.each (function (section) {
-         _this._updateOrder(section, true);
-         Sortable.create(section, {
-           tag : 'div',
-           only: 'extension-maquette',
-           format: /^.*\.([^.]+)$/,
-           containment: sections,
-           dropOnEmpty: true,
-           constraint: false,
-           handle : 'move',
-           scroll: window,
-           onUpdate : function(container) {
-             _this._updateOrder(container, true);
-           }
-         });
-       });
-    },
-   
-    _updateOrder : function (container, updateContainer) {
-       var i = 0;
-       container.select ((updateContainer ? '.extension' : '.section') + '-title input.uix-order').each(function(item) {
-         item.value = ++i;
-       });
-       if (updateContainer) {
-         var uixid = container.up('.section-maquette').id;
-         if (uixid) {
-           container.select ('input.uix-pointid').each(function(item) {
-             item.value = uixid;
-           });
-         }
-       }
-    },
-
-    _handleSubmit : function () {
-      var _this = this;
-
-      var submitButton = this._form.down('input[type="submit"]');
-      submitButton._originalValue = submitButton.value;
-
-      var sectionsPanel = this._element.down('.designer-panel.sections');
-
-      this._form.observe ('submit', function(event) {
-        event.stop();
-        // Update the order of the selected sections/fields
-        _this._updateOrder(sectionsPanel);
-        sectionsPanel.select('.section-maquette .section-contents').each (function (section) {
-          _this._updateOrder(section);
-        });
-
-        // -----------------------------
-        // TODO remove me!
-        // -----------------------------
-        _this._form.submit();
-        return;
-        // -----------------------------
-
-        // ajax submit the form
-        var formData = new Hash(_this._form.serialize(true));
-        _this._form.disable();
-        submitButton.value = 'Saving configuration...';
-        submitButton.addClassName('loading');
-        new Ajax.Request(_this._form.action, {
-            method : 'post',
-            parameters : formData,
-            onSuccess : function () {
-              submitButton.value = 'Configuration saved';
-              submitButton.removeClassName('loading');
-              submitButton.addClassName('success');
-              new PeriodicalExecuter(function(pe) {
-                submitButton.value = submitButton._originalValue;
-                submitButton.removeClassName('success');
-                pe.stop();
-              }, 3);
-            },
-            onFailure : function (response) {
-              var failureReason = response.statusText;
-              if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-                failureReason = 'Server not responding';
-              }
-              submitButton.value = submitButton._originalValue;
-              submitButton.removeClassName('loading');
-              new XWiki.widgets.Notification("$services.localization.render('core.viewers.comments.add.failed')" + failureReason, "error");
-            },
-            on0 : function (response) {
-              response.request.options.onFailure(response);
-            },
-            onComplete : function () {
-              _this._form.enable();
-            }
-        });
-      });
-    },
-
-    _handleNewSection : function () {
-      var _this = this;
-      var newSectionForm = $('create-section-form');
-      var newSectionInputs = $('new-section')
-      if (!newSectionInputs) {
-        return;
-      }
-      var newSectionButton = newSectionInputs.down('input[type="button"]');
-      if (!newSectionForm || !newSectionInputs || !newSectionButton) {return;}
-      // hide that form and duplicate the inputs under the section list
-       newSectionButton._originalValue =  newSectionButton.value;
-      newSectionForm.hide();
-      newSectionButton.observe('click', function() {
-        newSectionForm.select('input[type="text"]').each(function(input) {
-          input.value = newSectionInputs.down('input[type="text"][name="' + input.name + '"]').value;
-        });
-        // AJAX submission
-        var formData = new Hash(newSectionForm.serialize(true));
-        newSectionForm.disable();
-        newSectionButton.value = 'Creating section...';
-        newSectionButton.addClassName('loading');
-        new Ajax.Request(newSectionForm.action, {
-            method : 'post',
-            parameters : formData,
-            onSuccess : function (response) {
-              newSectionButton.value = 'Section created';
-              newSectionButton.removeClassName('loading');
-              newSectionButton.addClassName('success');
-              newSectionInputs.insert({before : response.responseText});
-              new PeriodicalExecuter(function(pe) {
-                newSectionButton.value = newSectionButton._originalValue;
-                newSectionButton.removeClassName('success');
-                pe.stop();
-              }, 3);
-              _this._enhanceExtensionTools();
-            },
-            onFailure : function (response) {
-              var failureReason = response.statusText;
-              if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-                failureReason = 'Server not responding';
-              }
-              newSectionButton.value = newSectionButton._originalValue;
-              newSectionButton.removeClassName('loading');
-              new XWiki.widgets.Notification("$services.localization.render('core.viewers.comments.add.failed')" + failureReason, "error");
-            },
-            on0 : function (response) {
-              response.request.options.onFailure(response);
-            },
-            onComplete : function () {
-              newSectionForm.enable();
-            }
-        });
-      });
-    }
-  });
-  return PhenoTips;
-}(PhenoTips || {}));
-
-document.observe("xwiki:dom:loaded", function(){
-  window.wiz = new PhenoTips.widgets.PatientFormDesigner($('patient-form-designer'));
-});</code>
-    </property>
-    <property>
-      <name/>
-    </property>
-    <property>
-      <parse>1</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <class>
-      <name>XWiki.StyleSheetExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <disabled>0</disabled>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators> ,|</separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <name>PhenoTips.FormDesigner</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>8d49282c-87bb-4a60-a5ea-83a25d3c87fc</guid>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>#template("colorThemeInit.vm")
-
-.designer-panel {
-  width: 45%;
-  float: left;
-  position: relative;
-}
-.designer-panel.sections {
-}
-.designer-panel.hint {
-  width: 10%;
-}
-.designer-panel.extensions {
-}
-.designer-panel.hint p {
-  font-size: 0.9em;
-  font-style: italic;
-  opacity: 0.5;
-  padding: 80px 5px;
-  text-align: center;
-}
-.designer-panel.hint:before, .designer-panel.hint:after {
-  color: $theme.linkColor;
-  content: "";
-  display: block;
-  position: absolute;
-  top: 2.5em;
-  z-index: 10;
-}
-
-.designer-panel.hint:before {
-  border-top: 32px solid transparent;
-  border-bottom: 32px solid transparent;
-  border-right: 32px solid;
-  margin-top: -16px;
-  margin-left: -32px;
-  left: 50%;
-}
-
-.designer-panel.hint:after {
-  border: 16px solid;
-  margin-left: -16px;
-  left: 50%;
-}
-.designer-panel .new-section {
-  margin: 10px 10px 25px;
-}
-.designer-panel .new-section .section-title{
-  color $theme.titleColor;
-  text-transform: uppercase;
-  padding-left: 16px;
-  background: transparent url("$xwiki.getSkinFile('icons/silk/bullet_add.png')") left center no-repeat;
-}
-.designer-panel .section-maquette {
-  margin: 10px 10px 25px;
-}
-.designer-panel .section-maquette .section-contents {
-  min-height: 20px;
-}
-.extension-tools {
-  float: right;
-  margin-top: -25px;
-}
-.extension-tool {
-  background-color: $theme.buttonSecondaryBackgroundColor;
-  border: 1px solid $theme.borderColor;
-  border-radius: 2px;
-  box-shadow: 1px 1px 5px $theme.borderColor, -1px -1px 2px $theme.buttonSecondaryGradientColor inset;
-  color: $theme.textColor !important;
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  line-height: 20px;
-  margin: 2px;
-  overflow: hidden;
-  text-decoration: none !important;
-  text-align: center;
-  text-shadow: 0 0 3px $theme.borderColor;
-}
-
-.extension-tool:hover {
-  text-shadow: 0 0 3px $theme.linkColor;
-}
-.extension-tool.flag input {
-  display: none;
-}
-.extension-tool.flag {
-  cursor: pointer;
-}
-.extension-tool.flag i {
-  opacity: 0.3;
-}
-.extension-tool.flag.required {
-  color: $theme.notificationErrorColor !important;
-}
-.extension-tool.flag.required i {
-  opacity: .8;
-}
-.extension-tool.flag:hover {
-  color: $theme.textColor !important;
-}
-.extension-tool.flag:hover i {
-  opacity: .7 !important;
-}
-.extension-tool.flag.required:hover {
-  color: $theme.notificationErrorColor !important;
-}
-.extension-tool.flag.required:hover i {
-  opacity: 1 !important;
-}
-.extension-tool.delete {
-  color: $theme.notificationErrorColor !important;
-}
-.extension-tool.move {
-  cursor: move;
-}
-
-.designer-panel.sections .disabled {
-  opacity: .3;
-}
-.designer-panel.extensions input[type="checkbox"] {
-  display: none;
-}
-
-.section-maquette .section-title {
-  color $theme.titleColor;
-  text-transform: uppercase;
-}
-.section-maquette .section-title * {
-  margin: 0 !important;
-}
-.section-maquette .section-contents {
-  border: 1px dotted $theme.borderColor;
-  background: $theme.backgroundSecondaryColor;
-  padding: .5em 1em;
-}
-.extension-maquette {
-  background-color: $theme.pageContentBackgroundColor;
-  border: 1px solid $theme.borderColor;
-  border-radius: .5em;
-  color: $theme.buttonSecondaryTextColor;
-  margin: 5px;
-  padding: .5em;
-  width: auto;
-}
-.extension-maquette:hover, .sections .section-maquette .section-contents:hover {
-  background-color: $theme.highlightColor;
-}
-.extension-title {
-  margin-right: 64px;
-}
-.extension-title p {
-  margin: 0;
-}</code>
-    </property>
-    <property>
-      <name/>
-    </property>
-    <property>
-      <parse>1</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
   <content>{{velocity output=false}}
 ## =====================================================================
 ## INITIALIZE VARIABLES AND DEFINE MACROS FOR ACCESSING EXTENSIONS
@@ -1135,4 +473,663 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##
 #end
 {{/velocity}}
 </content>
+  <object>
+    <name>PhenoTips.FormDesigner</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>f932f5b4-9eb5-4334-9fdf-d92946a5d6c5</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+  widgets.PatientFormDesigner = Class.create({
+
+    _ENHANCED_TOOL_CSS_CLASS : 'initialized',
+    _NEW_TOOL_SELECTOR: ':not(.initialized)',
+    
+    initialize : function (element) {
+      if (!element) return;
+      this._element = element;
+      this._form = element.up('form');
+      this._globalConfig = element.hasClassName('global');
+      this._enhanceExtensionTools();
+      this._handleSubmit();
+      this._handleNewSection();
+    },
+
+    _enhanceExtensionTools : function () {
+      this._silenceMoveButtons();
+      this._enableRequiredFlags();
+      this._enableAjaxDeletion();
+      this._enableSectionToggle();
+      this._enableSectionReorder();
+      this._enableFieldToggle();
+      if (this._globalConfig) {
+        this._enableFieldDragDrop();
+      } else {
+        this._enableFieldReorder();
+      }
+    },
+
+    _silenceMoveButtons : function () {
+      this._element.select('a.move' + this._NEW_TOOL_SELECTOR).invoke('observe', 'click', function(event) {
+        event.stop();
+      });
+      this._element.select('a.move' + this._NEW_TOOL_SELECTOR).invoke('addClassName', this._ENHANCED_TOOL_CSS_CLASS);
+    },
+
+    _enableRequiredFlags : function () {
+      var _this = this;
+      this._element.select('label.flag' + this._NEW_TOOL_SELECTOR).each(function(item) {
+        item._syncSource = item.down('input.uix-required');
+        if (item._syncSource.checked) {
+           item.addClassName('required');
+        } else {
+           item.removeClassName('required');
+        }
+        item.observe('click', function(event) {
+          var elt = event.findElement('label.flag');
+          if (elt._syncSource.checked) {
+            elt.addClassName('required');
+          } else {
+            elt.removeClassName('required');
+          }
+        });
+        item.addClassName(_this._ENHANCED_TOOL_CSS_CLASS);
+      });
+    },
+
+    _enableAjaxDeletion : function() {
+      var _this = this;
+      this._element.select('.section-maquette a.delete' + this._NEW_TOOL_SELECTOR + ', .extension-maquette a.delete' + this._NEW_TOOL_SELECTOR).invoke('observe', 'click', function(event) {
+        event.stop();
+        var trigger = event.findElement('a');
+        trigger.blur();
+        if (trigger.disabled) {
+          // Do nothing if the button was already clicked and it's waiting for a response from the server.
+          return;
+        }
+        var url = trigger.readAttribute('href') + "?confirm=1&amp;form_token=" + $$('meta[name=form_token]')[0].content + (Prototype.Browser.Opera ? "" : "&amp;ajax=1");
+        new XWiki.widgets.ConfirmedAjaxRequest(
+          /* Ajax request URL */
+          url,
+          /* Ajax request parameters */
+          {
+            onCreate : function() {
+              // Disable the button, to avoid a cascade of clicks from impatient users
+              trigger.disabled = true;
+            },
+            onSuccess : function() {
+              // remove the element
+              // move all extensions (if any) to the "available extenions" panel
+              var container = trigger.up('.section-maquette');
+              var extensionsPanel = _this._element.down('.designer-panel.extensions .section-contents');
+              if (container &amp;&amp; extensionsPanel) {
+                container.select('.extension-maquette').each(function(item) {
+                  extensionsPanel.insert(item);
+                });
+                _this._updateOrder(extensionsPanel, true);
+              }
+              trigger.up('.extension-maquette, .section-maquette').remove();
+            },
+            onFailure : function() {
+              // Better luck next time!
+              trigger.disabled = false;
+            }
+          },
+          /* Interaction parameters */
+          {
+            confirmationText: "$services.localization.render('core.recyclebin.confirm')"
+          }
+        );
+      });
+      this._element.select('.section-maquette a.delete' + this._NEW_TOOL_SELECTOR + ', .extension-maquette a.delete' + this._NEW_TOOL_SELECTOR).invoke('addClassName', this._ENHANCED_TOOL_CSS_CLASS);
+    },
+
+    _enableSectionToggle : function () {
+      this._enableExtensionToggle('.section-maquette', '.section-title input[type="checkbox"]');
+    },
+
+    _enableFieldToggle : function () {
+      this._enableExtensionToggle('.extension-maquette', '.extension-title input[type="checkbox"]');
+    },
+
+   _enableExtensionToggle : function (extensionSelector, toggleSelector) {
+      var _this = this;
+      var syncSectionAppearance = function(extension, enabled) {
+        if (enabled) {
+          extension.removeClassName('disabled');
+        } else {
+          extension.addClassName('disabled');
+        }
+      };
+      var activateSyncSectionAppearance = function(enablingElement) {
+        enablingElement.addClassName(_this._ENHANCED_TOOL_CSS_CLASS);
+        var extension = enablingElement.up(extensionSelector);
+        syncSectionAppearance(extension, enablingElement.checked);
+        enablingElement.observe('click', function(event) {
+          syncSectionAppearance(extension, enablingElement.checked);
+        });
+      };
+      this._element.select(extensionSelector + ' ' + toggleSelector + this._NEW_TOOL_SELECTOR).each(activateSyncSectionAppearance);
+    },
+
+    _enableSectionReorder : function () {
+       var sectionsPanel = this._element.down('.designer-panel.sections');
+       this._updateOrder(sectionsPanel)
+       var _this = this;
+       Sortable.destroy(sectionsPanel);
+       Sortable.create(sectionsPanel, {
+         tag : 'div',
+         only: 'section-maquette',
+         format: /^.*\.([^.]+)$/,
+         handle : 'move',
+         onUpdate : function(container) {
+           _this._updateOrder(container);
+         }
+       });
+    },
+
+    _enableFieldReorder : function () {
+       var _this = this;
+       this._element.select('.designer-panel.sections .section-maquette .section-contents').each (function (section) {
+         _this._updateOrder(section, true);
+         Sortable.create(section, {
+           tag : 'div',
+           only: 'extension-maquette',
+           format: /^.*\.([^.]+)$/,
+           handle : 'move',
+           onUpdate : function(container) {
+             _this._updateOrder(container, true);
+           }
+         });
+       });
+    },
+
+    _enableFieldDragDrop : function () {
+       var _this = this;
+       var sections = this._element.select('.designer-panel .section-maquette .section-contents');
+       sections.each (function (section) {
+         _this._updateOrder(section, true);
+         Sortable.create(section, {
+           tag : 'div',
+           only: 'extension-maquette',
+           format: /^.*\.([^.]+)$/,
+           containment: sections,
+           dropOnEmpty: true,
+           constraint: false,
+           handle : 'move',
+           scroll: window,
+           onUpdate : function(container) {
+             _this._updateOrder(container, true);
+           }
+         });
+       });
+    },
+   
+    _updateOrder : function (container, updateContainer) {
+       var i = 0;
+       container.select ((updateContainer ? '.extension' : '.section') + '-title input.uix-order').each(function(item) {
+         item.value = ++i;
+       });
+       if (updateContainer) {
+         var uixid = container.up('.section-maquette').id;
+         if (uixid) {
+           container.select ('input.uix-pointid').each(function(item) {
+             item.value = uixid;
+           });
+         }
+       }
+    },
+
+    _handleSubmit : function () {
+      var _this = this;
+
+      var submitButton = this._form.down('input[type="submit"]');
+      submitButton._originalValue = submitButton.value;
+
+      var sectionsPanel = this._element.down('.designer-panel.sections');
+
+      this._form.observe ('submit', function(event) {
+        event.stop();
+        // Update the order of the selected sections/fields
+        _this._updateOrder(sectionsPanel);
+        sectionsPanel.select('.section-maquette .section-contents').each (function (section) {
+          _this._updateOrder(section);
+        });
+
+        // -----------------------------
+        // TODO remove me!
+        // -----------------------------
+        _this._form.submit();
+        return;
+        // -----------------------------
+
+        // ajax submit the form
+        var formData = new Hash(_this._form.serialize(true));
+        _this._form.disable();
+        submitButton.value = 'Saving configuration...';
+        submitButton.addClassName('loading');
+        new Ajax.Request(_this._form.action, {
+            method : 'post',
+            parameters : formData,
+            onSuccess : function () {
+              submitButton.value = 'Configuration saved';
+              submitButton.removeClassName('loading');
+              submitButton.addClassName('success');
+              new PeriodicalExecuter(function(pe) {
+                submitButton.value = submitButton._originalValue;
+                submitButton.removeClassName('success');
+                pe.stop();
+              }, 3);
+            },
+            onFailure : function (response) {
+              var failureReason = response.statusText;
+              if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+                failureReason = 'Server not responding';
+              }
+              submitButton.value = submitButton._originalValue;
+              submitButton.removeClassName('loading');
+              new XWiki.widgets.Notification("$services.localization.render('core.viewers.comments.add.failed')" + failureReason, "error");
+            },
+            on0 : function (response) {
+              response.request.options.onFailure(response);
+            },
+            onComplete : function () {
+              _this._form.enable();
+            }
+        });
+      });
+    },
+
+    _handleNewSection : function () {
+      var _this = this;
+      var newSectionForm = $('create-section-form');
+      var newSectionInputs = $('new-section')
+      if (!newSectionInputs) {
+        return;
+      }
+      var newSectionButton = newSectionInputs.down('input[type="button"]');
+      if (!newSectionForm || !newSectionInputs || !newSectionButton) {return;}
+      // hide that form and duplicate the inputs under the section list
+       newSectionButton._originalValue =  newSectionButton.value;
+      newSectionForm.hide();
+      newSectionButton.observe('click', function() {
+        newSectionForm.select('input[type="text"]').each(function(input) {
+          input.value = newSectionInputs.down('input[type="text"][name="' + input.name + '"]').value;
+        });
+        // AJAX submission
+        var formData = new Hash(newSectionForm.serialize(true));
+        newSectionForm.disable();
+        newSectionButton.value = 'Creating section...';
+        newSectionButton.addClassName('loading');
+        new Ajax.Request(newSectionForm.action, {
+            method : 'post',
+            parameters : formData,
+            onSuccess : function (response) {
+              newSectionButton.value = 'Section created';
+              newSectionButton.removeClassName('loading');
+              newSectionButton.addClassName('success');
+              newSectionInputs.insert({before : response.responseText});
+              new PeriodicalExecuter(function(pe) {
+                newSectionButton.value = newSectionButton._originalValue;
+                newSectionButton.removeClassName('success');
+                pe.stop();
+              }, 3);
+              _this._enhanceExtensionTools();
+            },
+            onFailure : function (response) {
+              var failureReason = response.statusText;
+              if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+                failureReason = 'Server not responding';
+              }
+              newSectionButton.value = newSectionButton._originalValue;
+              newSectionButton.removeClassName('loading');
+              new XWiki.widgets.Notification("$services.localization.render('core.viewers.comments.add.failed')" + failureReason, "error");
+            },
+            on0 : function (response) {
+              response.request.options.onFailure(response);
+            },
+            onComplete : function () {
+              newSectionForm.enable();
+            }
+        });
+      });
+    }
+  });
+  return PhenoTips;
+}(PhenoTips || {}));
+
+document.observe("xwiki:dom:loaded", function(){
+  window.wiz = new PhenoTips.widgets.PatientFormDesigner($('patient-form-designer'));
+});</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.FormDesigner</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>8d49282c-87bb-4a60-a5ea-83a25d3c87fc</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template("colorThemeInit.vm")
+
+.designer-panel {
+  width: 45%;
+  float: left;
+  position: relative;
+}
+.designer-panel.sections {
+}
+.designer-panel.hint {
+  width: 10%;
+}
+.designer-panel.extensions {
+}
+.designer-panel.hint p {
+  font-size: 0.9em;
+  font-style: italic;
+  opacity: 0.5;
+  padding: 80px 5px;
+  text-align: center;
+}
+.designer-panel.hint:before, .designer-panel.hint:after {
+  color: $theme.linkColor;
+  content: "";
+  display: block;
+  position: absolute;
+  top: 2.5em;
+  z-index: 10;
+}
+
+.designer-panel.hint:before {
+  border-top: 32px solid transparent;
+  border-bottom: 32px solid transparent;
+  border-right: 32px solid;
+  margin-top: -16px;
+  margin-left: -32px;
+  left: 50%;
+}
+
+.designer-panel.hint:after {
+  border: 16px solid;
+  margin-left: -16px;
+  left: 50%;
+}
+.designer-panel .new-section {
+  margin: 10px 10px 25px;
+}
+.designer-panel .new-section .section-title{
+  color $theme.titleColor;
+  text-transform: uppercase;
+  padding-left: 16px;
+  background: transparent url("$xwiki.getSkinFile('icons/silk/bullet_add.png')") left center no-repeat;
+}
+.designer-panel .section-maquette {
+  margin: 10px 10px 25px;
+}
+.designer-panel .section-maquette .section-contents {
+  min-height: 20px;
+}
+.extension-tools {
+  float: right;
+  margin-top: -25px;
+}
+.extension-tool {
+  background-color: $theme.buttonSecondaryBackgroundColor;
+  border: 1px solid $theme.borderColor;
+  border-radius: 2px;
+  box-shadow: 1px 1px 5px $theme.borderColor, -1px -1px 2px $theme.buttonSecondaryGradientColor inset;
+  color: $theme.textColor !important;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  margin: 2px;
+  overflow: hidden;
+  text-decoration: none !important;
+  text-align: center;
+  text-shadow: 0 0 3px $theme.borderColor;
+}
+
+.extension-tool:hover {
+  text-shadow: 0 0 3px $theme.linkColor;
+}
+.extension-tool.flag input {
+  display: none;
+}
+.extension-tool.flag {
+  cursor: pointer;
+}
+.extension-tool.flag i {
+  opacity: 0.3;
+}
+.extension-tool.flag.required {
+  color: $theme.notificationErrorColor !important;
+}
+.extension-tool.flag.required i {
+  opacity: .8;
+}
+.extension-tool.flag:hover {
+  color: $theme.textColor !important;
+}
+.extension-tool.flag:hover i {
+  opacity: .7 !important;
+}
+.extension-tool.flag.required:hover {
+  color: $theme.notificationErrorColor !important;
+}
+.extension-tool.flag.required:hover i {
+  opacity: 1 !important;
+}
+.extension-tool.delete {
+  color: $theme.notificationErrorColor !important;
+}
+.extension-tool.move {
+  cursor: move;
+}
+
+.designer-panel.sections .disabled {
+  opacity: .3;
+}
+.designer-panel.extensions input[type="checkbox"] {
+  display: none;
+}
+
+.section-maquette .section-title {
+  color $theme.titleColor;
+  text-transform: uppercase;
+}
+.section-maquette .section-title * {
+  margin: 0 !important;
+}
+.section-maquette .section-contents {
+  border: 1px dotted $theme.borderColor;
+  background: $theme.backgroundSecondaryColor;
+  padding: .5em 1em;
+}
+.extension-maquette {
+  background-color: $theme.pageContentBackgroundColor;
+  border: 1px solid $theme.borderColor;
+  border-radius: .5em;
+  color: $theme.buttonSecondaryTextColor;
+  margin: 5px;
+  padding: .5em;
+  width: auto;
+}
+.extension-maquette:hover, .sections .section-maquette .section-contents:hover {
+  background-color: $theme.highlightColor;
+}
+.extension-title {
+  margin-right: 64px;
+}
+.extension-title p {
+  margin: 0;
+}</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
 </xwikidoc>

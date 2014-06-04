@@ -27,12 +27,12 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1396049910000</creationDate>
+  <creationDate>1401822127000</creationDate>
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1396298012000</date>
-  <contentUpdateDate>1396298012000</contentUpdateDate>
+  <date>1401822127000</date>
+  <contentUpdateDate>1401822127000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -79,7 +79,6 @@
     </name>
     <token>
       <algorithm/>
-      <customDisplay/>
       <customDisplay>{{velocity}}
 #if ($type == 'edit')
 {{html clean="false"}}&lt;input type="password" name="${prefix}${name}" value="#if ("$!{value}" != '')********#end" /&gt;{{/html}}

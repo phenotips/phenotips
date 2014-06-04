@@ -20,29 +20,95 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>HPOBranchDisplayer</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.PatientSheet</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822214000</creationDate>
+  <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1361987147000</creationDate>
-  <date>1361987841000</date>
-  <contentUpdateDate>1361987813000</contentUpdateDate>
+  <date>1401822214000</date>
+  <contentUpdateDate>1401822214000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content>{{velocity}}
+$xwiki.ssx.use('PhenoTips.HPOBranchDisplayer')##
+$xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
+#if ($xcontext.action == 'edit')
+#set ($firstLevel = true)
+##
+##
+#macro (_displayItem $itemId $itemName $itemData)
+  &lt;input type="radio" id="${prefix}${name}_${itemId}" #if("$!{value}" == $itemId)checked="checked"#end name="${prefix}${name}" value="${itemId}" title="${itemName}"/&gt; #if("$!{itemData}" != '')&lt;span class="entry-tool info-tool"&gt;i&lt;/span&gt; #end&lt;label for="${prefix}${name}_${itemId}" title="$!{itemName}$!{util.newline}$!{itemData.def}"&gt;${itemName}&lt;/label&gt;
+#if("$!{itemData}" != '')
+  &lt;div class="tooltip invisible"&gt;
+    &lt;span class="hide-tool" title="Hide"&gt;×&lt;/span&gt;
+    &lt;span class="info"&gt;&lt;span class="key"&gt;[${itemId}]&lt;/span&gt; &lt;span class="value"&gt;$itemName&lt;/span&gt;&lt;/span&gt;
+    &lt;dl&gt;
+    #if ("$!{itemData.def}" != '')
+      &lt;dt class=""&gt;&lt;/dt&gt;
+      &lt;dd&gt;&lt;div&gt;$itemData.def&lt;/div&gt;&lt;/dd&gt;
+    #end
+    #if ($itemData.synonym.empty == false)
+      &lt;dt class="also-known-as"&gt;Also known as&lt;/dt&gt;&lt;dd&gt;
+      #foreach ($s in $itemData.synonym)
+        &lt;div&gt;$s&lt;/div&gt;
+      #end&lt;/dd&gt;
+    #end
+    #if ($itemData.is_a.empty == false)
+      &lt;dt class="is-a-type-of"&gt;Is a type of&lt;/dt&gt;&lt;dd&gt;
+      #foreach ($p in $itemData.is_a)
+        &lt;div&gt;$p.replaceAll("^([A-Z]+:[0-9]+)\s+!\s+", '')&lt;/div&gt;
+      #end&lt;/dd&gt;
+    #end
+    &lt;/dl&gt;
+  &lt;/div&gt;
+#end
+#end
+##
+##
+#macro (_displayChildren $rootId)
+  #set($childrenList = $services.ontologies.hpo.search({'is_a': $rootId}))
+  #if ($childrenList.size() &gt; 0)
+  &lt;ul&gt;
+  #if ($firstLevel)&lt;li class="hpo-unknown"&gt;#_displayItem('', 'Unknown')&lt;/li&gt;#set($firstLevel = false)#end
+  #set($macro.childrenMap = {})
+  #foreach($item in $childrenList)
+    #set ($discard = $macro.childrenMap.put($item.id, $item))
+  #end
+  #foreach($orderedItemId in $order)
+    #set ($foreach.item = $macro.childrenMap.get($orderedItemId))
+    #if ("$!{foreach.item}" != '' &amp;&amp; "$!foreach.item.id" != '')&lt;li class="term-entry"&gt;#_displayItem("${foreach.item.id}", "${foreach.item.name}", $foreach.item)#_displayChildren($foreach.item.id)&lt;/li&gt;#end
+  #end
+  &lt;/ul&gt;
+  #end
+#end
+
+#if ($startWith &amp;&amp; $order)
+{{html wiki=false clean=false}}
+&lt;div class="hpo-branch"&gt;
+#_displayChildren($startWith)
+&lt;/div&gt;
+{{/html}}
+#end
+#elseif ("$!{value}" != '')
+  $services.ontologies.resolveTerm($value).name
+#end
+{{/velocity}}
+</content>
   <object>
+    <name>PhenoTips.HPOBranchDisplayer</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>54f5672b-51e3-4a59-b4c4-4d38d4dd4c5c</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -114,10 +180,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.HPOBranchDisplayer</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>54f5672b-51e3-4a59-b4c4-4d38d4dd4c5c</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -146,6 +208,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.HPOBranchDisplayer</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>5b26d0a0-c251-441c-8410-2dc39caa7240</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -217,10 +283,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.HPOBranchDisplayer</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>5b26d0a0-c251-441c-8410-2dc39caa7240</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -259,69 +321,4 @@
       <use>onDemand</use>
     </property>
   </object>
-  <content>{{velocity}}
-$xwiki.ssx.use('PhenoTips.HPOBranchDisplayer')##
-$xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
-#if ($xcontext.action == 'edit')
-#set ($firstLevel = true)
-##
-##
-#macro (_displayItem $itemId $itemName $itemData)
-  &lt;input type="radio" id="${prefix}${name}_${itemId}" #if("$!{value}" == $itemId)checked="checked"#end name="${prefix}${name}" value="${itemId}" title="${itemName}"/&gt; #if("$!{itemData}" != '')&lt;span class="entry-tool info-tool"&gt;i&lt;/span&gt; #end&lt;label for="${prefix}${name}_${itemId}" title="$!{itemName}$!{util.newline}$!{itemData.def}"&gt;${itemName}&lt;/label&gt;
-#if("$!{itemData}" != '')
-  &lt;div class="tooltip invisible"&gt;
-    &lt;span class="hide-tool" title="Hide"&gt;×&lt;/span&gt;
-    &lt;span class="info"&gt;&lt;span class="key"&gt;[${itemId}]&lt;/span&gt; &lt;span class="value"&gt;$itemName&lt;/span&gt;&lt;/span&gt;
-    &lt;dl&gt;
-    #if ("$!{itemData.def}" != '')
-      &lt;dt class=""&gt;&lt;/dt&gt;
-      &lt;dd&gt;&lt;div&gt;$itemData.def&lt;/div&gt;&lt;/dd&gt;
-    #end
-    #if ($itemData.synonym.empty == false)
-      &lt;dt class="also-known-as"&gt;Also known as&lt;/dt&gt;&lt;dd&gt;
-      #foreach ($s in $itemData.synonym)
-        &lt;div&gt;$s&lt;/div&gt;
-      #end&lt;/dd&gt;
-    #end
-    #if ($itemData.is_a.empty == false)
-      &lt;dt class="is-a-type-of"&gt;Is a type of&lt;/dt&gt;&lt;dd&gt;
-      #foreach ($p in $itemData.is_a)
-        &lt;div&gt;$p.replaceAll("^([A-Z]+:[0-9]+)\s+!\s+", '')&lt;/div&gt;
-      #end&lt;/dd&gt;
-    #end
-    &lt;/dl&gt;
-  &lt;/div&gt;
-#end
-#end
-##
-##
-#macro (_displayChildren $rootId)
-  #set($childrenList = $services.ontologies.hpo.search({'is_a': $rootId}))
-  #if ($childrenList.size() &gt; 0)
-  &lt;ul&gt;
-  #if ($firstLevel)&lt;li class="hpo-unknown"&gt;#_displayItem('', 'Unknown')&lt;/li&gt;#set($firstLevel = false)#end
-  #set($macro.childrenMap = {})
-  #foreach($item in $childrenList)
-    #set ($discard = $macro.childrenMap.put($item.id, $item))
-  #end
-  #foreach($orderedItemId in $order)
-    #set ($foreach.item = $macro.childrenMap.get($orderedItemId))
-    #if ("$!{foreach.item}" != '' &amp;&amp; "$!foreach.item.id" != '')&lt;li class="term-entry"&gt;#_displayItem("${foreach.item.id}", "${foreach.item.name}", $foreach.item)#_displayChildren($foreach.item.id)&lt;/li&gt;#end
-  #end
-  &lt;/ul&gt;
-  #end
-#end
-
-#if ($startWith &amp;&amp; $order)
-{{html wiki=false clean=false}}
-&lt;div class="hpo-branch"&gt;
-#_displayChildren($startWith)
-&lt;/div&gt;
-{{/html}}
-#end
-#elseif ("$!{value}" != '')
-  $services.ontologies.resolveTerm($value).name
-#end
-{{/velocity}}
-</content>
 </xwikidoc>

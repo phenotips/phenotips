@@ -20,29 +20,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>XWiki</web>
   <name>Admin</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>Main.UserDirectory</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822150000</creationDate>
+  <parent>Main.UserDirectory</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1384800523000</creationDate>
-  <date>1384810368000</date>
-  <contentUpdateDate>1384809931000</contentUpdateDate>
+  <date>1401822150000</date>
+  <contentUpdateDate>1401822150000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
   <hidden>false</hidden>
+  <content/>
   <object>
+    <name>XWiki.Admin</name>
+    <number>0</number>
+    <className>XWiki.ConfigurationClass</className>
+    <guid>eee70e7f-fd35-4603-b4f5-b4b001926edf</guid>
     <class>
       <name>XWiki.ConfigurationClass</name>
       <customClass/>
@@ -79,10 +81,6 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </value>
     </class>
-    <name>XWiki.Admin</name>
-    <number>0</number>
-    <className>XWiki.ConfigurationClass</className>
-    <guid>eee70e7f-fd35-4603-b4f5-b4b001926edf</guid>
     <property>
       <property>phenotips_mapping</property>
     </property>
@@ -91,6 +89,10 @@
     </property>
   </object>
   <object>
+    <name>XWiki.Admin</name>
+    <number>0</number>
+    <className>XWiki.WatchListClass</className>
+    <guid>80df91dd-cd7d-4542-aae0-869c692a93ed</guid>
     <class>
       <name>XWiki.WatchListClass</name>
       <customClass/>
@@ -173,10 +175,6 @@
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </wikis>
     </class>
-    <name>XWiki.Admin</name>
-    <number>0</number>
-    <className>XWiki.WatchListClass</className>
-    <guid>80df91dd-cd7d-4542-aae0-869c692a93ed</guid>
     <property>
       <automaticwatch>NONE</automaticwatch>
     </property>
@@ -185,6 +183,10 @@
     </property>
   </object>
   <object>
+    <name>XWiki.Admin</name>
+    <number>0</number>
+    <className>XWiki.XWikiRights</className>
+    <guid>82b92228-ee18-4bdc-8ce5-9b05f131c215</guid>
     <class>
       <name>XWiki.XWikiRights</name>
       <customClass/>
@@ -250,10 +252,6 @@
         <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
       </users>
     </class>
-    <name>XWiki.Admin</name>
-    <number>0</number>
-    <className>XWiki.XWikiRights</className>
-    <guid>82b92228-ee18-4bdc-8ce5-9b05f131c215</guid>
     <property>
       <allow>1</allow>
     </property>
@@ -268,6 +266,10 @@
     </property>
   </object>
   <object>
+    <name>XWiki.Admin</name>
+    <number>0</number>
+    <className>XWiki.XWikiUsers</className>
+    <guid>2b725080-26f0-4e3c-bf93-59c2d316c47c</guid>
     <class>
       <name>XWiki.XWikiUsers</name>
       <customClass/>
@@ -522,10 +524,6 @@
         <classType>com.xpn.xwiki.objects.classes.PasswordClass</classType>
       </validkey>
     </class>
-    <name>XWiki.Admin</name>
-    <number>0</number>
-    <className>XWiki.XWikiUsers</className>
-    <guid>2b725080-26f0-4e3c-bf93-59c2d316c47c</guid>
     <property>
       <accessibility/>
     </property>
@@ -590,5 +588,4 @@
       <usertype>Advanced</usertype>
     </property>
   </object>
-  <content/>
 </xwikidoc>

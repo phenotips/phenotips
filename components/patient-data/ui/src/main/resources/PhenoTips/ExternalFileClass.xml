@@ -20,28 +20,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>ExternalFileClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822126000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1352901729000</creationDate>
-  <date>1354233979000</date>
-  <contentUpdateDate>1354233979000</contentUpdateDate>
+  <date>1401822126000</date>
+  <contentUpdateDate>1401822126000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content/>
   <class>
     <name>PhenoTips.ExternalFileClass</name>
     <customClass/>
@@ -88,5 +86,4 @@
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </file>
   </class>
-  <content/>
 </xwikidoc>

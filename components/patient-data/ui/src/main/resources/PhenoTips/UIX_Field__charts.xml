@@ -20,29 +20,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>UIX_Field__charts</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.PatientSheet</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822214000</creationDate>
+  <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1377394123000</creationDate>
-  <date>1377393104000</date>
-  <contentUpdateDate>1377281552000</contentUpdateDate>
+  <date>1401822214000</date>
+  <contentUpdateDate>1401822214000</contentUpdateDate>
   <version>1.1</version>
   <title>Growth charts</title>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content/>
   <object>
+    <name>PhenoTips.UIX_Field__charts</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>92c1e7dd-195e-460f-abf2-1b7b175b7695</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -107,10 +109,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.UIX_Field__charts</name>
-    <number>0</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>92c1e7dd-195e-460f-abf2-1b7b175b7695</guid>
     <property>
       <content>{{include document="PhenoTips.ChartServiceMacros" /}}
 
@@ -147,5 +145,4 @@ fields=</parameters>
       <scope>wiki</scope>
     </property>
   </object>
-  <content/>
 </xwikidoc>

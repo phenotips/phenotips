@@ -20,28 +20,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>PhenotypeMappingClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.PatientClass</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822127000</creationDate>
+  <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1384974050000</creationDate>
-  <date>1384973029000</date>
-  <contentUpdateDate>1384972970000</contentUpdateDate>
+  <date>1401822127000</date>
+  <contentUpdateDate>1401822127000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content/>
   <class>
     <name>PhenoTips.PhenotypeMappingClass</name>
     <customClass/>
@@ -63,6 +61,10 @@
     </description>
   </class>
   <object>
+    <name>PhenoTips.PhenotypeMappingClass</name>
+    <number>0</number>
+    <className>XWiki.ClassSheetBinding</className>
+    <guid>23873546-c660-4b27-a4fe-04ab2d8bbf11</guid>
     <class>
       <name>XWiki.ClassSheetBinding</name>
       <customClass/>
@@ -86,15 +88,15 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </sheet>
     </class>
-    <name>PhenoTips.PhenotypeMappingClass</name>
-    <number>0</number>
-    <className>XWiki.ClassSheetBinding</className>
-    <guid>23873546-c660-4b27-a4fe-04ab2d8bbf11</guid>
     <property>
       <sheet>PhenoTips.PhenotypeMappingSheet</sheet>
     </property>
   </object>
   <object>
+    <name>PhenoTips.PhenotypeMappingClass</name>
+    <number>0</number>
+    <className>XWiki.DocumentSheetBinding</className>
+    <guid>193aa8c4-2ba2-4c7c-bf07-ff9c6318f125</guid>
     <class>
       <name>XWiki.DocumentSheetBinding</name>
       <customClass/>
@@ -118,13 +120,8 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </sheet>
     </class>
-    <name>PhenoTips.PhenotypeMappingClass</name>
-    <number>0</number>
-    <className>XWiki.DocumentSheetBinding</className>
-    <guid>193aa8c4-2ba2-4c7c-bf07-ff9c6318f125</guid>
     <property>
       <sheet>XWiki.ClassSheet</sheet>
     </property>
   </object>
-  <content/>
 </xwikidoc>

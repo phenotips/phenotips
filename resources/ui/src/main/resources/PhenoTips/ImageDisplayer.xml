@@ -20,29 +20,202 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>ImageDisplayer</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822197000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1323918579000</creationDate>
-  <date>1324435385000</date>
-  <contentUpdateDate>1324435385000</contentUpdateDate>
+  <date>1401822197000</date>
+  <contentUpdateDate>1401822197000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content>{{velocity output=false}}
+#set ($displayerName = 'PhenoTips.ImageDisplayer')
+#set ($displayer = $xwiki.getDocument($displayerName))
+#set($options = {
+  'fieldName' : "",
+  'filter' : ['png', 'jpg', 'gif'],
+  'manage' : false,
+  'inputType' : 'checkbox',
+  'isImage' : true
+})
+
+#set($options.mode = "$!{xcontext.action}")
+
+#if ("$!{name}" != '' &amp;&amp; "$!{prefix}" != '' &amp;&amp; "$!{object}" != '')
+  ## In displayer mode
+  #set ($targetDoc = $doc)
+  #set ($property = "$!{name}")
+  #set ($propValue = $value)
+  #set ($fieldName = "$!{prefix}$!{name}")
+#elseif ("$!{request.doc}" != '' &amp;&amp; "$!{request.classname}" != '' &amp;&amp; "$!{request.object}" != '' &amp;&amp; "$!{request.property}" != '')
+  ## In external mode
+  #set ($targetDoc = $xwiki.getDocument("$!{request.doc}"))
+  #set ($property = "$!{request.property}")
+  #set ($object = $targetDoc.getObject("$!{request.classname}", $mathtool.toInteger("$!{request.object}")))
+  #set ($propValue = $object.getProperty("$!{request.property}").value)
+  #if ("$!{propValue.size()}" == '')
+    #set ($propValue = [])
+  #end
+  #set ($fieldName = "$!{request.dprefix}$!{request.classname}_$!{request.object}_$!{request.property}")
+  #if ("$!{request.mode}" != '')
+    #set($options.mode = "$!{request.mode}")
+  #else
+    #set($options.mode = "$!{xcontext.action}")
+  #end
+  #if ("$!{request.manage}" != '')
+    #set($options.manage = true)
+  #end
+#end
+#if ($object.getxWikiClass().get($property).getProperty('multiSelect').value != 1)
+  #set($options.inputType = 'radio')
+  #if ("$!{value}" == '')
+    #set ($propValue = [])
+  #else
+    #set ($propValue = [$value])
+  #end
+#end
+## TODO: This is a workaround. Find a better way to specify accepted file formats.
+#set($options.html5Filter = "$!{object.getxWikiClass().get($property).getProperty('validationRegExp').value}")
+#set($formats = "$!{object.getxWikiClass().get($property).getProperty('validationMessage').value}")
+#if ($formats != '')
+  #set ($options.filter = $formats.split('\\s*[,| ]\\s*'))
+  #if (!$options.html5Filter.contains('image'))
+    #set ($options.isImage = false)
+  #end
+#end
+#set ($qString = "doc=$!escapetool.url($!{targetDoc.fullName})&amp;property=$!{property}&amp;classname=$!escapetool.url($!{object.xWikiClass.name})&amp;object=${object.number}")
+
+#if ($options.filter &amp;&amp; $options.filter.size() &gt; 0)
+  #foreach($item in $options.filter)
+    #set($options.rawfilter = "$!{options.rawfilter}, ${item}")
+  #end
+  #if ($options.rawfilter)
+    #set($options.rawfilter = $options.rawfilter.substring(2))
+  #end
+#end
+
+#macro (__getExtension $filename)$!{filename.substring($mathtool.add($filename.lastIndexOf('.'), 1)).toLowerCase()}#end
+
+#macro (__displaySelectableAttachment $attachment $targetDocument $selection)
+  {{html wiki=true clean=false}}&lt;div class="attachment-item #if($options.isImage) image #else #__getExtension(${attachment.filename})#{end}#if($selection.contains(${attachment.filename})) selected#{end}"&gt;
+  &lt;label for='${fieldName}_${attachment.filename}' title='${attachment.filename}'&gt;
+  {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='${options.inputType}' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
+  #if ($options.manage)
+  &lt;a class='action delete' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="Delete"&gt;Delete&lt;/a&gt;##
+  #end
+  #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||title="${attachment.filename}"]])))#else##
+ &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="Open $!{attachment.filename}"&gt; [open]&lt;/a&gt;#end##
+  &lt;/div&gt;{{/html}}##
+#end
+
+#macro (__displaySelectableAttachmentList $targetDocument $selection)
+  (% class="attachment-list" %)(((
+  #set ($sortedAttachments = $sorttool.sort($targetDocument.getAttachmentList(), 'date:desc') )
+  #if ($sortedAttachments.size() == 0)(% class="hint" %)None available(%%)#end
+  #foreach ($attachment in $sortedAttachments)
+    #set ($extension = "#__getExtension($attachment.getFilename())")
+    #if ($options.filter.size() == 0 || $options.filter.contains($extension))
+      #__displaySelectableAttachment($attachment $targetDocument $selection)
+    #end
+  #end
+  {{html wiki=false clean=false}}&lt;input type='hidden' name='${fieldName}' value=''/&gt;{{/html}}##
+  )))(% class="clear" %)((()))###
+#end
+
+#macro (__displayLastAttachmentSelected $targetDocument)
+  #set ($sortedAttachments = $sorttool.sort($targetDocument.getAttachmentList(), 'date:desc') )
+  #if ($sortedAttachments.size() &gt; 0)
+    #set ($attachment = $sortedAttachments.get(0))
+    #set ($extension = "#__getExtension($attachment.getFilename())")
+    #if ($options.filter.size() == 0 || $options.filter.contains($extension))
+      #__displaySelectableAttachment($attachment $targetDocument [${attachment.filename}])
+    #end
+  #end
+#end
+
+#macro (__displayUploadForm $targetDocument)
+  {{html wiki=false clean=false}}
+  &lt;form action="$targetDocument.getURL('upload')" enctype="multipart/form-data" method="post" id="${fieldName}-upload2" class="upload-attachment xform"&gt;
+  &lt;div&gt;
+    #if (${options.rawfilter} != '')
+      &lt;span class="xHint"&gt;Accepted file formats: ${options.rawfilter}&lt;/span&gt;
+    #end
+    &lt;input type="file" name="filepath" id="attachfile2" class="attachment" size="30" title="$!{escapetool.xml($options.rawfilter)}"/&gt;
+    &lt;input type="hidden" name="filter" value="$!{escapetool.xml($options.html5Filter)}" /&gt;
+    &lt;input type="hidden" name="xredirect" value="$!{escapetool.xml($doc.getURL($xcontext.action, $request.queryString))}" /&gt;
+    &lt;input type="hidden" name="ajaxxredirect" value="$!{escapetool.xml($displayer.getURL('get', "$!{qString}&amp;xaction=lastatt" ))}" /&gt;
+    &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+    &lt;input type="submit" name="action_upload" class="button" value='Upload and select'  title='Upload and select'/&gt;
+  &lt;/div&gt;
+  &lt;/form&gt;
+  {{/html}}
+#end
+
+#macro (__displayGallery $targetDocument  $selection)
+  #set ($content = '')
+  #foreach ($name in  $selection)
+    #if ("$!{targetDocument.getAttachment(${name})}" != '')
+      #if ($options.isImage)
+        #set ($content = "$!{content}[[image:${targetDocument.fullName}@${name}||style=""max-width:100%""]]${util.newline}")
+      #else
+        #set ($content = "$!{content}(% class='attachment-link #__getExtension($name)' %)attach:${targetDocument.fullName}@${name} (%%)${util.newline}")
+      #end
+    #end
+  #end
+  #if ($content != '')
+#if ($options.isImage &amp;&amp; $options.inputType == 'checkbox')
+{{gallery}}
+$content
+{{/gallery}}
+
+#else
+$content
+#end
+  #end
+#end
+
+{{/velocity}}
+
+{{velocity}}
+#if ("$!{request.xaction}" == 'lastatt')
+#__displayLastAttachmentSelected($targetDoc)
+#else
+  $xwiki.ssx.use($displayerName, {'colorTheme' : "$xwiki.getSpacePreferenceFor('colorTheme', ${targetDoc.space})"})##
+  $xwiki.jsx.use($displayerName)##
+  ## check if the property exists and its value has the right type (is a list)
+  #if ("$!{propValue.size()}" != '')
+    #if ($options.mode == 'edit')
+      (% id=$!{fieldName}_container %)(((
+      #if ($options.manage)
+        #__displayUploadForm($targetDoc)
+      #else
+        #set ($actionURL = $displayer.getURL('view', "$!{qString}&amp;mode=edit&amp;manage=true"))
+        {{html wiki=false clean=false}}&lt;div class="actions"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;span class="buttonwrapper"&gt;&lt;a class="add-data-button button manage-images-button" href="${actionURL}"&gt;Upload and manage&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;{{/html}}
+      #end
+      #__displaySelectableAttachmentList($targetDoc $propValue)
+      )))
+    #else## not edit
+      #__displayGallery($targetDoc $propValue)
+    #end## context action check
+  #end## target object &amp; property exist and are valid
+#end## not a custom action
+{{/velocity}}</content>
   <object>
+    <name>PhenoTips.ImageDisplayer</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>92c4c790-a961-4909-a1e5-ec02c0cf2e85</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -114,10 +287,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.ImageDisplayer</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>92c4c790-a961-4909-a1e5-ec02c0cf2e85</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -419,6 +588,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.ImageDisplayer</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>71632e63-756b-45e6-94bc-6b81867954b3</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -490,10 +663,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.ImageDisplayer</name>
-    <number>1</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>71632e63-756b-45e6-94bc-6b81867954b3</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -835,6 +1004,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.ImageDisplayer</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>138649f5-23c9-4416-884f-37b72d3b2309</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -906,10 +1079,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.ImageDisplayer</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>138649f5-23c9-4416-884f-37b72d3b2309</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -1032,6 +1201,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.ImageDisplayer</name>
+    <number>1</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>a716b014-bd8a-43c3-b18c-38f84a651e81</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -1103,10 +1276,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.ImageDisplayer</name>
-    <number>1</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>a716b014-bd8a-43c3-b18c-38f84a651e81</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -1178,176 +1347,4 @@
       <use>onDemand</use>
     </property>
   </object>
-  <content>{{velocity output=false}}
-#set ($displayerName = 'PhenoTips.ImageDisplayer')
-#set ($displayer = $xwiki.getDocument($displayerName))
-#set($options = {
-  'fieldName' : "",
-  'filter' : ['png', 'jpg', 'gif'],
-  'manage' : false,
-  'inputType' : 'checkbox',
-  'isImage' : true
-})
-
-#set($options.mode = "$!{xcontext.action}")
-
-#if ("$!{name}" != '' &amp;&amp; "$!{prefix}" != '' &amp;&amp; "$!{object}" != '')
-  ## In displayer mode
-  #set ($targetDoc = $doc)
-  #set ($property = "$!{name}")
-  #set ($propValue = $value)
-  #set ($fieldName = "$!{prefix}$!{name}")
-#elseif ("$!{request.doc}" != '' &amp;&amp; "$!{request.classname}" != '' &amp;&amp; "$!{request.object}" != '' &amp;&amp; "$!{request.property}" != '')
-  ## In external mode
-  #set ($targetDoc = $xwiki.getDocument("$!{request.doc}"))
-  #set ($property = "$!{request.property}")
-  #set ($object = $targetDoc.getObject("$!{request.classname}", $mathtool.toInteger("$!{request.object}")))
-  #set ($propValue = $object.getProperty("$!{request.property}").value)
-  #if ("$!{propValue.size()}" == '')
-    #set ($propValue = [])
-  #end
-  #set ($fieldName = "$!{request.dprefix}$!{request.classname}_$!{request.object}_$!{request.property}")
-  #if ("$!{request.mode}" != '')
-    #set($options.mode = "$!{request.mode}")
-  #else
-    #set($options.mode = "$!{xcontext.action}")
-  #end
-  #if ("$!{request.manage}" != '')
-    #set($options.manage = true)
-  #end
-#end
-#if ($object.getxWikiClass().get($property).getProperty('multiSelect').value != 1)
-  #set($options.inputType = 'radio')
-  #if ("$!{value}" == '')
-    #set ($propValue = [])
-  #else
-    #set ($propValue = [$value])
-  #end
-#end
-## TODO: This is a workaround. Find a better way to specify accepted file formats.
-#set($options.html5Filter = "$!{object.getxWikiClass().get($property).getProperty('validationRegExp').value}")
-#set($formats = "$!{object.getxWikiClass().get($property).getProperty('validationMessage').value}")
-#if ($formats != '')
-  #set ($options.filter = $formats.split('\\s*[,| ]\\s*'))
-  #if (!$options.html5Filter.contains('image'))
-    #set ($options.isImage = false)
-  #end
-#end
-#set ($qString = "doc=$!escapetool.url($!{targetDoc.fullName})&amp;property=$!{property}&amp;classname=$!escapetool.url($!{object.xWikiClass.name})&amp;object=${object.number}")
-
-#if ($options.filter &amp;&amp; $options.filter.size() &gt; 0)
-  #foreach($item in $options.filter)
-    #set($options.rawfilter = "$!{options.rawfilter}, ${item}")
-  #end
-  #if ($options.rawfilter)
-    #set($options.rawfilter = $options.rawfilter.substring(2))
-  #end
-#end
-
-#macro (__getExtension $filename)$!{filename.substring($mathtool.add($filename.lastIndexOf('.'), 1)).toLowerCase()}#end
-
-#macro (__displaySelectableAttachment $attachment $targetDocument $selection)
-  {{html wiki=true clean=false}}&lt;div class="attachment-item #if($options.isImage) image #else #__getExtension(${attachment.filename})#{end}#if($selection.contains(${attachment.filename})) selected#{end}"&gt;
-  &lt;label for='${fieldName}_${attachment.filename}' title='${attachment.filename}'&gt;
-  {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='${options.inputType}' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
-  #if ($options.manage)
-  &lt;a class='action delete' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="Delete"&gt;Delete&lt;/a&gt;##
-  #end
-  #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||title="${attachment.filename}"]])))#else##
- &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="Open $!{attachment.filename}"&gt; [open]&lt;/a&gt;#end##
-  &lt;/div&gt;{{/html}}##
-#end
-
-#macro (__displaySelectableAttachmentList $targetDocument $selection)
-  (% class="attachment-list" %)(((
-  #set ($sortedAttachments = $sorttool.sort($targetDocument.getAttachmentList(), 'date:desc') )
-  #if ($sortedAttachments.size() == 0)(% class="hint" %)None available(%%)#end
-  #foreach ($attachment in $sortedAttachments)
-    #set ($extension = "#__getExtension($attachment.getFilename())")
-    #if ($options.filter.size() == 0 || $options.filter.contains($extension))
-      #__displaySelectableAttachment($attachment $targetDocument $selection)
-    #end
-  #end
-  {{html wiki=false clean=false}}&lt;input type='hidden' name='${fieldName}' value=''/&gt;{{/html}}##
-  )))(% class="clear" %)((()))###
-#end
-
-#macro (__displayLastAttachmentSelected $targetDocument)
-  #set ($sortedAttachments = $sorttool.sort($targetDocument.getAttachmentList(), 'date:desc') )
-  #if ($sortedAttachments.size() &gt; 0)
-    #set ($attachment = $sortedAttachments.get(0))
-    #set ($extension = "#__getExtension($attachment.getFilename())")
-    #if ($options.filter.size() == 0 || $options.filter.contains($extension))
-      #__displaySelectableAttachment($attachment $targetDocument [${attachment.filename}])
-    #end
-  #end
-#end
-
-#macro (__displayUploadForm $targetDocument)
-  {{html wiki=false clean=false}}
-  &lt;form action="$targetDocument.getURL('upload')" enctype="multipart/form-data" method="post" id="${fieldName}-upload2" class="upload-attachment xform"&gt;
-  &lt;div&gt;
-    #if (${options.rawfilter} != '')
-      &lt;span class="xHint"&gt;Accepted file formats: ${options.rawfilter}&lt;/span&gt;
-    #end
-    &lt;input type="file" name="filepath" id="attachfile2" class="attachment" size="30" title="$!{escapetool.xml($options.rawfilter)}"/&gt;
-    &lt;input type="hidden" name="filter" value="$!{escapetool.xml($options.html5Filter)}" /&gt;
-    &lt;input type="hidden" name="xredirect" value="$!{escapetool.xml($doc.getURL($xcontext.action, $request.queryString))}" /&gt;
-    &lt;input type="hidden" name="ajaxxredirect" value="$!{escapetool.xml($displayer.getURL('get', "$!{qString}&amp;xaction=lastatt" ))}" /&gt;
-    &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-    &lt;input type="submit" name="action_upload" class="button" value='Upload and select'  title='Upload and select'/&gt;
-  &lt;/div&gt;
-  &lt;/form&gt;
-  {{/html}}
-#end
-
-#macro (__displayGallery $targetDocument  $selection)
-  #set ($content = '')
-  #foreach ($name in  $selection)
-    #if ("$!{targetDocument.getAttachment(${name})}" != '')
-      #if ($options.isImage)
-        #set ($content = "$!{content}[[image:${targetDocument.fullName}@${name}||style=""max-width:100%""]]${util.newline}")
-      #else
-        #set ($content = "$!{content}(% class='attachment-link #__getExtension($name)' %)attach:${targetDocument.fullName}@${name} (%%)${util.newline}")
-      #end
-    #end
-  #end
-  #if ($content != '')
-#if ($options.isImage &amp;&amp; $options.inputType == 'checkbox')
-{{gallery}}
-$content
-{{/gallery}}
-
-#else
-$content
-#end
-  #end
-#end
-
-{{/velocity}}
-
-{{velocity}}
-#if ("$!{request.xaction}" == 'lastatt')
-#__displayLastAttachmentSelected($targetDoc)
-#else
-  $xwiki.ssx.use($displayerName, {'colorTheme' : "$xwiki.getSpacePreferenceFor('colorTheme', ${targetDoc.space})"})##
-  $xwiki.jsx.use($displayerName)##
-  ## check if the property exists and its value has the right type (is a list)
-  #if ("$!{propValue.size()}" != '')
-    #if ($options.mode == 'edit')
-      (% id=$!{fieldName}_container %)(((
-      #if ($options.manage)
-        #__displayUploadForm($targetDoc)
-      #else
-        #set ($actionURL = $displayer.getURL('view', "$!{qString}&amp;mode=edit&amp;manage=true"))
-        {{html wiki=false clean=false}}&lt;div class="actions"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;span class="buttonwrapper"&gt;&lt;a class="add-data-button button manage-images-button" href="${actionURL}"&gt;Upload and manage&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;{{/html}}
-      #end
-      #__displaySelectableAttachmentList($targetDoc $propValue)
-      )))
-    #else## not edit
-      #__displayGallery($targetDoc $propValue)
-    #end## context action check
-  #end## target object &amp; property exist and are valid
-#end## not a custom action
-{{/velocity}}</content>
 </xwikidoc>

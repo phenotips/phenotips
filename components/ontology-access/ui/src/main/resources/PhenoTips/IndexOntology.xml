@@ -20,29 +20,75 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>IndexOntology</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822213000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1326240140000</creationDate>
-  <date>1326255380000</date>
-  <contentUpdateDate>1326255380000</contentUpdateDate>
+  <date>1401822213000</date>
+  <contentUpdateDate>1401822213000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content>{{velocity}}
+#if ("$!{request.url}" != '')
+  #set($result = $services.ontologies.hpo.reindex("$!{request.url}"))
+  #if ("$!{request.ajax}" == '1')
+    #if ($result == 0)
+      Indexing succeeded.
+    #else
+      $response.setStatus(500)##
+      Indexing failed.
+    #end
+
+  #else
+    #if ($result == 0)
+      #set ($indexMessage = "{{info}}Indexing of $!{request.url} succeeded.{{/info}}")
+    #else
+      #set ($indexMessage = "{{error}}Indexing of $!{request.url} failed.{{/error}}")
+    #end
+  #end
+#end
+#if ("$!{request.ajax}" != '1')
+$xwiki.jsx.use('PhenoTips.IndexOntology')##
+== Index an ontology ==
+(% class="half" %)(((
+{{html wiki=false clean=false}}
+&lt;form class="xform solr-admin" action='' method="post"&gt;
+&lt;dl&gt;
+&lt;dt&gt;
+&lt;label for="ontology-url"&gt;Ontology&lt;/label&gt;
+#set ($version = $services.ontologies.hpo.Version)
+&lt;span class="xHint"&gt;Current version: #if (!$version)No version could be retrieved.#else$version#end&lt;/span&gt;
+&lt;span class="xHint"&gt;The URL of a file containing the ontology you wish to index in &lt;a href="http://www.bioontology.org/wiki/index.php/OboInOwl:Main_Page" rel="_blank"&gt;OBO format&lt;/a&gt;.&lt;/span&gt;
+&lt;/dt&gt;
+&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-url" value="$services.ontologies.hpo.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;div&gt;
+&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="Start reindexing"/&gt;&lt;/span&gt;
+&lt;/div&gt;
+&lt;/form&gt;
+{{/html}}
+
+{{warning}}Indexing may take a while, please be patient.{{/warning}}
+
+)))
+#end
+{{/velocity}}</content>
   <object>
+    <name>PhenoTips.IndexOntology</name>
+    <number>0</number>
+    <className>XWiki.ConfigurableClass</className>
+    <guid>0b66703e-b724-40f2-a0cd-3c9427a05851</guid>
     <class>
       <name>XWiki.ConfigurableClass</name>
       <customClass/>
@@ -221,10 +267,6 @@
         <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
       </sectionPriority>
     </class>
-    <name>PhenoTips.IndexOntology</name>
-    <number>0</number>
-    <className>XWiki.ConfigurableClass</className>
-    <guid>0b66703e-b724-40f2-a0cd-3c9427a05851</guid>
     <property>
       <advancedOnly>0</advancedOnly>
     </property>
@@ -263,6 +305,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.IndexOntology</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>092d7722-c25e-46ae-9989-2ceb28d16c56</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -334,10 +380,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.IndexOntology</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>092d7722-c25e-46ae-9989-2ceb28d16c56</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -389,49 +431,4 @@
       <use>onDemand</use>
     </property>
   </object>
-  <content>{{velocity}}
-#if ("$!{request.url}" != '')
-  #set($result = $services.ontologies.hpo.reindex("$!{request.url}"))
-  #if ("$!{request.ajax}" == '1')
-    #if ($result == 0)
-      Indexing succeeded.
-    #else
-      $response.setStatus(500)##
-      Indexing failed.
-    #end
-
-  #else
-    #if ($result == 0)
-      #set ($indexMessage = "{{info}}Indexing of $!{request.url} succeeded.{{/info}}")
-    #else
-      #set ($indexMessage = "{{error}}Indexing of $!{request.url} failed.{{/error}}")
-    #end
-  #end
-#end
-#if ("$!{request.ajax}" != '1')
-$xwiki.jsx.use('PhenoTips.IndexOntology')##
-== Index an ontology ==
-(% class="half" %)(((
-{{html wiki=false clean=false}}
-&lt;form class="xform solr-admin" action='' method="post"&gt;
-&lt;dl&gt;
-&lt;dt&gt;
-&lt;label for="ontology-url"&gt;Ontology&lt;/label&gt;
-#set ($version = $services.ontologies.hpo.Version)
-&lt;span class="xHint"&gt;Current version: #if (!$version)No version could be retrieved.#else$version#end&lt;/span&gt;
-&lt;span class="xHint"&gt;The URL of a file containing the ontology you wish to index in &lt;a href="http://www.bioontology.org/wiki/index.php/OboInOwl:Main_Page" rel="_blank"&gt;OBO format&lt;/a&gt;.&lt;/span&gt;
-&lt;/dt&gt;
-&lt;dd class="mandatory"&gt;&lt;input type="text" name="url" id="ontology-url" value="$services.ontologies.hpo.DefaultOntologyLocation"/&gt;&lt;/dd&gt;
-&lt;/dl&gt;
-&lt;div&gt;
-&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="actionindex" value="Start reindexing"/&gt;&lt;/span&gt;
-&lt;/div&gt;
-&lt;/form&gt;
-{{/html}}
-
-{{warning}}Indexing may take a while, please be patient.{{/warning}}
-
-)))
-#end
-{{/velocity}}</content>
 </xwikidoc>

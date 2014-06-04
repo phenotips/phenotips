@@ -20,29 +20,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>SkinCustomization</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822215000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1378834766000</creationDate>
-  <date>1378848312000</date>
-  <contentUpdateDate>1377016720000</contentUpdateDate>
+  <date>1401822215000</date>
+  <contentUpdateDate>1401822215000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content/>
   <object>
+    <name>PhenoTips.SkinCustomization</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>6e3e70c9-22a3-4133-948a-fa18b7db7257</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -107,10 +109,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.SkinCustomization</name>
-    <number>0</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>6e3e70c9-22a3-4133-948a-fa18b7db7257</guid>
     <property>
       <content>{{velocity}}
 #set($uixs = $services.uix.getExtensions("org.phenotips.header.top:${doc.space}"))
@@ -136,6 +134,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.SkinCustomization</name>
+    <number>2</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>c92a9749-be15-42c4-9d98-04a69a519b2d</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -200,10 +202,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.SkinCustomization</name>
-    <number>2</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>c92a9749-be15-42c4-9d98-04a69a519b2d</guid>
     <property>
       <content>{{velocity}}
 #set($uixs = $services.uix.getExtensions("org.phenotips.header.bottom:${doc.space}"))
@@ -228,6 +226,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.SkinCustomization</name>
+    <number>4</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>51232060-d6a2-409e-91eb-feea8cdd0e73</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -292,10 +294,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.SkinCustomization</name>
-    <number>4</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>51232060-d6a2-409e-91eb-feea8cdd0e73</guid>
     <property>
       <content>{{velocity}}
 #set($uixs = $services.uix.getExtensions("org.phenotips.main.top:${doc.space}"))
@@ -337,6 +335,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.SkinCustomization</name>
+    <number>6</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>c92aad87-9fc7-415f-b073-6d7696d7c7bc</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -401,10 +403,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
-    <name>PhenoTips.SkinCustomization</name>
-    <number>6</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>c92aad87-9fc7-415f-b073-6d7696d7c7bc</guid>
     <property>
       <content>{{velocity}}
 #set($uixs = $services.uix.getExtensions("org.phenotips.content.top:${doc.space}"))
@@ -437,6 +435,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.SkinCustomization</name>
+    <number>0</number>
+    <className>XWiki.XWikiRights</className>
+    <guid>007a396b-14ff-4fba-ad44-e23c905d29c1</guid>
     <class>
       <name>XWiki.XWikiRights</name>
       <customClass/>
@@ -502,10 +504,6 @@
         <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
       </users>
     </class>
-    <name>PhenoTips.SkinCustomization</name>
-    <number>0</number>
-    <className>XWiki.XWikiRights</className>
-    <guid>007a396b-14ff-4fba-ad44-e23c905d29c1</guid>
     <property>
       <allow>1</allow>
     </property>
@@ -519,5 +517,4 @@
       <users>XWiki.XWikiGuest</users>
     </property>
   </object>
-  <content/>
 </xwikidoc>

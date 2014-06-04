@@ -20,29 +20,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>FontAwesomeIcons</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822217000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1377882358000</creationDate>
-  <date>1378521916000</date>
-  <contentUpdateDate>1378520932000</contentUpdateDate>
+  <date>1401822217000</date>
+  <contentUpdateDate>1401822217000</contentUpdateDate>
   <version>1.1</version>
   <title>Macro for inserting Font Awesome icons</title>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content/>
   <object>
+    <name>PhenoTips.FontAwesomeIcons</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>20e6d01c-ccdd-4417-b3c5-b67851c65298</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -114,10 +116,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.FontAwesomeIcons</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>20e6d01c-ccdd-4417-b3c5-b67851c65298</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -156,6 +154,10 @@
     </property>
   </object>
   <object>
+    <name>PhenoTips.FontAwesomeIcons</name>
+    <number>0</number>
+    <className>XWiki.WikiMacroClass</className>
+    <guid>90c03ff1-f1ba-4f3e-9648-e2a7aa423b6e</guid>
     <class>
       <name>XWiki.WikiMacroClass</name>
       <customClass/>
@@ -265,10 +267,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </visibility>
     </class>
-    <name>PhenoTips.FontAwesomeIcons</name>
-    <number>0</number>
-    <className>XWiki.WikiMacroClass</className>
-    <guid>90c03ff1-f1ba-4f3e-9648-e2a7aa423b6e</guid>
     <property>
       <code>{{velocity output=false}}
 #set ($aliases = {
@@ -327,6 +325,10 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
     </property>
   </object>
   <object>
+    <name>PhenoTips.FontAwesomeIcons</name>
+    <number>0</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>3bd583dc-fe5b-48a0-be80-5dbda6e5d123</guid>
     <class>
       <name>XWiki.WikiMacroParameterClass</name>
       <customClass/>
@@ -375,10 +377,6 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>
-    <name>PhenoTips.FontAwesomeIcons</name>
-    <number>0</number>
-    <className>XWiki.WikiMacroParameterClass</className>
-    <guid>3bd583dc-fe5b-48a0-be80-5dbda6e5d123</guid>
     <property>
       <defaultValue/>
     </property>
@@ -393,6 +391,10 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
     </property>
   </object>
   <object>
+    <name>PhenoTips.FontAwesomeIcons</name>
+    <number>1</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>48b1ea40-a3e4-427c-833c-b440a07cddd0</guid>
     <class>
       <name>XWiki.WikiMacroParameterClass</name>
       <customClass/>
@@ -441,10 +443,6 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>
-    <name>PhenoTips.FontAwesomeIcons</name>
-    <number>1</number>
-    <className>XWiki.WikiMacroParameterClass</className>
-    <guid>48b1ea40-a3e4-427c-833c-b440a07cddd0</guid>
     <property>
       <defaultValue/>
     </property>
@@ -459,6 +457,10 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
     </property>
   </object>
   <object>
+    <name>PhenoTips.FontAwesomeIcons</name>
+    <number>2</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>34d49cbf-067d-4553-8827-40b5ab64bcbc</guid>
     <class>
       <name>XWiki.WikiMacroParameterClass</name>
       <customClass/>
@@ -507,10 +509,6 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>
-    <name>PhenoTips.FontAwesomeIcons</name>
-    <number>2</number>
-    <className>XWiki.WikiMacroParameterClass</className>
-    <guid>34d49cbf-067d-4553-8827-40b5ab64bcbc</guid>
     <property>
       <defaultValue/>
     </property>
@@ -525,6 +523,10 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
     </property>
   </object>
   <object>
+    <name>PhenoTips.FontAwesomeIcons</name>
+    <number>3</number>
+    <className>XWiki.WikiMacroParameterClass</className>
+    <guid>384e2e9f-bf98-4504-b174-835f1a3cbdc5</guid>
     <class>
       <name>XWiki.WikiMacroParameterClass</name>
       <customClass/>
@@ -573,10 +575,6 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>
-    <name>PhenoTips.FontAwesomeIcons</name>
-    <number>3</number>
-    <className>XWiki.WikiMacroParameterClass</className>
-    <guid>384e2e9f-bf98-4504-b174-835f1a3cbdc5</guid>
     <property>
       <defaultValue/>
     </property>
@@ -590,5 +588,4 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
       <name>cssClass</name>
     </property>
   </object>
-  <content/>
 </xwikidoc>
