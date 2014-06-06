@@ -199,7 +199,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
      */
     private BaseObject findMetadataObject(XWikiDocument doc) throws XWikiException
     {
-        List<BaseObject> objects = doc.getXObjects(PhenoTipsFeatureMetadatum.CLASS_REFERENCE);
+        List<BaseObject> objects = doc.getXObjects(FeatureMetadatum.CLASS_REFERENCE);
         if (objects != null) {
             for (BaseObject o : objects) {
                 if (o == null) {

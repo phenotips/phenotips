@@ -19,6 +19,10 @@
  */
 package org.phenotips.data;
 
+import org.phenotips.Constants;
+
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.stability.Unstable;
 
 import java.util.Locale;
@@ -34,6 +38,10 @@ import net.sf.json.JSONObject;
 @Unstable
 public interface FeatureMetadatum extends OntologyProperty
 {
+    /** The XClass used for storing phenotype metadata. */
+    public static final EntityReference CLASS_REFERENCE = new EntityReference("PhenotypeMetaClass",
+        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
     /**
      * The supported metadata types.
      */
