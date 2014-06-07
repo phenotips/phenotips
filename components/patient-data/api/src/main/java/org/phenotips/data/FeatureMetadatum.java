@@ -52,7 +52,9 @@ public interface FeatureMetadatum extends OntologyProperty
         /** The speed at which disease manifestations first develop. */
         SPEED_OF_ONSET("HP:0011008"),
         /** The speed at which disease manifestations develop in time. */
-        PACE_OF_PROGRESSION("HP:0003679");
+        PACE_OF_PROGRESSION("HP:0003679"),
+        /** The pattern in which a particular genetic trait or disorder is passed from one generation to the next. */
+        SUSPECTED_MODE_OF_INHERITANCE("HP:0000005");
 
         /** @see #getId() */
         private final String id;
