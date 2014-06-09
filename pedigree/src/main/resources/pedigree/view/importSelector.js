@@ -54,12 +54,12 @@ var ImportSelector = Class.create( {
         typeListElement.insert(_addTypeOption(false, "GEDCOM", "gedcom"));
         typeListElement.insert(_addTypeOption(false, "Simple JSON", "simpleJSON"));
         //TODO: typeListElement.insert(_addTypeOption(false, "Phenotips Pedigree JSON", "phenotipsJSON"));
-                
+
         var promptType = new Element('div', {'class': 'import-section'}).update("Data format:");
         var dataSection2 = new Element('div', {'class': 'import-block'});
         dataSection2.insert(promptType).insert(typeListElement);
         mainDiv.insert(dataSection2);
-                       
+
         var _addConfigOption = function (checked, labelText, value) {
             var optionWrapper = new Element('tr');
             var input = new Element('input', {"type" : "radio", "value": value, "name": "select-options" });            
@@ -69,11 +69,11 @@ var ImportSelector = Class.create( {
             var label = new Element('label', {'class': 'import-config-label'}).insert(input).insert(labelText);
             optionWrapper.insert(label.wrap('td'));
             return optionWrapper;
-          };          
+          };
         var configListElement = new Element('table', {id : 'import-type'});        
         configListElement.insert(_addConfigOption(true,  "Treat non-standard phenotype values as new disorders", "accept"));
         configListElement.insert(_addConfigOption(false, "Treat non-standard phenotype values as \"no information\"", "dontaccept"));
-       
+
         var markEvaluated = new Element('input', {"type" : "checkbox", "value": "1", "name": "mark-evaluated"});
         var markLabel1     = new Element('label', {'class': 'import-mark-label1'}).insert(markEvaluated).insert("Mark all patients with known disorder status with 'documented evaluation' mark").wrap('td').wrap('tr');
         configListElement.insert(markLabel1);
@@ -81,19 +81,19 @@ var ImportSelector = Class.create( {
         markExternal.checked = true;
         var markLabel2   = new Element('label', {'class': 'import-mark-label2'}).insert(markExternal).insert("Save individual IDs as given in the input data as 'external ID'").wrap('td').wrap('tr');
         configListElement.insert(markLabel2);
-        
+
         var promptConfig = new Element('div', {'class': 'import-section'}).update("Options:");
         var dataSection3 = new Element('div', {'class': 'import-block'});        
         dataSection3.insert(promptConfig).insert(configListElement);
         mainDiv.insert(dataSection3);
-        
+
         //TODO: [x] auto-combine multiple unaffected children when the number of children is greater than [5]
-        
+
         var buttons = new Element('div', {'class' : 'buttons import-block-bottom'});
         buttons.insert(new Element('input', {type: 'button', name : 'import', 'value': 'Import', 'class' : 'button', 'id': 'import_button'}).wrap('span', {'class' : 'buttonwrapper'}));
         buttons.insert(new Element('input', {type: 'button', name : 'cancel', 'value': 'Cancel', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'}));
         mainDiv.insert(buttons);
-              
+
         var cancelButton = buttons.down('input[name="cancel"]');
         cancelButton.observe('click', function(event) {
             _this.hide();
@@ -102,9 +102,9 @@ var ImportSelector = Class.create( {
         importButton.observe('click', function(event) {
             _this._onImportStarted();
         })
-        
+
         var closeShortcut = ['Esc'];
-        this.dialog = new MS.widgets.ModalPopup(mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-import-chooser", title: "Pedigree import", displayCloseButton: true});
+        this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-import-chooser", title: "Pedigree import", displayCloseButton: true});
     },
 
     /*

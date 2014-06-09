@@ -27,7 +27,7 @@ var View = Class.create({
     /**
      * Pre-generates paths and pre-computes bounding boxes for shapes which are commonly used in the graph.
      * Raphael is slow and re-computing each path/box for every node is noticeably slow
-     * 
+     *
      * @method preGenerateGraphics
      */
     preGenerateGraphics: function() {
@@ -35,11 +35,11 @@ var View = Class.create({
         // computing scaled icons:
         //   var iconScale = 0.6;
         //   var path = "...";
-        //   console.log("scaled path: " + Raphael.transformPath(path, ["s", iconScale, iconScale, 0, 0])); 
+        //   console.log("scaled path: " + Raphael.transformPath(path, ["s", iconScale, iconScale, 0, 0]));
         //
 
         // 1) menu button
-        // nonScaledPath = "M2.021,9.748L2.021,9.748V9.746V9.748zM2.022,9.746l5.771,5.773l-5.772,5.771l2.122,2.123l7.894-7.895L4.143,7.623L2.022,9.746zM12.248,23.269h14.419V20.27H12.248V23.269zM16.583,17.019h10.084V14.02H16.583V17.019zM12.248,7.769v3.001h14.419V7.769H12.248z";        
+        // nonScaledPath = "M2.021,9.748L2.021,9.748V9.746V9.748zM2.022,9.746l5.771,5.773l-5.772,5.771l2.122,2.123l7.894-7.895L4.143,7.623L2.022,9.746zM12.248,23.269h14.419V20.27H12.248V23.269zM16.583,17.019h10.084V14.02H16.583V17.019zM12.248,7.769v3.001h14.419V7.769H12.248z";
         this.__menuButton_svgPath = "M1.213,5.849C1.213,5.849,1.213,5.849,1.213,5.849C1.213,5.849,1.213,5.848,1.213,5.848C1.213,5.848,1.213,5.849,1.213,5.849C1.213,5.849,1.213,5.849,1.213,5.849M1.213,5.848C1.213,5.848,4.676,9.3114,4.676,9.3114C4.676,9.3114,1.2126,12.774,1.2126,12.774C1.2126,12.774,2.486,14.048,2.486,14.048C2.486,14.048,7.222,9.311,7.222,9.311C7.222,9.311,2.486,4.574,2.486,4.574C2.486,4.574,1.213,5.848,1.213,5.8476C1.2131999999999998,5.8476,1.2131999999999998,5.8476,1.2131999999999998,5.8476M7.348799999999999,13.9614C7.348799999999999,13.9614,16.0002,13.9614,16.0002,13.9614C16.0002,13.9614,16.0002,12.161999999999999,16.0002,12.161999999999999C16.0002,12.161999999999999,7.348799999999999,12.161999999999999,7.348799999999999,12.161999999999999C7.348799999999999,12.161999999999999,7.348799999999999,13.9614,7.348799999999999,13.9614C7.348799999999999,13.9614,7.348799999999999,13.9614,7.348799999999999,13.9614M9.949799999999998,10.2114C9.949799999999998,10.2114,16.0002,10.2114,16.0002,10.2114C16.0002,10.2114,16.0002,8.411999999999999,16.0002,8.411999999999999C16.0002,8.411999999999999,9.949799999999998,8.411999999999999,9.949799999999998,8.411999999999999C9.949799999999998,8.411999999999999,9.949799999999998,10.2114,9.949799999999998,10.2114C9.949799999999998,10.2114,9.949799999999998,10.2114,9.949799999999998,10.2114M7.348799999999999,4.6613999999999995C7.348799999999999,4.6613999999999995,7.348799999999999,6.462,7.348799999999999,6.462C7.348799999999999,6.462,16.0002,6.462,16.0002,6.462C16.0002,6.462,16.0002,4.661,16.0,4.6614C16.0,4.6614,7.349,4.6614,7.349,4.6614C7.349,4.6614,7.349,4.6614,7.349,4.6614";
         this.__menuButton_BBox    = Raphael.pathBBox(this.__menuButton_svgPath);
 
@@ -82,7 +82,7 @@ var View = Class.create({
      */
     getNode: function(nodeId) {
         if (!this._nodeMap.hasOwnProperty(nodeId)) {
-            console.log("ERROR: requesting non-existent node " + nodeId); 
+            console.log("ERROR: requesting non-existent node " + nodeId);
             throw "ERROR";
             return null;
         }
@@ -171,7 +171,7 @@ var View = Class.create({
         var cornerRadius     = PedigreeEditor.attributes.curvedLinesCornerRadius * 0.8;
         var goesRight        = ( xFrom > xTo );
         if (isFinite(lastBend)) {
-            var xFinalBend       = goesRight ? xTo + lastBend                  : xTo - lastBend; 
+            var xFinalBend       = goesRight ? xTo + lastBend                  : xTo - lastBend;
             var xFinalBendVert   = goesRight ? xTo + lastBend + cornerRadius   : xTo - lastBend - cornerRadius;
             var xBeforeFinalBend = goesRight ? xTo + lastBend + cornerRadius*2 : xTo - lastBend - cornerRadius*2;
         } else {
@@ -193,7 +193,7 @@ var View = Class.create({
                 if (goesRight)
                     drawCornerCurve( xFromAndBit, yFrom, xFromAfterCorner, yFrom-cornerRadius, true, attr, twoLines, -2.5, 2.5, 2.5, -2.5 );
                 else
-                    drawCornerCurve( xFromAndBit, yFrom, xFromAfterCorner, yFrom-cornerRadius, true, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );            
+                    drawCornerCurve( xFromAndBit, yFrom, xFromAfterCorner, yFrom-cornerRadius, true, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );
                 this.drawLineWithCrossings(id, xFromAfterCorner, yFrom-cornerRadius, xFromAfterCorner, yTop+cornerRadius, attr, twoLines, goesRight);
                 if (goesRight)
                     drawCornerCurve( xFromAfterCorner, yTop+cornerRadius, xFromAfter2Corners, yTop, false, attr, twoLines, -2.5, 2.5, 2.5, -2.5 );
@@ -204,7 +204,7 @@ var View = Class.create({
                 if (goesRight)
                     drawLevelChangeCurve( xFromAndBit, yFrom, xFromAfter2Corners, yTop, attr, twoLines, -2.5, 2.5, 2.5, -2.5 );
                 else
-                    drawLevelChangeCurve( xFromAndBit, yFrom, xFromAfter2Corners, yTop, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );                
+                    drawLevelChangeCurve( xFromAndBit, yFrom, xFromAfter2Corners, yTop, attr, twoLines, 2.5, 2.5, -2.5, -2.5 );
             }
             this.drawLineWithCrossings(id, xFromAfter2Corners, yTop, xBeforeFinalBend, yTop, attr, twoLines, !goesRight, true);
         }
@@ -299,27 +299,27 @@ var View = Class.create({
                 };
 
                 var noCrossSymbolProximity = isHorizontal ? 20*20 : 9*9;
-                
+
                 if (distance(intersectPoint, {"x": x1, "y": y1}) < noCrossSymbolProximity)
                     continue;
                 if (distance(intersectPoint, {"x": x2, "y": y2}) < noCrossSymbolProximity)
                     continue;
-                
-                if (isHorizontal) {                    
+
+                if (isHorizontal) {
                     if (twoLines) {
                         if (secondLineBelow)
                             intersectPoint.y += ( 2.5 - lineNum * 7.5);
                         else
                             intersectPoint.y += (-2.5 + lineNum * 7.5);
-                    }                    
+                    }
                     // a curve above the crossing
-                    raphaelPath += " L " + (intersectPoint.x - 10) + " " + intersectPoint.y;                    
+                    raphaelPath += " L " + (intersectPoint.x - 10) + " " + intersectPoint.y;
                     raphaelPath += " C " + (intersectPoint.x - 7)  + " " + (intersectPoint.y + 1) +
                                      " " + (intersectPoint.x - 7)  + " " + (intersectPoint.y - 7) +
                                      " " + (intersectPoint.x)      + " " + (intersectPoint.y - 7);
                     raphaelPath += " C " + (intersectPoint.x + 7)  + " " + (intersectPoint.y - 7) +
                                      " " + (intersectPoint.x + 7)  + " " + (intersectPoint.y + 1) +
-                                     " " + (intersectPoint.x + 10) + " " + (intersectPoint.y);                                        
+                                     " " + (intersectPoint.x + 10) + " " + (intersectPoint.y);
                 } else if (isVertical) {
                     if (twoLines) {
                         intersectPoint.x += ( -2.5 + lineNum * 7.5);
@@ -331,16 +331,16 @@ var View = Class.create({
                                      " " + (intersectPoint.x + 7)  + " " + (intersectPoint.y);
                     raphaelPath += " C " + (intersectPoint.x + 7)  + " " + (intersectPoint.y + 7) +
                                      " " + (intersectPoint.x - 1)  + " " + (intersectPoint.y + 7) +
-                                     " " + (intersectPoint.x)      + " " + (intersectPoint.y + 10);                    
-                }   
+                                     " " + (intersectPoint.x)      + " " + (intersectPoint.y + 10);
+                }
                 // else: some diagonal line: presumably there should be none, if there are some
-                //       everything will be ok except there will be no special intersection graphic drawn                
-            }        
-            raphaelPath += " L " + x2 + " " + y2; 
+                //       everything will be ok except there will be no special intersection graphic drawn
+            }
+            raphaelPath += " L " + x2 + " " + y2;
             editor.getPaper().path(raphaelPath).attr(attr).toBack();
-        }        
+        }
     },
-    
+
     /**
      * Creates a new node in the graph and returns it. The node type is obtained from
      * editor.getGraph() and may be on of Person, Partnership or ... TODO. The position
@@ -353,16 +353,16 @@ var View = Class.create({
     addNode: function(id) {
         //console.log("add node");
         var positionedGraph = editor.getGraph();
-        
+
         if (!positionedGraph.isValidID(id))
             throw "addNode(): Invalid id";
 
-        var node;        
-        var properties = positionedGraph.getProperties(id);        
-        
+        var node;
+        var properties = positionedGraph.getProperties(id);
+
         var graphPos = positionedGraph.getPosition(id);
-        var position = editor.convertGraphCoordToCanvasCoord(graphPos.x, graphPos.y );        
-        
+        var position = editor.convertGraphCoordToCanvasCoord(graphPos.x, graphPos.y );
+
         if (positionedGraph.isRelationship(id)) {
             //console.log("-> add partnership");
             node = new Partnership(position.x, position.y, id, properties);
@@ -370,7 +370,7 @@ var View = Class.create({
         else if (positionedGraph.isPersonGroup(id)) {
             //console.log("-> add person group");
             node = new PersonGroup(position.x, position.y, id, properties);
-        }        
+        }
         else if (positionedGraph.isPerson(id)) {
             //console.log("-> add person");
             node = new Person(position.x, position.y, id, properties);
@@ -378,37 +378,37 @@ var View = Class.create({
         else {
             throw "addNode(): unsupported node type";
         }
-        
+
         this.getNodeMap()[id] = node;
-        
+
         return node;
     },
-    
+
     moveNode: function(id, animate) {
         var positionedGraph = editor.getGraph();
         var graphPos = positionedGraph.getPosition(id);
         var position = editor.convertGraphCoordToCanvasCoord(graphPos.x, graphPos.y );
         this.getNode(id).setPos(position.x, position.y, animate);
     },
-    
+
     changeNodeIds: function( changedIdsSet ) {
         var newNodeMap = {};
-        
+
         // change all IDs at once so that have both new and old references at the same time
         for (oldID in this._nodeMap) {
             var node  = this.getNode(oldID);
-            
-            var newID = changedIdsSet.hasOwnProperty(oldID) ? changedIdsSet[oldID] : oldID;                             
+
+            var newID = changedIdsSet.hasOwnProperty(oldID) ? changedIdsSet[oldID] : oldID;
             node.setID( newID );
-             
+
             newNodeMap[newID] = node;
         }
-        
+
         this._nodeMap = newNodeMap;
-        
+
         this._lineSet.replaceIDs(changedIdsSet);
     },
-  
+
     /**
      * Enters hover-mode state, which is when a handle or a PlaceHolder is being dragged around the screen
      *
@@ -419,18 +419,18 @@ var View = Class.create({
      * dragged on top of them.
      */
     enterHoverMode: function(sourceNode, hoverType) {
-        
+
         //var timer = new Timer();
-        
+
         var me = this;
         var validTargets = this.getValidDragTargets(sourceNode.getID(), hoverType);
-                
+
         validTargets.each(function(nodeID) {
             me._currentGrownNodes.push(nodeID);
-            
-            var node = me.getNode(nodeID);            
+
+            var node = me.getNode(nodeID);
             node.getGraphics().grow();
-                        
+
             var hoverModeZone = node.getGraphics().getHoverBox().getHoverZoneMask().clone().toFront();
             //var hoverModeZone = node.getGraphics().getHoverBox().getHoverZoneMask().toFront();
             hoverModeZone.hover(
@@ -438,14 +438,14 @@ var View = Class.create({
                     me._currentHoveredNode = nodeID;
                     node.getGraphics().getHoverBox().setHighlighted(true);
                 },
-                function() {                    
+                function() {
                     me._currentHoveredNode = null;
-                    node.getGraphics().getHoverBox().setHighlighted(false);                    
+                    node.getGraphics().getHoverBox().setHighlighted(false);
                 });
-            
+
             me.hoverModeZones.push(hoverModeZone);
         });
-        
+
         //timer.printSinceLast("=== Enter hover mode - highlight: ");
     },
 
@@ -484,20 +484,20 @@ var View = Class.create({
             result = editor.getGraph().getPossibleSiblingsOf(sourceNodeID);
             break;
         case "child":
-            // all person nodes which are not ancestors of sourse node and which do not already have parents            
+            // all person nodes which are not ancestors of sourse node and which do not already have parents
             result = editor.getGraph().getPossibleChildrenOf(sourceNodeID);
             break;
         case "parent":
             result = editor.getGraph().getPossibleParentsOf(sourceNodeID);
             break;
-        case "partnerR":            
+        case "partnerR":
         case "partnerL":
             // all person nodes of the other gender or unknown gender (who ar enot already partners)
             result = editor.getGraph().getPossiblePartnersOf(sourceNodeID)
             //console.log("possible partners: " + stringifyObject(result));
             break;
         case "PlaceHolder":
-            // all nodes which can be this placehodler: e.g. all that can be child of it's parents && 
+            // all nodes which can be this placehodler: e.g. all that can be child of it's parents &&
             // partners of it's partners
             throw "TODO";
         default:
@@ -507,7 +507,7 @@ var View = Class.create({
     },
 
     applyChanges: function( changeSet, markNew ) {
-        // applies change set of the form {"new": {list of nodes}, "moved": {list of nodes} }        
+        // applies change set of the form {"new": {list of nodes}, "moved": {list of nodes} }
         console.log("Change set: " + stringifyObject(changeSet));
 
         var timer = new Timer();
@@ -519,10 +519,10 @@ var View = Class.create({
 
         // to simplify code which deals woith removed nodes making other mnodes to move
         if (!changeSet.hasOwnProperty("moved"))
-            changeSet["moved"] = [];               
+            changeSet["moved"] = [];
         if (!changeSet.hasOwnProperty("removed"))
-            changeSet["removed"] = []; 
-        if (!changeSet.hasOwnProperty("removedInternally"))        
+            changeSet["removed"] = [];
+        if (!changeSet.hasOwnProperty("removedInternally"))
             changeSet["removedInternally"] = [];
 
         // 0. remove all removed
@@ -532,70 +532,70 @@ var View = Class.create({
         //
         // 3. move all existing relationships - as all lines are attached to relationships we want to draw
         //                                      them after all person nodes are already in correct position
-        // 4. create new relationships        
-                
-                        
+        // 4. create new relationships
+
+
         if (changeSet.hasOwnProperty("removed")) {
             var affectedByLineRemoval = {};
-            
+
             for (var i = 0; i < changeSet.removed.length; i++) {
                 var nextRemoved = changeSet.removed[i];
-                
+
                 this.getNodeMap()[nextRemoved].remove();
                 this.removeFromNodeMap(nextRemoved);
-                
+
                 var affected = this._lineSet.removeAllLinesAffectedByOwnerMovement(nextRemoved);
-                
+
                 for (var j = 0; j < affected.length; j++)
                     if (!arrayContains(changeSet.removed, affected[j])) { // ignore nodes which are removed anyway
                         //console.log("adding due to line removal: " + affected[j]);
                         affectedByLineRemoval[affected[j]] = true;
                     }
             }
-                        
+
             // for each removed node all nodes with higher ids get their IDs shifted down by 1
             var idChanged = false;
             var changedIDs = {};
             var maxCurrentNodeId = this.getMaxNodeID();
-            for (var i = 0; i < changeSet.removedInternally.length; i++) {                    
-                var nextRemoved = changeSet.removedInternally[i];            
+            for (var i = 0; i < changeSet.removedInternally.length; i++) {
+                var nextRemoved = changeSet.removedInternally[i];
                 for (var u = nextRemoved + 1; u <= maxCurrentNodeId; u++) {
                     idChanged = true;
                     if (!changedIDs.hasOwnProperty(u))
                         changedIDs[u] = u - 1;
                     else
-                        changedIDs[u]--;                                        
+                        changedIDs[u]--;
                 }
             }
-            
+
             // change all IDs at once so that have both new and old references at the same time
             if (idChanged)
                 this.changeNodeIds(changedIDs);
-            
+
             //console.log("Affected by line removal: " + stringifyObject(affectedByLineRemoval));
             //console.log("LineSet: " + stringifyObject(this._lineSet));
-            
+
             for (node in affectedByLineRemoval)
                 if (affectedByLineRemoval.hasOwnProperty(node)) {
-                    var newID = changedIDs.hasOwnProperty(node) ? changedIDs[node] : node; 
+                    var newID = changedIDs.hasOwnProperty(node) ? changedIDs[node] : node;
                     if (!arrayContains(changeSet.moved, newID)) {
-                        //console.log("moved due to line removal: oldID="+node + ", newID=" + newID); 
+                        //console.log("moved due to line removal: oldID="+node + ", newID=" + newID);
                         changeSet.moved.push(newID);
                     }
                 }
         }
-        
+
         timer.printSinceLast("=== Removal runtime: ");
-                            
-                   
+
+
         var movedPersons       = [];
         var movedRelationships = [];
         var newPersons         = [];
         var newRelationships   = [];
         var animate            = {};
-        
+
         if (changeSet.hasOwnProperty("animate")) {
-            for (var i = 0; i < changeSet.animate.length; i++) {                
+            for (var i = 0; i < changeSet.animate.length; i++) {
                 //animate[changeSet.animate[i]] = true;     // TODO: animations disabled because hoverboxes & labels behave strangely
             }
         }
@@ -605,11 +605,11 @@ var View = Class.create({
         if (changeSet.hasOwnProperty("moved")) {
             // remove all lines so that we start drawing anew
             for (var i = 0; i < changeSet.moved.length; i++) {
-                var nextMoved = changeSet.moved[i];                      
-                if (editor.getGraph().isRelationship(nextMoved)) {        
+                var nextMoved = changeSet.moved[i];
+                if (editor.getGraph().isRelationship(nextMoved)) {
                     var affected = this._lineSet.removeAllLinesAffectedByOwnerMovement(nextMoved);
                     for (var j = 0; j < affected.length; j++) {
-                        var node = affected[j];                        
+                        var node = affected[j];
                         if (!arrayContains(changeSet.moved, node))
                             changeSet.moved.push(node);
                     }
@@ -644,7 +644,7 @@ var View = Class.create({
 
         timer.printSinceLast("=== Move persons runtime: ");
 
-        for (var i = 0; i < newPersons.length; i++) {            
+        for (var i = 0; i < newPersons.length; i++) {
             var newPerson = this.addNode(newPersons[i]);
             if (markNew) {
                 newPerson.getGraphics().markPermanently();
@@ -692,3 +692,4 @@ var View = Class.create({
         }
     }
 });
+

@@ -32,7 +32,7 @@ NodeMenu = Class.create({
         this.closeButton = new Element('span', {'class' : 'close-button'}).update('×');
         this.menuBox.insert({'top': this.closeButton});
         this.closeButton.observe('click', this.hide.bindAsEventListener(this));
-        
+
         this.form = new Element('form', {'method' : 'get', 'action' : ''});
         this.menuBox.insert({'bottom' : this.form});
 
@@ -48,7 +48,7 @@ NodeMenu = Class.create({
         // Insert in document
         this.hide();
         editor.getWorkspace().getWorkArea().insert(this.menuBox);
-        
+
         this._onClickOutside = this._onClickOutside.bindAsEventListener(this);
 
         // Attach pickers
@@ -65,7 +65,7 @@ NodeMenu = Class.create({
             if (!item.hasClassName('initialized')) {
                 // Create the Suggest.
                 item._suggest = new PhenoTips.widgets.Suggest(item, {
-                    script: "$xwiki.getURL('PhenoTips.OmimService', 'get')?outputSyntax=plain&",
+                    script: Disorder.getOMIMServiceURL() + "&",
                     varname: "q",
                     noresults: "No matching terms",
                     json: true,
@@ -343,7 +343,7 @@ NodeMenu = Class.create({
         this.menuBox.hide();
         this._clearCrtData();
     },
-    
+
     isVisible: function() {
         return this._onscreen;
     },
@@ -369,7 +369,7 @@ NodeMenu = Class.create({
           this._height   = this.menuBox.getHeight();
           this.menuBox.style.height   = '';
           this.menuBox.style.overflow = '';
-          this.menuBox.style.left = x + 'px';          
+          this.menuBox.style.left = x + 'px';
       } else {
           if (this.menuBox.getHeight() <= this._height) return;
           this._height = this.menuBox.getHeight();
@@ -396,12 +396,11 @@ NodeMenu = Class.create({
             _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
             _this.fieldMap[name].inactive = false;
         });
-    },    
-    
+    },
+
     _setCrtData : function (data) {
         var _this = this;
-        Object.keys(this.fieldMap).each(function (name) {            
-            
+        Object.keys(this.fieldMap).each(function (name) {
             _this.fieldMap[name].crtValue = data && data[name] && typeof(data[name].value) != "undefined" ? data[name].value : _this.fieldMap[name].crtValue || _this.fieldMap[name]["default"];
             _this.fieldMap[name].inactive = (data && data[name] && (typeof(data[name].inactive) == 'boolean' || typeof(data[name].inactive) == 'object')) ? data[name].inactive : _this.fieldMap[name].inactive;
             _this.fieldMap[name].disabled = (data && data[name] && (typeof(data[name].disabled) == 'boolean' || typeof(data[name].disabled) == 'object')) ? data[name].disabled : _this.fieldMap[name].disabled;
@@ -409,11 +408,10 @@ NodeMenu = Class.create({
             _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
             _this._setFieldDisabled[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].disabled);
             //_this._updatedDependency(_this.fieldMap[name].element, _this.fieldMap[name].element);
-            
             //console.log("name = " + name + ", data = " + stringifyObject(data[name]) + ", inactive: " + stringifyObject(_this.fieldMap[name].inactive));            
         });
     },
-    
+
     _setFieldValue : {
         'radio' : function (container, value) {
             var target = container.down('input[type=radio][value=' + value + ']');
@@ -438,7 +436,7 @@ NodeMenu = Class.create({
             if (target) {
                 target.value = value;
             }
-        },        
+        },
         'date-picker' : function (container, value) {
             var target = container.down('input[type=text].xwiki-date');
             if (target) {
@@ -475,7 +473,7 @@ NodeMenu = Class.create({
             }
         }
     },
-    
+
     _toggleFieldVisibility : function(container, doHide) {
         if (doHide) {
           container.addClassName('hidden');
@@ -483,7 +481,7 @@ NodeMenu = Class.create({
           container.removeClassName('hidden');
         }
     },
-    
+
     _setFieldInactive : {
         'radio' : function (container, inactive) {
             if (inactive === true) {
@@ -533,8 +531,8 @@ NodeMenu = Class.create({
                 container.addClassName('hidden');
             } else {
                 container.removeClassName('hidden');
-                container.select('input[type=radio]').each(function(item) {                    
-                    if (disabled && Object.prototype.toString.call(disabled) === '[object Array]')                        
+                container.select('input[type=radio]').each(function(item) {
+                    if (disabled && Object.prototype.toString.call(disabled) === '[object Array]')
                         item.disabled = (disabled.indexOf(item.value) >= 0);
                     if (!disabled)
                         item.disabled = false;
