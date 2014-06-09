@@ -379,6 +379,10 @@ var Workspace = Class.create({
             xDisplacement = x - oX,
             yDisplacement = y - oY;
         
+        if (editor.isUnsupportedBrowser()) {
+            instant = true;
+        }
+        
         var numSeconds = instant ? 0 : .4;
         var frames     = instant ? 1 : 11;
         
@@ -439,7 +443,7 @@ var Workspace = Class.create({
      * @param {Number} nodeID The id of the node
      */
     centerAroundNode: function(nodeID, instant, xCenterShift, yCenterShift) {
-        var node = editor.getNode[nodeID];
+        var node = editor.getNode(nodeID);
         if(node) {
             var x = node.getX(),
                 y = node.getY();
