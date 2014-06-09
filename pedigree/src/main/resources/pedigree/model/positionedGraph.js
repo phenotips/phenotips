@@ -223,98 +223,85 @@ PositionedGraph.prototype = {
         //    resuting component may have other minimum in/out multi-rnak edges
 
         console.log("Re-ranking ranks before: " + stringifyObject(ranks));
-
+        
         while(true) {
             var nodeColor        = [];   // for each node which component it belongs to
             var component        = [];   // for each component list of vertices in the component
-            var minOutEdgeLength = [];   // for each component length of the shortest outgoing multi-rank edge
-            var minOutEdgeWeight = [];   // for each component weight of the shortest outgoing multi-rank edge
+            var minOutEdgeInfo   = [];   // for each component length & weight of the shortest outgoing multi-rank edge
 
             for (var v = 0; v < baseG.getNumVertices(); v++) {
                 nodeColor.push(null);
-                // we don't know how many components we'll get, when initializing
-                // assume as many as there are nodes:
-                component.push([]);
-                minOutEdgeLength.push(Infinity);
-                minOutEdgeWeight.push(0);
             }
 
-            var maxComponentColor = 0;
+            var currentComponentColor = 0;
             for (var v = 0; v < baseG.getNumVertices(); v++) {
 
                 if (nodeColor[v] == null) {
-                    // mark all reachable using non-multi-rank edges with the same color (ignore edge direction)
-
+                    // This node will be the first node of the next component, which
+                    // includes all nodes reachable using non-multi-rank edges (any direction).
+                    // All nodes in the component will be colored as "maxComponentColor"
+                    
+                    var thisComponent = [];
+                    
+                    var potentialLongEdges = {};
+                    
                     var queue = new Queue();
                     queue.push( v );
 
                     while ( queue.size() > 0 ) {
                         var nextV = queue.pop();
+                        
                         //console.log("processing: " + nextV);
                         if (nodeColor[nextV] != null) continue;
 
-                        nodeColor[nextV] = maxComponentColor;
-                        component[maxComponentColor].push(nextV);
+                        nodeColor[nextV] = currentComponentColor;
+                        thisComponent.push(nextV);
 
                         var rankV = ranks[nextV];
 
-                        var inEdges = baseG.getInEdges(nextV);
-                        for (var i = 0; i < inEdges.length; i++) {
-                            var vv         = inEdges[i];
-                            var weight     = baseG.getEdgeWeight(vv,nextV);
-                            var edgeLength = rankV - ranks[vv];
-                            // we want to avoid counting long edges within a component, so do not
-                            // count edges going to nodes in unknown components. Thus we may have to
-                            // use inedges to count outedges, since when processing at least one of the
-                            // two directions both nodes would be already coloured
-                            if (edgeLength > 1) {
-                                if (nodeColor[vv] != null && nodeColor[vv] != maxComponentColor) {
-                                    if (edgeLength < minOutEdgeLength[nodeColor[vv]] ||
-                                        (edgeLength == minOutEdgeLength[nodeColor[vv]] && weight > minOutEdgeWeight[nodeColor[vv]])) {
-                                        minOutEdgeLength[nodeColor[vv]] = edgeLength;
-                                        minOutEdgeWeight[nodeColor[vv]] = weight;
+                        var allEdges = baseG.getAllEdgesWithWeights(nextV);
+                        for (var vv in allEdges) {
+                            if (allEdges.hasOwnProperty(vv) && nodeColor[vv] != currentComponentColor) {
+                                var edgeLength = Math.abs(rankV - ranks[vv]);
+                                if (edgeLength == 1) {          // using only edges between neighbouring ranks
+                                    if (nodeColor[vv] == null)
+                                        queue.push(vv);         // add nodes not in any component to this one
+                                } else {
+                                    // save all long edges into a separate list, and check it once component is fully computed
+                                    if (allEdges[vv].out) {
+                                        potentialLongEdges[vv] = {"length": edgeLength, "weight": allEdges[vv].weight };
                                     }
-                                }
-                            }
-                            else {
-                                if (nodeColor[vv] == null)
-                                {
-                                    queue.push(vv);
-                                    //console.log("add-I + " + nextV + " <- " + vv);
-                                }
-                            }
-                        }
-
-                        var outEdges = baseG.getOutEdges(nextV);
-                        for (var u = 0; u < outEdges.length; u++) {
-                            var vv         = outEdges[u];
-                            var weight     = baseG.getEdgeWeight(nextV,vv);
-                            var edgeLength = ranks[vv] - rankV;
-                            if (edgeLength > 1) {
-                                if (nodeColor[vv] != null && nodeColor[vv] != maxComponentColor) {
-                                    if (edgeLength < minOutEdgeLength[maxComponentColor] ||
-                                        (edgeLength == minOutEdgeLength[maxComponentColor] && weight > minOutEdgeWeight[maxComponentColor])) {
-                                        minOutEdgeLength[maxComponentColor] = edgeLength;
-                                        minOutEdgeWeight[maxComponentColor] = weight;
-                                    }
-                                }
-                            }
-                            else {
-                                if (nodeColor[vv] == null) {
-                                    queue.push(vv);
-                                    //console.log("add-O + " + nextV + " -> " + vv);
                                 }
                             }
                         }
                     }
-
-                    maxComponentColor++;
+                    
+                    component[currentComponentColor]      = thisComponent;                
+                    minOutEdgeInfo[currentComponentColor] = { "length": Infinity, "weight": 0 };
+                
+                    // go over all long edges originating from nodes in the component,
+                    // and find the shortest long edge which goes out of component                    
+                    for (var vv in potentialLongEdges) {
+                        if (potentialLongEdges.hasOwnProperty(vv)) {                                
+                                if (nodeColor[vv] == currentComponentColor) continue;  // ignore nodes which are now in the same component
+                                
+                                var nextEdge = potentialLongEdges[vv];
+                                
+                                if (nextEdge.length < minOutEdgeInfo[currentComponentColor].length ||
+                                    (nextEdge.length == minOutEdgeInfo[currentComponentColor].length &&
+                                     nextEdge.weight > minOutEdgeInfo[currentComponentColor].weight) ) {
+                                    minOutEdgeInfo[currentComponentColor] = nextEdge;
+                                }
+                            }
+                    }
+                    
+                    currentComponentColor++;
                 }
             }
 
 
             //console.log("components: " + stringifyObject(component));
-            if (maxComponentColor == 1) return; // only one component left - done re-ranking
+            if (currentComponentColor == 1) return; // only one component - done re-ranking
 
             // for each component we should either increase the rank (to shorten out edges) or
             // decrease it (to shorten in-edges. If only in- (or only out-) edges are present there
@@ -326,21 +313,21 @@ PositionedGraph.prototype = {
             // the rank (as for each decrease there is an equivalent increase in the other component).
 
             // so we find the heaviest out edge and increase the rank of the source component
-            // in case of a tie we find the shortest of the heaviest edges
-
+            // - in case of a tie use the shortest of the heaviest edges
             var minComponent = 0;
-            for (var i = 1; i < maxComponentColor; i++) {
-              if (minOutEdgeWeight[i] > minOutEdgeWeight[minComponent] ||
-                  (minOutEdgeWeight[i] == minOutEdgeWeight[minComponent] &&
-                   minOutEdgeLength[i] <  minOutEdgeLength[minComponent]) )
-                minComponent = i;
+            for (var i = 1; i < component.length; i++) {
+              if (minOutEdgeInfo[i].weight > minOutEdgeInfo[minComponent].weight ||
+                  (minOutEdgeInfo[i].weight == minOutEdgeInfo[minComponent].weight &&
+                   minOutEdgeInfo[i].length <  minOutEdgeInfo[minComponent].length) ) {
+                  minComponent = i;
+              }
             }
 
             //console.log("MinLen: " + stringifyObject(minOutEdgeLength));
 
             // reduce rank of all nodes in component "minComponent" by minEdgeLength[minComponent] - 1
             for (var v = 0; v < component[minComponent].length; v++) {
-                ranks[component[minComponent][v]] += (minOutEdgeLength[minComponent] - 1);
+                ranks[component[minComponent][v]] += (minOutEdgeInfo[minComponent].length - 1);
             }
 
             //console.log("Re-ranking ranks update: " + stringifyObject(ranks));
@@ -1026,7 +1013,7 @@ PositionedGraph.prototype = {
 
         var minDistance = Infinity;
         var bucket1     = 0;
-        var bucket2     = 0;
+        var bucket2     = 1;
 
         //var timer = new Timer();
 
@@ -1047,8 +1034,9 @@ PositionedGraph.prototype = {
 
         //timer.printSinceLast("Compute distance between buckets: ");
 
-        if (minDistance == Infinity)
-            return false; // all buckets are unrelated. In theory should not happen
+        if (minDistance == Infinity) {
+            throw "Assumption failed: unrelated buckets";
+        }
 
         // merge all items from bucket1 into bucket2
         for (var i = 0; i < buckets[bucket2].length; i++) {
@@ -1237,19 +1225,19 @@ PositionedGraph.prototype = {
             }
 
             if (this.GG.isRelationship(i)) {
-    		    var parents = this.GG.getInEdges(i);
+                var parents = this.GG.getInEdges(i);
 
                 if (parents.length == 2) {     // while each relationship has 2 parents, during ordering some parents may be "unplugged" to simplify the graph
                     // only if parents have the same rank
                     if ( this.ranks[parents[0]] != this.ranks[parents[1]] )
-        			    continue;
+                        continue;
 
                     var order1 = order.vOrder[parents[0]];
                     var order2 = order.vOrder[parents[1]];
 
                     totalEdgeLengthInPositions += Math.abs(order1 - order2);
 
-                    // penalty, if any, for fathe ron the left, mother on the right
+                    // penalty, if any, for father on the left, mother on the right
                     var leftParent   = (order1 < order2) ? parents[0] : parents[1];
                     var genderOfLeft = this.GG.properties[leftParent]["gender"];
                     if (genderOfLeft == 'F')
