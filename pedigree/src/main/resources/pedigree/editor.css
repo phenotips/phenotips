@@ -349,19 +349,25 @@
 .menu-box .field-box .textarea-3-rows {
   height: 4.3em;
 }
+.import-upload {
+  display: block;
+  margin: 0.2em 0 0.75em 7.5em;
+  text-align: left;
+}
 .import-selector .import-textarea {
-  height: 8em;
+  height: 10em;
   resize: none;
   width: 85%;
   /*border: 1px solid #E8E8E8;*/
-  margin: .2em 0 0.5em 0;
+  margin: .2em 0 0 7.5em;
+  display: block;
 }
 .import-block {
-  margin: 0 0 0.5em 0;
+  margin: 0.75em 0 0.5em 0;
   display: block;
 }
 .import-block-bottom {
-  margin: 1em 0 0.5em 0;
+  margin: 1.25em 0 0.5em 0;
 }
 .import-section {
   font-weight: bold;
@@ -375,9 +381,13 @@
   float: left;
   margin: 0 1em 0 2.5em;
 }
-.import-mark-label {
+.import-mark-label1 {
   float: left;
-  margin: 0.2em 1em 0 2.5em;
+  margin: 0.25em 1em 0 2.5em;
+}
+.import-mark-label2 {
+  float: left;
+  margin: 0 1em 0 2.5em;
 }
 .menu-box .field-box textarea:focus {
   border: 1px solid #DDD;

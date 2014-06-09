@@ -1127,7 +1127,7 @@ DynamicPositionedGraph.prototype = {
     {
         var removedNodes = this._getAllNodes();
 
-        serializedData = JSON.parse(serializedAsJSON);
+        var serializedData = JSON.parse(serializedAsJSON);
 
         //console.log("Got serialization object: " + stringifyObject(serializedData));
 
@@ -1150,15 +1150,25 @@ DynamicPositionedGraph.prototype = {
         return {"new": newNodes, "removed": removedNodes};
     },
 
-    fromPED: function (inputPED, linkageMod, acceptUnknownPhenotypes, markEvaluated)
+    fromImport: function (importString, importType, importOptions)
     {
         var removedNodes = this._getAllNodes();
 
         //this._debugPrintAll("before");
 
-        var baseGraph = PedigreeImport.initFromPED(inputPED, linkageMod, acceptUnknownPhenotypes, markEvaluated);
-
-        if (!this._recreateUsingBaseGraph(baseGraph)) return {};  // no changes
+        if (importType == "ped") {
+            var baseGraph = PedigreeImport.initFromPED(importString, importOptions.acceptUnknownPhenotypes, importOptions.markEvaluated);
+            if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
+        } else if (importType == "gedcom") {
+            var baseGraph = PedigreeImport.initFromGEDCOM(importString, importOptions.markEvaluated);
+            if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
+        } else if (importType == "simpleJSON") {
+            var baseGraph = PedigreeImport.initFromSimpleJSON(importString);
+            if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes            
+        }  else if (importType == "phenotipsJSON") {
+            
+            // TODO
+        }
 
         //this._debugPrintAll("after");
 
@@ -1178,20 +1188,23 @@ DynamicPositionedGraph.prototype = {
 
     _recreateUsingBaseGraph: function (baseGraph)
     {
-        this.DG = new PositionedGraph( baseGraph,
-                                       this.DG.horizontalPersonSeparationDist,
-                                       this.DG.horizontalRelSeparationDist,
-                                       this.DG.maxInitOrderingBuckets,
-                                       this.DG.maxOrderingIterations,
-                                       this.DG.maxXcoordIterations );
+        try {
+            var newDG = new PositionedGraph( baseGraph,
+                                             this.DG.horizontalPersonSeparationDist,
+                                             this.DG.horizontalRelSeparationDist,
+                                             this.DG.maxInitOrderingBuckets,
+                                             this.DG.maxOrderingIterations,
+                                             this.DG.maxXcoordIterations );
+        } catch (e) {
+            return false;
+        }
 
+        this.DG          = newDG;
         this._heuristics = new Heuristics( this.DG );
 
-        this._debugPrintAll("before improvement");
-
+        //this._debugPrintAll("before improvement");
         this._heuristics.improvePositioning();
-
-        this._debugPrintAll("after improvement");
+        //this._debugPrintAll("after improvement");
 
         return true;
     },

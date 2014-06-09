@@ -121,20 +121,17 @@ var SaveLoadEngine = Class.create( {
         document.fire("pedigree:load:finish");
     },
 
-    createGraphFromImportData: function(inputString, noUndo, centerAround0, type, acceptUnknownPhenotypes, markEvaluated) {
+    createGraphFromImportData: function(importString, importType, importOptions, noUndo, centerAround0) {
         console.log("---- import: parsing data ----");
         document.fire("pedigree:load:start");
 
         try {
-            if (type == "ped") {
-                var changeSet = editor.getGraph().fromPED(inputString, false, acceptUnknownPhenotypes, markEvaluated);
-            } else if (type == "linkage") {
-                var changeSet = editor.getGraph().fromPED(inputString, true, acceptUnknownPhenotypes, markEvaluated);
-            }
+            var changeSet = editor.getGraph().fromImport(importString, importType, importOptions);
+            
+            if (changeSet == null) throw "unable to create a pedigree from imported data"; 
         }
         catch(err)
         {
-            console.log("ERROR loading the graph: " + err);
             alert("Error importing pedigree: " + err);
             document.fire("pedigree:load:finish");
             return;
