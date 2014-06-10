@@ -575,7 +575,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__genes')##
 $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
 #set ($targetClassName = 'PhenoTips.InvestigationClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
-  === List of known affected genes ===
+  === List of candidate genes ===
 
   #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'propertyName' : 'type', 'propertyValue' : 'molecular', 'mode' : $xcontext.action})
 #end
@@ -588,7 +588,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__genes')##
       <name>org.phenotips.patientSheet.field.genes</name>
     </property>
     <property>
-      <parameters>title=Known affected genes
+      <parameters>title=Candidate genes
 enabled=true
 required=
 order=1
