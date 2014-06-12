@@ -17,25 +17,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
 package org.phenotips.data.export.internal;
 
 import java.util.HashSet;
@@ -87,11 +68,21 @@ public class DataSection
         if (maxX == null || maxY == null) {
             throw new Exception("The maximum values should be initialized");
         }
+
+        /* From now on the cell positioning can be read from the 2D array's points,
+        rather then the positioning stored within the cell. */
         finalList = new DataCell[maxX + 1][maxY + 1];
         for (DataCell cell : bufferList) {
             finalList[cell.getX()][cell.getY()] = cell;
-            /* From now on the cell positioning will be read from its position in various arrays,
-            rather then the positioning stored within the cell. */
+
+            /* Some cells will be later merged, and to preserve styles they need to generate a list of empty
+            cells */
+            if (cell.generateMergedCells() == null) {
+                continue;
+            }
+            for (DataCell emptyCell : cell.generateMergedCells()) {
+                finalList[emptyCell.getX()][emptyCell.getY()] = emptyCell;
+            }
         }
     }
 

@@ -71,7 +71,7 @@ public class DataToCellConverter
         String sectionName = "phenotype";
         String[] fieldIds =
             { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta", "phenotype_meta",
-                "negative_phenotype", "phenotype_by_category" };
+                "negative_phenotype", "phenotype_by_section" };
         /* FIXME These will not work properly in different configurations */
         String[][] headerIds =
             { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "meta_code" }, { "meta" }, { "negative" },
@@ -117,20 +117,22 @@ public class DataToCellConverter
         int counter = 0;
         int hX = 0;
         if (present.contains("phenotype") && present.contains("negative")) {
-            DataCell cell = new DataCell("Present", hX, 1);
+            DataCell cell = new DataCell("Present", hX, 1, StyleOption.HEADER);
+            cell.addStyle(StyleOption.LARGE_HEADER);
             section.addToBuffer(cell);
             hX++;
         }
         for (String headerId : orderedHeaderIds) {
             if (!present.contains(headerId)) {
+                counter++;
                 continue;
             }
-            DataCell cell = new DataCell(orderedHeaderNames.get(counter), hX, 1);
+            DataCell cell = new DataCell(orderedHeaderNames.get(counter), hX, 1, StyleOption.HEADER);
             section.addToBuffer(cell);
             hX++;
             counter++;
         }
-        DataCell sectionHeader = new DataCell("Phenotype", 0, 0);
+        DataCell sectionHeader = new DataCell("Phenotype", 0, 0, StyleOption.HEADER);
         section.addToBuffer(sectionHeader);
 
         section.mergeX();
@@ -169,7 +171,11 @@ public class DataToCellConverter
 
             if (bothTypes && lastStatus != feature.isPresent()) {
                 lastStatus = feature.isPresent();
+                lastSection = "";
                 DataCell cell = new DataCell(lastStatus ? "Yes" : "No", x, y);
+                if (!lastStatus) {
+                    cell.addStyle(StyleOption.YES_NO_SEPARATOR);
+                }
                 cell.addStyle(lastStatus ? StyleOption.YES : StyleOption.NO);
                 section.addToBuffer(cell);
             }
@@ -178,7 +184,7 @@ public class DataToCellConverter
             }
             if (categoriesEnabled) {
                 String currentSection = sectionFeatureLookup.get(feature.getId());
-                if (StringUtils.equals(currentSection, lastSection)) {
+                if (!StringUtils.equals(currentSection, lastSection)) {
                     DataCell cell = new DataCell(currentSection, x, y);
                     section.addToBuffer(cell);
                     lastSection = currentSection;
@@ -186,12 +192,12 @@ public class DataToCellConverter
                 x++;
             }
             if (present.contains("phenotype")) {
-                DataCell cell = new DataCell(feature.getName(), x, y);
+                DataCell cell = new DataCell(feature.getName(), x, y, StyleOption.FEATURE_SEPARATOR);
                 section.addToBuffer(cell);
                 x++;
             }
             if (present.contains("code")) {
-                DataCell cell = new DataCell(feature.getId(), x, y);
+                DataCell cell = new DataCell(feature.getId(), x, y, StyleOption.FEATURE_SEPARATOR);
                 section.addToBuffer(cell);
                 x++;
             }
@@ -234,6 +240,7 @@ public class DataToCellConverter
         DataSection section = new DataSection(sectionName);
         enabledHeaderIdsBySection.put(sectionName, present);
         DataCell cell = new DataCell("Identifier", 0, 0, StyleOption.HEADER);
+        cell.addStyle(StyleOption.LARGE_HEADER);
         section.addToBuffer(cell);
 
 //        section._finalize();

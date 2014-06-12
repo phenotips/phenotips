@@ -96,7 +96,7 @@ public class SpreadsheetExportService implements ScriptService
         try {
             exporter.export(enabledFields, patientListToXWikiDocument(patients));
         } catch (Exception ex) {
-            logger.error("Error caught while generating a export in spreadsheet format", ex);
+            logger.error("Error caught while generating an export spreadsheet", ex);
         }
     }
 

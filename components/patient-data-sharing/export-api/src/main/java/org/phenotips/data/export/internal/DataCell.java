@@ -38,6 +38,7 @@
  */
 package org.phenotips.data.export.internal;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -80,9 +81,15 @@ public class DataCell
         styles.add(style);
     }
 
-    public Set<StyleOption> readStyles()
+    public void transferStyle(Collection<StyleOption> _styles)
     {
-        return styles;
+        if (_styles == null) {
+            return;
+        }
+        if (styles == null) {
+            styles = new HashSet<StyleOption>();
+        }
+        styles.addAll(_styles) ;
     }
 
     public Integer getX()
@@ -121,5 +128,26 @@ public class DataCell
             mergeX = 0;
         }
         mergeX++;
+    }
+
+    public Set<DataCell> generateMergedCells()
+    {
+        if (mergeX == null) {
+            return null;
+        }
+
+        Set<DataCell> generated = new HashSet<DataCell>();
+        for (int x=1; x <= mergeX; x++) {
+            DataCell cell = new DataCell("", this.x + x, this.getY());
+            cell.transferStyle(this.styles);
+            generated.add(cell);
+        }
+
+        return generated;
+    }
+
+    public Set<StyleOption> getStyles()
+    {
+        return styles;
     }
 }

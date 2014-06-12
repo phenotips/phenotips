@@ -52,10 +52,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * These are supplementary functions to the main conversion functions.
@@ -92,7 +95,7 @@ public class ConversionHelpers
         Object _mapping = mappingService.get("phenotype");
         if (_mapping instanceof ArrayList) {
             List<Map<String, Object>> fullMapping = (List<Map<String, Object>>) _mapping;
-            categoryMapping = new HashMap<String, ArrayList<String>>();
+            categoryMapping = new LinkedHashMap<String, ArrayList<String>>();
             for (Map<String, Object> categoryEntry : fullMapping) {
                 categoryMapping
                     .put(categoryEntry.get("title").toString(), (ArrayList<String>) categoryEntry.get("categories"));
@@ -135,15 +138,18 @@ public class ConversionHelpers
     {
         List<Feature> sortedFeatures = new LinkedList<Feature>();
 
-        for (String section : getCategoryMapping().keySet()) {
+        Map<String, ArrayList<String>> mapping = getCategoryMapping();
+        for (String section : mapping.keySet()) {
             if (features.isEmpty()) {
                 break;
             }
 
-            for (String category : getCategoryMapping().get(section)) {
+            for (String category : mapping.get(section)) {
                 Set<Feature> toRemove = new HashSet<Feature>();
                 for (Feature feature : features) {
-                    if (getCategoriesFromOntology(feature.getId()).contains(category)) {
+                    if (getCategoriesFromOntology(feature.getId()).contains(category) ||
+                        StringUtils.equals(feature.getId(), category))
+                    {
                         sectionFeatureTree.put(feature.getId(), section);
                         sortedFeatures.add(feature);
                         toRemove.add(feature);
@@ -167,6 +173,7 @@ public class ConversionHelpers
         if (termObj != null && termObj.get(PropertyDisplayer.INDEXED_CATEGORY_KEY) != null
             && List.class.isAssignableFrom(termObj.get(PropertyDisplayer.INDEXED_CATEGORY_KEY).getClass()))
         {
+            /* Could use ancestorAndSelf, but not sure that is necessary and likely is slower */
             return (List<String>) termObj.get(PropertyDisplayer.INDEXED_CATEGORY_KEY);
         }
         return new LinkedList<String>();

@@ -68,11 +68,22 @@ public class SheetAssembler
 
         List<DataSection> patientsCombined = new LinkedList<DataSection>();
         for (List<DataSection> patientSections : allSections) {
-            patientsCombined.add(assembleSectionsX(patientSections, false));
+            for (DataSection section : patientSections) {
+                section._finalize();
+                Styler.extendStyleHorizontally(section, StyleOption.FEATURE_SEPARATOR, StyleOption.YES_NO_SEPARATOR);
+                Styler.styleSectionBorder(section, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
+            }
+
+            DataSection assembled = assembleSectionsX(patientSections, true);
+            Styler.styleSectionBottom(assembled, StyleOption.PATIENT_BORDER);
+            patientsCombined.add(assembled);
         }
 
         DataSection bodyCombined = assembleSectionsY(patientsCombined, false);
-        DataSection headerCombined = assembleSectionsX(headers, false);
+        DataSection headerCombined = assembleSectionsX(headers, true);
+
+        /* Add style through functions. Use only with finalized sections. */
+        Styler.styleSectionBottom(headerCombined, StyleOption.HEADER_BOTTOM);
 
         headerHeight = headerCombined.getMaxX();
         oneSection = assembleSectionsY(Arrays.asList(headerCombined, bodyCombined), true);
@@ -130,7 +141,7 @@ public class SheetAssembler
                 cell.setY(cell.getY() + offset);
                 combinedSection.addToBuffer(cell);
             }
-            offset = section.getMaxY() + 1;
+            offset += section.getMaxY() + 1;
         }
         if (finalize) {
             combinedSection._finalize();

@@ -141,6 +141,7 @@ public class SpreadsheetExporter
     protected void write(DataSection section, Sheet sheet)
     {
         DataCell[][] cells = section.getFinalList();
+        Styler styler = new Styler();
 
         Row row;
         for (Integer y = 0; y <= section.getMaxY(); y++) {
@@ -154,11 +155,11 @@ public class SpreadsheetExporter
                 Cell cell = row.createCell(x);
 
                 cell.setCellValue(dataCell.getValue());
-//                cell.setCellStyle(dataCell.getStyle(wBook));
+                styler.style(dataCell, cell, wBook);
             }
         }
 
-        for (int col = 0; section.getMaxX() > col; col++) {
+        for (int col = 0; section.getMaxX() >= col; col++) {
             sheet.autoSizeColumn(col);
         }
 
