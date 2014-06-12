@@ -41,6 +41,7 @@ package org.phenotips.data.export.internal;
 import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
 import org.phenotips.data.Patient;
+import org.phenotips.ontology.OntologyService;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,18 +51,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class DataToCellConverter
 {
     private Map<String, Set<String>> enabledHeaderIdsBySection = new HashMap<String, Set<String>>();
 
-    public void featureSetUp(Set<String> enabledFields)
+    private OntologyService ontologyService;
+
+    private ConversionHelpers helpers;
+
+    public DataToCellConverter()
+    {
+        helpers = new ConversionHelpers();
+    }
+
+    public void featureSetUp(Set<String> enabledFields) throws Exception
     {
         String sectionName = "phenotype";
         String[] fieldIds =
             { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta", "phenotype_meta",
-                "negative_phenotype" };
+                "negative_phenotype", "phenotype_by_category" };
+        /* FIXME These will not work properly in different configurations */
         String[][] headerIds =
-            { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "meta_code" }, { "meta" }, { "negative" } };
+            { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "meta_code" }, { "meta" }, { "negative" },
+                { "category" } };
         Set<String> present = new HashSet<String>();
 
         int counter = 0;
@@ -74,6 +88,8 @@ public class DataToCellConverter
             counter++;
         }
         enabledHeaderIdsBySection.put(sectionName, present);
+
+        helpers.featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
     }
 
     public DataSection featuresHeader() throws Exception
@@ -86,11 +102,13 @@ public class DataToCellConverter
 
         DataSection section = new DataSection(sectionName);
         List<String> orderedHeaderIds = new LinkedList<String>();
+        orderedHeaderIds.add("category");
         orderedHeaderIds.add("phenotype");
         orderedHeaderIds.add("code");
         orderedHeaderIds.add("meta");
         orderedHeaderIds.add("meta_code");
         List<String> orderedHeaderNames = new LinkedList<String>();
+        orderedHeaderNames.add("Category");
         orderedHeaderNames.add("Label");
         orderedHeaderNames.add("ID");
         orderedHeaderNames.add("Meta");
@@ -130,24 +148,24 @@ public class DataToCellConverter
         Boolean bothTypes = present.contains("phenotype") && present.contains("negative");
         DataSection section = new DataSection(sectionName);
 
+        int x;
         int y = 0;
-        int x = 0;
         Set<? extends Feature> features = patient.getFeatures();
-        List<Feature> sortedFeatures = new LinkedList<Feature>();
-        for (Feature feature : features) {
-            boolean positive = present.contains("phenotype");
-            boolean negative = present.contains("negative");
-            if (feature.isPresent() && positive) {
-                sortedFeatures.add(0, feature);
-            } else if (!feature.isPresent() && negative) {
-                sortedFeatures.add(feature);
-            }
+        helpers.newPatient();
+        Boolean categoriesEnabled = present.contains("category");
+        List<Feature> sortedFeatures;
+        Map<String, String> sectionFeatureLookup = new HashMap<String, String>();
+        if (!categoriesEnabled) {
+            sortedFeatures = helpers.sortFeaturesSimple(features);
+        } else {
+            sortedFeatures = helpers.sortFeaturesWithSections(features);
+            sectionFeatureLookup = helpers.getSectionFeatureTree();
         }
 
         Boolean lastStatus = false;
+        String lastSection = "";
         for (Feature feature : sortedFeatures) {
             x = 0;
-            boolean negative = !feature.isPresent();
 
             if (bothTypes && lastStatus != feature.isPresent()) {
                 lastStatus = feature.isPresent();
@@ -156,6 +174,15 @@ public class DataToCellConverter
                 section.addToBuffer(cell);
             }
             if (bothTypes) {
+                x++;
+            }
+            if (categoriesEnabled) {
+                String currentSection = sectionFeatureLookup.get(feature.getId());
+                if (StringUtils.equals(currentSection, lastSection)) {
+                    DataCell cell = new DataCell(currentSection, x, y);
+                    section.addToBuffer(cell);
+                    lastSection = currentSection;
+                }
                 x++;
             }
             if (present.contains("phenotype")) {
