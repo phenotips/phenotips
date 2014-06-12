@@ -683,6 +683,23 @@ document.observe('xwiki:dom:loaded', function() {
           } else {
             if (progressionPreview) {progressionPreview.update('');}
           }
+          var inheritancePreview = pdItem.down('.inheritance-preview');
+          var inheritance = false;
+          pdItem.select('.suspected_mode_of_inheritance input[type="radio"]').each(function(item) {
+            if (item.checked &amp;&amp; item.value != '') {
+              inheritance = item;
+            }
+          });
+          if (inheritance) {
+             if (!inheritancePreview) {
+               inheritancePreview = new Element('dd', {'class' : 'inheritance-preview preview' });
+               inheritance.up('dd').insert({after: inheritancePreview});
+             }
+             inheritancePreview.update(inheritance.title);
+             details += inheritance.title;
+          } else {
+            if (inheritancePreview) {inheritancePreview.update('');}
+          }
           var noPreview = pdItem.down('.no-preview');
           if (details.strip() == '') {
             if (!noPreview) {
