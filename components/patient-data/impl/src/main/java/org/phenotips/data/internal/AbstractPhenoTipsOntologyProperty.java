@@ -78,8 +78,8 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
      */
     protected AbstractPhenoTipsOntologyProperty(JSONObject json)
     {
-        this.id = json.getString(ID_JSON_KEY_NAME);
-        this.name = json.getString(NAME_JSON_KEY_NAME);
+        this.id = json.has(ID_JSON_KEY_NAME) ? json.getString(ID_JSON_KEY_NAME) : "";
+        this.name = json.has(NAME_JSON_KEY_NAME) ? json.getString(NAME_JSON_KEY_NAME) : null;
     }
 
     @Override
@@ -118,8 +118,12 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
     public JSONObject toJSON()
     {
         JSONObject result = new JSONObject();
-        result.element(ID_JSON_KEY_NAME, getId());
-        result.element(NAME_JSON_KEY_NAME, getName());
+        if (StringUtils.isNotEmpty(this.getId())) {
+            result.element(ID_JSON_KEY_NAME, getId());
+        }
+        if (StringUtils.isNotEmpty(this.getName())) {
+            result.element(NAME_JSON_KEY_NAME, getName());
+        }
         return result;
     }
 
