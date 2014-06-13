@@ -41,7 +41,6 @@ package org.phenotips.data.export.internal;
 import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
 import org.phenotips.data.Patient;
-import org.phenotips.ontology.OntologyService;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,8 +55,6 @@ import org.apache.commons.lang3.StringUtils;
 public class DataToCellConverter
 {
     private Map<String, Set<String>> enabledHeaderIdsBySection = new HashMap<String, Set<String>>();
-
-    private OntologyService ontologyService;
 
     private ConversionHelpers helpers;
 
@@ -118,8 +115,7 @@ public class DataToCellConverter
         int hX = 0;
         if (present.contains("phenotype") && present.contains("negative")) {
             DataCell cell = new DataCell("Present", hX, 1, StyleOption.HEADER);
-            cell.addStyle(StyleOption.LARGE_HEADER);
-            section.addToBuffer(cell);
+            section.addCell(cell);
             hX++;
         }
         for (String headerId : orderedHeaderIds) {
@@ -128,14 +124,14 @@ public class DataToCellConverter
                 continue;
             }
             DataCell cell = new DataCell(orderedHeaderNames.get(counter), hX, 1, StyleOption.HEADER);
-            section.addToBuffer(cell);
+            section.addCell(cell);
             hX++;
             counter++;
         }
         DataCell sectionHeader = new DataCell("Phenotype", 0, 0, StyleOption.HEADER);
-        section.addToBuffer(sectionHeader);
+        sectionHeader.addStyle(StyleOption.LARGE_HEADER);
+        section.addCell(sectionHeader);
 
-        section.mergeX();
         return section;
     }
 
@@ -177,7 +173,7 @@ public class DataToCellConverter
                     cell.addStyle(StyleOption.YES_NO_SEPARATOR);
                 }
                 cell.addStyle(lastStatus ? StyleOption.YES : StyleOption.NO);
-                section.addToBuffer(cell);
+                section.addCell(cell);
             }
             if (bothTypes) {
                 x++;
@@ -186,19 +182,19 @@ public class DataToCellConverter
                 String currentSection = sectionFeatureLookup.get(feature.getId());
                 if (!StringUtils.equals(currentSection, lastSection)) {
                     DataCell cell = new DataCell(currentSection, x, y);
-                    section.addToBuffer(cell);
+                    section.addCell(cell);
                     lastSection = currentSection;
                 }
                 x++;
             }
             if (present.contains("phenotype")) {
                 DataCell cell = new DataCell(feature.getName(), x, y, StyleOption.FEATURE_SEPARATOR);
-                section.addToBuffer(cell);
+                section.addCell(cell);
                 x++;
             }
             if (present.contains("code")) {
                 DataCell cell = new DataCell(feature.getId(), x, y, StyleOption.FEATURE_SEPARATOR);
-                section.addToBuffer(cell);
+                section.addCell(cell);
                 x++;
             }
             if (present.contains("meta") || present.contains("meta_code")) {
@@ -209,11 +205,11 @@ public class DataToCellConverter
                 for (FeatureMetadatum meta : featureMetadatum) {
                     if (present.contains("meta")) {
                         DataCell cell = new DataCell(meta.getName(), mX, y);
-                        section.addToBuffer(cell);
+                        section.addCell(cell);
                     }
                     if (present.contains("meta_code")) {
                         DataCell cell = new DataCell(meta.getId(), mCX, y);
-                        section.addToBuffer(cell);
+                        section.addCell(cell);
                     }
                     y++;
                 }
@@ -224,7 +220,7 @@ public class DataToCellConverter
             y++;
         }
 
-//        section._finalize();
+//        section.finalizeToMatrix();
         return section;
     }
 
@@ -241,9 +237,9 @@ public class DataToCellConverter
         enabledHeaderIdsBySection.put(sectionName, present);
         DataCell cell = new DataCell("Identifier", 0, 0, StyleOption.HEADER);
         cell.addStyle(StyleOption.LARGE_HEADER);
-        section.addToBuffer(cell);
+        section.addCell(cell);
 
-//        section._finalize();
+//        section.finalizeToMatrix();
         return section;
     }
 
@@ -257,9 +253,9 @@ public class DataToCellConverter
         DataSection section = new DataSection(sectionName);
 
         DataCell cell = new DataCell(patient.getExternalId(), 0, 0);
-        section.addToBuffer(cell);
+        section.addCell(cell);
 
-//        section._finalize();
+//        section.finalizeToMatrix();
         return section;
     }
 }

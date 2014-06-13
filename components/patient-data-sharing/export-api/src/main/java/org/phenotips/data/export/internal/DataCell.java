@@ -39,6 +39,7 @@
 package org.phenotips.data.export.internal;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,6 +59,10 @@ public class DataCell
 
     private Integer mergeX;
 
+    private Boolean merged;
+
+    Set<DataCell> generated;
+
     public DataCell(String value, Integer x, Integer y)
     {
         this.value = value;
@@ -73,15 +78,20 @@ public class DataCell
         addStyle(style);
     }
 
-    public void addStyle(StyleOption style)
+    public void addStyle(StyleOption _style)
     {
         if (styles == null) {
             styles = new HashSet<StyleOption>();
         }
-        styles.add(style);
+        styles.add(_style);
+        if (generated != null) {
+            for (DataCell child : generated) {
+                child.addStyle(_style);
+            }
+        }
     }
 
-    public void transferStyle(Collection<StyleOption> _styles)
+    public void addStyles(Collection<StyleOption> _styles)
     {
         if (_styles == null) {
             return;
@@ -89,7 +99,12 @@ public class DataCell
         if (styles == null) {
             styles = new HashSet<StyleOption>();
         }
-        styles.addAll(_styles) ;
+        styles.addAll(_styles);
+        if (generated != null) {
+            for (DataCell child : generated) {
+                child.addStyles(_styles);
+            }
+        }
     }
 
     public Integer getX()
@@ -133,13 +148,17 @@ public class DataCell
     public Set<DataCell> generateMergedCells()
     {
         if (mergeX == null) {
-            return null;
+            return Collections.emptySet();
+        }
+        if (generated != null) {
+            return generated;
         }
 
-        Set<DataCell> generated = new HashSet<DataCell>();
-        for (int x=1; x <= mergeX; x++) {
+        generated = new HashSet<DataCell>();
+        for (int x = 1; x <= mergeX; x++) {
             DataCell cell = new DataCell("", this.x + x, this.getY());
-            cell.transferStyle(this.styles);
+            cell.setMerged(true);
+            cell.addStyles(this.styles);
             generated.add(cell);
         }
 
@@ -149,5 +168,18 @@ public class DataCell
     public Set<StyleOption> getStyles()
     {
         return styles;
+    }
+
+    public Boolean isMerged()
+    {
+        if (merged == null || !merged) {
+            return false;
+        }
+        return true;
+    }
+
+    public void setMerged(Boolean merged)
+    {
+        this.merged = merged;
     }
 }

@@ -69,7 +69,7 @@ public class SheetAssembler
         List<DataSection> patientsCombined = new LinkedList<DataSection>();
         for (List<DataSection> patientSections : allSections) {
             for (DataSection section : patientSections) {
-                section._finalize();
+                section.finalizeToMatrix();
                 Styler.extendStyleHorizontally(section, StyleOption.FEATURE_SEPARATOR, StyleOption.YES_NO_SEPARATOR);
                 Styler.styleSectionBorder(section, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
             }
@@ -77,6 +77,13 @@ public class SheetAssembler
             DataSection assembled = assembleSectionsX(patientSections, true);
             Styler.styleSectionBottom(assembled, StyleOption.PATIENT_BORDER);
             patientsCombined.add(assembled);
+        }
+
+        /* Inserting styling calls here is fairly unavoidable. Also don't forget to merge BEFORE styling. */
+        for (DataSection header : headers) {
+            header.finalizeToMatrix();
+            header.mergeX();
+            Styler.styleSectionBorder(header, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
         }
 
         DataSection bodyCombined = assembleSectionsY(patientsCombined, false);
@@ -87,6 +94,9 @@ public class SheetAssembler
 
         headerHeight = headerCombined.getMaxX();
         oneSection = assembleSectionsY(Arrays.asList(headerCombined, bodyCombined), true);
+
+        /* Extend the section borders all the way to the bottom of the sheet */
+        Styler.extendStyleVertically(oneSection, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
     }
 
     private List<List<DataSection>> generateBody(DataToCellConverter converter, List<Patient> patients) throws Exception
@@ -115,16 +125,16 @@ public class SheetAssembler
 
         Integer offset = 0;
         for (DataSection section : sections) {
-            Set<DataCell> cells = section.getBufferList();
+            Set<DataCell> cells = section.getCellList();
 
             for (DataCell cell : cells) {
                 cell.setX(cell.getX() + offset);
-                combinedSection.addToBuffer(cell);
+                combinedSection.addCell(cell);
             }
             offset = section.getMaxX() + 1;
         }
         if (finalize) {
-            combinedSection._finalize();
+            combinedSection.finalizeToMatrix();
         }
 
         return combinedSection;
@@ -135,16 +145,16 @@ public class SheetAssembler
 
         Integer offset = 0;
         for (DataSection section : sections) {
-            Set<DataCell> cells = section.getBufferList();
+            Set<DataCell> cells = section.getCellList();
 
             for (DataCell cell : cells) {
                 cell.setY(cell.getY() + offset);
-                combinedSection.addToBuffer(cell);
+                combinedSection.addCell(cell);
             }
             offset += section.getMaxY() + 1;
         }
         if (finalize) {
-            combinedSection._finalize();
+            combinedSection.finalizeToMatrix();
         }
 
         return combinedSection;

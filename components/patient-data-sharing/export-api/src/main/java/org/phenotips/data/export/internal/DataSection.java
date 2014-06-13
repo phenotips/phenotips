@@ -32,10 +32,15 @@ public class DataSection
 {
     private String sectionName;
 
-    private Set<DataCell> bufferList = new HashSet<DataCell>();
+    private Set<DataCell> cellList = new HashSet<DataCell>();
 
     /** Populated after all the cells are in the buffer list */
-    private DataCell[][] finalList;
+    private DataCell[][] matrix;
+
+    /** The matrix X and Y are size parameters, not the max X or Y index */
+    private Integer matrixX = 0;
+
+    private Integer matrixY = 0;
 
     private Integer maxX = 0;
 
@@ -52,18 +57,26 @@ public class DataSection
     }
 
     /** Need the buffer to determine the size of the matrix first */
-    public void addToBuffer(DataCell cell)
+    public void addCell(DataCell cell)
     {
+        /* Add to matrix only if the cell fits within the boundaries and the current spot is empty */
+        if (matrix != null) {
+            if (cell.getX() < matrixX && cell.getY() < matrixY) {
+                if (matrix[cell.getX()][cell.getY()] == null) {
+                    matrix[cell.getX()][cell.getY()] = cell;
+                }
+            }
+        }
         if (cell.getX() > maxX) {
             maxX = cell.getX();
         }
         if (cell.getY() > maxY) {
             maxY = cell.getY();
         }
-        bufferList.add(cell);
+        cellList.add(cell);
     }
 
-    public void _finalize() throws Exception
+    public void finalizeToMatrix() throws Exception
     {
         if (maxX == null || maxY == null) {
             throw new Exception("The maximum values should be initialized");
@@ -71,32 +84,33 @@ public class DataSection
 
         /* From now on the cell positioning can be read from the 2D array's points,
         rather then the positioning stored within the cell. */
-        finalList = new DataCell[maxX + 1][maxY + 1];
-        for (DataCell cell : bufferList) {
-            finalList[cell.getX()][cell.getY()] = cell;
+        matrixX = maxX + 1;
+        matrixY = maxY + 1;
+        matrix = new DataCell[matrixX][matrixY];
+        for (DataCell cell : cellList) {
+            matrix[cell.getX()][cell.getY()] = cell;
 
             /* Some cells will be later merged, and to preserve styles they need to generate a list of empty
             cells */
-            if (cell.generateMergedCells() == null) {
-                continue;
-            }
             for (DataCell emptyCell : cell.generateMergedCells()) {
-                finalList[emptyCell.getX()][emptyCell.getY()] = emptyCell;
+                matrix[emptyCell.getX()][emptyCell.getY()] = emptyCell;
             }
         }
     }
 
     public void mergeX() throws Exception
     {
-        _finalize();
+        if (matrix == null) {
+            throw new Exception("The section has not been converted to a matrix");
+        }
         for (Integer y = 0; y <= getMaxY(); y++) {
             for (Integer x = 0; x <= getMaxX(); x++) {
-                DataCell cell = finalList[x][y];
+                DataCell cell = matrix[x][y];
                 if (cell == null) {
                     continue;
                 }
                 Integer nextX = x + 1;
-                while (nextX <= getMaxX() && finalList[nextX][y] == null) {
+                while (nextX <= getMaxX() && matrix[nextX][y] == null) {
                     cell.addMergeX();
                     nextX++;
                 }
@@ -104,14 +118,14 @@ public class DataSection
         }
     }
 
-    public Set<DataCell> getBufferList()
+    public Set<DataCell> getCellList()
     {
-        return bufferList;
+        return cellList;
     }
 
-    public DataCell[][] getFinalList()
+    public DataCell[][] getMatrix()
     {
-        return finalList;
+        return matrix;
     }
 
     public Integer getMaxX()

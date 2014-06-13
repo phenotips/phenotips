@@ -19,6 +19,7 @@
  */
 package org.phenotips.data.export.internal;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 
 /**
  * Takes care of giving cells the right style, and applying styles to the output spreadsheet.
@@ -41,9 +43,9 @@ public class Styler
     /** Use only on finalized sections */
     public static void styleSectionBottom(DataSection section, StyleOption style) throws Exception
     {
-        DataCell[][] cellMatrix = section.getFinalList();
+        DataCell[][] cellMatrix = section.getMatrix();
         if (cellMatrix == null) {
-            throw new Exception("The section has not been finalized");
+            throw new Exception("The section has not been converted to a matrix");
         }
 
         /* In case the border passes through non-existent cells */
@@ -51,7 +53,7 @@ public class Styler
             DataCell cell = cellMatrix[x][section.getMaxY()];
             if (cell == null) {
                 cell = new DataCell("", x, section.getMaxY());
-                section.addToBuffer(cell);
+                section.addCell(cell);
             }
             cell.addStyle(style);
         }
@@ -60,23 +62,23 @@ public class Styler
     public static void styleSectionBorder(DataSection section, StyleOption styleLeft, StyleOption styleRight)
         throws Exception
     {
-        DataCell[][] cellMatrix = section.getFinalList();
+        DataCell[][] cellMatrix = section.getMatrix();
         if (cellMatrix == null) {
-            throw new Exception("The section has not been finalized");
+            throw new Exception("The section has not been converted to a matrix");
         }
 
         /* TODO determine if setting border on both sides is needed */
         /* In case the border passes through non-existent cells */
         for (int y = 0; y <= section.getMaxY(); y++) {
-            DataCell cellLeft = cellMatrix[0][section.getMaxY()];
-            DataCell cellRight = cellMatrix[section.getMaxX()][section.getMaxY()];
+            DataCell cellLeft = cellMatrix[0][y];
+            DataCell cellRight = cellMatrix[section.getMaxX()][y];
             if (cellLeft == null) {
                 cellLeft = new DataCell("", 0, y);
-                section.addToBuffer(cellLeft);
+                section.addCell(cellLeft);
             }
             if (cellRight == null) {
                 cellRight = new DataCell("", section.getMaxX(), y);
-                section.addToBuffer(cellLeft);
+                section.addCell(cellRight);
             }
             cellLeft.addStyle(styleLeft);
             cellRight.addStyle(styleRight);
@@ -87,37 +89,87 @@ public class Styler
     public static void extendStyleHorizontally(DataSection section, StyleOption... styles)
         throws Exception
     {
-        DataCell[][] cellMatrix = section.getFinalList();
+        DataCell[][] cellMatrix = section.getMatrix();
         if (cellMatrix == null) {
-            throw new Exception("The section has not been finalized");
+            throw new Exception("The section has not been converted to a matrix");
         }
 
         /* In case the border passes through non-existent cells */
         for (int y = 0; y <= section.getMaxY(); y++) {
             Set<StyleOption> toExtend = new HashSet<StyleOption>();
+            Integer startingX = 0;
+            Boolean found = false;
             for (int x = 0; x <= section.getMaxX(); x++) {
-                Boolean _break = false;
+                found = false;
                 DataCell cell = cellMatrix[x][y];
                 if (cell == null) {
                     continue;
                 }
                 for (StyleOption style : styles) {
-                    if (cell.getStyles().contains(style)) {
+                    if (cell.getStyles() != null && cell.getStyles().contains(style)) {
                         toExtend.add(style);
-                        _break = true;
+                        found = true;
                     }
                 }
-
-                if (_break) {
+                if (found) {
+                    startingX = x;
                     break;
                 }
             }
-            for (int x = 0; x <= section.getMaxX(); x++) {
+            if (!found) {
+                continue;
+            }
+            for (int x = startingX + 1; x <= section.getMaxX(); x++) {
                 DataCell cell = cellMatrix[x][y];
                 if (cell == null) {
                     cell = new DataCell("", x, y);
+                    section.addCell(cell);
                 }
-                cell.transferStyle(toExtend);
+                cell.addStyles(toExtend);
+            }
+        }
+    }
+
+    public static void extendStyleVertically(DataSection section, StyleOption... styles)
+        throws Exception
+    {
+        DataCell[][] cellMatrix = section.getMatrix();
+        if (cellMatrix == null) {
+            throw new Exception("The section has not been converted to a matrix");
+        }
+
+        /* In case the border passes through non-existent cells */
+        for (int x = 0; x <= section.getMaxX(); x++) {
+            Set<StyleOption> toExtend = new HashSet<StyleOption>();
+            Integer startingY = 0;
+            Boolean found = false;
+            for (int y = 0; y <= section.getMaxY(); y++) {
+                found = false;
+                DataCell cell = cellMatrix[x][y];
+                if (cell == null) {
+                    continue;
+                }
+                for (StyleOption style : styles) {
+                    if (!cell.isMerged() && cell.getStyles() != null && cell.getStyles().contains(style)) {
+                        toExtend.add(style);
+                        found = true;
+                    }
+                }
+                if (found) {
+                    startingY = y;
+                    break;
+                }
+            }
+            if (!found) {
+                continue;
+            }
+            for (int y = startingY + 1; y <= section.getMaxY(); y++) {
+                DataCell cell = cellMatrix[x][y];
+                if (cell == null) {
+                    cell = new DataCell("", x, y);
+                    section.addCell(cell);
+                }
+                cell.addStyles(toExtend);
             }
         }
     }
@@ -125,7 +177,15 @@ public class Styler
     public void style(DataCell dataCell, Cell cell, Workbook wBook)
     {
         Set<StyleOption> styles = dataCell.getStyles();
+        CellStyle cellStyle = wBook.createCellStyle();
         if (styles == null) {
+            if (styleCache.containsKey(Collections.<StyleOption>emptySet())) {
+                cell.setCellStyle(styleCache.get(Collections.<StyleOption>emptySet()));
+                return;
+            }
+            cellStyle.setFont(createDefaultFont(wBook));
+            cell.setCellStyle(cellStyle);
+            styleCache.put(Collections.<StyleOption>emptySet(), cellStyle);
             return;
         }
 
@@ -136,32 +196,33 @@ public class Styler
 
         /* Priority can be coded in by placing the if statement lower, for higher priority */
         /* Font styles */
-        CellStyle cellStyle = wBook.createCellStyle();
+        Font headerFont = null;
         if (styles.contains(StyleOption.HEADER)) {
-            Font font = wBook.createFont();
-            font.setBoldweight(Font.BOLDWEIGHT_BOLD);
-            cellStyle.setFont(font);
+            headerFont = wBook.createFont();
+            headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+            cellStyle.setFont(headerFont);
             cellStyle.setAlignment(CellStyle.ALIGN_CENTER);
             cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
             cell.setCellStyle(cellStyle);
         }
         if (styles.contains(StyleOption.LARGE_HEADER)) {
-            Font font = wBook.createFont();
-            font.setFontHeightInPoints((short) 18);
-            cellStyle.setFont(font);
+            if (headerFont == null) {
+                headerFont = wBook.createFont();
+                headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+            }
+            headerFont.setFontHeightInPoints((short) 12);
+            cellStyle.setFont(headerFont);
             cell.setCellStyle(cellStyle);
         }
         if (styles.contains(StyleOption.YES)) {
-            Font font = wBook.createFont();
+            Font font = createDefaultFont(wBook);
             font.setColor(HSSFColor.GREEN.index);
-            font.setFontHeightInPoints((short) 12);
             cellStyle.setFont(font);
             cell.setCellStyle(cellStyle);
         }
         if (styles.contains(StyleOption.NO)) {
-            Font font = wBook.createFont();
-            font.setColor(HSSFColor.RED.index);
-            font.setFontHeightInPoints((short) 12);
+            Font font = createDefaultFont(wBook);
+            font.setColor(HSSFColor.DARK_RED.index);
             font.setBoldweight(Font.BOLDWEIGHT_BOLD);
             cellStyle.setFont(font);
             cell.setCellStyle(cellStyle);
@@ -190,12 +251,19 @@ public class Styler
             cell.setCellStyle(cellStyle);
         }
         if (styles.contains(StyleOption.YES_NO_SEPARATOR)) {
-            cellStyle.setBorderTop(CellStyle.BORDER_DOTTED);
+            cellStyle.setBorderTop(CellStyle.BORDER_DASHED);
             cellStyle.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             cell.setCellStyle(cellStyle);
         }
 
         /* Keep this as the last statement. */
         styleCache.put(styles, cellStyle);
+    }
+
+    private Font createDefaultFont(Workbook wBook) {
+        Font font = wBook.createFont();
+        font.setFontHeightInPoints((short) 10);
+        font.setFontName(XSSFFont.DEFAULT_FONT_NAME);
+        return font;
     }
 }

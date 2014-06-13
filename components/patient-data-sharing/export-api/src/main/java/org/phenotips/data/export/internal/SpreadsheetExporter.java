@@ -140,7 +140,7 @@ public class SpreadsheetExporter
 
     protected void write(DataSection section, Sheet sheet)
     {
-        DataCell[][] cells = section.getFinalList();
+        DataCell[][] cells = section.getMatrix();
         Styler styler = new Styler();
 
         Row row;
