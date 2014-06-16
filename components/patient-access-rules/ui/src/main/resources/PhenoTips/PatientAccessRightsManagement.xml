@@ -838,7 +838,7 @@ $xwiki.ssx.use($serviceDocName)
         #if ($canTransfer)
           &lt;div id="new-owner-input"&gt;&lt;input type="text" name="owner" id="new-owner-user-select" class="suggestUsers" value="" placeholder="New owner" /&gt;&lt;/div&gt;
           #set ($groups = $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
-          #set ($phgroups = [])
+          #set ($phgroups = $collectionstool.sortedMap)
           #foreach ($group in $groups)
             #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
             #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
@@ -846,7 +846,11 @@ $xwiki.ssx.use($serviceDocName)
               #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
             #end
             #if ($groupObj)
-              #set ($discard = $phgroups.add($group))
+              #if ("$group.plainTitle" != '')
+                #set ($discard = $phgroups.put($group.documentReference, $group.plainTitle))
+              #else
+                #set ($discard = $phgroups.put($group.documentReference, $group.documentReference.name))
+              #end
             #end
           #end
           #set ($groups = $phgroups)
@@ -854,8 +858,8 @@ $xwiki.ssx.use($serviceDocName)
           &lt;select name="owner" id="new-owner-group-select"&gt;
             &lt;option value="" selected="selected"&gt;New owner group&lt;/option&gt;
             &lt;optgroup label="New owner group"&gt;
-            #foreach ($g in $groups)
-              &lt;option value="${g.documentReference}"#if ("$!{ownerReference}" == "$g.documentReference") selected="selected"#end&gt;#if ("$g.plainTitle" != '')$g.plainTitle#else${g.name}#end&lt;/option&gt;
+            #foreach ($g in $groups.entrySet())
+              &lt;option value="${g.key}"#if ("$!{ownerReference}" == "$g.key") selected="selected"#end&gt;${g.value}&lt;/option&gt;
             #end
             &lt;/optgroup&gt;
           &lt;/select&gt;
