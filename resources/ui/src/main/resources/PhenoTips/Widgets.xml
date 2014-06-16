@@ -198,7 +198,10 @@
     unifiedLoader: false,
     // The DOM node to use to display the loading indicator when in mode unified loader (it will receive a "loading" class name for the time of the loading)
     // Default is null, which falls back on the input itself. This option is used only when unifiedLoader is true.
-    loaderNode: null
+    loaderNode: null,
+    // A function returning true or false for each fetched suggestion. If defined, only suggestions for which 'true' is returned
+    // are added to the list
+    filterFunc: null
   },
   sInput : "",
   nInputChars : 0,
@@ -920,7 +923,9 @@
     //
     for (var i = 0,len = arr.length; i &lt; len; i++)
     {
-       list.addItem(this.generateListItem(arr[i]));
+       if (!this.options.filterFunc || this.options.filterFunc(arr[i])) {
+           list.addItem(this.generateListItem(arr[i]));
+       }
     }
     // no results
     if (arr.length == 0)
