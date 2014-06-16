@@ -17,25 +17,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
 package org.phenotips.data.export.internal;
 
 import org.phenotips.data.Feature;
@@ -63,7 +44,7 @@ public class DataToCellConverter
         helpers = new ConversionHelpers();
     }
 
-    public void featureSetUp(Set<String> enabledFields) throws Exception
+    public void featureSetup(Set<String> enabledFields) throws Exception
     {
         String sectionName = "phenotype";
         String[] fieldIds =
@@ -224,7 +205,7 @@ public class DataToCellConverter
         return section;
     }
 
-    protected DataSection idHeader(Set<String> enabledFields) throws Exception
+    public DataSection idHeader(Set<String> enabledFields) throws Exception
     {
         String sectionName = "id";
         Set<String> present = new HashSet<String>();
@@ -243,7 +224,7 @@ public class DataToCellConverter
         return section;
     }
 
-    protected DataSection idBody(Patient patient) throws Exception
+    public DataSection idBody(Patient patient) throws Exception
     {
         String sectionName = "id";
         Set<String> present = enabledHeaderIdsBySection.get(sectionName);
@@ -257,5 +238,47 @@ public class DataToCellConverter
 
 //        section.finalizeToMatrix();
         return section;
+    }
+
+    public DataSection patientInfoHeader(Set<String> enabledFields) throws Exception
+    {
+        String sectionName = "patientInfo";
+        Map<String, String> fieldToHeaderMap = new HashMap<String, String>();
+        fieldToHeaderMap.put("first_name", "First Name");
+        fieldToHeaderMap.put("last_name", "Last Name");
+        fieldToHeaderMap.put("date_of_birth", "Date of birth");
+        fieldToHeaderMap.put("gender", "Sex");
+        fieldToHeaderMap.put("indication_for_referral", "Indication for referral");
+
+        Set<String> present = new HashSet<String>();
+        for (String fieldId : fieldToHeaderMap.keySet()) {
+            if (enabledFields.remove(fieldId)) {
+                present.add(fieldId);
+            }
+        }
+        enabledHeaderIdsBySection.put(sectionName, present);
+
+        DataSection headerSection = new DataSection();
+        int x = 0;
+        for (String fieldId : present) {
+            DataCell headerCell = new DataCell(fieldToHeaderMap.get(fieldId), x, 1, StyleOption.HEADER);
+            headerSection.addCell(headerCell);
+            x++;
+        }
+        DataCell headerCell = new DataCell("Patient Information", 0, 0, StyleOption.LARGE_HEADER);
+        headerSection.addCell(headerCell);
+
+        return headerSection;
+    }
+
+    public DataSection patientInfoBody(Patient patient) {
+        String sectionName = "patientInfo";
+        Set<String> headerIds = enabledHeaderIdsBySection.get(sectionName);
+
+        DataSection bodySection = new DataSection();
+        if (headerIds.remove("first_name")) {
+            String firstName = patient.<String>getData("patientName").get("first_name");
+        }
+        return bodySection;
     }
 }

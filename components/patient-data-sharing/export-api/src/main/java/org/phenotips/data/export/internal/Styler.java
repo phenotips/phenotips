@@ -195,7 +195,7 @@ public class Styler
         }
 
         /* Priority can be coded in by placing the if statement lower, for higher priority */
-        /* Font styles */
+        /** Font styles */
         Font headerFont = null;
         if (styles.contains(StyleOption.HEADER)) {
             headerFont = wBook.createFont();
@@ -228,7 +228,7 @@ public class Styler
             cell.setCellStyle(cellStyle);
         }
 
-        /* Border styles */
+        /** Border styles */
         if (styles.contains(StyleOption.HEADER_BOTTOM)) {
             cellStyle.setBorderBottom(CellStyle.BORDER_MEDIUM);
             cell.setCellStyle(cellStyle);
@@ -262,7 +262,7 @@ public class Styler
 
     private Font createDefaultFont(Workbook wBook) {
         Font font = wBook.createFont();
-        font.setFontHeightInPoints((short) 10);
+        font.setFontHeightInPoints((short) 9);
         font.setFontName(XSSFFont.DEFAULT_FONT_NAME);
         return font;
     }

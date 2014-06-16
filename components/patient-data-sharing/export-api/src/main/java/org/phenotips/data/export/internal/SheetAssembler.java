@@ -59,8 +59,8 @@ public class SheetAssembler
     {
         DataToCellConverter converter = new DataToCellConverter();
 
-        /* Some sections require setup */
-        converter.featureSetUp(enabledFields);
+        /* Some sections require setup, which need to be run here. */
+        converter.featureSetup(enabledFields);
 
         /* Important. Headers MUST be generated first. Some of them contain setup code for the body */
         List<DataSection> headers = generateHeader(converter, enabledFields);
@@ -106,7 +106,7 @@ public class SheetAssembler
             List<DataSection> patientSections = new LinkedList<DataSection>();
             patientSections.add(converter.idBody(patient));
             patientSections.add(converter.featuresBody(patient));
-
+            patientSections.add(converter.patientInfoBody(patient));
             allSections.add(patientSections);
         }
         return allSections;
@@ -117,6 +117,7 @@ public class SheetAssembler
         List<DataSection> headerSections = new LinkedList<DataSection>();
         headerSections.add(converter.idHeader(enabledFields));
         headerSections.add(converter.featuresHeader());
+        headerSections.add(converter.patientInfoHeader(enabledFields));
         return headerSections;
     }
 
