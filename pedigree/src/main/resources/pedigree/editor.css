@@ -354,12 +354,16 @@
   margin: 0.2em 0 0.75em 7.5em;
   text-align: left;
 }
+/*
+.import-selector {
+  overflow: auto;
+}*/
 .import-selector .import-textarea {
   height: 10em;
   resize: none;
-  width: 85%;
+  width: 84%;
   /*border: 1px solid #E8E8E8;*/
-  margin: .2em 0 0 7.5em;
+  margin: .2em .2em 0 7.5em;
   display: block;
 }
 .import-block {
@@ -640,6 +644,11 @@
 .template-picture-container {
     display: inline-block;
     margin: 3px;
+}
+
+.msdialog-box {
+    /*overflow:auto;*/
+    width: 650px;
 }
 .msdialog-box .content {
     text-align: center;
