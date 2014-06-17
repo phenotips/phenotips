@@ -156,7 +156,8 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
     }
 
     /**
-     * Constructor for initializeing form a JSON Object.
+     * Constructor for initializing from a JSON Object.
+     *
      * @param json JSON object describing this property
      */
     PhenoTipsFeature(JSONObject json)
