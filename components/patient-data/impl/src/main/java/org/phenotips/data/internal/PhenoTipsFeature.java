@@ -268,7 +268,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
                 StringProperty nameProperty = (StringProperty) o.get(META_PROPERTY_NAME);
                 StringProperty valueProperty = (StringProperty) o.get(META_PROPERTY_VALUE);
                 if (nameProperty != null && StringUtils.equals(nameProperty.getValue(), this.propertyName)
-                    && valueProperty != null && StringUtils.equals(valueProperty.getValue(), this.id)) {
+                    && valueProperty != null && StringUtils.equals(valueProperty.getValue(), this.getValue())) {
                     return o;
                 }
             }
