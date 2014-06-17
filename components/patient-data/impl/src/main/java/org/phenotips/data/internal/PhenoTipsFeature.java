@@ -194,7 +194,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
     @Override
     public String getValue()
     {
-        if (getId().equals("")) {
+        if (StringUtils.isEmpty(getId())) {
             return getName();
         }
         return getId();
