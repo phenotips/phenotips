@@ -20,9 +20,13 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.Constants;
+import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
+import org.phenotips.ontology.OntologyManager;
+import org.phenotips.ontology.OntologyTerm;
 
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
@@ -225,11 +229,20 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
         }
         if (!this.categories.isEmpty()) {
             JSONArray categoriesList = new JSONArray();
-            for (String category : this.categories) {
-                JSONObject categoryObject = new JSONObject();
-                categoryObject.put("id", category);
-                categoriesList.add(categoryObject);
-                // FIXME: Add the label as well
+            try {
+                OntologyManager om =
+                    ComponentManagerRegistry.getContextComponentManager().getInstance(OntologyManager.class);
+                for (String category : this.categories) {
+                    OntologyTerm term = om.resolveTerm(category);
+                    if (term != null && StringUtils.isNotEmpty(term.getName())) {
+                        JSONObject categoryObject = new JSONObject();
+                        categoryObject.put("id", term.getId());
+                        categoryObject.put("label", term.getName());
+                        categoriesList.add(categoryObject);
+                    }
+                }
+            } catch (ComponentLookupException ex) {
+                // Shouldn't happen
             }
             result.element("categories", categoriesList);
         }
