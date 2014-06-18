@@ -98,6 +98,15 @@ public class DataSection
         }
     }
 
+    public void addMergedToMatrix()
+    {
+        for (DataCell cell : cellList) {
+            for (DataCell emptyCell : cell.generateMergedCells()) {
+                matrix[emptyCell.getX()][emptyCell.getY()] = emptyCell;
+            }
+        }
+    }
+
     public void mergeX() throws Exception
     {
         if (matrix == null) {

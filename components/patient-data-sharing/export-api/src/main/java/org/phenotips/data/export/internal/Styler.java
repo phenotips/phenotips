@@ -150,7 +150,7 @@ public class Styler
                     continue;
                 }
                 for (StyleOption style : styles) {
-                    if (!cell.isMerged() && cell.getStyles() != null && cell.getStyles().contains(style)) {
+                    if (!cell.isChild() && cell.getStyles() != null && cell.getStyles().contains(style)) {
                         toExtend.add(style);
                         found = true;
                     }
@@ -163,7 +163,8 @@ public class Styler
             if (!found) {
                 continue;
             }
-            for (int y = startingY + 1; y <= section.getMaxY(); y++) {
+//            for (int y = startingY + 1; y <= section.getMaxY(); y++) {
+            for (int y = 0; y <= section.getMaxY(); y++) {
                 DataCell cell = cellMatrix[x][y];
                 if (cell == null) {
                     cell = new DataCell("", x, y);

@@ -258,7 +258,7 @@ public class DataToCellConverter
         }
         enabledHeaderIdsBySection.put(sectionName, present);
 
-        DataSection headerSection = new DataSection();
+        DataSection headerSection = new DataSection(sectionName);
         int x = 0;
         for (String fieldId : present) {
             DataCell headerCell = new DataCell(fieldToHeaderMap.get(fieldId), x, 1, StyleOption.HEADER);
@@ -275,9 +275,9 @@ public class DataToCellConverter
         String sectionName = "patientInfo";
         Set<String> headerIds = enabledHeaderIdsBySection.get(sectionName);
 
-        DataSection bodySection = new DataSection();
+        DataSection bodySection = new DataSection(sectionName);
         if (headerIds.remove("first_name")) {
-            String firstName = patient.<String>getData("patientName").get("first_name");
+            String firstName = patient.<String, String>getData("patientName").get("first_name");
         }
         return bodySection;
     }

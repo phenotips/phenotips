@@ -17,25 +17,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
 package org.phenotips.data.export.internal;
 
 import org.phenotips.data.Patient;
@@ -64,10 +45,10 @@ public class SheetAssembler
 
         /* Important. Headers MUST be generated first. Some of them contain setup code for the body */
         List<DataSection> headers = generateHeader(converter, enabledFields);
-        List<List<DataSection>> allSections = generateBody(converter, patients);
+        List<List<DataSection>> bodySections = generateBody(converter, patients);
 
         List<DataSection> patientsCombined = new LinkedList<DataSection>();
-        for (List<DataSection> patientSections : allSections) {
+        for (List<DataSection> patientSections : bodySections) {
             for (DataSection section : patientSections) {
                 section.finalizeToMatrix();
                 Styler.extendStyleHorizontally(section, StyleOption.FEATURE_SEPARATOR, StyleOption.YES_NO_SEPARATOR);
@@ -103,10 +84,17 @@ public class SheetAssembler
     {
         List<List<DataSection>> allSections = new LinkedList<List<DataSection>>();
         for (Patient patient : patients) {
+            List<DataSection> _patientSections = new LinkedList<DataSection>();
             List<DataSection> patientSections = new LinkedList<DataSection>();
-            patientSections.add(converter.idBody(patient));
-            patientSections.add(converter.featuresBody(patient));
-            patientSections.add(converter.patientInfoBody(patient));
+            _patientSections.add(converter.idBody(patient));
+            _patientSections.add(converter.featuresBody(patient));
+            _patientSections.add(converter.patientInfoBody(patient));
+
+            for (DataSection section : _patientSections) {
+                if (section != null) {
+                    patientSections.add(section);
+                }
+            }
             allSections.add(patientSections);
         }
         return allSections;
@@ -115,9 +103,16 @@ public class SheetAssembler
     private List<DataSection> generateHeader(DataToCellConverter converter, Set<String> enabledFields) throws Exception
     {
         List<DataSection> headerSections = new LinkedList<DataSection>();
-        headerSections.add(converter.idHeader(enabledFields));
-        headerSections.add(converter.featuresHeader());
-        headerSections.add(converter.patientInfoHeader(enabledFields));
+        List<DataSection> _headerSections = new LinkedList<DataSection>();
+        _headerSections.add(converter.idHeader(enabledFields));
+        _headerSections.add(converter.featuresHeader());
+        _headerSections.add(converter.patientInfoHeader(enabledFields));
+
+        for (DataSection section : _headerSections) {
+            if (section != null) {
+                headerSections.add(section);
+            }
+        }
         return headerSections;
     }
 

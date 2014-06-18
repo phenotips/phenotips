@@ -17,25 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+
 package org.phenotips.data.export.internal;
 
 import java.util.Collection;
@@ -59,7 +41,7 @@ public class DataCell
 
     private Integer mergeX;
 
-    private Boolean merged;
+    private Boolean isChild;
 
     Set<DataCell> generated;
 
@@ -157,7 +139,7 @@ public class DataCell
         generated = new HashSet<DataCell>();
         for (int x = 1; x <= mergeX; x++) {
             DataCell cell = new DataCell("", this.x + x, this.getY());
-            cell.setMerged(true);
+            cell.setIsChild(true);
             cell.addStyles(this.styles);
             generated.add(cell);
         }
@@ -170,16 +152,16 @@ public class DataCell
         return styles;
     }
 
-    public Boolean isMerged()
+    public Boolean isChild()
     {
-        if (merged == null || !merged) {
+        if (isChild == null || !isChild) {
             return false;
         }
         return true;
     }
 
-    public void setMerged(Boolean merged)
+    public void setIsChild(Boolean isChild)
     {
-        this.merged = merged;
+        this.isChild = isChild;
     }
 }
