@@ -119,7 +119,7 @@
       <parameters>title=Genotype information
 enabled=true
 required=
-order=11</parameters>
+order=6</parameters>
     </property>
   </object>
 </xwikidoc>

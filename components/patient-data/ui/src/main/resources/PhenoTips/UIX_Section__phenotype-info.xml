@@ -122,7 +122,7 @@
       <parameters>title=Clinical symptoms and physical findings
 enabled=true
 required=
-order=6</parameters>
+order=8</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -122,7 +122,7 @@
       <parameters>title=Copy number variants
 enabled=false
 required=
-order=8</parameters>
+order=7</parameters>
     </property>
     <property>
       <scope>wiki</scope>

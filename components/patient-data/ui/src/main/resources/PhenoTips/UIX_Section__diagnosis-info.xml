@@ -122,7 +122,7 @@
       <parameters>title=Diagnosis
 enabled=true
 required=
-order=7</parameters>
+order=9</parameters>
     </property>
     <property>
       <scope>wiki</scope>
