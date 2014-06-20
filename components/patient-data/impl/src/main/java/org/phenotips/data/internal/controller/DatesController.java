@@ -57,7 +57,7 @@ import net.sf.json.JSONObject;
 @Component(roles = { PatientDataController.class })
 @Named("dates")
 @Singleton
-public class DatesController implements PatientDataController<ImmutablePair<String, Date>>
+public class DatesController implements PatientDataController<Date>
 {
     private static final String DATA_NAME = "dates";
 
@@ -73,7 +73,7 @@ public class DatesController implements PatientDataController<ImmutablePair<Stri
     private RecordConfigurationManager configurationManager;
 
     @Override
-    public PatientData<ImmutablePair<String, Date>> load(Patient patient)
+    public PatientData<Date> load(Patient patient)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
@@ -120,7 +120,7 @@ public class DatesController implements PatientDataController<ImmutablePair<Stri
     }
 
     @Override
-    public PatientData<ImmutablePair<String, Date>> readJSON(JSONObject json)
+    public PatientData<Date> readJSON(JSONObject json)
     {
         throw new UnsupportedOperationException();
     }

@@ -259,6 +259,96 @@
               <className>**/script/OtologyScriptService</className>
               <differenceType>8001</differenceType>
             </difference>
+            <difference>
+              <differenceType>4001</differenceType>
+              <className>**/data/PatientData</className>
+              <to>**/util/List</to>
+            </difference>
+            <difference>
+              <differenceType>4001</differenceType>
+              <className>**/data/PatientData</className>
+              <to>**/util/Collection</to>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/PatientData</className>
+              <method>java.lang.Boolean isIndexed()</method>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/PatientData</className>
+              <method>java.lang.Boolean isNamed()</method>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/PatientData</className>
+              <method>java.lang.Object get(java.lang.String)</method>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/PatientData</className>
+              <method>java.lang.Object get(int)</method>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/PatientData</className>
+              <method>java.lang.Object getValue()</method>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/PatientData</className>
+              <method>java.util.Iterator keyIterator()</method>
+            </difference>
+            <difference>
+              <differenceType>4001</differenceType>
+              <className>**/data/SimpleNamedData</className>
+              <to>**/util/List</to>
+            </difference>
+            <difference>
+              <differenceType>4001</differenceType>
+              <className>**/data/SimpleNamedData</className>
+              <to>**/util/Deque</to>
+            </difference>
+            <difference>
+              <differenceType>4001</differenceType>
+              <className>**/data/SimpleNamedData</className>
+              <to>**/util/Collection</to>
+            </difference>
+            <difference>
+              <differenceType>4001</differenceType>
+              <className>**/data/SimpleNamedData</className>
+              <to>**/util/Queue</to>
+            </difference>
+            <difference>
+              <differenceType>4001</differenceType>
+              <className>**/data/SimpleNamedData</className>
+              <to>**/lang/Cloneable</to>
+            </difference>
+            <difference>
+              <differenceType>4001</differenceType>
+              <className>**/data/SimpleNamedData</className>
+              <to>**/io/Serializable</to>
+            </difference>
+            <difference>
+              <differenceType>5001</differenceType>
+              <className>**/data/SimpleNamedData</className>
+              <to>**/util/AbstractCollection</to>
+            </difference>
+            <difference>
+              <differenceType>5001</differenceType>
+              <className>**/data/SimpleNamedData</className>
+              <to>**/util/AbstractList</to>
+            </difference>
+            <difference>
+              <differenceType>5001</differenceType>
+              <className>**/data/SimpleNamedData</className>
+              <to>**/util/AbstractSequentialList</to>
+            </difference>
+            <difference>
+              <differenceType>5001</differenceType>
+              <className>**/data/SimpleNamedData</className>
+              <to>**/util/LinkedList</to>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

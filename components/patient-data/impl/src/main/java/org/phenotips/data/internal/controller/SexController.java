@@ -55,7 +55,7 @@ import net.sf.json.JSONObject;
 @Component(roles = { PatientDataController.class })
 @Named("sex")
 @Singleton
-public class SexController implements PatientDataController<ImmutablePair<String, String>>
+public class SexController implements PatientDataController<String>
 {
     private static final String DATA_NAME = "sex";
 
@@ -87,7 +87,7 @@ public class SexController implements PatientDataController<ImmutablePair<String
     }
 
     @Override
-    public PatientData<ImmutablePair<String, String>> load(Patient patient)
+    public PatientData<String> load(Patient patient)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
@@ -147,7 +147,7 @@ public class SexController implements PatientDataController<ImmutablePair<String
     }
 
     @Override
-    public PatientData<ImmutablePair<String, String>> readJSON(JSONObject json)
+    public PatientData<String> readJSON(JSONObject json)
     {
         if (!json.containsKey(DATA_NAME)) {
             // no supported data in provided JSON

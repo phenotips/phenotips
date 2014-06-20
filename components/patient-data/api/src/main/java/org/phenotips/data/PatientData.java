@@ -19,17 +19,17 @@
  */
 package org.phenotips.data;
 
-import java.util.List;
+import java.util.Iterator;
 
 /**
  * Non-essential pieces of custom patient data that can be part of the patient record.
  *
- * @param <T> the type of data being represented; usually a key-value pair, where the {@code key} is a String (name)
- * @see PatientDataController
+ * @param <T> the type of data expected back
  * @version $Id$
+ * @see PatientDataController
  * @since 1.0M10
  */
-public interface PatientData<T> extends List<T>
+public interface PatientData<T> extends Iterable<T>
 {
     /**
      * The name of this custom data.
@@ -37,4 +37,45 @@ public interface PatientData<T> extends List<T>
      * @return a short string
      */
     String getName();
+
+    /**
+     * If the underlying concrete class is structured as or akin to a map, will look up value attached to the key.
+     *
+     * @param key the name of the value to return
+     * @return the value attached to the key
+     */
+    T get(String key);
+
+    /**
+     * If the underlying concrete class is structured as or akin to a list, will perform a lookup value attached to the
+     * index.
+     *
+     * @param index for which to search
+     * @return the value at the index
+     */
+    T get(int index);
+
+    /**
+     * Used if the underlying concrete class holds only a single value.
+     *
+     * @return the value stored in the class
+     */
+    T getValue();
+
+    /**
+     * @return true if the data structure is index based
+     */
+    Boolean isIndexed();
+
+    /**
+     * @return true if the data structure is key-value based
+     */
+    Boolean isNamed();
+
+    /**
+     * For named data only.
+     * @param <K> type of keys
+     * @return iterator containing all the keys
+     */
+    <K> Iterator<K> keyIterator();
 }
