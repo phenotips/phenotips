@@ -53,11 +53,9 @@ $xwiki.ssx.use('PhenoTips.HPOBranchDisplayer')##
 ##
 ##
 #macro (_displayChildren $rootId)
-
   #set($childrenList = $services.ontologies.hpo.search({'is_a': $rootId}))
   #if ($childrenList.size() &gt; 0)
-  &lt;ul&gt;
-  #if ($firstLevel)&lt;li class="hpo-unknown"&gt;#_displayItem('', 'Unknown')&lt;/li&gt;#set($firstLevel = false) #end
+  #if ($firstLevel)#_displayItem('', 'Unknown')#set($firstLevel = false) #end
   #set($macro.childrenMap = {})
   #foreach($item in $childrenList)
     #set ($discard = $macro.childrenMap.put($item.id, $item))
@@ -75,7 +73,6 @@ $xwiki.ssx.use('PhenoTips.HPOBranchDisplayer')##
     #if ("$!{foreach.item}" != '' &amp;&amp; "$!foreach.item.id" != '')#_displayItem("${foreach.item.id}", "${foreach.item.name}", $foreach.item)#_displayChildren($foreach.item.id)#end
   #end
   #set ($level = $level - 1)
-  &lt;/ul&gt;
   #end
 #end
 
