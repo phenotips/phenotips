@@ -58,6 +58,9 @@
 
 #macro(__filters_display $cssClass)
 (% class="filters $!cssClass" %)
+#if ($activeFields.contains('external_id'))
+* By **external identifier**: {{html clean=false}}&lt;p class="xHint"&gt;(The hospital ID manually entered)&lt;/p&gt;&lt;input type="text" name="external_id" value=""/&gt;{{/html}}
+#end
 * By **referrer**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all referrers are considered)&lt;/p&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
 * By **owner**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all are considered)&lt;/p&gt;&lt;input type="hidden" name="owner/class" value="PhenoTips.OwnerClass"/&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="owner" value=""/&gt;{{/html}}
 * By **last author**: {{html clean=false}}&lt;p class="xHint"&gt;(an empty value list means all authors are considered)&lt;/p&gt;&lt;input type="text" class="suggestUsers multipleSelection" name="doc.author" value=""/&gt;{{/html}}
