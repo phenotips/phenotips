@@ -179,6 +179,8 @@ public class Styler
     {
         Set<StyleOption> styles = dataCell.getStyles();
         CellStyle cellStyle = wBook.createCellStyle();
+        /* For \n to work properly set to true */
+        cellStyle.setWrapText(true);
         if (styles == null) {
             if (styleCache.containsKey(Collections.<StyleOption>emptySet())) {
                 cell.setCellStyle(styleCache.get(Collections.<StyleOption>emptySet()));

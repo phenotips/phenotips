@@ -23,7 +23,9 @@ import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
 import org.phenotips.data.Patient;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -43,6 +45,8 @@ public class DataToCellConverter
     {
         helpers = new ConversionHelpers();
     }
+
+    public static final Integer charactersPerLine = 100;
 
     public void featureSetup(Set<String> enabledFields) throws Exception
     {
@@ -266,6 +270,7 @@ public class DataToCellConverter
             x++;
         }
         DataCell headerCell = new DataCell("Patient Information", 0, 0, StyleOption.LARGE_HEADER);
+        headerCell.addStyle(StyleOption.HEADER);
         headerSection.addCell(headerCell);
 
         return headerSection;
@@ -276,9 +281,62 @@ public class DataToCellConverter
         Set<String> headerIds = enabledHeaderIdsBySection.get(sectionName);
 
         DataSection bodySection = new DataSection(sectionName);
+        Integer x = 0;
         if (headerIds.remove("first_name")) {
-            String firstName = patient.<String, String>getData("patientName").get("first_name");
+            String firstName = patient.<String>getData("patientName").get("first_name");
+            DataCell cell = new DataCell(firstName, x, 0);
+            bodySection.addCell(cell);
+            x++;
         }
+        if (headerIds.remove("last_name")) {
+            String lastName = patient.<String>getData("patientName").get("last_name");
+            DataCell cell = new DataCell(lastName, x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (headerIds.remove("date_of_birth")) {
+            SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+            Date dob = patient.<Date>getData("dates").get("date_of_birth");
+            DataCell cell = new DataCell(format.format(dob), x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (headerIds.remove("gender")) {
+            String sex = patient.<String>getData("sex").get("sex");
+            DataCell cell = new DataCell(sex, x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (headerIds.remove("indication_for_referral")) {
+            String indicationForReferral = patient.<String>getData("notes").get("indication_for_referral");
+            indicationForReferral = wrapString(indicationForReferral, this.charactersPerLine);
+            DataCell cell = new DataCell(indicationForReferral, x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+
         return bodySection;
+    }
+
+    public static String wrapString(String string, Integer charactersPerLine)
+    {
+        StringBuilder returnString = new StringBuilder(string);
+        Integer counter = charactersPerLine;
+        Character nextChar = null;
+        while(counter < string.length()) {
+            Boolean found = false;
+            /* TODO. See if this breaks in Unicode */
+            while (nextChar == null || nextChar.compareTo(' ') != 0) {
+                nextChar = string.charAt(counter);
+                counter++;
+                found = true;
+            }
+            if (found) {
+                returnString.insert(counter, "\n");
+            }
+
+            counter += charactersPerLine;
+        }
+        return returnString.toString();
     }
 }
