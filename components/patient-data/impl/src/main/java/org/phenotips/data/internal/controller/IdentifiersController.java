@@ -28,6 +28,7 @@ import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -104,9 +105,16 @@ public class IdentifiersController implements PatientDataController<String>
             return;
         }
 
-        for (ImmutablePair<String, String> data : patient.<ImmutablePair<String, String>>getData(DATA_NAME)) {
-            if (!data.getRight().equals("")) {
-                json.put(data.getKey(), data.getRight());
+        PatientData<String> patientData = patient.<String>getData(DATA_NAME);
+        if (patientData != null && patientData.isNamed()) {
+            Iterator<String> values = patientData.iterator();
+            Iterator<String> keys = patientData.keyIterator();
+
+            while (keys.hasNext()) {
+                String value = values.next();
+                if (!value.equals("")) {
+                    json.put(keys.next(), value);
+                }
             }
         }
     }

@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -112,9 +113,17 @@ public class DatesController implements PatientDataController<Date>
     {
         DateFormat dateFormat =
             new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
-        for (ImmutablePair<String, Date> data : patient.<ImmutablePair<String, Date>>getData(DATA_NAME)) {
-            if (selectedFieldNames == null || selectedFieldNames.contains(data.getKey())) {
-                json.put(data.getKey(), dateFormat.format(data.getRight()));
+
+        PatientData<Date> patientData = patient.<Date>getData(DATA_NAME);
+        if (patientData != null && patientData.isNamed()) {
+            Iterator<Date> values = patientData.iterator();
+            Iterator<String> keys = patientData.keyIterator();
+
+            while (keys.hasNext()) {
+                String key = keys.next();
+                if (selectedFieldNames == null || selectedFieldNames.contains(key)) {
+                    json.put(key, dateFormat.format(values.next()));
+                }
             }
         }
     }

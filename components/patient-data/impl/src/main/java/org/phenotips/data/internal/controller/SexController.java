@@ -29,6 +29,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -141,8 +142,13 @@ public class SexController implements PatientDataController<String>
             return;
         }
 
-        for (ImmutablePair<String, String> data : patient.<ImmutablePair<String, String>>getData(DATA_NAME)) {
-            json.put(data.getKey(), data.getRight());
+        PatientData<String> patientData = patient.<String>getData(DATA_NAME);
+        if (patientData != null && patientData.isNamed()) {
+            Iterator<String> values = patientData.iterator();
+            Iterator<String> keys = patientData.keyIterator();
+            while (keys.hasNext()) {
+                json.put(keys.next(), values.next());
+            }
         }
     }
 

@@ -45,7 +45,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -211,15 +210,10 @@ public class PhenoTipsPatient implements Patient
     public String getExternalId()
     {
         try {
-            for (ImmutablePair<String, String> identifier : this.<ImmutablePair<String, String>> getData("identifiers")) {
-                if (identifier.getKey().equalsIgnoreCase("external_id")) {
-                    return identifier.getValue();
-                }
-            }
+            return this.<String>getData("identifiers").get("external_id");
         } catch (Exception ex) {
             return null;
         }
-        return null;
     }
 
     @Override
