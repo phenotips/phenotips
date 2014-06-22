@@ -27,6 +27,7 @@ import org.phenotips.data.SimpleNamedData;
 import org.xwiki.bridge.DocumentAccessBridge;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,7 +48,7 @@ import net.sf.json.JSONObject;
  * @version $Id$
  * @since 1.0M10
  */
-public abstract class AbstractSimpleController implements PatientDataController<ImmutablePair<String, String>>
+public abstract class AbstractSimpleController implements PatientDataController<String>
 {
     /** Provides access to the underlying data storage. */
     @Inject
@@ -58,7 +59,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
     private Logger logger;
 
     @Override
-    public PatientData<ImmutablePair<String, String>> load(Patient patient)
+    public PatientData<String> load(Patient patient)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
@@ -95,26 +96,31 @@ public abstract class AbstractSimpleController implements PatientDataController<
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        PatientData<ImmutablePair<String, String>> data = patient.getData(getName());
-        if (data == null || data.isEmpty()) {
+        PatientData<String> data = patient.getData(getName());
+
+        Iterator<String> iterator = data.iterator();
+        if (data == null || !data.isNamed() || !iterator.hasNext()) {
             return;
         }
+        Iterator<String> keyIterator = data.keyIterator();
         JSONObject container = json.getJSONObject(getJsonPropertyName());
 
-        for (ImmutablePair<String, String> item : data) {
-            if (selectedFieldNames == null || selectedFieldNames.contains(item.getKey())) {
+        while(keyIterator.hasNext()) {
+            String key = keyIterator.next();
+            String value = iterator.next();
+            if (selectedFieldNames == null || selectedFieldNames.contains(key)) {
                 if (container == null || container.isNullObject()) {
                     // put() is placed here because we want to create the property iff at least one field is set/enabled
                     json.put(getJsonPropertyName(), new JSONObject());
                     container = json.getJSONObject(getJsonPropertyName());
                 }
-                container.put(item.getKey(), item.getValue());
+                container.put(key, value);
             }
         }
     }
 
     @Override
-    public PatientData<ImmutablePair<String, String>> readJSON(JSONObject json)
+    public PatientData<String> readJSON(JSONObject json)
     {
         throw new UnsupportedOperationException();
     }

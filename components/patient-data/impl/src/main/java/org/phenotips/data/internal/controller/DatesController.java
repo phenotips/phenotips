@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,7 +58,7 @@ import net.sf.json.JSONObject;
 @Component(roles = { PatientDataController.class })
 @Named("dates")
 @Singleton
-public class DatesController implements PatientDataController<ImmutablePair<String, Date>>
+public class DatesController implements PatientDataController<Date>
 {
     private static final String DATA_NAME = "dates";
 
@@ -73,7 +74,7 @@ public class DatesController implements PatientDataController<ImmutablePair<Stri
     private RecordConfigurationManager configurationManager;
 
     @Override
-    public PatientData<ImmutablePair<String, Date>> load(Patient patient)
+    public PatientData<Date> load(Patient patient)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
@@ -112,15 +113,23 @@ public class DatesController implements PatientDataController<ImmutablePair<Stri
     {
         DateFormat dateFormat =
             new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
-        for (ImmutablePair<String, Date> data : patient.<ImmutablePair<String, Date>>getData(DATA_NAME)) {
-            if (selectedFieldNames == null || selectedFieldNames.contains(data.getKey())) {
-                json.put(data.getKey(), dateFormat.format(data.getRight()));
+
+        PatientData<Date> patientData = patient.<Date>getData(DATA_NAME);
+        if (patientData != null && patientData.isNamed()) {
+            Iterator<Date> values = patientData.iterator();
+            Iterator<String> keys = patientData.keyIterator();
+
+            while (keys.hasNext()) {
+                String key = keys.next();
+                if (selectedFieldNames == null || selectedFieldNames.contains(key)) {
+                    json.put(key, dateFormat.format(values.next()));
+                }
             }
         }
     }
 
     @Override
-    public PatientData<ImmutablePair<String, Date>> readJSON(JSONObject json)
+    public PatientData<Date> readJSON(JSONObject json)
     {
         throw new UnsupportedOperationException();
     }

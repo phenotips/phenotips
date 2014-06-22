@@ -35,6 +35,7 @@ import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -60,7 +61,7 @@ import net.sf.json.JSONObject;
 @Component(roles = { PatientDataController.class })
 @Named("owner-contact")
 @Singleton
-public class ContactInformationController implements PatientDataController<ImmutablePair<String, String>>
+public class ContactInformationController implements PatientDataController<String>
 {
     private static final String DATA_CONTACT = "contact";
 
@@ -94,7 +95,7 @@ public class ContactInformationController implements PatientDataController<Immut
     private PermissionsManager permissions;
 
     @Override
-    public PatientData<ImmutablePair<String, String>> load(Patient patient)
+    public PatientData<String> load(Patient patient)
     {
         Owner owner = this.permissions.getPatientAccess(patient).getOwner();
         List<ImmutablePair<String, String>> contactInfo = getContactInfo(owner);
@@ -122,22 +123,26 @@ public class ContactInformationController implements PatientDataController<Immut
         if (selectedFieldNames != null && !selectedFieldNames.contains(getEnablingFieldName())) {
             return;
         }
-        PatientData<ImmutablePair<String, String>> data = patient.getData(DATA_CONTACT);
-        if (data == null || data.isEmpty()) {
+        PatientData<String> data = patient.getData(DATA_CONTACT);
+
+        Iterator<String> iterator = data.iterator();
+        if (data == null || !data.isNamed() || !iterator.hasNext()) {
             return;
         }
+        Iterator<String> keyIterator = data.keyIterator();
+
         JSONObject container = json.getJSONObject(DATA_CONTACT);
         if (container == null || container.isNullObject()) {
             json.put(DATA_CONTACT, new JSONObject());
             container = json.getJSONObject(DATA_CONTACT);
         }
-        for (ImmutablePair<String, String> item : data) {
-            container.put(item.getKey(), item.getValue());
+        while (keyIterator.hasNext()) {
+            container.put(keyIterator.next(), iterator.next());
         }
     }
 
     @Override
-    public PatientData<ImmutablePair<String, String>> readJSON(JSONObject json)
+    public PatientData<String> readJSON(JSONObject json)
     {
         throw new UnsupportedOperationException();
     }

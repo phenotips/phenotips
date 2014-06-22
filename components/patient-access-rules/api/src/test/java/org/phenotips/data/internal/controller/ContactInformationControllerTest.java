@@ -35,7 +35,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
+import java.util.Iterator;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -72,8 +73,8 @@ public class ContactInformationControllerTest
     private static final String GROUP_EMAIL = "contact@hospital.org";
 
     @Rule
-    public final MockitoComponentMockingRule<PatientDataController<ImmutablePair<String, String>>> mocker =
-        new MockitoComponentMockingRule<PatientDataController<ImmutablePair<String, String>>>(
+    public final MockitoComponentMockingRule<PatientDataController<String>> mocker =
+        new MockitoComponentMockingRule<PatientDataController<String>>(
             ContactInformationController.class);
 
     /** {@link ContactInformationController#load(Patient)} returns the user information when the owner is a user. */
@@ -132,7 +133,12 @@ public class ContactInformationControllerTest
         Assert.assertEquals("padams", result.get("user_id"));
         Assert.assertNull(result.get("email"));
         Assert.assertNull(result.get("institution"));
-        Assert.assertEquals(1, result.size());
+
+        //Recoding Assert.assertEquals(1, result.size())
+        Iterator resultIterator = result.iterator();
+        Assert.assertTrue(resultIterator.hasNext());
+        resultIterator.next();
+        Assert.assertTrue(!resultIterator.hasNext());
     }
 
     /** {@link ContactInformationController#load(Patient)} returns null when the owner is a user that doesn't exist. */

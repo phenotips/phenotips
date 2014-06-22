@@ -19,8 +19,6 @@
  */
 package org.phenotips.data.internal.controller;
 
-import net.sf.json.JSONObject;
-
 import org.phenotips.Constants;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
@@ -49,6 +47,8 @@ import org.slf4j.Logger;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
+import net.sf.json.JSONObject;
+
 /**
  * Exposes the version of the ontologies used for creating the patient record, as well as the current PhenoTips version.
  *
@@ -59,7 +59,7 @@ import com.xpn.xwiki.objects.BaseObject;
 @Named("versions")
 @Singleton
 public class VersionsController extends AbstractSimpleController
-    implements PatientDataController<ImmutablePair<String, String>>
+    implements PatientDataController<String>
 {
     /** The XClass used for storing version data of different ontologies. */
     private static final EntityReference ONTOLOGY_VERSION_CLASS_REFERENCE =
@@ -71,7 +71,7 @@ public class VersionsController extends AbstractSimpleController
     private Logger logger;
 
     @Override
-    public PatientData<ImmutablePair<String, String>> load(Patient patient)
+    public PatientData<String> load(Patient patient)
     {
         List<ImmutablePair<String, String>> versions = new LinkedList<ImmutablePair<String, String>>();
 
