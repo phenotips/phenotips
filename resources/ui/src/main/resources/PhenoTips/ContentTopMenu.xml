@@ -1326,7 +1326,7 @@ $xwiki.jsx.use('PhenoTips.ContentTopMenu')##
 ** [[Export PDF&gt;&gt;path:$doc.getURL('export', "format=pdf&amp;pdfcover=0&amp;pdftoc=0&amp;pdftemplate=${pdfTemplate}")|| class="export-link"]]
 #if($isAdvancedUser)
 ** [[Export XAR&gt;&gt;path:$doc.getURL('export', "format=xar&amp;name=${doc.fullName}&amp;pages=${doc.fullName}")|| class="export-link"]]
-** [[Export JSON&gt;&gt;path:$xwiki.getURL('PhenoTips.PatientPhenotypeExportService', 'get', "id=${doc.name}")|| class="export-link"]]
+** [[Export JSON&gt;&gt;path:$xwiki.getURL('PhenoTips.ExportPatient', 'get', "id=${escapetool.url($doc.documentReference.name)}&amp;outputSyntax=plain")|| class="export-link"]]
 #end
 #foreach ($e in $services.uix.getExtensions("org.phenotips.patientRecordMenu.moreActions"))
 #if ($foreach.index == 0)
