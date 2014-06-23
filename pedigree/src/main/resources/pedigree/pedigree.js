@@ -29,6 +29,7 @@ var PedigreeEditor = Class.create({
         this._actionStack = new ActionStack();
         this._templateSelector = new TemplateSelector();
         this._importSelector = new ImportSelector();
+        this._exportSelector = new ExportSelector();
         this._saveLoadIndicator = new SaveLoadIndicator();
         this._versionUpdater = new VersionUpdater();
         this._saveLoadEngine = new SaveLoadEngine();
@@ -74,6 +75,10 @@ var PedigreeEditor = Class.create({
         var importButton = $('action-import');
         importButton && importButton.on("click", function(event) {
             editor.getImportSelector().show();
+        });
+        var exportButton = $('action-export');
+        exportButton && exportButton.on("click", function(event) {
+            editor.getExportSelector().show();
         });
 
         var closeButton = $('action-close');
@@ -248,11 +253,19 @@ var PedigreeEditor = Class.create({
     
     /**
      * @method getImportSelector
-     * @return {importSelector}
+     * @return {ImportSelector}
      */
     getImportSelector: function() {
         return this._importSelector
-    },    
+    },
+
+    /**
+     * @method getExportSelector
+     * @return {ExportSelector}
+     */
+    getExportSelector: function() {
+        return this._exportSelector
+    },
 
     /**
      * Returns true if any of the node menus are visible

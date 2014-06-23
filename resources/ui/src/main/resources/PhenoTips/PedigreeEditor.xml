@@ -54,6 +54,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/model/xcoordclass.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/ordering.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/baseGraph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/import.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/model/export.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/edgeOptimization.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/positionedGraph.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/model/dynamicGraph.js')##
@@ -65,6 +66,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/view/legend.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/saveLoadIndicator.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/templateSelector.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/importSelector.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/view/exportSelector.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/abstractHoverbox.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/readonlyHoverbox.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/partnershipHoverbox.js')##
@@ -94,23 +96,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/pedigree.js')##
 
 {{html}}
 &lt;div id="editor-menu"&gt;
-&lt;!--
-&lt;div class="action-group internal-actions"&gt;
-&lt;span class="menu-item new" id="action-new"&gt;New node&lt;/span&gt;
-&lt;span class="menu-item undo" id="action-undo"&gt;Undo&lt;/span&gt;
-&lt;span class="menu-item redo" id="action-redo"&gt;Redo&lt;/span&gt;
-&lt;span class="menu-item layout" id="action-layout"&gt;Automatic layout&lt;/span&gt;
-&lt;span class="menu-item clear" id="action-clear"&gt;Clear all&lt;/span&gt;
 &lt;/div&gt;
-&lt;div class="action-group external-actions"&gt;
-&lt;span class="menu-item print" id="action-print"&gt;Printable version&lt;/span&gt;
-&lt;span class="menu-item save" id="action-save"&gt;Save&lt;/span&gt;
-&lt;span class="menu-item export" id="action-export"&gt;Export&lt;/span&gt;
-&lt;span class="menu-item close" id="action-close"&gt;Close&lt;/span&gt;
-&lt;/div&gt;
---&gt;
-&lt;/div&gt;
-
 &lt;div id="workspace"&gt;
 &lt;div id="canvas"&gt;&lt;/div&gt;
 &lt;/div&gt;

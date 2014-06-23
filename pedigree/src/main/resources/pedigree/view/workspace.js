@@ -150,6 +150,7 @@ var Workspace = Class.create({
             }, {
                 name : 'external',
                 items: [
+                    { key : 'export',    label : 'Export'},
                     { key : 'reload',    label : 'Reload'},
                     { key : 'close',     label : 'Close'}
                 ]
@@ -167,6 +168,7 @@ var Workspace = Class.create({
                 name : 'external',
                 items: [
                     { key : 'save',      label : 'Save'},
+                    { key : 'export',    label : 'Export'},
                     { key : 'reload',    label : 'Reload'},
                     { key : 'import',    label : 'Import'},
                     { key : 'templates', label : 'Templates'},

@@ -48,7 +48,7 @@ var ImportSelector = Class.create( {
             optionWrapper.insert(label.wrap('td'));
             return optionWrapper;
           };          
-        var typeListElement = new Element('table', {id : 'import-type'});
+        var typeListElement = new Element('table');
         //TODO: typeListElement.insert(_addTypeOption(true,  "Autodetect", "auto"));
         typeListElement.insert(_addTypeOption(true,  "PED or LINKAGE (pre- or post- makeped)", "ped"));        
         typeListElement.insert(_addTypeOption(false, "GEDCOM", "gedcom"));

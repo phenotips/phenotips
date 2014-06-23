@@ -95,7 +95,7 @@
   background-image: url("$xwiki.getSkinFile('icons/silk/disk.png')"); /* bullet_disk.png */
 }
 #editor-menu .export {
-  background-image: url("$xwiki.getSkinFile('icons/silk/package.png')");
+  background-image: url("$xwiki.getSkinFile('icons/silk/drive_link.png')"); /* package.png computer_go.png drive_go.png */
 }
 #editor-menu .close {
   background-image: url("$xwiki.getSkinFile('icons/silk/bullet_go.png')");
@@ -384,6 +384,14 @@
 .import-config-label {
   float: left;
   margin: 0 1em 0 2.5em;
+}
+.export-config-header {
+  float: left;
+  margin: 0 1em 0 2.95em;
+}
+.export-subconfig-label {
+  float: left;
+  margin: 0 1em 0 3.5em;
 }
 .import-mark-label1 {
   float: left;

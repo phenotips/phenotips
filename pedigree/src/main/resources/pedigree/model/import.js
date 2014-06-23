@@ -171,7 +171,7 @@ PedigreeImport.initFromPhenotipsInternal = function(inputG)
  *   Column 10+: Disease and marker phenotypes (as in the original pedigree file)
  * ===============================================================================================
  */
-PedigreeImport.initFromPED = function(inputText, acceptOtherPhenotypes, markEvaluated, affectedCodeOne, disorderNames)
+PedigreeImport.initFromPED = function(inputText, acceptOtherPhenotypes, markEvaluated, saveIDAsExternalID, affectedCodeOne, disorderNames)
 {
     var inputLines = inputText.match(/[^\r\n]+/g);
     if (inputLines.length == 0) throw "Unable to import: no data";
@@ -197,7 +197,7 @@ PedigreeImport.initFromPED = function(inputText, acceptOtherPhenotypes, markEval
     // first pass: add all vertices and assign vertex IDs
     for (var i = 0; i < inputLines.length; i++) {
 
-        inputLines[i] = inputLines[i].replace(/[^a-zA-Z0-9.\-\s*]/g, ' ');
+        inputLines[i] = inputLines[i].replace(/[^a-zA-Z0-9_.\-\s*]/g, ' ');
         inputLines[i] = inputLines[i].replace(/^\s+|\s+$/g, '');  // trim()
 
         var parts = inputLines[i].split(/\s+/);
@@ -227,7 +227,8 @@ PedigreeImport.initFromPED = function(inputText, acceptOtherPhenotypes, markEval
             gender = "F";
         var properties = {"gender": gender};
 
-        properties["externalID"] = pedID;
+        if (saveIDAsExternalID)
+            properties["externalID"] = pedID;
 
         var useID = (postMakeped && parts[8] == 1) ? 0 : nextID++;
         if (i == inputLines.length-1 && newG.v[0] === undefined) {
@@ -381,7 +382,9 @@ PedigreeImport.validateBaseGraph = function(newG)
  *      { "name": "ch1", "sex": "female", "mother": "f21", "father": "m21", "disorders": [603235], "proband": true } ]
  * 
  *  Supported properties:
- *   - "id": string (default: none). If two nodes with the same ID are found an error is reported.
+ *   - "id": string or number (default: none). If two nodes with the same ID are found an error is reported.
+ *           If present, this id is used only for the purpose of linking nodes to each other and is not recorded
+ *           in the imported pedigree. Use "externalId" if an ID should be stored
  *   - "proband": boolean (default: true for the first object, false for all other objects. If another object
  *                                  is explicitly indicated as a proband, the firs tobject also defaults to false.
  *                                  If more than one node is indicated as a proband only the first one is considered ot be one) 
@@ -405,11 +408,11 @@ PedigreeImport.validateBaseGraph = function(newG)
  *                      (default: if a disorder is given, default is 'affected', otherwise: none.
  *                       also, if a disorder is given and status is explicitly '', it is automatically changed to 'affected')
  *   - "mother" and "father": string, a reference to another node given in the JSON.
- *                            First a match versus an ID is checked,
- *                            if not found a check against "name" and finally "firstName" is made.
- *                            If one is given and the other one is not a virtual new node is created
+ *                            First a match versus an existing ID is checked, if not found a check against "externalId",
+ *                            if not found a check against "name" and finally "firstName".
+ *                            If one of the parents is given and the other one is not a virtual new node is created
  *
- *   Each node should have at least one of {"id", "name", "firstName"} defined.
+ *   Each node should have at least one of {"id", "externalId", "name", "firstName"} defined.
  * ===============================================================================================
  */
 PedigreeImport.initFromSimpleJSON = function(inputText)
@@ -419,78 +422,79 @@ PedigreeImport.initFromSimpleJSON = function(inputText)
    } catch( err) {
        throw "Unable to import pedigree: input is not a valid JSON string " + err;
    }
-   
+
    if (typeof inputArray != 'object' || Object.prototype.toString.call(inputArray) !== '[object Array]') {
        throw "Unable to import pedigree: JSON does not represent an array of objects";
-   }   
+   }
    if (inputArray.length == 0) {
        throw "Unable to import pedigree: input is empty";
    }
-   
+
    var newG = new BaseGraph();
 
    var nameToID            = {};
    var externalIDToID      = {};
    var ambiguousReferences = {};
+   var hasID               = {}
 
    // first pass: add all vertices and assign vertex IDs
    for (var i = 0; i < inputArray.length; i++) {
        var nextPerson = inputArray[i];
-      
+
        if (typeof nextPerson != 'object') {
            throw "Unable to import pedigree: JSON does not represent an array of objects";
        }
-       
-       if (!nextPerson.hasOwnProperty("id") && !nextPerson.hasOwnProperty("name") && !nextPerson.hasOwnProperty("firstName")) {
+
+       if ( !nextPerson.hasOwnProperty("id") && !nextPerson.hasOwnProperty("name") &&
+            !nextPerson.hasOwnProperty("firstName") && !nextPerson.hasOwnProperty("externalId") ) {
            throw "Unable to import pedigree: a node with no ID or name is found";
        }
-       
+
        var pedigreeID = newG._addVertex( null, TYPE.PERSON, {}, newG.defaultPersonNodeWidth );
-       
-       var properties = {};       
+
+       var properties = {};
        properties["gender"] = "U";     // each person should have some gender set 
 
        for (var property in nextPerson) {
            if (nextPerson.hasOwnProperty(property)) {
-               property = property.toLowerCase();
+               var value    = nextPerson[property];
+               var property = property.toLowerCase();
                
                if (property == "mother" || property == "father")  // those are processed on the second pass
                    continue;
                
                if (property == "sex") {
-                   var genderString = nextPerson["sex"].toLowerCase();
+                   var genderString = value.toLowerCase();
                    if( genderString == "female" || genderString == "f")
                        properties["gender"] = "F";
                    else if( genderString == "male" || genderString == "m")
                        properties["gender"] = "M";
                } else if (property == "id") {
-                   var externalID           = nextPerson["id"];
-                   properties["externalID"] = externalID;
-                   if (externalIDToID.hasOwnProperty(externalID)) {
-                       throw "Unable to import pedigree: multiple persons with the same ID [" + externalID + "]"; 
-                   }             
-                   if (nameToID.hasOwnProperty(externalID) && nameToID[externalID] != pedigreeID) {
-                       delete nameToID[externalID];
-                       ambiguousReferences[externalID] = true;                       
-                   } else {
-                       externalIDToID[nextPerson["id"]] = pedigreeID;
+                   if (externalIDToID.hasOwnProperty(value)) {
+                       throw "Unable to import pedigree: multiple persons with the same ID [" + value + "]"; 
                    }
-               } else if (property == "name" || property == "firstName" ) {
-                   var name = nextPerson[property];
-                   properties["fName"] = name;
-                   if (nameToID.hasOwnProperty(name) && nameToID[name] != pedigreeID) {
+                   if (nameToID.hasOwnProperty(value) && nameToID[value] != pedigreeID) {
+                       delete nameToID[value];
+                       ambiguousReferences[value] = true;
+                   } else {
+                       externalIDToID[value] = pedigreeID;
+                       hasID[pedigreeID] = true;
+                   }
+               } else if (property == "name" || property == "firstname" ) {
+                   properties["fName"] = value;
+                   if (nameToID.hasOwnProperty(value) && nameToID[value] != pedigreeID) {
                        // multiple nodes have this first name
-                       delete nameToID[name];
-                       ambiguousReferences[name] = true;
-                   } else if (externalIDToID.hasOwnProperty(name) && externalIDToID[name] != pedigreeID) {
+                       delete nameToID[value];
+                       ambiguousReferences[value] = true;
+                   } else if (externalIDToID.hasOwnProperty(value) && externalIDToID[value] != pedigreeID) {
                        // some other node has this name as an ID
-                       delete externalIDToID[name];
-                       ambiguousReferences[name] = true;
-                   } else {                   
-                       nameToID[nextPerson[property]] = pedigreeID;
+                       delete externalIDToID[value];
+                       ambiguousReferences[value] = true;
+                   } else {
+                       nameToID[value] = pedigreeID;
                    }
                } else {
-                   var processed = PedigreeImport.convertProperty(property, nextPerson[property]);
+                   var processed = PedigreeImport.convertProperty(property, value);
                    if (processed !== null) {
                        // supported property
                        properties[processed.propertyName] = processed.value;
@@ -498,21 +502,27 @@ PedigreeImport.initFromSimpleJSON = function(inputText)
                }
            }
        }
-       
+
+       // only use externalID if id is not present
+       if (nextPerson.hasOwnProperty("externalId") && !hasID.hasOwnProperty(pedigreeID)) {
+           externalIDToID[nextPerson.externalId] = pedigreeID;
+           hasID[pedigreeID] = true;
+       }
+
        newG.properties[pedigreeID] = properties;
    }
-   
+
    var getPersonID = function(person) {
        if (person.hasOwnProperty("id"))
            return externalIDToID[person.id];
-           
+
        if (person.hasOwnProperty("firstName"))
            return nameToID[person.firstName];
-           
+
        if (person.hasOwnProperty("name"))
            return nameToID[person.name];
    };
-   
+
    var findReferencedPerson = function(reference, refType) {
        if (ambiguousReferences.hasOwnProperty(reference))
            throw "Unable to import pedigree: ambiguous reference to [" + reference + "]";
@@ -600,7 +610,7 @@ PedigreeImport.initFromSimpleJSON = function(inputText)
  *    INFERTILE: "M"    
  * ===============================================================================================
  */
-PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated)
+PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated, saveIDAsExternalID)
 {  
    var inputLines = inputText.match(/[^\r\n]+/g);
    if (inputLines.length == 0) throw "Unable to import: no data";
@@ -744,7 +754,8 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated)
        externalIDToID[nextPerson.id] = pedigreeID; 
                       
        var cleanedID = nextPerson.id.replace(/@/g, '')
-       var properties = {"externalID": cleanedID};
+       var properties = saveIDAsExternalID ? {"externalID": cleanedID} : {};
+
        properties["gender"] = "U";     // each person should have some gender set 
 
        var getFirstValue = function(obj) {
@@ -840,13 +851,21 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated)
                    var props = getFirstValue(nextPerson[property]).split('');
                    for (var p = 0; p < props.length; p++) {
                        var value = props[p];
+                       if (value.charCodeAt(0) == 65533 || value.charCodeAt(0) == 172) {
+                           // one value is obtained via copy-paste, another via file upload
+                           value = "HEARSAY";
+                       }
                        switch(value) {
                        case "O":
                            properties["carrierStatus"] = 'affected';
                            properties["disorders"]     = ['affected'];
+                           if (markEvaluated)
+                               properties["evaluated"] = true;
                            break;
-                       case "¬":
+                       case "HEARSAY":
                            properties["carrierStatus"] = 'presymptomatic'; // the closest graphic to cyrillic's "hearsay"
+                           if (markEvaluated)
+                               properties["evaluated"] = true;
                            break;
                        case "K":
                            properties["lifeStatus"] = "stillborn";
@@ -951,22 +970,23 @@ PedigreeImport.initFromGEDCOM = function(inputText, markEvaluated)
 // ===============================================================================================
 
 
-// TODO: convert internal properties to match piublic and rename this to "supportedProperties"
+// TODO: convert internal properties to match public names and rename this to "supportedProperties"
 PedigreeImport.JSONToInternalPropertyMapping = {
         "proband":         "proband", 
-        "lastName":        "lName",
-        "lastNameAtBirth": "lNameAtB",
+        "lastname":        "lName",
+        "lastnameatbirth": "lNameAtB",
         "comments":        "comments",
-        "twinGroup":       "twinGroup",
+        "twingroup":       "twinGroup",
         "monozygotic":     "monozygotic",
-        "adoptedIn":       "isAdopted",
+        "adoptedin":       "isAdopted",
         "evaluated":       "evaluated",
-        "birthDate":       "dob",
-        "deathDate":       "dod",
-        "gestationAge":    "gestationAge",
-        "lifeStatus":      "lifeStatus",
+        "birthdate":       "dob",
+        "deathdate":       "dod",
+        "gestationage":    "gestationAge",
+        "lifestatus":      "lifeStatus",
         "disorders":       "disorders",
-        "carrierStatus":   "carrierStatus"
+        "carrierstatus":   "carrierStatus",
+        "externalid":      "externalID"
     };
 
 

@@ -898,9 +898,6 @@ DynamicPositionedGraph.prototype = {
         // fix common layout mistakes (e.g. relationship not right above the only child)
         this._heuristics.improvePositioning(ranksBefore, rankYBefore);
 
-        // update vertical separation for all nodes & compute ancestors
-        this._updateauxiliaryStructures(ranksBefore, rankYBefore);
-
         var movedNodes = this._findMovedNodes( numNodesBefore, positionsBefore, ranksBefore, vertLevelsBefore, rankYBefore );
         if (!arrayContains(movedNodes, parentRel))
             movedNodes.push(parentRel);
@@ -1157,10 +1154,10 @@ DynamicPositionedGraph.prototype = {
         //this._debugPrintAll("before");
 
         if (importType == "ped") {
-            var baseGraph = PedigreeImport.initFromPED(importString, importOptions.acceptUnknownPhenotypes, importOptions.markEvaluated);
+            var baseGraph = PedigreeImport.initFromPED(importString, importOptions.acceptUnknownPhenotypes, importOptions.markEvaluated, importOptions.externalIdMark);
             if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
         } else if (importType == "gedcom") {
-            var baseGraph = PedigreeImport.initFromGEDCOM(importString, importOptions.markEvaluated);
+            var baseGraph = PedigreeImport.initFromGEDCOM(importString, importOptions.markEvaluated, importOptions.externalIdMark);
             if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
         } else if (importType == "simpleJSON") {
             var baseGraph = PedigreeImport.initFromSimpleJSON(importString);
@@ -2965,7 +2962,7 @@ Heuristics.prototype = {
         for (var e = 0; e < longEdges.length; e++) {
             var chain = longEdges[e];
             //this.DG.displayGraph(xcoord.xcoord, "pre-straighten-"+stringifyObject(chain));
-            console.log("trying to force-straighten edge " + stringifyObject(chain));
+            //console.log("trying to force-straighten edge " + stringifyObject(chain));
 
             //var person = this.DG.GG.getInEdges(chain[0])[0];
             do {
