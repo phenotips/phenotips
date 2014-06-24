@@ -318,7 +318,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
       <code>document.observe('xwiki:dom:loading', function() {
   var suggestionsMapping = {
         "hpo" : {
-            script: "$xwiki.getURL('PhenoTips.SolrService', 'get')?",
+            script: new XWiki.Document('SolrService', 'PhenoTips').getURL("get") + "?",
             queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
                            'name' : {'wordBoost': 10, 'phraseBoost': 20},
                            'nameSpell' : {'wordBoost': 18, 'phraseBoost': 36, 'stubBoost': 14},
@@ -341,6 +341,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
             resultsParameter : "rows",
             resultId : "id",
             resultValue : "name",
+            resultSynonym: "synonym",
             resultCategory : "term_category",
             resultInfo : {
                  "Browse related terms..." : {"extern" : true,
@@ -361,7 +362,7 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
             timeout : 30000
         },
         "omim" : {
-            script: "$xwiki.getURL('PhenoTips.OmimService', 'get')?outputSyntax=plain&amp;",
+            script: new XWiki.Document('OmimService', 'PhenoTips').getURL("get", "outputSyntax=plain") + "&amp;",
             queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
                            'name' : {'wordBoost': 20, 'phraseBoost': 40},
                            'nameSpell' : {'wordBoost': 50, 'phraseBoost': 100, 'stubBoost': 20},
