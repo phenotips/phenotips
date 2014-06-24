@@ -302,7 +302,8 @@
         <picker>0</picker>
         <prettyName>extended_negative_phenotype</prettyName>
         <relationalStorage>1</relationalStorage>
-        <separator> </separator>
+        <separator>
+</separator>
         <separators/>
         <size>1</size>
         <sort>none</sort>
@@ -326,7 +327,8 @@
         <picker>0</picker>
         <prettyName>extended_negative_prenatal_phenotype</prettyName>
         <relationalStorage>1</relationalStorage>
-        <separator> </separator>
+        <separator>
+</separator>
         <separators/>
         <size>1</size>
         <sort>none</sort>
@@ -350,7 +352,8 @@
         <picker>0</picker>
         <prettyName>extended_phenotype</prettyName>
         <relationalStorage>1</relationalStorage>
-        <separator> </separator>
+        <separator>
+</separator>
         <separators/>
         <size>1</size>
         <sort>none</sort>
@@ -374,7 +377,8 @@
         <picker>0</picker>
         <prettyName>extended_prenatal_phenotype</prettyName>
         <relationalStorage>1</relationalStorage>
-        <separator> </separator>
+        <separator>
+</separator>
         <separators/>
         <size>1</size>
         <sort>none</sort>
@@ -735,7 +739,8 @@
         <picker>0</picker>
         <prettyName>Symptoms NOT observed in this patient</prettyName>
         <relationalStorage>1</relationalStorage>
-        <separator> </separator>
+        <separator>
+</separator>
         <separators/>
         <size>1</size>
         <sort>none</sort>
@@ -759,7 +764,8 @@
         <picker>0</picker>
         <prettyName>Prenatal symptoms NOT observed in this patient</prettyName>
         <relationalStorage>1</relationalStorage>
-        <separator> </separator>
+        <separator>
+</separator>
         <separators/>
         <size>1</size>
         <sort>none</sort>
@@ -783,7 +789,8 @@
         <picker>0</picker>
         <prettyName>OMIM disorder</prettyName>
         <relationalStorage>1</relationalStorage>
-        <separator> </separator>
+        <separator>
+</separator>
         <separators/>
         <size>1</size>
         <sort>none</sort>
@@ -871,7 +878,8 @@
         <picker>0</picker>
         <prettyName>Clinical symptoms &amp; physical findings</prettyName>
         <relationalStorage>1</relationalStorage>
-        <separator> </separator>
+        <separator>
+</separator>
         <separators/>
         <size>1</size>
         <sort>none</sort>
@@ -915,7 +923,8 @@
         <picker>0</picker>
         <prettyName>Prenatal and Perinatal History</prettyName>
         <relationalStorage>1</relationalStorage>
-        <separator> </separator>
+        <separator>
+</separator>
         <separators/>
         <size>1</size>
         <sort>none</sort>
