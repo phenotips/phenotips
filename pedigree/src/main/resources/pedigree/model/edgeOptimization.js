@@ -50,7 +50,7 @@ VerticalPosIntOptimizer.prototype = {
                 var intersects = crosses[j];
                 if (intersects > edge) {                  // because we want to only count each intersection only once, and score func is symmetrical
                     //console.log("[p] " + edge + " + " + intersects + " = " + this.pairScoreFunc( edge, intersects, levels[edge], levels[intersects] ));
-                    penalty += this.pairScoreFunc( edge, intersects, levels[edge], levels[intersects] );;
+                    penalty += this.pairScoreFunc( edge, intersects, levels[edge], levels[intersects], levels );
                     if (!isFinite(penalty))
                         return penalty;
                 }
@@ -63,6 +63,7 @@ VerticalPosIntOptimizer.prototype = {
         penalty += numLevelsPen;
         //console.log("num levels penalty: " + numLevelsPen);
 
+        //console.log("Score: " + penalty + " (numLevels: " + numLevelsPen + ")");
         return penalty;
     },
 
@@ -183,6 +184,7 @@ VerticalPosIntOptimizer.prototype = {
             components.addRequiredPenaltyToComponent(compID, penaltyForNumLevelsUsed);
         }
 
+        //console.log("Components: " + stringifyObject(components));
         return {"crosses": crosses, "components": components };
     },
 
@@ -224,7 +226,8 @@ VerticalPosIntOptimizer.prototype = {
 
         var initScore = this.componentScoreFunc(bestSoFar, componentID)
 
-        this.checkedNumber = 0; // TODO: debug
+        //this.checkedNumber = 0; // TODO: debug
+        //console.log("minPossiblePenalty: " + this.components.getMinPossiblePenalty(componentID));
 
         var result = this.recursiveExhaustiveSearch( componentID, bestSoFar.slice(0), 0, {"values":bestSoFar, "score":initScore} );
 
@@ -235,21 +238,19 @@ VerticalPosIntOptimizer.prototype = {
 
     recursiveExhaustiveSearch: function ( componentID, valuesSoFar, level, bestSoFar ) {
 
-        //console.log("best value at enter [" + level + "]: " + stringifyObject(bestSoFar.values) + " (score: " + bestSoFar.score + ")");
-
         var component = this.components.getComponentEdges(componentID);
 
         // reached the end of the recursion
         if (level == component.length) {
-            //console.log("trying complete: " + stringifyObject(valuesSoFar));
             var score = this.componentScoreFunc(valuesSoFar, componentID);
+            //console.log("SCORING: " + stringifyObject(valuesSoFar) + " -> Score: " + score );
             if (score < bestSoFar.score) {
                 bestSoFar.values = valuesSoFar.slice(0);
                 bestSoFar.score  = score;
                 //console.log("[fsearch] New best: " + stringifyObject(bestSoFar.values) + " (score: " + bestSoFar.score + ")");
             }
             //console.log("best value at enter [" + level + "]: " + stringifyObject(valuesSoFar));
-            this.checkedNumber++; // TODO: debug
+            //this.checkedNumber++; // TODO: debug
             return bestSoFar;
         }
 
@@ -343,7 +344,7 @@ VerticalPosIntOptimizer.prototype = {
                 isBelowAll = true;       // if level == minLevel for the edge does not make sense to decrese the level
             }
         }
-        while (isAboveAll && isBelowAll);  // if both above lal and below all no sense to play with the edge; need to pick another edge
+        while (isAboveAll && isBelowAll);  // if both above all and below all no sense to play with the edge; need to pick another edge
 
         // pick new random level for the edge (different form the old value)
         var newLevel;
@@ -396,6 +397,27 @@ VerticalPosIntOptimizer.prototype = {
             }
         }
 
+        // 3. try to minimize the highest used level
+        do {
+            var changed = false;
+            for (var i = 0; i < component.length; i++) {
+                var edge = component[i];
+                var curLevel = levels[edge];
+                var minLevel = this.minLevels ? this.minLevels[edge] : 1;
+                if (curLevel > minLevel) {
+                    var highestBelow = 0;
+                    for (var j = 0; j < this.crosses[edge].length; j++) {
+                        var level = levels[this.crosses[edge][j]];
+                        if (level < curLevel && level > highestBelow)
+                            highestBelow = levels[this.crosses[edge][j]];
+                    }
+                    if (highestBelow < curLevel - 1) {
+                        levels[edge] = highestBelow + 1;
+                    }
+                }
+            }
+        } while (changed);
+
         //console.log("post normalization: " + stringifyObject(levels));
     },
 
@@ -444,6 +466,8 @@ VerticalPosIntOptimizer.prototype = {
         //     sbest ← snew; ebest ← enew                    // Save 'new neighbour' to 'best found'.
         //   k ← k + 1                                       // One more evaluation done
         // return sbest                                      // Return the best solution found.
+
+        //console.log("Min possible penalty: " + this.components.getMinPossiblePenalty(componentID));
 
         var step = maxSteps;
         while (bestScore > this.components.getMinPossiblePenalty(componentID) && step >= 0) {

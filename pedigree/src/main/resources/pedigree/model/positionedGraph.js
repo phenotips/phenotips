@@ -2405,13 +2405,13 @@ PositionedGraph.prototype = {
             var optimizer = new VerticalPosIntOptimizer( pairScoreFunc, initLevels );
 
             // - full exhaustive search when up to 5 edges cross other edges on this rank
-            // - heuristic with up to 400 steps is used otherwise
+            // - heuristic with up to 600 steps is used otherwise
             //
             //   max full search running time: ~                 f(numEdgesThatCross) * scoreFuncTime  (*)
             //   max heuristic running time:   ~  bigC * numEdgesThatCross * numSteps * scoreFuncTime
             //
             //   (*) where f(numEdgesThatCross) is (currently) numEdgesThatCross^numEdgesThatCross, e.g. f(5) = 3125
-            var edgeLevels = optimizer.computeVerticalPositions( 5, 400 );
+            var edgeLevels = optimizer.computeVerticalPositions( 5, 600 );
 
             //console.log("[rank " + r + "] Final vertical childedge levels: " +  stringifyObject(edgeLevels));
 
@@ -2429,6 +2429,7 @@ PositionedGraph.prototype = {
 
             var initLevels = [];
             var edgeInfo   = [];
+            var relEdges   = {};
 
             var len = this.order.order[r].length;
             for (var i = 0; i < len; i++) {
@@ -2462,6 +2463,7 @@ PositionedGraph.prototype = {
                             var minLevel = (minOrder == maxOrder) ? 0 : 1;  // 0 if next to each other, 1 if at least anything inbetween
                             //console.log("v: " + v + "(" + vOrder[v] + "),  dest: " + dest +  "(" + vOrder[dest] + "), minOrder: " + minOrder + ", maxOrder: " + maxOrder);
                             var otherVirtualEdge = false;
+                            var goesOver         = [];
                             for (var o = minOrder; o < maxOrder; o++) {
                                 var w = this.order.order[r][o];
                                 if (this.GG.isRelationship(w)) { minLevel = Math.max(minLevel, 2); }
@@ -2469,6 +2471,7 @@ PositionedGraph.prototype = {
                                 if (this.GG.isVirtual(w) && this.GG.getInEdges(w)[0] != v) {
                                     otherVirtualEdge = true;
                                 }
+                                goesOver.push(w);
                             }
                             nextVerticalLevel = Math.max(nextVerticalLevel, minLevel);
                             //console.log("attaching ->" + dest + "(" + u + ") at attach port " + nextAttachPort + " and level " + nextVerticalLevel);
@@ -2497,8 +2500,11 @@ PositionedGraph.prototype = {
                                     }
                                 }
 
-                                edgeInfo.push( { "v": v, "u": u, "v_x": v_x, "left_x": left_x, "right_x": right_x, "down_x": down_x, "top_x": top_x} );
+                                edgeInfo.push( { "v": v, "u": u, "v_x": v_x, "left_x": left_x, "right_x": right_x, "down_x": down_x, "top_x": top_x, "over": goesOver } );
                                 initLevels.push(nextVerticalLevel);
+                                if (!relEdges.hasOwnProperty(u))
+                                    relEdges[u] = [];
+                                relEdges[u].push(edgeInfo.length-1);
                             }
                             //------------------------------
 
@@ -2521,9 +2527,21 @@ PositionedGraph.prototype = {
 
             if (edgeInfo.length > 1) {    // if at most one edge crosses other vertices - we know everything is already laid out perfectly
 
+                for (var e = 0; e < edgeInfo.length; e++) {
+                    if (!edgeInfo[e].hasOwnProperty("edgeComplement")) {
+                        var nextRel   = edgeInfo[e].u;
+                        var nextEdges = relEdges[nextRel];
+                        if (nextEdges.length > 1) {
+                            var otherEdge = (nextEdges[0] == e) ? nextEdges[1] : nextEdges[0];
+                            edgeInfo[e]["edgeComplement"]         = otherEdge;
+                            edgeInfo[otherEdge]["edgeComplement"] = e;
+                        }
+                    }
+                }
+
                 // compose the "crossing score" function which, given edgeInfo + which horizontal line is higher,
                 // can tell the number of crossings between two node-to-relationship edges
-                var pairScoreFunc = function( edge1, edge2, edge1level, edge2level ) {
+                var pairScoreFunc = function( edge1, edge2, edge1level, edge2level, levels ) {
                     //
                     // general form of a displayed edges is one of:
                     // (where the solid line is part of the edge and the dotted part is treated as a separate edge related to the other partner or some other node)
@@ -2585,26 +2603,40 @@ PositionedGraph.prototype = {
                     if (edgeInfo[edge1].left_x >= edgeInfo[edge2].left_x && edgeInfo[edge1].right_x <= edgeInfo[edge2].right_x)
                         return 2;
 
-                    var extraIntersections = 0;
+                    var extraIntersections = 1.0;
 
                     // edges cross: if lower edge has top_x and it crosses the other edge -> report 1 unnecessary crossing
                     if (edgeInfo[edge2].top_x >= edgeInfo[edge1].left_x && edgeInfo[edge2].top_x <= edgeInfo[edge1].right_x)
                         extraIntersections++;
 
-                    // edges cross: upper edge's down_x crosses lower edge (0.5 because it will be counted twice for left/right edge)
-                    if (edgeInfo[edge1].down_x >= edgeInfo[edge2].left_x && edgeInfo[edge1].down_x <= edgeInfo[edge2].right_x)
-                        extraIntersections += 0.5;
+                    // [edge1] ------\           /- - - - - [edge1-complement]
+                    //               |           |
+                    // [edge2] ------1-----------2-------
+                    //               |           |
+                    //               \___[rel]_ _/
+                    //                     |
+                    //
+                    // in a case like this, [rel] will be moved to a position above [edge2] and instead of
+                    // two intersection {1,2} there will be only one intersection of downward egge with edge2.
+                    // So if a case like this is detected we subtract 0.4 crossings from intersections 1 and 2
+                    // (and from minimum score as well) - as long as there is [edge1-complement]
+                    //
+                    if (edgeInfo[edge1].hasOwnProperty("edgeComplement") &&
+                        (!levels || levels[edgeInfo[edge1].edgeComplement] > edge2level)) {
+                        if (edgeInfo[edge1].down_x >= edgeInfo[edge2].left_x && edgeInfo[edge1].down_x <= edgeInfo[edge2].right_x)
+                            extraIntersections -= 0.4;
+                    }
 
                     return extraIntersections;
                 }
 
-                console.log("[rank " + r + "] Init vertical relatioship levels: " +  stringifyObject(initLevels));
+                //console.log("[rank " + r + "] Init vertical relatioship levels: " +  stringifyObject(initLevels));
 
                 var optimizer = new VerticalPosIntOptimizer( pairScoreFunc, initLevels, initLevels );  // init level == min level
 
                 var relEdgeLevels = optimizer.computeVerticalPositions( 5, 500 );
 
-                console.log("[rank " + r + "] Final vertical relatioship levels: " +  stringifyObject(relEdgeLevels));
+                //console.log("[rank " + r + "] Final vertical relatioship levels: " +  stringifyObject(relEdgeLevels));
 
                 numLevels = 0;
                 // place computed levels where they ultimately belong
@@ -2612,6 +2644,33 @@ PositionedGraph.prototype = {
                     verticalLevels.outEdgeVerticalLevel[ edgeInfo[i].v ][ edgeInfo[i].u ].verticalLevel = relEdgeLevels[i];
                     if (relEdgeLevels[i] > numLevels)
                         numLevels = relEdgeLevels[i];
+                }
+
+                // optimize cases where an edge has rank > 1 because it supposedly goes over a relationship, but all
+                // relationships it goes over are raised because all their edges have higher levels.
+                // In such a case it looks beter when the edge in question is re-ranked back to rank 1
+                for (var i = 0; i < edgeInfo.length; i++) {
+                    // optimize cases where an edge has rank 2 (because it goes over a relationship), but all
+                    // relationships it goes over are raised => re-rank to rank 1
+                    var level = relEdgeLevels[i];
+                    if (level > 1) {
+                        var lowerLevel = true;
+                        for (var e = 0; e < edgeInfo[i].over.length; e++) {
+                            var w = edgeInfo[i].over[e];
+                            if (!this.GG.isRelationship(w)) {
+                                lowerLevel = false;
+                                break;
+                            }
+                            var parents = this.GG.getParents(w);
+                            if ( verticalLevels.outEdgeVerticalLevel[ parents[0] ][ w ].verticalLevel <= level ||
+                                 verticalLevels.outEdgeVerticalLevel[ parents[1] ][ w ].verticalLevel <= level ) {
+                                lowerLevel = false;
+                                break;
+                            }
+                        }
+                        if (lowerLevel)
+                            verticalLevels.outEdgeVerticalLevel[ edgeInfo[i].v ][ edgeInfo[i].u ].verticalLevel = 1;
+                    }
                 }
             }
 
@@ -3126,7 +3185,7 @@ PositionedGraph.prototype = {
 
         for (var e = 0; e < longEdges.length; ++e) {
             var chain = longEdges[e];
-            console.log("trying to straighten edge " + stringifyObject(chain));
+            //console.log("trying to straighten edge " + stringifyObject(chain));
 
             // 1) try to straighten by shifting the head
 

@@ -391,7 +391,13 @@ DynamicPositionedGraph.prototype = {
             var allRels = this.DG.GG.getAllRelationships(v);
             for (var i = 0; i < allRels.length; i++) {
                 removedList[allRels[i]] = true;
-                var chhubId = this.DG.GG.getOutEdges(allRels[i])[0];
+            }
+        }
+
+        // remove all childhubs of all relationships that need to be removed
+        for (var node in removedList) {
+            if (removedList.hasOwnProperty(node) && this.isRelationship(node)) {
+                var chhubId = this.DG.GG.getOutEdges(node)[0];
                 removedList[chhubId] = true;
             }
         }
@@ -1251,12 +1257,16 @@ DynamicPositionedGraph.prototype = {
 
     _updateauxiliaryStructures: function(ranksBefore, rankYBefore)
     {
+        var timer = new Timer();
+
         // update vertical levels
         this.DG.vertLevel = this.DG.positionVertically();
         this.DG.rankY     = this.DG.computeRankY(ranksBefore, rankYBefore);
 
         // update ancestors
         this.updateAncestors();
+
+        timer.printSinceLast("=== Vertical spacing + ancestors runtime: ");
     },
 
     _getAllNodes: function (minID, maxID)
