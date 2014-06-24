@@ -2140,9 +2140,9 @@ return PhenoTips;
     }
     var result = "";
     for (var rField in this.restriction) {
-      var restrictionString = "+(";
+      var restrictionString = (rField.substring(0, 1) == '-' ? '-' : '+') + "(";
       for (var i = 0; i &lt; this.restriction[rField].length; ++i) {
-        restrictionString += rField + ":" + this.restriction[rField][i].replace(/:/g, "\\:") + " ";
+        restrictionString += rField.replace(/^-/, '') + ":" + this.restriction[rField][i].replace(/:/g, "\\:") + " ";
       }
       restrictionString = restrictionString.strip() + ") ";
       result += restrictionString;

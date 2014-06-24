@@ -156,6 +156,7 @@ public class OmimScriptService extends AbstractSolrScriptService
         if (nphenotypes.size() > 0) {
             q += "  not_symptom:" + StringUtils.join(nphenotypes, " not_symptom:");
         }
+        q += " -nameSort:\\** -nameSort:\\+* -nameSort:\\^*";
         params.put(CommonParams.Q, q.replaceAll("HP:", "HP\\\\:"));
         params.put(CommonParams.ROWS, "100");
         params.put(CommonParams.START, "0");

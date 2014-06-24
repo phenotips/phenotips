@@ -77,6 +77,7 @@
     #foreach ($piece in $!request.getParameterValues('free_symptom'))
       #set($discard = $data.add("text:""${piece}"""))
     #end
+    #set ($discard = $data.add('-nameSort:\** -nameSort:\+* -nameSort:\^*'))
     #if ("$!{request.format}" == 'html')
 #set ($results = $_service.search($stringtool.join($data, ' '), $limit, 0))
 #if ($results.size() &gt; 0)

@@ -504,6 +504,8 @@ document.observe('xwiki:dom:loaded', function() {
                            'keywords' : {'wordBoost': 2, 'phraseBoost': 6, 'stubBoost': 2},
                            'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1},
                            'textSpell' : {'wordBoost': 2, 'phraseBoost': 5, 'stubBoost': 2, 'stubTrigger': true}
+                         }, {
+                           '-nameSort': ['\\**', '\\+*', '\\^*']
                          }),
             varname: "q",
             noresults: "No matching terms",
