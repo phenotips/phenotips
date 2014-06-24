@@ -38,7 +38,7 @@ function getAge(birthDate, deathDate)
         months = (now.getFullYear() - birthDate.getFullYear())*12 + ( offsetNow.getMonth() - offsetBirth.getMonth()) ;
     }
 
-    agestr="";
+    var agestr;
 
     if (months < 12){
         days = Math.floor(age / aDay);
@@ -51,9 +51,16 @@ function getAge(birthDate, deathDate)
         {
             agestr = months + 'mo';
         }
-    }else{
-        agestr = agestr + years;
-        agestr = agestr + "y";
+    } else {
+        if (years < 120) {
+            agestr = years + "y";
+        }
+        else {
+            // assume a person over 120 years old is probably no longer alive, so
+            // instead of displaying the age (which may not make any sense, e.g. "250y")
+            // just diusplay the borth date
+            agestr = "b. " + birthDate.getFullYear();
+        }
     }
     return agestr;
 }

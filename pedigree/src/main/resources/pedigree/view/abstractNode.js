@@ -12,14 +12,14 @@
 var AbstractNode = Class.create( {
 
     initialize: function(x, y, id) {
-    	//console.log("abstract node");
-    	this._id = id;
-    	this._comments = "";
-        !this._type && (this._type = "AbstractNode");        
+        //console.log("abstract node");
+        this._id = id;
+        this._comments = "";
+        !this._type && (this._type = "AbstractNode");
         this._graphics = this._generateGraphics(x, y);
         //console.log("abstract node end");
     },
-    
+
     /**
      * Returns the unique ID of this node
      *
@@ -38,11 +38,11 @@ var AbstractNode = Class.create( {
      */
     setID: function(id) {
         if (id == this._id) return;
-        console.log("Updating ID " + this._id + " to " + id);
+        //console.log("Updating ID " + this._id + " to " + id);
         this._id = id;
         this._graphics.onSetID(id);
     },
-    
+
     /**
      * Generates an instance of AbstractNodeVisuals
      *
@@ -53,7 +53,7 @@ var AbstractNode = Class.create( {
      * @private
      */
     _generateGraphics: function(x, y) {
-    	console.log("abstract node - generate graphics");
+        //console.log("abstract node - generate graphics");
         return new AbstractNodeVisuals(this, x, y);
     },
 
@@ -99,7 +99,7 @@ var AbstractNode = Class.create( {
     setPos: function(x,y, animate, callback) {
         this.getGraphics().setPos(x, y, animate, callback);
     },
-    
+
     /**
      * Returns the type of this node
      *
@@ -116,8 +116,8 @@ var AbstractNode = Class.create( {
      * @method remove
      * @param [skipConfirmation=false] {Boolean} if true, no confirmation box will pop up
      */
-    remove: function() {    	    	
-    	this.getGraphics().remove();    	    
+    remove: function() {
+        this.getGraphics().remove();
     },
 
     /**
@@ -177,10 +177,10 @@ var AbstractNode = Class.create( {
     onWidgetHide: function() {
         this.getGraphics().getHoverBox() && this.getGraphics().getHoverBox().onWidgetHide();
     },
-    
+
     onWidgetShow: function() {
         this.getGraphics().getHoverBox() && this.getGraphics().getHoverBox().onWidgetShow();
-    }    
+    }
 });
 
 

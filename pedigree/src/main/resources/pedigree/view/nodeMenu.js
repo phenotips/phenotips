@@ -262,7 +262,7 @@ NodeMenu = Class.create({
         'date-picker' : function (data) {
             var result = this._generateEmptyField(data);
             var datePicker = new Element('input', {type: 'text', 'class': 'xwiki-date', name: data.name, 'title': data.format, alt : '' });
-            result.insert(datePicker);            
+            result.insert(datePicker);
             datePicker._getValue = function() { return [this.alt && Date.parseISO_8601(this.alt)]; }.bind(datePicker);
             this._attachFieldEventListeners(datePicker, ['xwiki:date:changed']);
             return result;
@@ -331,7 +331,7 @@ NodeMenu = Class.create({
         this.reposition(x, y);
         document.observe('mousedown', this._onClickOutside);
     },
-        
+
     hide : function() {
         this.hideSuggestPicker();
         this._onscreen = false;
@@ -344,15 +344,15 @@ NodeMenu = Class.create({
         this.menuBox.hide();
         this._clearCrtData();
     },
-    
+
     hideSuggestPicker: function() {
-        this.form.select('input.suggest-omim').each(function(item) {
+        this.form.select('input.suggest').each(function(item) {
             if (item._suggest) {
                 item._suggest.clearSuggestions();
             }
         });
     },
-    
+
     isVisible: function() {
         return this._onscreen;
     },
@@ -368,17 +368,17 @@ NodeMenu = Class.create({
       x = Math.floor(x);
       y = Math.floor(y);
       if (x !== undefined ) {
-          if (this.canvas && x + this.menuBox.getWidth() > (this.canvas.getWidth() + 10)) {              
+          if (this.canvas && x + this.menuBox.getWidth() > (this.canvas.getWidth() + 10)) {
               var delta = x + this.menuBox.getWidth() - this.canvas.getWidth();
               editor.getWorkspace().panByX(delta, true);
-              x -= delta;              
-          }              
+              x -= delta;
+          }
           this._currentX = x;
           this._currentY = y;
           this._height   = this.menuBox.getHeight();
           this.menuBox.style.height   = '';
           this.menuBox.style.overflow = '';
-          this.menuBox.style.left = x + 'px';          
+          this.menuBox.style.left = x + 'px';
       } else {
           if (this.menuBox.getHeight() <= this._height) return;
           this._height = this.menuBox.getHeight();
@@ -397,7 +397,7 @@ NodeMenu = Class.create({
         this.menuBox.style.top = y + 'px';
       }
     },
-    
+
     _clearCrtData : function () {
         var _this = this;
         Object.keys(this.fieldMap).each(function (name) {
@@ -405,12 +405,11 @@ NodeMenu = Class.create({
             _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
             _this.fieldMap[name].inactive = false;
         });
-    },    
-    
+    },
+
     _setCrtData : function (data) {
         var _this = this;
         Object.keys(this.fieldMap).each(function (name) {            
-            
             _this.fieldMap[name].crtValue = data && data[name] && typeof(data[name].value) != "undefined" ? data[name].value : _this.fieldMap[name].crtValue || _this.fieldMap[name]["default"];
             _this.fieldMap[name].inactive = (data && data[name] && (typeof(data[name].inactive) == 'boolean' || typeof(data[name].inactive) == 'object')) ? data[name].inactive : _this.fieldMap[name].inactive;
             _this.fieldMap[name].disabled = (data && data[name] && (typeof(data[name].disabled) == 'boolean' || typeof(data[name].disabled) == 'object')) ? data[name].disabled : _this.fieldMap[name].disabled;
@@ -418,11 +417,10 @@ NodeMenu = Class.create({
             _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
             _this._setFieldDisabled[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].disabled);
             //_this._updatedDependency(_this.fieldMap[name].element, _this.fieldMap[name].element);
-            
             //console.log("name = " + name + ", data = " + stringifyObject(data[name]) + ", inactive: " + stringifyObject(_this.fieldMap[name].inactive));            
         });
     },
-    
+
     _setFieldValue : {
         'radio' : function (container, value) {
             var target = container.down('input[type=radio][value=' + value + ']');
@@ -447,7 +445,7 @@ NodeMenu = Class.create({
             if (target) {
                 target.value = value;
             }
-        },        
+        },
         'date-picker' : function (container, value) {
             var target = container.down('input[type=text].xwiki-date');
             if (target) {
@@ -484,7 +482,7 @@ NodeMenu = Class.create({
             }
         }
     },
-    
+
     _toggleFieldVisibility : function(container, doHide) {
         if (doHide) {
           container.addClassName('hidden');
@@ -492,15 +490,15 @@ NodeMenu = Class.create({
           container.removeClassName('hidden');
         }
     },
-    
+
     _setFieldInactive : {
         'radio' : function (container, inactive) {
             if (inactive === true) {
                 container.addClassName('hidden');
             } else {
                 container.removeClassName('hidden');
-                container.select('input[type=radio]').each(function(item) {                    
-                    if (inactive && Object.prototype.toString.call(inactive) === '[object Array]') {                        
+                container.select('input[type=radio]').each(function(item) {
+                    if (inactive && Object.prototype.toString.call(inactive) === '[object Array]') {
                         item.disabled = (inactive.indexOf(item.value) >= 0);
                         if (item.disabled)
                             item.up().addClassName('hidden');
@@ -542,13 +540,13 @@ NodeMenu = Class.create({
                 container.addClassName('hidden');
             } else {
                 container.removeClassName('hidden');
-                container.select('input[type=radio]').each(function(item) {                    
-                    if (disabled && Object.prototype.toString.call(disabled) === '[object Array]')                        
+                container.select('input[type=radio]').each(function(item) {
+                    if (disabled && Object.prototype.toString.call(disabled) === '[object Array]')
                         item.disabled = (disabled.indexOf(item.value) >= 0);
                     if (!disabled)
                         item.disabled = false;
                 });
-            }            
+            }
         },
         'checkbox' : function (container, disabled) {
             var target = container.down('input[type=checkbox]');

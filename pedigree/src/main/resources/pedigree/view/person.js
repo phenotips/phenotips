@@ -341,6 +341,11 @@ var Person = Class.create(AbstractPerson, {
      * @param {Number} numWeeks Greater than or equal to 0
      */
     setGestationAge: function(numWeeks) {
+        try {
+            numWeeks = parseInt(numWeeks);
+        } catch (err) {
+            numWeeks = "";
+        }
         if(numWeeks){
             this._gestationAge = numWeeks;
             var daysAgo = numWeeks * 7,
