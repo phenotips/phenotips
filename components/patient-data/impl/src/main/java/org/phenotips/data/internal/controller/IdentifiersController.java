@@ -112,8 +112,9 @@ public class IdentifiersController implements PatientDataController<String>
 
             while (keys.hasNext()) {
                 String value = values.next();
+                String key = keys.next();
                 if (!value.equals("")) {
-                    json.put(keys.next(), value);
+                    json.put(key, value);
                 }
             }
         }
