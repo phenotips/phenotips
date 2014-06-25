@@ -130,7 +130,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <xwiki.version>5.4.5</xwiki.version>
     <slf4j.version>1.7.6</slf4j.version>
-    <solr.version>4.8.1</solr.version>
+    <solr.version>4.9.0</solr.version>
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>
     <clirr.skip>false</clirr.skip>
