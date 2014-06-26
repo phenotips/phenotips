@@ -272,12 +272,12 @@
             <difference>
               <differenceType>7012</differenceType>
               <className>**/data/PatientData</className>
-              <method>java.lang.Boolean isIndexed()</method>
+              <method>java.lang.boolean isIndexed()</method>
             </difference>
             <difference>
               <differenceType>7012</differenceType>
               <className>**/data/PatientData</className>
-              <method>java.lang.Boolean isNamed()</method>
+              <method>java.lang.boolean isNamed()</method>
             </difference>
             <difference>
               <differenceType>7012</differenceType>
