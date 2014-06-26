@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,25 +31,22 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * Class for representing {@link PatientData patient data} organized as a list of simple key-value pairs, where the key
- * is a string (name) and the value is an object of a specific type. This list is immutable, and the each pair in the
- * list is also immutable; but the immutability of the values is not guaranteed, although recommended.
+ * Class for representing {@link PatientData patient data} organized as a dictionary (map) of simple key-value pairs,
+ * where the key is a string (name) and the value is an object of a specific type. This dictionary is immutable, and
+ * each pair in the dictionary should also be immutable, although the immutability of the values is not guaranteed.
  *
- * @param <T> the type of data being managed by this component; since this is a list of key-value pairs, this refers to
- * the type of the values stored on the right side of the pairs
+ * @param <T> the type of data being managed by this component; since this is a dictionary of key-value pairs, this
+ *            refers to the type of the values stored on the right side of the pairs
  * @version $Id$
  * @since 1.0M10
  */
 public class SimpleNamedData<T> implements PatientData<T>
 {
-    private static final long serialVersionUID = 1L;
-
+    /** The name of this custom data. */
     private final String name;
 
-    /**
-     * The {@link java.util.Map} object holding the data.
-     */
-    private Map<String, T> internalMap;
+    /** The actual data. */
+    private final Map<String, T> internalMap;
 
     /**
      * Legacy constructor copying the values from a list.
@@ -58,24 +56,24 @@ public class SimpleNamedData<T> implements PatientData<T>
      */
     public SimpleNamedData(String name, List<ImmutablePair<String, T>> data)
     {
-        internalMap = new HashMap<String, T>();
+        Map<String, T> map = new HashMap<String, T>();
         for (Pair<String, T> pair : data) {
-            internalMap.put(pair.getLeft(), pair.getRight());
+            map.put(pair.getLeft(), pair.getRight());
         }
         this.name = name;
-        Collections.unmodifiableMap(internalMap);
+        this.internalMap = Collections.unmodifiableMap(map);
     }
 
     /**
-     * Default constructor copying the values and setting the internal map to be unmodifiable.
+     * Default constructor copying the values into an internal unmodifiable map.
+     *
      * @param name the name of this data
      * @param data the map of values to represent
      */
     public SimpleNamedData(String name, Map<String, T> data)
     {
-        internalMap = data;
         this.name = name;
-        Collections.unmodifiableMap(internalMap);
+        this.internalMap = Collections.unmodifiableMap(new LinkedHashMap<String, T>(data));
     }
 
     @Override
@@ -84,25 +82,16 @@ public class SimpleNamedData<T> implements PatientData<T>
         return this.name;
     }
 
-    /**
-     * Shortcut method for getting a value from this list, the first one where the key is equal to the requested name.
-     *
-     * @param name the name of the entry to retrieve
-     * @return the value found in the pair with the key equal to the requested name; if more than one such pairs exists,
-     * the value from the first one is returned; if no such pair exists, {@code null} is returned
-     */
+    @Override
     public T get(String name)
     {
-        return internalMap.get(name);
+        return this.internalMap.get(name);
     }
 
-    /**
-     * @return the iterator over all values present in the map, or an empty iterator
-     */
     @Override
     public Iterator<T> iterator()
     {
-        Collection<T> values = internalMap.values();
+        Collection<T> values = this.internalMap.values();
         if (values != null) {
             return values.iterator();
         }
@@ -112,7 +101,7 @@ public class SimpleNamedData<T> implements PatientData<T>
     @Override
     public Iterator<String> keyIterator()
     {
-        Collection<String> keys = internalMap.keySet();
+        Collection<String> keys = this.internalMap.keySet();
         if (keys != null) {
             return keys.iterator();
         }
@@ -120,13 +109,13 @@ public class SimpleNamedData<T> implements PatientData<T>
     }
 
     @Override
-    public Boolean isIndexed()
+    public boolean isIndexed()
     {
         return false;
     }
 
     @Override
-    public Boolean isNamed()
+    public boolean isNamed()
     {
         return true;
     }
@@ -134,12 +123,12 @@ public class SimpleNamedData<T> implements PatientData<T>
     @Override
     public T getValue()
     {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
     public T get(int index)
     {
-        throw new UnsupportedOperationException();
+        return null;
     }
 }
