@@ -300,54 +300,13 @@
               <method>java.util.Iterator keyIterator()</method>
             </difference>
             <difference>
-              <differenceType>4001</differenceType>
-              <className>**/data/SimpleNamedData</className>
-              <to>**/util/List</to>
+              <differenceType>7012</differenceType>
+              <className>**/data/PatientData</className>
+              <method>java.util.Iterator dictionaryIterator()</method>
             </difference>
             <difference>
-              <differenceType>4001</differenceType>
+              <differenceType>8001</differenceType>
               <className>**/data/SimpleNamedData</className>
-              <to>**/util/Deque</to>
-            </difference>
-            <difference>
-              <differenceType>4001</differenceType>
-              <className>**/data/SimpleNamedData</className>
-              <to>**/util/Collection</to>
-            </difference>
-            <difference>
-              <differenceType>4001</differenceType>
-              <className>**/data/SimpleNamedData</className>
-              <to>**/util/Queue</to>
-            </difference>
-            <difference>
-              <differenceType>4001</differenceType>
-              <className>**/data/SimpleNamedData</className>
-              <to>**/lang/Cloneable</to>
-            </difference>
-            <difference>
-              <differenceType>4001</differenceType>
-              <className>**/data/SimpleNamedData</className>
-              <to>**/io/Serializable</to>
-            </difference>
-            <difference>
-              <differenceType>5001</differenceType>
-              <className>**/data/SimpleNamedData</className>
-              <to>**/util/AbstractCollection</to>
-            </difference>
-            <difference>
-              <differenceType>5001</differenceType>
-              <className>**/data/SimpleNamedData</className>
-              <to>**/util/AbstractList</to>
-            </difference>
-            <difference>
-              <differenceType>5001</differenceType>
-              <className>**/data/SimpleNamedData</className>
-              <to>**/util/AbstractSequentialList</to>
-            </difference>
-            <difference>
-              <differenceType>5001</differenceType>
-              <className>**/data/SimpleNamedData</className>
-              <to>**/util/LinkedList</to>
             </difference>
           </ignored>
           <excludes>

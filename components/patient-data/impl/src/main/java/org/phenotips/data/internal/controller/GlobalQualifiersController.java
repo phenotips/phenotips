@@ -19,26 +19,29 @@
  */
 package org.phenotips.data.internal.controller;
 
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.SimpleNamedData;
 import org.phenotips.ontology.OntologyManager;
 import org.phenotips.ontology.OntologyTerm;
+
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -79,14 +82,14 @@ public class GlobalQualifiersController implements PatientDataController<Ontolog
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
-            List<ImmutablePair<String, OntologyTerm>> result = new LinkedList<ImmutablePair<String, OntologyTerm>>();
+            Map<String, OntologyTerm> result = new LinkedHashMap<String, OntologyTerm>();
             for (String propertyName : getProperties()) {
                 String propertyValue = data.getStringValue(propertyName);
                 if (StringUtils.isNotBlank(propertyValue)) {
-                    result.add(ImmutablePair.of(propertyName, this.ontologyManager.resolveTerm(propertyValue)));
+                    result.put(propertyName, this.ontologyManager.resolveTerm(propertyValue));
                 }
             }
-            return new SimpleNamedData<OntologyTerm>(DATA_NAME, result);
+            return new DictionaryPatientData<OntologyTerm>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document");
         }
@@ -108,14 +111,16 @@ public class GlobalQualifiersController implements PatientDataController<Ontolog
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        for (ImmutablePair<String, OntologyTerm> data : patient.<ImmutablePair<String, OntologyTerm>>getData(DATA_NAME))
+        Iterator<Entry<String, OntologyTerm>> data = patient.<OntologyTerm>getData(DATA_NAME).dictionaryIterator();
+        while (data.hasNext())
         {
-            if (selectedFieldNames == null || selectedFieldNames.contains(data.getKey())) {
-                OntologyTerm term = data.getValue();
+            Entry<String, OntologyTerm> datum = data.next();
+            if (selectedFieldNames == null || selectedFieldNames.contains(datum.getKey())) {
+                OntologyTerm term = datum.getValue();
                 JSONObject element = new JSONObject();
                 element.put("id", term.getId());
                 element.put("label", term.getName());
-                json.put(data.getKey(), element);
+                json.put(datum.getKey(), element);
             }
         }
     }

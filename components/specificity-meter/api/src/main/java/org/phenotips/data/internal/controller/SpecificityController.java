@@ -19,12 +19,12 @@
  */
 package org.phenotips.data.internal.controller;
 
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.PatientSpecificity;
 import org.phenotips.data.PatientSpecificityService;
-import org.phenotips.data.SimpleNamedData;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -35,15 +35,14 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
@@ -96,11 +95,11 @@ public class SpecificityController implements PatientDataController<Object>, Ini
     {
         PatientSpecificity spec = this.service.getSpecificity(patient);
         if (spec != null) {
-            List<ImmutablePair<String, Object>> data = new LinkedList<ImmutablePair<String, Object>>();
-            data.add(new ImmutablePair<String, Object>("score", spec.getScore()));
-            data.add(new ImmutablePair<String, Object>("date", spec.getComputationDate()));
-            data.add(new ImmutablePair<String, Object>("server", spec.getComputingMethod()));
-            return new SimpleNamedData<Object>(NAME, data);
+            Map<String, Object> data = new LinkedHashMap<String, Object>();
+            data.put("score", spec.getScore());
+            data.put("date", spec.getComputationDate());
+            data.put("server", spec.getComputingMethod());
+            return new DictionaryPatientData<Object>(NAME, data);
         }
         return null;
     }
@@ -121,15 +120,14 @@ public class SpecificityController implements PatientDataController<Object>, Ini
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
         if (selectedFieldNames == null || selectedFieldNames.contains(NAME)) {
-            SimpleNamedData<Object> specificity =
-                (SimpleNamedData<Object>) patient.getData(NAME);
+            PatientData<Object> specificity = patient.getData(NAME);
             if (specificity != null && specificity.isNamed()) {
                 JSONObject result = new JSONObject();
 
-                Iterator<String> keyIterator = specificity.keyIterator();
-                Iterator<Object> iterator = specificity.iterator();
-                while (keyIterator.hasNext()) {
-                    result.element(keyIterator.next(), iterator.next(), this.jsonConfig);
+                Iterator<Entry<String, Object>> data = specificity.dictionaryIterator();
+                while (data.hasNext()) {
+                    Entry<String, Object> datum = data.next();
+                    result.element(datum.getKey(), datum.getValue(), this.jsonConfig);
                 }
                 json.put(NAME, result);
             }

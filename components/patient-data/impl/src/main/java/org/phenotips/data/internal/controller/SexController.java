@@ -22,16 +22,13 @@ package org.phenotips.data.internal.controller;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.SimpleNamedData;
+import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -62,10 +59,10 @@ public class SexController implements PatientDataController<String>
 
     private static final String INTERNAL_PROPERTY_NAME = "gender";
 
-    private static final String EXPOSED_PROPERTY_NAME = DATA_NAME;
+    private static final String SEX_MALE = "M";
 
-    private static final String SEX_MALE    = "M";
-    private static final String SEX_FEMALE  = "F";
+    private static final String SEX_FEMALE = "F";
+
     private static final String SEX_UNKNOWN = "U";
 
     private static final String ERROR_MESSAGE_NO_PATIENT_CLASS = "The patient does not have a PatientClass";
@@ -96,10 +93,8 @@ public class SexController implements PatientDataController<String>
             if (data == null) {
                 throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
-            List<ImmutablePair<String, String>> result = new LinkedList<ImmutablePair<String, String>>();
             String gender = parseGender(data.getStringValue(INTERNAL_PROPERTY_NAME));
-            result.add(ImmutablePair.of(EXPOSED_PROPERTY_NAME, gender));
-            return new SimpleNamedData<String>(DATA_NAME, result);
+            return new SimpleValuePatientData<String>(DATA_NAME, gender);
         } catch (Exception e) {
             this.logger.error("Failed to load patient gender: [{}]", e.getMessage());
         }
@@ -143,12 +138,8 @@ public class SexController implements PatientDataController<String>
         }
 
         PatientData<String> patientData = patient.<String>getData(DATA_NAME);
-        if (patientData != null && patientData.isNamed()) {
-            Iterator<String> values = patientData.iterator();
-            Iterator<String> keys = patientData.keyIterator();
-            while (keys.hasNext()) {
-                json.put(keys.next(), values.next());
-            }
+        if (patientData != null && patientData.getValue() != null) {
+            json.put(DATA_NAME, patientData.getValue());
         }
     }
 
@@ -160,12 +151,9 @@ public class SexController implements PatientDataController<String>
             return null;
         }
 
-        List<ImmutablePair<String, String>> result = new LinkedList<ImmutablePair<String, String>>();
-
         String gender = parseGender(json.getString(DATA_NAME));
-        result.add(ImmutablePair.of(EXPOSED_PROPERTY_NAME, gender));
 
-        return new SimpleNamedData<String>(DATA_NAME, result);
+        return new SimpleValuePatientData<String>(DATA_NAME, gender);
     }
 
     @Override

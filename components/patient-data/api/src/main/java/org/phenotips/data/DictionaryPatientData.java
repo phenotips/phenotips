@@ -19,16 +19,11 @@
  */
 package org.phenotips.data;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import java.util.Map.Entry;
 
 /**
  * Class for representing {@link PatientData patient data} organized as a dictionary (map) of simple key-value pairs,
@@ -38,9 +33,9 @@ import org.apache.commons.lang3.tuple.Pair;
  * @param <T> the type of data being managed by this component; since this is a dictionary of key-value pairs, this
  *            refers to the type of the values stored on the right side of the pairs
  * @version $Id$
- * @since 1.0M10
+ * @since 1.0RC1
  */
-public class SimpleNamedData<T> implements PatientData<T>
+public class DictionaryPatientData<T> implements PatientData<T>
 {
     /** The name of this custom data. */
     private final String name;
@@ -49,28 +44,12 @@ public class SimpleNamedData<T> implements PatientData<T>
     private final Map<String, T> internalMap;
 
     /**
-     * Legacy constructor copying the values from a list.
-     *
-     * @param name the name of this data
-     * @param data the list of values to represent; the pairs are turned into an unmodifiable map
-     */
-    public SimpleNamedData(String name, List<ImmutablePair<String, T>> data)
-    {
-        Map<String, T> map = new HashMap<String, T>();
-        for (Pair<String, T> pair : data) {
-            map.put(pair.getLeft(), pair.getRight());
-        }
-        this.name = name;
-        this.internalMap = Collections.unmodifiableMap(map);
-    }
-
-    /**
      * Default constructor copying the values into an internal unmodifiable map.
      *
      * @param name the name of this data
      * @param data the map of values to represent
      */
-    public SimpleNamedData(String name, Map<String, T> data)
+    public DictionaryPatientData(String name, Map<String, T> data)
     {
         this.name = name;
         this.internalMap = Collections.unmodifiableMap(new LinkedHashMap<String, T>(data));
@@ -85,15 +64,17 @@ public class SimpleNamedData<T> implements PatientData<T>
     @Override
     public T get(String name)
     {
-        return this.internalMap.get(name);
+        if (this.internalMap != null) {
+            return this.internalMap.get(name);
+        }
+        return null;
     }
 
     @Override
     public Iterator<T> iterator()
     {
-        Collection<T> values = this.internalMap.values();
-        if (values != null) {
-            return values.iterator();
+        if (this.internalMap != null) {
+            return this.internalMap.values().iterator();
         }
         return Collections.emptyIterator();
     }
@@ -101,9 +82,17 @@ public class SimpleNamedData<T> implements PatientData<T>
     @Override
     public Iterator<String> keyIterator()
     {
-        Collection<String> keys = this.internalMap.keySet();
-        if (keys != null) {
-            return keys.iterator();
+        if (this.internalMap != null) {
+            return this.internalMap.keySet().iterator();
+        }
+        return Collections.emptyIterator();
+    }
+
+    @Override
+    public Iterator<Entry<String, T>> dictionaryIterator()
+    {
+        if (this.internalMap != null) {
+            return this.internalMap.entrySet().iterator();
         }
         return Collections.emptyIterator();
     }

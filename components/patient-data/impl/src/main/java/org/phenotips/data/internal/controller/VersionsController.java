@@ -21,10 +21,10 @@ package org.phenotips.data.internal.controller;
 
 import org.phenotips.Constants;
 import org.phenotips.components.ComponentManagerRegistry;
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.SimpleNamedData;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -33,15 +33,15 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -73,7 +73,7 @@ public class VersionsController extends AbstractSimpleController
     @Override
     public PatientData<String> load(Patient patient)
     {
-        List<ImmutablePair<String, String>> versions = new LinkedList<ImmutablePair<String, String>>();
+        Map<String, String> versions = new LinkedHashMap<String, String>();
 
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
@@ -82,7 +82,7 @@ public class VersionsController extends AbstractSimpleController
         } catch (Exception e) {
             this.logger.error("Could not find requested document");
         }
-        return new SimpleNamedData<String>(getName(), versions);
+        return new DictionaryPatientData<String>(getName(), versions);
     }
 
     /**
@@ -90,7 +90,7 @@ public class VersionsController extends AbstractSimpleController
      *
      * @param doc the document storing the patient data
      */
-    private void addOntologyVersions(XWikiDocument doc, List<ImmutablePair<String, String>> versions)
+    private void addOntologyVersions(XWikiDocument doc, Map<String, String> versions)
     {
         List<BaseObject> ontologyVersionObjects = doc.getXObjects(ONTOLOGY_VERSION_CLASS_REFERENCE);
         if (ontologyVersionObjects == null) {
@@ -101,7 +101,7 @@ public class VersionsController extends AbstractSimpleController
             String versionType = versionObject.getStringValue("name");
             String versionString = versionObject.getStringValue("version");
             if (StringUtils.isNotEmpty(versionType) && StringUtils.isNotEmpty(versionString)) {
-                versions.add(new ImmutablePair<String, String>(versionType + "_version", versionString));
+                versions.put(versionType + "_version", versionString);
             }
         }
     }
@@ -111,13 +111,12 @@ public class VersionsController extends AbstractSimpleController
      *
      * @param versions the list of version data being constructed
      */
-    private void addPhenoTipsVersion(List<ImmutablePair<String, String>> versions)
+    private void addPhenoTipsVersion(Map<String, String> versions)
     {
         try {
             DistributionManager distribution =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(DistributionManager.class);
-            versions.add(new ImmutablePair<String, String>("phenotips_version",
-                distribution.getDistributionExtension().getId().getVersion().toString()));
+            versions.put("phenotips_version", distribution.getDistributionExtension().getId().getVersion().toString());
         } catch (ComponentLookupException ex) {
             // Shouldn't happen
             this.logger.error("Could not find DistributionManager component");

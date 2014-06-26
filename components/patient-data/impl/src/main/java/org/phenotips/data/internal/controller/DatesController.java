@@ -20,10 +20,10 @@
 package org.phenotips.data.internal.controller;
 
 import org.phenotips.configuration.RecordConfigurationManager;
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.SimpleNamedData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -34,14 +34,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -82,14 +83,14 @@ public class DatesController implements PatientDataController<Date>
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
-            List<ImmutablePair<String, Date>> result = new LinkedList<ImmutablePair<String, Date>>();
+            Map<String, Date> result = new LinkedHashMap<String, Date>();
             for (String propertyName : getProperties()) {
                 Date date = data.getDateValue(propertyName);
                 if (date != null) {
-                    result.add(ImmutablePair.of(propertyName, date));
+                    result.put(propertyName, date);
                 }
             }
-            return new SimpleNamedData<Date>(DATA_NAME, result);
+            return new DictionaryPatientData<Date>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document");
         }
@@ -114,16 +115,16 @@ public class DatesController implements PatientDataController<Date>
         DateFormat dateFormat =
             new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
 
-        PatientData<Date> patientData = patient.<Date>getData(DATA_NAME);
-        if (patientData != null && patientData.isNamed()) {
-            Iterator<Date> values = patientData.iterator();
-            Iterator<String> keys = patientData.keyIterator();
+        PatientData<Date> datesData = patient.<Date>getData(DATA_NAME);
+        if (datesData == null) {
+            return;
+        }
 
-            while (keys.hasNext()) {
-                String key = keys.next();
-                if (selectedFieldNames == null || selectedFieldNames.contains(key)) {
-                    json.put(key, dateFormat.format(values.next()));
-                }
+        Iterator<Entry<String, Date>> data = datesData.dictionaryIterator();
+        while (data.hasNext()) {
+            Entry<String, Date> datum = data.next();
+            if (selectedFieldNames == null || selectedFieldNames.contains(datum.getKey())) {
+                json.put(datum.getKey(), dateFormat.format(datum.getValue()));
             }
         }
     }

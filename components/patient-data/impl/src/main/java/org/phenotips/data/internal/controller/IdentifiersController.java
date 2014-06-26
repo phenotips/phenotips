@@ -19,24 +19,25 @@
  */
 package org.phenotips.data.internal.controller;
 
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.SimpleNamedData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -76,10 +77,9 @@ public class IdentifiersController implements PatientDataController<String>
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
-            List<ImmutablePair<String, String>> result = new LinkedList<ImmutablePair<String, String>>();
-            result.add(ImmutablePair.of(EXTERNAL_IDENTIFIER_PROPERTY_NAME,
-                data.getStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME)));
-            return new SimpleNamedData<String>(DATA_NAME, result);
+            Map<String, String> result = new LinkedHashMap<String, String>();
+            result.put(EXTERNAL_IDENTIFIER_PROPERTY_NAME, data.getStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME));
+            return new DictionaryPatientData<String>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document");
         }
@@ -107,14 +107,12 @@ public class IdentifiersController implements PatientDataController<String>
 
         PatientData<String> patientData = patient.<String>getData(DATA_NAME);
         if (patientData != null && patientData.isNamed()) {
-            Iterator<String> values = patientData.iterator();
-            Iterator<String> keys = patientData.keyIterator();
+            Iterator<Entry<String, String>> values = patientData.dictionaryIterator();
 
-            while (keys.hasNext()) {
-                String value = values.next();
-                String key = keys.next();
-                if (!value.equals("")) {
-                    json.put(key, value);
+            while (values.hasNext()) {
+                Entry<String, String> datum = values.next();
+                if (StringUtils.isNotBlank(datum.getValue())) {
+                    json.put(datum.getKey(), datum.getValue());
                 }
             }
         }

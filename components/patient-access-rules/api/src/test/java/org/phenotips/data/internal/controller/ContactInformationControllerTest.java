@@ -20,8 +20,8 @@
 package org.phenotips.data.internal.controller;
 
 import org.phenotips.data.Patient;
+import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.SimpleNamedData;
 import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
@@ -96,8 +96,7 @@ public class ContactInformationControllerTest
         when(user.getAttribute("email")).thenReturn(USER_EMAIL);
         when(user.getAttribute("company")).thenReturn(USER_INSTITUTION);
 
-        SimpleNamedData<String> result =
-            (SimpleNamedData<String>) this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNotNull(result);
         Assert.assertEquals("contact", result.getName());
         Assert.assertEquals(USER_NAME, result.get("name"));
@@ -125,8 +124,7 @@ public class ContactInformationControllerTest
         when(user.getAttribute("email")).thenReturn("");
         when(user.getAttribute("company")).thenReturn(" ");
 
-        SimpleNamedData<String> result =
-            (SimpleNamedData<String>) this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNotNull(result);
         Assert.assertEquals("contact", result.getName());
         Assert.assertNull(result.get("name"));
@@ -155,8 +153,7 @@ public class ContactInformationControllerTest
         UserManager users = this.mocker.getInstance(UserManager.class);
         when(users.getUser(USER_STR)).thenReturn(null);
 
-        SimpleNamedData<String> result =
-            (SimpleNamedData<String>) this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNull(result);
     }
 
@@ -182,8 +179,7 @@ public class ContactInformationControllerTest
         when(doc.getXObject(Group.CLASS_REFERENCE)).thenReturn(obj);
         when(obj.getStringValue("contact")).thenReturn(GROUP_EMAIL);
 
-        SimpleNamedData<String> result =
-            (SimpleNamedData<String>) this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNotNull(result);
         Assert.assertEquals("contact", result.getName());
         Assert.assertEquals(GROUP.getName(), result.get("name"));
@@ -206,8 +202,7 @@ public class ContactInformationControllerTest
         GroupManager groups = this.mocker.getInstance(GroupManager.class);
         when(groups.getGroup(GROUP)).thenReturn(null);
 
-        SimpleNamedData<String> result =
-            (SimpleNamedData<String>) this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNull(result);
     }
 
@@ -220,8 +215,7 @@ public class ContactInformationControllerTest
         when(permissions.getPatientAccess(this.patient)).thenReturn(access);
         when(access.getOwner()).thenReturn(null);
 
-        SimpleNamedData<String> result =
-            (SimpleNamedData<String>) this.mocker.getComponentUnderTest().load(this.patient);
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNull(result);
     }
 

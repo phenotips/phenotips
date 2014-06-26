@@ -19,10 +19,10 @@
  */
 package org.phenotips.data.internal.controller;
 
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.SimpleNamedData;
 import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.groups.Group;
@@ -36,15 +36,14 @@ import org.xwiki.users.UserManager;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -98,11 +97,11 @@ public class ContactInformationController implements PatientDataController<Strin
     public PatientData<String> load(Patient patient)
     {
         Owner owner = this.permissions.getPatientAccess(patient).getOwner();
-        List<ImmutablePair<String, String>> contactInfo = getContactInfo(owner);
+        Map<String, String> contactInfo = getContactInfo(owner);
         if (contactInfo == null) {
             return null;
         }
-        return new SimpleNamedData<String>(DATA_CONTACT, contactInfo);
+        return new DictionaryPatientData<String>(DATA_CONTACT, contactInfo);
     }
 
     @Override
@@ -147,9 +146,9 @@ public class ContactInformationController implements PatientDataController<Strin
         throw new UnsupportedOperationException();
     }
 
-    private List<ImmutablePair<String, String>> getContactInfo(Owner owner)
+    private Map<String, String> getContactInfo(Owner owner)
     {
-        List<ImmutablePair<String, String>> contactInfo = new LinkedList<ImmutablePair<String, String>>();
+        Map<String, String> contactInfo = new LinkedHashMap<String, String>();
         if (owner == null || owner.getUser() == null) {
             return null;
         }
@@ -169,7 +168,7 @@ public class ContactInformationController implements PatientDataController<Strin
         return contactInfo;
     }
 
-    private void populateUserInfo(List<ImmutablePair<String, String>> contactInfo, User user)
+    private void populateUserInfo(Map<String, String> contactInfo, User user)
     {
         String email = (String) user.getAttribute(ATTRIBUTE_EMAIL_USER);
         String institution = (String) user.getAttribute(ATTRIBUTE_INSTITUTION);
@@ -180,7 +179,7 @@ public class ContactInformationController implements PatientDataController<Strin
         addInfo(contactInfo, DATA_INSTITUTION, institution);
     }
 
-    private void populateGroupInfo(List<ImmutablePair<String, String>> contactInfo, Group group)
+    private void populateGroupInfo(Map<String, String> contactInfo, Group group)
     {
         addInfo(contactInfo, DATA_NAME, group.getReference().getName());
 
@@ -211,10 +210,10 @@ public class ContactInformationController implements PatientDataController<Strin
         return DATA_CONTACT;
     }
 
-    private void addInfo(List<ImmutablePair<String, String>> contactInfo, String key, String value)
+    private void addInfo(Map<String, String> contactInfo, String key, String value)
     {
         if (StringUtils.isNotBlank(value)) {
-            contactInfo.add(ImmutablePair.of(key, value));
+            contactInfo.put(key, value);
         }
     }
 }
