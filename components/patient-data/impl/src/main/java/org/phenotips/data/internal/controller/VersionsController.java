@@ -129,9 +129,9 @@ public class VersionsController extends AbstractSimpleController
     {
         // unlike all other controllers, there is no field name controlling version information
         // so for this particular controller a special getEnablingFieldName() property is used
-        // which, if included in the list of fields, enbales version data to be dumped into JSON
+        // which, if included in the list of fields, enables version data to be dumped into JSON
         // (note that we may sometimes want to omit this data when presenting results for the end users)
-        if (selectedFieldNames == null || selectedFieldNames.contains(VersionsController.getEnablingFieldName())) {
+        if (selectedFieldNames == null || selectedFieldNames.contains(getEnablingFieldName())) {
             super.writeJSON(patient, json, null);
         }
     }
@@ -156,8 +156,8 @@ public class VersionsController extends AbstractSimpleController
     }
 
     /**
-     * Unlike all other controllers, there is no field name controlling presence of version information
-     * in JSON output. This method returns a name which can be used instead.
+     * Unlike all other controllers, there is no field name controlling presence of version information in JSON output.
+     * This method returns a name which can be used instead.
      *
      * @return a name which can be included in the list of enabled fields to enable version info in JSON output
      */

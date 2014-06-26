@@ -134,8 +134,8 @@ public class ContactInformationControllerTest
         Assert.assertNull(result.get("email"));
         Assert.assertNull(result.get("institution"));
 
-        //Recoding Assert.assertEquals(1, result.size())
-        Iterator resultIterator = result.iterator();
+        // Recoding Assert.assertEquals(1, result.size())
+        Iterator<String> resultIterator = result.iterator();
         Assert.assertTrue(resultIterator.hasNext());
         resultIterator.next();
         Assert.assertTrue(!resultIterator.hasNext());
