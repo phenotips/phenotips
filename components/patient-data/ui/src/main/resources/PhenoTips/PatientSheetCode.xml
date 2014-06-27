@@ -908,6 +908,10 @@ document.observe('xwiki:dom:loaded', function() {
                 e.update(PhenoTips.widgets.OntologyBrowser.prototype._getExpandCollapseSymbol(true));
                 var header = e.up();
                 var dataContainer = header.next();
+                var selectedName = new Element('span').update(
+                    dataContainer.select("input[type='radio']:checked")[0].readAttribute('title')
+                );
+                header.insert({bottom: selectedName});
                 var cClassName = "collapsed";
                 header.addClassName("collapsible");
                 dataContainer.addClassName(cClassName);
@@ -924,6 +928,7 @@ document.observe('xwiki:dom:loaded', function() {
                 dataContainer.select("input[type='radio']").each(function(radio) {
                     radio.observe('click', function(){
                         dataContainer.addClassName(cClassName);
+                        selectedName.update(radio.readAttribute('title'));
                         e.update(PhenoTips.widgets.OntologyBrowser.prototype._getExpandCollapseSymbol(true));
                     });
                 });
