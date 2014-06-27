@@ -800,6 +800,7 @@ document.observe('xwiki:dom:loaded', function() {
                    onSuccess : function (response) {
                      addTrigger._x_notif.hide();
                      detailsElt.update(response.responseText);
+                     selectionSummary._givePhenotypeQualifiersCollapseButtons(detailsElt);
                      detailsElt.removeClassName('loading');
                      selectionSummary._focusDetails(detailsElt);
                      detailsElt.select('input, textarea').invoke('observe', 'focus', function(event){selectionSummary._focusDetails(detailsElt)});
@@ -900,6 +901,35 @@ document.observe('xwiki:dom:loaded', function() {
              this._silentRemove(inputElt.value, type);
           }
         }.bind(selectionSummary);
+
+        selectionSummary._givePhenotypeQualifiersCollapseButtons = function (elem) {
+            var collapseContainers = elem.select("dt .collapse-button");
+            collapseContainers.each(function(e){
+                e.update(PhenoTips.widgets.OntologyBrowser.prototype._getExpandCollapseSymbol(true));
+                var header = e.up();
+                var dataContainer = header.next();
+                var cClassName = "collapsed";
+                header.addClassName("collapsible");
+                dataContainer.addClassName(cClassName);
+
+                header.observe('click', function() {
+                    if (dataContainer.hasClassName(cClassName)) {
+                        dataContainer.removeClassName(cClassName);
+                        e.update(PhenoTips.widgets.OntologyBrowser.prototype._getExpandCollapseSymbol(false));
+                    } else {
+                        dataContainer.addClassName(cClassName);
+                        e.update(PhenoTips.widgets.OntologyBrowser.prototype._getExpandCollapseSymbol(true));
+                    }
+                });
+                dataContainer.select("input[type='radio']").each(function(radio) {
+                    radio.observe('click', function(){
+                        dataContainer.addClassName(cClassName);
+                        e.update(PhenoTips.widgets.OntologyBrowser.prototype._getExpandCollapseSymbol(true));
+                    });
+                });
+            });
+        }.bind(selectionSummary);
+
         selectionSummary._updateVisibility();
     }
     // -----------------------------------------------------------------
@@ -1244,6 +1274,7 @@ document.observe('xwiki:dom:loaded', function() {
         });
       }
     });
+    selectionSummary._givePhenotypeQualifiersCollapseButtons(selectionSummary);
   };
   (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
   return XWiki;
@@ -4323,6 +4354,9 @@ form .extradata-list tr:hover td {
   cursor: pointer;
   padding-left: 16px;
 }
+.phenotype-details .collapsed {
+  display: none;
+}
 .phenotype-details .comments-preview {
   display: block;
   overflow: hidden;
@@ -4413,6 +4447,9 @@ form .extradata-list tr:hover td {
 }
 .phenotype-details .actions {
   float: right;
+}
+.phenotype-details .collapsible {
+  cursor: pointer !important;
 }</code>
     </property>
     <property>

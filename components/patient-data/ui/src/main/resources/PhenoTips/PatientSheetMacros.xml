@@ -201,12 +201,13 @@
 #macro (__phenotypeMeta_displayEntry $targetObj)
     #set($dataClass = $targetObj.xWikiClass)
     #set($enabledProperties = ['age_of_onset', 'pace_of_progression', 'suspected_mode_of_inheritance', 'comments', 'supporting_images', 'supporting_documents'])
+    #set($collapsableProperties = ['age_of_onset', 'pace_of_progression', 'suspected_mode_of_inheritance'])
     #set($targetId = "phenotypeMeta__$!{class.name}_$!{obj.number}_$!{targetObj.getProperty('target_property_name').value}__$!{targetObj.getProperty('target_property_value').value}")
     {{html wiki="true" clean="false"}}##
     {{html wiki="false" clean="false"}}&lt;dl id="$targetId"&gt;{{/html}}##
       #foreach($prop in $dataClass.properties)##
         #if ($enabledProperties.contains($prop.name))#set($displayMode='')#else#set($displayMode=' hidden')#end##
-        &lt;dt class="${prop.name}${displayMode}"&gt;&lt;label for=""&gt;${prop.prettyName}:&lt;/label&gt;&lt;/dt&gt;##
+        &lt;dt class="${prop.name}${displayMode}"&gt; #if ($collapsableProperties.contains($prop.name)) &lt;span class="collapse-button"&gt;&lt;/span&gt; #end &lt;label for=""&gt;${prop.prettyName}:&lt;/label&gt;&lt;/dt&gt;##
         &lt;dd class="${prop.name}${displayMode}"&gt;$doc.display($prop.getName(), $targetObj)&lt;/dd&gt;##
       #end##
     &lt;/dl&gt;##
