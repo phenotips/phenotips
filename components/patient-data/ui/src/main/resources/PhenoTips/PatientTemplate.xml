@@ -208,7 +208,7 @@
 #end
 #end
 {{/html}}{{/velocity}}</customDisplay>
-        <dateFormat>MM/dd/yyyy</dateFormat>
+        <dateFormat>yyyy-MM-dd</dateFormat>
         <disabled>0</disabled>
         <emptyIsToday>1</emptyIsToday>
         <name>date_of_birth</name>
@@ -276,7 +276,7 @@
 #end
 #end
 {{/html}}{{/velocity}}</customDisplay>
-        <dateFormat>MM/dd/yyyy</dateFormat>
+        <dateFormat>yyyy-MM-dd</dateFormat>
         <disabled>0</disabled>
         <emptyIsToday>1</emptyIsToday>
         <name>exam_date</name>

@@ -227,7 +227,7 @@ $!value
       </phenotypeMapping>
     </class>
     <property>
-      <dateOfBirthFormat>MM/dd/yyyy</dateOfBirthFormat>
+      <dateOfBirthFormat>yyyy-MM-dd</dateOfBirthFormat>
     </property>
     <property>
       <enableImperialUnitSystem>0</enableImperialUnitSystem>
