@@ -72,7 +72,7 @@
       <name>relative_of</name>
       <number>2</number>
       <picker>0</picker>
-      <prettyName>Of patient with identifier:</prettyName>
+      <prettyName>Of patient with identifier</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators/>
