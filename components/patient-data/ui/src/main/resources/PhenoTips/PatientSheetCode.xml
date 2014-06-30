@@ -1086,7 +1086,7 @@ document.observe('xwiki:dom:loaded', function() {
               if (item_subsection.hasClassName('single-select')){
                  // TODO: ensure single select within this group
               }
-            } else {
+            }
             item._dropDown = new PhenoTips.widgets.DropDown(item.up('.term-entry'));
             item._trigger = new Element('span', {'class' : 'expand-tool'}).update(PhenoTips.widgets.OntologyBrowser.prototype._getExpandCollapseSymbol(true));
             item._trigger._source = item;
@@ -1127,8 +1127,6 @@ document.observe('xwiki:dom:loaded', function() {
             } else {
               item._trigger.addClassName('disabled');
             }
-
-            }   // if subsection
 
             // Info buttons behavior
             var itemParent = item.up('.term-entry');
