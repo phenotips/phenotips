@@ -79,8 +79,8 @@ public class VersionsController extends AbstractSimpleController
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             addOntologyVersions(doc, versions);
             addPhenoTipsVersion(versions);
-        } catch (Exception e) {
-            this.logger.error("Could not find requested document");
+        } catch (Exception ex) {
+            this.logger.error("Could not find requested document: {}", ex.getMessage());
         }
         return new DictionaryPatientData<String>(getName(), versions);
     }
