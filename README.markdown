@@ -58,8 +58,6 @@ The project is split into several modules, among which `distribution/standalone`
 
 The standalone distribution comes packaged with a *Java Servlet Container*, [Jetty](http://www.eclipse.org/jetty/), a lightweight *relational database management system*, [HyperSQL](http://hsqldb.org/), and the *phenotyping application* itself.
 
-**While good for a small to medium trial, this package isn't suited for production use and large quantities of data**.
-
 # LICENSE #
 
 PhenoTips is distributed under the [LGPL version 2.1](http://www.gnu.org/licenses/lgpl-2.1.html) (GNU Lesser General Public License), a well known free software/open source license recognized both by the Free Software Foundation and the Open Source Initiative.
