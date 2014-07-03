@@ -4735,9 +4735,9 @@ div.resultContainer div.sourceContent.loading {
 .ontology-tree .entry .tooltip .value, .term-entry .tooltip .value {
   font-weight: bold;
 }
-.ontology-tree .entry .tooltip .key, .term-entry .tooltip ,key {
+.ontology-tree .entry .tooltip .key, .term-entry .tooltip .key {
   font-size: .8em;
-  color:$theme.textColor;
+  color: $theme.textColor;
 }
 .ontology-tree .entry .tooltip dl, .term-entry .tooltip dl {
   margin: .3em 0;
