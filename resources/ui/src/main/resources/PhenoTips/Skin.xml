@@ -77,6 +77,15 @@
     <filesize>2751</filesize>
   </attachment>
   <attachment>
+    <filename>edit-s-gray.png</filename>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1358882861000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QEWExsZ+Vv60QAAARxJREFUOMuVkjFOw0AQRd9GkWOfIWfgAF5PCwV3oCESDaeggRsECWSEaGiQcgAKmnVcpaIC0YYjYONmKGKjxQ6O86vVSm/+zPyBPVSVRec93gcOwohYJAUIwmhWlcXwAkEYYRNJgVMAmwhBGM1Gu8Bvr231/nWIawPHIos4kQMAK5LaeoyqLDB98GQz8xOQAgXKVZ652N/JaAB8b+DdwIuBV38nQLdAGwZWKB8o82XmzvwoOzFucV4BnwrzPHPnTdu+OjuIRRbAXQ2vVf+HfztonOuKFwpvKF8K133wX+dEjq3IQ30kt35UfRo37sZwA0ytiFk6d+JH1afRZHOih8AUZa3w2I6qt4P6LC9RjvLMPbd3slM2EbPt7ofqB1Yrj0baLkPvAAAAAElFTkSuQmCC</content>
+    <filesize>381</filesize>
+  </attachment>
+  <attachment>
     <filename>editinline.vm</filename>
     <author>xwiki:XWiki.Admin</author>
     <date>1378847911000</date>
