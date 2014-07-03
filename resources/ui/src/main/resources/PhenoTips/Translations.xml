@@ -95,5 +95,7 @@ phenotips.profile.preferences=PhenoTips preferences
 phenotips.profile.preferences.mapping=Preferred mapping
 
 XWiki.XWikiUsers_company=Affiliation
-XWiki.XWikiUsers_comment=About</content>
+XWiki.XWikiUsers_comment=About
+
+PhenoTips.PatientClass_gender_hint=Sex should be recorded as biological sex rather than gender.</content>
 </xwikidoc>

@@ -3851,6 +3851,151 @@ document.observe("xwiki:dom:loaded", function() {
   </object>
   <object>
     <name>PhenoTips.Widgets</name>
+    <number>10</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>34bc814b-fee0-4738-bc6d-b5803a08a0dc</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function(PhenoTips) {
+  // Start augmentation
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+
+  widgets.HelpButton =  Class.create({
+    initialize : function(icon) {
+      this.icon = icon;
+      this.icon.observe("click", this.toggleHelp.bindAsEventListener(this));
+    },
+    toggleHelp : function() {
+      if (!this.helpBox) {
+        this.createHelpBox();
+      }
+      this.helpBox.toggleClassName('hidden');
+    },
+    hideHelp : function() {
+      if (this.helpBox) {
+        this.helpBox.addClassName('hidden');
+      }
+    },
+    showHelp : function() {
+      if (!this.helpBox) {
+        this.createHelpBox();
+      }
+      this.helpBox.removeClassName('hidden');
+    },
+    createHelpBox : function() {
+      this.helpBox = new Element('div', {'class': 'hidden xTooltip'});
+      this.helpBox.update(this.icon.title);
+      var closeButton = new Element('span', {'class': 'hide-tool', 'title': 'Hide'});
+      closeButton.update('×');
+      closeButton.observe('click', this.hideHelp.bindAsEventListener(this));
+      this.helpBox.insert({'top': closeButton});
+      this.icon.insert({'after' : this.helpBox});
+    }
+  });
+
+  var init = function(event) {
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      element.select(".xHelp").each(function(icon) {
+        if (!icon.__helpController) {
+          icon.__helpController = new PhenoTips.widgets.HelpButton(icon);
+        }
+      });
+    });
+    return true;
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  document.observe("xwiki:dom:updated", init);
+
+  // End augmentation.
+  return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name>Help buttons</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>3adf8acf-b6e8-4d05-a382-fa56ee969cf9</guid>
@@ -5118,6 +5263,129 @@ input.xwiki-free-multiselect-value {
     </property>
     <property>
       <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>7</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>00ed2265-5601-43d6-94b9-c1cab4eaae52</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+
+/* The help icon, already displayed as a question mark character. */
+.xHelp {
+  color: $theme.buttonPrimaryBackgroundColor;
+  color: $theme.notificationInfoColor;
+  cursor: pointer;
+}
+.xHelp:hover {
+  color: $theme.buttonPrimaryGradientColor;
+  color: $theme.buttonPrimaryBackgroundColor;
+}
+
+/* The box containing the tooltip, displayed when clicking on the help icon. */
+.xTooltip {
+  background: $theme.pageContentBackgroundColor;
+  border: 0 none;
+  border-radius: 0 1em 1em;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  margin: 0.7em 0 0 -0.3em;
+  max-width: 80%;
+  padding: 4px 8px;
+  position: absolute;
+  z-index: 2;
+}
+.xTooltip .hide-tool {
+  color: #900;
+  cursor: pointer;
+  float: right;
+  padding-left: 0.5em;
+}</code>
+    </property>
+    <property>
+      <name>Help buttons</name>
+    </property>
+    <property>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
