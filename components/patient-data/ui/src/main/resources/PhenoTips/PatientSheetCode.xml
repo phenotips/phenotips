@@ -1371,6 +1371,7 @@ document.observe('xwiki:dom:loaded', function() {
     initialize : function(dataTable) {
       /** Measurement evaluation service */
       this.measurementsService = new XWiki.Document('PatientToolsService', 'PhenoTips').getURL('get');
+      this.solarService = new XWiki.Document('SolrService', 'PhenoTips').getURL("get");
 
       this.dataTable = dataTable;
       this.dataTable._processor = this;
@@ -1661,10 +1662,11 @@ document.observe('xwiki:dom:loaded', function() {
             var target = _info[p];
             if (value == 'evaluation' &amp;&amp; target['valueHooks'] &amp;&amp; _this._getMostRecentEntry() == cell.up('tr.data-row')) {
               var targetElt = values[p]['valCategory'] &amp;&amp; (target['valueHooks'][values[p]['valCategory']] || target['valueHooks']["extreme-" + values[p]['valCategory']]);
+              targetElt = _this._selectFormElementForPhenotype(targetElt);
               _this._selectMeasurementTerm(targetElt);
               if (values[p]['valCategory']) {
                 ['extreme-below-normal', 'extreme-above-normal'].without(values[p]['valCategory'], "extreme-" + values[p]['valCategory']).each(function(val) {
-                  var elt = target['valueHooks'][val];
+                  var elt = findFormElementForPhenotype(target['valueHooks'][val]);
                   _this._unselectMeasurementTerm(elt);
                 });
               }
@@ -1677,8 +1679,8 @@ document.observe('xwiki:dom:loaded', function() {
     /**
      *
      * */
-    _selectMeasurementTerm : function (elt) {
-      if (elt &amp;&amp; !elt.checked) {
+    _selectMeasurementTerm : function (elt, force) {
+      if (elt &amp;&amp; (!elt.checked || force)) {
         if (elt._ynpicker) {
           elt._ynpicker._onYes();
         } else {
@@ -1709,6 +1711,36 @@ document.observe('xwiki:dom:loaded', function() {
       }
     },
 
+    _selectFormElementForPhenotype: function(id) {
+      var _this = this;
+      var existingElement = findFormElementForPhenotype(id);
+      if (existingElement == null) {
+        var suggestWidget = $("quick-phenotype-search")._suggestWidget;
+        if (!suggestWidget) {
+           return null;         
+        }
+        searchURL = this.solarService + "?q=id:" + id.replace(":", "?");
+        new Ajax.Request(searchURL, {
+          method: 'get',
+          onSuccess: function(transport) {
+            var response = transport.responseJSON.rows[0];
+            if (response) {
+              var categories = '&lt;span class="hidden term-category"&gt;';
+              response.term_category.each(function(category){categories += '&lt;input type="hidden" value="' + category + '"&gt;'});
+              categories + "&lt;/span&gt;";
+              var data = {'id':id, 'value':response.name, 'catgegories': categories}
+              var title =  response.name;
+              suggestWidget.acceptEntry(data, title, title);
+              _this._selectMeasurementTerm(findFormElementForPhenotype(id), true);
+            }
+          }
+        });
+        return null;
+      } else {
+        return existingElement;
+      }
+    },
+
     /**
      * Information about how to handle each measurement:
      * - where to find the value (selector to be used using the current data row as root)
@@ -1723,22 +1755,22 @@ document.observe('xwiki:dom:loaded', function() {
        weight : {
          evaluation : 'td.weight_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0004325'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0004324')
+           'extreme-below-normal': 'HP:0004325',
+           'extreme-above-normal': 'HP:0004324'
          }
        },
        height : {
          evaluation : 'td.height_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0004322'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0000098')
+           'extreme-below-normal': 'HP:0004322',
+           'extreme-above-normal': 'HP:0000098'
          }
        },
        hc : {
          evaluation : 'td.hc_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0000252'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0000256')
+           'extreme-below-normal': 'HP:0000252',
+           'extreme-above-normal': 'HP:0000256'
          }
        },
        ocd : {
@@ -1750,78 +1782,78 @@ document.observe('xwiki:dom:loaded', function() {
        pfl : {
          evaluation : 'td.pfl_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0000637'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0012745')
+           'extreme-below-normal': 'HP:0000637',
+           'extreme-above-normal': 'HP:0012745'
          }
        },
        ipd : {
          evaluation : 'td.ipd_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0000601'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0000316')
+           'extreme-below-normal': 'HP:0000601',
+           'extreme-above-normal': 'HP:0000316'
          }
        },
        ear : {
          evaluation : 'td.ear_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0008551'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0000400')
+           'extreme-below-normal': 'HP:0008551',
+           'extreme-above-normal': 'HP:0000400'
          }
        },
        hand : {
          evaluation : 'td.hand_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0200055'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0001176')
+           'extreme-below-normal': 'HP:0200055',
+           'extreme-above-normal': 'HP:0001176'
          }
        },
        palm : {
          evaluation : 'td.palm_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0004279'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0011302')
+           'extreme-below-normal': 'HP:0004279',
+           'extreme-above-normal': 'HP:0011302'
          }
        },
        foot : {
          evaluation : 'td.foot_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0001773'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0001833')
+           'extreme-below-normal': 'HP:0001773',
+           'extreme-above-normal': 'HP:0001833'
          }
        },
        ear_right : {
          evaluation : 'td.ear_right_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0008551'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0000400')
+           'extreme-below-normal': 'HP:0008551',
+           'extreme-above-normal': 'HP:0000400'
          }
        },
        hand_right : {
          evaluation : 'td.hand_right_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0200055'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0001176')
+           'extreme-below-normal': 'HP:0200055',
+           'extreme-above-normal': 'HP:0001176'
          }
        },
        palm_right : {
          evaluation : 'td.palm_right_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0004279'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0011302')
+           'extreme-below-normal': 'HP:0004279',
+           'extreme-above-normal': 'HP:0011302'
          }
        },
        foot_right : {
          evaluation : 'td.foot_right_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0001773'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0001833')
+           'extreme-below-normal': 'HP:0001773',
+           'extreme-above-normal': 'HP:0001833'
          }
        },
        philtrum : {
          evaluation : 'td.philtrum_evaluation',
          valueHooks : {
-           'extreme-below-normal': findFormElementForPhenotype('HP:0000322'),
-           'extreme-above-normal': findFormElementForPhenotype('HP:0000343')
+           'extreme-below-normal': 'HP:0000322',
+           'extreme-above-normal': 'HP:0000343'
          }
        },
        armspan : {
