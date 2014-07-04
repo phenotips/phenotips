@@ -1712,6 +1712,9 @@ document.observe('xwiki:dom:loaded', function() {
     },
 
     _selectFormElementForPhenotype: function(id) {
+      if (!id) {
+        return null;
+      }
       var _this = this;
       var existingElement = findFormElementForPhenotype(id);
       if (existingElement == null) {
