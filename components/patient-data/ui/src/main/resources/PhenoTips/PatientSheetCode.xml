@@ -1717,7 +1717,7 @@ document.observe('xwiki:dom:loaded', function() {
       if (existingElement == null) {
         var suggestWidget = $("quick-phenotype-search")._suggestWidget;
         if (!suggestWidget) {
-           return null;         
+           return null;
         }
         searchURL = this.solarService + "?q=id:" + id.replace(":", "?");
         new Ajax.Request(searchURL, {
@@ -1728,7 +1728,7 @@ document.observe('xwiki:dom:loaded', function() {
               var categories = '&lt;span class="hidden term-category"&gt;';
               response.term_category.each(function(category){categories += '&lt;input type="hidden" value="' + category + '"&gt;'});
               categories + "&lt;/span&gt;";
-              var data = {'id':id, 'value':response.name, 'catgegories': categories}
+              var data = {'id':id, 'value':response.name, 'categories': categories}
               var title =  response.name;
               suggestWidget.acceptEntry(data, title, title);
               _this._selectMeasurementTerm(findFormElementForPhenotype(id), true);
