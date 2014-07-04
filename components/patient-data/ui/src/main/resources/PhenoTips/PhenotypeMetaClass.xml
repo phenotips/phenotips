@@ -70,7 +70,7 @@
 #set ($startWith = 'HP:0011007')
 {{/velocity}}
 
-{{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
+{{include reference="PhenoTips.FlatHPOBranchDisplayer"/}}</customDisplay>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <idField/>
@@ -137,7 +137,7 @@
 #set ($startWith = 'HP:0000005')
 {{/velocity}}
 
-{{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
+{{include reference="PhenoTips.FlatHPOBranchDisplayer"/}}</customDisplay>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <idField/>
@@ -172,7 +172,7 @@
 #set ($startWith = 'HP:0003679')
 {{/velocity}}
 
-{{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
+{{include reference="PhenoTips.FlatHPOBranchDisplayer"/}}</customDisplay>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <idField/>
