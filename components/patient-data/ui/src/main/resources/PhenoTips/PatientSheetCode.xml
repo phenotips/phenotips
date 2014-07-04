@@ -1719,7 +1719,7 @@ document.observe('xwiki:dom:loaded', function() {
         if (!suggestWidget) {
            return null;
         }
-        searchURL = this.solarService + "?q=id:" + id.replace(":", "?");
+        searchURL = this.solarService + "?q=id:" + id.replace(":", "%5C:");
         new Ajax.Request(searchURL, {
           method: 'get',
           onSuccess: function(transport) {
