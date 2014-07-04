@@ -1682,7 +1682,7 @@ document.observe('xwiki:dom:loaded', function() {
     _selectMeasurementTerm : function (elt, force) {
       if (elt &amp;&amp; (!elt.checked || force)) {
         if (elt._ynpicker) {
-          elt._ynpicker._onYes();
+          elt._ynpicker._select('yes');
         } else {
           elt.checked = true;
         }
