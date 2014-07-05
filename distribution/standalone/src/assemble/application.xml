@@ -61,11 +61,6 @@
       </includes>
       <outputDirectory>/</outputDirectory>
       <unpack>true</unpack>
-      <unpackOptions>
-        <excludes>
-          <exclude>jetty/contexts/search.xml</exclude>
-        </excludes>
-      </unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>
