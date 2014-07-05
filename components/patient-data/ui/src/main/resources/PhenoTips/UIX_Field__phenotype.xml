@@ -718,7 +718,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
   #if ($xcontext.action == 'edit')
     $doc.display('unaffected') #__label('unaffected' '' "$class.get('unaffected').prettyName")
 
-    (% class="hint controlled" %)Or select observed phenotypes:(%%)
+    (% class="hint controlled" %)Or select observed phenotypes:(%%)#* Empty comment needed for the whitespace trimmer to leave an empty space before the icon *# {{icon name="question-circle" cssClass="xHelp" title="$services.localization.render("PhenoTips.PatientClass_select_phenotypes_hint")"/}}
   #else
     #if ($showUnaffected)$class.get('unaffected').prettyName#end
   #end
