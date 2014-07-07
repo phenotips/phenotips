@@ -25,7 +25,7 @@
 <!-- =============================================================== -->
 <!-- Add a ContextProvider to the deployment manager                 -->
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-<!-- This scans the contexts directory for xml files describing      -->
+<!-- This scans the etc/contexts/ directory for xml files describing -->
 <!-- applications to deploy.                                         -->
 <!-- This configuration must be used with jetty-deploy.xml, which    -->
 <!-- creates the deployment manager instance                         -->
