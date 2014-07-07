@@ -205,7 +205,7 @@ XCoord.prototype = {
         var leftSlack  = Infinity;
         var rightSlack = Infinity;
 
-        for (v in set) {
+        for (var v in set) {
             if (set.hasOwnProperty(v)) {
                 var leftNeighbour  = this.graph.order.getLeftNeighbour(v, this.graph.ranks[v]);
                 if (!set.hasOwnProperty(leftNeighbour)) {

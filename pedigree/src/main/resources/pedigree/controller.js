@@ -215,7 +215,7 @@ var Controller = Class.create({
         // was changed, need to update all the twins
         if (twinUpdate) {
             var allTwins = editor.getGraph().getAllTwinsSortedByOrder(nodeID);
-            for (propertySetFunction in twinUpdate) {
+            for (var propertySetFunction in twinUpdate) {
                 if (twinUpdate.hasOwnProperty(propertySetFunction)) {
                     var propValue = twinUpdate[propertySetFunction];
 

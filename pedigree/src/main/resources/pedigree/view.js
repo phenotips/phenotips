@@ -91,7 +91,7 @@ var View = Class.create({
 
     getMaxNodeID: function() {
         var max = 0;
-        for (node in this._nodeMap)
+        for (var node in this._nodeMap)
             if (this._nodeMap.hasOwnProperty(node))
                 if (parseInt(node) > max)
                     max = node;
@@ -575,7 +575,7 @@ var View = Class.create({
             //console.log("Affected by line removal: " + stringifyObject(affectedByLineRemoval));
             //console.log("LineSet: " + stringifyObject(this._lineSet));
 
-            for (node in affectedByLineRemoval)
+            for (var node in affectedByLineRemoval)
                 if (affectedByLineRemoval.hasOwnProperty(node)) {
                     var newID = changedIDs.hasOwnProperty(node) ? changedIDs[node] : node;
                     if (!arrayContains(changeSet.moved, newID)) {
@@ -594,11 +594,13 @@ var View = Class.create({
         var newRelationships   = [];
         var animate            = {};
 
+        /*
+        // TODO: animations disabled because hoverboxes & labels behave strangely
         if (changeSet.hasOwnProperty("animate")) {
             for (var i = 0; i < changeSet.animate.length; i++) {
-                //animate[changeSet.animate[i]] = true;     // TODO: animations disabled because hoverboxes & labels behave strangely
+                animate[changeSet.animate[i]] = true;
             }
-        }
+        }*/
 
         //console.log("moved: " + stringifyObject(changeSet.moved));
 

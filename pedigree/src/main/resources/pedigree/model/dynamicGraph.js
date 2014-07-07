@@ -2665,7 +2665,7 @@ Heuristics.prototype = {
 
                             console.log("Moving: " + stringifyObject(component.component) + " by " + slack);
 
-                            for (node in component.component) {
+                            for (var node in component.component) {
                                 if (component.component.hasOwnProperty(node)) {
                                     xcoord.xcoord[node] += slack;
                                 }

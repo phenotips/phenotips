@@ -257,7 +257,7 @@ function _printObjectInternal(o, level) {
             output = '{';
             var idx = 0;
             if (level == 0) output += '\n';
-            for (property in o) {
+            for (var property in o) {
                 if (!o.hasOwnProperty(property)) continue;
 
                 if (level != 0 && idx != 0 )
