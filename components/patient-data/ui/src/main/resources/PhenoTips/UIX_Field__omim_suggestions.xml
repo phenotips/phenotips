@@ -114,7 +114,7 @@
 
 {{velocity}}
 #if ($xcontext.action == 'edit')
-  (% class="ncbi-search-box $!{cssClass}" %)(((
+  (% class="ncbi-search-box" %)(((
     === Instant OMIM search ===
     (% class="expand-tools" %)(((
       (% class="tool show" %)Show(%%) (% class="tool hide" %)Hide(%%)

@@ -718,7 +718,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
   #if ($xcontext.action == 'edit')
     $doc.display('unaffected') #__label('unaffected' '' "$class.get('unaffected').prettyName")
 
-    (% class="hint controlled" %)Or select observed phenotypes:(%%)
+    (% class="hint controlled" %)Or select observed phenotypes:(%%) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("PhenoTips.PatientClass_select_phenotypes_hint")"/}}
   #else
     #if ($showUnaffected)$class.get('unaffected').prettyName#end
   #end
