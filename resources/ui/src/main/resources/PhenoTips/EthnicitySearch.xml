@@ -41,8 +41,6 @@
   <hidden>true</hidden>
   <content>{{velocity}}
 #if ($xcontext.action == 'get')
-  $response.setContentType("text/xml")
-
   #set ($input = $request.getParameter("input").toLowerCase())
   #set ($finalResults = [])
   #set ($lowercaseResults = [])
@@ -63,12 +61,28 @@
   ##Display
   ##-------
 
-  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-  &lt;results type="3"&gt;
-  #foreach($result in $finalResults)
-    &lt;rs id="$foreach.count" info=""&gt;$escapetool.xml($result)&lt;/rs&gt;
+  #if (!$request.getParameter("json"))
+    $response.setContentType("text/xml")
+    &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+    &lt;results type="3"&gt;
+    #foreach($result in $finalResults)
+      &lt;rs id="$foreach.count" info=""&gt;$escapetool.xml($result)&lt;/rs&gt;
+    #end
+    &lt;/results&gt;
+  #else
+    $response.setContentType("application/json")
+    {
+      "returnedrows": $finalResults.size(),
+      "rows": [
+      #foreach($result in $finalResults)
+        #if ($foreach.count > 1)
+          ,
+        #end
+        { "index": "$foreach.count", "ethnicity": "$escapetool.xml($result)" }
+      #end
+      ]
+    }
   #end
-  &lt;/results&gt;
 #end
 {{/velocity}}
 </content>

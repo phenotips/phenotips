@@ -18,22 +18,19 @@ var Person = Class.create(AbstractPerson, {
 
     initialize: function($super, x, y, id, properties) {
         //var timer = new Timer();
-    	//console.log("person");            
         this._isProband = (id == 0);
         !this._type && (this._type = "Person");
         this._setDefault();
         var gender = properties.hasOwnProperty("gender") ? properties['gender'] : "U"; 
         $super(x, y, gender, id);
-        
+
         // need to assign after super() and explicitly pass gender to super()
         // because changing properties requires a redraw, which relies on gender
         // shapes being there already
         this.assignProperties(properties);
-        
-        //console.log("person end");
-        //timer.printSinceLast("=== new person runtime: ");        
+        //timer.printSinceLast("=== new person runtime: ");
     },
-    
+
     _setDefault: function() {
         this._firstName = "";
         this._lastName = "";
@@ -49,7 +46,7 @@ var Person = Class.create(AbstractPerson, {
         this._childlessReason = "";
         this._carrierStatus = "";
         this._disorders = [];
-        this._evaluations = [];    
+        this._ethnicities = [];
         this._twinGroup = null;
         this._monozygotic = false;
         this._evaluated = false;
@@ -77,7 +74,7 @@ var Person = Class.create(AbstractPerson, {
     isProband: function() {
         return this._isProband;
     },
-    
+
     /**
      * Returns the first name of this Person
      *
@@ -512,8 +509,7 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
-     * Given a list of disorders, adds and removes the disorders of this node to match
-     * the new list
+     * Sets the list of disorders of this person to the given list
      *
      * @method setDisorders
      * @param {Array} disorders List of Disorder objects
@@ -536,6 +532,26 @@ var Person = Class.create(AbstractPerson, {
     },
 
     /**
+     * Sets the list of ethnicities of this person to the given list
+     *
+     * @method setEthnicities
+     * @param {Array} disorders List of Disorder objects
+     */
+    setEthnicities: function(ethnicities) {
+        this._ethnicities = ethnicities;
+    },
+
+    /**
+     * Returns a list of ethnicities of this person.
+     *
+     * @method getEthnicities
+     * @return {Array} List of ethnicity names.
+     */
+    getEthnicities: function() {
+        return this._ethnicities;
+    },
+
+    /**
      * Removes the node and its visuals.
      *
      * @method remove
@@ -543,9 +559,9 @@ var Person = Class.create(AbstractPerson, {
      */
     remove: function($super) {
         this.setDisorders([]);  // remove disorders form the legend
-        $super();                   
+        $super();
     },
-    
+
     /**
      * Returns disorder with given id if this person has it. Returns null otherwise.
      *
@@ -641,6 +657,7 @@ var Person = Class.create(AbstractPerson, {
             date_of_birth: {value : this.getBirthDate(), inactive: this.isFetus()},
             carrier:       {value : this.getCarrierStatus(), disabled: inactiveCarriers},
             disorders:     {value : disorders},
+            ethnicity:     {value : this.getEthnicities()},
             adopted:       {value : this.isAdopted(), inactive: cantChangeAdopted},
             state:         {value : this.getLifeStatus(), inactive: inactiveStates},
             date_of_death: {value : this.getDeathDate(), inactive: this.isFetus()},
@@ -692,6 +709,8 @@ var Person = Class.create(AbstractPerson, {
         }
         if (this.getDisorders().length > 0)
             info['disorders'] = this.getDisordersForExport();
+        if (this.getEthnicities().length > 0)
+            info['ethnicities'] = this.getEthnicities();
         if (this._twinGroup !== null)
             info['twinGroup'] = this._twinGroup;
         if (this._monozygotic)
@@ -731,6 +750,9 @@ var Person = Class.create(AbstractPerson, {
             }
             if(info.disorders) {
                 this.setDisorders(info.disorders);
+            }
+            if(info.ethnicities) {
+                this.setEthnicities(info.ethnicities);
             }
             if(info.hasOwnProperty("isAdopted") && this.isAdopted() != info.isAdopted) {
                 this.setAdopted(info.isAdopted);

@@ -99,6 +99,47 @@ NodeMenu = Class.create({
                 });
             }
         });
+        // ethnicities
+        this.form.select('input.suggest-ethnicity').each(function(item) {
+            if (!item.hasClassName('initialized')) {
+                ///$xwiki.getURL('PhenoTips.EthnicitySearch', 'get', 'outputSyntax=plain'))
+                var ethnicityServiceURL = new XWiki.Document('EthnicitySearch', 'PhenoTips').getURL("get", "outputSyntax=plain")
+                console.log("Ethnicity URL: " + ethnicityServiceURL);
+                item._suggest = new PhenoTips.widgets.Suggest(item, {
+                    script: ethnicityServiceURL + "&json=true&",
+                    varname: "input",
+                    noresults: "No matching terms",
+                    resultsParameter : "rows",
+                    json: true,
+                    resultId : "id",
+                    resultValue : "ethnicity",
+                    resultInfo : {},
+                    enableHierarchy: false,
+                    fadeOnClear : false,
+                    timeout : 30000,
+                    parentContainer : $('body')
+                });
+                if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
+                    item._suggestPicker = new PhenoTips.widgets.SuggestPicker(item, item._suggest, {
+                        'showKey' : false,
+                        'showTooltip' : false,
+                        'showDeleteTool' : true,
+                        'enableSort' : false,
+                        'showClearTool' : true,
+                        'inputType': 'hidden',
+                        'listInsertionElt' : 'input',
+                        'listInsertionPosition' : 'after',
+                        'acceptFreeText' : true
+                    });
+                }
+                item.addClassName('initialized');
+                document.observe('ms:suggest:containerCreated', function(event) {
+                    if (event.memo && event.memo.suggest === item._suggest) {
+                        item._suggest.container.setStyle({'overflow': 'auto', 'maxHeight': document.viewport.getHeight() - item._suggest.container.cumulativeOffset().top + 'px'})
+                    }
+                });
+            }
+        });
         // Update disorder colors
         this._updateDisorderColor = function(id, color) {
           this.menuBox.select('.field-disorders li input[value="' + id + '"]').each(function(item) {
@@ -292,6 +333,31 @@ NodeMenu = Class.create({
             this._attachFieldEventListeners(diseasePicker, ['custom:selection:changed']);
             return result;
         },
+        'ethnicity-picker' : function (data) {
+            var result = this._generateEmptyField(data);
+            var ethnicityPicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-ethnicity', name: data.name});
+            result.insert(ethnicityPicker);
+            ethnicityPicker._getValue = function() {
+              var results = [];
+              var container = this.up('.field-box');
+              if (container) {
+                container.select('input[type=hidden][name=' + data.name + ']').each(function(item){
+                  results.push(item.next('.value') && item.next('.value').firstChild.nodeValue || item.value);
+                });
+              }
+              return [results];
+            }.bind(ethnicityPicker);
+            // Forward the 'custom:selection:changed' to the input
+            var _this = this;
+            document.observe('custom:selection:changed', function(event) {
+              if (event.memo && event.memo.trigger && event.findElement() != event.memo.trigger && !event.memo.trigger._silent) {
+                 Event.fire(event.memo.trigger, 'custom:selection:changed');
+                _this.reposition();
+              }
+            });
+            this._attachFieldEventListeners(ethnicityPicker, ['custom:selection:changed']);
+            return result;
+        },
         'select' : function (data) {
             var result = this._generateEmptyField(data);
             var select = new Element('select', {'name' : data.name});
@@ -366,36 +432,51 @@ NodeMenu = Class.create({
 
     reposition : function(x, y) {
       x = Math.floor(x);
-      y = Math.floor(y);
-      if (x !== undefined ) {
+      if (x !== undefined && isFinite(x)) {
           if (this.canvas && x + this.menuBox.getWidth() > (this.canvas.getWidth() + 10)) {
               var delta = x + this.menuBox.getWidth() - this.canvas.getWidth();
               editor.getWorkspace().panByX(delta, true);
               x -= delta;
           }
-          this._currentX = x;
-          this._currentY = y;
-          this._height   = this.menuBox.getHeight();
-          this.menuBox.style.height   = '';
-          this.menuBox.style.overflow = '';
           this.menuBox.style.left = x + 'px';
-      } else {
-          if (this.menuBox.getHeight() <= this._height) return;
-          this._height = this.menuBox.getHeight();
-          x = this._currentX;
-          y = this._currentY;
       }
+
+      this.menuBox.style.height = '';
+      var height = '';
+      var top    = '';
+      if (y !== undefined && isFinite(y)) {
+          y = Math.floor(y);
+      } else {
+          if (this.menuBox.style.top.length > 0) {
+              y  = parseInt(this.menuBox.style.top.match( /^(\d+)/g )[0]);
+          }
+          if (y === undefined || !isFinite(y) || y < 0) y = 0;
+      }
+
       // Make sure the menu fits inside the screen
-      if (this.canvas && this.menuBox.getHeight() >= (this.canvas.getHeight() + 5)) {
-        this.menuBox.style.top = 0;
-        this.menuBox.style.height = this.canvas.getHeight() + 'px';
-        this.menuBox.style.overflow = 'auto';
-      } else if (this.canvas.getHeight() < y + this.menuBox.getHeight() + 25) {   // fix a bug (?) in firefox & chrome where getHeight() is sligtly incorrect
-        var diff = y + this.menuBox.getHeight() - this.canvas.getHeight() + 25;
-        this.menuBox.style.top = (y - diff) + 'px';
+      if (this.canvas && this.menuBox.getHeight() >= (this.canvas.getHeight() - 1)) {
+          // menu is too big to fit the screen
+          top    = 0;
+          height = (this.canvas.getHeight() - 1) + 'px';
+      } else if (this.canvas.getHeight() < y + this.menuBox.getHeight() + 1) {
+          // menu fits the screen, but have to move it higher for that
+          var diff = y + this.menuBox.getHeight() - this.canvas.getHeight() + 1;
+          var position = (y - diff);
+          if (position < 0) {
+              top    = 0;
+              height = (this.canvas.getHeight() - 1) + 'px';
+          } else {
+              top    = position + 'px';
+              height = '';
+          }
       } else {
-        this.menuBox.style.top = y + 'px';
+          top = y + 'px';
+          height = '';
       }
+
+      this.menuBox.style.top      = top;
+      this.menuBox.style.height   = height;
+      this.menuBox.style.overflow = 'auto';
     },
 
     _clearCrtData : function () {
@@ -469,6 +550,20 @@ NodeMenu = Class.create({
                 target._silent = false;
             }
         },
+        'ethnicity-picker' : function (container, values) {
+            var _this = this;
+            var target = container.down('input[type=text].suggest-ethnicity');
+            if (target && target._suggestPicker) {
+                target._silent = true;
+                target._suggestPicker.clearAcceptedList();
+                if (values) {
+                    values.each(function(v) {
+                        target._suggestPicker.addItem(v, v, '');
+                    })
+                }
+                target._silent = false;
+            }
+        },
         'select' : function (container, value) {
             var target = container.down('select option[value=' + value + ']');
             if (target) {
@@ -526,6 +621,9 @@ NodeMenu = Class.create({
         'disease-picker' : function (container, inactive) {
             this._toggleFieldVisibility(container, inactive);
         },
+        'ethnicity-picker' : function (container, inactive) {
+            this._toggleFieldVisibility(container, inactive);
+        },
         'select' : function (container, inactive) {
             this._toggleFieldVisibility(container, inactive);
         },
@@ -567,6 +665,9 @@ NodeMenu = Class.create({
             // FIXME: Not implemented
         },
         'disease-picker' : function (container, inactive) {
+            // FIXME: Not implemented
+        },
+        'ethnicity-picker' : function (container, inactive) {
             // FIXME: Not implemented
         },
         'select' : function (container, inactive) {

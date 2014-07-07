@@ -115,11 +115,11 @@ var PedigreeEditor = Class.create({
     getView: function() {
         return this._view;
     },
-    
+
     /**
      * @method getVersionUpdater
      * @return {VersionUpdater}
-     */    
+     */
     getVersionUpdater: function() {
         return this._versionUpdater;
     },
@@ -204,7 +204,7 @@ var PedigreeEditor = Class.create({
         if (!document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1")) {
             // implies unpredictable behavior when using handles & interactive elements,
             // and most likely extremely slow on any CPU
-            return true;            
+            return true;
         }
         // http://kangax.github.io/es5-compat-table/
         if (!window.JSON) {
@@ -250,7 +250,7 @@ var PedigreeEditor = Class.create({
     getTemplateSelector: function() {
         return this._templateSelector
     },
-    
+
     /**
      * @method getImportSelector
      * @return {ImportSelector}
@@ -330,7 +330,13 @@ var PedigreeEditor = Class.create({
                 'label': 'External ID',
                 'type' : 'text',
                 'function' : 'setExternalID'
-            },            
+            },
+            {
+                'name' : 'ethnicity',
+                'label' : 'Ethnicities',
+                'type' : 'ethnicity-picker',
+                'function' : 'setEthnicities'
+            },
             {
                 'name' : 'carrier',
                 'label' : 'Carrier status',
@@ -488,8 +494,14 @@ var PedigreeEditor = Class.create({
                 'function' : 'setExternalID'
             },
             {
+                'name' : 'ethnicity',
+                'label' : 'Ethnicities<br>(common to all individuals in the group)',
+                'type' : 'ethnicity-picker',
+                'function' : 'setEthnicities'
+            },
+            {
                 'name' : 'disorders',
-                'label' : 'Known disorders common to all individuals in the group',
+                'label' : 'Known disorders<br>(common to all individuals in the group)',
                 'type' : 'disease-picker',
                 'function' : 'setDisorders'
             },
@@ -517,7 +529,7 @@ var PedigreeEditor = Class.create({
                 'label' : 'Documented evaluation',
                 'type' : 'checkbox',
                 'function' : 'setEvaluated'
-            },            
+            },
             {
                 'name' : 'adopted',
                 'label' : 'Adopted in',
