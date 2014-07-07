@@ -1542,7 +1542,7 @@ $!value
 &lt;dt&gt;&lt;label for="${fullPrefix}title"&gt;Welcome message box title&lt;/label&gt;&lt;/dt&gt;
 &lt;dd&gt;&lt;input id="${fullPrefix}title" name="${prefix}title" size="30" type="text" value="$!gadgetObj.getProperty('title').value"&gt;&lt;/input&gt;&lt;/dd&gt;
 &lt;dt&gt;&lt;label for="${fullPrefix}content"&gt;Welcome message content&lt;/label&gt;&lt;/dt&gt;
-&lt;dd&gt;&lt;textarea cols="40" id="${fullPrefix}content" name="${prefix}content" rows="5"&gt;PhenoTips enables the capture and analysis of phenotypic information for patients with genetic disorders.&lt;/textarea&gt;&lt;/dd&gt;
+&lt;dd&gt;&lt;textarea cols="40" id="${fullPrefix}content" name="${prefix}content" rows="5"&gt;$!gadgetObj.getProperty('content').value&lt;/textarea&gt;&lt;/dd&gt;
 &lt;/dl&gt;
 &lt;input type="hidden" id="${targetDocName}_redirect" name="xredirect" value="$doc.getURL($xcontext.action, $request.queryString)" /&gt;
 &lt;input type="hidden" name="form_token" value="$!{services.csrf.token}" /&gt;
