@@ -234,6 +234,17 @@ $xwiki.ssx.use('PhenoTips.YesNoNAPicker')##
        Event.fire(input, 'picker:change');
        document.fire('ynpicker:change', {'element' : input});
        this.label &amp;&amp; this.label.addClassName(name + '-selected');
+       //Expanding and collapsing the terms descendants
+       if (input._dropDown) {
+         var dropDownEnabled = false;
+         if (name == "yes") {
+           dropDownEnabled = input._dropDown.show(true);
+           dropDownEnabled ? input._trigger._root._expanded = false : null;
+         } 
+         if (dropDownEnabled) {
+           input._trigger.click();
+         }
+       }
        //this[name].title = this._hints[name].selectedTitle;
      }
      return this[name];
@@ -245,6 +256,17 @@ $xwiki.ssx.use('PhenoTips.YesNoNAPicker')##
        input.checked = false;
        Event.fire(input, 'picker:change');
        this.label &amp;&amp; this.label.removeClassName(name + '-selected');
+       //Expanding and collapsing the terms descendants
+       if (input._dropDown) {
+         var dropDownEnabled = false;
+         if (name == "yes") {
+           dropDownEnabled = input._dropDown.show(true);
+           dropDownEnabled ? input._trigger._root._expanded = true : null;
+         } 
+         if (dropDownEnabled) {
+           input._trigger.click();
+         }
+       }
        //this[name].title = this._hints[name].unselectedTitle;
      }
      return this[name];
