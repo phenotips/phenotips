@@ -15,13 +15,13 @@ var Workspace = Class.create({
         this.workArea = new Element('div', {'id' : 'work-area'}).update(this.canvas);
         $('body').update(this.workArea);
         var screenDimensions = document.viewport.getDimensions();
+        this.generateTopMenu();
         this.width = screenDimensions.width;
         this.height = screenDimensions.height - this.canvas.cumulativeOffset().top - 4;
         this._paper = Raphael("canvas",this.width, this.height);
         this.viewBoxX = 0;
         this.viewBoxY = 0;
         this.zoomCoefficient = 1;
-        this.generateTopMenu();
 
         this.background = this.getPaper().rect(0,0, this.width, this.height).attr({fill: 'blue', stroke: 'none', opacity: 0}).toBack();
         this.background.node.setAttribute("class", "panning-background");
@@ -444,7 +444,7 @@ var Workspace = Class.create({
         this.getPaper().setViewBox(this.viewBoxX, this.viewBoxY, this.width/this.zoomCoefficient, this.height/this.zoomCoefficient);
         this.background && this.background.attr({"width": this.width, "height": this.height});
         if (editor.getNodeMenu()) {
-            editor.getNodeMenu().reposition(0,0);
+            editor.getNodeMenu().reposition();
         }
     },
 

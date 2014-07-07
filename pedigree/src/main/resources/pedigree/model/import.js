@@ -400,6 +400,7 @@ PedigreeImport.validateBaseGraph = function(newG)
  *   - "evaluated": boolean (default: false)
  *   - "birthDate": string (deault: none)
  *   - "deathDate": string (deault: none)
+ *   - "numPersons": integer. When present and not 0 this individual is treated as a "person group"
  *   - "lifeStatus": one of {"alive", "deceased", "aborted", "stillborn", "unborn"}.
  *                   (default: "alive". If death date is given status defaults to "deceased" and overwrites
  *                             the explicitly given status if it were "alive")   
@@ -987,7 +988,8 @@ PedigreeImport.JSONToInternalPropertyMapping = {
         "disorders":       "disorders",
         "ethnicities":     "ethnicities",
         "carrierstatus":   "carrierStatus",
-        "externalid":      "externalID"
+        "externalid":      "externalID",
+        "numpersons":      "numPersons"
     };
 
 

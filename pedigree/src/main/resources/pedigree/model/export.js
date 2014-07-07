@@ -183,7 +183,8 @@ PedigreeExport.internalToJSONPropertyMapping = {
         "ethnicities":   "ethnicities",
         "carrierStatus": "carrierStatus",
         "externalID":    "externalId",
-        "gender":        "sex"
+        "gender":        "sex",
+        "numPersons":    "numPersons"
     };
 
 /*
