@@ -58,7 +58,7 @@
 #set ($targetClass = $xwiki.getClass($targetClassName))
 #set ($activeFields = $services.recordConfiguration.activeConfiguration.enabledFieldNames)
 #set ($dateFormat = $xwiki.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy'))
-#set ($query = ', BaseObject obj where doc.space = ? and obj.name = doc.fullName and obj.className = ?')
+#set ($query = ', BaseObject obj, LongProperty iid where doc.space = ? and obj.name = doc.fullName and obj.className = ? and iid.id.id = obj.id and iid.id.name = ''identifier'' and iid.value &gt;= 0')
 #set ($parameters = ['data', $targetClassName])
 #set ($isFirstReferrer = true)
 #foreach ($referrer in $request.getParameterValues('doc.creator'))

@@ -91,8 +91,8 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   'resultPage'        : 'PhenoTips.LiveTableResults'
 })
 #if ($isGuest)
-  #set ($filterFrom = ", BaseObject accessObj, StringProperty accessProp")
-  #set ($filterWhere = "and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and accessObj.className = 'PhenoTips.OwnerClass' and (accessProp.value = '' or accessProp.value is null)")
+  #set ($filterFrom = ", BaseObject accessObj, StringProperty accessProp, LongProperty iid")
+  #set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and accessObj.className = 'PhenoTips.OwnerClass' and (accessProp.value = '' or accessProp.value is null)")
   #set ($discard = $options.put('extraParams', "&amp;filterFrom=${escapetool.url($filterFrom)}&amp;filterWhere=${escapetool.url($filterWhere)}"))
 #elseif (!$hasAdmin)
   #set ($groups = [])
@@ -110,8 +110,12 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
     #end
   #end
   #set ($groups = "('${stringtool.join($groups, ""','"")}')")
-  #set ($filterFrom = ", BaseObject accessObj, StringProperty accessProp")
-  #set ($filterWhere = "and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and ((accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ${groups}) or (accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ${groups}) or (accessObj.className = 'PhenoTips.VisibilityClass' and accessProp.value = 'public'))")
+  #set ($filterFrom = ", BaseObject accessObj, StringProperty accessProp, LongProperty iid")
+  #set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and ((accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ${groups}) or (accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ${groups}) or (accessObj.className = 'PhenoTips.VisibilityClass' and accessProp.value = 'public'))")
+  #set ($discard = $options.put('extraParams', "&amp;filterFrom=${escapetool.url($filterFrom)}&amp;filterWhere=${escapetool.url($filterWhere)}"))
+#else
+  #set ($filterFrom = ", LongProperty iid")
+  #set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0")
   #set ($discard = $options.put('extraParams', "&amp;filterFrom=${escapetool.url($filterFrom)}&amp;filterWhere=${escapetool.url($filterWhere)}"))
 #end
 #if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)

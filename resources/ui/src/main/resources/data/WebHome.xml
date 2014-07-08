@@ -2252,9 +2252,9 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
     <property>
       <content>{{velocity}}
 #if ($isGuest)
-#set ($availableData = $services.query.xwql("from doc.object(PhenoTips.PatientClass) as pat, doc.object(PhenoTips.OwnerClass) as owner where owner.owner = '' or owner.owner is null").count())
+#set ($availableData = $services.query.xwql("from doc.object(PhenoTips.PatientClass) as pat, doc.object(PhenoTips.OwnerClass) as owner where doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and (owner.owner = '' or owner.owner is null) and pat.identifier &gt;= 0").addFilter('unique').count())
 #else
-#set ($availableData = $services.query.xwql("from doc.object(PhenoTips.PatientClass) as pat, doc.object(PhenoTips.OwnerClass) as owner where owner.owner = :o").bindValue('o', $xcontext.userReference.toString()).count())
+#set ($availableData = $services.query.xwql("from doc.object(PhenoTips.PatientClass) as pat, doc.object(PhenoTips.OwnerClass) as owner where doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and owner.owner = :o and pat.identifier &gt;= 0").bindValue('o', $services.model.serialize($xcontext.userReference, 'default')).addFilter('unique').count())
 #end
 #if ($availableData &gt; 0)
 $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
@@ -2291,12 +2291,12 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   'defaultOrder'      : 'asc',
   'resultPage'        : 'PhenoTips.LiveTableResults'
 })
-#set ($filterFrom = ", BaseObject ownerObj, StringProperty ownerProp")
+#set ($filterFrom = ", BaseObject ownerObj, StringProperty ownerProp, LongProperty iid")
 #if ($isGuest)
-  #set ($filterWhere = "and ownerObj.name = doc.fullName and ownerObj.className = 'PhenoTips.OwnerClass' and ownerProp.id.id = ownerObj.id and (ownerProp.value = '' or ownerProp.value is null)")
+  #set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and ownerObj.name = doc.fullName and ownerObj.className = 'PhenoTips.OwnerClass' and ownerProp.id.id = ownerObj.id and (ownerProp.value = '' or ownerProp.value is null)")
 #else
   #set ($o = $escapetool.sql($services.model.serialize($xcontext.userReference, 'default')))
-  #set ($filterWhere = "and ownerObj.name = doc.fullName and ownerObj.className = 'PhenoTips.OwnerClass' and ownerProp.id.id = ownerObj.id and ownerProp.value = '${o}'")
+  #set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and ownerObj.name = doc.fullName and ownerObj.className = 'PhenoTips.OwnerClass' and ownerProp.id.id = ownerObj.id and ownerProp.value = '${o}'")
 #end
 #set ($discard = $options.put('extraParams', "&amp;filterFrom=${escapetool.url($filterFrom)}&amp;filterWhere=${escapetool.url($filterWhere)}"))
 #if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
@@ -2390,9 +2390,9 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpace
 #end
 #set ($groupsString = "('${stringtool.join($groups, ""','"")}')")
 #if ($groups.empty)
-  #set ($query = ", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj where patientObj.name = doc.fullName and doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and patientObj.className = 'PhenoTips.PatientClass' and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}')")
+  #set ($query = ", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj, LongProperty iid where patientObj.name = doc.fullName and doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and patientObj.className = 'PhenoTips.PatientClass' and iid.id.id = patientObj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}')")
 #else
-  #set ($query = ", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj where patientObj.name = doc.fullName and doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and patientObj.className = 'PhenoTips.PatientClass' and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and ((accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ('${stringtool.join($groups, ""','"")}')) or (accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}')))")
+  #set ($query = ", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj, LongProperty iid where patientObj.name = doc.fullName and doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and patientObj.className = 'PhenoTips.PatientClass' and iid.id.id = patientObj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and ((accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ('${stringtool.join($groups, ""','"")}')) or (accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}')))")
 #end
 #set ($availableData = $services.query.hql($query).count())
 #if ($availableData &gt; 0)
@@ -2430,12 +2430,12 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   'defaultOrder'      : 'asc',
   'resultPage'        : 'PhenoTips.LiveTableResults'
 })
-#set ($filterFrom = ", BaseObject accessObj, StringProperty accessProp")
-#set ($filterWhere = "and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and (")
+#set ($filterFrom = ", BaseObject accessObj, StringProperty accessProp, LongProperty iid")
+#set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and (")
 #if (!$groups.isEmpty())
   #set ($filterWhere = "${filterWhere}(accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ('${stringtool.join($groups, ""','"")}')) or ")
 #end
-#set ($discard = $groups.add($xcontext.userReference.toString()))
+#set ($discard = $groups.add($services.model.serialize($xcontext.userReference, 'default')))
 #set ($filterWhere = "${filterWhere}(accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groups, ""','"")}')))")
 #set ($discard = $options.put('extraParams', "&amp;filterFrom=${escapetool.url($filterFrom)}&amp;filterWhere=${escapetool.url($filterWhere)}"))
 #if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
