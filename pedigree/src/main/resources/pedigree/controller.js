@@ -65,49 +65,52 @@ var Controller = Class.create({
 
     handleRemove: function(event)
     {
-        try {
-            console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
-            var nodeID = event.memo.nodeID;
+        console.log("event: " + event.eventName + ", memo: " + stringifyObject(event.memo));
+        var nodeID = event.memo.nodeID;
 
-            //get the list of affected nodes
-            var disconnectedList = editor.getGraph().getDisconnectedSetIfNodeRemoved(nodeID);
+        // get the list of affected nodes
+        var disconnectedList = editor.getGraph().getDisconnectedSetIfNodeRemoved(nodeID);
 
-            if (disconnectedList.length > 1)
-                editor.getView().unmarkAll();
+        var removeSelected = function() {
+            try {
+                var changeSet = editor.getGraph().removeNodes(disconnectedList);
 
-                for (var i = 0; i < disconnectedList.length; i++) {
-                    var nextHighlight = disconnectedList[i];
-                    editor.getView().getNode(nextHighlight).getGraphics().markPermanently();
-                }
-
-            var changeSet = null;
-            // iff this is not an undo/redo action and more tha none nod eis affected =>
-            // show message box && proceed only iff user agrees to remove all the affected nodes
-            if (disconnectedList.length <= 1 || event.memo.hasOwnProperty("noUndoRedo") ||
-                confirm('All highlighted nodes will be removed. Do you want to proceed?')) {
-                changeSet = editor.getGraph().removeNodes(disconnectedList);
-            }
-            else if (disconnectedList.length > 1) {
-                // no removal: unhighlight the modes. If removal did happen there is nothing to unhighlight by now
-                for (var i = 0; i < disconnectedList.length; i++) {
-                    var nextHighlight = disconnectedList[i];
-                    editor.getView().getNode(nextHighlight).getGraphics().unmark();
-                }
-            }
-
-            if (changeSet) {
                 editor.getView().applyChanges(changeSet, true);
 
-                changeSet = editor.getGraph().improvePosition();
+                var changeSet = editor.getGraph().improvePosition();
                 editor.getView().applyChanges(changeSet, true);
 
                 if (!event.memo.noUndoRedo)
                     editor.getActionStack().addState( event );
+            } catch(err) {
+                console.log("[DEBUG] Remove error: " + err);
             }
+        };
 
-        } catch(err) {
-            console.log("Remove error: " + err);
+        // if there is only one node or this removal is done as part of an undo/redo action
+        // => just remove without asking any questions or highlighting any nodes
+        if (disconnectedList.length <= 1 || event.memo.hasOwnProperty("noUndoRedo")) {
+            removeSelected();
+            return;
         }
+
+        // otherwise remove current highlighting and highlight all nodes which will be removed
+        editor.getView().unmarkAll();
+        for (var i = 0; i < disconnectedList.length; i++) {
+            var nextHighlight = disconnectedList[i];
+            editor.getView().getNode(nextHighlight).getGraphics().markPermanently();
+        }
+
+        var unhighlightSelected = function() {
+            for (var i = 0; i < disconnectedList.length; i++) {
+                var nextHighlight = disconnectedList[i];
+                editor.getView().getNode(nextHighlight).getGraphics().unmark();
+            }
+        }
+
+        // ...and display a OK/Cancel dialogue, calling "removeSelected()" on OK and "unhighlightSelected" on Cancel
+        editor.getOkCancelDialogue().show( 'All highlighted nodes will be removed. Do you want to proceed?',
+                                           'Delete nodes?', removeSelected, unhighlightSelected );
     },
 
     handleSetProperty: function(event)

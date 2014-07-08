@@ -22,6 +22,7 @@ var PedigreeEditor = Class.create({
         this._partnershipMenu = this.generatePartnershipMenu();
         this._nodetypeSelectionBubble = new NodetypeSelectionBubble(false);
         this._siblingSelectionBubble  = new NodetypeSelectionBubble(true);
+        this._okCancelDialogue = new OkCancelDialogue();
         this._disorderLegend = new DisorgerLegend();
 
         this._view = new View();
@@ -110,7 +111,7 @@ var PedigreeEditor = Class.create({
 
     /**
      * @method getView
-     * @return {View} (responsible for managing graphical representations of nodes in the editor)
+     * @return {View} (responsible for managing graphical representations of nodes and interactive elements)
      */
     getView: function() {
         return this._view;
@@ -134,7 +135,7 @@ var PedigreeEditor = Class.create({
 
     /**
      * @method getController
-     * @return {Controller} (responsible for managing data changes)
+     * @return {Controller} (responsible for managing user input and corresponding data changes)
      */
     getController: function() {
         return this._controller;
@@ -142,10 +143,18 @@ var PedigreeEditor = Class.create({
 
     /**
      * @method getActionStack
-     * @return {ActionStack} (responsible undoing and redoing actions)
+     * @return {ActionStack} (responsible for undoing and redoing actions)
      */
     getActionStack: function() {
         return this._actionStack;
+    },
+
+    /**
+     * @method getOkCancelDialogue
+     * @return {OkCancelDialogue} (responsible for displaying ok/cancel prompts)
+     */
+    getOkCancelDialogue: function() {
+        return this._okCancelDialogue;
     },
 
     /**

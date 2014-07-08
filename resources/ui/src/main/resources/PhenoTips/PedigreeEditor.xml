@@ -65,6 +65,7 @@ $xwiki.jsfx.use('uicomponents/pedigree/view/graphicHelpers.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/legend.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/saveLoadIndicator.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/templateSelector.js')##
+$xwiki.jsfx.use('uicomponents/pedigree/view/okCancelDialogue.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/importSelector.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/exportSelector.js')##
 $xwiki.jsfx.use('uicomponents/pedigree/view/abstractHoverbox.js')##
@@ -95,12 +96,6 @@ $xwiki.jsfx.use('uicomponents/pedigree/pedigree.js')##
 {{/velocity}}
 
 {{html}}
-&lt;div id="editor-menu"&gt;
-&lt;/div&gt;
-&lt;div id="workspace"&gt;
-&lt;div id="canvas"&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="clearfloats"&gt;&lt;/div&gt;
 {{/html}}
 </content>
 </xwikidoc>
