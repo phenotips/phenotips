@@ -1213,9 +1213,10 @@ PositionedGraph.prototype = {
         //   lowest priority: father not being on the left, mother notbeing on the right
         //                    (constant penalty for each case)
 
-        var totalEdgeLengthInPositions     = 0;
-        var totalEdgeLengthInChildren      = 0;
-        var totalEdgeLengthInFatherOnRight = 0;
+        var totalEdgeLengthInPositions   = 0;
+        var totalEdgeLengthInChildren    = 0;
+        var totalPenaltyForFatherOnRight = 0;  // penalty for not having father on the left/mother on the right
+        var totalPenaltyForChildAgeOrder = 0;  // penalty for not having children ordered by age
 
         for (var i = 0; i < this.GG.getNumVertices(); i++) {
 
@@ -1241,30 +1242,46 @@ PositionedGraph.prototype = {
                     var leftParent   = (order1 < order2) ? parents[0] : parents[1];
                     var genderOfLeft = this.GG.properties[leftParent]["gender"];
                     if (genderOfLeft == 'F')
-                        totalEdgeLengthInFatherOnRight++;
+                        totalPenaltyForFatherOnRight++;
                 }
             }
 
             if (this.GG.isChildhub(i)) {
                 // get the distance between the rightmost and leftmost child
                 var children = this.GG.getOutEdges(i);
-                if ( children.length > 0 ) {
-                    var minOrder = order.vOrder[children[0]];
-                    var maxOrder = minOrder;
-                    for (var j = 1; j < children.length; j++) {
-                        var ord = order.vOrder[children[j]];
-                        if ( ord > maxOrder ) maxOrder = ord;
-                        if ( ord < minOrder ) minOrder = ord;
+                if (children.length > 1) {
+                    var orderedChildren = order.sortByOrder(children);
+
+                    var minOrder = order.vOrder[orderedChildren[0]];
+                    var maxOrder = order.vOrder[orderedChildren[orderedChildren.length-1]];
+                    totalEdgeLengthInChildren += (maxOrder - minOrder);
+
+                    var leftChildDOB = this.GG.properties[orderedChildren[0]].hasOwnProperty("dob") ?
+                                       new Date(this.GG.properties[orderedChildren[0]]["dob"]) : null;
+                    for (var j = 1; j < orderedChildren.length; j++) {
+                        var thisChildDOB = this.GG.properties[orderedChildren[j]].hasOwnProperty("dob") ?
+                                           new Date(this.GG.properties[orderedChildren[j]]["dob"]) : null;
+
+                        if (thisChildDOB != null) {
+                            if (leftChildDOB == null) {
+                                // prefer all without date of birth to be on the right, i.e. penalty for no date on the left
+                                totalPenaltyForChildAgeOrder++;
+                            } else {
+                                // both are not null: compare dates
+                                if (leftChildDOB.getTime() > thisChildDOB.getTime()) {
+                                    // penalty for older child on the right
+                                    totalPenaltyForChildAgeOrder++;
+                                }
+                            }
+                        }
+                        leftChildDOB = thisChildDOB;
                     }
                 }
-                totalEdgeLengthInChildren += (maxOrder - minOrder);
-                //if (i == 25)
-                //console.log("lenInChildren: maxOrd = " + maxOrder + ", minOrd = " + minOrder + "  (children: " + stringifyObject(children) + ", order: " + stringifyObject(order.order[4]) + ")");
             }
         }
 
         //console.log("r = " + onlyRank + ", edgeLength = " + totalEdgeLengthInPositions + ", childLen = " + totalEdgeLengthInChildren);
-        return totalEdgeLengthInPositions*100000 + totalEdgeLengthInChildren*1000 + totalEdgeLengthInFatherOnRight;
+        return totalEdgeLengthInPositions*100000 + totalEdgeLengthInChildren*1000 + totalPenaltyForFatherOnRight*5 + totalPenaltyForChildAgeOrder;
     },
 
     edge_crossing: function(order, onlyRank, dontUseApproximationForRelationshipEdges)
