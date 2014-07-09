@@ -34,12 +34,14 @@
   <date>1401822169000</date>
   <contentUpdateDate>1401822169000</contentUpdateDate>
   <version>1.1</version>
-  <title>Users</title>
+  <title>PhenoTips</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
   <hidden>true</hidden>
-  <content>{{include document="Main.UserDirectory" /}}</content>
+  <content>{{velocity}}
+$response.sendRedirect($xwiki.getURL('data.WebHome'))
+{{/velocity}}</content>
   <object>
     <name>XWiki.WebHome</name>
     <number>0</number>
