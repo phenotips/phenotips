@@ -372,14 +372,15 @@ VerticalPosIntOptimizer.prototype = {
         var usedLevels = filterUnique(levels).sort();
         for (var i = usedLevels.length-1; i > 0; i--) {
             if (usedLevels[i] != usedLevels[i-1] + 1) {      // there may be only one gap so no need to implement a more robust algorithm
-                for (var j = 0; j < levels.length; j++)
-                    if (levels[j] >= usedLevels[i])
-                        levels[j]--;
+                for (var j = 0; j < component.length; j++) {
+                    var e = component[j];
+                    if (levels[e] >= usedLevels[i])
+                        levels[e]--;
+                }
                 //console.log("found gap [" + usedLevels[i-1] + " - " + usedLevels[i] + "]");
                 break;
             }
         }
-
         //console.log("post fill gap levels: " + stringifyObject(levels));
 
         // 2. make sure all edges satisfy their min levels (including fixing 0 level)
