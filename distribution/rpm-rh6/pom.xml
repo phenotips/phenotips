@@ -27,10 +27,10 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>phenotips-rpm</artifactId>
+  <artifactId>phenotips-rpm-rh6</artifactId>
   <packaging>rpm</packaging>
-  <name>PhenoTips - RPM Distribution</name>
-  <description>Distribution containing the PhenoTips application deployed under Tomcat, with HSQLDB for storage, as a RedHat (.rpm) package.</description>
+  <name>PhenoTips - RPM Distribution for RedHat 6.x based distribution</name>
+  <description>Distribution containing the PhenoTips application deployed under Tomcat6, with HSQLDB for storage, as a RedHat (.rpm) package.</description>
 
   <properties>
     <ptwar.path>${project.build.directory}/ptwar</ptwar.path>
@@ -178,8 +178,11 @@ extension.repositories=extensions.xwiki.org:xwiki:http://extensions.xwiki.org/xw
         <version>2.1-alpha-4</version>
         <extensions>true</extensions>
         <configuration>
-          <name>phenotips</name>
-          <summary>The PhenoTips server packaged for Tomcat with an embedded HSQLDB database for data storage</summary>
+          <name>phenotips-tomcat6</name>
+          <provides>
+            <provide>phenotips</provide>
+          </provides>
+          <summary>The PhenoTips server packaged for Tomcat 6 with an embedded HSQLDB database for data storage</summary>
           <description>PhenoTips is an open source software tool for collecting and analyzing phenotypic information for patients with genetic disorders. The user interface closely mirrors clinician workflows so as to facilitate the recording of observations made during the patient encounter. This easy-to-use front-end, compatible with any device that runs a Web browser, is coupled with with a standardized database back-end where phenotypic information is represented using the Human Phenotype Ontology (HPO).
 
 Collected data include demographics, medical history, family history, physical and laboratory measurements, physical findings, and free-form notes.
@@ -196,7 +199,7 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
           <defaultGroupname>tomcat</defaultGroupname>
           <requires>
             <require>java &gt;= 0:1.6.0</require>
-            <require>tomcat</require>
+            <require>tomcat6</require>
             <require>unzip</require>
             <require>bc</require>
           </requires>
@@ -239,7 +242,7 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
             </mapping>
             <!-- Copy the webapp descriptor -->
             <mapping>
-              <directory>/etc/tomcat/Catalina/localhost/</directory>
+              <directory>/etc/tomcat6/Catalina/localhost/</directory>
               <directoryIncluded>false</directoryIncluded>
               <sources>
                 <source>
