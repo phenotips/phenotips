@@ -26,6 +26,7 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.ModelConfiguration;
+import org.xwiki.model.ModelContext;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
@@ -66,6 +67,9 @@ public class WikiUserManager extends AbstractUserManager implements Initializabl
     /** Model access, used for determining if a document exists or not, and to get the current wiki. */
     @Inject
     private DocumentAccessBridge bridge;
+
+    @Inject
+    private ModelContext modelContext;
 
     /** Entity reference serializer to pass to {@link WikiUser} instances. */
     @Inject
@@ -131,7 +135,7 @@ public class WikiUserManager extends AbstractUserManager implements Initializabl
      */
     private DocumentReference getLocalReference(String identifier)
     {
-        WikiReference currentWiki = this.bridge.getCurrentDocumentReference().getWikiReference();
+        WikiReference currentWiki = new WikiReference(this.modelContext.getCurrentEntityReference());
         return new DocumentReference(this.nameResolver.resolve(identifier, EntityType.DOCUMENT,
             new EntityReference(this.defaultSpace, EntityType.SPACE, currentWiki)));
     }
@@ -145,7 +149,7 @@ public class WikiUserManager extends AbstractUserManager implements Initializabl
      */
     private DocumentReference getDefaultReference(String identifier)
     {
-        String currentWiki = this.bridge.getCurrentDocumentReference().getWikiReference().getName();
+        String currentWiki = this.modelContext.getCurrentEntityReference().getRoot().getName();
         WikiReference defaultWiki = new WikiReference(this.configuration.getProperty("users.defaultWiki", currentWiki));
         return new DocumentReference(this.nameResolver.resolve(identifier, EntityType.DOCUMENT,
             new EntityReference(this.defaultSpace, EntityType.SPACE, defaultWiki)));
