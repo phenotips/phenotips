@@ -24,21 +24,18 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-resources</artifactId>
+    <artifactId>jetty</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>jetty-resources</artifactId>
   <name>PhenoTips - Jetty Resources</name>
   <packaging>pom</packaging>
   <description>Packages a Jetty installation</description>
-  <properties>
-    <jetty.version>8.1.15.v20140411</jetty.version>
-  </properties>
   <dependencies>
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-tool-jetty-listener</artifactId>
-      <version>${xwiki.version}</version>
+      <groupId>org.phenotips</groupId>
+      <artifactId>jetty-startup-listener</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>

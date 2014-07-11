@@ -41,7 +41,7 @@
       <outputDirectory>/jetty/lib</outputDirectory>
       <excludes>
         <exclude>org.eclipse.jetty:jetty-start</exclude>
-        <exclude>org.xwiki.platform:xwiki-platform-tool-jetty-listener</exclude>
+        <exclude>org.phenotips:jetty-startup-listener</exclude>
         <exclude>commons-io:commons-io</exclude>
         <!-- jetty-start.jar's  start.config file (see http://wiki.eclipse.org/Jetty/Feature/Start.jar) expects the
              Servlet API JAR to be named servlet-api-3.0.jar. However Jetty names it javax.servlet-<version>.jar, thus
@@ -66,7 +66,7 @@
     <dependencySet>
       <outputDirectory>/jetty/lib/ext</outputDirectory>
       <includes>
-        <include>org.xwiki.platform:xwiki-platform-tool-jetty-listener</include>
+        <include>org.phenotips:jetty-startup-listener</include>
         <include>commons-io:commons-io</include>
       </includes>
       <!-- Needed to prevent warning since our project has a pom packaging and is not producing any artifact -->

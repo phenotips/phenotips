@@ -24,22 +24,18 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-parent</artifactId>
+    <artifactId>phenotips-resources</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-resources</artifactId>
+  <artifactId>jetty</artifactId>
+  <name>PhenoTips - Jetty</name>
   <packaging>pom</packaging>
-  <name>PhenoTips - Resource packages</name>
-
+  <description>Packages a Jetty installation for use in the standalone distribution</description>
   <properties>
-    <!-- Resource packages have no Java code, speedup by skipping Clirr and Checkstyle checks -->
-    <checkstyle.skip>true</checkstyle.skip>
-    <clirr.skip>true</clirr.skip>
+    <jetty.version>8.1.15.v20140411</jetty.version>
   </properties>
-
   <modules>
-    <module>jetty</module>
-    <module>solr-configuration</module>
-    <module>ui</module>
+    <module>startup-listener</module>
+    <module>packaging</module>
   </modules>
 </project>

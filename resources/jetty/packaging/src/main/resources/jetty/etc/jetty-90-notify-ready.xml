@@ -32,7 +32,7 @@
 
   <Call name="addLifeCycleListener">
     <Arg>
-      <New class="org.xwiki.tools.jetty.listener.NotifyListener" />
+      <New class="org.phenotips.tools.jetty.listener.NotifyListener" />
     </Arg>
   </Call>
 

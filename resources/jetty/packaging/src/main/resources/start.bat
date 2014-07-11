@@ -47,7 +47,7 @@ if not defined JETTY_STOP_PORT (
   )
 )
 
-echo Starting Jetty on port %JETTY_PORT% ...
+echo Starting Jetty on port %JETTY_PORT%, please wait...
 
 REM Location where XWiki stores generated data and where database files are.
 set XWIKI_DATA_DIR=data

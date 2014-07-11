@@ -24,22 +24,18 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-parent</artifactId>
+    <artifactId>jetty</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-resources</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Resource packages</name>
-
-  <properties>
-    <!-- Resource packages have no Java code, speedup by skipping Clirr and Checkstyle checks -->
-    <checkstyle.skip>true</checkstyle.skip>
-    <clirr.skip>true</clirr.skip>
-  </properties>
-
-  <modules>
-    <module>jetty</module>
-    <module>solr-configuration</module>
-    <module>ui</module>
-  </modules>
+  <artifactId>jetty-startup-listener</artifactId>
+  <name>PhenoTips - Jetty Lifecycle Listener</name>
+  <description>Includes a lifecycle listener that notifies users that they should open PhenoTips in a browser after the server started.</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <version>${jetty.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>

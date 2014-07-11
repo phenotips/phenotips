@@ -63,7 +63,7 @@ else
   JETTY_STOPPORT=8079
 fi
 
-echo Starting Jetty on port $JETTY_PORT ...
+echo Starting Jetty on port ${JETTY_PORT}, please wait...
 
 # Location where XWiki stores generated data and where database files are.
 XWIKI_DATA_DIR=data
