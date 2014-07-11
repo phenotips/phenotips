@@ -45,7 +45,7 @@ if(typeof(XWiki) == "undefined" || typeof(XWiki.widgets) == "undefined" || typeo
       content.insert(question).insert(buttons);
       Event.observe(yesButton, "click", this.onYes.bindAsEventListener(this));
       Event.observe(noButton, "click", this.onNo.bindAsEventListener(this));
-      Event.observe(cancelButton, "click", this.closeDialog.bindAsEventListener(this));
+      Event.observe(cancelButton, "click", this.onCancel.bindAsEventListener(this));
       return content;
     },
     onYes : function() {
@@ -58,6 +58,12 @@ if(typeof(XWiki) == "undefined" || typeof(XWiki.widgets) == "undefined" || typeo
       this.closeDialog();
       if (typeof (this.behavior.onNo) == 'function') {
         this.behavior.onNo();
+      }
+    },
+    onCancel : function() {
+      this.closeDialog();
+      if (typeof (this.behavior.onCancel) == 'function') {
+        this.behavior.onCancel();
       }
     }
   });
