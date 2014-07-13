@@ -320,7 +320,6 @@
             cy: 0,
             fill: "#fff",
             "fill-opacity": 1,
-            font: '10px "Arial"',
             "font-family": '"Arial"',
             "font-size": "10",
             "font-style": "normal",
@@ -3801,7 +3800,7 @@ window.Raphael.svg && function (R) {
     },
     addGradientFill = function (element, gradient) {
         var type = "linear",
-            id = element.id + gradient,
+            id = "grad:" + element.id + gradient,
             fx = .5, fy = .5,
             o = element.node,
             SVG = element.paper,
@@ -4661,7 +4660,7 @@ window.Raphael.svg && function (R) {
         var el = $("rect");
         svg.canvas && svg.canvas.appendChild(el);
         var res = new Element(el, svg);
-        res.attrs = {x: x, y: y, width: w, height: h, r: r || 0, rx: r || 0, ry: r || 0, fill: "none", stroke: "#000"};
+        res.attrs = {x: x, y: y, width: w, height: h, rx: r || 0, ry: r || 0, fill: "none", stroke: "#000"};
         res.type = "rect";
         $(el, res.attrs);
         return res;
@@ -4694,7 +4693,8 @@ window.Raphael.svg && function (R) {
             y: y,
             "text-anchor": "middle",
             text: text,
-            font: R._availableAttrs.font,
+            "font-family": R._availableAttrs["font-family"],
+            "font-size": R._availableAttrs["font-size"],
             stroke: "none",
             fill: "#000"
         };
@@ -5665,7 +5665,8 @@ window.Raphael.vml && function (R) {
             attr = {
                 fill: "#000",
                 stroke: "none",
-                font: R._availableAttrs.font,
+                "font-family": R._availableAttrs["font-family"],
+                "font-size": R._availableAttrs["font-size"],
                 text: text
             };
         p.shape = el;
