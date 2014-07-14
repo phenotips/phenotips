@@ -49,6 +49,3 @@
   <Call class="java.lang.System" name="setOut"><Arg><Ref id="ServerLog"/></Arg></Call>
 
 </Configure>
-
-
-
