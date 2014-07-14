@@ -2,6 +2,6 @@
   background: transparent url("$xwiki.getSkinFile('icons/silk/help.png')") left 2px no-repeat;
   padding: 4px 0 6px 22px;
 }
-.xdialog-box-confirmation #confirm-cancel {
+.xdialog-box-confirmation .cancel {
   float: right;
 }

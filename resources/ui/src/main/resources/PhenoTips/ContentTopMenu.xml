@@ -688,7 +688,7 @@
          }
       },
       /* Interaction parameters */
-      { confirmationText: "Save before exporting?" }
+      { confirmationText: "Save before exporting?", showCancelButton: true }
     );
   });
 });</code>

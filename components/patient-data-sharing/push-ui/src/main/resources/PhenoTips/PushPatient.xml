@@ -164,7 +164,7 @@
               }
             },
             /* Interaction parameters */
-            { confirmationText: "Save before exporting?" }
+            { confirmationText: "Save before exporting?", showCancelButton: true }
           );
         } else {
           _this._launchUI();
