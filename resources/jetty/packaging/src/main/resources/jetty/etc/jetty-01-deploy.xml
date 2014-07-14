@@ -25,7 +25,7 @@
 <!-- =============================================================== -->
 <!-- Create the deployment manager                                   -->
 <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-<!-- The deplyment manager handles the lifecycle of deploying web    -->
+<!-- The deployment manager handles the lifecycle of deploying web   -->
 <!-- applications. Apps are provided by instances of the             -->
 <!-- AppProvider interface.  Typically these are provided by         -->
 <!-- one or more of:                                                 -->
