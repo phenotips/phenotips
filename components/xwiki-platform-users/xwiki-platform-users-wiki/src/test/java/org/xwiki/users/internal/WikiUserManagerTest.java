@@ -23,6 +23,7 @@ import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.ModelConfiguration;
+import org.xwiki.model.ModelContext;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
@@ -69,6 +70,8 @@ public class WikiUserManagerTest
 
     private ModelConfiguration modelConfiguration;
 
+    private ModelContext modelContext;
+
     private DocumentAccessBridge bridge;
 
     @Before
@@ -79,6 +82,7 @@ public class WikiUserManagerTest
         this.serializer = this.mocker.getInstance(EntityReferenceSerializer.TYPE_STRING);
         this.configuration = this.mocker.getInstance(ConfigurationSource.class, "xwikiproperties");
         this.modelConfiguration = this.mocker.getInstance(ModelConfiguration.class);
+        this.modelContext = this.mocker.getInstance(ModelContext.class);
         this.bridge = this.mocker.getInstance(DocumentAccessBridge.class);
 
         when(this.configuration.getProperty("users.defaultUserSpace", "XWiki")).thenReturn("XWiki");
@@ -234,7 +238,7 @@ public class WikiUserManagerTest
     {
         final DocumentReference targetUser = new DocumentReference(targetUserWiki, "XWiki", "Admin");
         when(this.configuration.getProperty("users.defaultWiki", "local")).thenReturn("users");
-        when(this.bridge.getCurrentDocumentReference()).thenReturn(new DocumentReference("local", "Main", "WebHome"));
+        when(this.modelContext.getCurrentEntityReference()).thenReturn(new DocumentReference("local", "Main", "WebHome"));
 
         when(this.bridge.exists(new DocumentReference("xwiki", targetSpace, "Admin"))).thenReturn(false);
         when(this.bridge.exists(new DocumentReference("users", targetSpace, "Admin"))).thenReturn(false);

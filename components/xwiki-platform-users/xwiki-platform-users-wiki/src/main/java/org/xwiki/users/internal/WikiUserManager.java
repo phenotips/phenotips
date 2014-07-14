@@ -135,7 +135,7 @@ public class WikiUserManager extends AbstractUserManager implements Initializabl
      */
     private DocumentReference getLocalReference(String identifier)
     {
-        WikiReference currentWiki = new WikiReference(this.modelContext.getCurrentEntityReference());
+        WikiReference currentWiki = new WikiReference(this.modelContext.getCurrentEntityReference().getRoot());
         return new DocumentReference(this.nameResolver.resolve(identifier, EntityType.DOCUMENT,
             new EntityReference(this.defaultSpace, EntityType.SPACE, currentWiki)));
     }
