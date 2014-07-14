@@ -25,6 +25,8 @@
 #   START_OPTS - parameters passed to the Java VM when running Jetty
 #     e.g. to increase the memory allocated to the JVM to 1GB, use
 #       set START_OPTS=-Xmx1024m
+#   JETTY_PORT - the port on which to start Jetty
+#   JETTY_STOPPORT - the port on which Jetty listens for a Stop command
 # ---------------------------------------------------------------------------
 
 # Ensure that the commands below are always started in the directory where this script is
@@ -50,17 +52,21 @@ if [ -z "$START_OPTS" ] ; then
 fi
 
 # The port on which to start Jetty can be passed to this script as the first argument
-if [ -n "$1" ]; then
-  JETTY_PORT=$1
-else
-  JETTY_PORT=8080
+if [ -z "$JETTY_PORT" ]; then
+  if [ -n "$1" ]; then
+    JETTY_PORT=$1
+  else
+    JETTY_PORT=8080
+  fi
 fi
 
 # The port on which to stop Jetty can be passed to this script as the second argument
-if [ -n "$2" ]; then
-  JETTY_STOPPORT=$2
-else
-  JETTY_STOPPORT=8079
+if [ -z "$JETTY_STOPPORT" ]; then
+  if [ -n "$2" ]; then
+    JETTY_STOPPORT=$2
+  else
+    JETTY_STOPPORT=8079
+  fi
 fi
 
 echo Starting Jetty on port ${JETTY_PORT}, please wait...
