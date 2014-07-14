@@ -26,7 +26,7 @@
 #     e.g. to increase the memory allocated to the JVM to 1GB, use
 #       set START_OPTS=-Xmx1024m
 #   JETTY_PORT - the port on which to start Jetty, 8080 by default
-#   JETTY_STOPPORT - the port on which Jetty listens for a Stop command, 8079 by default
+#   JETTY_STOP_PORT - the port on which Jetty listens for a Stop command, 8079 by default
 # ---------------------------------------------------------------------------
 
 # Ensure that the commands below are always started in the directory where this script is
@@ -51,8 +51,9 @@ if [ -z "$START_OPTS" ] ; then
   START_OPTS="-Xmx512m -XX:MaxPermSize=192m"
 fi
 
-# The port on which to start Jetty can be passed to this script as the first argument
+# The port on which to start Jetty can be defined in an enviroment variable called JETTY_PORT
 if [ -z "$JETTY_PORT" ]; then
+  # Alternatively, it can be passed to this script as the first argument
   if [ -n "$1" ]; then
     JETTY_PORT=$1
   else
@@ -60,12 +61,13 @@ if [ -z "$JETTY_PORT" ]; then
   fi
 fi
 
-# The port on which to stop Jetty can be passed to this script as the second argument
-if [ -z "$JETTY_STOPPORT" ]; then
+# The port on which Jetty listens for a Stop command can be defined in an enviroment variable called JETTY_STOP_PORT
+if [ -z "$JETTY_STOP_PORT" ]; then
+  # Alternatively, it can be passed to this script as the second argument
   if [ -n "$2" ]; then
-    JETTY_STOPPORT=$2
+    JETTY_STOP_PORT=$2
   else
-    JETTY_STOPPORT=8079
+    JETTY_STOP_PORT=8079
   fi
 fi
 
@@ -91,7 +93,7 @@ START_OPTS="$START_OPTS -Djetty.port=$JETTY_PORT"
 START_OPTS="$START_OPTS -Djetty.home=$JETTY_HOME"
 
 # Specify port and key to stop a running Jetty instance
-START_OPTS="$START_OPTS -DSTOP.KEY=phenotipsstop -DSTOP.PORT=$JETTY_STOPPORT"
+START_OPTS="$START_OPTS -DSTOP.KEY=phenotipsstop -DSTOP.PORT=$JETTY_STOP_PORT"
 
 # Force UTF8 as the global JVM encoding
 START_OPTS="$START_OPTS -Dfile.encoding=UTF8"
