@@ -79,9 +79,6 @@ set START_OPTS=%START_OPTS% -DSTOP.KEY=xwiki -DSTOP.PORT=%JETTY_STOP_PORT%
 REM Specify the encoding to use
 set START_OPTS=%START_OPTS% -Dfile.encoding=UTF8
 
-REM Path to the solr configuration
-set START_OPTS=%START_OPTS% -Dsolr.solr.home=solrconfig
-
 REM In order to avoid getting a "java.lang.IllegalStateException: Form too large" error
 REM when editing large page in XWiki we need to tell Jetty to allow for large content
 REM since by default it only allows for 20K. We do this by passing the
