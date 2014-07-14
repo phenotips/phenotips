@@ -26,6 +26,8 @@ REM -----------------
 REM   START_OPTS - parameters passed to the Java VM when running Jetty
 REM     e.g. to increase the memory allocated to the JVM to 1GB, use
 REM       set START_OPTS=-Xmx1024m
+REM   JETTY_PORT - the port on which to start Jetty, 8080 by default
+REM   JETTY_STOPPORT - the port on which Jetty listens for a Stop command, 8079 by default
 REM -------------------------------------------------------------------------
 
 setlocal EnableDelayedExpansion

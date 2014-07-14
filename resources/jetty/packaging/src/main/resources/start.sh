@@ -25,8 +25,8 @@
 #   START_OPTS - parameters passed to the Java VM when running Jetty
 #     e.g. to increase the memory allocated to the JVM to 1GB, use
 #       set START_OPTS=-Xmx1024m
-#   JETTY_PORT - the port on which to start Jetty
-#   JETTY_STOPPORT - the port on which Jetty listens for a Stop command
+#   JETTY_PORT - the port on which to start Jetty, 8080 by default
+#   JETTY_STOPPORT - the port on which Jetty listens for a Stop command, 8079 by default
 # ---------------------------------------------------------------------------
 
 # Ensure that the commands below are always started in the directory where this script is
