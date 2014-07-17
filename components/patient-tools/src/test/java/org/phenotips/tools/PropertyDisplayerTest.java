@@ -43,7 +43,7 @@ import org.w3c.dom.ls.LSInput;
 
 /**
  * Tests for the {@link PropertyDisplayer}.
- * 
+ *
  * @version $Id$
  */
 public class PropertyDisplayerTest

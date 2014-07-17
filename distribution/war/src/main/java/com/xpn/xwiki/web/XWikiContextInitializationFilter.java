@@ -19,6 +19,15 @@
  */
 package com.xpn.xwiki.web;
 
+import org.xwiki.container.Container;
+import org.xwiki.container.servlet.ServletContainerException;
+import org.xwiki.container.servlet.ServletContainerInitializer;
+import org.xwiki.context.Execution;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.SpaceReference;
+import org.xwiki.model.reference.WikiReference;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 
@@ -31,28 +40,15 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.xwiki.container.Container;
-import org.xwiki.container.servlet.ServletContainerException;
-import org.xwiki.container.servlet.ServletContainerInitializer;
-import org.xwiki.context.Execution;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.SpaceReference;
-import org.xwiki.model.reference.WikiReference;
-
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.user.api.XWikiRightService;
 import com.xpn.xwiki.user.api.XWikiUser;
-import com.xpn.xwiki.web.Utils;
-import com.xpn.xwiki.web.XWikiServletContext;
-import com.xpn.xwiki.web.XWikiServletRequest;
-import com.xpn.xwiki.web.XWikiServletResponse;
 
 /**
  * This filter can be used to initialize the XWiki context before processing a request.
- * 
+ *
  * @version $Id$
  */
 public class XWikiContextInitializationFilter implements Filter
@@ -70,7 +66,7 @@ public class XWikiContextInitializationFilter implements Filter
     @Override
     public void destroy()
     {
-        filterConfig = null;
+        this.filterConfig = null;
     }
 
     @Override
@@ -96,15 +92,15 @@ public class XWikiContextInitializationFilter implements Filter
         this.filterConfig = filterConfig;
 
         try {
-            mode = Integer.parseInt(filterConfig.getInitParameter("mode"));
+            this.mode = Integer.parseInt(filterConfig.getInitParameter("mode"));
         } catch (Exception e) {
-            mode = -1;
+            this.mode = -1;
         }
     }
 
     /**
      * Initializes the XWiki context.
-     * 
+     *
      * @param request the request being processed
      * @param response the response
      * @throws ServletException if the initialization fails
@@ -114,7 +110,7 @@ public class XWikiContextInitializationFilter implements Filter
         try {
             // Not all request types specify an action (e.g. GWT-RPC) so we default to the empty string.
             String action = "";
-            XWikiServletContext xwikiEngine = new XWikiServletContext(filterConfig.getServletContext());
+            XWikiServletContext xwikiEngine = new XWikiServletContext(this.filterConfig.getServletContext());
             XWikiServletRequest xwikiRequest = new XWikiServletRequest((HttpServletRequest) request);
             XWikiServletResponse xwikiResponse = new XWikiServletResponse((HttpServletResponse) response);
 
@@ -122,8 +118,8 @@ public class XWikiContextInitializationFilter implements Filter
             XWikiContext context = Utils.prepareContext(action, xwikiRequest, xwikiResponse, xwikiEngine);
 
             // Overwrite the context mode if the mode filter initialization parameter is specified.
-            if (mode >= 0) {
-                context.setMode(mode);
+            if (this.mode >= 0) {
+                context.setMode(this.mode);
             }
 
             // Initialize the Container component which is the new way of transporting the Context in the new component
@@ -142,6 +138,7 @@ public class XWikiContextInitializationFilter implements Filter
             // Initialize the current user.
             XWikiUser user = context.getWiki().checkAuth(context);
             if (user != null) {
+                @SuppressWarnings("deprecation")
                 DocumentReferenceResolver<String> documentReferenceResolver =
                     Utils.getComponent(DocumentReferenceResolver.TYPE_STRING, "explicit");
                 SpaceReference defaultUserSpace =
@@ -164,6 +161,7 @@ public class XWikiContextInitializationFilter implements Filter
         // Initialize the Container fields (request, response, session). Note that this is a bridge between the old core
         // and the component architecture. In the new component architecture we use ThreadLocal to transport the
         // request, response and session to components which require them.
+        @SuppressWarnings("deprecation")
         ServletContainerInitializer containerInitializer = Utils.getComponent((Type) ServletContainerInitializer.class);
 
         try {
@@ -181,11 +179,13 @@ public class XWikiContextInitializationFilter implements Filter
      */
     protected void cleanupComponents()
     {
+        @SuppressWarnings("deprecation")
         Container container = Utils.getComponent((Type) Container.class);
         container.removeRequest();
         container.removeResponse();
         container.removeSession();
 
+        @SuppressWarnings("deprecation")
         Execution execution = Utils.getComponent((Type) Execution.class);
         execution.removeContext();
     }
