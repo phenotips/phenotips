@@ -635,6 +635,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-authorization</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>patient-access-rules-api</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -797,6 +802,7 @@
                 <xwikiCfgAdditionalProperties>
 xwiki.plugin.watchlist.automaticwatch=none
 xwiki.authentication.group.allgroupimplicit=1
+xwiki.authentication.rightsclass=org.phenotips.security.authorization.ModularRightServiceImpl
 xwiki.section.edit=0
 xwiki.backlinks=0
 xwiki.showviewaction=0
