@@ -108,7 +108,8 @@ public class SolrOntologyTerm implements OntologyTerm
         if (!(value instanceof List)) {
             return;
         }
-        List listValue = (List) value;
+        @SuppressWarnings("unchecked")
+        List<String> listValue = (List<String>) value;
         listValue.remove(this.getId());
     }
 
