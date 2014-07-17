@@ -69,8 +69,9 @@ public class SolrUpdateGenerator
     public void transform(File input, File output, Map<String, Double> fieldSelection)
     {
         this.fieldSelection = fieldSelection;
+        BufferedReader in = null;
         try {
-            BufferedReader in = new BufferedReader(new FileReader(input));
+            in = new BufferedReader(new FileReader(input));
             FileOutputStream fos = new FileOutputStream(output);
             OutputFormat of = new OutputFormat("XML", "UTF-8", true);
             of.setIndent(2);
@@ -125,6 +126,13 @@ public class SolrUpdateGenerator
             ex.printStackTrace();
         } finally {
             this.fieldSelection = null;
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    // Closing a stream shouldn't fail
+                }
+            }
         }
     }
 

@@ -48,8 +48,9 @@ public class DAG
         // Load data
         this.nodes.clear();
         TermData data = new TermData();
+        BufferedReader in = null;
         try {
-            BufferedReader in = new BufferedReader(new FileReader(source));
+            in = new BufferedReader(new FileReader(source));
             String line;
             while ((line = in.readLine()) != null) {
                 if (line.trim().equalsIgnoreCase(TERM_MARKER)) {
@@ -78,6 +79,14 @@ public class DAG
         } catch (IOException ex) {
             // TODO Auto-generated catch block
             ex.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    // Closing a stream shouldn't fail
+                }
+            }
         }
 
         // Redo all links
