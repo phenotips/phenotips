@@ -55,7 +55,6 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.PartSource;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
@@ -142,8 +141,8 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
     {
         PostMethod method = null;
         try {
-            PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
-            String eid = identifiers.get(0).getValue();
+            PatientData<String> identifiers = patient.getData("identifiers");
+            String eid = identifiers.get("external_id");
             String url = getMethodURL(VARIANT_MANAGER, "getVariantCountForDNAIDs");
             method = new PostMethod(url);
             JSONArray parameters = new JSONArray();
@@ -181,9 +180,9 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
     {
         PostMethod method = null;
         try {
-            PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
+            PatientData<String> identifiers = patient.getData("identifiers");
             String url = getMethodURL("UploadManager", "upload");
-            String eid = identifiers.get(0).getValue();
+            String eid = identifiers.get("external_id");
             XWikiContext context = Utils.getContext();
             XWikiDocument doc = context.getWiki().getDocument(patient.getDocument(), context);
             method = new PostMethod(url);
@@ -215,8 +214,8 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
         PostMethod method = null;
         List<JSONArray> result = new LinkedList<JSONArray>();
         try {
-            PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
-            String eid = identifiers.get(0).getValue();
+            PatientData<String> identifiers = patient.getData("identifiers");
+            String eid = identifiers.get("external_id");
             String url = getMethodURL(VARIANT_MANAGER, "getVariants");
             method = new PostMethod(url);
             JSONArray parameters = new JSONArray();
@@ -264,8 +263,8 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
         List<JSONArray> result = new LinkedList<JSONArray>();
         try {
             for (Integer refID : this.referenceIDs) {
-                PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
-                String eid = identifiers.get(0).getValue();
+                PatientData<String> identifiers = patient.getData("identifiers");
+                String eid = identifiers.get("external_id");
                 String url = getMethodURL(VARIANT_MANAGER, "getVariants");
                 method = new PostMethod(url);
                 JSONArray parameters = new JSONArray();
