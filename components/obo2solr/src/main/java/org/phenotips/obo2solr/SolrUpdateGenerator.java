@@ -149,7 +149,6 @@ public class SolrUpdateGenerator
 
     public Map<String, TermData> transform(URL input, Map<String, Double> fieldSelection)
     {
-        Collection<String> dateVersion = null;
         this.fieldSelection = fieldSelection;
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(input.openConnection().getInputStream()));

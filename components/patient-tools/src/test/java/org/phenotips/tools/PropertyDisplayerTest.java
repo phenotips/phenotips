@@ -69,7 +69,7 @@ public class PropertyDisplayerTest
         configuration.setPositiveFieldName("PhenoTips.PatientClass_0_phenotype");
         Collection<Map<String, ?>> data = Collections.emptySet();
         OntologyService ontologyService = Mockito.mock(OntologyService.class);
-        Mockito.doReturn(new HashSet<OntologyTerm>()).when(ontologyService).search(Mockito.any(Map.class));
+        Mockito.doReturn(new HashSet<OntologyTerm>()).when(ontologyService).search(Mockito.anyMapOf(String.class, Object.class));
 
         PropertyDisplayer displayer = new PropertyDisplayer(data, configuration, ontologyService);
         String output = displayer.display();

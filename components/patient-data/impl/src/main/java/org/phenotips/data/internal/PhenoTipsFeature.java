@@ -146,7 +146,9 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
         try {
             BaseObject categoriesObject = findCategoriesObject(doc);
             if (categoriesObject != null && categoriesObject.getListValue(META_PROPERTY_CATEGORIES) != null) {
-                categories = Collections.unmodifiableList(categoriesObject.getListValue(META_PROPERTY_CATEGORIES));
+                @SuppressWarnings("unchecked")
+                List<String> categoriesList = categoriesObject.getListValue(META_PROPERTY_CATEGORIES);
+                categories = Collections.unmodifiableList(categoriesList);
             }
         } catch (XWikiException ex) {
             // Cannot access metadata, simply ignore
