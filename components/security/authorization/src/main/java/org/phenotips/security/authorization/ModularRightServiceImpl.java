@@ -31,8 +31,10 @@ import org.xwiki.security.internal.XWikiConstants;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +48,7 @@ import com.xpn.xwiki.web.Utils;
 
 /**
  * A modular implementation of the legacy authorization checking service, forwarding the decision to instances of the
- * {@link AuthorizationService} role.
+ * {@link AuthorizationModule} role.
  *
  * @version $Id$
  * @since 1.0RC1
@@ -104,9 +106,10 @@ public class ModularRightServiceImpl extends XWikiCachingRightService implements
         PatientRepository repo = Utils.getComponent(PatientRepository.class);
         Patient patient = repo.getPatientById(docname);
         if (patient != null) {
-            Set<AuthorizationService> services = new TreeSet<AuthorizationService>();
-            services.addAll(Utils.getComponentList(AuthorizationService.class));
-            for (AuthorizationService service : services) {
+            List<AuthorizationModule> services = new LinkedList<>();
+            services.addAll(Utils.getComponentList(AuthorizationModule.class));
+            Collections.sort(services, AuthorizationModuleComparator.INSTANCE);
+            for (AuthorizationModule service : services) {
                 try {
                     Boolean decision = service.hasAccess(access, user, patient);
                     if (decision != null) {
@@ -168,5 +171,20 @@ public class ModularRightServiceImpl extends XWikiCachingRightService implements
     private DocumentReference resolveUserName(String username, WikiReference wikiReference)
     {
         return this.userAndGroupReferenceResolver.resolve(username, wikiReference);
+    }
+
+    private static final class AuthorizationModuleComparator implements Comparator<AuthorizationModule>
+    {
+        private static final AuthorizationModuleComparator INSTANCE = new AuthorizationModuleComparator();
+
+        @Override
+        public int compare(AuthorizationModule o1, AuthorizationModule o2)
+        {
+            if (o1 == null) {
+                return (o2 == null) ? 0 : 1;
+            }
+            return (o2 == null) ? -1 : o2.getPriority() - o1.getPriority();
+        }
+
     }
 }

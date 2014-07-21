@@ -34,7 +34,7 @@ import org.xwiki.users.User;
  * @since 1.0RC1
  */
 @Role
-public interface AuthorizationService extends Comparable<AuthorizationService>
+public interface AuthorizationModule
 {
     /**
      * The priority of this implementation. Implementations with a higher priority will be queried before
