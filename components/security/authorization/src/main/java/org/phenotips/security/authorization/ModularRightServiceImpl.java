@@ -19,25 +19,13 @@
  */
 package org.phenotips.security.authorization;
 
-import org.phenotips.data.Patient;
-import org.phenotips.data.PatientRepository;
-
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.WikiReference;
-import org.xwiki.security.authorization.Right;
 import org.xwiki.security.authorization.internal.XWikiCachingRightService;
 import org.xwiki.security.internal.XWikiConstants;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -47,34 +35,38 @@ import com.xpn.xwiki.user.api.XWikiUser;
 import com.xpn.xwiki.web.Utils;
 
 /**
- * A modular implementation of the legacy authorization checking service, forwarding the decision to instances of the
- * {@link AuthorizationModule} role.
+ * A bridge implementation of the legacy authorization checking service, forwarding the decision to the
+ * {@link AuthorizationService} role.
  *
  * @version $Id$
  * @since 1.0RC1
  */
 public class ModularRightServiceImpl extends XWikiCachingRightService implements XWikiRightService
 {
-    private final Logger logger = LoggerFactory.getLogger(ModularRightServiceImpl.class);
-
+    /** Converts usernames into proper {@link User} objects. */
     @SuppressWarnings("deprecation")
     private UserManager userManager = Utils.getComponent(UserManager.class);
 
+    /** Resolver for document references. */
+    @SuppressWarnings("deprecation")
+    private DocumentReferenceResolver<String> documentReferenceResolver = Utils.getComponent(
+        DocumentReferenceResolver.TYPE_STRING, "currentmixed");
+
+    /** Converts usernames into document references pointing to the corresponding profile document. */
     @SuppressWarnings("deprecation")
     private DocumentReferenceResolver<String> userAndGroupReferenceResolver = Utils.getComponent(
         DocumentReferenceResolver.TYPE_STRING, "user");
+
+    /** The actual component dealing with the authorization decision. */
+    @SuppressWarnings("deprecation")
+    private AuthorizationService service = Utils.getComponent(AuthorizationService.class);
 
     @Override
     public boolean checkAccess(String action, XWikiDocument doc, XWikiContext context) throws XWikiException
     {
         DocumentReference userReference = getCurrentUser(context);
         User user = this.userManager.getUser(userReference != null ? userReference.toString() : null, true);
-        Boolean decision = checkRights(user, actionToRight(action), doc.getDocumentReference().toString());
-        if (decision != null) {
-            return decision.booleanValue();
-        }
-
-        return super.checkAccess(action, doc, context);
+        return this.service.hasAccess(user, actionToRight(action), doc.getDocumentReference());
     }
 
     @Override
@@ -82,47 +74,9 @@ public class ModularRightServiceImpl extends XWikiCachingRightService implements
         throws XWikiException
     {
         User user = this.userManager.getUser(username, true);
-        Boolean decision = checkRights(user, actionToRight(right), docname);
-        if (decision != null) {
-            return decision.booleanValue();
-        }
-
-        return super.hasAccessLevel(right, username, docname, context);
-    }
-
-    /**
-     * Invoke the actual authorization modules in descending order of priority, until one of them responds with a non-
-     * {@code null} decision. If none of the authorization modules responds, {@code null} is returned.
-     *
-     * @param user the user requesting access
-     * @param access the requested access right
-     * @param docname the document being accessed
-     * @return {@code True} if access is granted, {@code False} if access is denied, {@code null} if no authorization
-     *         module can determine if access should be granted or denied
-     */
-    @SuppressWarnings("deprecation")
-    private Boolean checkRights(User user, Right access, String docname)
-    {
-        PatientRepository repo = Utils.getComponent(PatientRepository.class);
-        Patient patient = repo.getPatientById(docname);
-        if (patient != null) {
-            List<AuthorizationModule> services = new LinkedList<>();
-            services.addAll(Utils.getComponentList(AuthorizationModule.class));
-            Collections.sort(services, AuthorizationModuleComparator.INSTANCE);
-            for (AuthorizationModule service : services) {
-                try {
-                    Boolean decision = service.hasAccess(access, user, patient);
-                    if (decision != null) {
-                        return decision;
-                    }
-                } catch (Exception ex) {
-                    // Don't fail because of bad authorization modules
-                    this.logger.warn("Failed to invoke authorization service [{}]: {}",
-                        service.getClass().getCanonicalName(), ex.getMessage());
-                }
-            }
-        }
-        return null;
+        WikiReference wikiReference = new WikiReference(context.getDatabase());
+        DocumentReference document = resolveDocumentName(docname, wikiReference);
+        return this.service.hasAccess(user, actionToRight(right), document);
     }
 
     /**
@@ -173,18 +127,14 @@ public class ModularRightServiceImpl extends XWikiCachingRightService implements
         return this.userAndGroupReferenceResolver.resolve(username, wikiReference);
     }
 
-    private static final class AuthorizationModuleComparator implements Comparator<AuthorizationModule>
+    /**
+     * @param docname name of the document as string.
+     * @param wikiReference the default wiki where the document will be assumed do be located, unless explicitly
+     *            specified in docname.
+     * @return the document reference.
+     */
+    private DocumentReference resolveDocumentName(String docname, WikiReference wikiReference)
     {
-        private static final AuthorizationModuleComparator INSTANCE = new AuthorizationModuleComparator();
-
-        @Override
-        public int compare(AuthorizationModule o1, AuthorizationModule o2)
-        {
-            if (o1 == null) {
-                return (o2 == null) ? 0 : 1;
-            }
-            return (o2 == null) ? -1 : o2.getPriority() - o1.getPriority();
-        }
-
+        return this.documentReferenceResolver.resolve(docname, wikiReference);
     }
 }

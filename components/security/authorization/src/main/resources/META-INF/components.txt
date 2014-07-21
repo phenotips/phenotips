@@ -1,0 +1,2 @@
+org.phenotips.security.authorization.internal.BaseAuthorizationModule
+org.phenotips.security.authorization.internal.DefaultAuthorizationService
