@@ -91,11 +91,7 @@ public class DefaultAuthorizationService implements AuthorizationService
         @Override
         public int compare(AuthorizationModule o1, AuthorizationModule o2)
         {
-            // Nulls come last, although there never should be a null instance passed here
-            if (o1 == null) {
-                return (o2 == null) ? 0 : 1;
-            }
-            int result = (o2 == null) ? -1 : o2.getPriority() - o1.getPriority();
+            int result = o2.getPriority() - o1.getPriority();
             // If the happen to have the same priority, to avoid randomness, order them alphabetically by their name
             if (result == 0) {
                 result = o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());

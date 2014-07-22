@@ -59,7 +59,10 @@ public class BaseAuthorizationModule implements AuthorizationModule
     @Override
     public Boolean hasAccess(User user, Right access, DocumentReference document)
     {
-        return this.configuration
-            .getProperty("phenotips.security.authorization.allowAllAccessByDefault", Boolean.FALSE);
+        Boolean result = this.configuration.getProperty("phenotips.security.authorization.allowAllAccessByDefault");
+        if (result == null) {
+            result = Boolean.FALSE;
+        }
+        return result;
     }
 }
