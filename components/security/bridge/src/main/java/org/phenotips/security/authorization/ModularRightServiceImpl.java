@@ -90,7 +90,7 @@ public class ModularRightServiceImpl extends XWikiCachingRightService implements
         DocumentReference contextUserReference = context.getUserReference();
         DocumentReference userReference = contextUserReference;
 
-        if (userReference == null && context.getMode() != XWikiContext.MODE_XMLRPC) {
+        if (userReference == null) {
             try {
                 XWikiUser user = context.getWiki().checkAuth(context);
                 if (user != null) {
@@ -107,8 +107,7 @@ public class ModularRightServiceImpl extends XWikiCachingRightService implements
             userReference = null;
         }
 
-        if (userReference != contextUserReference
-            && (userReference == null || !userReference.equals(contextUserReference))) {
+        if (userReference != contextUserReference) {
             context.setUserReference(userReference);
         }
 
