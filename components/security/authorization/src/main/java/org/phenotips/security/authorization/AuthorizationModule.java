@@ -26,10 +26,10 @@ import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
 
 /**
- * Modular authorization service which checks if a specific operation on a patient record should be granted or not. This
- * can be implemented by different components, each one with a different priority. When a specific access is requested,
- * each of the available implementations will be queried by the {@link AuthorizationService} in descending order of
- * their priority, until one responds with a non-null decision.
+ * Modular authorization service which checks if a specific operation on an entity should be granted or not. This can be
+ * implemented by different components, each one with a different priority. When a specific access is requested, each of
+ * the available implementations will be queried by the {@link AuthorizationService} in descending order of their
+ * priority, until one responds with a non-null decision.
  *
  * @version $Id$
  * @since 1.0RC1
