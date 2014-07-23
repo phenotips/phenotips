@@ -4423,7 +4423,6 @@ form .extradata-list tr:hover td {
 
 .phenotype-details.focused input {
   color: $theme.textColor;
-  box-shadow: 0 1px 2px #aaa inset !important;
   background: #FFF !important;
   border-color: #FFF !important;
 }
