@@ -38,7 +38,7 @@ import javax.inject.Singleton;
  * @since 1.0RC1
  */
 @Component
-@Named("base")
+@Named("xwiki-acl")
 @Singleton
 public class XWikiACLAuthorizationModule implements AuthorizationModule
 {
