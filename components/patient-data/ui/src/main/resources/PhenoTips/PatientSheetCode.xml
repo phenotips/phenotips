@@ -4371,7 +4371,6 @@ form .extradata-list tr:hover td {
 }
 .phenotype-details.collapsed {
   background-position: 99% .25em;
-  background-image: url("$xwiki.getSkinFile('edit-s-gray.png')");
   cursor: pointer;
   padding-left: 16px;
 }
