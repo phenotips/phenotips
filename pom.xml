@@ -461,9 +461,6 @@
           </dependencies>
           <configuration>
             <consoleOutput>true</consoleOutput>
-            <!-- We use this to disable checkstyle when the clover profile is executed since there's a
-                 conflict between checkstyle and clover. Namely the clovered code doesn't pass our
-                 checkstyle rules -->
             <skip>${checkstyle.skip}</skip>
             <configLocation>checkstyle.xml</configLocation>
           </configuration>
