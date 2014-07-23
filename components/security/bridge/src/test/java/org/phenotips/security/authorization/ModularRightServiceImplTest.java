@@ -170,8 +170,12 @@ public class ModularRightServiceImplTest
     @Test
     public void hasAccessLevelBaseTest() throws XWikiException
     {
-        when(this.context.getUserReference()).thenReturn(null);
-        when(this.xwiki.checkAuth(this.context)).thenThrow(new XWikiException());
         Assert.assertTrue(this.service.hasAccessLevel("view", "jdoe", "Some.Document", this.context));
+    }
+
+    @Test
+    public void hasAccessWithGuestUser() throws XWikiException
+    {
+        Assert.assertFalse(this.service.hasAccessLevel("view", "XWiki.XWikiGuest", "Some.Document", this.context));
     }
 }

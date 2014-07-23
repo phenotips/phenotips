@@ -27,6 +27,8 @@ import org.xwiki.security.internal.XWikiConstants;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -73,7 +75,7 @@ public class ModularRightServiceImpl extends XWikiCachingRightService implements
     public boolean hasAccessLevel(String right, String username, String docname, XWikiContext context)
         throws XWikiException
     {
-        User user = this.userManager.getUser(username, true);
+        User user = this.userManager.getUser(StringUtils.endsWith(username, "XWikiGuest") ? null : username, true);
         WikiReference wikiReference = new WikiReference(context.getDatabase());
         DocumentReference document = resolveDocumentName(docname, wikiReference);
         return this.service.hasAccess(user, actionToRight(right), document);
