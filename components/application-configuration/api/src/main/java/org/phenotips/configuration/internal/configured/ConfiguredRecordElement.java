@@ -29,7 +29,7 @@ import java.util.List;
 
 /**
  * Implementation of {@link RecordElement} that takes into account a {@link CustomConfiguration custom configuration}.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -40,7 +40,7 @@ public class ConfiguredRecordElement extends DefaultRecordElement implements Rec
 
     /**
      * Simple constructor passing all the needed components.
-     * 
+     *
      * @param configuration the custom configuration
      * @param extension the extension defining this element
      * @param section the parent {@link RecordSection section} containing this element

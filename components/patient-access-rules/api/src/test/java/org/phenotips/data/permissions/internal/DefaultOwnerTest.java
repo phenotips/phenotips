@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for the default {@link Owner} implementation, {@link DefaultOwner}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultOwnerTest

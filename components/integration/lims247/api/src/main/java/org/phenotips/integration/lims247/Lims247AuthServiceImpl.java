@@ -56,7 +56,7 @@ import com.xpn.xwiki.web.XWikiRequest;
  * <li>If the token is validated, then the user identified by the username is successfully logged in PhenoTips, for the
  * duration of the current session.</li>
  * </ol>
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -103,7 +103,7 @@ public class Lims247AuthServiceImpl extends XWikiLDAPAuthServiceImpl implements 
 
     /**
      * Check if the current session already contains a logged in LIMS user. If yes, then the that user is returned.
-     * 
+     *
      * @param context the current request context
      * @return the user found in the session, or {@code null} if no LIMS user is logged in
      */
@@ -120,7 +120,7 @@ public class Lims247AuthServiceImpl extends XWikiLDAPAuthServiceImpl implements 
 
     /**
      * Store a validated log in in the current session to reduce the number of checks sent to LIMS.
-     * 
+     *
      * @param auth the authentication information to store in the session
      * @param context the current request context, used for accessing the session
      */
@@ -131,7 +131,7 @@ public class Lims247AuthServiceImpl extends XWikiLDAPAuthServiceImpl implements 
 
     /**
      * Check if the authentication parameters sent in the URL are validated by the local XWiki server.
-     * 
+     *
      * @param token the authentication token
      * @param username the target username
      * @param context the current request context
@@ -163,7 +163,7 @@ public class Lims247AuthServiceImpl extends XWikiLDAPAuthServiceImpl implements 
 
     /**
      * Check if the authentication parameters sent in the URL are validated by the remote LIMS server.
-     * 
+     *
      * @param token the authentication token
      * @param username the target username
      * @param pn the LIMS instance identifier
@@ -182,7 +182,7 @@ public class Lims247AuthServiceImpl extends XWikiLDAPAuthServiceImpl implements 
 
     /**
      * Configure the context so that the PhenoTips instance is better embedded inside LIMS.
-     * 
+     *
      * @param context the current request context
      */
     private void setupContextForLims(XWikiContext context)
@@ -196,7 +196,7 @@ public class Lims247AuthServiceImpl extends XWikiLDAPAuthServiceImpl implements 
     /**
      * Store the specified access mode, if any, in the session. This influences the {@link Lims247RightServiceImpl
      * custom rights implementation}, overriding the granted rights.
-     * 
+     *
      * @param context the current request context
      */
     private void storeAccesMode(XWikiContext context)

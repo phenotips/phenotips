@@ -21,6 +21,8 @@ package org.phenotips.obo2solr.maps;
 
 public class IntegerSumMap<K> extends IntegerMap<K>
 {
+    private static final long serialVersionUID = 1L;
+
     public IntegerSumMap()
     {
         super();

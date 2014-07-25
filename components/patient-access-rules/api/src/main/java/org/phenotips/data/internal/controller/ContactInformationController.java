@@ -202,7 +202,7 @@ public class ContactInformationController implements PatientDataController<Strin
     /**
      * Unlike all other controllers, there is no field name controlling presence of version information in JSON output.
      * This method returns a name which can be used instead.
-     * 
+     *
      * @return a name which can be included in the list of enabled fields to enable version info in JSON output
      */
     public static String getEnablingFieldName()

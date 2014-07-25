@@ -19,12 +19,12 @@
  */
 package org.phenotips.data.securestorage;
 
-import javax.persistence.Entity;
+import java.sql.Timestamp;
+
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
-import java.sql.Timestamp;
 
 /**
  * Used on the server side to store the login token assigned to a user upon remote "push" login.
@@ -39,16 +39,16 @@ public class LocalLoginToken
     @GeneratedValue
     private long id;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String localUserName;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String sourceServerName;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String loginToken;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private Timestamp timeTokenCreated;
 
     /** Default constructor used by Hibernate. */
@@ -59,19 +59,20 @@ public class LocalLoginToken
 
     /**
      * TODO
+     *
      * @param
      */
     public LocalLoginToken(String localUserName, String sourceServerName, String loginToken)
     {
-        this.localUserName    = localUserName;
+        this.localUserName = localUserName;
         this.sourceServerName = sourceServerName;
-        this.loginToken       = loginToken;
+        this.loginToken = loginToken;
         this.timeTokenCreated = new Timestamp(System.currentTimeMillis());
     }
 
     public String getLoginToken()
     {
-        return loginToken;
+        return this.loginToken;
     }
 
     public void setLoginToken(String newToken)
@@ -81,12 +82,12 @@ public class LocalLoginToken
 
     public String getLocalUserName()
     {
-        return localUserName;
+        return this.localUserName;
     }
 
     public String getSourceServerName()
     {
-        return sourceServerName;
+        return this.sourceServerName;
     }
 
     public Timestamp getTimeCreated()

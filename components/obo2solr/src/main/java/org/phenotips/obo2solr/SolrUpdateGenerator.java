@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

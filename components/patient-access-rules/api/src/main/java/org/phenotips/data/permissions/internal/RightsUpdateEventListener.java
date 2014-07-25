@@ -108,7 +108,7 @@ public class RightsUpdateEventListener implements EventListener
     @Override
     public List<Event> getEvents()
     {
-        return Arrays.<Event> asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
+        return Arrays.<Event>asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
     }
 
     @Override
@@ -117,12 +117,12 @@ public class RightsUpdateEventListener implements EventListener
         XWikiDocument doc = (XWikiDocument) source;
         XWikiContext context = (XWikiContext) data;
         if (isPatient(doc)) {
-            //Map of permissions to users/groups
+            // Map of permissions to users/groups
             Map<String, Map<String, String>> oldRights = new HashMap<String, Map<String, String>>();
             Map<String, BaseObject> rightsObjects = findRights(doc);
             List<String> missingRights = findMissingRights(rightsObjects);
             clearRights(rightsObjects, oldRights);
-            //Create rights after clearRights, because it saves unnecessary resetting of groups and users
+            // Create rights after clearRights, because it saves unnecessary resetting of groups and users
             createRights(missingRights, rightsObjects, doc, context);
             updateDefaultRights(rightsObjects, doc);
             updateOwnerRights(rightsObjects, oldRights, doc);
@@ -150,7 +150,7 @@ public class RightsUpdateEventListener implements EventListener
         }
         Map<String, BaseObject> rightsObjects = new HashMap<String, BaseObject>();
         for (BaseObject right : allRights) {
-            //getXObjects returns an ArrayList that could be lacking elements
+            // getXObjects returns an ArrayList that could be lacking elements
             if (right == null) {
                 continue;
             }
@@ -185,7 +185,7 @@ public class RightsUpdateEventListener implements EventListener
     private void clearRights(Map<String, BaseObject> rightsObjects, Map<String, Map<String, String>> oldRights)
     {
         for (BaseObject right : rightsObjects.values()) {
-            Map <String, String> entityList = new HashMap<String, String>();
+            Map<String, String> entityList = new HashMap<String, String>();
             entityList.put(GROUPS, right.getStringValue(GROUPS));
             entityList.put(USERS, right.getStringValue(USERS));
             oldRights.put(right.getStringValue("levels"), entityList);
@@ -198,7 +198,7 @@ public class RightsUpdateEventListener implements EventListener
      * Loops over the {@code rightsCombinations} and attaches a new rights object for each combination to the document.
      *
      * @param rightsCombinations the string array containing all the combinations for which there should be an object
-     * created
+     *            created
      * @param rightsObjects the map of existing rights objects
      * @param doc XWikiDocument
      * @param context XWikiContext

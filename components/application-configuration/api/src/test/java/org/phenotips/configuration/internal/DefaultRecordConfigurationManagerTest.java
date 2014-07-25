@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the default {@link RecordConfigurationManager} implementation, {@link GlobalRecordConfiguration}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultRecordConfigurationManagerTest

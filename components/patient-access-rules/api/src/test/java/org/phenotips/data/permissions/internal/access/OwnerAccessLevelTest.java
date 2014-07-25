@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the {@link EditAccessLevel edit access level}.
- * 
+ *
  * @version $Id$
  */
 public class OwnerAccessLevelTest

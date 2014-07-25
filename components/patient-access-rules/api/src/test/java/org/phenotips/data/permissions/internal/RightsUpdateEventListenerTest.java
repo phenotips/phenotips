@@ -60,25 +60,26 @@ public class RightsUpdateEventListenerTest
     @Before
     public void setUp() throws ComponentLookupException
     {
-        testComponent = mocker.getComponentUnderTest();
+        this.testComponent = this.mocker.getComponentUnderTest();
     }
+
     /** Basic test for {@link RightsUpdateEventListener#findRights} */
     @Test
     public void findRightsTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
     {
         Class[] args = new Class[1];
         args[0] = XWikiDocument.class;
-        Method testMethod = testComponent.getClass().getDeclaredMethod("findRights", args);
+        Method testMethod = this.testComponent.getClass().getDeclaredMethod("findRights", args);
         testMethod.setAccessible(true);
 
         List<BaseObject> mockRightObjects = mock(List.class);
         Iterator<BaseObject> mockRightIterator = mock(Iterator.class);
         BaseObject mockRightObject = mock(BaseObject.class);
-        when(doc.getXObjects(any(EntityReference.class))).thenReturn(mockRightObjects);
+        when(this.doc.getXObjects(any(EntityReference.class))).thenReturn(mockRightObjects);
         when(mockRightObjects.iterator()).thenReturn(mockRightIterator);
         when(mockRightIterator.hasNext()).thenReturn(true, false);
         when(mockRightIterator.next()).thenReturn(mockRightObject);
 
-        testMethod.invoke(testComponent, doc);
+        testMethod.invoke(this.testComponent, this.doc);
     }
 }

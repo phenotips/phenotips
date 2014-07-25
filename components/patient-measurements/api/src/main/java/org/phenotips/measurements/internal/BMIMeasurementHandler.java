@@ -19,14 +19,14 @@
  */
 package org.phenotips.measurements.internal;
 
+import org.xwiki.component.annotation.Component;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.xwiki.component.annotation.Component;
-
 /**
  * BMI (Body Mass Index) measurements, in kilograms per square meter.
- * 
+ *
  * @version $Id$
  * @since 1.0M3
  */
@@ -44,7 +44,7 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler
     /**
      * Compute the BMI (Body-Mass Index) for the given weigh and height. The formula is {@code weight / (height^2)}
      * multiplied by 10000 (to convert centimeters into meters).
-     * 
+     *
      * @param weightInKilograms the measured weight, in kilograms
      * @param heightInCentimeters the measured length for children under 24 months, or measured height for older
      *            children, in centimeters
@@ -60,7 +60,7 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler
 
     /**
      * Get the BMI percentile for the given weight and height.
-     * 
+     *
      * @param male {@code true} for boys, {@code false} for girls
      * @param ageInMonths the age of the measurement, in months
      * @param weightInKilograms the measured weight, in kilograms
@@ -75,7 +75,7 @@ public class BMIMeasurementHandler extends AbstractMeasurementHandler
 
     /**
      * Get the BMI standard deviation for the given weight and height.
-     * 
+     *
      * @param male {@code true} for boys, {@code false} for girls
      * @param ageInMonths the age of the measurement, in months
      * @param weightInKilograms the measured weight, in kilograms

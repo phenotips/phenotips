@@ -38,7 +38,7 @@ import com.xpn.xwiki.web.Utils;
 
 /**
  * Rights checking class that respects the access level granted by a LIMS 24/7 server.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */

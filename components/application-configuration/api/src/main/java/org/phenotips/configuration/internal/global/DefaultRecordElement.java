@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Default (global) implementation for {@link RecordElement}.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -46,7 +46,7 @@ public class DefaultRecordElement implements RecordElement
 
     /**
      * Simple constructor passing all the needed components.
-     * 
+     *
      * @param extension the extension defining this element
      * @param section the parent {@link RecordSection section} containing this element
      */

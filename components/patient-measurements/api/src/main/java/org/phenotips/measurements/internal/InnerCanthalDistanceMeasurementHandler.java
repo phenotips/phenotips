@@ -19,14 +19,14 @@
  */
 package org.phenotips.measurements.internal;
 
+import org.xwiki.component.annotation.Component;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.xwiki.component.annotation.Component;
-
 /**
  * Inner Canthal distance measurements, in centimeters.
- * 
+ *
  * @version $Id$
  * @since 1.0M3
  */

@@ -72,7 +72,7 @@ import net.sf.json.JsonConfig;
 /**
  * Communication via HTTP requests with a LIMS server, configured in the wiki preferences via
  * {@code PhenoTips.LimsAuthServer} objects.
- * 
+ *
  * @version $Id$
  * @since 1.0M11
  */
@@ -299,7 +299,7 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
 
     /**
      * Return the base URL of the specified LIMS instance.
-     * 
+     *
      * @param pn the LIMS instance identifier
      * @param context the current request context
      * @return the configured URL, in the format {@code http://lims.host.name}, or {@code null} if the LIMS instance

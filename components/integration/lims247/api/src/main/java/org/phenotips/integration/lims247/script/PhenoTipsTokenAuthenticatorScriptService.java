@@ -40,7 +40,7 @@ import com.xpn.xwiki.XWikiContext;
 
 /**
  * Validates a token for a specified user, in response to an authentication check sent by a remote LIMS server.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -60,7 +60,7 @@ public class PhenoTipsTokenAuthenticatorScriptService implements ScriptService
 
     /**
      * Check if the specified token is valid for the specified user.
-     * 
+     *
      * @param username the username whose authentication to check
      * @param token the token to check
      * @return {@code true} if the token is valid for the user, {@code false} otherwise

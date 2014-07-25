@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 
 /**
  * Default implementation for {@link GroupManager}, using XDocuments as the place where groups are defined.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */

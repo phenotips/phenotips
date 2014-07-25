@@ -56,7 +56,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * {@code RelativeClass} objects. Searches for all documents containing values for the {@code relative_of} property, and
  * for each such document creates a new {@code PhenoTips.RelativeClass}. The old {@code relative} and
  * {@code relative_of} properties are removed.
- * 
+ *
  * @version $Id$
  * @since 1.0M7
  */

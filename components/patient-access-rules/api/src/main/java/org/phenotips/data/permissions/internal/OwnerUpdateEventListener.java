@@ -65,7 +65,7 @@ public class OwnerUpdateEventListener implements EventListener
     @Override
     public List<Event> getEvents()
     {
-        return Collections.<Event> singletonList(new DocumentCreatingEvent());
+        return Collections.<Event>singletonList(new DocumentCreatingEvent());
     }
 
     @Override

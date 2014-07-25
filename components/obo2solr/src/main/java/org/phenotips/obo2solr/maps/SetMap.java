@@ -24,6 +24,7 @@ import java.util.LinkedHashSet;
 
 public class SetMap<K, V> extends AbstractCollectionMap<K, V>
 {
+    private static final long serialVersionUID = 1L;
 
     @Override
     protected Collection<V> getEmptyCollection()

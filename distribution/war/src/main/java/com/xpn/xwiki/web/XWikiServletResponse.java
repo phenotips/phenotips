@@ -51,7 +51,7 @@ public class XWikiServletResponse implements XWikiResponse
      * Note that in Servlet 3.0 there's a better way to get the servlet response's code by calling <a
      * href="http://download.oracle.com/javaee/6/api/javax/servlet/http/HttpServletResponse.html#getStatus%28%29">
      * getStatus()</a>.
-     * 
+     *
      * @return the HTTP response status (200, 302, etc)
      * @since 5.0M1
      */
@@ -176,7 +176,7 @@ public class XWikiServletResponse implements XWikiResponse
 
     /**
      * Remove a cookie.
-     * 
+     *
      * @param request The servlet request needed to find the cookie to remove
      * @param cookieName The name of the cookie that must be removed.
      */

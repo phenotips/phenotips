@@ -35,7 +35,7 @@ public class SuggestedPhenotype implements Comparable<SuggestedPhenotype>
 
     /**
      * Constructor initializing all the required fields.
-     * 
+     *
      * @param id see {@link #id}
      * @param name see {@link #name}
      * @param score see {@link #score}

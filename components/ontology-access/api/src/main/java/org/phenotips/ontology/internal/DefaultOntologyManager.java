@@ -38,7 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Default implementation of the {@link OntologyManager} component, which uses the {@link OntologyService ontologies}
  * registered in the component manager.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -81,7 +81,7 @@ public class DefaultOntologyManager implements OntologyManager, Initializable
     /**
      * Finds the owner ontology given a term identifier. The ontology is identified by the term ID prefix, for example
      * {@code HP} in {@code HP:0002066}.
-     * 
+     *
      * @param termId the term identifier to process
      * @return the owner ontology, or {@code null} if the term doesn't belong to a known ontology
      */

@@ -19,10 +19,10 @@
  */
 package org.phenotips.hpoa.ontology;
 
+import org.phenotips.hpoa.utils.maps.SetMap;
+
 import java.util.Collection;
 import java.util.Collections;
-
-import org.phenotips.hpoa.utils.maps.SetMap;
 
 public class TermData extends SetMap<String, String>
 {

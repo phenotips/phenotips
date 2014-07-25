@@ -52,7 +52,7 @@ import com.xpn.xwiki.store.migration.hibernate.HibernateDataMigration;
 
 /**
  * Migration for PhenoTips issue #931: Add a {@code PhenoTips.OwnerClass} to all patient records that don't have one.
- * 
+ *
  * @version $Id$
  * @since 1.0M13
  */

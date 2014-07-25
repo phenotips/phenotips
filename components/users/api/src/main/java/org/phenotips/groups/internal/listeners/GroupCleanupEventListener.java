@@ -43,7 +43,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Event listener that also deletes the corresponding "Group Administrators" group when deleting a PhenoTips group.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -64,7 +64,7 @@ public class GroupCleanupEventListener implements EventListener
     @Override
     public List<Event> getEvents()
     {
-        return Collections.<Event> singletonList(new DocumentDeletedEvent());
+        return Collections.<Event>singletonList(new DocumentDeletedEvent());
     }
 
     @Override

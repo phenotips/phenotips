@@ -74,7 +74,7 @@ public interface PushPatientService
     /**
      * Retrieves the list of patient fields accepted by the remote server as well as the list of groups the given remote
      * user is a member of on the remote server.
-     * 
+     *
      * @param remoteServerIdentifier server name as configured in TODO
      * @param userName user name on the remote server
      * @param password user password on the remote server
@@ -101,7 +101,7 @@ public interface PushPatientService
 
     /**
      * Removes stored remote login token, if any - for security purposes
-     * 
+     *
      * @param remoteServerIdentifier
      */
     void removeStoredLoginTokens(String remoteServerIdentifier);

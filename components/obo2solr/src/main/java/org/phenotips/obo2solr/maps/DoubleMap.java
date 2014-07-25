@@ -21,6 +21,8 @@ package org.phenotips.obo2solr.maps;
 
 public class DoubleMap<K> extends AbstractNumericValueMap<K, Double>
 {
+    private static final long serialVersionUID = 1L;
+
     public DoubleMap()
     {
         super();

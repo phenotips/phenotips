@@ -31,7 +31,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Information about a {@link Patient patient} {@link Feature feature} property (meta-feature).
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -61,7 +61,7 @@ public interface FeatureMetadatum extends OntologyProperty
 
         /**
          * Constructor that initializes the {@link #getId() ontology term identifier}.
-         * 
+         *
          * @param id an identifier, in the format {@code ONTOLOGY:termId}
          * @see #getId()
          */
@@ -78,7 +78,7 @@ public interface FeatureMetadatum extends OntologyProperty
 
         /**
          * Get the ontology term identifier associated to this type of meta-feature.
-         * 
+         *
          * @return an identifier, in the format {@code ONTOLOGY:termId}
          */
         public String getId()
@@ -89,14 +89,14 @@ public interface FeatureMetadatum extends OntologyProperty
 
     /**
      * The category of this meta-feature.
-     * 
+     *
      * @return an identifier, for example {@code age_of_onset} or {@code pace_of_progression}
      */
     String getType();
 
     /**
      * Retrieve information about this meta-feature in a JSON format. For example:
-     * 
+     *
      * <pre>
      * {
      *   "id": "HP:0003621",
@@ -104,7 +104,7 @@ public interface FeatureMetadatum extends OntologyProperty
      *   "type": "age_of_onset",
      * }
      * </pre>
-     * 
+     *
      * @return the meta-feature data, using the json-lib classes
      */
     @Override

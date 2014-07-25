@@ -47,7 +47,7 @@ import org.slf4j.Logger;
  * Provides access to the Solr server, with the main purpose of providing access to an indexed ontology. There are two
  * ways of accessing items in the ontology: getting a single term by its identifier, or searching for terms matching a
  * given query in the Lucene query language.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -82,7 +82,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
 
     /**
      * Get the name of the Solr "core" to be used by this service instance.
-     * 
+     *
      * @return the simple core name
      */
     protected abstract String getName();
@@ -193,7 +193,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     /**
      * Perform a search, falling back on the suggested spellchecked query if the original query fails to return any
      * results.
-     * 
+     *
      * @param params the Solr parameters to use, should contain at least a value for the "q" parameter
      * @return the list of matching documents, empty if there are no matching terms
      */
@@ -205,7 +205,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     /**
      * Perform a search, falling back on the suggested spellchecked query if the original query fails to return any
      * results.
-     * 
+     *
      * @param params the Solr parameters to use, should contain at least a value for the "q" parameter
      * @param queryOptions extra options to include in the query; these override the default values, but don't override
      *            values already set in the query
@@ -237,7 +237,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
 
     /**
      * Get the number of entries that match a specific Lucene query.
-     * 
+     *
      * @param query a valid the Lucene query as string
      * @return the number of entries matching the query
      */
@@ -259,7 +259,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
 
     /**
      * Generate a Lucene query from a map of parameters, to be used in the "q" parameter for Solr.
-     * 
+     *
      * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
      *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
      *            single value, or a collection of values that can (OR) be matched by the term;

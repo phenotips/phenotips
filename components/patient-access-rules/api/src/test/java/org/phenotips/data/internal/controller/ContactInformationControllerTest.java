@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the contact data controller implementation, {@link ContactInformationController}.
- * 
+ *
  * @version $Id$
  */
 public class ContactInformationControllerTest
