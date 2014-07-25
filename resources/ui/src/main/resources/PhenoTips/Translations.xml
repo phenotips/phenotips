@@ -101,7 +101,7 @@ core.widgets.confirmationBox.button.cancel=Cancel
 
 PhenoTips.PatientClass_gender_hint=Sex should be recorded as biological sex rather than gender.
 PhenoTips.RelativeClass_hint=Create links to other patients or family members in the system.
-PhenoTips.PatientClass_global_age_of_onset_hint=The onset for the majority of the symptoms. Individual phenotypes may be designated with different onset than recorded here in the Clinical Symptoms section.
+PhenoTips.PatientClass_global_age_of_onset_hint=The onset for the majority of the symptoms. Individual phenotypes may be designated with different onsets than recorded here in the Clinical Symptoms section.
 PhenoTips.PatientClass_indication_for_referral_hint=This content can be a short summary or include content from the patient record. DO NOT RECORD any Protected Health Information.
 PhenoTips.PatientClass_gestation_hint=Numeric value in weeks, such as “38” or blank if unknown.
 PhenoTips.PatientClass_prenatal_comments_hint=This content can be a short summary or include content from the patient record. DO NOT RECORD any Protected Health Information.
