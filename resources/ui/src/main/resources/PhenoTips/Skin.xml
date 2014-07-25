@@ -279,17 +279,24 @@
   margin-left: 2em;
 }
 
-#phenotips-globalTools label, #phenotips-globalTools input[type="submit"], #create-patient-record {
+#create-patient-record {
   background: transparent;
   border: 0 none;
   color: $theme.menuLinkColor;
   cursor: pointer;
   display: inline-block;
   font: 700 0.8em/1.8em sans-serif;
-  padding: 2px;
+  padding: 2px 0 0;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
   text-transform: uppercase;
   white-space: nowrap;
   width: auto;
+}
+#create-patient-record:hover {
+  text-decoration: underline;
+}
+#create-patient-record::-moz-focus-inner {
+  border: 0;
 }
 #phenotips-globalTools .search .icon-search, #phenotips-globalTools .search .fa-search {
   color: $theme.menuLinkColor;
@@ -344,9 +351,6 @@
 }
 .general-tools label:hover {
   text-decoration: underline;
-}
-#create-patient-record {
-  padding: .3em .2em .3em  2.2em;
 }
 #patient-creation-form {
   position: relative;
