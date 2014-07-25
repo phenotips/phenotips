@@ -87,7 +87,8 @@ public class R54593PhenoTips949DataMigration extends AbstractHibernateDataMigrat
     public void hibernateMigrate() throws DataMigrationException, XWikiException
     {
         getStore().executeWrite(getXWikiContext(), new MigrateNotesCallback("family_comments", "family_history"));
-        getStore().executeWrite(getXWikiContext(), new MigrateNotesCallback("prenatal_comments", "prenatal_history"));
+        getStore().executeWrite(getXWikiContext(),
+            new MigrateNotesCallback("prenatal_comments", "prenatal_development"));
         getStore().executeWrite(getXWikiContext(),
             new MigrateNotesCallback("medical_developmental_history", "medical_history"));
         getStore().executeWrite(getXWikiContext(), new MigrateNotesCallback("comments", "diagnosis_notes"));
