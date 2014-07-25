@@ -29,7 +29,7 @@ import java.util.Map.Entry;
  *
  * @param <T> the type of data being managed by this component; since this is a simple value, this refers to its type
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.0M13
  */
 public class SimpleValuePatientData<T> implements PatientData<T>
 {

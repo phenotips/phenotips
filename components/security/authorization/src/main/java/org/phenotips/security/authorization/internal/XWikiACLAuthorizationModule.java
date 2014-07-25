@@ -35,7 +35,7 @@ import javax.inject.Singleton;
  * Authorization module using XWiki's classic ACLs.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.0M13
  */
 @Component
 @Named("xwiki-acl")

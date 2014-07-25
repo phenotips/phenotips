@@ -38,7 +38,7 @@ import javax.inject.Singleton;
  * default value {@code false}.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.0M13
  */
 @Component
 @Named("base")

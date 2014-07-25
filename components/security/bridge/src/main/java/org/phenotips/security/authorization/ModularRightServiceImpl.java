@@ -41,7 +41,7 @@ import com.xpn.xwiki.web.Utils;
  * {@link AuthorizationService} role.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.0M13
  */
 public class ModularRightServiceImpl extends XWikiCachingRightService implements XWikiRightService
 {

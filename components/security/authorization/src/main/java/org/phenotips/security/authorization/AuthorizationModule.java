@@ -32,7 +32,7 @@ import org.xwiki.users.User;
  * priority, until one responds with a non-null decision.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.0M13
  */
 @Unstable
 @Role

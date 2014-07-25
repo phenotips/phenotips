@@ -43,7 +43,7 @@ import org.slf4j.Logger;
  * descending order of priority, until one responds with a non-null decision.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.0M13
  */
 @Component
 @Singleton

@@ -46,7 +46,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * the owner.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.0M13
  */
 @Component
 @Named("phenotips-patient-owner-updater")
