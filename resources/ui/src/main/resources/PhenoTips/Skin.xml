@@ -291,10 +291,16 @@
   white-space: nowrap;
   width: auto;
 }
+#phenotips-globalTools input[type="submit"] {
+  display: none
+}
 #phenotips-globalTools .search .icon-search, #phenotips-globalTools .search .fa-search {
   color: $theme.menuLinkColor;
   display: inline-block;
   margin-right: 5px;
+}
+#phenotips-globalTools .all :hover {
+    text-decoration: none;
 }
 
 .bottombuttons {
