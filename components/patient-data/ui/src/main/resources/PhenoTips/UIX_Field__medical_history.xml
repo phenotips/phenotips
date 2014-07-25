@@ -22,7 +22,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>UIX_Field__medical_developmental_history</name>
+  <name>UIX_Field__medical_history</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -41,7 +41,7 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX_Field__medical_developmental_history</name>
+    <name>PhenoTips.UIX_Field__medical_history</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>374f7214-6345-4693-8fa9-d18da0e95840</guid>
@@ -113,21 +113,21 @@
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#__displayIfNotEmpty('medical_developmental_history')
+#__displayIfNotEmpty('medical_history')
 {{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>org.phenotips.patientSheet.section.medical-history</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.medical_developmental_history</name>
+      <name>org.phenotips.patientSheet.field.medical_history</name>
     </property>
     <property>
       <parameters>title=Medical and developmental history
 enabled=true
 required=
 order=1
-fields=medical_developmental_history</parameters>
+fields=medical_history</parameters>
     </property>
     <property>
       <scope>wiki</scope>

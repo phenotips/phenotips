@@ -22,7 +22,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>UIX_Field__comments</name>
+  <name>UIX_Field__diagnosis_notes</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -41,7 +41,7 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX_Field__comments</name>
+    <name>PhenoTips.UIX_Field__diagnosis_notes</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>109906e7-a5b1-4bf2-9443-4a38f89b1c40</guid>
@@ -113,21 +113,21 @@
       <content>{{include document="PhenoTips.PatientSheetMacros" /}}
 
 {{velocity}}
-#__displayIfNotEmpty('comments')
+#__displayIfNotEmpty('diagnosis_notes')
 {{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>org.phenotips.patientSheet.section.diagnosis-info</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.comments</name>
+      <name>org.phenotips.patientSheet.field.diagnosis_notes</name>
     </property>
     <property>
       <parameters>title=Additional comments
 enabled=true
 required=
 order=2
-fields=comments
+fields=diagnosis_notes
 contains_PII=true</parameters>
     </property>
     <property>
