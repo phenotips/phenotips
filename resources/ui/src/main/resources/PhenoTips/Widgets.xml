@@ -2995,27 +2995,42 @@ console.log(categories);
   options : {},
   initialize : function (element) {
     this.element = element;
-    this.dropdown = new Element('div', {'class' : 'dropdown'});
+    this.hasForceOpen = false;
+    var existingDropdown = element.next(".dropdown")
+    if (existingDropdown) {
+      this.contentContainer = null;
+      this.dropdown = existingDropdown;
+      this.hasForceOpen = true;
+    } else {
+      this.dropdown = new Element('div', {'class' : 'dropdown'});
 
-    this.contentContainer = new Element('div');
-    this.dropdown.update(this.contentContainer);
-
+      this.contentContainer = new Element('div');
+      this.dropdown.update(this.contentContainer);
+    }
     //var closeButton = new Element('div', {'class': 'close', 'title': 'Close'}).update("&amp;#215;");
     //closeButton.observe("click", this.close.bindAsEventListener(this));
     //this.dropdown.insert({top: closeButton});
   },
   setContent : function(content) {
-    this.contentContainer.update(content);
+    this.contentContainer != null ? this.contentContainer.update(content) : null;
   },
-  show : function () {
+  show : function (force) {
+    if (force &amp;&amp; !this.hasForceOpen) {
+      return false;
+    }
     if (this.dropdown.hasClassName('invisible')) {
       this.dropdown.removeClassName('invisible');
     } else  {
       this.element.insert({after : this.dropdown});
     }
+    return true;
   },
-  close : function () {
+  close : function (force) {
+    if (force &amp;&amp; !this.hasForceOpen) {
+      return false;
+    }
     this.dropdown.addClassName('invisible');
+    return true;
     //this.dropdown.remove();
   }
   });

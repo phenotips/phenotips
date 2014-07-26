@@ -56,6 +56,8 @@ public class PropertyDisplayer
 
     private static final String ITEM_TYPE_SUBSECTION = "subsection";
 
+    private static final String ITEM_TYPE_CONDITIONAL_SUBSECTION = "conditionalSubsection";
+
     private static final String ITEM_TYPE_FIELD = "field";
 
     private static final String INDEXED_CATEGORY_KEY = "term_category";
@@ -222,8 +224,18 @@ public class PropertyDisplayer
 
     private boolean isSubsection(Map<String, ?> item)
     {
-        return ITEM_TYPE_SUBSECTION.equals(item.get(TYPE_KEY)) && String.class.isInstance(item.get(TITLE_KEY))
-            && Collection.class.isInstance(item.get(DATA_KEY));
+        return (ITEM_TYPE_SUBSECTION.equals(item.get(TYPE_KEY)) || ITEM_TYPE_CONDITIONAL_SUBSECTION.equals(item.get(TYPE_KEY)))
+            && String.class.isInstance(item.get(TITLE_KEY)) && Collection.class.isInstance(item.get(DATA_KEY));
+    }
+
+    /**
+     * This function is meant to be used on sections that are already know to be subsections.
+     * @param item the configuration object of the subsection
+     * @return true if the subsection is conditional, false otherwise
+     */
+    private boolean isConditionalSubsection(Map<String, ?> item)
+    {
+        return ITEM_TYPE_CONDITIONAL_SUBSECTION.equals(item.get(TYPE_KEY));
     }
 
     private boolean isField(Map<String, ?> item)
@@ -251,7 +263,16 @@ public class PropertyDisplayer
         if (type == null) {
             type = "";
         }
-        FormGroup subsection = new FormSubsection(title, type);
+        FormGroup subsection;
+        if (isConditionalSubsection(subsectionTemplate)) {
+            String id = (String) subsectionTemplate.get(ID_KEY);
+            boolean yesSelected = customYesSelected.remove(id);
+            boolean noSelected = customNoSelected.remove(id);
+            FormElement titleYesNoPicker = generateField(id, title, true, yesSelected, noSelected, true);
+            subsection = new FormConditionalSubsection(title, type, titleYesNoPicker, yesSelected);
+        } else {
+            subsection = new FormSubsection(title, type);
+        }
         generateData(subsection, subsectionTemplate, customYesSelected, customNoSelected);
         return subsection;
     }
@@ -280,11 +301,23 @@ public class PropertyDisplayer
 
     }
 
+
     private FormElement generateField(String id, String title, boolean expandable, boolean yesSelected,
         boolean noSelected)
     {
+        return generateField(id, title, expandable, yesSelected, noSelected, false);
+    }
+
+    private FormElement generateField(String id, String title, boolean yesSelected, boolean noSelected)
+    {
+        return generateField(id, title, hasDescendantsInOntology(id), yesSelected, noSelected);
+    }
+
+    private FormElement generateField(String id, String title, boolean expandable, boolean yesSelected,
+        boolean noSelected, boolean forceHint)
+    {
         String hint = getLabelFromOntology(id);
-        if (id.equals(hint) && title != null) {
+        if (forceHint || (id.equals(hint) && title != null)) {
             hint = title;
         }
         String metadata = "";
@@ -296,11 +329,6 @@ public class PropertyDisplayer
         }
         return new FormField(id, StringUtils.defaultIfEmpty(title, hint), hint, StringUtils.defaultString(metadata),
             expandable, yesSelected, noSelected);
-    }
-
-    private FormElement generateField(String id, String title, boolean yesSelected, boolean noSelected)
-    {
-        return generateField(id, title, hasDescendantsInOntology(id), yesSelected, noSelected);
     }
 
     private List<String> assignCustomFields(FormSection section, Map<String, List<String>> customCategories)

@@ -1145,7 +1145,7 @@ document.observe('xwiki:dom:loaded', function() {
               if (!doExpand) {
                 source._ontologyBrowser.hide();
               }
-              source._dropDown.element.insert(source._dropDown.dropdown.down('.tooltip'));
+              //source._dropDown.element.insert(source._dropDown.dropdown.down('.tooltip'));
             }
 
             if (item._trigger._root.hasClassName('dropdown-root')) {
