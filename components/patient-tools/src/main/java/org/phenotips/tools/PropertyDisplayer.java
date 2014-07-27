@@ -224,8 +224,10 @@ public class PropertyDisplayer
 
     private boolean isSubsection(Map<String, ?> item)
     {
-        return (ITEM_TYPE_SUBSECTION.equals(item.get(TYPE_KEY)) || ITEM_TYPE_CONDITIONAL_SUBSECTION.equals(item.get(TYPE_KEY)))
-            && String.class.isInstance(item.get(TITLE_KEY)) && Collection.class.isInstance(item.get(DATA_KEY));
+        return (ITEM_TYPE_SUBSECTION.equals(item.get(TYPE_KEY))
+            || ITEM_TYPE_CONDITIONAL_SUBSECTION.equals(item.get(TYPE_KEY)))
+            && (String.class.isInstance(item.get(TITLE_KEY)) || String.class.isInstance(item.get(ID_KEY)))
+            && Collection.class.isInstance(item.get(DATA_KEY));
     }
 
     /**
@@ -268,7 +270,7 @@ public class PropertyDisplayer
             String id = (String) subsectionTemplate.get(ID_KEY);
             boolean yesSelected = customYesSelected.remove(id);
             boolean noSelected = customNoSelected.remove(id);
-            FormElement titleYesNoPicker = generateField(id, title, true, yesSelected, noSelected, true);
+            FormElement titleYesNoPicker = generateField(id, title, true, yesSelected, noSelected);
             subsection = new FormConditionalSubsection(title, type, titleYesNoPicker, yesSelected);
         } else {
             subsection = new FormSubsection(title, type);
@@ -301,23 +303,16 @@ public class PropertyDisplayer
 
     }
 
-
-    private FormElement generateField(String id, String title, boolean expandable, boolean yesSelected,
-        boolean noSelected)
-    {
-        return generateField(id, title, expandable, yesSelected, noSelected, false);
-    }
-
     private FormElement generateField(String id, String title, boolean yesSelected, boolean noSelected)
     {
         return generateField(id, title, hasDescendantsInOntology(id), yesSelected, noSelected);
     }
 
     private FormElement generateField(String id, String title, boolean expandable, boolean yesSelected,
-        boolean noSelected, boolean forceHint)
+        boolean noSelected)
     {
         String hint = getLabelFromOntology(id);
-        if (forceHint || (id.equals(hint) && title != null)) {
+        if (id.equals(hint) && title != null) {
             hint = title;
         }
         String metadata = "";
