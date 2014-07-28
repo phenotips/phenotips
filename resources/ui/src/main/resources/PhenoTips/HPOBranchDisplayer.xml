@@ -76,7 +76,8 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 ##
 ##
 #macro (_displayChildren $rootId)
-  #set($childrenList = $services.ontologies.hpo.search({'is_a': $rootId}))
+  #set ($term = $services.ontologies.resolveTerm($rootId))
+  #set($childrenList = $services.ontologies.hpo.search({'is_a': $term.id}))
   #if ($childrenList.size() &gt; 0)
   &lt;ul&gt;
   #if ($firstLevel)&lt;li class="hpo-unknown"&gt;#_displayItem('', 'Unknown')&lt;/li&gt;#set($firstLevel = false)#end
