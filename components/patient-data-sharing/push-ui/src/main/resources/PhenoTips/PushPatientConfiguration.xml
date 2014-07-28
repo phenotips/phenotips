@@ -60,15 +60,6 @@ $xwiki.ssx.use($displayDocumentName)##
   #set ($discard = $options.put('mode', 'edit'))
   #__extradata_displayLastEntry($request.dataClassName $options)
 #else
-{{warning}}In order to be able to push patients, you must obtain a valid **authentication token** from the administrators of the remote server.{{/warning}}
-
-{{info}}To obtain such a token from [[**PhenomeCentral**&gt;&gt;https://phenomecentral.org/||target="_blank"]], please send an email to ${escapetool.h}${escapetool.h}support@phenomecentral.org${escapetool.h}${escapetool.h} with the following information:
-* Name of your institution
-* A contact email address (institution email address preferred)
-* A description of the type of cases you will be contributing to PhenomeCentral
-* The public IP from which requests from your server will be sent
-{{/info}}
-
 {{html clean="false"}}
 &lt;form action="${preferencesDoc.getURL('save')}" method="post"&gt;
 &lt;div class="hidden"&gt;

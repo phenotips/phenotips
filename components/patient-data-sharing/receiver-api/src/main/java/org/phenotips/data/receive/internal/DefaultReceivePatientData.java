@@ -54,7 +54,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
@@ -76,15 +75,15 @@ import net.sf.json.JSONObject;
 @Singleton
 public class DefaultReceivePatientData implements ReceivePatientData
 {
+    private final static int DEFAULT_USER_TOKEN_LIFETIME = 7;
+
+    private final static boolean DEFAULT_USER_TOKENS_ENABLED = true;
+
     private final static String SERVER_CONFIG_IP_PROPERTY_NAME = "ip";
 
     private final static String SERVER_CONFIG_USE_TOKEN_PROPERTY_NAME = "user_tokens";
 
     private final static String SERVER_CONFIG_SERVER_NAME_PROPERTY_NAME = "name";
-
-    private final static String SERVER_CONFIG_TOKEN_PROPERTY_NAME = "token";
-
-    private final static String SERVER_CONFIG_UPDATES_ENABLED_PROPERTY_NAME = "allow_updates";
 
     private final static String SERVER_CONFIG_USER_TOKEN_EXPIRE_PROPERTY_NAME = "user_token_life_in_days";
 
@@ -137,30 +136,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
     @Inject
     private PermissionsManager permisionManager;
-
-    @Override
-    public boolean isServerTrusted()
-    {
-        XWikiContext context = getXContext();
-
-        BaseObject serverConfig = getSourceServerConfiguration(context.getRequest().getRemoteAddr(), context);
-        if (serverConfig == null) {
-            this.logger.error("Connection from an unknown server", context.getRequest().getRemoteAddr());
-            return false;
-        }
-
-        String token = context.getRequest().getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_SERVER_TOKEN);
-
-        String expected = serverConfig.getStringValue(SERVER_CONFIG_TOKEN_PROPERTY_NAME);
-
-        return StringUtils.equals(expected, token);
-    }
-
-    @Override
-    public JSONObject untrustedServerResponse()
-    {
-        return generateFailedLoginResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_UNTRUSTEDSERVER);
-    }
 
     @Override
     public JSONObject unsupportedeActionResponse()
@@ -337,8 +312,28 @@ public class DefaultReceivePatientData implements ReceivePatientData
         return TokenStatus.VALID;
     }
 
+    protected String getRemoteServerName(BaseObject serverConfig, XWikiRequest request)
+    {
+        if (serverConfig == null) {
+            return request.getRemoteAddr();  // default for non-configured servers
+        }
+        return serverConfig.getStringValue(SERVER_CONFIG_SERVER_NAME_PROPERTY_NAME);
+    }
+
+    protected long getUserTokenLifetime(BaseObject serverConfig)
+    {
+        if (serverConfig == null) {
+            return DEFAULT_USER_TOKEN_LIFETIME;  // default for non-configured servers
+        }
+        return serverConfig.getLongValue(SERVER_CONFIG_USER_TOKEN_EXPIRE_PROPERTY_NAME);
+    }
+
     protected boolean userTokensEnabled(BaseObject serverConfig)
     {
+        // if no specific configuratio nis given for the push server => use default: allow user tokens
+        if (serverConfig == null) {
+            return DEFAULT_USER_TOKENS_ENABLED;
+        }
         return (serverConfig.getIntValue(SERVER_CONFIG_USE_TOKEN_PROPERTY_NAME) == 1);
     }
 
@@ -354,8 +349,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
     protected JSONObject validateLogin(XWikiRequest request, XWikiContext context)
     {
         try {
-            BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context);
-
             String userName = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME);
             String token = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USER_TOKEN);
 
@@ -370,13 +363,15 @@ public class DefaultReceivePatientData implements ReceivePatientData
                     return generateFailedCredentialsResponse();
                 }
             } else {
+                BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context);
+
                 if (!userTokensEnabled(serverConfig)) {
                     this.logger.warn("user token provided by [{}] but tokens are disabled", userName);
                     return generateFailedCredentialsResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_NOUSERTOKENS);
                 }
 
-                String serverName = serverConfig.getStringValue(SERVER_CONFIG_SERVER_NAME_PROPERTY_NAME);
-                long tokenLifeTime = serverConfig.getLongValue(SERVER_CONFIG_USER_TOKEN_EXPIRE_PROPERTY_NAME);
+                String serverName  = getRemoteServerName(serverConfig, request);
+                long tokenLifeTime = getUserTokenLifetime(serverConfig);
 
                 TokenStatus tokenStatus = checkUserToken(userName, serverName, token, tokenLifeTime);
 
@@ -430,10 +425,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
             if (guid != null) {
                 affectedPatient = getPatientByGUID(guid);
-
-                if (!updatesByGUIDEnabled(request.getRemoteAddr(), context)) {
-                    return generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_UPDATESDISABLED);
-                }
                 if (affectedPatient == null) {
                     return generateFailedActionResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_INCORRECTGUID);
                 }
@@ -476,8 +467,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
             // store separately from the patient object
             BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context);
-            String sourceServerName = serverConfig.getStringValue(SERVER_CONFIG_SERVER_NAME_PROPERTY_NAME);
-            String patientGUID = getPatientGUID(affectedPatient);
+            String sourceServerName = getRemoteServerName(serverConfig, request);
+            String patientGUID      = getPatientGUID(affectedPatient);
             this.storageManager.storePatientSourceServerInfo(patientGUID, sourceServerName);
 
             return generateSuccessfulResponseWithPatientIDs(affectedPatient, context);
@@ -514,12 +505,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             JSONObject response = generateSuccessfulResponse();
             response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_USERGROUPS, groupList);
             response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_ACCEPTEDFIELDS, acceptedFields);
-
-            if (updatesByGUIDEnabled(request.getRemoteAddr(), context)) {
-                response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_UPDATESENABLED, true);
-            } else {
-                response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_UPDATESENABLED, false);
-            }
+            response.element(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_UPDATESENABLED, true);
 
             BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context); // TODO: make nice
             if (this.userTokensEnabled(serverConfig)) {
@@ -531,7 +517,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
                     // (and thus keep pushing the expire date)
                 }
 
-                String serverName = serverConfig.getStringValue(SERVER_CONFIG_SERVER_NAME_PROPERTY_NAME);
+                String serverName = getRemoteServerName(serverConfig, request);
                 this.logger.warn("Remote server name: [{}]", serverName);
 
                 this.storageManager.storeLocalLoginToken(userName, serverName, token);
@@ -620,17 +606,6 @@ public class DefaultReceivePatientData implements ReceivePatientData
         return true;
     }
 
-    private boolean updatesByGUIDEnabled(String serverIP, XWikiContext context)
-    {
-        BaseObject serverConfig = getSourceServerConfiguration(serverIP, context);
-
-        if (serverConfig.getIntValue(SERVER_CONFIG_UPDATES_ENABLED_PROPERTY_NAME) == 1) {
-            return true;
-        }
-
-        return false;
-    }
-
     /**
      * Helper method for obtaining a valid xcontext from the execution context.
      *
@@ -666,7 +641,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
             return prefsDoc.getXObject(new DocumentReference(context.getDatabase(), Constants.CODE_SPACE,
                 "ReceivePatientServer"), SERVER_CONFIG_IP_PROPERTY_NAME, domainName);
         } catch (Exception ex) {
-            this.logger.error("Failed to get server info: [{}] {}", ex.getMessage(), ex);
+            this.logger.warn("Failed to get server info: [{}] {}", ex.getMessage(), ex);
             return null;
         }
     }

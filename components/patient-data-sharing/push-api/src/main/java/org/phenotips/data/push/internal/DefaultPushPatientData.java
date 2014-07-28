@@ -72,9 +72,6 @@ public class DefaultPushPatientData implements PushPatientData
     /** Server configuration Description property name within the PushPatientServer class. */
     public static final String PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME = "description";
 
-    /** Server configuration URL property name within the PushPatientServer class. */
-    public static final String PUSH_SERVER_CONFIG_TOKEN_PROPERTY_NAME = "token";
-
     /** Destination page. */
     private static final String PATIENT_DATA_SHARING_PAGE = "/bin/receivePatientData";
 
@@ -129,20 +126,6 @@ public class DefaultPushPatientData implements PushPatientData
         return null;
     }
 
-    /**
-     * Return the token given for the specified remote PhenoTips instance.
-     *
-     * @param serverConfiguration the XObject holding the remote server configuration
-     * @return the token, as a free-form string of characters
-     */
-    private String getServerToken(BaseObject serverConfiguration)
-    {
-        if (serverConfiguration != null) {
-            return serverConfiguration.getStringValue(PUSH_SERVER_CONFIG_TOKEN_PROPERTY_NAME);
-        }
-        return null;
-    }
-
     private PostMethod generatePostMethod(String remoteServerIdentifier, String actionName,
         String userName, String password, String userToken)
     {
@@ -159,7 +142,6 @@ public class DefaultPushPatientData implements PushPatientData
 
         method.addParameter(XWIKI_RAW_OUTPUT_KEY, XWIKI_RAW_OUTPUT_VALUE);
         method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER, ShareProtocol.POST_PROTOCOL_VERSION);
-        method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_SERVER_TOKEN, getServerToken(serverConfiguration));
         method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_ACTION, actionName);
 
         method.addParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME, userName);

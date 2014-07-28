@@ -36,15 +36,6 @@ import net.sf.json.JSONObject;
 public interface ReceivePatientData
 {
     /**
-     * Check that the server token received in the request is valid. The expected token is configured per-server in the
-     * Administration->Receive patient information.
-     *
-     * @return {@code true} if a token parameter is present in the request, and it's value matches the configuration for
-     *         the pushing server.
-     */
-    boolean isServerTrusted();
-
-    /**
      * Validates the username and credentials (password or user_token) given in the request, and iff credentials are
      * valid, returns the list of Phenotips patient fields accepted in push requests by the server and the list of local
      * Phenotips groups that the given user is a member of.<br>
@@ -126,8 +117,6 @@ public interface ReceivePatientData
      *  "patient_url": {@code String}, the URL of the Phenotips patient object with the given GUID
      */
     JSONObject getPatientURL();
-
-    JSONObject untrustedServerResponse();
 
     JSONObject unsupportedeActionResponse();
 }
