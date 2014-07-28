@@ -43,12 +43,12 @@ public class FormConditionalSubsection extends FormGroup
     public String display(DisplayMode mode, String[] fieldNames)
     {
         String displayedElements = super.display(mode, fieldNames);
-        if (StringUtils.isBlank(displayedElements) && !selected) {
+        if (StringUtils.isBlank(displayedElements) && !this.selected) {
             return "";
         }
         if (DisplayMode.Edit.equals(mode)) {
             return "<label class='section'>"
-                + titleYesNoPicker.display(mode, fieldNames)
+                + this.titleYesNoPicker.display(mode, fieldNames)
                 + "<div class='dropdown invisible " + this.type + "'><div>"
                 + displayedElements + "</div></div></label>";
         } else {

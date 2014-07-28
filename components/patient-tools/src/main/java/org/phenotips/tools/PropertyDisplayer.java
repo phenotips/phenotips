@@ -232,6 +232,7 @@ public class PropertyDisplayer
 
     /**
      * This function is meant to be used on sections that are already know to be subsections.
+     *
      * @param item the configuration object of the subsection
      * @return true if the subsection is conditional, false otherwise
      */
