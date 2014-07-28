@@ -322,6 +322,22 @@ ${newline}##
               #if ("$!{paceMeta}" != '')
                 ; ${paceMeta}##
               #end
+              #set ($severityMeta = $meta.getProperty('severity').value)
+              #if ("$!{severityMeta}" != '')
+                ; ${severityMeta}##
+              #end
+              #set ($temporalMeta = $meta.getProperty('temporal_pattern').value)
+              #if ("$!{temporalMeta}" != '')
+                ; ${temporalMeta}##
+              #end
+              #set ($spatialMeta = $meta.getProperty('spatial_pattern').value)
+              #if ("$!{spatialMeta}" != '')
+                ; ${spatialMeta}##
+              #end
+              #set ($lateralityMeta = $meta.getProperty('laterality').value)
+              #if ("$!{lateralityMeta}" != '')
+                ; ${lateralityMeta}##
+              #end
             #end
           #end
           #if ($foreach.hasNext)
@@ -350,6 +366,22 @@ ${newline}##
               #set ($paceMeta = $meta.getProperty('pace_of_progression').value)
               #if ("$!{paceMeta}" != '')
                 ; ${services.ontologies.resolveTerm($paceMeta).name}##
+              #end
+              #set ($severityMeta = $meta.getProperty('severity').value)
+              #if ("$!{severityMeta}" != '')
+                ; ${services.ontologies.resolveTerm($severityMeta).name}##
+              #end
+              #set ($temporalMeta = $meta.getProperty('temporal_pattern').value)
+              #if ("$!{temporalMeta}" != '')
+                ; ${services.ontologies.resolveTerm($temporalMeta).name}##
+              #end
+              #set ($spatialMeta = $meta.getProperty('spatial_pattern').value)
+              #if ("$!{spatialMeta}" != '')
+                ; ${services.ontologies.resolveTerm($spatialMeta).name}##
+              #end
+              #set ($lateralityMeta = $meta.getProperty('laterality').value)
+              #if ("$!{lateralityMeta}" != '')
+                ; ${services.ontologies.resolveTerm($lateralityMeta).name}##
               #end
             #end
           #else

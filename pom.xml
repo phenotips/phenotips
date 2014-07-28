@@ -308,6 +308,11 @@
               <differenceType>8001</differenceType>
               <className>**/data/SimpleNamedData</className>
             </difference>
+            <difference>
+              <differenceType>6001</differenceType>
+              <className>**/data/FeatureMetadatum$Type</className>
+              <field>SPEED_OF_ONSET</field>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

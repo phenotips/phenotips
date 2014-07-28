@@ -203,8 +203,8 @@
 ##
 #macro (__phenotypeMeta_displayEntry $targetObj)
     #set($dataClass = $targetObj.xWikiClass)
-    #set($enabledProperties = ['age_of_onset', 'pace_of_progression', 'suspected_mode_of_inheritance', 'comments', 'supporting_images', 'supporting_documents'])
-    #set($collapsibleProperties = ['age_of_onset', 'pace_of_progression', 'suspected_mode_of_inheritance'])
+    #set($enabledProperties = ['age_of_onset', 'pace_of_progression', 'severity', 'temporal_pattern', 'spatial_pattern', 'laterality', 'comments', 'supporting_images', 'supporting_documents'])
+    #set($collapsibleProperties = ['age_of_onset', 'pace_of_progression', 'severity', 'temporal_pattern', 'spatial_pattern', 'laterality'])
     #set($targetId = "phenotypeMeta__$!{class.name}_$!{obj.number}_$!{targetObj.getProperty('target_property_name').value}__$!{targetObj.getProperty('target_property_value').value}")
     {{html wiki="true" clean="false"}}##
     {{html wiki="false" clean="false"}}&lt;dl id="$targetId"&gt;{{/html}}##

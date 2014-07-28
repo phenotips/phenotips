@@ -48,11 +48,17 @@ public interface FeatureMetadatum extends OntologyProperty
     enum Type
     {
         /** The age group in which disease manifestations appear. */
-        AGE_OF_ONSET("HP:0011007"),
-        /** The speed at which disease manifestations first develop. */
-        SPEED_OF_ONSET("HP:0011008"),
+        AGE_OF_ONSET("HP:0003674"),
         /** The speed at which disease manifestations develop in time. */
         PACE_OF_PROGRESSION("HP:0003679"),
+        /** The intensity or degree of a manifestation. */
+        SEVERITY("HP:0012824"),
+        /** The speed at which disease manifestations appear and develop. */
+        TEMPORAL_PATTERN("HP:0011008"),
+        /** The pattern by which a phenotype affects one or more regions of the body. */
+        SPATIAL_PATTERN("HP:0012836"),
+        /** The localization with respect to the side of the body of the specified phenotypic abnormality. */
+        LATERALITY("HP:0012831"),
         /** The pattern in which a particular genetic trait or disorder is passed from one generation to the next. */
         SUSPECTED_MODE_OF_INHERITANCE("HP:0000005");
 
