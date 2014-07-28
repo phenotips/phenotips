@@ -118,9 +118,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.phenotips</groupId>
-      <artifactId>phenotips-authorization</artifactId>
-      <version>${project.version}</version>
+    	<groupId>org.phenotips</groupId>
+    	<artifactId>phenotips-authorization</artifactId>
+    	<version>${project.version}</version>
     </dependency>
   </dependencies>
 

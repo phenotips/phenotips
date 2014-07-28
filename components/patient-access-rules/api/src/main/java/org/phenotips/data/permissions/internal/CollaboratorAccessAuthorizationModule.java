@@ -21,6 +21,7 @@ package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.PatientAccess;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.security.authorization.AuthorizationModule;
@@ -35,19 +36,18 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Implementation that allows all access to the owner of a patient.
+ * Implementation that allows access to a Collaborator based on the Access Level.
  *
  * @version $Id$
  * @since 1.0RC1
  */
 @Component
-@Named("owner-access")
+@Named("collaborator-access")
 @Singleton
-public class OwnerAccessAuthorizationModule implements AuthorizationModule
+public class CollaboratorAccessAuthorizationModule implements AuthorizationModule
 {
-    /**
-     * Checks to see if document is a patient (DocumentReference).
-     */
+
+    /** Checks to see if document is a patient (DocumentReference). */
     @Inject
     private PatientRepository patientRepository;
 
@@ -60,13 +60,14 @@ public class OwnerAccessAuthorizationModule implements AuthorizationModule
     @Override
     public int getPriority()
     {
-        return 400;
+        return 350;
     }
 
     @Override
     public Boolean hasAccess(User user, Right access, DocumentReference document)
     {
-        if (user == null || document == null) {
+        // Checks to see if the user, access or patient is null.
+        if (user == null || access == null || document == null) {
             return null;
         }
 
@@ -75,12 +76,16 @@ public class OwnerAccessAuthorizationModule implements AuthorizationModule
         if (patient == null) {
             return null;
         }
-        // This retrieves the access rules for the patient.
         PatientAccess patientAccess = this.permissionsManager.getPatientAccess(patient);
-        // If the target user is the owner, allow all access to patient.
-        if (patientAccess.isOwner(user.getProfileDocument())) {
+        // This retrieves the access level for the patient.
+        AccessLevel grantedAccess = patientAccess.getAccessLevel(user.getProfileDocument());
+        // This retrieves the access level for the collaborator.
+        AccessLevel requestedAccess = this.permissionsManager.resolveAccessLevel(access.getName());
+        // This grants access if nothing is null and the collaborator has the required access level.
+        if (grantedAccess != null && requestedAccess != null && grantedAccess.compareTo(requestedAccess) >= 0) {
             return true;
         }
         return null;
     }
+
 }
