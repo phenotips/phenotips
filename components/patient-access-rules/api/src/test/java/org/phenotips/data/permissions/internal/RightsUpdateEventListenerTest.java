@@ -57,15 +57,13 @@ public class RightsUpdateEventListenerTest
 {
     @Rule
     public final MockitoComponentMockingRule<EventListener> mocker =
-    new MockitoComponentMockingRule<EventListener>(RightsUpdateEventListener.class);
+        new MockitoComponentMockingRule<EventListener>(RightsUpdateEventListener.class);
 
     @Mock
     private Event event;
 
     @Mock
     private XWikiDocument doc;
-
-    private DocumentReference reference = new DocumentReference("x", "data", "P0000001");
 
     @Mock
     private XWikiContext context;
