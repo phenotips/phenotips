@@ -1054,10 +1054,12 @@
                                                                                            "Check if the given remote user has access rights to update the patient."));
                     } else
                     if (res.accessdeniedguid) {
-                        _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient."));
+                        _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient: access denied"));
                     } else
                     if (res.cantconnect) {
                       _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to connect to server", true));
+                    } else {
+                      _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient", true));
                     }
                 }
                 //_this._dialog.closeDialog();

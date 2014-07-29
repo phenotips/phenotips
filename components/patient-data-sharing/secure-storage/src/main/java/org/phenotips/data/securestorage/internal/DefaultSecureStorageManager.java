@@ -174,7 +174,9 @@ public class DefaultSecureStorageManager implements SecureStorageManager
 
         if (existing != null)
         {
-            this.logger.warn("DEBUG: remote server already defined");
+            if (!existing.getSourceServerName().equals(sourceServerName)) {
+                this.logger.warn("Multiple servers pushing the same patient: remote server is already defined as {} and is different from {}", existing.getSourceServerName(), sourceServerName);
+            }
         }
         else
         {
