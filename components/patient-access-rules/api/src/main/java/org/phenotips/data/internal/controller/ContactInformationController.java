@@ -123,6 +123,9 @@ public class ContactInformationController implements PatientDataController<Strin
             return;
         }
         PatientData<String> data = patient.getData(DATA_CONTACT);
+        if (data == null) {
+            return;
+        }
 
         Iterator<String> iterator = data.iterator();
         if (data == null || !data.isNamed() || !iterator.hasNext()) {
