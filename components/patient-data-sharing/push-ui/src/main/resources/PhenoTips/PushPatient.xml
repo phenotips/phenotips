@@ -144,6 +144,10 @@
       // ---------------------------------------------------------------------
       var _this = this;
 
+      this._observeSave = function() {
+          _this._launchUI();
+      }
+
       for (var server = 0; server &lt; pushTargets.length; server++) {
           var nextServer = pushTargets[server];
           var pushLauncher = nextServer.down('a');
@@ -165,9 +169,7 @@
 	                {
 	                  onYes : function() {
 	                    document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
-	                    document.observe('xwiki:document:saved', function () {
-	                      _this._launchUI();
-	                    });
+	                    document.observe('xwiki:document:saved', _this._observeSave);
 	                  },
 	                  onNo : function() {
 	                    _this._launchUI();
@@ -363,6 +365,8 @@
 
     _launchUI : function() {
       var _this = this;
+      document.stopObserving('xwiki:document:saved', _this._observeSave);
+
       if (this.__launchUIAjaxInProgress) { return; }
 
       // reset data about available push servers
