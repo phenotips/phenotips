@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -123,23 +124,23 @@ public class ContactInformationController implements PatientDataController<Strin
             return;
         }
         PatientData<String> data = patient.getData(DATA_CONTACT);
-        if (data == null) {
+        if (data == null || !data.isNamed()) {
             return;
         }
 
-        Iterator<String> iterator = data.iterator();
-        if (data == null || !data.isNamed() || !iterator.hasNext()) {
+        Iterator<Entry<String, String>> iterator = data.dictionaryIterator();
+        if (!iterator.hasNext()) {
             return;
         }
-        Iterator<String> keyIterator = data.keyIterator();
 
         JSONObject container = json.getJSONObject(DATA_CONTACT);
         if (container == null || container.isNullObject()) {
             json.put(DATA_CONTACT, new JSONObject());
             container = json.getJSONObject(DATA_CONTACT);
         }
-        while (keyIterator.hasNext()) {
-            container.put(keyIterator.next(), iterator.next());
+        while (iterator.hasNext()) {
+            Entry<String, String> item = iterator.next();
+            container.put(item.getKey(), item.getValue());
         }
     }
 
