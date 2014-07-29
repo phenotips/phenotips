@@ -168,7 +168,7 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
         this.present = (json.getString(OBSERVED_JSON_KEY_NAME).equals(JSON_PRESENTSTATUS_YES));
         this.type = json.getString(TYPE_JSON_KEY_NAME);
         this.propertyName = null;
-        this.notes = json.getString(NOTES_JSON_KEY_NAME);
+        this.notes = json.optString(NOTES_JSON_KEY_NAME);
         if (json.has("categories")) {
             List<String> categories = new ArrayList<String>();
             JSONArray categoriesList = json.getJSONArray("categories");

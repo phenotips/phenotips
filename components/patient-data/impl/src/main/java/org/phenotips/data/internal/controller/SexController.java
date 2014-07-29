@@ -111,9 +111,8 @@ public class SexController implements PatientDataController<String>
                 throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
 
-            String gender = patient.<ImmutablePair<String, String>>getData(DATA_NAME).get(0).getValue();
-
-            this.logger.warn("Saving gender value: [{}]", gender);
+            String gender = patient.<String>getData(DATA_NAME).getValue();
+            //this.logger.warn("Saving gender value: [{}]", gender);
 
             data.setStringValue(INTERNAL_PROPERTY_NAME, gender);
 
