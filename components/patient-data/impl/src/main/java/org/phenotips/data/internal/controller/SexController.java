@@ -35,7 +35,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
@@ -112,7 +111,6 @@ public class SexController implements PatientDataController<String>
             }
 
             String gender = patient.<String>getData(DATA_NAME).getValue();
-            //this.logger.warn("Saving gender value: [{}]", gender);
 
             data.setStringValue(INTERNAL_PROPERTY_NAME, gender);
 
