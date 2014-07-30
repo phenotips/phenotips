@@ -24,39 +24,88 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>patient-data</artifactId>
+    <artifactId>phenotips-navigation</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-data-ui</artifactId>
-  <name>PhenoTips - Patient data - Documents providing the patient class, sheet and display code</name>
+  <artifactId>phenotips-navigation-ui</artifactId>
+  <name>PhenoTips - Navigation - Documents providing the homepage and the All Data page</name>
   <packaging>xar</packaging>
 
   <properties>
     <!-- Don't run CLIRR here since there's no Java code. -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
     <!-- Name to display by the Extension Manager -->
-    <xwiki.extension.name>Core patient data and the patient record UI</xwiki.extension.name>
+    <xwiki.extension.name>PhenoTips general navigation pages</xwiki.extension.name>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>phenotips-navigation-ui</artifactId>
+      <artifactId>phenotips-skin-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontology-hpo-access-ui</artifactId>
+      <artifactId>application-configuration-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>patient-data-default-impl</artifactId>
+      <artifactId>application-configuration-api</artifactId>
       <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-search-ui</artifactId>
+      <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-macro-velocity</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-macro-include</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.rendering</groupId>
+      <artifactId>xwiki-rendering-macro-html</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-csrf</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-model</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-query-manager</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- Needed for translations -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-localization-macro</artifactId>
+      <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
   </dependencies>

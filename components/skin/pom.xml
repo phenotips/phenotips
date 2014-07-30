@@ -24,38 +24,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-parent</artifactId>
+    <artifactId>phenotips-components</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-components</artifactId>
+  <artifactId>phenotips-skin</artifactId>
   <packaging>pom</packaging>
-  <name>PhenoTips - Various Java components</name>
+  <name>PhenoTips - Skin</name>
 
   <modules>
-    <module>constants</module>
-    <module>component-registry</module>
-    <module>widgets</module>
-    <module>skin</module>
-    <module>navigation</module>
-    <module>export</module>
-    <module>obo2solr</module>
-    <module>solr-access-service</module>
-    <module>ontology-access</module>
-    <module>patient-update-listeners</module>
-    <module>patient-data</module>
-    <module>security</module>
-    <module>patient-access-rules</module>
-    <module>patient-data-sharing</module>
-    <module>patient-measurements</module>
-    <module>xwiki-platform-users</module>
-    <module>studies</module>
-    <module>users</module>
-    <module>application-configuration</module>
-    <module>patient-tools</module>
-    <module>ncbieutils-services</module>
-    <module>phenotype-mapping-service</module>
-    <module>specificity-meter</module>
-    <module>medsavant-client</module>
-    <module>integration</module>
+    <module>ui</module>
   </modules>
 </project>

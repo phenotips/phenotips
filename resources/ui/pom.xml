@@ -67,12 +67,6 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-search-ui</artifactId>
-      <version>${xwiki.version}</version>
-      <type>xar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-wikimacro-ui</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>
@@ -111,6 +105,37 @@
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-colorthemes-ui</artifactId>
       <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-widgets-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-skin-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-navigation-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-data-export-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ontology-hpo-access-ui</artifactId>
+      <version>${project.version}</version>
       <type>xar</type>
     </dependency>
     <dependency>
