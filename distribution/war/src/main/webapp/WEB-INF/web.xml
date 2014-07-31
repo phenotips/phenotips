@@ -26,8 +26,8 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
     version="2.4">
 
-  <display-name>XWiki</display-name>
-  <description>XWiki Application</description>
+  <display-name>PhenoTips</display-name>
+  <description>Application for collecting clinical findings observed in patients with possible genetic disorders</description>
 
   <!-- Main Restlet Application using Restlet's JAX-RS extension. -->
   <context-param>
