@@ -124,14 +124,14 @@
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.prenatal-info</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.none</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.patientSheet.field.prenatal_phenotype</name>
     </property>
     <property>
       <parameters>title=Prenatal and perinatal phenotypes
-enabled=true
+enabled=false
 required=
 order=4
 fields=prenatal_phenotype,negative_prenatal_phenotype</parameters>

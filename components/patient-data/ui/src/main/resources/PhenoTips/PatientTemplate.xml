@@ -293,7 +293,7 @@
         <cache>0</cache>
         <classname/>
         <customDisplay/>
-        <disabled>0</disabled>
+        <disabled>1</disabled>
         <displayType>checkbox</displayType>
         <idField/>
         <multiSelect>1</multiSelect>
@@ -343,7 +343,7 @@
         <cache>0</cache>
         <classname/>
         <customDisplay/>
-        <disabled>0</disabled>
+        <disabled>1</disabled>
         <displayType>checkbox</displayType>
         <idField/>
         <multiSelect>1</multiSelect>
@@ -755,7 +755,7 @@
         <cache>0</cache>
         <classname/>
         <customDisplay/>
-        <disabled>0</disabled>
+        <disabled>1</disabled>
         <displayType>select</displayType>
         <idField/>
         <multiSelect>1</multiSelect>
@@ -914,7 +914,7 @@
   {{include document="PhenoTips.PhenotypeDisplay" /}}
 #end
 {{/velocity}}</customDisplay>
-        <disabled>0</disabled>
+        <disabled>1</disabled>
         <displayType>select</displayType>
         <idField/>
         <multiSelect>1</multiSelect>
