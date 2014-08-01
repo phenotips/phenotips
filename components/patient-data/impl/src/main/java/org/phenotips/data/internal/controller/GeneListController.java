@@ -19,17 +19,21 @@
  */
 package org.phenotips.data.internal.controller;
 
-import org.phenotips.data.DictionaryPatientData;
+import org.phenotips.Constants;
 import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.EntityReference;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -41,14 +45,21 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 /**
  * Handles the patients genes.
  */
 @Component(roles = {PatientDataController.class})
 @Named("gene")
 @Singleton
-public class GeneController extends AbstractComplexController<PatientData<String>>
+public class GeneListController extends AbstractComplexController<Map<String, String>>
 {
+    /** The XClass used for storing gene data. */
+    private final EntityReference GENE_CLASS_REFERENCE = new EntityReference("InvestigationClass", EntityType.DOCUMENT,
+    Constants.CODE_SPACE_REFERENCE);
+
     @Override
     public String getName()
     {
@@ -80,32 +91,55 @@ public class GeneController extends AbstractComplexController<PatientData<String
     }
 
     @Override
-    public PatientData<PatientData<String>> load(Patient patient)
+    public PatientData<Map<String, String>> load(Patient patient)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
-            List<BaseObject> geneXWikiObjects = doc.getXObjects(Patient.GENE_CLASS_REFERENCE);
+            List<BaseObject> geneXWikiObjects = doc.getXObjects(GENE_CLASS_REFERENCE);
             if (geneXWikiObjects == null) {
                 throw new NullPointerException("The patient does not have any gene information");
             }
 
-            List<PatientData<String>> allGenes = new LinkedList<PatientData<String>>();
+            List<Map<String, String>> allGenes = new LinkedList<Map<String, String>>();
             for (BaseObject geneObject : geneXWikiObjects) {
-                Map<String, String> singleGene = new HashMap<String, String>();
+                Map<String, String> singleGene = new LinkedHashMap<String, String>();
                 for (String property : getProperties()) {
                     BaseProperty field = (BaseProperty) geneObject.getField(property);
                     if (field != null) {
                         singleGene.put(property, (String) field.getValue());
                     }
                 }
-                /* The DictionaryPatientData does not need a name, as it is used solely as a Map */
-                allGenes.add(new DictionaryPatientData<String>("", singleGene));
+                allGenes.add(singleGene);
             }
-            return new IndexedPatientData<PatientData<String>>(getName(), allGenes);
+            return new IndexedPatientData<Map<String, String>>(getName(), allGenes);
         } catch (Exception e) {
-            super.logger.error(
-                "Could not find requested document or some unforeseen error has occurred during controller loading");
+            //TODO. Log an error.
         }
         return null;
+    }
+
+    @Override
+    public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
+    {
+        //FIXME. selectedFieldNames have no effect.
+        PatientData<Map<String, String>> data = patient.getData(getName());
+        if (data == null) {
+            return;
+        }
+        Iterator<Map<String, String>> iterator = data.iterator();
+        if (iterator == null || !iterator.hasNext()) {
+            return;
+        }
+        JSONArray container = null;
+
+        while (iterator.hasNext()) {
+            Map<String, String> item = iterator.next();
+            if (container == null) {
+                // put() is placed here because we want to create the property iff at least one field is set/enabled
+                json.put(getJsonPropertyName(), new JSONArray());
+                container = json.getJSONArray(getJsonPropertyName());
+            }
+            container.add(item);
+        }
     }
 }

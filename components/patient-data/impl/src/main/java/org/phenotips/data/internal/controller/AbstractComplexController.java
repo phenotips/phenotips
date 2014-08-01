@@ -20,6 +20,7 @@
 package org.phenotips.data.internal.controller;
 
 import org.phenotips.data.DictionaryPatientData;
+import org.phenotips.data.OntologyProperty;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
@@ -28,8 +29,8 @@ import org.phenotips.data.internal.AbstractPhenoTipsOntologyProperty;
 import org.xwiki.bridge.DocumentAccessBridge;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,11 @@ import net.sf.json.JSONObject;
  * custom functions for dealing with conversion to booleans, and ontology codes to human readable labels.
  *
  * @version $Id$
+<<<<<<< HEAD
  * @since 1.0M10
+=======
+ * @since 1.0RC1
+>>>>>>> 0fcadcca564ebabf3ab0a4feae2e1258d1e9f08f
  */
 public abstract class AbstractComplexController<T> implements PatientDataController<T>
 {
@@ -61,7 +66,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
 
     /** Logging helper object. */
     @Inject
-    protected Logger logger;
+    private Logger logger;
 
     @Override
     public PatientData<T> load(Patient patient)
@@ -72,17 +77,18 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
-            Map<String, T> result = new HashMap<String, T>();
+            Map<String, T> result = new LinkedHashMap<String, T>();
             for (String propertyName : getProperties()) {
                 BaseProperty field = (BaseProperty) data.getField(propertyName);
                 if (field != null) {
                     Object propertyValue = field.getValue();
                     /* If the controller only works with codes, store the Ontology Instances rather than Strings */
                     if (getCodeFields().contains(propertyName) && isCodeFieldsOnly()) {
-                        List<org.phenotips.data.OntologyProperty> propertyValuesList =
-                            new LinkedList<org.phenotips.data.OntologyProperty>();
-                        for (Object id : (List) propertyValue) {
-                            propertyValuesList.add(new OntologyProperty((String) id));
+                        List<OntologyProperty> propertyValuesList = new LinkedList<OntologyProperty>();
+                        @SuppressWarnings("unchecked")
+                        List<String> terms = (List<String>) propertyValue;
+                        for (String termId : terms) {
+                            propertyValuesList.add(new QuickOntologyProperty(termId));
                         }
                         propertyValue = propertyValuesList;
                     }
@@ -101,6 +107,9 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
         PatientData<T> data = patient.getData(getName());
+        if (data == null) {
+            return;
+        }
         Iterator<Map.Entry<String, T>> iterator = data.dictionaryIterator();
         if (iterator == null || !iterator.hasNext()) {
             return;
@@ -121,11 +130,21 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
         }
     }
 
+    /** @return list of fields which should be resolved to booleans */
     protected abstract List<String> getBooleanFields();
 
+    /**
+     * @return list of fields which contain HPO codes, and therefore additional data can be obtained, such as human
+     * readable name
+     */
     protected abstract List<String> getCodeFields();
 
-    protected Boolean isCodeFieldsOnly()
+    /**
+     * In case all fields are code fields, then the controller can store data in memory as Ontology objects rather than
+     * strings.
+     * @return true if all fields contain HPO codes
+     */
+    protected boolean isCodeFieldsOnly()
     {
         return false;
     }
@@ -166,11 +185,11 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     {
         JSONArray labeledList = new JSONArray();
         for (T code : codes) {
-            OntologyProperty term;
-            if (code instanceof OntologyProperty) {
-                term = (OntologyProperty) code;
+            QuickOntologyProperty term;
+            if (code instanceof QuickOntologyProperty) {
+                term = (QuickOntologyProperty) code;
             } else {
-                term = new OntologyProperty(code.toString());
+                term = new QuickOntologyProperty(code.toString());
             }
             labeledList.add(term.toJSON());
         }
@@ -207,11 +226,11 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
  * org.phenotips.data.internal.AbstractPhenoTipsOntologyProperty} in a separate file, or create such class here. Given
  * the fact the the {@link org.phenotips.data.internal.AbstractPhenoTipsOntologyProperty} is abstract only by having a
  * protected constructor, which fully satisfies the needed functionality, it makes the most sense to put {@link
- * OntologyProperty} here.
+ * QuickOntologyProperty} here.
  */
-class OntologyProperty extends AbstractPhenoTipsOntologyProperty
+class QuickOntologyProperty extends AbstractPhenoTipsOntologyProperty
 {
-    public OntologyProperty(String id)
+    public QuickOntologyProperty(String id)
     {
         super(id);
     }

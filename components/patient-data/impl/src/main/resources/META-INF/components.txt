@@ -11,4 +11,4 @@ org.phenotips.data.internal.controller.PrenatalPerinatalHistoryController
 org.phenotips.data.internal.controller.PrenatalPhenotypeController
 org.phenotips.data.internal.controller.FamilyHistoryController
 org.phenotips.data.internal.controller.EthnicityController
-org.phenotips.data.internal.controller.GeneController
+org.phenotips.data.internal.controller.GeneListController
