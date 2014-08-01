@@ -20,31 +20,29 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.1">
+<xwikidoc>
   <web>PhenoTips</web>
-  <name>UIX_Field__measurements</name>
+  <name>UIX_Field__birth_measurements</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1401822214000</creationDate>
   <parent>PhenoTips.PatientSheet</parent>
+  <creator>xwiki:XWiki.Admin</creator>
   <author>xwiki:XWiki.Admin</author>
+  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822214000</date>
-  <contentUpdateDate>1401822214000</contentUpdateDate>
+  <creationDate>1385090754000</creationDate>
+  <date>1385135382000</date>
+  <contentUpdateDate>1385090754000</contentUpdateDate>
   <version>1.1</version>
-  <title>Measurements</title>
+  <title>Measurements at birth</title>
+  <defaultTemplate/>
+  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content/>
   <object>
-    <name>PhenoTips.UIX_Field__measurements</name>
-    <number>0</number>
-    <className>XWiki.UIExtensionClass</className>
-    <guid>0fbed218-0ed3-40b1-bd6c-678b864f31ae</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -109,56 +107,50 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </scope>
     </class>
+    <name>PhenoTips.UIX_Field__birth_measurements</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>dfbb2421-0169-4dd2-a942-1c5fc77c62f1</guid>
     <property>
-      <content>{{include document="PhenoTips.TabelarDataMacros" /}}
-
-{{velocity}}
-#set ($targetClassName = 'PhenoTips.MeasurementsClass')
-#if ($xcontext.action == 'edit')
-  $xwiki.ssx.use('XWiki.DateTimePicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
-  $xwiki.jsx.use('XWiki.DateTimePicker')##
-  #if ($config &amp;&amp; "$!{config.getProperty('enableImperialUnitSystem').value}" == '1')
-    #set ($measurementUnitInfo = "enable-unit-switch $!{config.getProperty('measurementUnitSystem').value}")
-  #else
-    #set ($measurementUnitInfo = '')
-  #end
-
-  #__extradata_displayTable($targetClassName, {'counter' : false, 'labels' : true, 'mode' : $xcontext.action, 'propertyName' : 'type', 'propertyValue' : 'postnatal', 'cssClass' : "measurements full $!{measurementUnitInfo}"})
-#elseif ($doc.getObject($targetClassName))
-  #set($dataClass = $xwiki.getDocument('PhenoTips.MeasurementsClass').xWikiClass)
-  #if ($dataClass)
-    #set($dataObjects = $doc.getObjects('PhenoTips.MeasurementsClass', 'type', 'postnatal'))
-    (% class="extradata-list" %)
-    #foreach ($o in $dataObjects)
-      #foreach($prop in $dataClass.properties)
-        #if ($prop.name == 'date' || $prop.name == 'age')
-          |= ${prop.prettyName}: |=(% colspan="2" %) $doc.display($prop.getName(), $o)
-        #elseif ($prop.name == 'type')
-          ## just ignore this one for now
-        #elseif (!$prop.name.endsWith('_evaluation') &amp;&amp; "$!o.getProperty($prop.getName()).value" != '')
-          |= ${prop.prettyName}: | $doc.display($prop.getName(), $o) | $!doc.display("${prop.getName()}_evaluation", $o)
-        #end
-      #end
-    #end## foreach object
-  #end## if dataclass
+      <content>{{velocity}}
+#set($targetClassName = 'PhenoTips.MeasurementsClass')
+#set($dataClass = $xwiki.getDocument($targetClassName).xWikiClass)
+#set($enabledProperties = ['weight', 'height', 'hc'])
+#if ($xcontext.action == 'edit' &amp;&amp; $config &amp;&amp; "$!{config.getProperty('enableImperialUnitSystem').value}" == '1')
+  #set ($measurementUnitInfo = "enable-unit-switch $!{config.getProperty('measurementUnitSystem').value}")
+#else
+  #set ($measurementUnitInfo = '')
 #end
+#if ($dataClass)
+  #set($o = $doc.getObject($targetClassName, "type", "birth"))
+  #if ($o)
+    ## In view mode, only display this table if it has at least one value entered
+    #if ($xcontext.action != 'edit' || "#foreach($p in $enabledProperties)$!{doc.display($p, $xcontext.action, $o)}#end" != '')
+    (% id="${targetClassName}-birth" class="extradata-list measurements short at-birth $!measurementUnitInfo" %)
+    | **Measurements at birth:** #foreach($prop in $dataClass.properties)#if ($enabledProperties.contains($prop.name))|(% class="$prop.name" %){{html clean="false" wiki="false"}}&lt;label class="" &gt;${prop.prettyName}&lt;/label&gt;{{/html}} $doc.display($prop.name, $xcontext.action, $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2') |(% class="${prop.name}_evaluation" %) $doc.display("${prop.name}_evaluation", $xcontext.action, $o).replaceAll('^(\{\{html clean="false" wiki="false"}})?&lt;p&gt;|&lt;/p&gt;(\{\{/html}})?$', '$1$2')##
+    #end#end## Foreach property
+    #if ($measurementUnitInfo != '')|(% class="unit-switch-container" %) #end##
+    #end## If show table
+  #end## If object
+#end## If dataClass
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.measurement-info</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.prenatal-info</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.measurements</name>
+      <name>org.phenotips.patientSheet.field.birth-measurements</name>
     </property>
     <property>
-      <parameters>title=Measurements
+      <parameters>title=Measurements at birth
 enabled=true
 required=
-order=2
+order=4
 fields=</parameters>
     </property>
     <property>
       <scope>wiki</scope>
     </property>
   </object>
+  <content/>
 </xwikidoc>

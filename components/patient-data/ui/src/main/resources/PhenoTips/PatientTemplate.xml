@@ -43,6 +43,914 @@
   <object>
     <name>PhenoTips.PatientTemplate</name>
     <number>0</number>
+    <className>PhenoTips.MeasurementsClass</className>
+    <guid>d42dabcb-f161-4ce8-b1e8-97821234d346</guid>
+    <class>
+      <name>PhenoTips.MeasurementsClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <age>
+        <customDisplay>{{velocity}}
+#if ("$!value" == '')
+  #set ($dValue = '-')
+#else
+  #set ($dValue = '')
+  #if ($value &gt;= 0)
+    #set ($y = $mathtool.idiv($value, 12))
+    #set ($m = $mathtool.mod($value, 12))
+  #end
+  #if ($y &gt; 0)
+    #set ($dValue = "${y}y")
+  #end
+  #if ($m &gt; 0)
+    #set ($dValue = "$!dValue ${m}m")
+  #end
+#end
+{{html wiki=false clean=false}}
+#if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+&lt;div class="$name displayed-value"&gt;$dValue.trim()&lt;/div&gt;
+{{/html}}
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>age</name>
+        <number>3</number>
+        <numberType>integer</numberType>
+        <prettyName>Age</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </age>
+      <armspan>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>armspan</name>
+        <number>40</number>
+        <numberType>float</numberType>
+        <prettyName>Arm span</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </armspan>
+      <armspan_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>armspan_evaluation</name>
+        <number>41</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('armspan').value)
+#set ($hValue = $object.getProperty('height').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '' || "$!hValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($dValue = $dValue - $hValue)
+  #set ($pValue = $services.measurements.armspan.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.armspan.valueToStandardDeviation($male, $age, $dValue)))
+##  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+  #set ($dValue = "~= Height#if ($dValue != 0)#if($dValue &gt;= 0) + #else - #end$mathtool.abs($mathtool.roundTo(2, $dValue)) cm#end")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </armspan_evaluation>
+      <bmi>
+        <customDisplay>{{velocity}}
+#if ($xcontext.action != 'edit' || $request.editor != 'object')
+  #set ($dValue = "$!{value}")
+  #if ($dValue == '')
+    #set ($dValue = '-')
+  #end
+  {{html wiki=false clean=false}}
+  #if ($xcontext.action == 'edit')&lt;input type="hidden" name="$prefix$name" value="$!value"/&gt;#end
+  &lt;div class="$name displayed-value"&gt;$dValue&lt;/div&gt;
+  {{/html}}
+#else{
+  {{html wiki=false clean=false}}&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!value"/&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>bmi</name>
+        <number>8</number>
+        <numberType>float</numberType>
+        <prettyName>BMI</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </bmi>
+      <bmi_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>bmi_evaluation</name>
+        <number>9</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($wValue = $object.getProperty('weight').value)
+#set ($hValue = $object.getProperty('height').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!wValue" == '' || "$!hValue" == '' || "$!wValue" == '0' || "$!hValue" == '0')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.bmi.valueToPercentile($male, $age, $wValue, $hValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.bmi.valueToStandardDeviation($male, $age, $wValue, $hValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </bmi_evaluation>
+      <date>
+        <customDisplay>{{velocity}}{{html wiki=false clean=false}}
+#set ($definedFormat = "$!object.xWikiClass.get($name).getProperty('dateFormat').value")
+#if ($xcontext.action == 'edit')
+&lt;input type="text" id="$prefix$name" title="$!definedFormat" name="$prefix$name" value="$!xwiki.formatDate($value, $definedFormat)" class="xwiki-date" alt="#formatdateISO($value)"/&gt;
+#else
+&lt;span class="date"&gt;$!xwiki.formatDate($!value, $definedFormat)&lt;/span&gt;
+#end
+{{/html}}{{/velocity}}</customDisplay>
+        <dateFormat>MM/dd/yyyy</dateFormat>
+        <disabled>0</disabled>
+        <emptyIsToday>1</emptyIsToday>
+        <name>date</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>Date</prettyName>
+        <size>20</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.DateClass</classType>
+      </date>
+      <ear>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>ear</name>
+        <number>20</number>
+        <numberType>float</numberType>
+        <prettyName>Left ear length</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </ear>
+      <ear_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>ear_evaluation</name>
+        <number>21</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('ear').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.ear.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.ear.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </ear_evaluation>
+      <ear_right>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>ear_right</name>
+        <number>28</number>
+        <numberType>float</numberType>
+        <prettyName>Right ear length</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </ear_right>
+      <ear_right_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>ear_right_evaluation</name>
+        <number>29</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('ear_right').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.ear.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.ear.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </ear_right_evaluation>
+      <foot>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>foot</name>
+        <number>26</number>
+        <numberType>float</numberType>
+        <prettyName>Left foot length</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </foot>
+      <foot_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>foot_evaluation</name>
+        <number>27</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('foot').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.foot.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.foot.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </foot_evaluation>
+      <foot_right>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>foot_right</name>
+        <number>34</number>
+        <numberType>float</numberType>
+        <prettyName>Right foot length</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </foot_right>
+      <foot_right_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>foot_right_evaluation</name>
+        <number>35</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('foot').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.foot.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.foot.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </foot_right_evaluation>
+      <hand>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>hand</name>
+        <number>22</number>
+        <numberType>float</numberType>
+        <prettyName>Left hand length</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </hand>
+      <hand_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>hand_evaluation</name>
+        <number>23</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('hand').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.hand.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.hand.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </hand_evaluation>
+      <hand_right>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>hand_right</name>
+        <number>30</number>
+        <numberType>float</numberType>
+        <prettyName>Right hand length</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </hand_right>
+      <hand_right_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>hand_right_evaluation</name>
+        <number>31</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('hand_right').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.hand.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.hand.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </hand_right_evaluation>
+      <hc>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>hc</name>
+        <number>10</number>
+        <numberType>float</numberType>
+        <prettyName>Head circumference</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </hc>
+      <hc_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>hc_evaluation</name>
+        <number>11</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('hc').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.hc.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.hc.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </hc_evaluation>
+      <height>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>height</name>
+        <number>6</number>
+        <numberType>float</numberType>
+        <prettyName>Height</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </height>
+      <height_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>height_evaluation</name>
+        <number>7</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('height').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.height.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.height.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </height_evaluation>
+      <icd>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>icd</name>
+        <number>14</number>
+        <numberType>float</numberType>
+        <prettyName>Inner canthal distance</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </icd>
+      <icd_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>icd_evaluation</name>
+        <number>15</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('icd').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.icd.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.icd.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </icd_evaluation>
+      <ipd>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>ipd</name>
+        <number>18</number>
+        <numberType>float</numberType>
+        <prettyName>Interpupilary distance</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </ipd>
+      <ipd_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>ipd_evaluation</name>
+        <number>19</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('ipd').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.ipd.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.ipd.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </ipd_evaluation>
+      <ocd>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>ocd</name>
+        <number>12</number>
+        <numberType>float</numberType>
+        <prettyName>Outer canthal distance</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </ocd>
+      <ocd_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>ocd_evaluation</name>
+        <number>13</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('ocd').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.ocd.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.ocd.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </ocd_evaluation>
+      <palm>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>palm</name>
+        <number>24</number>
+        <numberType>float</numberType>
+        <prettyName>Left palm length</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </palm>
+      <palm_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>palm_evaluation</name>
+        <number>25</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('palm').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.palm.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.palm.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </palm_evaluation>
+      <palm_right>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>palm_right</name>
+        <number>32</number>
+        <numberType>float</numberType>
+        <prettyName>Right palm length</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </palm_right>
+      <palm_right_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>palm_right_evaluation</name>
+        <number>33</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('palm_right').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.palm.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.palm.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </palm_right_evaluation>
+      <pfl>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>pfl</name>
+        <number>16</number>
+        <numberType>float</numberType>
+        <prettyName>Palpebral fissure length</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </pfl>
+      <pfl_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>pfl_evaluation</name>
+        <number>17</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('pfl').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.pfl.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.pfl.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </pfl_evaluation>
+      <philtrum>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>philtrum</name>
+        <number>36</number>
+        <numberType>float</numberType>
+        <prettyName>Philtrum length</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </philtrum>
+      <philtrum_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>philtrum_evaluation</name>
+        <number>37</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('philtrum').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.philtrum.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.philtrum.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </philtrum_evaluation>
+      <sitting>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') cm#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;cm&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>sitting</name>
+        <number>38</number>
+        <numberType>float</numberType>
+        <prettyName>Sitting height</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sitting>
+      <sitting_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sitting_evaluation</name>
+        <number>39</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('sitting').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.sitting.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.sitting.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </sitting_evaluation>
+      <type>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>type</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>birth=At birth|postnatal=Postnatal</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </type>
+      <weight>
+        <customDisplay>{{velocity}}
+#if ($type != 'edit')$!{mathtool.roundTo(2, $value)}#if ("$!{value}" != '') kg#end
+#else
+{{html clean="false"}}&lt;div class="metric"&gt;&lt;input type="text" id="$prefix$name" name="$prefix$name" value="$!mathtool.roundTo(2, $value)" size="6"/&gt;&lt;span class="unit"&gt;kg&lt;/span&gt;&lt;/div&gt;{{/html}}
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>weight</name>
+        <number>4</number>
+        <numberType>float</numberType>
+        <prettyName>Weight</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </weight>
+      <weight_evaluation>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>weight_evaluation</name>
+        <number>5</number>
+        <prettyName/>
+        <script>{{velocity}}
+#set ($dValue = $object.getProperty('weight').value)
+#set ($age = $object.getProperty('age').value)
+#set ($male = $doc.getObject('PhenoTips.PatientClass').getProperty('gender').value != 'F')
+#if ("$!dValue" == '')
+  #set ($dValue = '-')
+#else
+  #set ($pValue = $services.measurements.weight.valueToPercentile($male, $age, $dValue))
+  #set ($sdValue = $mathtool.roundTo(2, $services.measurements.weight.valueToStandardDeviation($male, $age, $dValue)))
+  #set ($dValue = "${pValue}#if($pValue%10==1)^^st^^#elseif($pValue%10==2)^^nd^^#elseif($pValue%10==3)^^rd^^#{else}^^th^^#end pctl (#if ($sdValue &gt;= 0)+#end${sdValue}SD~)")
+#end
+(% class="${name} displayed-value $!{services.measurements.getFuzzyValue($!sdValue)}" %)${dValue}(%%)
+{{/velocity}}</script>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </weight_evaluation>
+    </class>
+    <property>
+      <age>0</age>
+    </property>
+    <property>
+      <type>birth</type>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.PatientTemplate</name>
+    <number>0</number>
     <className>PhenoTips.PatientClass</className>
     <guid>a8a20625-bade-443d-bbd4-56dbdb830e1c</guid>
     <class>

@@ -1528,7 +1528,7 @@ document.observe('xwiki:dom:loaded', function() {
     _rowMapping : [
       {
         name : 'head',
-        values : ['date', 'age', 'actions']
+        values : ['date', 'age', 'type', 'actions']
       }, {
         name : 'general',
         values : ['weight', 'weight_evaluation', 'height', 'height_evaluation', 'bmi', 'bmi_evaluation']
