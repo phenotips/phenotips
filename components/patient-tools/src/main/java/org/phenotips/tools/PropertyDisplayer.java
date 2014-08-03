@@ -262,13 +262,16 @@ public class PropertyDisplayer
         List<String> customNoSelected)
     {
         String title = (String) subsectionTemplate.get(TITLE_KEY);
+        String id = (String) subsectionTemplate.get(ID_KEY);
+        if (StringUtils.isEmpty(title) && StringUtils.isNotEmpty(id)) {
+            title = getLabelFromOntology(id);
+        }
         String type = (String) subsectionTemplate.get(GROUP_TYPE_KEY);
         if (type == null) {
             type = "";
         }
         FormGroup subsection;
         if (isConditionalSubsection(subsectionTemplate)) {
-            String id = (String) subsectionTemplate.get(ID_KEY);
             boolean yesSelected = customYesSelected.remove(id);
             boolean noSelected = customNoSelected.remove(id);
             FormElement titleYesNoPicker = generateField(id, title, true, yesSelected, noSelected);
