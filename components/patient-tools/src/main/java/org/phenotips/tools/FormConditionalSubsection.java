@@ -47,10 +47,10 @@ public class FormConditionalSubsection extends FormGroup
             return "";
         }
         if (DisplayMode.Edit.equals(mode)) {
-            return "<label class='section'>"
+            return "<div class='section'>"
                 + this.titleYesNoPicker.display(mode, fieldNames)
                 + "<div class='dropdown invisible " + this.type + "'><div>"
-                + displayedElements + "</div></div></label>";
+                + displayedElements + "</div></div></div>";
         } else {
             return "<label class='section'>"
                 + XMLUtils.escapeElementContent(this.title)
