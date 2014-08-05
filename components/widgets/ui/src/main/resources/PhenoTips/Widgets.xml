@@ -3951,6 +3951,8 @@ document.observe("xwiki:dom:loaded", function() {
   widgets.HelpButton =  Class.create({
     initialize : function(icon) {
       this.icon = icon;
+      this.icon._information = this.icon.title;
+      this.icon.title = 'How fill in this information';
       this.icon.observe("click", this.toggleHelp.bindAsEventListener(this));
     },
     toggleHelp : function() {
@@ -3973,7 +3975,7 @@ document.observe("xwiki:dom:loaded", function() {
     },
     createHelpBox : function() {
       this.helpBox = new Element('div', {'class': 'hidden xTooltip'});
-      this.helpBox.update(this.icon.title);
+      this.helpBox.update(this.icon._information);
       var closeButton = new Element('span', {'class': 'hide-tool', 'title': 'Hide'});
       closeButton.update('×');
       closeButton.observe('click', this.hideHelp.bindAsEventListener(this));
