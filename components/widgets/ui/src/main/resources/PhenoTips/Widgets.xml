@@ -5387,8 +5387,9 @@ input.xwiki-free-multiselect-value {
 }
 .xTooltip .hide-tool {
   cursor: pointer;
-  float: right;
-  margin-top: -0.75em;
+  position: absolute;
+  right: 0.5em;
+  top: 0.2em;
 }</code>
     </property>
     <property>
