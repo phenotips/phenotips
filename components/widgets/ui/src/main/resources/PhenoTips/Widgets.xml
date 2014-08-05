@@ -3968,7 +3968,7 @@ document.observe("xwiki:dom:loaded", function() {
       if (!this.helpBox) {
         this.createHelpBox();
       }
-      $$('div.xTooltip:not(.hidden)').invoke('toggleClassName', 'hidden');
+      $$('div.xTooltip:not(.hidden)').invoke('addClassName', 'hidden');
       this.helpBox.removeClassName('hidden');
     },
     createHelpBox : function() {
