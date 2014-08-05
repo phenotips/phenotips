@@ -101,12 +101,6 @@
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-classloader-protocol-attachmentjar</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
     <!-- Extension Manager -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -201,8 +195,6 @@
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
-    <!-- Default Platform Macros we want available by default in XE.
-         Please keep them in alphabetical order -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-dashboard-macro</artifactId>
@@ -347,12 +339,6 @@
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-panels-api</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
     <!-- Activity Stream -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
@@ -377,13 +363,6 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-scheduler-api</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <!-- Tags -->
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-tag-api</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
@@ -542,42 +521,6 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-wiki-default</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wiki-script</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wiki-template-default</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wiki-template-script</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wiki-user-default</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wiki-user-script</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wiki-workspaces-migrator</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
@@ -790,8 +733,7 @@
   com.xpn.xwiki.plugin.scheduler.SchedulerPlugin,\
   com.xpn.xwiki.plugin.mailsender.MailSenderPlugin,\
   com.xpn.xwiki.plugin.activitystream.plugin.ActivityStreamPlugin, \
-  com.xpn.xwiki.plugin.watchlist.WatchListPlugin, \
-  com.xpn.xwiki.plugin.tag.TagPlugin</xwikiCfgPlugins>
+  com.xpn.xwiki.plugin.watchlist.WatchListPlugin</xwikiCfgPlugins>
                 <xwikiCfgVirtual>0</xwikiCfgVirtual>
                 <xwikiCfgVirtualUsepath>0</xwikiCfgVirtualUsepath>
                 <xwikiCfgEditCommentMandatory>0</xwikiCfgEditCommentMandatory>
