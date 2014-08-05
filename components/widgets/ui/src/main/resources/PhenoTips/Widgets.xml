@@ -5047,10 +5047,6 @@ div.resultContainer div.sourceContent.loading {
   font-size: .9em;
   width: 95%;
   z-index: 100;
-  opacity: .9;
-}
-.dropdown:hover {
-  opacity: 1;
 }
 .dropdown.emphasized-box {
   margin-left: -4px;
