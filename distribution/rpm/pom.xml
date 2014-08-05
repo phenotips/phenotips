@@ -204,7 +204,6 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
             <!-- Copy the main PhenoTips webapp -->
             <mapping>
               <directory>/var/lib/phenotips/webapp</directory>
-              <recurseDirectories>true</recurseDirectories>
               <sources>
                 <source>
                   <location>${ptwar.path}</location>
