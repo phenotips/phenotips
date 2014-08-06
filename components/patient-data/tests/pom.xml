@@ -29,7 +29,7 @@
   </parent>
   <artifactId>patient-data-tests</artifactId>
   <name>PhenoTips - Patient data - Functional Tests</name>
-  <packaging>jar</packaging>
+  <packaging>functional-tests</packaging>
   <description>Tests for the patient data</description>
   <properties>
     <xwikiCfgSuperadminPassword>pass</xwikiCfgSuperadminPassword>
@@ -70,19 +70,6 @@
             <include>**/AllTests.java</include>
           </includes>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.xwiki.platform</groupId>
-        <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
-        <version>${xwiki.version}</version>
-        <executions>
-          <execution>
-            <phase>generate-test-resources</phase>
-            <goals>
-              <goal>package</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
