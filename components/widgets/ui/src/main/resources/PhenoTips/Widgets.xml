@@ -3952,7 +3952,7 @@ document.observe("xwiki:dom:loaded", function() {
     initialize : function(icon) {
       this.icon = icon;
       this.icon._information = this.icon.title;
-      this.icon.title = 'How fill in this information';
+      this.icon.title = 'How to enter this information';
       this.icon.observe("click", this.toggleHelp.bindAsEventListener(this));
       this.hideAllHelpOnOutsideClick = this.hideAllHelpOnOutsideClick.bindAsEventListener(this);
     },
