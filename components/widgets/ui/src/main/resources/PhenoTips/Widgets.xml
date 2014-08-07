@@ -3954,12 +3954,27 @@ document.observe("xwiki:dom:loaded", function() {
       this.icon._information = this.icon.title;
       this.icon.title = 'How fill in this information';
       this.icon.observe("click", this.toggleHelp.bindAsEventListener(this));
+      this.hideAllHelpOnOutsideClick = this.hideAllHelpOnOutsideClick.bindAsEventListener(this);
     },
     toggleHelp : function() {
       if (!this.helpBox) {
         this.createHelpBox();
       }
+      this.hideAllHelp(':not(.hidden)');
       this.helpBox.toggleClassName('hidden');
+      if (! this.helpBox.hasClassName('hidden')) {
+        document.observe('click', this.hideAllHelpOnOutsideClick);
+      } else {
+        document.stopObserving('click', this.hideAllHelpOnOutsideClick);
+      }
+    },
+    hideAllHelp : function (exceptionSelector) {
+      $$('div.xTooltip' + (exceptionSelector || '')).invoke('addClassName', 'hidden');
+    },
+    hideAllHelpOnOutsideClick : function (event) {
+      if (!event.findElement('.xTooltip') && !event.findElement('.xHelpButton')) {
+        this.hideAllHelp();
+      }
     },
     hideHelp : function() {
       if (this.helpBox) {
