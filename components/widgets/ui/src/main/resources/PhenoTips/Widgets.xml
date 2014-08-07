@@ -3960,20 +3960,16 @@ document.observe("xwiki:dom:loaded", function() {
       if (!this.helpBox) {
         this.createHelpBox();
       }
-      this.hideAllHelp(':not(.hidden)');
+      $$('div.xTooltip:not(.hidden)').invoke('addClassName', 'hidden');
       this.helpBox.toggleClassName('hidden');
       if (! this.helpBox.hasClassName('hidden')) {
         document.observe('click', this.hideAllHelpOnOutsideClick);
-      } else {
-        document.stopObserving('click', this.hideAllHelpOnOutsideClick);
       }
-    },
-    hideAllHelp : function (exceptionSelector) {
-      $$('div.xTooltip' + (exceptionSelector || '')).invoke('addClassName', 'hidden');
     },
     hideAllHelpOnOutsideClick : function (event) {
       if (!event.findElement('.xTooltip') &amp;&amp; !event.findElement('.xHelpButton')) {
-        this.hideAllHelp();
+        this.hideHelp();
+        document.stopObserving('click', this.hideAllHelpOnOutsideClick);
       }
     },
     hideHelp : function() {
