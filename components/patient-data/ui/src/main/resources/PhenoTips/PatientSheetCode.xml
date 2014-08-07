@@ -974,8 +974,9 @@ document.observe('xwiki:dom:loaded', function() {
                 e.update(PhenoTips.widgets.OntologyBrowser.prototype._getExpandCollapseSymbol(true));
                 var header = e.up();
                 var dataContainer = header.next();
-                var selectedName = new Element('span').update(
-                    dataContainer.select("input[type='radio']:checked")[0].readAttribute('title')
+                var selectedOption = dataContainer.down("input[type='radio']:checked");
+                var selectedName = new Element('span', {'class' : (selectedOption &amp;&amp; selectedOption.value &amp;&amp; 'selected' || 'none')}).update(
+                    selectedOption &amp;&amp; selectedOption.readAttribute('title') || ''
                 );
                 header.insert({bottom: selectedName});
                 var cClassName = "collapsed";
@@ -995,6 +996,13 @@ document.observe('xwiki:dom:loaded', function() {
                     radio.observe('click', function(){
                         dataContainer.addClassName(cClassName);
                         selectedName.update(radio.readAttribute('title'));
+                        if (radio.value) {
+                          selectedName.addClassName('selected');
+                          selectedName.removeClassName('none');
+                        } else {
+                          selectedName.removeClassName('selected');
+                          selectedName.addClassName('none');
+                        }
                         e.update(PhenoTips.widgets.OntologyBrowser.prototype._getExpandCollapseSymbol(true));
                     });
                 });
@@ -4502,8 +4510,17 @@ form .extradata-list tr:hover td {
   box-shadow: 0 2px 5px #999;
 }
 
+.phenotype-details dt {
+  font-weight: normal;
+}
+
 .phenotype-details dt label {
   color: $theme.textColor;
+}
+
+.phenotype-details dt .selected {
+  color: $theme.textColor;
+  font-weight: bold;
 }
 
 .phenotype-details.focused input {
