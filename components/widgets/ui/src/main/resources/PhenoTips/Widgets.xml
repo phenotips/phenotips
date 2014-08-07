@@ -3972,7 +3972,7 @@ document.observe("xwiki:dom:loaded", function() {
       $$('div.xTooltip' + (exceptionSelector || '')).invoke('addClassName', 'hidden');
     },
     hideAllHelpOnOutsideClick : function (event) {
-      if (!event.findElement('.xTooltip') && !event.findElement('.xHelpButton')) {
+      if (!event.findElement('.xTooltip') &amp;&amp; !event.findElement('.xHelpButton')) {
         this.hideAllHelp();
       }
     },
