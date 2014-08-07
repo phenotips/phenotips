@@ -933,10 +933,6 @@ document.observe('xwiki:dom:loaded', function() {
                  if (deleteTrigger.disabled) {
                     return;
                  }
-                 if (deleteTrigger.__target) {
-                   deleteTrigger.__target.remove();
-                   delete deleteTrigger.__target;
-                 }
                  if (deleteTrigger.__url) {
                    new XWiki.widgets.ConfirmedAjaxRequest(deleteTrigger.__url, {
                      onCreate : function() {
