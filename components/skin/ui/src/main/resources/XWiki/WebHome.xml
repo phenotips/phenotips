@@ -113,7 +113,7 @@ $response.sendRedirect($xwiki.getURL('data.WebHome'))
     </class>
     <property>
       <content>{{velocity}}{{html clean=false}}
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css', {'rel': 'stylesheet'})##
 $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 &lt;div id="phenotips-mainmenu" class="layoutsubsection actionmenu"&gt;
 &lt;strong id="xwikimenutitle" class="hidden"&gt;$services.localization.render('core.menu.main.title')&lt;/strong&gt;
@@ -245,7 +245,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
     </class>
     <property>
       <content>{{velocity}}{{html clean=false}}
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css', {'rel': 'stylesheet'})##
 $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 &lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
   &lt;div class="rightmenu"&gt;

@@ -142,7 +142,7 @@
   },
   {
     "type"       : "section",
-    "title"      : "Cardiac",
+    "title"      : "Cardiovascular",
     "categories" : ["HP:0001626"],
     "data"       : [
         {"id" : "HP:0001631"},

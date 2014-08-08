@@ -42,7 +42,7 @@
   <content>{{include document="PhenoTips.DatabaseFilters" /}}
 
 {{velocity}}
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css', {'rel': 'stylesheet'})##
 $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
 {{html wiki=false clean=false}}&lt;div class="general-tools"&gt;#if($hasCreatePage)&lt;label for="create-patient-record"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;New patient record&lt;/label&gt; · #end&lt;a id="phenotips_export" title="Export the database in CSV format (MS Excel compatible)" href="$xwiki.getURL('PhenoTips.Export', 'get', "space=${escapetool.url($doc.space)}&amp;amp;outputSyntax=plain")"&gt;&lt;span class="fa fa-table"&gt; &lt;/span&gt;Export database&lt;/a&gt;&lt;/div&gt;{{/html}}{{/velocity}}
 

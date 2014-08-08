@@ -150,7 +150,7 @@ public class DefaultPushPatientService implements PushPatientService
 
             Set<PushServerInfo> response = new TreeSet<PushServerInfo>();
             for (BaseObject serverConfiguration : servers) {
-                this.logger.warn("   ...available: [{}]",
+                this.logger.debug("   ...available: [{}]",
                     serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME));
                 PushServerInfo info = new DefaultPushServerInfo(
                     serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME),

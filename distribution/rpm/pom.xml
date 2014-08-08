@@ -189,13 +189,12 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
           <license>LGPL 2.1</license>
           <group>Applications/Science</group>
           <icon>src/main/resources/phenotips.gif</icon>
-          <prefix>/usr/local</prefix>
           <defaultDirmode>750</defaultDirmode>
           <defaultFilemode>644</defaultFilemode>
           <defaultUsername>tomcat</defaultUsername>
           <defaultGroupname>tomcat</defaultGroupname>
           <requires>
-            <require>java &gt;= 0:1.6.0</require>
+            <require>java &gt;= 0:1.7.0</require>
             <require>tomcat</require>
             <require>unzip</require>
             <require>bc</require>
@@ -203,8 +202,7 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
           <mappings>
             <!-- Copy the main PhenoTips webapp -->
             <mapping>
-              <directory>/var/lib/phenotips/webapp/</directory>
-              <recurseDirectories>true</recurseDirectories>
+              <directory>/var/lib/phenotips/webapp</directory>
               <sources>
                 <source>
                   <location>${ptwar.path}</location>
@@ -213,7 +211,7 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
             </mapping>
             <!-- Copy the custom PhenoTips/XWiki configuration files into the webapp -->
             <mapping>
-              <directory>/var/lib/phenotips/webapp/WEB-INF/</directory>
+              <directory>/var/lib/phenotips/webapp/WEB-INF</directory>
               <configuration>noreplace</configuration>
               <directoryIncluded>false</directoryIncluded>
               <sources>
@@ -229,7 +227,7 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
             </mapping>
             <!-- Copy the data dependencies into the "next" directory for optional unpacking when first installing this package -->
             <mapping>
-              <directory>/var/lib/phenotips/next/</directory>
+              <directory>/var/lib/phenotips/next</directory>
               <dependency>
                 <includes>
                   <include>${project.groupId}:database-zip</include>
@@ -239,7 +237,7 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
             </mapping>
             <!-- Copy the webapp descriptor -->
             <mapping>
-              <directory>/etc/tomcat/Catalina/localhost/</directory>
+              <directory>/etc/tomcat/Catalina/localhost</directory>
               <directoryIncluded>false</directoryIncluded>
               <sources>
                 <source>

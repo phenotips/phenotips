@@ -63,7 +63,7 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             Session session = this.sessionFactory.getSessionFactory().openSession();
             Transaction t = session.beginTransaction();
             t.begin();
-            this.logger.warn("DEBUG: removing stored token for [{}] @ [{}]", localUserName, serverName);
+            this.logger.debug("Removing stored token for [{}@{}]", localUserName, serverName);
             session.delete(existing);
             t.commit();
         }
@@ -131,11 +131,11 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             .uniqueResult();
 
         if (data == null) {
-            this.logger.warn("DEBUG: Token not found or more than one found");
+            this.logger.debug("Token not found or more than one found for [{}@{}]", localUserName, serverName);
             return null;
         }
 
-        // this.logger.warn("DEBUG: Token found");
+        this.logger.debug("Token found for [{}@{}]", localUserName, serverName);
         return data;
     }
 
@@ -153,11 +153,11 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             .uniqueResult();
 
         if (data == null) {
-            this.logger.warn("DEBUG: Token not found or more than one found");
+            this.logger.debug("Local token not found or more than one found for [{}@{}]", userName, sourceServerName);
             return null;
         }
 
-        // this.logger.warn("DEBUG: Token found");
+        this.logger.debug("Local token found for [{}@{}]", userName, sourceServerName);
         return data;
     }
 
@@ -175,7 +175,9 @@ public class DefaultSecureStorageManager implements SecureStorageManager
         if (existing != null)
         {
             if (!existing.getSourceServerName().equals(sourceServerName)) {
-                this.logger.warn("Multiple servers pushing the same patient: remote server is already defined as {} and is different from {}", existing.getSourceServerName(), sourceServerName);
+                this.logger.warn("Multiple servers pushing the same patient: "
+                    + "remote server is already defined as {} and is different from {}",
+                    existing.getSourceServerName(), sourceServerName);
             }
         }
         else
@@ -183,7 +185,7 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             Session session = this.sessionFactory.getSessionFactory().openSession();
             Transaction t = session.beginTransaction();
             t.begin();
-            // this.logger.warn("DEBUG: Saving remote source sever for [{}] = [{}]", patientGUID, sourceServerName);
+            this.logger.debug("Saving remote source server for [{}] = [{}]", patientGUID, sourceServerName);
             session.save(new PatientSourceServerInfo(patientGUID, sourceServerName));
             t.commit();
         }
@@ -198,11 +200,11 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             .uniqueResult();
 
         if (data == null) {
-            this.logger.warn("DEBUG: No remote source server defined");
+            this.logger.debug("No remote source server defined for [{}]", patientGUID);
             return null;
         }
 
-        this.logger.warn("DEBUG: Remote source server found");
+        this.logger.debug("Remote source server found for [{}]: [{}]", patientGUID, data.getSourceServerName());
         return data;
     }
 
@@ -222,7 +224,8 @@ public class DefaultSecureStorageManager implements SecureStorageManager
 
         if (existing != null)
         {
-            this.logger.warn("DEBUG: Updating patient push info");
+            this.logger.debug("Updating patient push info for [{}]: [{}@{}] -> [{}@{}]", localPatientID,
+                existing.getRemotePatientID(), existing.getRemoteServerName(), remotePatientID, remoteServerName);
             existing.setLastPushTimeToNow();
             existing.setRemotePatientID(remotePatientID);
             existing.setRemotePatientGUID(remotePatientGUID);
@@ -231,8 +234,8 @@ public class DefaultSecureStorageManager implements SecureStorageManager
         }
         else
         {
-            this.logger.warn("DEBUG: Saving new patient push info [{}] -> [{}] @ [{}]", localPatientID,
-                remotePatientURL, remoteServerName);
+            this.logger.debug("Saving new patient push info [{}]: [{}@{}]", localPatientID,
+                remotePatientID, remoteServerName);
             session.save(new PatientPushedToInfo(localPatientID, remoteServerName,
                 remotePatientGUID, remotePatientID, remotePatientURL));
         }
@@ -253,11 +256,12 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             .uniqueResult();
 
         if (data == null) {
-            this.logger.warn("DEBUG: Never pushed to this server");
+            this.logger.debug("Never pushed [{}] to [{}]", localPatientID, remoteServerName);
             return null;
         }
 
-        this.logger.warn("DEBUG: Previous push info found");
+        this.logger.debug("[{}] was previously pushed to [{}@{}]", localPatientID, data.getRemotePatientID(),
+            remoteServerName);
         return data;
     }
 }

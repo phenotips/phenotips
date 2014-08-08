@@ -3951,13 +3951,26 @@ document.observe("xwiki:dom:loaded", function() {
   widgets.HelpButton =  Class.create({
     initialize : function(icon) {
       this.icon = icon;
+      this.icon._information = this.icon.title;
+      this.icon.title = 'How to enter this information';
       this.icon.observe("click", this.toggleHelp.bindAsEventListener(this));
+      this.hideAllHelpOnOutsideClick = this.hideAllHelpOnOutsideClick.bindAsEventListener(this);
     },
     toggleHelp : function() {
       if (!this.helpBox) {
         this.createHelpBox();
       }
+      $$('div.xTooltip:not(.hidden)').invoke('addClassName', 'hidden');
       this.helpBox.toggleClassName('hidden');
+      if (! this.helpBox.hasClassName('hidden')) {
+        document.observe('click', this.hideAllHelpOnOutsideClick);
+      }
+    },
+    hideAllHelpOnOutsideClick : function (event) {
+      if (!event.findElement('.xTooltip') &amp;&amp; !event.findElement('.xHelpButton')) {
+        this.hideHelp();
+        document.stopObserving('click', this.hideAllHelpOnOutsideClick);
+      }
     },
     hideHelp : function() {
       if (this.helpBox) {
@@ -3968,11 +3981,12 @@ document.observe("xwiki:dom:loaded", function() {
       if (!this.helpBox) {
         this.createHelpBox();
       }
+      $$('div.xTooltip:not(.hidden)').invoke('addClassName', 'hidden');
       this.helpBox.removeClassName('hidden');
     },
     createHelpBox : function() {
       this.helpBox = new Element('div', {'class': 'hidden xTooltip'});
-      this.helpBox.update(this.icon.title);
+      this.helpBox.update(this.icon._information);
       var closeButton = new Element('span', {'class': 'hide-tool', 'title': 'Hide'});
       closeButton.update('×');
       closeButton.observe('click', this.hideHelp.bindAsEventListener(this));
@@ -5047,10 +5061,6 @@ div.resultContainer div.sourceContent.loading {
   font-size: .9em;
   width: 95%;
   z-index: 100;
-  opacity: .9;
-}
-.dropdown:hover {
-  opacity: 1;
 }
 .dropdown.emphasized-box {
   margin-left: -4px;
@@ -5392,7 +5402,8 @@ input.xwiki-free-multiselect-value {
 .xTooltip .hide-tool {
   cursor: pointer;
   float: right;
-  margin-top: -0.75em;
+  margin-right: -0.5em;
+  margin-top: -0.6em;
 }</code>
     </property>
     <property>
