@@ -19,6 +19,7 @@
  */
 package org.phenotips.data.internal.controller;
 
+import org.phenotips.data.OntologyProperty;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.component.annotation.Component;
