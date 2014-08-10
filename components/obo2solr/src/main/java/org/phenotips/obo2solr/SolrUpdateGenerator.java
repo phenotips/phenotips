@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -149,7 +148,6 @@ public class SolrUpdateGenerator
 
     public Map<String, TermData> transform(URL input, Map<String, Double> fieldSelection)
     {
-        Collection<String> dateVersion = null;
         this.fieldSelection = fieldSelection;
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(input.openConnection().getInputStream()));

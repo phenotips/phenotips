@@ -33,7 +33,7 @@ public class FormGroup extends AbstractFormElement
 
     protected boolean addElement(FormElement e)
     {
-        return this.elements.add(e);
+        return e != null && this.elements.add(e);
     }
 
     @Override

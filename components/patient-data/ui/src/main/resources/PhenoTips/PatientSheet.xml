@@ -54,6 +54,7 @@ $xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$xwiki.getSpacePre
 $xwiki.jsx.use('PhenoTips.PatientSheetCode')##
 $xwiki.jsfx.use('js/xwiki/actionbuttons/actionButtons.js', true)##
 $xwiki.jsfx.use('js/xwiki/editors/autosave.js')##
+$xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 $xwiki.ssfx.use('uicomponents/widgets/validation/livevalidation.css', true)##
 $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
 ##

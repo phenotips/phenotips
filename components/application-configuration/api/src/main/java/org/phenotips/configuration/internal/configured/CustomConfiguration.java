@@ -25,7 +25,7 @@ import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * Exposes the custom configuration using simple APIs instead of low-level XObject access.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -36,7 +36,7 @@ public class CustomConfiguration
 
     /**
      * Simple constructor.
-     * 
+     *
      * @param configuration the configuration XObject to wrap
      */
     public CustomConfiguration(BaseObject configuration)
@@ -48,7 +48,7 @@ public class CustomConfiguration
      * Custom sections configuration is represented as a list of section identifiers. If a section is present in this
      * list, then it is enabled, otherwise it's disabled. The custom order of the sections is the same order as this
      * list. If the list is empty, then the global configuration is used instead.
-     * 
+     *
      * @return a list of enabled section identifiers, empty if the sections aren't configured, {@code null} if the
      *         configuration object doesn't define this override at all
      */
@@ -64,7 +64,7 @@ public class CustomConfiguration
      * Fields can't be moved to a different section using the custom configuration, so only the relative order of the
      * enabled fields belonging to the same section determines their order in that section. If the list is empty, then
      * the global configuration is used instead.
-     * 
+     *
      * @return a list of enabled field identifiers, empty if the fields aren't configured, {@code null} if the
      *         configuration object doesn't define this override at all
      */
@@ -77,7 +77,7 @@ public class CustomConfiguration
     /**
      * The custom configuration can specify a different phenotype mapping to use, as a serialized reference to the
      * mapping document.
-     * 
+     *
      * @return a serialized document reference, possibly empty or {@code null}
      */
     public String getPhenotypeMapping()

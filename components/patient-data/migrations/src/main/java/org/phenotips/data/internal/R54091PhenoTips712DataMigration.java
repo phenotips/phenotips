@@ -49,8 +49,8 @@ import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
- * Migration for PhenoTips issue #712: Automatically migrate existing {@code age_of_onset} values to the {@code
- * global_age_of_onset} field.
+ * Migration for PhenoTips issue #712: Automatically migrate existing {@code age_of_onset} values to the
+ * {@code global_age_of_onset} field.
  *
  * @version $Id$
  * @since 1.0M10

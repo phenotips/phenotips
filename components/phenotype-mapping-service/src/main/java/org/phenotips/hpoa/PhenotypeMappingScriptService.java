@@ -19,6 +19,17 @@
  */
 package org.phenotips.hpoa;
 
+import org.phenotips.hpoa.annotation.OmimHPOAnnotations;
+import org.phenotips.hpoa.annotation.SearchResult;
+import org.phenotips.hpoa.ontology.Ontology;
+import org.phenotips.hpoa.prediction.Predictor;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
+import org.xwiki.environment.Environment;
+import org.xwiki.script.service.ScriptService;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,17 +42,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.phenotips.hpoa.annotation.OmimHPOAnnotations;
-import org.phenotips.hpoa.annotation.SearchResult;
-import org.phenotips.hpoa.ontology.Ontology;
-import org.phenotips.hpoa.prediction.Predictor;
-
-import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
-import org.xwiki.environment.Environment;
-import org.xwiki.script.service.ScriptService;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;

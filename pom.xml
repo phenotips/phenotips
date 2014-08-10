@@ -151,6 +151,16 @@
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
       <!-- Most plugins depend on the servlet API -->
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -255,59 +265,6 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release 1.0-rc-1 -->
-            <difference>
-              <className>**/script/OtologyScriptService</className>
-              <differenceType>8001</differenceType>
-            </difference>
-            <difference>
-              <differenceType>4001</differenceType>
-              <className>**/data/PatientData</className>
-              <to>**/util/List</to>
-            </difference>
-            <difference>
-              <differenceType>4001</differenceType>
-              <className>**/data/PatientData</className>
-              <to>**/util/Collection</to>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>boolean isIndexed()</method>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>boolean isNamed()</method>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>java.lang.Object get(java.lang.String)</method>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>java.lang.Object get(int)</method>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>java.lang.Object getValue()</method>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>java.util.Iterator keyIterator()</method>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>java.util.Iterator dictionaryIterator()</method>
-            </difference>
-            <difference>
-              <differenceType>8001</differenceType>
-              <className>**/data/SimpleNamedData</className>
-            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
@@ -461,9 +418,6 @@
           </dependencies>
           <configuration>
             <consoleOutput>true</consoleOutput>
-            <!-- We use this to disable checkstyle when the clover profile is executed since there's a
-                 conflict between checkstyle and clover. Namely the clovered code doesn't pass our
-                 checkstyle rules -->
             <skip>${checkstyle.skip}</skip>
             <configLocation>checkstyle.xml</configLocation>
           </configuration>

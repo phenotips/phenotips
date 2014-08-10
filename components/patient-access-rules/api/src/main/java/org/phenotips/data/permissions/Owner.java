@@ -28,7 +28,7 @@ import org.xwiki.stability.Unstable;
 /**
  * The owner of a patient record, either a user or a group that has full control on the patient record. Only one owner
  * can be set for a patient record at a time, but ownership can be transfered.
- * 
+ *
  * @version $Id$
  * @since 1.0M10
  */
@@ -50,14 +50,14 @@ public interface Owner
 
     /**
      * The user or group that has been set as collaborator.
-     * 
+     *
      * @return a reference to the user's or group's profile
      */
     EntityReference getUser();
 
     /**
      * The username or group name.
-     * 
+     *
      * @return the name of the document holding the user or group (just the name without the space or instance name)
      */
     String getUsername();

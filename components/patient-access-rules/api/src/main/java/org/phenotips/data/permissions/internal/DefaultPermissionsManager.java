@@ -61,7 +61,7 @@ public class DefaultPermissionsManager implements PermissionsManager
     {
         try {
             Collection<Visibility> result = new TreeSet<Visibility>();
-            result.addAll(this.componentManager.get().<Visibility> getInstanceList(Visibility.class));
+            result.addAll(this.componentManager.get().<Visibility>getInstanceList(Visibility.class));
             return result;
         } catch (ComponentLookupException ex) {
             return Collections.emptyList();
@@ -86,7 +86,7 @@ public class DefaultPermissionsManager implements PermissionsManager
     {
         try {
             Collection<AccessLevel> result = new TreeSet<AccessLevel>();
-            result.addAll(this.componentManager.get().<AccessLevel> getInstanceList(AccessLevel.class));
+            result.addAll(this.componentManager.get().<AccessLevel>getInstanceList(AccessLevel.class));
             Iterator<AccessLevel> it = result.iterator();
             while (it.hasNext()) {
                 if (!it.next().isAssignable()) {

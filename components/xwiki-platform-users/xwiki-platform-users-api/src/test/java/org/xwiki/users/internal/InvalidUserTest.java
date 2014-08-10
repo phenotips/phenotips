@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests the invalid user flavor of {@link User}.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */

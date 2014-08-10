@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * Exposes the current configuration related to the patient record.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -61,7 +61,7 @@ public interface RecordConfiguration
 
     /**
      * The list of fields displayed in the patient record.
-     * 
+     *
      * @return an unmodifiable ordered list of field names, empty if none are enabled or the configuration is missing
      */
     List<String> getEnabledFieldNames();
@@ -69,7 +69,7 @@ public interface RecordConfiguration
     /**
      * The list of non-identifiable fields displayed in the patient record (i.e. fields which contain no personal
      * information which can be tracked to a particular patient)
-     * 
+     *
      * @return an unmodifiable ordered list of field names, empty if no non-identifiable fields are enabled or the
      *         configuration is missing
      */
@@ -78,7 +78,7 @@ public interface RecordConfiguration
     /**
      * The list of possible fields defined in the application. This doesn't include metadata stored in separate
      * entities, such as measurements, relatives, additional files, etc.
-     * 
+     *
      * @return an unmodifiable ordered list of field names, empty if none are available or the configuration is missing
      */
     List<String> getAllFieldNames();
@@ -89,7 +89,7 @@ public interface RecordConfiguration
      * instance, and one of these mappings can be selected as the preferred mapping to be used globally or for each
      * group. Warning! The return type of this method is likely to change once a more specific class for representing
      * mappings will be implemented.
-     * 
+     *
      * @return the selected phenotype mapping, as a reference to the document where the mapping is defined
      */
     @Unstable
@@ -104,7 +104,7 @@ public interface RecordConfiguration
 
     /**
      * The format of the date of birth, in the standard {@link java.text.SimpleDateFormat Java date format}.
-     * 
+     *
      * @return the configured date format
      */
     String getDateOfBirthFormat();

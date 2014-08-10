@@ -19,13 +19,13 @@
  */
 package org.phenotips.measurements.internal;
 
-import java.util.List;
-
 import org.phenotips.measurements.MeasurementsChartConfiguration;
 import org.phenotips.measurements.MeasurementsChartConfigurationsFactory;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -34,7 +34,7 @@ import org.mockito.Mockito;
 
 /**
  * Tests for the {@link DefaultMeasurementsChartConfigurationsFactory} component.
- * 
+ *
  * @version $Id$
  * @since 1.0M3
  */

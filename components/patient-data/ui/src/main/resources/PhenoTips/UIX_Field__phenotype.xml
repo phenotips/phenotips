@@ -552,22 +552,7 @@
 }
 label.selected, label.subterm-selected {
   background-color: $theme.backgroundSecondaryColor;
-  background-image: none;
   font-weight: bold;
-  padding-left: 4px;
-  margin-left: -4px;
-  border-radius: 2px;
-}
-label.subterm-selected {
-  background-image: url("$xwiki.getSkinFile('icons/silk/shading.gif')");
-  background-position: 14px center;
-  background-repeat: no-repeat;
-}
-label.subterm-selected input[type="checkbox"] {
-  opacity: .2;
-}
-label.selected input[type="checkbox"] {
-  opacity: 1;
 }
 /** -------------------------------------------- **/
 /** Suggestions **/
@@ -718,7 +703,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
   #if ($xcontext.action == 'edit')
     $doc.display('unaffected') #__label('unaffected' '' "$class.get('unaffected').prettyName")
 
-    (% class="hint controlled" %)Or select observed phenotypes:(%%) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("PhenoTips.PatientClass_select_phenotypes_hint")"/}}
+    (% class="hint controlled" %)Or select observed phenotypes:(%%) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("PhenoTips.PatientClass_select_phenotypes_hint").replace('"', '~~~"')"/}}
   #else
     #if ($showUnaffected)$class.get('unaffected').prettyName#end
   #end

@@ -19,20 +19,20 @@
  */
 package org.phenotips.hpoa.prediction;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.phenotips.hpoa.annotation.HPOAnnotation;
 import org.phenotips.hpoa.annotation.SearchResult;
 
 import org.xwiki.component.annotation.Role;
+
+import java.util.Collection;
+import java.util.List;
 
 @Role
 public interface Predictor
 {
     /**
      * Obtains the list of OMIM diseases that fit a set of phenotypes, ordered descending by a "matching" score.
-     * 
+     *
      * @param phenotypes A set of HPO ids
      * @return A list of {@link SearchResult}s which map OMIM ids to fitness scores, ordered descending by score.
      */
@@ -42,7 +42,7 @@ public interface Predictor
      * Obtains a list of phenotypes that are likely to be useful in a differential diagnosis. These are basically
      * phenotypes present only in some of the diseases matching the input phenotypes. The score reflects the reliability
      * of the differentiation.
-     * 
+     *
      * @param phenotypes A set of HPO ids
      * @return A list of {@link SearchResult}s which map HPO ids to fitness scores, ordered descending by score.
      */

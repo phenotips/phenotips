@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for the default {@link Owner} implementation, {@link DefaultOwner}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultOwnerTest
@@ -140,6 +140,12 @@ public class DefaultOwnerTest
         // Different hashcodes for different users
         other = new DefaultOwner(new DocumentReference("xwiki", "XWiki", "padams"), helper);
         Assert.assertNotEquals(o.hashCode(), other.hashCode());
+        // Different hashcodes for user and guest
+        other = new DefaultOwner(null, helper);
+        Assert.assertNotEquals(o.hashCode(), other.hashCode());
+        // Same hashcode for two guests
+        o = new DefaultOwner(null, helper);
+        Assert.assertEquals(o.hashCode(), other.hashCode());
     }
 
     /** {@link Owner#toString()} is customized. */
@@ -150,4 +156,11 @@ public class DefaultOwnerTest
         Assert.assertEquals("[xwiki:XWiki.hmccoy]", o.toString());
     }
 
+    /** {@link Owner#toString()} uses "nobody" as the user when no user is set. */
+    @Test
+    public void toStringUsesNobodyForGuests() throws ComponentLookupException
+    {
+        Owner o = new DefaultOwner(null, helper);
+        Assert.assertEquals("[nobody]", o.toString());
+    }
 }

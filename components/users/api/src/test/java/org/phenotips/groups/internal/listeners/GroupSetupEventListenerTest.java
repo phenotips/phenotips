@@ -65,11 +65,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings("deprecation")
-@ComponentList({LocalStringEntityReferenceSerializer.class, RelativeStringEntityReferenceResolver.class,
+@ComponentList({ LocalStringEntityReferenceSerializer.class, RelativeStringEntityReferenceResolver.class,
     CurrentReferenceDocumentReferenceResolver.class, CurrentReferenceEntityReferenceResolver.class,
     CurrentEntityReferenceValueProvider.class, DefaultModelContext.class, DefaultExecution.class,
     DefaultModelConfiguration.class, CurrentMixedStringDocumentReferenceResolver.class,
-    CurrentMixedEntityReferenceValueProvider.class, DefaultEntityReferenceValueProvider.class})
+    CurrentMixedEntityReferenceValueProvider.class, DefaultEntityReferenceValueProvider.class })
 public class GroupSetupEventListenerTest
 {
     private EntityReference groupsClassReference = new EntityReference("XWikiGroups", EntityType.DOCUMENT,

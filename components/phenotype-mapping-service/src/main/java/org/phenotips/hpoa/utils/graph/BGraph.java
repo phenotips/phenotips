@@ -30,7 +30,8 @@ public class BGraph<T extends Node>
 {
     public enum Side
     {
-        L, R;
+        L,
+        R;
     }
 
     private Map<String, Side> nodeSides = new HashMap<String, Side>();

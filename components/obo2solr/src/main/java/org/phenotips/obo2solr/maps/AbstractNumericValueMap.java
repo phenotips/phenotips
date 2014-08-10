@@ -29,6 +29,8 @@ import java.util.List;
 public abstract class AbstractNumericValueMap<K, N extends Number> extends LinkedHashMap<K, N> implements
     NumericValueMap<K, N>
 {
+    private static final long serialVersionUID = 1L;
+
     public AbstractNumericValueMap()
     {
         super();

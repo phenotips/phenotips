@@ -28,7 +28,7 @@ import java.net.URI;
 /**
  * {@link org.xwiki.users.User} implementation marking invalid users. This could mean users no longer existing in the
  * wiki, or users whose profiles are not accessible.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -36,7 +36,7 @@ public class InvalidUser extends AbstractUser
 {
     /**
      * Constructor.
-     * 
+     *
      * @param profileReference supposed user profile, no longer valid for some reason
      * @param serializer the entity reference serializer to use
      */
@@ -48,7 +48,7 @@ public class InvalidUser extends AbstractUser
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.xwiki.users.User#exists()
      */
     @Override
@@ -59,7 +59,7 @@ public class InvalidUser extends AbstractUser
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.xwiki.users.User#getName()
      */
     @Override
@@ -70,7 +70,7 @@ public class InvalidUser extends AbstractUser
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.xwiki.users.User#getProfileDocument()
      */
     @Override
@@ -81,7 +81,7 @@ public class InvalidUser extends AbstractUser
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.xwiki.users.User#getProfileURI()
      */
     @Override
@@ -92,7 +92,7 @@ public class InvalidUser extends AbstractUser
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.xwiki.users.User#getAttribute(String)
      */
     @Override

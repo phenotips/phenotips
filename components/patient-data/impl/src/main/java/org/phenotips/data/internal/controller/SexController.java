@@ -35,7 +35,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
@@ -111,9 +110,7 @@ public class SexController implements PatientDataController<String>
                 throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
 
-            String gender = patient.<ImmutablePair<String, String>>getData(DATA_NAME).get(0).getValue();
-
-            this.logger.warn("Saving gender value: [{}]", gender);
+            String gender = patient.<String>getData(DATA_NAME).getValue();
 
             data.setStringValue(INTERNAL_PROPERTY_NAME, gender);
 

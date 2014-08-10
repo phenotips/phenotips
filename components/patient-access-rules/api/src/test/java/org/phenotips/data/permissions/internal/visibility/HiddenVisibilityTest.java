@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the {@link HiddenVisibility hidden visibility level}.
- * 
+ *
  * @version $Id$
  */
 public class HiddenVisibilityTest

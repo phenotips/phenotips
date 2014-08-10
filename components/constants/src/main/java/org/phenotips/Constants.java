@@ -24,7 +24,7 @@ import org.xwiki.model.reference.EntityReference;
 
 /**
  * Frequently used values in the rest of the code, gathered in one place.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */

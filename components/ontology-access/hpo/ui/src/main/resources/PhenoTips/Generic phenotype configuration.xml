@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>Generic phenotype configuration</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822211000</creationDate>
+  <parent>data.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822211000</date>
+  <contentUpdateDate>1401822211000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Generic phenotype configuration</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+#set($phenotype = [
+  {
+    "type"       : "section",
+    "title"      : "Growth parameters",
+    "categories" : ["HP:0001507", "HP:0000240"],
+    "data"       : [
+        {
+           "type"  : "subsection",
+           "id"    : "HP:0004323",
+           "group_type" : "single-select",
+           "title" : "Weight for age",
+           "data"  : [
+               {"id" : "HP:0004325", "title" : "&lt;3rd"},
+               {"id" : "HP:0001513", "title" : "&gt;97th"}
+           ]
+        },
+        {
+           "type"  : "subsection",
+           "id"    : "HP:0000002",
+           "group_type" : "single-select",
+           "title" : "Stature for age",
+           "data"  : [
+               {"id" : "HP:0004322", "title" : "&lt;3rd"},
+               {"id" : "HP:0000098", "title" : "&gt;97th"}
+           ]
+        },
+        {
+           "type"  : "subsection",
+           "id"    : "HP:0000240",
+           "group_type" : "single-select",
+           "title" : "Head circumference for age",
+           "data"  : [
+               {"id" : "HP:0000252", "title" : "&lt;3rd"},
+               {"id" : "HP:0000256", "title" : "&gt;97th"}
+           ]
+        },
+        {"id" : "HP:0001528"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Craniofacial",
+    "categories" : ["HP:0000152"],
+    "data"       : [
+        {"id" : "HP:0001363"},
+        {"id" : "HP:0000204"},
+        {"id" : "HP:0000175"},
+        {"id" : "HP:0001999"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Eye Defects",
+    "categories" : ["HP:0000478"],
+    "data"       : [
+        {"id" : "HP:0000505"},
+        {"id" : "HP:0000481"},
+        {"id" : "HP:0000589"},
+        {"id" : "HP:0000593"},
+        {"id" : "HP:0000518"},
+        {"id" : "HP:0000479"},
+        {"id" : "HP:0000587"},
+        {"id" : "HP:0000568"},
+        {"id" : "HP:0000639"},
+        {"id" : "HP:0000486"},
+        {"id" : "HP:0000601"},
+        {"id" : "HP:0000316"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Ear Defects",
+    "categories" : ["HP:0000598"],
+    "data"       : [
+        {
+           "type"  : "subsection",
+           "id"    : "HP:0000404",
+           "title" : "Deafness",
+           "data"  : [
+               {"id" : "HP:0008538", "title" : "Sensorineural"},
+               {"id" : "HP:0000367", "title" : "Conductive"}
+           ]
+        },
+        {"id" : "HP:0004467"},
+        {"id" : "HP:0000384"},
+        {"id" : "HP:0000356"},
+        {"id" : "HP:0000359"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Cutaneous",
+    "categories" : ["HP:0001574"],
+    "data"       : [
+        {"id" : "HP:0000953"},
+        {"id" : "HP:0001010"},
+        {"id" : "HP:0005306"},
+        {"id" : "HP:0011276"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Cardiovascular",
+    "categories" : ["HP:0001626"],
+    "data"       : [
+        {"id" : "HP:0001631"},
+        {"id" : "HP:0001629"},
+        {"id" : "HP:0001674"},
+        {"id" : "HP:0001680"},
+        {"id" : "HP:0001636"},
+        {"id" : "HP:0001638"},
+        {"id" : "HP:0011675"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Respiratory",
+    "categories" : ["HP:0002086", "HP:0000765"],
+    "data"       : [
+        {"id" : "HP:0000776"},
+        {"id" : "HP:0002088"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Musculoskeletal",
+    "categories" : ["HP:0000924", "HP:0003011"],
+    "data"       : [
+        {"id" : "HP:0002652"},
+        {"id" : "HP:0002659"},
+        {"id" : "HP:0009816"},
+        {"id" : "HP:0009824"},
+
+        {
+           "type"  : "subsection",
+           "title" : "Camptodactyly",
+           "data"  : [
+               {"id" : "HP:0100490", "title" : "Finger"},
+               {"id" : "HP:0001836", "title" : "Toe"}
+           ]
+        },
+        {
+           "type"  : "subsection",
+           "title" : "Syndactyly",
+           "data"  : [
+               {"id" : "HP:0006101", "title" : "Finger"},
+               {"id" : "HP:0001770", "title" : "Toe"}
+           ]
+        },
+        {
+           "type"  : "subsection",
+           "title" : "Polydactyly",
+           "data"  : [
+               {"id" : "HP:0100258", "title" : "Preaxial"},
+               {"id" : "HP:0100259", "title" : "Postaxial"}
+           ]
+        },
+        {
+           "type"  : "subsection",
+           "title" : "Oligodactyly",
+           "data"  : [
+               {"id" : "HP:0001180", "title" : "Hands"},
+               {"id" : "HP:0001849", "title" : "Feet"}
+           ]
+        },
+
+        {"id" : "HP:0002650"},
+        {"id" : "HP:0000925"},
+        {"id" : "HP:0001371"},
+        {"id" : "HP:0001762"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Gastrointestinal",
+    "categories" : ["HP:0011024"],
+    "data"       : [
+        {"id" : "HP:0002032"},
+        {"id" : "HP:0002575"},
+        {"id" : "HP:0001543"},
+        {"id" : "HP:0001539"},
+        {"id" : "HP:0002251"},
+        {"id" : "HP:0001396"},
+        {"id" : "HP:0002910"},
+        {"id" : "HP:0001738"},
+        {"id" : "HP:0000819"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Genitourinary",
+    "categories" : ["HP:0000119"],
+    "data"       : [
+        {"id" : "HP:0000107"},
+        {"id" : "HP:0000085"},
+        {"id" : "HP:0000069"},
+        {"id" : "HP:0000795"},
+        {"id" : "HP:0000062"},
+        {"id" : "HP:0000047"},
+        {"id" : "HP:0000028"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Behavior, Cognition and Development",
+    "categories" : ["HP:0011446"],
+    "data"       : [
+        {"id" : "HP:0001263"},
+        {"id" : "HP:0010862"},
+        {"id" : "HP:0002194"},
+        {"id" : "HP:0000750"},
+        {"id" : "HP:0001328"},
+        {
+           "type"  : "subsection",
+           "id"    : "HP:0001249",
+           "group_type" : "single-select",
+           "title" : "Intellectual disability",
+           "data"  : [
+               {"id" : "HP:0001256", "title" : "Mild"},
+               {"id" : "HP:0002342", "title" : "Moderate"},
+               {"id" : "HP:0010864", "title" : "Severe"}
+           ]
+        },
+        {"id" : "HP:0007018"},
+        {"id" : "HP:0000717"},
+        {"id" : "HP:0000708"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Neurological",
+    "categories" : ["HP:0000707"],
+    "data"       : [
+        {"id" : "HP:0001290"},
+        {"id" : "HP:0001250"},
+        {"id" : "HP:0001251"},
+        {"id" : "HP:0001332"},
+        {"id" : "HP:0002072"},
+        {"id" : "HP:0001257"},
+        {"id" : "HP:0010301"},
+        {"id" : "HP:0007319"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Other",
+    "categories" : ["HP:0000118"],
+    "data"       : []
+  }
+])
+
+
+#set ($prenatal_history = [
+  {
+    "type"       : "section",
+    "title"      : "Prenatal growth parameters",
+    "categories" : ["HP:0001507"],
+    "data"       : [
+       {
+         "type"  : "subsection",
+         "id"    : "HP:0004323",
+         "group_type" : "single-select",
+         "title" : "Weight for age",
+         "data"  : [
+           {"id" : "HP:0004325", "title" : "&lt;3rd"},
+           {"id" : "HP:0001513", "title" : "&gt;97th"}
+         ]
+       },
+       {
+         "type"  : "subsection",
+         "id"    : "HP:0000002",
+         "group_type" : "single-select",
+         "title" : "Stature for age",
+         "data"  : [
+           {"id" : "HP:0004322", "title" : "&lt;3rd"},
+           {"id" : "HP:0000098", "title" : "&gt;97th"}
+         ]
+       },
+       {
+         "type"  : "subsection",
+         "id"    : "HP:0000240",
+         "group_type" : "single-select",
+         "title" : "Head circumference for age",
+         "data"  : [
+           {"id" : "HP:0000252", "title" : "&lt;3rd"},
+           {"id" : "HP:0000256", "title" : "&gt;97th"}
+         ]
+       }
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Prenatal development or birth",
+    "categories" : ["HP:0001197"],
+    "data"       : [
+        {"id" : "HP:0001562"},
+        {"id" : "HP:0001561"},
+        {"id" : "HP:0001622"}
+    ]
+  }
+])
+
+#set ($mappings = {
+  'phenotype': $phenotype,
+  'prenatal_phenotype': $prenatal_history
+})
+{{/velocity}}</content>
+  <object>
+    <name>PhenoTips.Generic phenotype configuration</name>
+    <number>0</number>
+    <className>PhenoTips.PhenotypeMappingClass</className>
+    <guid>901abd50-448b-4e94-827e-444dc1fb8724</guid>
+    <class>
+      <name>PhenoTips.PhenotypeMappingClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>1</number>
+        <prettyName>description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+    </class>
+    <property>
+      <description>A generic set of common phenotypes, covering most anatomical systems from top to bottom, and including neurological and behavioral signs.</description>
+    </property>
+  </object>
+</xwikidoc>

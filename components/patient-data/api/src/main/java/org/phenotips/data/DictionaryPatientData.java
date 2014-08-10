@@ -33,7 +33,7 @@ import java.util.Map.Entry;
  * @param <T> the type of data being managed by this component; since this is a dictionary of key-value pairs, this
  *            refers to the type of the values stored on the right side of the pairs
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.0M13
  */
 public class DictionaryPatientData<T> implements PatientData<T>
 {

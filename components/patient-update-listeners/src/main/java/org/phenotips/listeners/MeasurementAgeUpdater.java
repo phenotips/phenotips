@@ -43,7 +43,7 @@ import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * Update the Age property whenever the birth date or measurement date properties are changed.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -67,7 +67,7 @@ public class MeasurementAgeUpdater implements EventListener
     public List<Event> getEvents()
     {
         // The list of events this listener listens to
-        return Arrays.<Event> asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
+        return Arrays.<Event>asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
     }
 
     @Override

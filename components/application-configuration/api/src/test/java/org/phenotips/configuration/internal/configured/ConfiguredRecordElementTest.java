@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the configurable {@link RecordElement} implementation, {@link ConfiguredRecordElement}.
- * 
+ *
  * @version $Id$
  */
 public class ConfiguredRecordElementTest
@@ -71,7 +71,7 @@ public class ConfiguredRecordElementTest
         when(extension.getParameters()).thenReturn(params);
         RecordElement s = new ConfiguredRecordElement(cc, extension, null);
 
-        when(cc.getFieldsOverride()).thenReturn(Collections.<String> emptyList());
+        when(cc.getFieldsOverride()).thenReturn(Collections.<String>emptyList());
         params.put("enabled", "true");
         Assert.assertTrue(s.isEnabled());
 

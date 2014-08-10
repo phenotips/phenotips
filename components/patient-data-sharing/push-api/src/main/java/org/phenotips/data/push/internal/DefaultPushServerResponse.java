@@ -75,7 +75,7 @@ public class DefaultPushServerResponse implements PushServerResponse
     public boolean isIncorrectProtocolVersion()
     {
         return hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_PROTOCOLFAILED) ||
-               !this.response.containsKey(ShareProtocol.SERVER_JSON_KEY_NAME_PROTOCOLVER);
+            !this.response.containsKey(ShareProtocol.SERVER_JSON_KEY_NAME_PROTOCOLVER);
     }
 
     @Override
@@ -93,14 +93,9 @@ public class DefaultPushServerResponse implements PushServerResponse
     @Override
     public boolean isLoginFailed_knownReason()
     {
-        return (isLoginFailed_UnauthorizedServer() || isLoginFailed_IncorrectCredentials() ||
-            isLoginFailed_TokensNotSuported() || isLoginFailed_UserTokenExpired());
-    }
-
-    @Override
-    public boolean isLoginFailed_UnauthorizedServer()
-    {
-        return isLoginFailed() && hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_UNTRUSTEDSERVER);
+        return (isLoginFailed_IncorrectCredentials() ||
+                isLoginFailed_TokensNotSuported() ||
+                isLoginFailed_UserTokenExpired());
     }
 
     @Override

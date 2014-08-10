@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 
 /**
  * Indexes patients in a local Solr core.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */

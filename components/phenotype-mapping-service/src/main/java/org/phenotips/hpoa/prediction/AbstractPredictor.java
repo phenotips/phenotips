@@ -19,15 +19,15 @@
  */
 package org.phenotips.hpoa.prediction;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.phenotips.hpoa.annotation.HPOAnnotation;
 import org.phenotips.hpoa.annotation.SearchResult;
 import org.phenotips.hpoa.utils.maps.CounterMap;
 import org.phenotips.hpoa.utils.maps.SumMap;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class AbstractPredictor implements Predictor
 {

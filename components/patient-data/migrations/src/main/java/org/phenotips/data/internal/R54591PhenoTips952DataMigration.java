@@ -50,9 +50,9 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 /**
  * Migration for PhenoTips issue #952: Automatically migrate existing {@code mode_of_inheritance} values for feature
  * qualifiers to the {@code suspected_mode_of_inheritance} field.
- * 
+ *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.0M13
  */
 @Component
 @Named("R54591Phenotips#952")

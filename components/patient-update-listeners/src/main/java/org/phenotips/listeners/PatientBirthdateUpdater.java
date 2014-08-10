@@ -47,7 +47,7 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * Update the Date of birth aggregated property whenever the birth year, month and day properties are specified in the
  * request.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -69,7 +69,7 @@ public class PatientBirthdateUpdater implements EventListener
     public List<Event> getEvents()
     {
         // The list of events this listener listens to
-        return Arrays.<Event> asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
+        return Arrays.<Event>asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
     }
 
     @Override
@@ -102,9 +102,9 @@ public class PatientBirthdateUpdater implements EventListener
 
     /**
      * Read a property from the request.
-     * 
-     * @param propertyName the name of the property as it would appear in the class, for example {@code
-     *        age_of_onset_years}
+     *
+     * @param propertyName the name of the property as it would appear in the class, for example
+     *            {@code age_of_onset_years}
      * @param objectNumber the object's number
      * @return the value sent in the request, or {@code 0} if the property is missing
      */

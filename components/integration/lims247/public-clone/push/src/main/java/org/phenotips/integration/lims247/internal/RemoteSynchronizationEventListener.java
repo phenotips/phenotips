@@ -54,7 +54,7 @@ import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * Pushes updated (or deleted) patient records to remote PhenoTips instances.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -82,8 +82,7 @@ public class RemoteSynchronizationEventListener implements EventListener
     @Override
     public List<Event> getEvents()
     {
-        return Arrays
-            .<Event> asList(new DocumentCreatedEvent(), new DocumentUpdatedEvent(), new DocumentDeletedEvent());
+        return Arrays.<Event>asList(new DocumentCreatedEvent(), new DocumentUpdatedEvent(), new DocumentDeletedEvent());
     }
 
     @Override
@@ -133,7 +132,7 @@ public class RemoteSynchronizationEventListener implements EventListener
 
     /**
      * Check if the modified document is a patient record.
-     * 
+     *
      * @param doc the modified document
      * @return {@code true} if the document contains a PatientClass object and a non-empty external identifier,
      *         {@code false} otherwise
@@ -146,7 +145,7 @@ public class RemoteSynchronizationEventListener implements EventListener
 
     /**
      * Get all the trusted remote instances where data should be sent that are configured in the current instance.
-     * 
+     *
      * @param context the current request object
      * @return a list of {@link BaseObject XObjects} with LIMS server configurations, may be {@code null}
      */
@@ -165,7 +164,7 @@ public class RemoteSynchronizationEventListener implements EventListener
 
     /**
      * Send the changed document to a remote PhenoTips instance.
-     * 
+     *
      * @param doc the serialized document to send
      * @param serverConfiguration the XObject holding the remote server configuration
      */
@@ -192,7 +191,7 @@ public class RemoteSynchronizationEventListener implements EventListener
 
     /**
      * Notify a remote PhenoTips instance of a deleted document.
-     * 
+     *
      * @param doc the name of the deleted document
      * @param serverConfiguration the XObject holding the remote server configuration
      */
@@ -219,7 +218,7 @@ public class RemoteSynchronizationEventListener implements EventListener
 
     /**
      * Return the URL of the specified remote PhenoTips instance, where the updated document should be sent.
-     * 
+     *
      * @param serverConfiguration the XObject holding the remote server configuration
      * @return the configured URL, in the format {@code http://remote.host.name/bin/receive/data/}, or {@code null} if
      *         the configuration isn't valid
@@ -236,7 +235,7 @@ public class RemoteSynchronizationEventListener implements EventListener
     /**
      * Return the URL of the specified remote PhenoTips instance, where the notifications about deleted documents should
      * be sent.
-     * 
+     *
      * @param serverConfiguration the XObject holding the remote server configuration
      * @return the configured URL, in the format {@code http://remote.host.name/bin/deleted/data/}, or {@code null} if
      *         the configuration isn't valid
@@ -252,7 +251,7 @@ public class RemoteSynchronizationEventListener implements EventListener
 
     /**
      * Return the base URL of the specified remote PhenoTips instance.
-     * 
+     *
      * @param serverConfiguration the XObject holding the remote server configuration
      * @return the configured URL, in the format {@code http://remote.host.name/bin/}, or {@code null} if the
      *         configuration isn't valid
@@ -283,7 +282,7 @@ public class RemoteSynchronizationEventListener implements EventListener
 
     /**
      * Helper method for obtaining a valid xcontext from the execution context.
-     * 
+     *
      * @return the current request context
      */
     private XWikiContext getXContext()

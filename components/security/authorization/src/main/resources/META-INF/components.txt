@@ -1,0 +1,3 @@
+org.phenotips.security.authorization.internal.BaseAuthorizationModule
+org.phenotips.security.authorization.internal.DefaultAuthorizationService
+org.phenotips.security.authorization.internal.XWikiACLAuthorizationModule

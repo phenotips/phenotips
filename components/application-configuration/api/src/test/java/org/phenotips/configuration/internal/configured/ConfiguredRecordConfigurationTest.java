@@ -47,7 +47,7 @@ import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.Matchers;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the default {@link RecordConfiguration} implementation, {@link GlobalRecordConfiguration}.
- * 
+ *
  * @version $Id$
  */
 public class ConfiguredRecordConfigurationTest
@@ -187,7 +187,7 @@ public class ConfiguredRecordConfigurationTest
         List<UIExtension> sorted = realFilter.filter(sections, "order");
         when(filter.filter(sections, "order")).thenReturn(sorted);
 
-        when(cc.getSectionsOverride()).thenReturn(Collections.<String> emptyList());
+        when(cc.getSectionsOverride()).thenReturn(Collections.<String>emptyList());
         List<RecordSection> result = c.getEnabledSections();
         Assert.assertEquals(3, result.size());
         Assert.assertEquals("Patient information", result.get(0).getName());
@@ -482,9 +482,9 @@ public class ConfiguredRecordConfigurationTest
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
-        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        when(x.getDocument(Matchers.any(EntityReference.class), Matchers.same(context))).thenReturn(wh);
         BaseObject o = mock(BaseObject.class);
-        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        when(wh.getXObject(RecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
         when(o.getStringValue("phenotypeMapping")).thenReturn("PhenoTips.XPhenotypeMapping");
 
         Assert.assertEquals(expectedMapping, c.getPhenotypeMapping());
@@ -524,9 +524,9 @@ public class ConfiguredRecordConfigurationTest
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
-        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        when(x.getDocument(Matchers.any(EntityReference.class), Matchers.same(context))).thenReturn(wh);
         BaseObject o = mock(BaseObject.class);
-        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        when(wh.getXObject(RecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
         when(o.getStringValue("phenotypeMapping")).thenReturn("PhenoTips.XPhenotypeMapping");
 
         Assert.assertEquals(expectedMapping, c.getPhenotypeMapping());

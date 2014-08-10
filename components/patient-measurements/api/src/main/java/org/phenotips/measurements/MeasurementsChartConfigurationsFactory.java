@@ -19,13 +19,13 @@
  */
 package org.phenotips.measurements;
 
-import java.util.List;
-
 import org.xwiki.component.annotation.Role;
+
+import java.util.List;
 
 /**
  * Loads chart configurations for measurements.
- * 
+ *
  * @version $Id$
  * @since 1.0M3
  */
@@ -34,7 +34,7 @@ public interface MeasurementsChartConfigurationsFactory
 {
     /**
      * Load and return the list of chart configurations for a measurement type.
-     * 
+     *
      * @param measurementType the measurement type to configure
      * @return a list of chart configurations, or an empty list if no configurations are registered
      */

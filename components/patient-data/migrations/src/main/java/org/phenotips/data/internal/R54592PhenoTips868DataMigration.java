@@ -52,9 +52,9 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
  * Migration for PhenoTips issue #868: Fix broken SVG code generated before fixing issue #556.
- * 
+ *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.0M13
  */
 @Component
 @Named("R54592Phenotips#868")

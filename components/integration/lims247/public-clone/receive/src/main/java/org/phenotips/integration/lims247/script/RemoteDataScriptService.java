@@ -39,7 +39,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Script service that accepts document modification requests from a trusted remote service.
- * 
+ *
  * @version $Id$
  * @since 1.0M10
  */
@@ -63,7 +63,7 @@ public class RemoteDataScriptService implements ScriptService
     /**
      * Check that the token received in the request is valid. The expected token is configured in the
      * {@code xwiki.properties} configuration file, under the {@code phenotips.remoteAuthentication.trustedToken} key.
-     * 
+     *
      * @return {@code true} if a token parameter is present in the request, and it's value matches the configuration
      */
     public boolean isTrusted()
@@ -126,7 +126,7 @@ public class RemoteDataScriptService implements ScriptService
 
     /**
      * Helper method for obtaining a valid XContext from the execution context.
-     * 
+     *
      * @return the current request context
      */
     private XWikiContext getXContext()

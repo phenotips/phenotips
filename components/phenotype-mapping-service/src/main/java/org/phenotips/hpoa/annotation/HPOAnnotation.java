@@ -19,14 +19,14 @@
  */
 package org.phenotips.hpoa.annotation;
 
+import org.phenotips.hpoa.ontology.Ontology;
+
+import org.xwiki.component.annotation.Role;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
-import org.phenotips.hpoa.ontology.Ontology;
-
-import org.xwiki.component.annotation.Role;
 
 @Role
 public interface HPOAnnotation

@@ -581,7 +581,7 @@
     </class>
     <property>
       <content>{{velocity}}
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})
+$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css', {'rel': 'stylesheet'})
 $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')
 $xwiki.ssx.use('PhenoTips.SpecificityMetricWidget', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('PhenoTips.SpecificityMetricWidget')##

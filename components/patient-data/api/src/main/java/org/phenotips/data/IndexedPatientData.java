@@ -32,7 +32,7 @@ import java.util.Map.Entry;
  *
  * @param <T> the type of data being managed by this component
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.0M13
  */
 public class IndexedPatientData<T> implements PatientData<T>
 {

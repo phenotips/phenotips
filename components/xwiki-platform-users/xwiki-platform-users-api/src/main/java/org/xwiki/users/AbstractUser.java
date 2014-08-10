@@ -24,7 +24,7 @@ import org.xwiki.model.reference.EntityReferenceSerializer;
 
 /**
  * Base class for implementing users.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -38,7 +38,7 @@ public abstract class AbstractUser implements User
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see User#getId()
      */
     @Override
@@ -49,7 +49,7 @@ public abstract class AbstractUser implements User
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see User#getUsername()
      */
     @Override
@@ -60,7 +60,7 @@ public abstract class AbstractUser implements User
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see User#getProfileDocument()
      */
     @Override
@@ -71,7 +71,7 @@ public abstract class AbstractUser implements User
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see Object#toString()
      */
     @Override
@@ -82,7 +82,7 @@ public abstract class AbstractUser implements User
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see Comparable#compareTo(Object)
      */
     @Override
