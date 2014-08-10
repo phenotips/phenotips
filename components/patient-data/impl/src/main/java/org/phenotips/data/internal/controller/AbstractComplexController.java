@@ -52,11 +52,7 @@ import net.sf.json.JSONObject;
  * custom functions for dealing with conversion to booleans, and ontology codes to human readable labels.
  *
  * @version $Id$
-<<<<<<< HEAD
- * @since 1.0M10
-=======
  * @since 1.0RC1
->>>>>>> 0fcadcca564ebabf3ab0a4feae2e1258d1e9f08f
  */
 public abstract class AbstractComplexController<T> implements PatientDataController<T>
 {
