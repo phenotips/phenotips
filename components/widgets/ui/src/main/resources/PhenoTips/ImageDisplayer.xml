@@ -112,7 +112,7 @@
   &lt;label for='${fieldName}_${attachment.filename}' title='${attachment.filename}'&gt;
   {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='${options.inputType}' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
   #if ($options.manage)
-  &lt;a class='action delete' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="Delete"&gt;&lt;img src="$xwiki.getSkinFile('icons/silk/cross.png')"&gt;&lt;/a&gt;##
+  &lt;a class='action delete fa fa-times-circle fa-lg fa-fw' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="Delete"&gt;&lt;/a&gt;##
   #end
   #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||title="${attachment.filename}"]])))#else##
  &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="Open $!{attachment.filename}"&gt; [open]&lt;/a&gt;#end##
@@ -1151,21 +1151,18 @@ $content
   display: inline-block;
   padding: 0 0 0 20px;
 }
-.attachment-item label input{
+.attachment-item label input {
   margin-left: 0px;
   vertical-align: middle;
 }
 .attachment-item .action {
-  background-position: center center;
+  background: $theme.pageContentBackgroundColor;
+  border-radius: 1em;
   display: none;
-  height: 18px;
+  line-height: 1.286em;
   position: absolute;
   right: 0;
-  top: -0.25em;
-  width: 18px;
-}
-.attachment-item image .action {
-  top: -0.1em;
+  top: 0;
 }
 .attachment-item:hover .action {
   display: inline-block;
