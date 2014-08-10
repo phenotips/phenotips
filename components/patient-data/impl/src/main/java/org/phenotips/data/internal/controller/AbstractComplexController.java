@@ -131,13 +131,14 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
 
     /**
      * @return list of fields which contain HPO codes, and therefore additional data can be obtained, such as human
-     * readable name
+     *         readable name
      */
     protected abstract List<String> getCodeFields();
 
     /**
      * In case all fields are code fields, then the controller can store data in memory as Ontology objects rather than
      * strings.
+     *
      * @return true if all fields contain HPO codes
      */
     protected boolean isCodeFieldsOnly()
@@ -218,11 +219,11 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
 /**
  * There exists no class currently that would be able to covert an ontology code into a human readable format given only
  * a code string. Considering that there is a need for such functionality, there are 3 options: copy the code that
- * performs the function needed into the controller, create a class extending {@link
- * org.phenotips.data.internal.AbstractPhenoTipsOntologyProperty} in a separate file, or create such class here. Given
- * the fact the the {@link org.phenotips.data.internal.AbstractPhenoTipsOntologyProperty} is abstract only by having a
- * protected constructor, which fully satisfies the needed functionality, it makes the most sense to put {@link
- * QuickOntologyProperty} here.
+ * performs the function needed into the controller, create a class extending
+ * {@link org.phenotips.data.internal.AbstractPhenoTipsOntologyProperty} in a separate file, or create such class here.
+ * Given the fact the the {@link org.phenotips.data.internal.AbstractPhenoTipsOntologyProperty} is abstract only by
+ * having a protected constructor, which fully satisfies the needed functionality, it makes the most sense to put
+ * {@link QuickOntologyProperty} here.
  */
 class QuickOntologyProperty extends AbstractPhenoTipsOntologyProperty
 {

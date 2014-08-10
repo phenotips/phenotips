@@ -33,7 +33,7 @@ import javax.inject.Singleton;
 /**
  * Handles the information found in the family history section of the patient record.
  */
-@Component(roles = {PatientDataController.class})
+@Component(roles = { PatientDataController.class })
 @Named("familyHistory")
 @Singleton
 public class FamilyHistoryController extends AbstractComplexController<Integer>
@@ -65,7 +65,7 @@ public class FamilyHistoryController extends AbstractComplexController<Integer>
     @Override
     protected List<String> getBooleanFields()
     {
-        return booleans;
+        return this.booleans;
     }
 
     @Override

@@ -34,7 +34,7 @@ import javax.inject.Singleton;
 /**
  * Handles the information found in the family history section of the patient record.
  */
-@Component(roles = {PatientDataController.class})
+@Component(roles = { PatientDataController.class })
 @Named("prenatalPhenotype")
 @Singleton
 public class PrenatalPhenotypeController extends AbstractComplexController<List<OntologyProperty>>
@@ -72,11 +72,12 @@ public class PrenatalPhenotypeController extends AbstractComplexController<List<
     @Override
     protected List<String> getCodeFields()
     {
-        return hpoCodes;
+        return this.hpoCodes;
     }
 
     @Override
-    protected Boolean isCodeFieldsOnly() {
+    protected boolean isCodeFieldsOnly()
+    {
         return true;
     }
 }

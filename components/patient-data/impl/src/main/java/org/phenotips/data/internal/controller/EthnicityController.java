@@ -33,7 +33,7 @@ import javax.inject.Singleton;
 /**
  * Handles the information found in the family history section of the patient record.
  */
-@Component(roles = {PatientDataController.class})
+@Component(roles = { PatientDataController.class })
 @Named("ethnicity")
 @Singleton
 public class EthnicityController extends AbstractComplexController<List<String>>
