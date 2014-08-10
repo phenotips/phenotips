@@ -44,7 +44,7 @@
 #set ($displayer = $xwiki.getDocument($displayerName))
 #set($options = {
   'fieldName' : "",
-  'filter' : ['png', 'jpg', 'gif'],
+  'filter' : ['png', 'jpg', 'jpeg', 'gif'],
   'manage' : false,
   'inputType' : 'checkbox',
   'isImage' : true
