@@ -124,6 +124,17 @@
         <enabled>false</enabled>
       </snapshots>
     </pluginRepository>
+    <pluginRepository>
+      <id>uoft-external-snapshots</id>
+      <name>UofT external snapshot repositories mirror</name>
+      <url>http://nexus.cs.toronto.edu/nexus/content/groups/public-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
   </pluginRepositories>
 
   <properties>
