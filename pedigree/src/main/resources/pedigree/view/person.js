@@ -400,7 +400,8 @@ var Person = Class.create(AbstractPerson, {
      */
     setDeathDate: function(deathDate) {
         deathDate = deathDate ? (new Date(deathDate)) : '';
-        if(!deathDate || deathDate && !this.getBirthDate() || deathDate.getDate()>this.getBirthDate().getDate()) {
+        // only set death date if it happens ot be after the birth date, or there is no birth or death date
+        if(!deathDate || !this.getBirthDate() || deathDate.getTime() > this.getBirthDate().getTime()) {
             this._deathDate =  deathDate;
             this._deathDate && (this.getLifeStatus() == 'alive') && this.setLifeStatus('deceased');
         }
