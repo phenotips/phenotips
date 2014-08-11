@@ -43,7 +43,7 @@ import javax.inject.Singleton;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.BaseProperty;
+import com.xpn.xwiki.objects.BaseStringProperty;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -104,9 +104,9 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             for (BaseObject geneObject : geneXWikiObjects) {
                 Map<String, String> singleGene = new LinkedHashMap<String, String>();
                 for (String property : getProperties()) {
-                    BaseProperty field = (BaseProperty) geneObject.getField(property);
+                    BaseStringProperty field = (BaseStringProperty) geneObject.getField(property);
                     if (field != null) {
-                        singleGene.put(property, (String) field.getValue());
+                        singleGene.put(property, field.getValue());
                     }
                 }
                 allGenes.add(singleGene);
