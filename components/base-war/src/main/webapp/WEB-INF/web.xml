@@ -208,6 +208,11 @@
   </servlet-mapping>
 
   <servlet-mapping>
+    <servlet-name>action</servlet-name>
+    <url-pattern>/xwiki/bin/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
     <servlet-name>redirectHomeServlet</servlet-name>
     <url-pattern>/redirect</url-pattern>
   </servlet-mapping>
