@@ -283,7 +283,7 @@
       <extension>
         <groupId>org.phenotips</groupId>
         <artifactId>phenotips-functional-tests-lifecycle</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0-milestone-1</version>
       </extension>
     </extensions>
     <plugins>
@@ -828,7 +828,7 @@
           <groupId>org.phenotips</groupId>
           <artifactId>phenotips-packager-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.0-SNAPSHOT</version>
+          <version>1.0-milestone-1</version>
         </plugin>
       </plugins>
     </pluginManagement>
