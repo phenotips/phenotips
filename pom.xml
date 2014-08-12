@@ -135,6 +135,16 @@
     <checkstyle.skip>false</checkstyle.skip>
     <clirr.skip>false</clirr.skip>
     <coverage.instructionRatio>1.00</coverage.instructionRatio>
+
+    <!-- Functional test environment -->
+    <it.pattern>.*</it.pattern>
+    <it.patternMethod>.*</it.patternMethod>
+    <it.server.directory>${project.build.directory}/package/</it.server.directory>
+    <it.server.port>8080</it.server.port>
+    <it.server.stopPort>8079</it.server.stopPort>
+    <it.server.startCommand>sh start.sh ${it.server.port} ${it.server.stopPort}</it.server.startCommand>
+    <it.server.stopCommand>sh stop.sh ${it.server.stopPort}</it.server.stopCommand>
+    <it.server.baseURL>http://localhost</it.server.baseURL>
   </properties>
 
   <dependencyManagement>
@@ -575,6 +585,48 @@
             </includes>
             <parallel>classesAndMethods</parallel>
             <threadCount>2</threadCount>
+            <systemProperties>
+              <property>
+                <name>pattern</name>
+                <value>${it.pattern}</value>
+              </property>
+              <property>
+                <name>patternMethod</name>
+                <value>${it.patternMethod}</value>
+              </property>
+              <property>
+                <name>xwiki.test.baseURL</name>
+                <value>${it.server.baseURL}</value>
+              </property>
+              <property>
+                <name>xwiki.test.skipStart</name>
+                <value>${it.skipStart}</value>
+              </property>
+              <property>
+                <name>xwikiPort</name>
+                <value>${it.server.port}</value>
+              </property>
+              <property>
+                <name>xwikiStopPort</name>
+                <value>${it.server.stopPort}</value>
+              </property>
+              <property>
+                <name>xwikiExecutionDirectory</name>
+                <value>${it.server.directory}</value>
+              </property>
+              <property>
+                <name>screenshotDirectory</name>
+                <value>${basedir}/target/screenshots</value>
+              </property>
+              <property>
+                <name>xwikiExecutionStartCommand</name>
+                <value>${it.server.startCommand}</value>
+              </property>
+              <property>
+                <name>xwikiExecutionStopCommand</name>
+                <value>${it.server.stopCommand}</value>
+              </property>
+            </systemProperties>
           </configuration>
         </plugin>
         <plugin>
@@ -802,6 +854,20 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+
+    <!-- Test profiles -->
+    <profile>
+      <id>windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+        <it.server.startCommand>cmd /c start.bat ${it.server.port} ${it.server.stopPort}</it.server.startCommand>
+        <it.server.stopCommand>cmd /c stop.bat ${it.server.stopPort}</it.server.stopCommand>
+      </properties>
     </profile>
   </profiles>
 
