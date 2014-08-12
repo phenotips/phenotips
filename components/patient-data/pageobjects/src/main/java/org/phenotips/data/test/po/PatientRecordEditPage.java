@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,26 +16,40 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.phenotips.data.test.po;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>patient-data</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Patient data</name>
+import org.xwiki.test.ui.po.InlinePage;
 
-  <modules>
-    <module>api</module>
-    <module>impl</module>
-    <module>migrations</module>
-    <module>indexing</module>
-    <module>ui</module>
-    <module>pageobjects</module>
-    <module>tests</module>
-  </modules>
-</project>
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+
+/**
+ * Represents the actions possible on a patient record in view mode.
+ *
+ * @version $Id$
+ * @since 1.0RC1
+ */
+public class PatientRecordEditPage extends InlinePage
+{
+    @FindBy(css = "#document-title h1")
+    WebElement recordId;
+
+    public static PatientRecordEditPage gotoPage(String patientId)
+    {
+        getUtil().gotoPage("data", patientId, "edit");
+        return new PatientRecordEditPage();
+    }
+
+    public String getPatientRecordId()
+    {
+        return this.recordId.getText();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected PatientRecordViewPage createViewPage()
+    {
+        return new PatientRecordViewPage();
+    }
+}

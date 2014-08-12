@@ -146,6 +146,16 @@
     <checkstyle.skip>false</checkstyle.skip>
     <clirr.skip>false</clirr.skip>
     <coverage.instructionRatio>1.00</coverage.instructionRatio>
+
+    <!-- Functional test environment -->
+    <it.pattern>.*</it.pattern>
+    <it.patternMethod>.*</it.patternMethod>
+    <it.server.directory>${project.build.directory}/package/</it.server.directory>
+    <it.server.port>8080</it.server.port>
+    <it.server.stopPort>8079</it.server.stopPort>
+    <it.server.startCommand>sh start.sh ${it.server.port} ${it.server.stopPort}</it.server.startCommand>
+    <it.server.stopCommand>sh stop.sh ${it.server.stopPort}</it.server.stopCommand>
+    <it.server.baseURL>http://localhost</it.server.baseURL>
   </properties>
 
   <dependencyManagement>
@@ -233,6 +243,31 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.9</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>${solr.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-queryparser</artifactId>
+        <version>${solr.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-analyzers-common</artifactId>
+        <version>${solr.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>xalan</artifactId>
+        <version>2.7.2</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -243,6 +278,12 @@
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-webdav-jackrabbit</artifactId>
         <version>2.2</version>
+      </extension>
+      <!-- Needed to add support for the "functional-tests" packaging -->
+      <extension>
+        <groupId>org.phenotips</groupId>
+        <artifactId>phenotips-functional-tests-lifecycle</artifactId>
+        <version>1.0-SNAPSHOT</version>
       </extension>
     </extensions>
     <plugins>
@@ -580,6 +621,48 @@
             </includes>
             <parallel>classesAndMethods</parallel>
             <threadCount>2</threadCount>
+            <systemProperties>
+              <property>
+                <name>pattern</name>
+                <value>${it.pattern}</value>
+              </property>
+              <property>
+                <name>patternMethod</name>
+                <value>${it.patternMethod}</value>
+              </property>
+              <property>
+                <name>xwiki.test.baseURL</name>
+                <value>${it.server.baseURL}</value>
+              </property>
+              <property>
+                <name>xwiki.test.skipStart</name>
+                <value>${it.skipStart}</value>
+              </property>
+              <property>
+                <name>xwikiPort</name>
+                <value>${it.server.port}</value>
+              </property>
+              <property>
+                <name>xwikiStopPort</name>
+                <value>${it.server.stopPort}</value>
+              </property>
+              <property>
+                <name>xwikiExecutionDirectory</name>
+                <value>${it.server.directory}</value>
+              </property>
+              <property>
+                <name>screenshotDirectory</name>
+                <value>${basedir}/target/screenshots</value>
+              </property>
+              <property>
+                <name>xwikiExecutionStartCommand</name>
+                <value>${it.server.startCommand}</value>
+              </property>
+              <property>
+                <name>xwikiExecutionStopCommand</name>
+                <value>${it.server.stopCommand}</value>
+              </property>
+            </systemProperties>
           </configuration>
         </plugin>
         <plugin>
@@ -741,6 +824,12 @@
           <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
           <version>${xwiki.version}</version>
         </plugin>
+        <plugin>
+          <groupId>org.phenotips</groupId>
+          <artifactId>phenotips-packager-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.0-SNAPSHOT</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -801,6 +890,20 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+
+    <!-- Test profiles -->
+    <profile>
+      <id>windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+        <it.server.startCommand>cmd /c start.bat ${it.server.port} ${it.server.stopPort}</it.server.startCommand>
+        <it.server.stopCommand>cmd /c stop.bat ${it.server.stopPort}</it.server.stopCommand>
+      </properties>
     </profile>
   </profiles>
 
