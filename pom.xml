@@ -662,6 +662,14 @@
                 <name>xwikiExecutionStopCommand</name>
                 <value>${it.server.stopCommand}</value>
               </property>
+              <property>
+                <name>xwikiWebappName</name>
+                <value>phenotips</value>
+              </property>
+              <property>
+                <name>xwikiWebappPath</name>
+                <value></value>
+              </property>
             </systemProperties>
           </configuration>
         </plugin>
