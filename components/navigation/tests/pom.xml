@@ -24,13 +24,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>patient-data</artifactId>
+    <artifactId>phenotips-navigation</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-data-tests</artifactId>
-  <name>PhenoTips - Patient data - Functional Tests</name>
+  <artifactId>phenotips-navigation-tests</artifactId>
+  <name>PhenoTips - Navigation - Functional Tests</name>
   <packaging>functional-tests</packaging>
-  <description>Tests for the patient data</description>
+  <description>Tests for the general navigation</description>
   <properties>
     <xwikiCfgSuperadminPassword>pass</xwikiCfgSuperadminPassword>
     <!-- There are no sources to cover -->
@@ -40,28 +40,15 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>patient-data-ui</artifactId>
-      <version>${project.version}</version>
-      <type>xar</type>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-navigation-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
-      <scope>runtime</scope>
     </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>xwiki-platform-test-overrides</artifactId>
       <version>${testframework.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>patient-data-pageobjects</artifactId>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

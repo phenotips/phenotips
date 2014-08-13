@@ -24,22 +24,9 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>patient-data</artifactId>
+    <artifactId>phenotips-navigation</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-data-pageobjects</artifactId>
-  <name>PhenoTips - Patient data - Page Objects</name>
-  <packaging>jar</packaging>
-  <description>Selenium wrapper which exposes the UI module as high level testable methods</description>
-  <properties>
-    <!-- None of the classes is valid -->
-    <checkstyle.skip>true</checkstyle.skip>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>xwiki-platform-test-overrides</artifactId>
-      <version>${testframework.version}</version>
-    </dependency>
-  </dependencies>
+  <artifactId>phenotips-navigation-api</artifactId>
+  <name>PhenoTips - Navigation - Java APIs</name>
 </project>
