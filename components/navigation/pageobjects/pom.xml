@@ -24,24 +24,30 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>phenotips-navigation</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-navigation</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - General navigation</name>
+  <artifactId>phenotips-navigation-pageobjects</artifactId>
+  <name>PhenoTips - Navigation - Testing Page Objects</name>
+  <packaging>jar</packaging>
+  <description>Selenium wrapper which exposes the Navigation UI module as high level testable methods</description>
 
-  <modules>
-    <module>ui</module>
-  </modules>
+  <properties>
+    <!-- None of the classes is valid -->
+    <checkstyle.skip>true</checkstyle.skip>
+  </properties>
 
-  <profiles>
-    <profile>
-      <id>functional-tests</id>
-      <modules>
-        <module>pageobjects</module>
-        <module>tests</module>
-      </modules>
-    </profile>
-  </profiles>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-test</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.phenotips</groupId>
+      <artifactId>patient-data-pageobjects</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>
