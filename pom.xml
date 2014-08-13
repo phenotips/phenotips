@@ -141,6 +141,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <xwiki.version>5.4.5</xwiki.version>
     <slf4j.version>1.7.7</slf4j.version>
+    <testframework.version>1.0-SNAPSHOT</testframework.version>
     <solr.version>4.9.0</solr.version>
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>
@@ -284,7 +285,7 @@
       <extension>
         <groupId>org.phenotips</groupId>
         <artifactId>phenotips-functional-tests-lifecycle</artifactId>
-        <version>1.0-milestone-1</version>
+        <version>${testframework.version}</version>
       </extension>
     </extensions>
     <plugins>
@@ -837,7 +838,7 @@
           <groupId>org.phenotips</groupId>
           <artifactId>phenotips-packager-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.0-milestone-1</version>
+          <version>${testframework.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>

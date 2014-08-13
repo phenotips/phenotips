@@ -43,9 +43,9 @@
     </dependency>
     <!-- Test dependencies -->
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-test</artifactId>
-      <version>${xwiki.version}</version>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-platform-test-overrides</artifactId>
+      <version>${testframework.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
