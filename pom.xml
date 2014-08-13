@@ -148,6 +148,7 @@
     <coverage.instructionRatio>1.00</coverage.instructionRatio>
 
     <!-- Functional test environment -->
+    <xwiki.defaultSkin>PhenoTips.Skin</xwiki.defaultSkin>
     <it.pattern>.*</it.pattern>
     <it.patternMethod>.*</it.patternMethod>
     <it.server.directory>${project.build.directory}/package/</it.server.directory>
