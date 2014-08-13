@@ -33,7 +33,10 @@
   <description>Tests for the general navigation</description>
   <properties>
     <xwikiCfgSuperadminPassword>pass</xwikiCfgSuperadminPassword>
+    <!-- There are no sources to cover -->
+    <coverage.instructionRatio>0</coverage.instructionRatio>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -55,6 +58,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <testSourceDirectory>src/test/it</testSourceDirectory>
     <plugins>
@@ -67,6 +71,8 @@
           <includes>
             <include>**/AllTests.java</include>
           </includes>
+          <!-- There's only one browser, it can't run parallel tests -->
+          <parallel>suites</parallel>
         </configuration>
       </plugin>
     </plugins>

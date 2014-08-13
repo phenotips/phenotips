@@ -33,9 +33,10 @@
   <description>Tests for the patient data</description>
   <properties>
     <xwikiCfgSuperadminPassword>pass</xwikiCfgSuperadminPassword>
-    <platform.version>${xwiki.version}</platform.version>
-    <commons.version>${xwiki.version}</commons.version>
+    <!-- There are no sources to cover -->
+    <coverage.instructionRatio>0</coverage.instructionRatio>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -57,6 +58,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <testSourceDirectory>src/test/it</testSourceDirectory>
     <plugins>
@@ -69,6 +71,8 @@
           <includes>
             <include>**/AllTests.java</include>
           </includes>
+          <!-- There's only one browser, it can't run parallel tests -->
+          <parallel>suites</parallel>
         </configuration>
       </plugin>
     </plugins>
