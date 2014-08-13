@@ -44,6 +44,13 @@
       <version>${project.version}</version>
       <type>xar</type>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-navigation-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+      <scope>runtime</scope>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -54,6 +61,12 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>patient-data-pageobjects</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-navigation-pageobjects</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
