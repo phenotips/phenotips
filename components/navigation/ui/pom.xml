@@ -41,6 +41,12 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-navigation-api</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-skin-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
