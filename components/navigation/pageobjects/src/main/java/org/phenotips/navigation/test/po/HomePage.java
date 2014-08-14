@@ -75,4 +75,9 @@ public class HomePage extends ViewPage
     {
         return getUtil().hasElement(this.activeGroupsGadget, By.cssSelector("tr"));
     }
+
+    public boolean hasGroupManagement()
+    {
+        return getUtil().hasElement(this.activeGroupsGadget, By.xpath(".//a[contains(text(), 'Manage groups')]"));
+    }
 }

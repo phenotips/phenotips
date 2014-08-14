@@ -141,7 +141,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <xwiki.version>5.4.5</xwiki.version>
     <slf4j.version>1.7.7</slf4j.version>
-    <testframework.version>1.0-milestone-2</testframework.version>
+    <testframework.version>1.0-SNAPSHOT</testframework.version>
     <solr.version>4.9.0</solr.version>
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>

@@ -24,7 +24,8 @@ import org.phenotips.navigation.test.po.AllRecordsPage;
 import org.phenotips.navigation.test.po.HomePage;
 
 import org.xwiki.test.ui.AbstractTest;
-import org.xwiki.test.ui.SuperAdminAuthenticationRule;
+import org.xwiki.test.ui.AuthenticationRule;
+import org.xwiki.test.ui.PAdamsAuthenticationRule;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -35,12 +36,12 @@ import org.junit.Test;
  * Verify the correct functionality of the PhenoTips homepage.
  *
  * @version $Id$
- * @since 4.3M1
+ * @since 1.0RC1
  */
 public class HomePageTest extends AbstractTest
 {
     @Rule
-    public SuperAdminAuthenticationRule authenticationRule = new SuperAdminAuthenticationRule(getUtil(), getDriver());
+    public AuthenticationRule authenticationRule = new PAdamsAuthenticationRule(getUtil(), getDriver(), true);
 
     @Test
     public void verifyClickingOnNewPatientRecord()
@@ -56,5 +57,12 @@ public class HomePageTest extends AbstractTest
         HomePage page = HomePage.gotoPage();
         AllRecordsPage allRecords = page.clickBrowseAllRecords();
         Assert.assertEquals(0, allRecords.getTable().getColumnIndex("Report name"));
+    }
+
+    @Test
+    public void verifyGroupManagementNotDisplayedForNormalUsers()
+    {
+        HomePage page = HomePage.gotoPage();
+        Assert.assertFalse(page.hasGroupManagement());
     }
 }
