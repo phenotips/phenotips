@@ -320,6 +320,10 @@
   float: right;
 }
 
+input.button:disabled, .buttonwrapper button:disabled, input.button:disabled:hover, .buttonwrapper button:disabled:hover {
+    background-image: none;
+}
+
 .add-data-button,
 .buttonwrapper a.add-data-button:link,
 .buttonwrapper a.add-data-button:visited,
