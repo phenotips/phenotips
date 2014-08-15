@@ -3600,8 +3600,7 @@ hr {
 /** Default style fixes **/
 .space-data #mainContentArea, .space-data #mainEditArea {
     background-color: #F9F9F9;
-    border: 1px solid #FFFFFF;
-    border-top: none;
+    border: 0 none;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     margin: 3em 0;
     padding: 0.5em 10px;
@@ -3667,9 +3666,6 @@ hr {
 }
 .space-data .before-patient-data {
   border: 0 none;
-  border-left: 1px solid $theme.menuBackgroundColor;
-  border-right: 1px solid $theme.menuBackgroundColor;
-  box-shadow: 0 4px 4px #f9f9f9;
   margin: 0 -11px;
   padding: 5px 10px;
 }
@@ -3678,7 +3674,7 @@ hr {
 }
 
 .xwiki-form-listclass {
-    display: inline-block;
+  display: inline-block;
 }
 .xwiki-form-listclass input[type="radio"][value=""], option[value=""] {
   display: none;
@@ -3767,10 +3763,6 @@ input[type=text]:focus, textarea:focus {
   font-style: normal;
 }
 .chapter {
-  border: 1px solid $theme.pageContentBackgroundColor;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 0 6px $theme.borderColor inset;
-  ##margin: 1em 0;
   margin: 3.5em 0 1em;
   padding: 5px 10px;
   position: relative;
