@@ -56,7 +56,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 /**
  * Migration for PhenoTips issue #477: Automatically migrate existing {@code onset} values to the new
  * {@code age_of_onset} field.
- * 
+ *
  * @version $Id$
  * @since 1.0M7
  */
@@ -93,7 +93,7 @@ public class R50290PhenoTips477DataMigration extends AbstractHibernateDataMigrat
 
         /**
          * Simple constructor.
-         * 
+         *
          * @param term see {@link #term}
          * @param upperAgeLimit see {@link #upperAgeLimit}
          */

@@ -35,27 +35,36 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * Tests for the contact data controller implementation, {@link ContactInformationController}.
- * 
+ *
  * @version $Id$
  */
 public class ContactInformationControllerTest
 {
-    private Patient patient = mock(Patient.class);
-
     /** The user used as the owner of the patient. */
     private static final DocumentReference USER = new DocumentReference("xwiki", "XWiki", "padams");
 
@@ -76,6 +85,20 @@ public class ContactInformationControllerTest
     public final MockitoComponentMockingRule<PatientDataController<String>> mocker =
         new MockitoComponentMockingRule<PatientDataController<String>>(
             ContactInformationController.class);
+
+    @Mock
+    private Patient patient;
+
+    @Mock
+    private PatientData<String> data;
+
+    @Before
+    public void setupComponents()
+    {
+        MockitoAnnotations.initMocks(this);
+        when(this.patient.<String>getData("contact")).thenReturn(this.data);
+        when(this.data.isNamed()).thenReturn(true);
+    }
 
     /** {@link ContactInformationController#load(Patient)} returns the user information when the owner is a user. */
     @Test
@@ -217,6 +240,116 @@ public class ContactInformationControllerTest
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
         Assert.assertNull(result);
+    }
+
+    /** {@link ContactInformationController#load(Patient)} returns null when the owner is guest. */
+    @Test
+    public void loadWithGuestOwner() throws Exception
+    {
+        PermissionsManager permissions = this.mocker.getInstance(PermissionsManager.class);
+        PatientAccess access = mock(PatientAccess.class);
+        when(permissions.getPatientAccess(this.patient)).thenReturn(access);
+        Owner owner = mock(Owner.class);
+        when(access.getOwner()).thenReturn(owner);
+        when(owner.getUser()).thenReturn(null);
+
+        PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
+        Assert.assertNull(result);
+    }
+
+    @Test
+    public void writeJSONWithNoContact() throws ComponentLookupException
+    {
+        when(this.patient.getData("contact")).thenReturn(null);
+        JSONObject json = new JSONObject();
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+        Assert.assertEquals(0, json.size());
+    }
+
+    @Test
+    public void writeJSONWithSkippedField() throws ComponentLookupException
+    {
+        JSONObject json = new JSONObject();
+        Collection<String> enabledFields = Collections.singleton("features");
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, enabledFields);
+        Assert.assertEquals(0, json.size());
+    }
+
+    @Test
+    public void writeJSONWithOtherTypeOfData() throws ComponentLookupException
+    {
+        JSONObject json = new JSONObject();
+        when(this.data.isNamed()).thenReturn(false);
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+        Assert.assertEquals(0, json.size());
+    }
+
+    @Test
+    public void writeJSONWithEmptyData() throws ComponentLookupException
+    {
+        JSONObject json = new JSONObject();
+        when(this.data.dictionaryIterator()).thenReturn(Collections.<Entry<String, String>>emptyIterator());
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+        Assert.assertEquals(0, json.size());
+    }
+
+    @Test
+    public void writeJSONUpdatesExistingElement() throws ComponentLookupException
+    {
+        JSONObject json = new JSONObject();
+        JSONObject contact = new JSONObject();
+        contact.put("workgroup", "Cardiology");
+        contact.put("email", "cardio@hospital.org");
+        json.put("contact", contact);
+
+        Map<String, String> data = new HashMap<>();
+        data.put("email", "jdoe@hospital.org");
+        data.put("name", "John Doe");
+        when(this.data.dictionaryIterator()).thenReturn(data.entrySet().iterator());
+        Collection<String> enabledFields = Collections.singleton("contact");
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, enabledFields);
+        Assert.assertEquals(1, json.size());
+        contact = json.getJSONObject("contact");
+        Assert.assertEquals(3, contact.size());
+        Assert.assertEquals("jdoe@hospital.org", contact.getString("email"));
+        Assert.assertEquals("Cardiology", contact.getString("workgroup"));
+        Assert.assertEquals("John Doe", contact.getString("name"));
+    }
+
+    @Test
+    public void writeJSONReplacesNullElement() throws ComponentLookupException
+    {
+        JSONObject json = new JSONObject();
+        json.put("contact", JSONNull.getInstance());
+
+        Map<String, String> data = new HashMap<>();
+        data.put("email", "jdoe@hospital.org");
+        data.put("name", "John Doe");
+        when(this.data.dictionaryIterator()).thenReturn(data.entrySet().iterator());
+        Collection<String> enabledFields = Collections.singleton("contact");
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json, enabledFields);
+        Assert.assertEquals(1, json.size());
+        JSONObject contact = json.getJSONObject("contact");
+        Assert.assertEquals(2, contact.size());
+        Assert.assertEquals("jdoe@hospital.org", contact.getString("email"));
+        Assert.assertEquals("John Doe", contact.getString("name"));
+    }
+
+    @Test
+    public void writeJSONCreatesContactElement() throws ComponentLookupException
+    {
+        JSONObject json = new JSONObject();
+
+        Map<String, String> data = new HashMap<>();
+        data.put("email", "jdoe@hospital.org");
+        data.put("name", "John Doe");
+        when(this.data.dictionaryIterator()).thenReturn(data.entrySet().iterator());
+        this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
+        Assert.assertEquals(1, json.size());
+        JSONObject contact = json.getJSONObject("contact");
+        Assert.assertEquals(2, contact.size());
+        Assert.assertEquals("jdoe@hospital.org", contact.getString("email"));
+        Assert.assertEquals("John Doe", contact.getString("name"));
     }
 
     /** {@link ContactInformationController#getName()} returns "contact". */

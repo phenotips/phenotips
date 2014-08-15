@@ -101,7 +101,7 @@ public class OmimInformationContentPatientScorer implements PatientScorer, Initi
      *
      * @param p the patient profile to score
      * @param presentFeatures whether the score for positive ({@code true}) or negative ({@code false}) features is
-     *        computed
+     *            computed
      * @return the score (information content) and the number of features
      */
     private Pair<Double, Integer> process(Patient p, boolean presentFeatures)

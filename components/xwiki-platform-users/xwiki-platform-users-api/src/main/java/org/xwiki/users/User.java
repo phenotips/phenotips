@@ -26,7 +26,7 @@ import java.net.URI;
 
 /**
  * XWiki User Interface.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -35,7 +35,7 @@ public interface User extends Comparable<User>
 {
     /**
      * Check if the returned user profile actually exists or not.
-     * 
+     *
      * @return {@code true} if the user profile is valid (e.g. the profile wiki document exists for a wiki user)
      */
     boolean exists();
@@ -43,7 +43,7 @@ public interface User extends Comparable<User>
     /**
      * An identifier which can be used internally for identifying the user. This is the value that should be stored to
      * remember the user.
-     * 
+     *
      * @return serialized user identifier which can be used to store and retrieve back this user object
      */
     String getId();
@@ -52,14 +52,14 @@ public interface User extends Comparable<User>
      * The username used for identifying the user in the form. This is not supposed to be used internally, but only as a
      * user-friendly "username" to display to this or other users, for example in a mail reminding what username to use
      * on the wiki.
-     * 
+     *
      * @return short username
      */
     String getUsername();
 
     /**
      * The real name of the user. The returned value should be in the "Givenname Familyname" format.
-     * 
+     *
      * @return user full (real) name, displayed in the UI to other wiki users
      */
     String getName();
@@ -68,7 +68,7 @@ public interface User extends Comparable<User>
      * If the user has an associated wiki document where their profile can be seen, return a reference to it. This
      * happens for users defined in the wiki, or for SSO users mirrored/cloned in the wiki. For external SSO users
      * without a profile clone in the wiki, {@code null} is returned.
-     * 
+     *
      * @return a reference to the user's profile document, if one exists, or {@code null} otherwise
      */
     DocumentReference getProfileDocument();
@@ -78,7 +78,7 @@ public interface User extends Comparable<User>
      * the wiki, a link to their profile document is returned. For external SSO users with a publicly accessible
      * profile, a link to their external profile is returned. For SSO services not accessible on the web, {@code null}
      * is returned.
-     * 
+     *
      * @return a link to the user's profile page, if one exists, or {@code null} otherwise
      */
     URI getProfileURI();
@@ -86,7 +86,7 @@ public interface User extends Comparable<User>
     /**
      * Get the value of an attribute defined for the user. Some example attributes are the user's given and family
      * names, email address, company, birth date. Actual attributes depend on the actual user management system.
-     * 
+     *
      * @param attributeName the name of the attribute to retrieve
      * @return the attribute value, if defined, or {@code null} otherwise
      */

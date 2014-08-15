@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests the meta user manager.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -91,7 +91,7 @@ public class MetaUserManagerTest
     public void getUserFromUsernameWithNoManagers() throws Exception
     {
         final DocumentReference admin = new DocumentReference("xwiki", "XWiki", "Admin");
-        when(this.cm.getInstanceMap(UserManager.class)).thenReturn(Collections.<String, Object> emptyMap());
+        when(this.cm.getInstanceMap(UserManager.class)).thenReturn(Collections.<String, Object>emptyMap());
         when(this.modelConfiguration.getDefaultReferenceValue(EntityType.WIKI)).thenReturn("xwiki");
         when(this.configuration.getProperty("users.defaultWiki", "xwiki")).thenReturn("xwiki");
         when(this.resolver.resolve("Admin", EntityType.DOCUMENT,
@@ -107,7 +107,7 @@ public class MetaUserManagerTest
     public void getUserFromFullReferenceWithNoManagers() throws Exception
     {
         final DocumentReference timmy = new DocumentReference("playground", "SouthPark", "Timmy");
-        when(this.cm.getInstanceMap(UserManager.class)).thenReturn(Collections.<String, Object> emptyMap());
+        when(this.cm.getInstanceMap(UserManager.class)).thenReturn(Collections.<String, Object>emptyMap());
         when(this.modelConfiguration.getDefaultReferenceValue(EntityType.WIKI)).thenReturn("xwiki");
         when(this.configuration.getProperty("users.defaultWiki", "xwiki")).thenReturn("xwiki");
         when(this.resolver.resolve("playground:SouthPark.Timmy", EntityType.DOCUMENT,
@@ -123,7 +123,7 @@ public class MetaUserManagerTest
     public void differentUsersWikiWithNoManagers() throws Exception
     {
         final DocumentReference admin = new DocumentReference("sandbox", "XWiki", "Admin");
-        when(this.cm.getInstanceMap(UserManager.class)).thenReturn(Collections.<String, Object> emptyMap());
+        when(this.cm.getInstanceMap(UserManager.class)).thenReturn(Collections.<String, Object>emptyMap());
         when(this.modelConfiguration.getDefaultReferenceValue(EntityType.WIKI)).thenReturn("xwiki");
         when(this.configuration.getProperty("users.defaultWiki", "xwiki")).thenReturn("sandbox");
         when(this.resolver.resolve("Admin", EntityType.DOCUMENT,
@@ -139,7 +139,7 @@ public class MetaUserManagerTest
     public void differentGlobalWikiWithNoManagers() throws Exception
     {
         final DocumentReference admin = new DocumentReference("test", "XWiki", "Admin");
-        when(this.cm.getInstanceMap(UserManager.class)).thenReturn(Collections.<String, Object> emptyMap());
+        when(this.cm.getInstanceMap(UserManager.class)).thenReturn(Collections.<String, Object>emptyMap());
         when(this.modelConfiguration.getDefaultReferenceValue(EntityType.WIKI)).thenReturn("test");
         when(this.configuration.getProperty("users.defaultWiki", "test")).thenReturn("test");
         when(this.resolver.resolve("Admin", EntityType.DOCUMENT,
@@ -162,7 +162,7 @@ public class MetaUserManagerTest
         managers.put("1", mockManager1);
         managers.put("2", mockManager2);
         managers.put("3", mockManager3);
-        when(this.cm.<UserManager> getInstanceMap(UserManager.class)).thenReturn(managers);
+        when(this.cm.<UserManager>getInstanceMap(UserManager.class)).thenReturn(managers);
         when(mockManager1.getUser("Admin")).thenReturn(null);
         when(mockManager2.getUser("Admin")).thenReturn(mockUser);
 
@@ -179,7 +179,7 @@ public class MetaUserManagerTest
         final Map<String, UserManager> managers = new LinkedHashMap<String, UserManager>();
         managers.put("ldap", mockManager1);
         managers.put("wiki", mockManager2);
-        when(this.cm.<UserManager> getInstanceMap(UserManager.class)).thenReturn(managers);
+        when(this.cm.<UserManager>getInstanceMap(UserManager.class)).thenReturn(managers);
         when(this.cm.getInstance(UserManager.class, "wiki")).thenReturn(mockManager2);
         when(mockManager1.getUser("Admin")).thenReturn(null);
         when(mockManager2.getUser("Admin")).thenReturn(null);
@@ -198,7 +198,7 @@ public class MetaUserManagerTest
         final Map<String, UserManager> managers = new LinkedHashMap<String, UserManager>();
         final DocumentReference admin = new DocumentReference("test", "XWiki", "Admin");
         managers.put("1", mockManager1);
-        when(this.cm.<UserManager> getInstanceMap(UserManager.class)).thenReturn(managers);
+        when(this.cm.<UserManager>getInstanceMap(UserManager.class)).thenReturn(managers);
         when(this.cm.getInstance(UserManager.class, "wiki")).thenThrow(
             new ComponentLookupException("Missing Implementation"));
 
@@ -239,7 +239,7 @@ public class MetaUserManagerTest
     public void differentDefaultUserManager() throws Exception
     {
         final DocumentReference admin = new DocumentReference("test", "XWiki", "Admin");
-        when(this.cm.getInstanceMap(UserManager.class)).thenReturn(Collections.<String, Object> emptyMap());
+        when(this.cm.getInstanceMap(UserManager.class)).thenReturn(Collections.<String, Object>emptyMap());
         when(this.configuration.getProperty("users.defaultUserManager", "wiki")).thenReturn("ldap");
         when(this.cm.getInstance(UserManager.class, "ldap")).thenThrow(
             new ComponentLookupException("Missing Implementation"));
@@ -290,7 +290,7 @@ public class MetaUserManagerTest
     public void forceWithMissingDefaultManager() throws Exception
     {
         final DocumentReference admin = new DocumentReference("test", "XWiki", "Admin");
-        when(this.cm.getInstanceMap(UserManager.class)).thenReturn(Collections.<String, Object> emptyMap());
+        when(this.cm.getInstanceMap(UserManager.class)).thenReturn(Collections.<String, Object>emptyMap());
         when(this.cm.getInstance(UserManager.class, "wiki")).thenThrow(
             new ComponentLookupException("Missing implementation"));
         when(this.modelConfiguration.getDefaultReferenceValue(EntityType.WIKI)).thenReturn("test");

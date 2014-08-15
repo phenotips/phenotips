@@ -30,7 +30,7 @@ import org.junit.Test;
 
 /**
  * Tests for the default {@link Group} implementation, {@link DefaultGroup}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultGroupTest

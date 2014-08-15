@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the default {@link PermissionsManager} implementation, {@link DefaultPermissionsManager}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultPermissionsManagerTest
@@ -91,7 +91,7 @@ public class DefaultPermissionsManagerTest
         levels.add(owner);
         levels.add(view);
         levels.add(manage);
-        when(this.cm.<AccessLevel> getInstanceList(AccessLevel.class)).thenReturn(levels);
+        when(this.cm.<AccessLevel>getInstanceList(AccessLevel.class)).thenReturn(levels);
         Collection<AccessLevel> returnedLevels = this.mocker.getComponentUnderTest().listAccessLevels();
         Assert.assertEquals(3, returnedLevels.size());
         Iterator<AccessLevel> it = returnedLevels.iterator();
@@ -106,8 +106,7 @@ public class DefaultPermissionsManagerTest
     @Test
     public void listAccessLevelsWithNoComponents() throws ComponentLookupException
     {
-        when(this.cm.<AccessLevel> getInstanceList(AccessLevel.class))
-            .thenReturn(Collections.<AccessLevel> emptyList());
+        when(this.cm.<AccessLevel>getInstanceList(AccessLevel.class)).thenReturn(Collections.<AccessLevel>emptyList());
         Collection<AccessLevel> returnedLevels = this.mocker.getComponentUnderTest().listAccessLevels();
         Assert.assertTrue(returnedLevels.isEmpty());
     }
@@ -116,7 +115,7 @@ public class DefaultPermissionsManagerTest
     @Test
     public void listAccessLevelsWithLookupExceptions() throws ComponentLookupException
     {
-        when(this.cm.<AccessLevel> getInstanceList(AccessLevel.class)).thenThrow(new ComponentLookupException("None"));
+        when(this.cm.<AccessLevel>getInstanceList(AccessLevel.class)).thenThrow(new ComponentLookupException("None"));
         Collection<AccessLevel> returnedLevels = this.mocker.getComponentUnderTest().listAccessLevels();
         Assert.assertTrue(returnedLevels.isEmpty());
     }
@@ -157,7 +156,7 @@ public class DefaultPermissionsManagerTest
         List<Visibility> visibilities = new ArrayList<Visibility>();
         visibilities.add(publicV);
         visibilities.add(privateV);
-        when(this.cm.<Visibility> getInstanceList(Visibility.class)).thenReturn(visibilities);
+        when(this.cm.<Visibility>getInstanceList(Visibility.class)).thenReturn(visibilities);
         Collection<Visibility> returnedVisibilities = this.mocker.getComponentUnderTest().listVisibilityOptions();
         Assert.assertEquals(2, returnedVisibilities.size());
         Iterator<Visibility> it = returnedVisibilities.iterator();
@@ -169,7 +168,7 @@ public class DefaultPermissionsManagerTest
     @Test
     public void listVisibilityOptionsWithNoComponents() throws ComponentLookupException
     {
-        when(this.cm.<Visibility> getInstanceList(Visibility.class)).thenReturn(Collections.<Visibility> emptyList());
+        when(this.cm.<Visibility>getInstanceList(Visibility.class)).thenReturn(Collections.<Visibility>emptyList());
         Collection<Visibility> returnedVisibilities = this.mocker.getComponentUnderTest().listVisibilityOptions();
         Assert.assertTrue(returnedVisibilities.isEmpty());
     }
@@ -178,7 +177,7 @@ public class DefaultPermissionsManagerTest
     @Test
     public void listVisibilityOptionsWithLookupExceptions() throws ComponentLookupException
     {
-        when(this.cm.<Visibility> getInstanceList(Visibility.class)).thenThrow(new ComponentLookupException("None"));
+        when(this.cm.<Visibility>getInstanceList(Visibility.class)).thenThrow(new ComponentLookupException("None"));
         Collection<Visibility> returnedVisibilities = this.mocker.getComponentUnderTest().listVisibilityOptions();
         Assert.assertTrue(returnedVisibilities.isEmpty());
     }

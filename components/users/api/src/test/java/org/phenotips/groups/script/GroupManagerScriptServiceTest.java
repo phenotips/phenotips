@@ -21,7 +21,6 @@ package org.phenotips.groups.script;
 
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
-import org.phenotips.groups.script.GroupManagerScriptService;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -39,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the {@link GroupManager} script service, {@link GroupManagerScriptService}.
- * 
+ *
  * @version $Id$
  */
 public class GroupManagerScriptServiceTest

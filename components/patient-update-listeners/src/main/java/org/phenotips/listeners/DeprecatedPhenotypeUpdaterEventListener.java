@@ -51,7 +51,7 @@ import com.xpn.xwiki.objects.DBStringListProperty;
 /**
  * Listens for document being created or updated, and before the action takes place, iterates over all the HPO terms and
  * replaces the deprecated ones.
- * 
+ *
  * @version $Id$
  */
 @Component

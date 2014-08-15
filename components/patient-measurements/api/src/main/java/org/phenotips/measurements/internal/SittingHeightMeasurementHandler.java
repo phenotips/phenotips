@@ -19,14 +19,14 @@
  */
 package org.phenotips.measurements.internal;
 
+import org.xwiki.component.annotation.Component;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.xwiki.component.annotation.Component;
-
 /**
  * Crown-rump length (infants) and sitting height measurements, in centimeters. Based on Tanner, 1978 charts.
- * 
+ *
  * @version $Id$
  * @since 1.0M3
  */

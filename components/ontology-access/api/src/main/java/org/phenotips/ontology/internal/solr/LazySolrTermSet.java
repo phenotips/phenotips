@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * A lazy-loading set that transforms a set of term identifiers into real terms only when actually accessing the terms.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -50,7 +50,7 @@ public class LazySolrTermSet implements Set<OntologyTerm>
     /**
      * Constructor that provides the list of {@link #identifiers terms identifier} and the {@link #ontology owner
      * ontology}.
-     * 
+     *
      * @param identifiers the {@link #identifiers identifiers to load}
      * @param ontology the {@link #ontology owner ontology}
      */

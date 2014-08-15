@@ -24,7 +24,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Provides access to the available ontologies and their terms.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -35,7 +35,7 @@ public interface OntologyManager
     /**
      * Retrieve a term from its owner ontology. For this to work properly, the term identifier must contain a known
      * ontology prefix.
-     * 
+     *
      * @param termId the term identifier, in the format {@code <ontology prefix>:<term id>}, for example
      *            {@code HP:0002066}
      * @return the requested term, or {@code null} if the term doesn't exist in the ontology, or no matching ontology is
@@ -45,7 +45,7 @@ public interface OntologyManager
 
     /**
      * Retrieve an ontology given its identifier.
-     * 
+     *
      * @param ontologyId the ontology identifier, which is also used as a prefix in every term identifier from that
      *            ontology, for example {@code HP} or {@code MIM}
      * @return the requested ontology, or {@code null} if it doesn't exist or isn't available in the platform

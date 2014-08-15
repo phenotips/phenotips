@@ -60,7 +60,7 @@ public abstract class AbstractAccessLevel implements AccessLevel
 
     /**
      * Simple constructor passing the permissiveness level.
-     * 
+     *
      * @param permissiveness the permissiveness to set, see {@link #permissiveness}
      */
     protected AbstractAccessLevel(int permissiveness, boolean assignable)

@@ -31,7 +31,7 @@ import net.sf.json.JSONObject;
 /**
  * Implementation of patient data based on the XWiki data model, where feature metadata is represented by properties in
  * objects of type {@code PhenoTips.PhenotypeMetaClass}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -42,7 +42,7 @@ public class PhenoTipsFeatureMetadatum extends AbstractPhenoTipsOntologyProperty
 
     /**
      * Constructor that copies the data from an XProperty.
-     * 
+     *
      * @param data the XProperty representing this meta-feature in XWiki
      */
     PhenoTipsFeatureMetadatum(StringProperty data)

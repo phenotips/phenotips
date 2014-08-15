@@ -19,6 +19,12 @@
  */
 package org.phenotips.solr;
 
+import org.phenotips.obo2solr.ParameterPreparer;
+import org.phenotips.obo2solr.SolrUpdateGenerator;
+import org.phenotips.obo2solr.TermData;
+
+import org.xwiki.component.annotation.Component;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,18 +42,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
-import org.phenotips.obo2solr.ParameterPreparer;
-import org.phenotips.obo2solr.SolrUpdateGenerator;
-import org.phenotips.obo2solr.TermData;
-import org.xwiki.component.annotation.Component;
-
 
 /**
  * Provides access to the Solr server, with the main purpose of providing access to the HPO ontology, and secondary
  * purposes of re-indexing the ontology and clearing the index completely. There are two ways of accessing the HPO
  * ontology: getting a single term by its identifier, or searching for terms matching a given query in the Lucene query
  * language.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -62,7 +63,7 @@ public class HPOScriptService extends AbstractSolrScriptService
 
     /**
      * Get the HPO IDs of the specified phenotype and all its ancestors.
-     * 
+     *
      * @param id the HPO identifier to search for, in the {@code HP:1234567} format
      * @return the full set of ancestors-or-self IDs, or an empty set if the requested ID was not found in the index
      */
@@ -92,7 +93,7 @@ public class HPOScriptService extends AbstractSolrScriptService
 
     /**
      * Add an ontology to the index.
-     * 
+     *
      * @param ontologyUrl the address from where to get the ontology file
      * @param fieldList the list of ontology fields to index; comma separated list of field names with an optional boost
      *            separated by a color; for example: {@code id:50,name,def,synonym,is_a:0.1}; if the empty string is
@@ -136,7 +137,7 @@ public class HPOScriptService extends AbstractSolrScriptService
 
     /**
      * Delete all the data in the Solr index.
-     * 
+     *
      * @return {@code 0} if the command was successful, {@code 1} otherwise
      */
     public int clear()

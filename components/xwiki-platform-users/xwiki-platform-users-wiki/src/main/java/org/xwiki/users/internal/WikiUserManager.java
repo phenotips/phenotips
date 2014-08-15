@@ -45,7 +45,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * User manager based on wiki documents holding {@code XWiki.XWikiUsers} XObjects.
- * 
+ *
  * @version $Id$
  * @since 3.1M2
  */
@@ -104,7 +104,7 @@ public class WikiUserManager extends AbstractUserManager implements Initializabl
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.xwiki.users.UserManager#getUser(String, boolean)
      */
     @Override
@@ -129,7 +129,7 @@ public class WikiUserManager extends AbstractUserManager implements Initializabl
 
     /**
      * Transform a username into a document reference, belonging to the current wiki.
-     * 
+     *
      * @param identifier the user identifier to resolve
      * @return a document reference
      */
@@ -143,7 +143,7 @@ public class WikiUserManager extends AbstractUserManager implements Initializabl
     /**
      * Transform a username into a document reference, belonging to the default wiki where user profiles should be
      * stored.
-     * 
+     *
      * @param identifier the user identifier to resolve
      * @return a document reference
      */
@@ -157,7 +157,7 @@ public class WikiUserManager extends AbstractUserManager implements Initializabl
 
     /**
      * Transform a username into a document reference, belonging to the main wiki.
-     * 
+     *
      * @param identifier the user identifier to resolve
      * @return a document reference
      */

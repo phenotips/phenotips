@@ -64,7 +64,7 @@ public class SecureStorageRegistrationHandler implements EventListener
     @Override
     public List<Event> getEvents()
     {
-        return Collections.<Event> singletonList(new ApplicationStartedEvent());
+        return Collections.<Event>singletonList(new ApplicationStartedEvent());
     }
 
     @Override

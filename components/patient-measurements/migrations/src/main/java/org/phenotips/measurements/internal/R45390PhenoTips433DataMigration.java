@@ -55,7 +55,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 /**
  * Migration for PhenoTips issue #433: Automatically migrate existing old
  * {@code ClinicalInformationCode.MeasurementsClass} to the new {@code PhenoTips.MeasurementsClass}.
- * 
+ *
  * @version $Id$
  * @since 1.0M6
  */

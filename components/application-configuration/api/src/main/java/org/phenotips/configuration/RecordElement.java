@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * A single field or a small subset of related fields displayed in a {@code RecordSection section}.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -35,42 +35,42 @@ public interface RecordElement
 {
     /**
      * The extension defining this element.
-     * 
+     *
      * @return a valid {@link UIExtension} object
      */
     UIExtension getExtension();
 
     /**
      * The name of this element, displayed in the form designer.
-     * 
+     *
      * @return a user-friendly name for this element
      */
     String getName();
 
     /**
      * Whether this element is going to be displayed in the patient record or not.
-     * 
+     *
      * @return {@code true} if this element must be displayed, {@code false} otherwise
      */
     boolean isEnabled();
 
     /**
      * Whether this element contains any private indentifiable information (PII) about the patient or not.
-     * 
+     *
      * @return {@code true} if this element contains PII, {@code false} otherwise
-     */    
+     */
     boolean containsPrivateIdentifiableInformation();
 
     /**
      * The list of fields displayed in the patient record by this element.
-     * 
+     *
      * @return an unmodifiable ordered list of field names, empty if this element doesn't display patient fields
      */
     List<String> getDisplayedFields();
 
     /**
      * The parent {@link RecordSection section} containing this element.
-     * 
+     *
      * @return a valid section
      */
     RecordSection getContainingSection();

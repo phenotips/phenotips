@@ -130,18 +130,14 @@ $response.setContentType('application/json')
 #if (!$service)
   {}
 #else
-  #if ($service.isServerTrusted())
-    #if ($request.action == 'get_server_info')
-      $service.getConfiguration().toString()
-    #elseif ($request.action == 'push')
-      $service.receivePatient().toString()
-    #elseif ($request.action == 'get_patient_id')
-      $service.getPatientURL().toString()
-    #else
-      $service.unsupportedeActionResponse().toString()
-    #end
+  #if ($request.action == 'get_server_info')
+    $service.getConfiguration().toString()
+  #elseif ($request.action == 'push')
+    $service.receivePatient().toString()
+  #elseif ($request.action == 'get_patient_id')
+    $service.getPatientURL().toString()
   #else
-    $service.untrustedServerResponse().toString()
+    $service.unsupportedeActionResponse().toString()
   #end
 #end
 {{/html}}{{/velocity}}

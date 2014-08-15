@@ -24,6 +24,7 @@ import org.phenotips.configuration.RecordConfiguration;
 import org.phenotips.configuration.RecordElement;
 import org.phenotips.configuration.RecordSection;
 import org.phenotips.data.Patient;
+
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
@@ -50,7 +51,7 @@ import com.xpn.xwiki.objects.classes.BaseClass;
 
 /**
  * Default (global) implementation of the {@link RecordConfiguration} role.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -77,7 +78,7 @@ public class GlobalRecordConfiguration implements RecordConfiguration
 
     /**
      * Simple constructor passing all the needed components.
-     * 
+     *
      * @param execution the execution context manager
      * @param uixManager the UIExtension manager
      * @param orderFilter UIExtension filter for ordering sections and elements
@@ -198,7 +199,7 @@ public class GlobalRecordConfiguration implements RecordConfiguration
 
     /**
      * Get the current request context from the execution context manager.
-     * 
+     *
      * @return the current request context
      */
     private XWikiContext getXContext()

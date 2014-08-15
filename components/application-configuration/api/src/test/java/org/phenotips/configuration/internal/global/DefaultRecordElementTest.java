@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the default {@link RecordElement} implementation, {@link DefaultRecordElement}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultRecordElementTest
@@ -71,7 +71,7 @@ public class DefaultRecordElementTest
     public void getNameWithMissingTitle()
     {
         UIExtension extension = mock(UIExtension.class);
-        when(extension.getParameters()).thenReturn(Collections.<String, String> emptyMap());
+        when(extension.getParameters()).thenReturn(Collections.<String, String>emptyMap());
         when(extension.getId()).thenReturn("org.phenotips.patientSheet.field.exam_date");
         RecordElement s = new DefaultRecordElement(extension, null);
         Assert.assertEquals("Exam date", s.getName());
@@ -117,7 +117,7 @@ public class DefaultRecordElementTest
     public void getDisplayedFieldsWithMissingProperty()
     {
         UIExtension extension = mock(UIExtension.class);
-        when(extension.getParameters()).thenReturn(Collections.<String, String> emptyMap());
+        when(extension.getParameters()).thenReturn(Collections.<String, String>emptyMap());
         RecordElement s = new DefaultRecordElement(extension, null);
         List<String> result = s.getDisplayedFields();
         Assert.assertTrue(result.isEmpty());

@@ -127,10 +127,8 @@
       // ---------------------------------------------------------------------
       // Search for the push patient elements. Exist if missing.
       // ---------------------------------------------------------------------
-      this._element = $('push-patient');
-      if (!this._element) { return; }
-      this._pushLauncher = this._element.down('a');
-      if (!this._pushLauncher) { return; }
+      var pushTargets = $$("div[id^=push-patient]");
+      if (pushTargets.length == 0) { return; }
 
       this._serviceURL = new XWiki.Document('PushPatientService', 'PhenoTips').getURL('get', 'outputSyntax=plain');
       this._patientId  = XWiki.currentDocument.page;
@@ -145,31 +143,48 @@
       // Attach launcher behavior:
       // ---------------------------------------------------------------------
       var _this = this;
-      this._pushLauncher.observe('click', function(event) {
-        event.stop();
-        event.findElement().blur();
 
-        if (event.findElement('.editbody')) {
-          // we're in edit mode; ask user if they want to save before exporting the data
-          new XWiki.widgets.ConfirmationBox(
-            {
-              onYes : function() {
-                document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
-                document.observe('xwiki:document:saved', function () {
-                  _this._launchUI();
-                });
-              },
-              onNo : function() {
-                _this._launchUI();
-              }
-            },
-            /* Interaction parameters */
-            { confirmationText: "Save before exporting?", showCancelButton: true }
-          );
-        } else {
+      this._observeSave = function() {
           _this._launchUI();
-        }
-      });
+      }
+
+      for (var server = 0; server &lt; pushTargets.length; server++) {
+          var nextServer = pushTargets[server];
+          var pushLauncher = nextServer.down('a');
+          if (!pushLauncher) continue;
+
+          var serverName = nextServer.readAttribute("name");
+
+          var createLauncher = function(serverID) {
+            return function(event) {
+	            event.stop();
+	            event.findElement().blur();
+
+	            _this._selectedServer = serverID;
+	            //console.log("Initializing push to " + serverID);
+
+	            if (event.findElement('.editbody')) {
+	              // we're in edit mode; ask user if they want to save before exporting the data
+	              new XWiki.widgets.ConfirmationBox(
+	                {
+	                  onYes : function() {
+	                    document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
+	                    document.observe('xwiki:document:saved', _this._observeSave);
+	                  },
+	                  onNo : function() {
+	                    _this._launchUI();
+	                  }
+	                },
+	                /* Interaction parameters */
+	                { confirmationText: "Save before exporting?", showCancelButton: true }
+	              );
+	            } else {
+	              _this._launchUI();
+	            }
+	          }
+          }
+	      pushLauncher.observe('click', createLauncher(serverName));
+	  }
       // ---------------------------------------------------------------------
       // Initialization done
       // ---------------------------------------------------------------------
@@ -256,7 +271,7 @@
           return new Element('div', {'class' : 'errormessage'}).update("Unable to authenticate user: incorrect credentials");
     },
 
-    _generateFailedToPushPatient: function(errorMessage, retryButton) {
+    _generateFailedToPushPatient: function(errorMessage, retryButton, retryAsNew) {
       var result = new Element('div', {'class' : 'errormessage'}).update(errorMessage);
 
       if (retryButton)
@@ -267,6 +282,16 @@
           _this._pushPatient();
         });
         result.insert(retryButton);
+      }
+      if (retryAsNew)
+      {
+        var retryAsNewButton = new Element('input', {type: 'button', name : 'retry', 'value': 'Push as a new patient', 'class' : 'button secondary'}).wrap('span', {'class' : 'buttonwrapper'});
+        var _this = this;
+        retryAsNewButton.observe('click', function(event) {
+          _this._selectPushNewPatient();
+          _this._pushPatient();
+        });
+        result.insert(retryAsNewButton);
       }
       return result;
     },
@@ -287,7 +312,6 @@
     },
 
     _onNoServerSelected: function() {
-      this._selectedServer    = undefined;
       this._lastApprovedUser  = undefined;
       this._lastSelectedGroup = undefined;
       this._userLoginError    = undefined;
@@ -341,6 +365,8 @@
 
     _launchUI : function() {
       var _this = this;
+      document.stopObserving('xwiki:document:saved', _this._observeSave);
+
       if (this.__launchUIAjaxInProgress) { return; }
 
       // reset data about available push servers
@@ -812,19 +838,7 @@
 
       //console.log("Remote servers as cached: " + stringifyObject(this._remoteServers))
 
-      if (pushServerList.length == 1) {
-        this._serverSelector.hide();
-        var serverName = servers[0];
-        this._selectServer(serverName);
-      } else {
-        var serverSelectInput = this._serverSelector.down('select');
-        serverSelectInput.update(new Element('option', {value: "none"}).update("Please select a server form the list"));
-
-        servers.each(function (server) {
-            serverSelectInput.insert(new Element('option', {'value': server}).update(server));
-        });
-        this._serverSelector.show();
-      }
+      this._selectServer(this._selectedServer);
     },
 
     _selectServer: function(serverName, keepUserAndGroup) {
@@ -841,9 +855,9 @@
         if (serverData.pushAgeHours !== undefined &amp;&amp; serverData.pushAgeHours &gt;=0) {
            existingPatientDataInfo = new Element('dd');
 
-           var description = new Element('p', {'class' : 'hint', 'id': 'server-description'});
+           var description = new Element('p', {'id': 'server-description'});
            var lastUpdated = serverData.pushAgeHours;
-           description.insert("This patient has been uploaded to ").insert(serverLink.clone(true));
+           description.insert("This patient has been uploaded to this server ");
            if (lastUpdated &lt; 1) {
               description.insert(" less than an hour ago");
            } else {
@@ -855,6 +869,7 @@
            }
 
            description.insert(" as ").insert(new Element('a', {'href' : serverData.remoteURL, 'target' : '_blank'}).update(serverData.remoteID)).insert('.');
+           description.insert("&lt;br/&gt;Further pushes will attempt to update the patient on the remote server.")
            existingPatientDataInfo.insert(description);
 
            var _this = this;
@@ -862,11 +877,11 @@
            var radio1 = new Element('input', {"type" : "radio", "value": "update", "id":"choice-update-patient", "name": "new-or-update"});
            radio1.checked = true;
            radio1.observe('change', function() { _this._displayGroupPicker() });
-           var label1 = new Element('label', {"id":"choice-update-patient-label"}).insert(new Element('span', {'class' : 'fa fa-refresh'}).update(' ')).insert(radio1).insert("Update remote patient");
+           var label1 = new Element('label', {"hidden": true}).insert(new Element('span', {'class' : 'fa fa-refresh'}).update(' ')).insert(radio1).insert("Update remote patient");
            var radio2 = new Element('input', {"type" : "radio", "value": "new", "id":"choice-new-patient", "name": "new-or-update"});
            radio2.observe('change', function() { _this._displayGroupPicker() } );
-           var label2 = new Element('label').insert(new Element('span', {'class' : 'fa fa-plus-square'}).update(' ')).insert(radio2).insert("Create new remote patient");
-           existingPatientDataInfo.insert(label1.wrap('p')).insert(label2.wrap('p'));
+           var label2 = new Element('label', {"hidden": true}).insert(new Element('span', {'class' : 'fa fa-plus-square'}).update(' ')).insert(radio2).insert("Create new remote patient");
+           existingPatientDataInfo.insert(label1).insert(label2);
         }
 
         this._serverInfo.update(new Element('dl')
@@ -953,6 +968,15 @@
         return pushUpdate;
     },
 
+    _selectPushNewPatient: function() {
+	    var radioSelectUpdate = document.getElementById('choice-update-patient');
+	    var radioSelectNew    = document.getElementById('choice-new-patient');
+	    if (radioSelectUpdate &amp;&amp; radioSelectNew) {
+	        radioSelectUpdate.checked = false;
+	        radioSelectNew.checked    = true;
+	    }
+    },
+
     _disableUpdateOption: function() {
         var radioSelectNew = document.getElementById('choice-new-patient');
         if (radioSelectNew) {
@@ -1023,17 +1047,19 @@
                     } else
                     if (res.invalidguid) {
                         _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient - stored remote GUID is incorrect. "+
-                                                                                           "Maybe the patient was deleted on the remote server."));
+                                                                                           "Maybe the patient was deleted on the remote server.&amp;nbsp;", false, true));
                     } else
                     if (res.accessdeniedguid) {
                         _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient - access denied. "+
                                                                                            "Check if the given remote user has access rights to update the patient."));
                     } else
                     if (res.accessdeniedguid) {
-                        _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient."));
+                        _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient: access denied"));
                     } else
                     if (res.cantconnect) {
                       _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to connect to server", true));
+                    } else {
+                      _this._pushResultSection.update(_this._generateFailedToPushPatient("Unable to update this patient", true));
                     }
                 }
                 //_this._dialog.closeDialog();
@@ -1409,7 +1435,22 @@ function _printObjectInternal(o, level) {
       <content>{{velocity}}
 $xwiki.jsx.use('PhenoTips.PushPatient')##
 $xwiki.ssx.use('PhenoTips.PushPatient')##
-(% id="push-patient" %)((([[Push to remote server&gt;&gt;path:#]])))
+#set ($service = $services.pushPatient)
+#set ($configuredServers = $service.getPushTargetsWithHistory(""))
+#foreach ($mapEntry in $configuredServers.entrySet())
+  ## make sure PhenomeCentral is enabled/configured, and if it is list it as the first push target
+  #if ($mapEntry.key.getServerID() == "PhenomeCentral")
+    (% id="push-patient-pc" name="PhenomeCentral" %)((([[Push to PhenomeCentral&gt;&gt;path:#]])))
+  #end
+#end
+#set ($counter = 0)
+#foreach ($mapEntry in $configuredServers.entrySet())
+  #set ($serverName = $mapEntry.key.getServerID())
+  #if ($serverName != "PhenomeCentral")
+    (% id="push-patient-$counter" name="$serverName" %)((([[Push to $serverName&gt;&gt;path:#]])))
+    #set( $counter = $counter + 1 )
+  #end
+#end
 {{/velocity}}</content>
     </property>
     <property>

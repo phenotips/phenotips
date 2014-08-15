@@ -49,8 +49,8 @@ import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
- * Migration for PhenoTips issue #713: Automatically migrate existing {@code mode_of_inheritance} values to the {@code
- * global_mode_of_inheritance} field.
+ * Migration for PhenoTips issue #713: Automatically migrate existing {@code mode_of_inheritance} values to the
+ * {@code global_mode_of_inheritance} field.
  *
  * @version $Id$
  * @since 1.0M10

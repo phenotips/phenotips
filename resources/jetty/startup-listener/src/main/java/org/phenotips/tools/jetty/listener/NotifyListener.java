@@ -33,7 +33,7 @@ import org.eclipse.jetty.util.log.Logger;
  * information to newbies so that they know what to do after the server is started.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.0M13
  */
 public class NotifyListener extends AbstractLifeCycleListener
 {

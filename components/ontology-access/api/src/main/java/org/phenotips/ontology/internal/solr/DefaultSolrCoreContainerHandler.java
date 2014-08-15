@@ -38,7 +38,7 @@ import org.apache.solr.core.CoreContainer;
  * the permanent directory called {@code solr}.
  *
  * @version $Id$
- * @since 1.0RC1
+ * @since 1.0M13
  */
 @Component
 public class DefaultSolrCoreContainerHandler implements SolrCoreContainerHandler, Initializable, Disposable

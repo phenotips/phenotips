@@ -31,7 +31,7 @@ import javax.inject.Singleton;
 
 /**
  * User management services.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -46,7 +46,7 @@ public class UserManagerScriptService implements ScriptService
 
     /**
      * Get the currently logged in user.
-     * 
+     *
      * @return the currently logged in user, or {@code null} if no user is logged in
      */
     public User getCurrentUser()

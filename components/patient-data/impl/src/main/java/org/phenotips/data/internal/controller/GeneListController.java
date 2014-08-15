@@ -43,7 +43,7 @@ import javax.inject.Singleton;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.BaseProperty;
+import com.xpn.xwiki.objects.BaseStringProperty;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -51,14 +51,14 @@ import net.sf.json.JSONObject;
 /**
  * Handles the patients genes.
  */
-@Component(roles = {PatientDataController.class})
+@Component(roles = { PatientDataController.class })
 @Named("gene")
 @Singleton
 public class GeneListController extends AbstractComplexController<Map<String, String>>
 {
     /** The XClass used for storing gene data. */
-    private final EntityReference GENE_CLASS_REFERENCE = new EntityReference("InvestigationClass", EntityType.DOCUMENT,
-    Constants.CODE_SPACE_REFERENCE);
+    private static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("InvestigationClass",
+        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     @Override
     public String getName()
@@ -104,16 +104,16 @@ public class GeneListController extends AbstractComplexController<Map<String, St
             for (BaseObject geneObject : geneXWikiObjects) {
                 Map<String, String> singleGene = new LinkedHashMap<String, String>();
                 for (String property : getProperties()) {
-                    BaseProperty field = (BaseProperty) geneObject.getField(property);
+                    BaseStringProperty field = (BaseStringProperty) geneObject.getField(property);
                     if (field != null) {
-                        singleGene.put(property, (String) field.getValue());
+                        singleGene.put(property, field.getValue());
                     }
                 }
                 allGenes.add(singleGene);
             }
             return new IndexedPatientData<Map<String, String>>(getName(), allGenes);
         } catch (Exception e) {
-            //TODO. Log an error.
+            // TODO. Log an error.
         }
         return null;
     }
@@ -121,7 +121,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        //FIXME. selectedFieldNames have no effect.
+        // FIXME. selectedFieldNames have no effect.
         PatientData<Map<String, String>> data = patient.getData(getName());
         if (data == null) {
             return;

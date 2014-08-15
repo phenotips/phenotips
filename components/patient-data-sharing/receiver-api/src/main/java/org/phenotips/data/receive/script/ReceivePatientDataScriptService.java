@@ -20,6 +20,7 @@
 package org.phenotips.data.receive.script;
 
 import org.phenotips.data.receive.ReceivePatientData;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
@@ -46,24 +47,14 @@ public class ReceivePatientDataScriptService implements ScriptService
     @Inject
     private ReceivePatientData internalService;
 
-    public boolean isServerTrusted()
-    {
-    	return this.internalService.isServerTrusted();
-    }
-
     public JSONObject getConfiguration()
     {
-    	return this.internalService.getConfiguration();
+        return this.internalService.getConfiguration();
     }
 
     public JSONObject receivePatient()
     {
         return this.internalService.receivePatient();
-    }
-
-    public JSONObject untrustedServerResponse()
-    {
-    	return this.internalService.untrustedServerResponse();
     }
 
     public JSONObject getPatientURL()

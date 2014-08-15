@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the {@link R54590PhenoTips931DataMigration}.
- * 
+ *
  * @version $Id$
  */
 public class R54590PhenoTips931DataMigrationTest
@@ -85,7 +85,7 @@ public class R54590PhenoTips931DataMigrationTest
         @SuppressWarnings("deprecation")
         ArgumentCaptor<HibernateCallback<Object>> callbackCaptor = new ArgumentCaptor<HibernateCallback<Object>>();
         this.mocker.getComponentUnderTest().migrate();
-        Mockito.verify(store).executeWrite(Mockito.same(xc), callbackCaptor.capture());
+        Mockito.verify(store).executeWrite(Matchers.same(xc), callbackCaptor.capture());
 
         XWiki xwiki = mock(XWiki.class);
         when(xc.getWiki()).thenReturn(xwiki);

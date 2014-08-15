@@ -26,7 +26,7 @@ import org.xwiki.model.reference.EntityReference;
 /**
  * Default implementation of the {@link Owner} interface, making use of a {@link PatientAccessHelper} component for any
  * actual owner type detection.
- * 
+ *
  * @version $Id$
  */
 public class DefaultOwner implements Owner

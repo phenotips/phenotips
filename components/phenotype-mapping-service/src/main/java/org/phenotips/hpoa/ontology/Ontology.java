@@ -19,13 +19,13 @@
  */
 package org.phenotips.hpoa.ontology;
 
-import java.io.File;
-import java.util.Set;
-
 import org.phenotips.hpoa.utils.graph.IDAGNode;
 import org.phenotips.solr.AbstractSolrScriptService;
 
 import org.xwiki.component.annotation.Role;
+
+import java.io.File;
+import java.util.Set;
 
 @Role
 public interface Ontology

@@ -32,8 +32,13 @@
   <name>PhenoTips - Various Java components</name>
 
   <modules>
+    <module>base-war</module>
     <module>constants</module>
     <module>component-registry</module>
+    <module>widgets</module>
+    <module>skin</module>
+    <module>navigation</module>
+    <module>export</module>
     <module>obo2solr</module>
     <module>solr-access-service</module>
     <module>ontology-access</module>

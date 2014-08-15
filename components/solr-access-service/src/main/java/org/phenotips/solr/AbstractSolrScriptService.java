@@ -54,7 +54,7 @@ import org.slf4j.Logger;
  * Provides access to the Solr server, with the main purpose of providing access to an indexed ontology. There are two
  * ways of accessing items in the ontology: getting a single term by its identifier, or searching for terms matching a
  * given query in the Lucene query language.
- * 
+ *
  * @version $Id$
  */
 public abstract class AbstractSolrScriptService implements ScriptService, Initializable
@@ -133,14 +133,14 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
 
     /**
      * Get the name of the Solr "core" to be used by this service instance.
-     * 
+     *
      * @return the simple core name
      */
     protected abstract String getName();
 
     /**
      * Search for terms matching the specified query, using the Lucene query language.
-     * 
+     *
      * @param queryParameters a Lucene query
      * @return the list of matching documents, empty if there are no matching terms
      */
@@ -152,7 +152,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
 
     /**
      * Search for terms matching the specified query, using the Lucene query language.
-     * 
+     *
      * @param queryParameters a Lucene query
      * @param sort sorting criteria
      * @return the list of matching documents, empty if there are no matching terms
@@ -165,7 +165,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
 
     /**
      * Search for terms matching the specified query, using the Lucene query language.
-     * 
+     *
      * @param queryParameters a Lucene query
      * @param rows the number of items to return, or -1 to use the default number of results
      * @param start the number of items to skip, i.e. the index of the first hit to return, 0-based
@@ -179,7 +179,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
 
     /**
      * Search for terms matching the specified query, using the Lucene query language.
-     * 
+     *
      * @param queryParameters a Lucene query
      * @param sort sorting criteria
      * @param rows the number of items to return, or -1 to use the default number of results
@@ -194,7 +194,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
 
     /**
      * Search for terms matching the specified query, where the query is specified as a map of field name and keywords.
-     * 
+     *
      * @param fieldValues the map of values to search for, where each key is the name of an indexed field and the value
      *            is the keywords to match for that field
      * @return the list of matching documents, empty if there are no matching terms
@@ -206,7 +206,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
 
     /**
      * Search for terms matching the specified query, where the query is specified as a map of field name and keywords.
-     * 
+     *
      * @param fieldValues the map of values to search for, where each key is the name of an indexed field and the value
      *            is the keywords to match for that field
      * @param sort sorting criteria
@@ -219,7 +219,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
 
     /**
      * Search for terms matching the specified query, where the query is specified as a map of field name and keywords.
-     * 
+     *
      * @param fieldValues the map of values to search for, where each key is the name of an indexed field and the value
      *            is the keywords to match for that field
      * @param rows the number of items to return, or -1 to use the default number of results
@@ -234,7 +234,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
 
     /**
      * Search for terms matching the specified query, where the query is specified as a map of field name and keywords.
-     * 
+     *
      * @param fieldValues the map of values to search for, where each key is the name of an indexed field and the value
      *            is the keywords to match for that field
      * @param sort sorting criteria
@@ -264,7 +264,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
 
     /**
      * Get the top hit corresponding to the specified query.
-     * 
+     *
      * @param fieldValues the map of values to search for, where each key is the name of an indexed field and the value
      *            is the keywords to match for that field
      * @return the top matching document, {@code null} if there were no matches at all
@@ -288,7 +288,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
 
     /**
      * Get the document corresponding to the specified term identifier.
-     * 
+     *
      * @param id the identifier to search for, in the {@code HP:1234567} format (for HPO), or {@code 123456} (for OMIM)
      * @return the matching document, if one was found, or {@code null} otherwise
      */
@@ -302,7 +302,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     /**
      * Perform a search, falling back on the suggested spellchecked query if the original query fails to return any
      * results.
-     * 
+     *
      * @param params the Solr parameters to use, should contain at least a value for the "q" parameter; use
      *            {@link #getSolrQuery(String, int, int)} to get the proper parameter expected by this method
      * @return the list of matching documents, empty if there are no matching terms
@@ -352,7 +352,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
      * Create Solr parameters based on the specified search terms. More specifically, concatenates the specified field
      * values into a Lucene query which is used as the "q" parameter, and adds parameters for requesting a spellcheck
      * result.
-     * 
+     *
      * @param fieldValues the map of values to search for, where each key is the name of an indexed field and the value
      *            is the keywords to match for that field
      * @param rows the number of items to return, or -1 to use the default number of results
@@ -368,7 +368,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
      * Create Solr parameters based on the specified search terms. More specifically, concatenates the specified field
      * values into a Lucene query which is used as the "q" parameter, and adds parameters for requesting a spellcheck
      * result.
-     * 
+     *
      * @param fieldValues the map of values to search for, where each key is the name of an indexed field and the value
      *            is the keywords to match for that field
      * @param sort the sort criteria ("fiel_name order')
@@ -397,7 +397,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     /**
      * Convert a Lucene query string into a map of Solr parameters. More specifically, places the input query under the
      * "q" parameter, and adds parameters for requesting a spellcheck result.
-     * 
+     *
      * @param query the lucene query string to use
      * @param rows the number of items to return, or -1 to use the default number of results
      * @param start the number of items to skip, i.e. the index of the first hit to return, 0-based
@@ -411,7 +411,7 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
     /**
      * Convert a Lucene query string into a map of Solr parameters. More specifically, places the input query under the
      * "q" parameter, and adds parameters for requesting a spellcheck result.
-     * 
+     *
      * @param query the lucene query string to use
      * @param sort the sort criteria ("fiel_name order')
      * @param rows the number of items to return, or -1 to use the default number of results
@@ -440,11 +440,11 @@ public abstract class AbstractSolrScriptService implements ScriptService, Initia
      * @param map the map to serialize
      * @return a String serialization of the map
      */
-    private String dumpMap(Map<String, ? > map)
+    private String dumpMap(Map<String, ?> map)
     {
         StringBuilder out = new StringBuilder();
         out.append('{');
-        for (Map.Entry<String, ? > entry : map.entrySet()) {
+        for (Map.Entry<String, ?> entry : map.entrySet()) {
             out.append(entry.getKey() + ':' + entry.getValue() + '\n');
         }
         out.append('}');

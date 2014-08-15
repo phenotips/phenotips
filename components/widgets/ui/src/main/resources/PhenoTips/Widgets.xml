@@ -1,0 +1,5419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>Widgets</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822215000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822215000</date>
+  <contentUpdateDate>1401822215000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>0e1a6de2-6050-432f-a39f-656bb3b90163</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function(PhenoTips){
+
+ var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+
+ if (typeof XWiki.widgets.XList == 'undefined') {
+  if (typeof console != "undefined" &amp;&amp; typeof console.warn == "function") {
+    console.warn("[Suggest widget] Required class missing: XWiki.widgets.XList");
+  }
+ } else {
+  widgets.XList = XWiki.widgets.XList;
+  widgets.XListItem = XWiki.widgets.XListItem;
+/**
+ * Suggest class.
+ * Provide value suggestions to users when starting to type in a text input.
+ */
+ widgets.Suggest = Class.create({
+  options : {
+    // The minimum number of characters after which to trigger the suggest
+    minchars : 1,
+    // The HTTP method for the AJAX request
+    method : "get",
+    // The name of the request parameter holding the input stub
+    varname : "input",
+    // The CSS classname of the suggest list
+    className : "ajaxsuggest",
+    timeout : 2500,
+    delay : 500,
+    offsety : 0,
+    // Display a "no results" message, or simply hide the suggest box when no suggestions are available
+    shownoresults : true,
+    // The message to display as the "no results" message
+    noresults : "No results!",
+    maxheight : 250,
+    cache : false,
+    seps : "",
+    icon : null,
+    // The name of the JSON variable or XML element holding the results.
+    // "results" for the old suggest, "searchResults" for the REST search.
+    resultsParameter : "results",
+    // The name of the JSON parameter or XML attribute holding the result identifier.
+    // "id" for both the old suggest and the REST search.
+    resultId : "id",
+    // The name of the JSON parameter or XML attribute holding the result value.
+    // "value" for the old suggest, "pageFullName" for the REST page search.
+    resultValue : "value",
+    // The name of the JSON parameter or XML attribute holding the result auxiliary information.
+    // "info" for the old suggest, "pageFullName" for the REST search.
+    resultInfo : "info",
+    // The name of the JSON parameter or XML attribute holding the result category.
+    resultCategory : "category",
+    // The name of the JSON parameter or XML attribute holding the result synonym.
+    resultSynonym : "synonym",
+    // The name of the JSON parameter or XML attribute holding the result icon.
+    resultIcon: "icon",
+    // The name of the JSON parameter or XML attribute holding a potential result hint (displayed next to the value).
+    resultHint: "hint",
+    // The id of the element that will hold the suggest element
+    //parentContainer : "body",
+    // Should results fragments be highlighted when matching typed input
+    highlight: true,
+    // Fade the suggestion container on clear
+    fadeOnClear: true,
+    // Show a 'hide suggestions' button
+    enableHideButton: true,
+    insertBeforeSuggestions: null,
+    // Should id be displayed or hidden
+    displayId: false,
+    // Should value be displayed as a hint
+    displayValue: false,
+    // Display value prefix text
+    displayValueText: "Value :",
+    // How to align the suggestion list when its width is different from the input field width
+    align: "left",
+    // When there are several suggest sources, should the widget displays only one, unified, "loading" indicator for all requests undergoing,
+    // Or should it displays one loading indicator per request next to the corresponding source.
+    unifiedLoader: false,
+    // The DOM node to use to display the loading indicator when in mode unified loader (it will receive a "loading" class name for the time of the loading)
+    // Default is null, which falls back on the input itself. This option is used only when unifiedLoader is true.
+    loaderNode: null,
+    // A function returning true or false for each fetched suggestion. If defined, only suggestions for which 'true' is returned
+    // are added to the list
+    filterFunc: null
+  },
+  sInput : "",
+  nInputChars : 0,
+  aSuggestions : [],
+  iHighlighted : null,
+  isActive : false,
+
+  /**
+   * Initialize the suggest
+   *
+   * @param {Object} fld the suggest field
+   * @param {Object} param the options
+   */
+  initialize: function (fld, param){
+
+    if (!fld) {
+      return false;
+    }
+    this.setInputField(fld);
+
+    // Clone default options from the prototype so that they are not shared and extend options with passed parameters
+    this.options = Object.extend(Object.clone(this.options), param || { });
+    if (typeof this.options.sources == 'object' &amp;&amp; this.options.sources.length &gt; 1) {
+      // We are in multi-sources mode
+      this.sources = this.options.sources;
+    } else {
+      // We are in mono-source mode
+      this.sources = this.options;
+    }
+
+    // Flatten sources
+    this.sources = [ this.sources ].flatten().compact();
+
+    // Reset the container if the configured parameter is not valid
+    if (!$(this.options.parentContainer)) {
+      this.options.parentContainer = $(document.body);
+    }
+
+    if (this.options.seps) {
+      this.seps = this.options.seps;
+    } else {
+      this.seps = "";
+    }
+
+    // Initialize a request number that will keep track of the latest request being fired.
+    // This will help to discard potential non-last requests callbacks ; this in order to have better performance
+    // (less unneccessary DOM manipulation, and less unneccessary highlighting computation).
+    this.latestRequest = 0;
+
+  },
+
+  /**
+   * Sets or replace the input field associated with this suggest.
+   */
+  setInputField: function(input){
+    if (this.fld) {
+      this.fld.stopObserving();
+    }
+    this.fld = $(input);
+    this.fld._suggestWidget = this;
+    // Bind the key listeners on the input field.
+    this.fld.observe("keyup", this.onKeyUp.bindAsEventListener(this));
+    if (Prototype.Browser.IE || Prototype.Browser.WebKit) {
+      this.fld.observe("keydown", this.onKeyPress.bindAsEventListener(this));
+    } else {
+      this.fld.observe("keypress", this.onKeyPress.bindAsEventListener(this));
+    }
+
+    // Prevent normal browser autocomplete
+    this.fld.setAttribute("autocomplete", "off");
+
+    this.fld.observe("blur", function(event){
+      // Make sure any running request will be dropped after the input field has been left
+      this.latestRequest++;
+
+    }.bind(this));
+  },
+
+  /**
+   * Treats normal characters and triggers the autocompletion behavior. This is needed since the field value is not
+   * updated when keydown/keypress are called, so the suggest would work with the previous value. The disadvantage is
+   * that keyUp is not fired for each stroke in a long keypress, but only once at the end. This is not a real problem,
+   * though.
+   */
+  onKeyUp: function(event)
+  {
+    var key = event.keyCode;
+    switch(key) {
+      // Ignore special keys, which are treated in onKeyPress
+      case Event.KEY_RETURN:
+      case Event.KEY_ESC:
+      case Event.KEY_UP:
+      case Event.KEY_DOWN:
+        break;
+      default: {
+        // If there are separators in the input string, get suggestions only for the text after the last separator
+        // TODO The user might be typing in the middle of the field, not in the last item. Do a better detection by
+        // comparing the new value with the old one.
+        if(this.seps) {
+          var lastIndx = -1;
+          for(var i = 0; i &lt; this.seps.length; i++) {
+            if(this.fld.value.lastIndexOf(this.seps.charAt(i)) &gt; lastIndx) {
+              lastIndx = this.fld.value.lastIndexOf(this.seps.charAt(i));
+            }
+          }
+          if(lastIndx == -1) {
+            this.getSuggestions(this.fld.value);
+          } else {
+            this.getSuggestions(this.fld.value.substring(lastIndx+1));
+          }
+        } else {
+          this.getSuggestions(this.fld.value);
+        }
+      }
+    }
+  },
+  /**
+   * Treats Up and Down arrows, Enter and Escape, affecting the UI meta-behavior. Enter puts the currently selected
+   * value inside the target field, Escape closes the suggest dropdown, Up and Down move the current selection.
+   */
+  onKeyPress: function(event) {
+    if(!$(this.isActive)) {
+      // Let the key events pass through if the UI is not displayed
+      return;
+    }
+    var key = event.keyCode;
+
+    switch(key) {
+      case Event.KEY_RETURN:
+        if (this.aSuggestions.length == 1) {
+          this.highlightFirst();
+        }
+        this.setHighlightedValue();
+        Event.stop(event);
+        break;
+      case Event.KEY_ESC:
+        this.clearSuggestions();
+        Event.stop(event);
+        break;
+      case Event.KEY_UP:
+        this.changeHighlight(key);
+        Event.stop(event);
+        break;
+      case Event.KEY_DOWN:
+        this.changeHighlight(key);
+        Event.stop(event);
+        break;
+      default:
+        break;
+    }
+  },
+
+  /**
+   * Get suggestions
+   *
+   * @param {Object} val the value to get suggestions for
+   */
+  getSuggestions: function (val)
+  {
+    // if input stays the same, do nothing
+    //
+    val = val.strip().toLowerCase();
+    if (val == this.sInput) {
+      return false;
+    }
+
+    if (val.length == 0) {
+      this.clearSuggestions();
+      return false;
+    }
+    // input length is less than the min required to trigger a request
+    // reset input string
+    // do nothing
+    //
+    if (val.length &lt; this.options.minchars) {
+      this.sInput = "";
+      return false;
+    }
+
+    // if caching enabled, and user is typing (ie. length of input is increasing)
+    // filter results out of aSuggestions from last request
+    //
+    if (val.length&gt;this.nInputChars &amp;&amp; this.aSuggestions.length &amp;&amp; this.options.cache)
+    {
+      var arr = [];
+      for (var i=0;i&lt;this.aSuggestions.length;i++) {
+        if (this.aSuggestions[i].value.substr(0,val.length).toLowerCase() == val) {
+          arr.push( this.aSuggestions[i] );
+        }
+      }
+
+      this.sInput = val;
+      this.nInputChars = val.length;
+      this.aSuggestions = arr;
+
+      this.createList(this.aSuggestions);
+
+      return false;
+    } else  {
+      // do new request
+      this.sInput = val;
+      this.nInputChars = val.length;
+
+      this.prepareContainer();
+
+      this.latestRequest++;
+      var pointer = this;
+      var requestId = this.latestRequest;
+      clearTimeout(this.ajID);
+      this.ajID = setTimeout( function() { pointer.doAjaxRequests(requestId) }, this.options.delay );
+
+    }
+    return false;
+  },
+
+  /**
+   * Fire the AJAX Request(s) that will get suggestions
+   */
+  doAjaxRequests: function (requestId)
+  {
+    if (this.fld.value.length &lt; this.options.minchars) {
+      return;
+    }
+
+    for (var i=0;i&lt;this.sources.length;i++) {
+      var source = this.sources[i];
+
+      // create ajax request
+      var query = this.fld.value.strip();
+      var parameters = {};
+      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.generateParameters) == "function") {
+        parameters = this.options.queryProcessor.generateParameters(query);
+      }
+      if (this.options.queryProcessor != null &amp;&amp; typeof(this.options.queryProcessor.processQuery) == "function") {
+        query = this.options.queryProcessor.processQuery(query);
+      }
+      var url = source.script + source.varname + "=" + encodeURIComponent(query);
+      var method = source.method || "get";
+      var headers = {};
+      if (source.json) {
+        headers.Accept = "application/json";
+      } else {
+        headers.Accept = "application/xml";
+      }
+
+      var ajx = new Ajax.Request(url, {
+        method: method,
+        parameters: parameters,
+        requestHeaders: headers,
+        onCreate : function () {
+          this.fld.addClassName("loading");
+        }.bind(this),
+        onSuccess: this.setSuggestions.bindAsEventListener(this, source, requestId),
+        onFailure: function (response) {
+          //new PhenoTips.widgets.Notification("Failed to retrieve suggestions : ')" + response.statusText, "error", {timeout: 5});
+          alert("Failed to retrieve suggestions : " + response.statusText);
+        },
+        onComplete : function () {
+          if (requestId &lt; this.latestRequest) {
+            return;
+          }
+          this.fld.removeClassName("loading");
+        }.bind(this)
+      });
+    }
+  },
+
+  /**
+   * Set suggestions
+   *
+   * @param {Object} req
+   * @param {Object} source
+   * @param {Number} requestId the identifier of the request for which this callback is triggered.
+   */
+  setSuggestions: function (req, source, requestId)
+  {
+
+    // If there has been one or several requests fired in the mean time (between the time the request for which this callback
+    // has been triggered and the time of the callback itself) ; we don't do anything and leave it to following callbacks to
+    // set potential suggestions
+    if (requestId &lt; this.latestRequest) {
+      return;
+    }
+
+    this.aSuggestions = this.getSuggestionList(req, source);
+    this.createList(this.aSuggestions, source);
+  },
+
+  getSuggestionList : function (req, source) {
+    var aSuggestions = [];
+    if (source &amp;&amp; source.json) {
+      var jsondata = req.responseJSON;
+      if (!jsondata) {
+        return false;
+      }
+      var results = jsondata[source.resultsParameter || this.options.resultsParameter];
+
+      var _getResultFieldValue = function(data, fieldName) {
+        return data &amp;&amp; data[fieldName] || '';
+      }
+
+      var _getResultFieldValueAsArray = function(data, fieldName) {
+        return new Array(data &amp;&amp; data[fieldName] || '').flatten();
+      };
+    } else {
+      var xmldata = req.responseXML;
+      if (!xmldata) {
+        return false;
+      }
+      var results = xmldata.getElementsByTagName((source &amp;&amp; source.resultsParameter) || this.options.resultsParameter);
+
+      var _getResultFieldValue = function(data, selector) {
+        var element = data &amp;&amp; Element.down(data, selector);
+        return element &amp;&amp; element.firstChild &amp;&amp; element.firstChild.nodeValue || '';
+      }
+
+      var _getResultFieldValueAsArray = function(data, selector) {
+        var result = new Array();
+        if (data) {
+          Element.select(data, selector).each(function(item) {
+            var value = item.firstChild &amp;&amp; item.firstChild.nodeValue;
+            if (value) {
+              result.push(value);
+            }
+          });
+        }
+        return result;
+      };
+    }
+
+    var _getExpandCollapseTriggerSymbol = function(isCollapsed) {
+      if (isCollapsed) return "&amp;#x25B8;";
+      return "&amp;#x25BE;";
+    }
+    for (var i = 0; i &lt; results.length; i++) {
+      var info = new Element("dl");
+      for (var section in this.options.resultInfo) {
+        var sOptions = this.options.resultInfo[section];
+
+        sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/gi, '').replace(/\s+/gi, "-");
+
+        var sectionState = ""
+        if (sOptions.collapsed) {
+          sectionState = "collapsed";
+        }
+
+        var processingFunction = sOptions.processor;
+
+        if (sOptions.extern) {
+          var trigger =  new Element("a").update(section);
+          trigger._processingFunction = processingFunction;
+          info.insert({"bottom" : new Element("dt", {'class' : sectionState + " " + sectionClass}).insert({'bottom' : trigger})});
+          trigger._processingFunction.call(this, trigger);
+          continue;
+        }
+
+        var selector = sOptions.selector;
+        if (!selector) {
+          continue;
+        }
+
+        var sectionContents = null;
+        _getResultFieldValueAsArray(results[i], selector).each(function(item) {
+          var text = item || '';
+          if (typeof (processingFunction) == "function") {
+            text = processingFunction(text);
+          }
+          if (text == '') {return;}
+          if (!sectionContents) {
+            var trigger = new Element("a", {'class' : 'expand-tool'}).update(_getExpandCollapseTriggerSymbol(sOptions.collapsed));
+            info.insert({"bottom" : new Element("dt", {'class' : sectionState}).insert({'top' : trigger}).insert({'bottom' : section})});
+            sectionContents = new Element("dd", {'class' : 'expandable'});
+            info.insert({"bottom" : sectionContents});
+            trigger.observe('click', function(event) {
+              event.stop();
+              trigger.up().toggleClassName('collapsed');
+              trigger.update(_getExpandCollapseTriggerSymbol(trigger.up().hasClassName('collapsed')));
+            }.bindAsEventListener(this));
+          }
+          sectionContents.insert({"bottom" : new Element("div").update(text)});
+        });
+      }
+      if (!info.hasChildNodes()) {
+        info = '';
+      }
+      if (this.options.resultCategory) {
+        var category = new Element("span", {'class' : 'hidden term-category'});
+        _getResultFieldValueAsArray(results[i], this.options.resultCategory).each(function(c) {
+           category.insert(new Element('input', {'type' : 'hidden', 'value' : c}));
+        });
+      }
+      if (!this.options.resultCategory || !category.hasChildNodes()) {
+        category = '';
+      }
+
+      var suggestValue = _getResultFieldValue(results[i], source.resultValue || this.options.resultValue);
+      var currFieldValue = this.sInput;
+      var curSimilarity = this.computeSimilarity(suggestValue,currFieldValue);
+      var synonym = _getResultFieldValueAsArray(results[i], source.resultSynonym || this.options.resultSynonym);
+      var synSimilarity = this.computeSimilarity(synonym[0], currFieldValue);
+      var matchSynonym = synonym[0];
+      for (var k = 1; k &lt; synonym.length; ++k) {
+        var tempSimilarity = this.computeSimilarity(synonym[k], currFieldValue);
+        if (tempSimilarity &gt; synSimilarity) {
+          synSimilarity = tempSimilarity;
+          matchSynonym = synonym[k];
+        }
+      }
+      if (curSimilarity &gt;= synSimilarity) {
+        matchSynonym = "";
+      }
+
+      aSuggestions.push({
+        'id': _getResultFieldValue(results[i], source.resultId || this.options.resultId),
+        'value': _getResultFieldValue(results[i], source.resultValue || this.options.resultValue),
+        'synonym': matchSynonym,
+        'info'    : info,
+        'category': category
+      });
+    }
+    return aSuggestions;
+  },
+
+  /**
+   * Compute the Smith Waterman similarity between two strings
+   */
+  computeSimilarity: function(str1, str2) {
+    var score;
+    var maxSoFar=0;
+    var gapCost = 2;
+
+    // get values
+    var a = str1;
+    var m = a.length;
+
+    //n is the length of currFieldValue
+    var b = str2;
+    var n = b.length;
+
+    //declare the matrix
+    var d = new Array();
+
+    for (i = 0; i &lt; n; i++) {
+      d[i] = new Array();
+
+      // get the substitution score
+      score = (a.charAt(i) == b.charAt(0))? 1: -1;
+
+      if (i == 0) {
+        d[0][0] = Math.max(0,-gapCost,score);
+      }else {
+        d[i][0] = Math.max(0,d[i - 1][0] - gapCost,score);
+      }
+
+      //update max possible if available
+      if (d[i][0] &gt; maxSoFar) {
+        maxSoFar = d[i][0];
+      }
+    }
+
+    for (j = 0; j &lt; m; j++) {
+      // get the substitution score
+      score = (a.charAt(0) == b.charAt(j))? 1: -1;
+
+      if (j == 0) {
+        d[0][0] = Math.max(0,-gapCost,score);
+      }else {
+        d[0][j] = Math.max(0,d[0][j - 1] - gapCost,score);
+      }
+
+      //update max possible if available
+      if (d[0][j] &gt; maxSoFar) {
+        maxSoFar = d[0][j];
+      }
+    }
+
+    // cycle through rest of table filling values from the lowest cost value of the three part cost function
+    for (i = 1; i &lt; n; i++) {
+      for (j = 1; j &lt; m; j++) {
+        // get the substitution score
+        score = (a.charAt(i) == b.charAt(j))? 1: -1;
+
+        // find lowest cost at point from three possible
+        d[i][j] = Math.max(0,d[i - 1][j] - gapCost,d[i][j - 1] - gapCost,d[i - 1][j - 1] + score);
+        //update max possible if available
+        if (d[i][j] &gt; maxSoFar) {
+          maxSoFar = d[i][j];
+        }
+      }
+    }
+    // return max value within matrix as holds the maximum edit score
+    return maxSoFar;
+  },
+
+
+  /**
+   * Creates the container that will hold one or multiple source results.
+   */
+  prepareContainer: function() {
+
+    var crtContainer = $(this.options.parentContainer).down('.suggestItems');
+
+    if (crtContainer &amp;&amp; crtContainer.__targetField != this.fld) {
+       if (crtContainer.__targetField) {
+         crtContainer.__targetField._suggest.clearSuggestions();
+       } else {
+         crtContainer.remove();
+       }
+       crtContainer = false;
+    }
+
+    if (!crtContainer) {
+      // If the suggestion top container is not in the DOM already, we create it and inject it
+
+      var div = new Element("div", { 'class': "suggestItems "+ this.options.className });
+
+      // Get position of target textfield
+      var pos = $(this.options.parentContainer).tagName.toLowerCase() == 'body' ? this.fld.cumulativeOffset() : this.fld.positionedOffset();
+
+      // Container width is passed as an option, or field width if no width provided.
+      // The 2px substracted correspond to one pixel of border on each side of the field,
+      // this allows to have the suggestion box borders well aligned with the field borders.
+      // FIXME this should be computed instead, since border might not always be 1px.
+      var containerWidth = this.options.width ? this.options.width : (this.fld.offsetWidth - 2)
+
+      if (this.options.align == 'left') {
+        // Align the box on the left
+        div.style.left = pos.left + "px";
+      } else if (this.options.align == "center") {
+        // Align the box to the center
+        div.style.left = pos.left + (this.fld.getWidth() - containerWidth - 2) / 2 + "px";
+      } else {
+        // Align the box on the right.
+        // This has a visible effect only when the container width is not the same as the input width
+        div.style.left = (pos.left - containerWidth + this.fld.offsetWidth - 2) + "px";
+      }
+
+      div.style.top = (pos.top + this.fld.offsetHeight + this.options.offsety) + "px";
+      div.style.width = containerWidth + "px";
+
+      // set mouseover functions for div
+      // when mouse pointer leaves div, set a timeout to remove the list after an interval
+      // when mouse enters div, kill the timeout so the list won't be removed
+      var pointer = this;
+      div.onmouseover = function(){ pointer.killTimeout() }
+      div.onmouseout = function(){ pointer.resetTimeout() }
+
+      this.resultContainer = new Element("div", {'class':'resultContainer'});
+      div.appendChild(this.resultContainer);
+
+      // add DIV to document
+      $(this.options.parentContainer).insert(div);
+
+      this.container = div;
+
+      if (this.options.insertBeforeSuggestions) {
+        this.resultContainer.insert(this.options.insertBeforeSuggestions);
+      }
+
+      document.fire("ms:suggest:containerCreated", {
+        'container' : this.container,
+        'suggest' : this
+      });
+    }
+
+    if (this.sources.length &gt; 1) {
+      // If we are in multi-source mode, we need to prepare a sub-container for each of the suggestion source
+      for (var i=0;i&lt;this.sources.length;i++) {
+
+        var source = this.sources[i];
+        source.id = i
+
+        if(this.resultContainer.down('.results' + source.id)) {
+          // If the sub-container for this source is already present, we just re-initialize it :
+          // - remove its content
+          // - set it as loading
+          if (this.resultContainer.down('.results' + source.id).down('ul')) {
+            this.resultContainer.down('.results' + source.id).down('ul').remove();
+          }
+          if (!this.options.unifiedLoader) {
+            this.resultContainer.down('.results' + source.id).down('.sourceContent').addClassName('loading');
+          }
+          else {
+            (this.options.loaderNode || this.fld).addClassName("loading");
+            this.resultContainer.down('.results' + source.id).addClassName('hidden loading');
+          }
+        }
+        else {
+          // The sub-container for this source has not been created yet
+          // Really create the subcontainer for this source and inject it in the global container
+          var sourceContainer = new Element('div', {'class' : 'results results' + source.id}),
+              sourceHeader = new Element('div', {'class':'sourceName'});
+
+          if (this.options.unifiedLoader) {
+            sourceContainer.addClassName('hidden loading');
+          }
+
+          if (typeof source.icon != 'undefined') {
+            // If there is an icon for this source group, set it as background image
+            var iconImage = new Image();
+            iconImage.onload = function(){
+              this.sourceHeader.setStyle({
+                backgroundImage: "url(" + this.iconImage.src + ")"
+              });
+              this.sourceHeader.setStyle({
+                textIndent:(this.iconImage.width + 6) + 'px'
+              });
+            }.bind({
+              sourceHeader:sourceHeader,
+              iconImage:iconImage
+            });
+            iconImage.src = source.icon;
+          }
+          sourceHeader.insert(source.name)
+          sourceContainer.insert( sourceHeader );
+          var classes = "sourceContent " + (this.options.unifiedLoader ? "" : "loading");
+          sourceContainer.insert( new Element('div', {'class':classes}));
+
+          if (typeof source.before !== 'undefined') {
+            this.resultContainer.insert(source.before);
+          }
+          this.resultContainer.insert(sourceContainer);
+          if (typeof source.after !== 'undefined') {
+            this.resultContainer.insert(source.after);
+          }
+        }
+      }
+    } else {
+      // In mono-source mode, reset the list if present
+      if (this.resultContainer.down("ul")) {
+        this.resultContainer.down("ul").remove();
+      }
+    }
+
+    var ev = this.container.fire("ms:suggest:containerPrepared", {
+      'container' : this.container,
+      'suggest' : this
+    });
+
+    this.container.__targetField = this.fld;
+    if (this.options.enableHideButton &amp;&amp; !this.container.down('.hide-button')) {
+      var hideButton = new Element('span', {'class' : 'hide-button'}).update('hide suggestions');
+      hideButton.observe('click', this.clearSuggestions.bindAsEventListener(this));
+      this.container.insert({top : new Element('div', {'class' : 'hide-button-wrapper'}).update(hideButton)});
+
+      hideButton = new Element('span', {'class' : 'hide-button'}).update('hide-suggestions');
+      hideButton.observe('click', this.clearSuggestions.bindAsEventListener(this));
+      this.container.insert({bottom : new Element('div', {'class' : 'hide-button-wrapper'}).update(hideButton)});
+    }
+    return this.container;
+  },
+
+  /**
+   * Create the HTML list of suggestions.
+   *
+   * @param {Object} arr
+   * @param {Object} source the source for data for which to create this list of results.
+   */
+  createList: function(arr, source)
+  {
+    this.isActive = true;
+    var pointer = this;
+
+    this.killTimeout();
+
+    // create holding div
+    //
+    if (this.sources.length &gt; 1) {
+      var div = this.resultContainer.down(".results" + source.id);
+      if (arr.length &gt; 0 || this.options.shownoresults) {
+        div.down('.sourceContent').removeClassName('loading');
+        this.resultContainer.down(".results" + source.id).removeClassName("hidden loading");
+      }
+
+      // If we are in mode "unified loader" (showing one loading indicator for all requests and not one per request)
+      // and there aren't any source still loading, we remove the unified loading status.
+      if (this.options.unifiedLoader &amp;&amp; !this.resultContainer.down("loading")) {
+        (this.options.loaderNode || this.fld).removeClassName("loading");
+      }
+    }
+    else {
+      var div = this.resultContainer;
+    }
+
+    // if no results, and shownoresults is false, go no further
+    if (arr.length == 0 &amp;&amp; !this.options.shownoresults) {
+      return false;
+    }
+
+    // Ensure any previous list of results for this source gets removed
+    if (div.down('ul')) {
+      div.down('ul').remove();
+    }
+
+    // create and populate list
+    div.appendChild(this.createListElement(arr, pointer));
+
+    this.suggest = div;
+
+    // remove list after an interval
+    var pointer = this;
+    if (this.options.timeout &gt; 0) {
+      this.toID = setTimeout(function () { pointer.clearSuggestions() }, this.options.timeout);
+    }
+  },
+
+  createListElement : function(arr, pointer) {
+    var list = new PhenoTips.widgets.XList([], {
+       icon: this.options.icon,
+       classes: 'suggestList',
+       eventListeners: {
+          'click' : function () { pointer.setHighlightedValue(); return false; },
+          'mouseover' : function () { pointer.setHighlight( this.getElement() ); }
+       }
+    });
+
+    // loop throught arr of suggestions
+    // creating an XlistItem for each suggestion
+    //
+    for (var i = 0,len = arr.length; i &lt; len; i++)
+    {
+       if (!this.options.filterFunc || this.options.filterFunc(arr[i])) {
+           list.addItem(this.generateListItem(arr[i]));
+       }
+    }
+    // no results
+    if (arr.length == 0)
+    {
+      list.addItem( new PhenoTips.widgets.XListItem(this.options.noresults, {
+                          'classes' : 'noSuggestion',
+                          noHighlight :true }) );
+    }
+    if (this.fld.hasClassName('accept-value')) {
+       var customItemId = this.fld.value.replace(/[^a-z0-9_]+/gi, "_");
+       var customItemCategoryInfo = this.fld.next('input[name="_category"]');
+       var customItemCategories = customItemCategoryInfo &amp;&amp; customItemCategoryInfo.value.split(",") || [];
+       var customItemCategoriesElt = new Element('div', {'class' : 'hidden term-category'});
+       var categoryFieldName = this.fld.name + "__" + customItemId + "__category";
+       customItemCategories.each(function (c) {
+         if (c) {
+           customItemCategoriesElt.insert(new Element('input', {'type' : 'hidden', name: categoryFieldName, value: c}));
+         }
+       });
+       list.addItem(this.generateListItem({
+         id: this.fld.value,
+         value: this.fld.value,
+         category: customItemCategoriesElt,
+         info: new Element('div', {'class' : 'hint'}).update('(your text, not a standard term)')
+       }, 'custom-value'));
+    }
+    return list.getElement();
+  },
+
+  generateListItem : function(data, cssClass) {
+    var displayNode = new Element("div");
+    // If the search result contains an icon information, we insert this icon in the result entry.
+    if (data.icon) {
+      displayNode.insert(new Element("img", {'src' : data.icon, 'class' : 'icon' }));
+    }
+    if (this.options.displayId) {
+        displayNode.insert(new Element('span', {'class':'suggestId'}).update(data.id));
+    }
+    displayNode.insert(new Element('span', {'class':'suggestValue'}).update(data.value));
+    var displayInfo = new Element('div', {'class':'suggestInfo'}).update(data.info);
+    displayNode.insert(displayInfo);
+    if(data.synonym){
+        displayInfo.insert({'top' : new Element('span', {'class':'suggestSynonym'}).update(data.synonym)});
+    }
+
+    var valueNode = new Element('div')
+            .insert(new Element('span', {'class':'suggestId'}).update(data.id))
+            .insert(new Element('span', {'class':'suggestValue'}).update(data.value))
+            .insert(new Element('div', {'class':'suggestCategory'}).update(data.category));
+
+    var item = new PhenoTips.widgets.XListItem( displayNode , {
+        containerClasses: 'suggestItem ' + (cssClass || ''),
+        value: valueNode,
+        noHighlight: true // we do the highlighting ourselves
+    });
+
+
+    Event.fire(this.fld, "ms:suggest:suggestionCreated", {element: item.getElement(), suggest: this});
+
+    return item;
+  },
+
+  /**
+   * Emphesize the elements in passed value that matches one of the words typed as input by the user.
+   *
+   * @param String input the (typed) input
+   * @param String value the value to emphasize
+   */
+  emphasizeMatches:function(input, value)
+  {
+    // If the source declares that results are matching, we highlight them in the value
+    var output = value,
+        // Separate words (called fragments hereafter) in user input
+        fragments = input.split(' ').uniq().compact(),
+        offset = 0,
+        matches = {};
+
+    for (var j=0,flen=fragments.length;j&lt;flen;j++) {
+      // We iterate over each fragments, and try to find one or several matches in this suggestion
+      // item display value.
+      var index = output.toLowerCase().indexOf(fragments[j].toLowerCase());
+      while (index &gt;= 0) {
+        // As long as we have matches, we store their index and replace them in the output string with the space char
+        // so that they don't get matched for ever.
+        // Note that the space char is the only one safe to use, as it cannot be part of a fragment.
+        var match = output.substring(index, index + fragments[j].length),
+            placeholder = "";
+        fragments[j].length.times(function(){
+          placeholder += " ";
+        });
+        matches[index] = match;
+        output = output.substring(0, index) + placeholder + output.substring(index + fragments[j].length);
+        index = output.toLowerCase().indexOf(fragments[j].toLowerCase());
+      }
+    }
+    // Now that we have found all matches for all possible fragments, we iterate over them
+    // to construct the final "output String" that will be injected as a suggestion item,
+    // with all matches emphasized
+    Object.keys(matches).sortBy(function(s){return parseInt(s)}).each(function(key){
+      var before = output.substring(0, parseInt(key) + offset);
+      var after = output.substring(parseInt(key) + matches[key].length + offset);
+      // Emphasize the match in the output string that will be displayed
+      output = before + "&lt;em&gt;" + matches[key] + "&lt;/em&gt;" + after;
+      // Increase the offset by 9, which correspond to the number of chars in the opening and closing "em" tags
+      // we have introduced for this match in the output String
+      offset += 9;
+    });
+
+    return output;
+  },
+
+  /**
+   * Change highlight
+   *
+   * @param {Object} key
+   */
+  changeHighlight: function(key)
+  {
+    var list = this.resultContainer;
+    if (!list)
+      return false;
+
+    var n, elem;
+
+    if (this.iHighlighted) {
+      // If there is already a highlighted element, we look for the next or previous highlightable item in the list
+      // of results, according to which key has been pressed.
+      if (key == Event.KEY_DOWN) {
+        elem = this.iHighlighted.next();
+        if (!elem &amp;&amp; this.iHighlighted.up('div.results')) {
+          // if the next item could not be found and multi-source mode, find the next not empty source
+          var source = this.iHighlighted.up('div.results').next();
+          while (source &amp;&amp; !elem) {
+            elem = source.down('li');
+            source = source.next();
+          }
+        }
+        if(!elem) {
+          elem = list.down('li');
+        }
+      }
+      else if (key == Event.KEY_UP) {
+        elem = this.iHighlighted.previous();
+        if (!elem &amp;&amp; this.iHighlighted.up('div.results')) {
+          // if the previous item could not be found and multi-source mode, find the previous not empty source
+          var source = this.iHighlighted.up('div.results').previous();
+          while(source &amp;&amp; !elem) {
+            elem = source.down('li:last-child');
+            source = source.previous();
+          }
+        }
+        if (!elem) {
+          elem =  list.select('ul')[list.select('ul').length - 1].down('li:last-child');
+        }
+      }
+    }
+    else {
+      // No item is highlighted yet, so we just look for the first or last highlightable item,
+      // according to which key, up or down, has been pressed.
+      if (key == Event.KEY_DOWN) {
+        if (list.down('div.results')) {
+          elem = list.down('div.results').down('li')
+        }
+        else {
+          elem = list.down('li');
+        }
+      }
+      else if (key == Event.KEY_UP)
+        if (list.select('li') &gt; 0) {
+          elem = list.select('li')[list.select('li').length - 1];
+        }
+    }
+
+    if (elem) {
+      this.setHighlight(elem);
+    }
+  },
+
+  /**
+   * Set highlight
+   *
+   * @param {Object} n
+   */
+  setHighlight: function(highlightedItem)
+  {
+    if (this.iHighlighted)
+      this.clearHighlight();
+
+    highlightedItem.addClassName("xhighlight");
+
+    this.iHighlighted = highlightedItem;
+
+    this.killTimeout();
+  },
+
+  /**
+   * Clear highlight
+   */
+  clearHighlight: function()
+  {
+    if (this.iHighlighted) {
+      this.iHighlighted.removeClassName("xhighlight");
+      delete this.iHighlighted;
+    }
+  },
+
+  highlightFirst: function()
+  {
+    if (this.suggest &amp;&amp; this.suggest.down('ul')) {
+      var first = this.suggest.down('ul').down('li');
+      if (first) {
+        this.setHighlight(first);
+      }
+    }
+  },
+
+  /**
+   * return true if a suggestion is highlighted, false otherwise
+   */
+  hasActiveSelection: function(){
+    return this.iHighlighted;
+  },
+
+  setHighlightedValue: function ()
+  {
+    if (this.iHighlighted &amp;&amp; !this.iHighlighted.hasClassName('noSuggestion'))
+    {
+      var selection, newFieldValue
+      if(this.sInput == "" &amp;&amp; this.fld.value == "")
+        selection = newFieldValue = this.iHighlighted.down(".suggestValue").innerHTML;
+      else {
+        if(this.seps) {
+           var lastIndx = -1;
+           for(var i = 0; i &lt; this.seps.length; i++)
+             if(this.fld.value.lastIndexOf(this.seps.charAt(i)) &gt; lastIndx)
+               lastIndx = this.fld.value.lastIndexOf(this.seps.charAt(i));
+            if(lastIndx == -1)
+              selection = newFieldValue = this.iHighlighted.down(".suggestValue").innerHTML;
+            else
+            {
+               newFieldValue = this.fld.value.substring(0, lastIndx+1) + this.iHighlighted.down(".suggestValue").innerHTML;
+               selection = newFieldValue.substring(lastIndx+1);
+           }
+        }
+        else
+          selection = newFieldValue = this.iHighlighted.down(".suggestValue").innerHTML;
+      }
+
+      var data = {
+        suggest  : this,
+        id       : this.iHighlighted.down(".suggestId").innerHTML,
+        value    : this.iHighlighted.down(".suggestValue").innerHTML,
+        info     : this.iHighlighted.down(".suggestInfo").innerHTML,
+        icon     : (this.iHighlighted.down('img.icon') ? this.iHighlighted.down('img.icon').src : ''),
+        category : this.iHighlighted.down(".suggestCategory").innerHTML
+      };
+      this.acceptEntry(data, selection, newFieldValue);
+    }
+  },
+
+  acceptEntry : function(data, selection, newFieldValue, silent) {
+      var event = Event.fire(this.fld, "ms:suggest:selected", data);
+
+      if (!event.stopped) {
+        if (!silent) {
+          this.sInput = selection;
+          this.fld.value = newFieldValue || this.fld.defaultValue || '';
+          //this.fld.focus();
+          this.clearSuggestions();
+        }
+        // pass selected object to callback function, if exists
+        if (typeof(this.options.callback) == "function") {
+          this.options.callback(data);
+        }
+
+        //there is a hidden input
+        if(this.fld.id.indexOf("_suggest") &gt; 0) {
+          var hidden_id = this.fld.id.substring(0, this.fld.id.indexOf("_suggest"));
+          var hidden_inp = $(hidden_id);
+          if (hidden_inp) {
+            hidden_inp.value =  info;
+          }
+        }
+      }
+  },
+
+  /**
+   * Kill timeout
+   */
+  killTimeout: function()
+  {
+    clearTimeout(this.toID);
+  },
+
+  /**
+   * Reset timeout
+   */
+  resetTimeout: function()
+  {
+    clearTimeout(this.toID);
+    var pointer = this;
+    this.toID = setTimeout(function () { pointer.clearSuggestions() }, 1000000);
+  },
+
+  /**
+   * Clear suggestions
+   */
+  clearSuggestions: function() {
+    this.killTimeout();
+    this.isActive = false;
+    var ele = $(this.container);
+    var pointer = this;
+    if (ele &amp;&amp; ele.parentNode) {
+      if (this.options.fadeOnClear) {
+        var fade = new Effect.Fade(ele, {duration: "0.25", afterFinish : function() {
+          if($(pointer.container)) {
+            $(pointer.container).remove();
+          }
+        }});
+      }
+      else {
+        $(this.container).remove();
+      }
+      document.fire("ms:suggest:clearSuggestions", { 'suggest' : this});
+    }
+  }
+
+ });
+
+ }
+
+ return PhenoTips;
+
+})(PhenoTips || {});</code>
+    </property>
+    <property>
+      <name>Modified suggest widget</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>d12911da-ec96-4e6b-bee9-8e6a5673edf8</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+  widgets.SuggestPicker = Class.create({
+
+  options : {
+    'showKey' : true,
+    'showTooltip' : false,
+    'showDeleteTool' : true,
+    'enableSort' : true,
+    'showClearTool' : true,
+    'inputType': 'hidden',
+    'listInsertionElt' : null,
+    'listInsertionPosition' : 'after',
+    'predefinedEntries' : null,
+    'acceptFreeText' : false
+  },
+  initialize: function(element, suggest, options, serializedDataInput) {
+    this.options = Object.extend(Object.clone(this.options), options || { });
+    this.serializedDataInput = serializedDataInput;
+    this.input = element;
+    this.suggest = suggest;
+    this.inputName = this.input.name;
+    if (!this.options.acceptFreeText) {
+      this.input.name = this.input.name + "__suggested";
+    } else {
+      this.input.addClassName("accept-value");
+    }
+    this.suggest.options.callback = this.acceptSuggestion.bind(this);
+    this.list = new Element('ul', {'class' : 'accepted-suggestions'});
+    var listInsertionElement;
+    if (this.options.listInsertionElt) {
+      if (typeof(this.options.listInsertionElt) == "string") {
+        listInsertionElement = this.input.up().down(this.options.listInsertionElt);
+      } else {
+        listInsertionElement = this.options.listInsertionElt;
+      }
+    }
+    if (!listInsertionElement) {
+      listInsertionElement = this.input;
+    }
+    var insertion = {};
+    insertion[this.options.listInsertionPosition] = this.list;
+    listInsertionElement.insert(insertion);
+    this.predefinedEntries = this.options.predefinedEntries ? $(this.options.predefinedEntries) : null;
+    if (this.options.showClearTool) {
+      this.clearTool = new Element('span', {'class' : 'clear-tool delete-tool invisible', 'title' : 'Clear the list of selected suggestions'}).update('Delete all &amp;#x2716;');
+      this.clearTool.observe('click', this.clearAcceptedList.bindAsEventListener(this));
+      this.list.insert({'after': this.clearTool});
+    }
+    if (typeof(this.options.onItemAdded) == "function") {
+      this.onItemAdded = this.options.onItemAdded;
+    }
+  },
+
+  acceptAddItem : function (key, negative) {
+    var searchFor = 'input[id="' + this.getInputId(key, negative).replace(/[^a-zA-Z0-9_-]/g, '\\$&amp;') + '"]';
+    var input = this.predefinedEntries ? this.predefinedEntries.down(searchFor) : this.list ? this.list.down(searchFor) : $(this.getInputId(key, negative));
+    if (input) {
+      input.checked = true;
+      Event.fire(input, 'suggest:change');
+      //this.ensureVisible(input.up(), true);
+      this.synchronizeSelection(input);
+      return false;
+    }
+    return true;
+  },
+
+  ensureVisible : function (element, force) {
+    if (this.silent || (!force &amp;&amp; this.options.silent) || element.up('.hidden')) {return;}
+    var section = element.up('.collapsed:not(.force-collapse)');
+    while (section) {
+      section.removeClassName('collapsed');
+      if (section.down('.expand-tool')) {
+        section.down('.expand-tool').update('▼');
+      }
+      section = section.up('.collapsed:not(.force-collapse)');
+    }
+    if (element.viewportOffset().top &gt; this.input.viewportOffset().top) {
+      if (element.viewportOffset().top &gt; document.viewport.getHeight()) {
+        if (element.viewportOffset().top - this.input.viewportOffset().top &lt; document.viewport.getHeight()) {
+          this.input.scrollTo();
+        } else {
+          element.scrollTo();
+        }
+      }
+    } else {
+      if (element.cumulativeOffset().top &lt; document.viewport.getScrollOffsets().top) {
+        element.scrollTo();
+      }
+    }
+  },
+
+  acceptSuggestion : function(obj) {
+    this.input.value = this.input.defaultValue || "";
+    if (this.acceptAddItem(obj.id || obj.value, obj.negative)) {
+      this.addItem(obj.id || obj.value, obj.value, obj.info, obj.category);
+    }
+    return false;
+  },
+
+  addItem : function(key, value, info, category) {
+    if (!key) {
+      return;
+    }
+    var id = this.getInputId(key);
+    var listItem = new Element("li");
+    var displayedValue = new Element("label", {"class": "accepted-suggestion", "for" : id});
+    // insert input
+    var inputOptions = {"type" : this.options.inputType, "name" : this.inputName, "id" : id, "value" : key};
+    if (this.options.inputType == 'checkbox') {
+      inputOptions.checked = true;
+    }
+    displayedValue.insert({'bottom' : new Element("input", inputOptions)});
+    // if the key should be displayed, insert it
+    if (this.options.showKey) {
+      displayedValue.insert({'bottom' : new Element("span", {"class": "key"}).update("[" + key.escapeHTML() + "]")});
+      displayedValue.insert({'bottom' : new Element("span", {"class": "sep"}).update(" ")});
+    }
+    // insert the displayed value
+    displayedValue.insert({'bottom' : new Element("span", {"class": "value"}).update(value.escapeHTML())});
+    listItem.insert(displayedValue);
+    if (category &amp;&amp; category != '') {
+      listItem.insert(category);
+    }
+    // delete tool
+    if (this.options.showDeleteTool) {
+      var deleteTool = new Element("span", {'class': "delete-tool", "title" : "Delete this term"}).update('&amp;#x2716;');
+      deleteTool.observe('click', this.removeItem.bindAsEventListener(this));
+      listItem.appendChild(deleteTool);
+    }
+    // tooltip, if information exists and the options state there should be a tooltip
+    if (this.options.showTooltip &amp;&amp; info) {
+      listItem.appendChild(new Element("div", {'class' : "tooltip"}).update(info));
+      listItem.select('.expand-tool').invoke('observe', 'click', function(event){event.stop();});
+    }
+    this.list.insert(listItem);
+    var newItem = this.list ? this.list.down('input[id="' + id.replace(/[^a-zA-Z0-9_-]/g, '\\$&amp;') + '"]') : $(id);
+    //this.ensureVisible(newItem);
+    this.synchronizeSelection(newItem);
+    newItem.observe('change', this.synchronizeSelection.bind(this, newItem));
+    this.updateListTools();
+    this.onItemAdded(newItem)
+    return newItem;
+  },
+
+  onItemAdded : function (element) {
+  },
+
+  removeItem : function(event) {
+    var item = event.findElement('li');
+    this.synchronizeSelection({
+      value   : (item.down('input[type=checkbox]') || item.down('input')).value,
+      checked : false
+    });
+    item.remove();
+    this.notifySelectionChange(item);
+    this.input.value = this.input.defaultValue || "";
+    this.updateListTools();
+  },
+
+  clearAcceptedList : function () {
+    // The list items are recreated after each update, so we can't cache the set of items, we must request them one by one
+    var item = this.list.down('li .delete-tool');
+    while (item) {
+      item.click();
+      item = this.list.down('li .delete-tool');
+    }
+  },
+
+  updateListTools : function () {
+    if (this.clearTool) {
+      if (this.list.select('li .accepted-suggestion').length &gt; 0) {
+        this.clearTool.removeClassName('invisible');
+      } else {
+        this.clearTool.addClassName('invisible');
+      }
+    }
+    if (this.options.enableSort &amp;&amp; this.list.select('li .accepted-suggestion').length &gt; 0 &amp;&amp; typeof(Sortable) != "undefined") {
+      Sortable.create(this.list);
+    }
+    if (this.serializedDataInput) {
+      var value = '';
+      this.list.select('li .accepted-suggestion input[type=checkbox]').each(function (entry) {
+        value += entry.value + '|';
+      });
+      this.serializedDataInput.value = value;
+    }
+  },
+
+  getInputId : function(key, negative) {
+    return (negative ? this.inputName.replace(/(_\d+)_/, "$1_negative_") : this.inputName) + "_" + key;
+  },
+
+  synchronizeSelection : function (input) {
+    var element = (typeof (input.up) == 'function') &amp;&amp; input.up('li');
+    if (element) {
+      if (this.input.hasClassName('generateYesNo') &amp;&amp; !input.up('.yes-no-picker')) {
+        Element.select(element, 'input[name="fieldName"][type="hidden"]').each(function(n) {
+          var target = n.up('li').down('input[type="checkbox"]');
+          var originalName = target.name;
+          target.id = target.id.replace(target.name, n.value);
+          target.name = n.value;
+          target.up('label').addClassName(n.className);
+          target.up('label').htmlFor = target.id;
+          n.value = originalName;
+          if (n.up('.term-category')) {
+            n.up('.term-category').insert({before: n});
+          }
+        });
+        var positiveName = this.input.name.replace(/__suggested$/, "");
+        var negativeName = this.input.name.replace(/(_\d+)_/, "$1_negative_").replace(/__suggested$/, "");;
+        var value = input.value;
+        var text = element.down('.value').firstChild.nodeValue;
+        var ynpickerElt = YesNoPicker.generatePickerElement([
+              {type: 'na',                         selected: !isValueSelected(positiveName, value) &amp;&amp; !isValueSelected(negativeName, value)},
+              {type: 'yes', name: positiveName, selected: isValueSelected(positiveName, value)},
+              {type: 'no' , name: negativeName,    selected: isValueSelected(negativeName, value)}
+        ], value, text, true, input.next());
+        input.insert({before: ynpickerElt});
+        input.hide();
+        input.name = '';
+        input.id = '';
+        input.value = '';
+        enableHighlightChecked(ynpickerElt.down('.yes input'));
+        enableHighlightChecked(ynpickerElt.down('.no input'));
+      }
+    }
+    if (element) {
+      this.notifySelectionChange(element);
+    }
+  },
+
+  notifySelectionChange : function(elt) {
+    if (!elt.__categoryArray) {
+      elt.__categoryArray = [];
+      Element.select(elt, '.term-category input[type=hidden]').each(function(c) {
+        elt.__categoryArray.push(c.value);
+      });
+    }
+    Event.fire(this.input, 'xwiki:form:field-value-changed');
+    Event.fire(document, "custom:selection:changed", {
+       'categories' : elt.__categoryArray,
+       'trigger'    : this.input,
+       'fieldName'  : this.inputName,
+       'customElement' : elt
+    });
+  }
+});
+  return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name>Multi-suggest</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>2</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>8671764c-5e4b-4641-a1ae-0a77d30d8009</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function (PhenoTips) {
+// Start PhenoTips augmentation.
+var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+widgets.ModalPopup = Class.create({
+  /** Configuration. Empty values will fall back to the CSS. */
+  options : {
+    idPrefix : "modal-popup-",
+    title : "",
+    displayCloseButton : true,
+    screenColor : "",
+    borderColor : "",
+    titleColor : "",
+    backgroundColor : "",
+    screenOpacity : "0.5",
+    verticalPosition : "center",
+    horizontalPosition : "center",
+    resetPositionOnShow: true,
+    removeOnClose : false,
+    onClose : Prototype.emptyFunction
+  },
+  /** Constructor. Registers the key listener that pops up the dialog. */
+  initialize : function(content, shortcuts, options) {
+    /** Shortcut configuration. Action name -&amp;gt; {method: function(evt), keys: string[]}. */
+    this.shortcuts = {
+      "show" : { method : this.showDialog, keys : []},
+      "close" : { method : this.closeDialog, keys : ['Esc']}
+    },
+
+    this.content = content || "Hello world!";
+    // Add the new shortcuts
+    this.shortcuts = Object.extend(Object.clone(this.shortcuts), shortcuts || { });
+    // Add the custom options
+    this.options = Object.extend(Object.clone(this.options), options || { });
+    // Register a shortcut for showing the dialog.
+    this.registerShortcuts("show");
+
+    if (typeof (widgets.ModalPopup.instanceCounter) == 'undefined') {
+      widgets.ModalPopup.instanceCounter = 0;
+    }
+    this.id = ++widgets.ModalPopup.instanceCounter;
+  },
+
+  getBoxId : function() {
+    return this.options.idPrefix + this.id;
+  },
+
+  /** Create the dialog, if it is not already loaded. Otherwise, just make it visible again. */
+  createDialog : function(event) {
+    this.dialog = new Element('div', {'class': 'msdialog-modal-container'});
+    // A full-screen semi-transparent screen covering the main document
+    this.screen = new Element('div', {'class': 'msdialog-screen'}).setStyle({
+      opacity : this.options.screenOpacity,
+      backgroundColor : this.options.screenColor
+    });
+    this.dialog.update(this.screen);
+    // The dialog chrome
+    this.dialogBox = new Element('div', {'class': 'msdialog-box', 'id' : this.getBoxId()});
+    if (this.options.extraClassName) {
+      this.dialogBox.addClassName(this.options.extraClassName);
+    }
+    // Insert the content
+    this.dialogBox._x_contentPlug = new Element('div', {'class' : 'content'});
+    this.dialogBox.update(this.dialogBox._x_contentPlug);
+    this.dialogBox._x_contentPlug.update(this.content);
+    // Add the dialog title
+    if (this.options.title) {
+      var title = new Element('div', {'class': 'msdialog-title'}).update(this.options.title);
+      title.setStyle({"color" : this.options.titleColor, "backgroundColor" : this.options.borderColor});
+      this.dialogBox.insertBefore(title, this.dialogBox.firstChild);
+    }
+    // Add the close button
+    if (this.options.displayCloseButton) {
+      var closeButton = new Element('div', {'class': 'msdialog-close', 'title': 'Close'}).update("&amp;#215;");
+      closeButton.setStyle({"color": this.options.titleColor});
+      closeButton.observe("click", this.closeDialog.bindAsEventListener(this));
+      this.dialogBox.insertBefore(closeButton, this.dialogBox.firstChild);
+    }
+    this.dialog.appendChild(this.dialogBox);
+    this.dialogBox.setStyle({
+      "textAlign": "left",
+      "borderColor": this.options.borderColor,
+      "backgroundColor" : this.options.backgroundColor
+    });
+    this.positionDialog();
+    // Append to the end of the document body.
+    document.body.appendChild(this.dialog);
+    if (typeof (Draggable) != 'undefined') {
+      new Draggable(this.getBoxId(), {
+        handle: $(this.getBoxId()).down('.msdialog-title'),
+        scroll: window,
+        change: this.updateScreenSize.bind(this)
+      });
+    }
+    this.dialog.hide();
+    var __enableUpdateScreenSize = function (event) {
+      if (this.dialog.visible()) {
+        this.updateScreenSize();
+      }
+    }.bindAsEventListener(this);
+    ['resize', 'scroll'].each(function(eventName) {
+       Event.observe(window, eventName, __enableUpdateScreenSize);
+    }.bind(this));
+    Event.observe(document, 'ms:popup:content-updated', __enableUpdateScreenSize);
+  },
+  positionDialog : function() {
+    switch(this.options.verticalPosition) {
+      case "top":
+        this.dialogBox.setStyle({"top": (document.viewport.getScrollOffsets().top + 6) + "px"});
+        break;
+      case "bottom":
+        this.dialogBox.setStyle({"bottom": ".5em"});
+        break;
+      default:
+        // TODO: smart alignment according to the actual height
+        this.dialogBox.setStyle({"top": "35%"});
+        break;
+    }
+    this.dialogBox.setStyle({"left": "", "right" : ""});
+    switch(this.options.horizontalPosition) {
+      case "left":
+        this.dialog.setStyle({"textAlign": "left"});
+        break;
+      case "right":
+        this.dialog.setStyle({"textAlign": "right"});
+        break;
+      default:
+        this.dialog.setStyle({"textAlign": "center"});
+        this.dialogBox.setStyle({"margin": "auto"});
+      break;
+    }
+  },
+  positionDialogInViewport : function(left, top) {
+    this.dialogBox.setStyle({
+      "left": (document.viewport.getScrollOffsets().left + left) + "px",
+      "top" : (document.viewport.getScrollOffsets().top  + top ) + "px",
+      "margin" : "0"
+    });
+  },
+  getPositionInViewport : function() {
+    return this.dialogBox.viewportOffset();
+  },
+
+  updateScreenSize : function() {
+    var __getNewDimension = function (eltToFit, dimensionAccessFunction, position) {
+      var crtDimension = $(document.documentElement)[dimensionAccessFunction]();
+      var viewportDimension = document.viewport.getScrollOffsets()[position] + document.viewport[dimensionAccessFunction]();
+      if (eltToFit) {
+        var limit = eltToFit.cumulativeOffset()[position] + eltToFit[dimensionAccessFunction]();
+      }
+      var result = '';
+      if (crtDimension &lt; viewportDimension) {
+        result = viewportDimension + 'px';
+      }
+      /*if (limit &amp;&amp; crtDimension &lt; limit) {
+        result = limit + 'px';
+      } else if (limit &amp;&amp; limit &lt; viewportDimension) {
+        result = viewportDimension + 'px';
+      }*/
+      return result;
+    };
+    this.screen.style.width  = __getNewDimension(this.dialogBox, 'getWidth', 'left');
+    this.screen.style.height = __getNewDimension(this.dialogBox, 'getHeight', 'top');
+  },
+  /** Set a class name to the dialog box */
+  setClass : function(className) {
+    this.dialogBox.addClassName('msdialog-box-' + className);
+  },
+  /** Remove a class name from the dialog box */
+  removeClass : function(className) {
+    this.dialogBox.removeClassName('msdialog-box-' + className);
+  },
+  /** Set the content of the dialog box */
+  setContent : function(content) {
+     this.content = content;
+     this.dialogBox._x_contentPlug.update(this.content);
+     this.updateScreenSize();
+  },
+  /** Called when the dialog is displayed. Enables the key listeners and gives focus to the (cleared) input. */
+  showDialog : function(event) {
+    if (event) {
+      Event.stop(event);
+    }
+    // Only do this if the dialog is not already active.
+    //if (!widgets.ModalPopup.active) {
+    //  widgets.ModalPopup.active = true;
+    if (!this.active) {
+      this.active = true;
+      if (!this.dialog) {
+        // The dialog wasn't loaded, create it.
+        this.createDialog();
+      }
+      // Start listening to keyboard events
+      this.attachKeyListeners();
+      // In IE, position: fixed does not work.
+      /*if (Prototype.Browser.IE6x) {
+        this.dialog.setStyle({top : document.viewport.getScrollOffsets().top + "px"});
+        this.dialog._x_scrollListener = this.onScroll.bindAsEventListener(this);
+        Event.observe(window, "scroll", this.dialog._x_scrollListener);
+        $$("select").each(function(item) {
+          item._x_initiallyVisible = item.style.visibility;
+          item.style.visibility = 'hidden';
+        });
+      }*/
+      // Display the dialog
+      this.dialog.show();
+      if (this.options.resetPositionOnShow) {
+        this.positionDialog();
+      }
+      this.updateScreenSize();
+    }
+  },
+  onScroll : function(event) {
+    this.dialog.setStyle({top : document.viewport.getScrollOffsets().top + "px"});
+  },
+  /** Called when the dialog is closed. Disables the key listeners, hides the UI and re-enables the 'Show' behavior. */
+  closeDialog : function(event) {
+    if (event) {
+      Event.stop(event);
+    }
+    /*if (window.browser.isIE6x) {
+      Event.stopObserving(window, "scroll", this.dialog._x_scrollListener);
+      $$("select").each(function(item) {
+        item.style.visibility = item._x_initiallyVisible;
+      });
+    }*/
+    // Call optional callback
+    this.options.onClose.call(this);
+    // Hide the dialog, without removing it from the DOM.
+    this.dialog.hide();
+    if (this.options.removeOnClose) {
+      this.dialog.remove();
+    }
+    // Stop the UI shortcuts (except the initial Show Dialog one).
+    this.detachKeyListeners();
+    // Re-enable the 'show' behavior.
+    // widgets.ModalPopup.active = false;
+    this.active = false;
+  },
+  /** Enables all the keyboard shortcuts, except the one that opens the dialog, which is already enabled. */
+  attachKeyListeners : function() {
+    for (var action in this.shortcuts) {
+      if (action != "show") {
+        this.registerShortcuts(action);
+      }
+    }
+  },
+  /** Disables all the keyboard shortcuts, except the one that opens the dialog. */
+  detachKeyListeners : function() {
+    for (var action in this.shortcuts) {
+      if (action != "show") {
+        this.unregisterShortcuts(action);
+      }
+    }
+  },
+  /**
+   * Enables the keyboard shortcuts for a specific action.
+   *
+   * @param {String} action The action to register
+   * {@see #shortcuts}
+   */
+  registerShortcuts : function(action) {
+    var shortcuts = this.shortcuts[action].keys;
+    var method = this.shortcuts[action].method;
+    for (var i = 0; i &lt; shortcuts.size(); ++i) {
+      if (Prototype.Browser.IE || Prototype.Browser.WebKit) {
+        shortcut.add(shortcuts[i], method.bindAsEventListener(this, action), {type: 'keyup'});
+      } else {
+        shortcut.add(shortcuts[i], method.bindAsEventListener(this, action), {type: 'keypress'});
+      }
+    }
+  },
+  /**
+   * Disables the keyboard shortcuts for a specific action.
+   *
+   * @param {String} action The action to unregister {@see #shortcuts}
+   */
+  unregisterShortcuts : function(action) {
+    for (var i = 0; i &lt; this.shortcuts[action].keys.size(); ++i) {
+      shortcut.remove(this.shortcuts[action].keys[i]);
+    }
+  },
+  createButton : function(type, text, title, id) {
+    var wrapper = new Element("span", {"class" : "buttonwrapper"});
+    var button = new Element("input", {
+      "type" : type,
+      "class" : "button",
+      "value" : text,
+      "title" : title,
+      "id" : id
+    });
+    wrapper.update(button);
+    return wrapper;
+  },
+  show : function(event) {
+    this.showDialog(event);
+  },
+  close : function(event) {
+    this.closeDialog(event);
+  }
+});
+/** Whether or not the dialog is already active (or activating). */
+widgets.ModalPopup.active = false;
+// End PhenoTips augmentation.
+return PhenoTips;
+}(PhenoTips || {}));
+</code>
+    </property>
+    <property>
+      <name>Modified modal popup</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>3</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>d536b27d-9de4-4d3d-9bc8-e458d3274c16</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+  widgets.SolrQueryProcessor = Class.create({
+  initialize: function(queryFields, restriction) {
+    this.queryFields = queryFields;
+    this.restriction = restriction;
+  },
+
+  processQuery: function(query)
+  {
+    return this.inflateQuery(query);
+  },
+
+  generateParameters: function(query)
+  {
+    var parameters = {'defType': 'edismax', 'spellcheck.collate': true, 'spellcheck': true, 'lowercaseOperators': false};
+    if (this.setupMandatoryQuery(query, parameters)) {
+      return parameters;
+    }
+    this.restrictQuery(query, parameters);
+    this.setupQueryFields(query, parameters);
+    return parameters;
+  },
+
+  setupMandatoryQuery : function(query, parameters)
+  {
+    var txt = query.strip();
+    var mandatoryQuery = "";
+    var hasMandatoryFields = false;
+    for (var field in this.queryFields) {
+      var fieldOptions = this.queryFields[field];
+      var activationRegex = fieldOptions['activationRegex'];
+      if (!fieldOptions['mandatory'] || !activationRegex || !txt.match(activationRegex)) {
+        continue;
+      }
+      mandatoryQuery += field + ":" + (fieldOptions['transform'] ? fieldOptions['transform'](query) : query) + " ";
+      hasMandatoryFields = true;
+    }
+    if (mandatoryQuery) {
+      parameters.fq = mandatoryQuery.strip();
+    }
+    return hasMandatoryFields;
+  },
+
+  restrictQuery : function(query, parameters)
+  {
+    if (!this.restriction) {
+      return;
+    }
+    var result = "";
+    for (var rField in this.restriction) {
+      var restrictionString = (rField.substring(0, 1) == '-' ? '-' : '+') + "(";
+      for (var i = 0; i &lt; this.restriction[rField].length; ++i) {
+        restrictionString += rField.replace(/^-/, '') + ":" + this.restriction[rField][i].replace(/:/g, "\\:") + " ";
+      }
+      restrictionString = restrictionString.strip() + ") ";
+      result += restrictionString;
+    }
+    if (result) {
+      parameters.fq = result.strip();
+    }
+  },
+
+  setupQueryFields : function(query, parameters)
+  {
+    var txt = query.strip();
+    var wordFields = "";
+    var phraseFields = "";
+    var boostQuery = "";
+    var lastWord = query.replace(/.*\W/g, '');
+    for (var field in this.queryFields) {
+      var fieldOptions = this.queryFields[field];
+      var activationRegex = fieldOptions['activationRegex'];
+      if (activationRegex &amp;&amp; !txt.match(activationRegex)) {
+        continue;
+      }
+      if (fieldOptions['wordBoost']) {
+        wordFields += field + "^" + fieldOptions['wordBoost'] + " ";
+      }
+      if (fieldOptions['phraseBoost']) {
+        phraseFields += field + "^" + fieldOptions['phraseBoost'] + (fieldOptions['phraseSlop'] ? "~" + fieldOptions['phraseSlop'] : "") + " ";
+      }
+      if (lastWord &amp;&amp; fieldOptions['stubBoost']) {
+        boostQuery += field + ":" + lastWord.replace(/:/g, "\\:")+ "*^" + fieldOptions['stubBoost'] + " ";
+      }
+    }
+    if (wordFields) {
+      parameters.qf = wordFields.strip();
+    }
+    if (phraseFields) {
+      parameters.pf = phraseFields.strip();
+    }
+    if (boostQuery) {
+      parameters.bq = boostQuery.strip();
+    }
+  },
+
+  inflateQuery : function(query)
+  {
+    var lastWord = query.replace(/.*\W/g, '');
+    if (!lastWord) {
+      return query;
+    }
+    var result = query;
+
+    for (var field in this.queryFields) {
+      if (this.queryFields[field].stubTrigger) {
+        result += " " + field + ":" + lastWord.replace(/:/g, "\\:") + "*";
+      }
+    }
+    return result.strip();
+  }
+});
+  return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name>Solr Qoery Processor</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>4</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>984c7b53-5644-489c-8ddc-ef51a196254a</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+  widgets.OntologyBrowser = Class.create({
+  options : {
+    script : "${xwiki.getURL('PhenoTips.SolrService', 'get', 'sort=nameSort asc&amp;start=0&amp;rows=10000')}&amp;",
+    varname: "q",
+    method : "post",
+    json : true,
+    responseFormat : "application/json",
+    resultsParameter : "rows",
+    resultId : "id",
+    resultValue : "name",
+    resultCategory : "term_category",
+    resultInfo : {
+                           ""              : {"selector"  : "def",
+                                              "processor" : function(text) { return text.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;'); }
+                           },
+                           "Also known as" : {"selector"  : "synonym"},
+                           "Is a type of"  : {"selector"  : "is_a",
+                                              "processor" : function(text) { return text.replace(/^([A-Z]+:[0-9]+)\s+!\s+/, ''); }
+                           }
+    },
+    resultParent : {
+      selector : 'is_a',
+//    json : false,
+//    responseFormat : "application/xml",
+//    resultsParameter : "doc",
+//    resultId : "str[name=id]",
+//    resultValue : "str[name=name]",
+//    resultCategory : "arr[name=term_category] str",
+//    resultInfo : {
+//                           "Definition"    : {"selector"  : "str[name=def]"},
+//                           "Synonyms"      : {"selector"  : "arr[name=synonym] str"}
+//    },
+//    resultParent : {
+//      selector : 'arr[name=is_a] str',
+      processingFunction : function (text){
+        var data = {};
+        data.id = text.replace(/\s+/gm, ' ').replace(/(HP:[0-9]+)\s*!\s*(.*)/m, "$1");
+        data.value = text.replace(/\s+/gm, ' ').replace(/(HP:[0-9]+)\s*!\s*(.*)/m, "$2");
+        return data;
+      }
+    },
+    noresults: "No sub-terms",
+    targetQueryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
+                           'id' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}},
+                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1, 'stubTrigger': true}
+                         }),
+    expandQueryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
+                           'is_a' : {'activationRegex' : /^HP:[0-9]+$/i, 'mandatory' : true, 'transform': function(query) {return query.toUpperCase().replace(/:/g, "\\:");}},
+                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1, 'stubTrigger': true}
+                         }),
+    showParents : true,
+    showRoot : true,
+    enableSelection : true,
+    enableBrowse : true,
+    isTermSelected : function (id) {return false;},
+    unselectTerm : function(id) {},
+
+    defaultEntryAction: 'browse' /* {browse, select} */
+  },
+
+  initialize: function(suggest, container, options) {
+    this.options = Object.extend(Object.clone(this.options), options || { });
+    this.suggest = suggest;
+    this.loadingMessage = new Element('div', {'class' : 'plainmessage loading'}).update("Loading...");
+    if (container) {
+      this.container = container;
+    } else {
+      this.container = new PhenoTips.widgets.ModalPopup(this.loadingMessage, {}, {
+        idPrefix : 'ontology-browser-window-',
+        title : "Related terms",
+        backgroundColor: "#ffffff",
+        verticalPosition : "top"
+      });
+      this.options.modal = true;
+    }
+    document.observe('click', function (event) {
+       if (this.activeTooltip &amp;&amp; event.element() &amp;&amp; event.element() != this.activeTooltip &amp;&amp; event.element().up('.tooltip') != this.activeTooltip) {
+         this._hideEntryInfo(event);
+       }
+    }.bindAsEventListener(this));
+    this._obrowserExpandEventHandler = this._obrowserExpandEventHandler.bindAsEventListener(this);
+  },
+
+  load : function(id) {
+      this.setContent(this.loadingMessage);
+      var query = id;
+      var parameters = {};
+      if (this.options.targetQueryProcessor != null &amp;&amp; typeof(this.options.targetQueryProcessor.generateParameters) == "function") {
+        parameters = this.options.targetQueryProcessor.generateParameters(query);
+      }
+      if (this.options.targetQueryProcessor != null &amp;&amp; typeof(this.options.targetQueryProcessor.processQuery) == "function") {
+        query = this.options.targetQueryProcessor.processQuery(query);
+      }
+      var url = this.options.script + this.options.varname + "=" + encodeURIComponent(query);
+      var headers = {};
+      headers.Accept = this.options.responseFormat;
+
+      var ajx = new Ajax.Request(url, {
+        method: this.options.method,
+        parameters: parameters,
+        requestHeaders: headers,
+        onSuccess: function (response) {
+          this.setContent(this.buildTree(this._getDataFromResponse(response)));
+          this.__crtRoot = id;
+        }.bind(this),
+        onFailure: function (response) {
+          this.setContent("Failed to retrieve data : " + respose.statusText);
+          this.__crtRoot = '';
+        }.bind(this)
+      });
+  },
+
+  expandTo : function (termId, categories) {
+    //alert ("start expanding " + termId + " " + categories);
+    if (categories.indexOf(this.__crtRoot) == -1) {
+      // not in the right tree, nothing to do
+      return;
+    }
+    this._expandToStep(termId, categories.without(this.__crtRoot, termId));
+  },
+
+  _expandToStep : function (termId, categories) {
+    var _this = this;
+    //alert ("expanding " + termId + " " + categories);
+    var target = this.container.contentContainer.down('li.entry input.select-tool[value="' + termId.replace(/"/g, '\\"') + '"]');
+    if (target) {
+       return;
+    }
+    var finishedStep = false;
+    categories.each(function(category) {
+      if (finishedStep) {return}
+      var categoryInput = _this.container.contentContainer.down('li.entry input.select-tool[value="' + category.replace(/"/g, '\\"') + '"]');
+      if (categoryInput) {
+        //alert ("start expanding " + category + " " + categories);
+        var categoryEntry = categoryInput.up('li');
+        if (categoryEntry.hasClassName('collapsed') || !categoryEntry.down('.descendents')) {
+          Event.observe(categoryEntry, "obrowser:expand:finished", function(event) {
+            Event.stopObserving(categoryEntry, "obrowser:expand:finished");
+console.log(termId);
+console.log(categories);
+            _this._expandToStep(termId, categories.without(category));
+          });
+          _this._toggleExpandState(categoryEntry);
+          finishedStep = true;
+        }
+      }
+    });
+  },
+
+  expand : function (element, doPopulate) {
+      var query = element.__termId;
+      var parameters = {};
+      if (this.options.expandQueryProcessor != null &amp;&amp; typeof(this.options.expandQueryProcessor.generateParameters) == "function") {
+        parameters = this.options.expandQueryProcessor.generateParameters(query);
+      }
+      if (this.options.expandQueryProcessor != null &amp;&amp; typeof(this.options.expandQueryProcessor.processQuery) == "function") {
+        query = this.options.expandQueryProcessor.processQuery(query);
+      }
+      var url = this.options.script + this.options.varname + "=" + encodeURIComponent(query);
+      var headers = {};
+      headers.Accept = this.options.responseFormat;
+
+      var ajx = new Ajax.Request(url, {
+        method: this.options.method,
+        requestHeaders: headers,
+        parameters: parameters,
+        onCreate: function() {this._lockExpandTool(element)}.bind(this),
+        onSuccess: function (response) {
+          var memo = {};
+          if (doPopulate) {
+            var newAdditions = this.buildDescendentsList(this._getDataFromResponse(response));
+            element.insert({'bottom': newAdditions});
+            Event.fire(document, "obrowser:content:added", {added: newAdditions, obrowser: this});
+            Event.fire(element, "obrowser:expand:finished");
+            Event.fire(this.container.contentContainer || document, "obrowser:expand:finished");
+            //memo.data = this.buildDescendentsList(this._getDataFromResponse(response));
+            //Event.fire(element, 'obrowser:expand:done', memo);
+          } else {
+            memo.count = this.countDescendents(this._getDataFromResponse(response));
+            //Event.fire(element, 'obrowser:count:done', memo);
+          }
+          if ((memo.count === 0) || (doPopulate &amp;&amp; !element.hasClassName('root') &amp;&amp; !element.down('.descendents .entry, .error'))) {
+            element.addClassName('collapsed');
+            var expandTool = element.down('.expand-tool');
+            if (expandTool) {
+              expandTool.update(this._getExpandCollapseSymbol(true)).addClassName('disabled');
+              expandTool.stopObserving('click');
+            }
+          }
+          Event.fire(document, "ms:popup:content-updated", {popup: this.container});
+        }.bind(this),
+        onFailure: function (response) {
+          Event.fire(element, 'obrowser:expand:failed', {data: new Element('div', {'class' : 'error'}).update("Failed to retrieve data : " + respose.statusText), count: -1});
+        },
+        onComplete: function() {this._unlockExpandTool(element)}.bind(this)
+      });
+  },
+
+  _getDataFromResponse : function(response) {
+    if (this.options.json) {
+      return response.responseJSON;
+    }
+    return response.responseXML;
+  },
+  _getResultset_json : function(data, fieldName) {
+    return data &amp;&amp; data[fieldName] || [];
+  },
+  _getResultFieldValue_json : function(data, fieldName) {
+    return data &amp;&amp; data[fieldName] || '';
+  },
+  _getResultFieldValueAsArray_json : function(data, fieldName) {
+    return new Array(data &amp;&amp; data[fieldName] || '').flatten();
+  },
+  _getResultset_xml : function(data, selector) {
+    var elements = data &amp;&amp; data.getElementsByTagName(selector);
+    return elements;
+  },
+  _getResultFieldValue_xml : function(data, selector) {
+    var element = data &amp;&amp; Element.down(data, selector);
+    return element &amp;&amp; element.firstChild &amp;&amp; element.firstChild.nodeValue || '';
+  },
+  _getResultFieldValueAsArray_xml : function(data, selector) {
+    var result = new Array();
+    if (data) {
+      Element.select(data, selector).each(function(item) {
+        var value = item.firstChild &amp;&amp; item.firstChild.nodeValue;
+        if (value) {
+          result.push(value);
+        }
+      });
+    }
+    return result;
+  },
+  _getResultset : function(data, fieldName) {
+    if (this.options.json) {
+      return this._getResultset_json(data, fieldName);
+    }
+    return this._getResultset_xml(data, fieldName);
+  },
+  _getResultFieldValue : function(data, fieldName) {
+    if (this.options.json) {
+      return this._getResultFieldValue_json(data, fieldName);
+    }
+    return this._getResultFieldValue_xml(data, fieldName);
+  },
+  _getResultFieldValueAsArray : function(data, fieldName) {
+    if (this.options.json) {
+      return this._getResultFieldValueAsArray_json(data, fieldName);
+    }
+    return this._getResultFieldValueAsArray_xml(data, fieldName);
+  },
+
+  buildTree : function (data) {
+    var results = this._getResultset(data, this.options.resultsParameter);
+    if (results.length == 0) {
+      return new Element('div', {'class' : 'error'}).update(this.options.noresults);
+    }
+    var targetResult = results[0];
+    var newContent = new Element('div');
+    if (this.options.showParents) {
+      var parents = new Element('ul', {'class': 'parents'});
+      this._getResultFieldValueAsArray(targetResult, this.options.resultParent.selector).each(function(item) {
+        var text = item;
+        var data = {};
+        if (typeof (this.options.resultParent.processingFunction) == "function") {
+          data = this.options.resultParent.processingFunction(text);
+        }
+        parents.insert({'bottom' : this._createParentBranch(data)});
+      }.bind(this));
+      if (parents.hasChildNodes()) {
+        newContent.insert({'top' : parents});
+      }
+      Event.fire(document, "obrowser:content:added", {added: parents, obrowser: this});
+    }
+    var data = {
+      id : this._getResultFieldValue(targetResult, this.options.resultId),
+      value : this._getResultFieldValue(targetResult, this.options.resultValue),
+      info : this._generateEntryInfo(targetResult),
+      category: this._generateEntryCategory(targetResult)
+    }
+    var root = this._createRoot(data);
+    newContent.insert({'bottom' : root});
+    Event.fire(document, "obrowser:content:added", {added: root, obrowser: this});
+    //this._toggleExpandState(root);
+    return newContent;
+  },
+
+  countDescendents : function(xml) {
+    return this._getResultset(xml, this.options.resultsParameter).length;
+  },
+
+  buildDescendentsList : function(xml) {
+    var results = this._getResultset(xml, this.options.resultsParameter);
+    var list = new Element('ul', {'class' : 'descendents'});
+    for (var i = 0; i &lt; results.length; i++) {
+        var data = {
+          id : this._getResultFieldValue(results[i], this.options.resultId),
+          value : this._getResultFieldValue(results[i], this.options.resultValue),
+          info : this._generateEntryInfo(results[i]),
+          category: this._generateEntryCategory(results[i])
+        };
+        list.insert({'bottom': this._createDescendentBranch(data)});
+    }
+    if (list.hasChildNodes()) {
+      return list;
+    }
+    return new Element('div', {'class' : 'descendents hint empty'}).update(this.options.noresults);
+  },
+
+  _createBranch: function (eltName, className, data, expandable) {
+    var element =  new Element(eltName, {'class' : 'entry ' + className});
+    element.__termId = data.id;
+    element.__termCategory = data.category;
+    var wrapper = new Element('div', {'class' : 'entry-data'});
+    wrapper.insert({'bottom': this._generateEntryTitle(data.id, data.value)});
+    var entryTools = new Element('span', {'class' : 'entry-tools'});
+    wrapper.insert({'top': entryTools});
+    element.update(wrapper);
+
+    if (!this._isRootEntry(element)) {
+      if (this.options.defaultEntryAction == 'browse') {
+        wrapper.down('.info').observe('click', this._browseEntry.bindAsEventListener(this));
+      } else if (this.options.enableBrowse) {
+        entryTools.insert({'top' : this._createTool('...', 'browse-tool', "Browse related terms", this._browseEntry)})
+      }
+    }
+    if (data.info) {
+      entryTools.insert({'top' : this._createTool('i', 'info-tool', "Information about this term", this._showEntryInfo)});
+      element.insert({bottom : data.info});
+    }
+
+    if (this.options.enableSelection) {
+      element.__selectTool = new Element('input', {'type' : 'checkbox', name: 'term_selector', value: data.id, 'class' : 'select-tool'});
+      wrapper.insert({'top': element.__selectTool});
+      if (this.options.isTermSelected(element.__termId)) {
+        element.addClassName('accepted');
+        element.__selectTool.checked = 'checked';
+      }
+      element.__selectTool.observe('click', this._toggleEntrySelection.bindAsEventListener(this));
+      if (this.options.defaultEntryAction == 'select') {
+         wrapper.down('.info').observe('click', this._toggleEntrySelection.bindAsEventListener(this));
+      }
+    }
+
+    if (expandable) {
+      var expandTool = new Element('span', {'class' : 'expand-tool'}).update(this._getExpandCollapseSymbol(true));
+      expandTool.observe('click', function(event) {
+        var entry = event.element().up('.entry');
+        if (!this._isExpandToolLocked(entry)){
+          this._toggleExpandState(entry);
+        }
+      }.bindAsEventListener(this));
+      wrapper.insert({'top': expandTool});
+      this.expand(element, element.hasClassName('root'));
+      //element.observe('obrowser:expand:done', this._obrowserExpandEventHandler);
+      //element.observe('obrowser:count:done', this._obrowserExpandEventHandler);
+      //element.observe('obrowser:expand:failed', this._obrowserExpandEventHandler);
+    }
+    return element;
+  },
+
+  _generateEntryTitle : function(id, value) {
+    return  new Element('span', {'class' : 'info'}).insert(
+                     {'bottom' : new Element('span', {'class' : 'key'}).update('[' + id + ']')}).insert(
+                     {'bottom' : ' '}).insert(
+                     {'bottom' : new Element('span', {'class' : 'value'}).update(value)});
+  },
+
+  _generateEntryCategory : function (xmlFragment) {
+    var category = new Element("span", {'class' : 'hidden term-category'});
+    if (this.options.resultCategory) {
+      this._getResultFieldValueAsArray(xmlFragment, this.options.resultCategory).each(function(c) {
+        category.insert(new Element('input', {'type' : 'hidden', 'value' : c}));
+      });
+    }
+    if (category.hasChildNodes()) {
+      return category;
+    } else {
+      return null;
+    }
+  },
+
+  _generateEntryInfo : function(xmlFragment) {
+    var title = this._generateEntryTitle(
+      this._getResultFieldValue(xmlFragment, this.options.resultId),
+      this._getResultFieldValue(xmlFragment, this.options.resultValue)
+    );
+    var info = new Element("dl");
+    for (var section in this.options.resultInfo) {
+      var sOptions = this.options.resultInfo[section];
+      sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, "-");
+      var selector = sOptions.selector;
+      if (!selector) {
+        continue;
+      }
+      var sectionContents = null;
+      this._getResultFieldValueAsArray(xmlFragment, selector).each(function(item) {
+        if (!item) {
+          return;
+        }
+        if (!sectionContents) {
+          info.insert({"bottom" : new Element("dt", {'class' : sectionClass}).insert({'bottom' : section})});
+          sectionContents = new Element("dd");
+          info.insert({"bottom" : sectionContents});
+        }
+        var text = item;
+        if (typeof sOptions.processor == 'function') {
+          text = sOptions.processor(text);
+        }
+        sectionContents.insert({"bottom" : new Element("div").update(text)});
+      });
+    }
+    if (!info.hasChildNodes()) {
+      return null;
+    }
+    var result = new Element("div", {'class' : "tooltip invisible"}).update(title);
+    result.insert({bottom : info});
+
+    var hideTool = new Element('span', {'class' : 'hide-tool', title : 'Hide'}).update("&amp;#215;");
+    result.insert({top : hideTool});
+    hideTool.observe('click', this._hideEntryInfo.bindAsEventListener(this));
+    return result;
+  },
+
+  _toggleExpandState : function(target) {
+    if (target) {
+      if (target.down('.descendents')) {
+        target.toggleClassName('collapsed');
+        Event.fire(target, "obrowser:expand:finished");
+      } else {
+        target.removeClassName('collapsed');
+        if (target.down(".error")) {
+          target.down(".error").remove();
+        }
+        this.expand(target, true);
+      }
+      target.down('.expand-tool').update(this._getExpandCollapseSymbol(target.hasClassName("collapsed")));
+    }
+  },
+
+  _obrowserExpandEventHandler : function(event) {
+     var element = event.element();
+     if (!event.memo) {
+       return;
+    }
+    if (event.memo.data) {
+       element.insert({'bottom': event.memo.data});
+       element.stopObserving('obrowser:expand:done', this._obrowserExpandEventHandler);
+    } else if (typeof (event.memo.count) != "undefined") {
+       element.stopObserving('obrowser:count:done', this._obrowserExpandEventHandler);
+    }
+    element.stopObserving('obrowser:expand:failed', this._obrowserExpandEventHandler);
+    if ((event.memo.count == "0") || (!element.hasClassName('root') &amp;&amp; event.memo.data &amp;&amp; !element.down('.descendents .entry, .error'))) {
+      element.addClassName('collapsed');
+      var expandTool = element.down('.expand-tool');
+      if (expandTool) {
+        expandTool.update(this._getExpandCollapseSymbol(true)).addClassName('disabled');
+        expandTool.stopObserving('click');
+      }
+    }
+    this._unlockExpandTool(element);
+    Event.fire(document, "ms:popup:content-updated", {popup: this.container});
+    if (event.memo.data) {
+      Event.fire(element, "obrowser:expand:finished");
+    }
+  },
+
+  _lockExpandTool : function(element) {
+    var expandTool = element.down('.expand-tool');
+    if (expandTool) {
+      expandTool.addClassName('locked');
+    }
+  },
+
+  _unlockExpandTool : function(element) {
+    var expandTool = element.down('.expand-tool');
+    if (expandTool) {
+      expandTool.removeClassName('locked');
+    }
+  },
+
+  _isExpandToolLocked : function(element) {
+    if (element.down('.expand-tool.locked')) {
+      return true;
+    }
+    return false;
+  },
+
+  _getExpandCollapseSymbol : function (isCollapsed) {
+    if (isCollapsed) {
+      return "&amp;#x25ba;";
+    }
+    return "&amp;#x25bc;";
+  },
+  _toggleEntrySelection : function(event) {
+    var trigger = event.element();
+    if (!trigger.hasClassName('select-tool')) {
+      trigger.up('.entry').down('input').click();
+      return;
+    }
+    var elt = trigger.up('.entry');
+    if (trigger.checked) {
+      this._selectEntry(elt);
+    } else {
+      this._unselectEntry(elt);
+    }
+  },
+  _selectEntry: function (entry) {
+    if (this.suggest) {
+      if (this.options.modal &amp;&amp; typeof (this.container.getPositionInViewport) == 'function') {
+        var prevPosition = this.container.getPositionInViewport();
+      }
+      var value = entry.down('.value').firstChild.nodeValue;
+      this.suggest.acceptEntry({'id':entry.__termId, 'value':value, 'category' : entry.__termCategory, 'negative' : entry.down('.selected.no')}, value, '', true);
+      entry.addClassName('accepted');
+      if (prevPosition &amp;&amp; (typeof (this.container.positionDialogInViewport) == 'function')) {
+        this.container.positionDialogInViewport(prevPosition.left, prevPosition.top);
+      }
+    }
+  },
+  _unselectEntry: function (entry) {
+     this.options.unselectTerm(entry.__termId);
+     this.options.unselectTerm(entry.__termId, true);
+     entry.removeClassName('accepted');
+  },
+  _createTool : function (text, className, title, method) {
+    var element = new Element('span', {'class' : 'entry-tool ' + className, "title" : title}).update(text);
+    element.observe('click', method.bindAsEventListener(this));
+    return element;
+  },
+  _showEntryInfo : function(event) {
+    event.stop();
+    // First hide open tooltips
+    $$('.tooltip:not(.invisible)').each(function(item){
+      item.addClassName('invisible');
+    }.bind(this));
+    var elt = event.element().up('.entry');
+    this.activeTooltip = elt.down('.tooltip');
+    this.activeTooltip.removeClassName('invisible');
+  },
+  _hideEntryInfo : function(event) {
+    if (this.activeTooltip) {
+      this.activeTooltip.addClassName('invisible');
+      this.activeTooltip = null;
+    }
+  },
+
+  _browseEntry : function(event) {
+    event.stop();
+    var elt = event.element().up('.entry');
+    this.load(elt.__termId);
+  },
+
+  _createParentBranch: function (parent) {
+    var parent = this._createBranch('li', 'parent', parent, false);
+    //parent.down('.info-tool').remove();
+    return parent;
+  },
+
+  _createRoot : function (data) {
+    var root = this._createBranch('div', 'root', data, true);
+    if (root.down('.browse-tool')) {
+      root.down('.browse-tool').remove();
+    }
+    if (!this.options.showRoot) {
+      root.addClassName('no-root');
+      root.down('.entry-data').addClassName('invisible');
+    }
+    return root;
+  },
+
+  _createDescendentBranch : function(data) {
+    return this._createBranch('li', 'descendent', data, true);
+  },
+
+  _isRootEntry : function(element) {
+    return element.hasClassName('entry') &amp;&amp; element.hasClassName('root');
+  },
+
+  setContent : function(content) {
+    this.container.setContent(new Element('div', {'class' : 'ontology-tree'}).update(content));
+  },
+
+  show : function(id) {
+    if (id) {
+      this.container.show();
+      if (this.__crtRoot != id) {
+        this.load (id);
+      } else {
+        Event.fire(this.container.contentContainer || document, 'obrowser:expand:finished');
+      }
+    }
+  },
+
+  hide : function() {
+    this.container.close();
+  }
+  });
+
+  return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name>Ontology browser</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>5</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>62a03919-3321-48ca-ae5a-b748ca291f63</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+  widgets.DropDown = Class.create({
+  options : {},
+  initialize : function (element) {
+    this.element = element;
+    this.hasForceOpen = false;
+    var existingDropdown = element.next(".dropdown")
+    if (existingDropdown) {
+      this.contentContainer = null;
+      this.dropdown = existingDropdown;
+      this.hasForceOpen = true;
+    } else {
+      this.dropdown = new Element('div', {'class' : 'dropdown'});
+
+      this.contentContainer = new Element('div');
+      this.dropdown.update(this.contentContainer);
+    }
+    //var closeButton = new Element('div', {'class': 'close', 'title': 'Close'}).update("&amp;#215;");
+    //closeButton.observe("click", this.close.bindAsEventListener(this));
+    //this.dropdown.insert({top: closeButton});
+  },
+  setContent : function(content) {
+    this.contentContainer != null ? this.contentContainer.update(content) : null;
+  },
+  show : function (force) {
+    if (force &amp;&amp; !this.hasForceOpen) {
+      return false;
+    }
+    if (this.dropdown.hasClassName('invisible')) {
+      this.dropdown.removeClassName('invisible');
+    } else  {
+      this.element.insert({after : this.dropdown});
+    }
+    return true;
+  },
+  close : function (force) {
+    if (force &amp;&amp; !this.hasForceOpen) {
+      return false;
+    }
+    this.dropdown.addClassName('invisible');
+    return true;
+    //this.dropdown.remove();
+  }
+  });
+  return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name>Dropdown ontology browser</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>6</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>1cc2a76f-aca1-4bfa-a468-3a599799c13c</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>StickyBox = Class.create({
+    options : {
+      offsetTop : 6,
+      offsetBottom: 0,
+      resize : false,
+      isSticky : function(element) {return true}
+    },
+    initialize : function(stickyElement, stickyAreaElement, options) {
+      this.stickyElement = stickyElement;
+      this.stickyAreaElement = stickyAreaElement;
+      if (this.stickyElement &amp;&amp; this.stickyAreaElement) {
+        this.options = Object.extend(Object.clone(this.options), options || { });
+        // Temporary, for backwards compatibility with deprecated parameter 'shadowSize'
+        if (this.options.shadowSize &amp;&amp; options.offsetTop === undefined) {
+          this.options.offsetTop = this.options.shadowSize;
+        }
+        this.resetPosition = this.resetPosition.bindAsEventListener(this);
+        Event.observe(window, 'scroll', this.resetPosition);
+        Event.observe(window, 'resize', this.resetPosition);
+        if (typeof(this.options.makeDefault) == 'function') {
+          thid.makeDefault = this.options.makeDefault.bind(this);
+        }
+        this.resetPosition();
+      }
+    },
+
+    resetPosition : function() {
+      if (!this.options.isSticky(this.stickyElement) || this.stickyElement.getHeight() &gt;= this.stickyAreaElement.getHeight()) {
+        return;
+      }
+      this.stickyElement.style.height = '';
+      this.stickyElement.style.overflow = '';
+      this.stickyElement.fire('size:changed');
+      this.boxHeight = this.stickyElement.getHeight();
+      var maxBoxHeight = document.viewport.getHeight() - this.options.offsetTop - this.options.offsetBottom;
+      if (this.options.resize) {
+         var memo =  {'diff' : (maxBoxHeight - this.boxHeight), 'original': this.boxHeight};
+         this.boxHeight = maxBoxHeight;
+         this.stickyElement.style.height = this.boxHeight + "px";
+         this.stickyElement.style.overflow = 'auto';
+         this.stickyElement.fire('size:changed', memo);
+      }
+      this.boxWidth = this.stickyElement.getWidth();
+      this.boxMinTop = this.stickyAreaElement.cumulativeOffset().top + this.options.offsetTop;
+      this.boxMaxTop = this.stickyAreaElement.cumulativeOffset().top + this.stickyAreaElement.getHeight() - this.boxHeight;
+      this.boxLeft = this.stickyElement.cumulativeOffset().left;
+      this.boxRelativeLeft = this.boxLeft - this.stickyElement.getOffsetParent().viewportOffset().left;
+      var relativeContentPosition = this.stickyAreaElement.viewportOffset().top;
+      this.direction = 0;
+      if (this.stickyAreaElement._prevPosition) {
+        if (this.stickyAreaElement._prevPosition &gt; relativeContentPosition) {
+          this.direction = 1;
+        } else if (this.stickyAreaElement._prevPosition &lt; relativeContentPosition) {
+          this.direction = -1;
+        }
+      }
+      if ((this.options.isSticky(this.stickyElement) || this.direction == 1) &amp;&amp;
+        document.viewport.getScrollOffsets().top &gt;= this.boxMinTop &amp;&amp;
+        document.viewport.getScrollOffsets().top &lt; this.boxMaxTop) {
+        this.makeFixed();
+      } else if ((this.options.isSticky(this.stickyElement) || this.direction == -1) &amp;&amp;
+        document.viewport.getScrollOffsets().top &gt;= this.boxMaxTop) {
+        this.makeAbsolute();
+      } else {
+        this.makeDefault();
+      }
+      this.stickyAreaElement._prevPosition = relativeContentPosition;
+    },
+
+    makeFixed : function() {
+      if (this.stickyElement.style.position != 'fixed') {
+        this.stickyElement.addClassName('sticky');
+        this.stickyElement.style.left = this.boxLeft + 'px';
+        this.stickyElement.style.width = (this.boxWidth) + 'px';
+        this.stickyElement.style.top = this.options.offsetTop + 'px';
+        this.stickyElement.style.right = '';
+        this.stickyElement.style.position = 'fixed';
+      }
+    },
+    makeAbsolute : function(top) {
+      if (this.stickyElement.style.position != 'absolute') { // || top &amp;&amp; this.stickyElement.style.top != top + 'px'){
+        this.stickyElement.addClassName('sticky');
+        top = top || (this.stickyAreaElement.getHeight() - this.stickyElement.getHeight());
+        this.stickyElement.style.top = top + 'px';
+        this.stickyElement.style.right = '';
+        var originalPosition = this.stickyElement.getStyle('position');
+        this.stickyElement.style.position = 'absolute';
+        if (originalPosition == 'fixed' &amp;&amp; !Prototype.Browser.WebKit) {
+          this.stickyElement.style.left = (this.boxRelativeLeft - this.stickyElement.getOffsetParent().viewportOffset().left + 2) + 'px';
+        } else {
+          this.stickyElement.style.left = this.boxRelativeLeft + 'px';
+        }
+      }
+    },
+    makeDefault : function() {
+      if (this.stickyElement.style.position != ''){
+        this.stickyElement.removeClassName('sticky');
+        this.stickyElement.style.position = '';
+        this.stickyElement.style.top = '';
+        this.stickyElement.style.left = '';
+        this.stickyElement.style.right = '';
+        this.stickyElement.style.width = '';
+      }
+    },
+    isFixed: function() {
+      return (this.stickyElement.style.position == 'fixed');
+    },
+    isAbsolute: function() {
+      return (this.stickyElement.style.position == 'absolute');
+    },
+    isDefault: function() {
+      return (this.stickyElement.style.position == '');
+    }
+});</code>
+    </property>
+    <property>
+      <name>Sticky Box</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>7</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>576a48e8-6707-4310-941b-0abb9e532d23</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+  widgets.FreeMultiselect = Class.create({
+    counter : 1,
+    options : {
+      returnKeyNavigation : false
+    },
+    initialize: function(element, options) {
+      this.options = Object.extend(Object.clone(this.options), options || { });
+      var _this = this;
+
+      // Suggest?
+      var suggestInfoSource = element.previous('input[name="xwiki-free-multiselect-suggest-script"][type="hidden"]');
+      if (suggestInfoSource &amp;&amp; suggestInfoSource.value &amp;&amp; typeof(XWiki.widgets.Suggest) != "undefined") {
+        this.suggestOptions = {
+          script : suggestInfoSource.value,
+          shownoresults : false,
+          varname: "input"
+        }
+      }
+
+      // Add a delete button and a "KEY_RETURN" keypress event listener for each line
+      this.enhanceLine = this.enhanceLine.bind(this);
+      var values = element.select('li input.xwiki-free-multiselect-value');
+      values.each(this.enhanceLine);
+
+      // Generate and insert the "add" button, edit mode only
+      if (element.down('input.xwiki-free-multiselect-value')) {
+        var addTool = new Element('a', {'title' : 'add', 'href' : '#' + element.id}).update('+...');
+        element.insert(addTool.wrap('li'));
+        addTool.observe('click', function(event) {
+          event.stop();
+          var prevLine = addTool.up('li').previous();
+          var template = prevLine &amp;&amp; prevLine.down('input.xwiki-free-multiselect-value');
+          if (template) {
+            _this.generateInput(template);
+          }
+        }.bindAsEventListener(this));
+      }
+    },
+
+    enhanceLine : function(element) {
+      element.id = this.generateId(element);
+      element.up('li').addClassName('xwiki-free-multiselect-line');
+      this.attachDeleteTool(element);
+      if (this.suggestOptions) {
+        new XWiki.widgets.Suggest(element, this.suggestOptions);
+      }
+      this.enableAddInput(element);
+    },
+
+    attachDeleteTool : function(element) {
+      var wrapper = element.up('.xwiki-free-multiselect-line');
+      var deleteTool = new Element('a', {'title' : 'delete', 'href' : '#' + element.id}).update('✖');
+      wrapper.insert(' ').insert(deleteTool);
+      deleteTool.observe('click', function(event) {
+        event.stop();
+        var wrapper = event.findElement('.xwiki-free-multiselect-line');
+        if (wrapper.previous('.xwiki-free-multiselect-line') || wrapper.next('.xwiki-free-multiselect-line')) {
+          wrapper.remove();
+        } else {
+          var target = wrapper.down('input');
+          target.value = '';
+          target.focus();
+        }
+      });
+    },
+
+    enableAddInput : function(element) {
+      var wrapper = element.up('.xwiki-free-multiselect-line');
+      var _this = this;
+      if (!wrapper) {return;}
+      element.observe('keypress', function(event) {
+        if (event.keyCode == Event.KEY_RETURN) {
+          event.stop();
+          var next = wrapper.next('.xwiki-free-multiselect-line');
+          if (_this.options.returnKeyNavigation &amp;&amp; next &amp;&amp; next.down('input')) {
+            next.down('input').focus();
+          } else {
+            element.next().removeClassName('inactive');
+            _this.generateInput(element);
+          }
+        } else if (event.keyCode == Event.KEY_BACKSPACE &amp;&amp; element.value == '') {
+          event.stop();
+          var previous = wrapper.previous('.xwiki-free-multiselect-line');
+          if (previous &amp;&amp; previous.down('input')) {
+            previous.down('input').focus();
+            element.up('.xwiki-free-multiselect-line').remove();
+          }
+        }
+      });
+    },
+
+    generateInput : function(template) {
+      var newInput = new Element('input', {'name' : template.name, id : this.generateId(template), type: template.type, size: template.size, 'class' : 'xwiki-free-multiselect-value'});
+      var newWrapper = new Element('li');
+      newWrapper.insert(newInput);
+      template.up('.xwiki-free-multiselect-line').insert({after: newWrapper});
+      this.enhanceLine(newInput);
+      newInput.focus();
+    },
+
+    generateId : function(element) {
+      return element.name + '_' + this.nextIndex();
+    },
+
+    nextIndex : function() {
+      return ++this.counter;
+    },
+
+    lastIndex : function() {
+      return this.counter;
+    }
+
+  });
+  return PhenoTips;
+}(PhenoTips || {}));
+
+document.observe("xwiki:dom:loaded", function() {
+  $$('.xwiki-free-multiselect').each(function(element) {
+    new PhenoTips.widgets.FreeMultiselect(element);
+  });
+});</code>
+    </property>
+    <property>
+      <name>Free Multiselect</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>8</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>a81251a5-7e93-4dda-b851-c37f4841d346</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var XWiki = (function(XWiki) {
+  // Start XWiki augmentation
+  var widgets = XWiki.widgets = XWiki.widgets || {};
+
+  widgets.VisibilityController =  Class.create({
+    initialize : function(element) {
+      this.element = element;
+      this.controller = this.element.down(".controller input[type=checkbox]");
+      if (!this.controller) {
+        // No controller, nothing else to do...
+        return;
+      }
+      this.controlled = this.element.select(".controlled");
+      if (this.element.hasClassName("complete-hide")) {
+        this.hiddenStyle = {"display" : "none"};
+        this.visibleStyle = {"display" : ""};
+      } else {
+        this.hiddenStyle = {"visibility" : "hidden"};
+        this.visibleStyle = {"visibility" : "visible"};
+      }
+      this.controlVisibility();
+      this.controller.observe("change", this.controlVisibility.bindAsEventListener(this));
+    },
+    controlVisibility : function() {
+      if (this.controller.checked) {
+         this.controlled.invoke("setStyle", this.hiddenStyle);
+         this.element.select(".controlled input").invoke("disable");
+      } else {
+         this.controlled.invoke("setStyle", this.visibleStyle);
+         this.element.select(".controlled input").invoke("enable");
+      }
+    }
+  });
+
+  var init = function(event) {
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      element.select(".controlled-group").each(function(group) {
+        if (!group.__visibilityController) {
+          group.__visibilityController = new XWiki.widgets.VisibilityController(group);
+        }
+      });
+    });
+    return true;
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  document.observe("xwiki:dom:updated", init);
+
+  // End XWiki augmentation.
+  return XWiki;
+}(XWiki || {}));</code>
+    </property>
+    <property>
+      <name>Controlled visibility groups</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>9</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>ce0e1cc4-d0b1-4bf0-9815-444160042fd0</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function (PhenoTips) {
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+  widgets.UnitConverter = Class.create({
+
+     CONVERSION_META : {
+        'weight': {
+           'imperial_units' : ['lb', 'oz'],
+           'metric_unit' : 'kg',
+           'inter_unit_scale' : 16,
+           'inter_system_scale' : 0.0283495
+        },
+        'length': {
+           'imperial_units' : ['ft', 'in'],
+           'metric_unit' : 'cm',
+           'inter_unit_scale' : 12,
+           'inter_system_scale' : 2.54
+        }
+     },
+
+     DEFAULT_UNIT_SYSTEM : 'metric',
+
+     initialize : function (container, selector, triggerInsertionElt, triggerInsertionPosition, system) {
+       this._selector = selector;
+       this._container = container || document.documentElement;
+       if (!this._selector || !triggerInsertionElt) {return;}
+
+       this.crtUnitSystem = system || this.DEFAULT_UNIT_SYSTEM;
+
+       this.initializeElements = this.initializeElements.bind(this);
+       this.attachConverter = this.attachConverter.bind(this);
+
+       this.generateTrigger(triggerInsertionElt, triggerInsertionPosition || 'bottom');
+
+       this.initializeElements();
+       var _this = this;
+       document.observe('xwiki:dom:updated', function(event) {
+         if (event.memo &amp;&amp; event.memo.elements) {
+           event.memo.elements.each(_this.initializeElements.bind(_this));
+         }
+       });
+     },
+
+     generateTrigger : function(atElement, position) {
+       this._trigger = new Element('select', {"class" : "unit-system-selector"});
+
+       var optionMetric = new Element('option', {
+                value : 'metric',
+         }).update('Metric units (' + this.CONVERSION_META.weight.metric_unit + ', ' + this.CONVERSION_META.length.metric_unit + ')');
+       if (this.crtUnitSystem == 'metric') {
+          optionMetric.selected = 'selected';
+       }
+       var optionImperial = new Element('option', {
+                value : 'imperial',
+         }).update('Imperial units (' + this.CONVERSION_META.weight.imperial_units.join(' / ') + ', ' + this.CONVERSION_META.length.imperial_units.join(' / ') + ')');
+       if (this.crtUnitSystem == 'imperial') {
+          optionImperial.selected = 'selected';
+       }
+       this._trigger.insert(optionMetric).insert(optionImperial);
+
+       insertionInfo = {};
+       insertionInfo[position] = this._trigger;
+       atElement.insert(insertionInfo);
+
+       var _this = this;
+       this._trigger.observe('change', function(event) {
+         _this.crtUnitSystem = _this._trigger.options[_this._trigger.selectedIndex].value;
+         _this.switchUnits(_this.crtUnitSystem);
+       });
+     },
+
+     initializeElements : function(element) {
+       container = element || this._container;
+       if (container.__unitSwitcher) {
+         return;
+       }
+       container.__unitSwitcher = this;
+       container.select(this._selector).each(this.attachConverter);
+       this.switchUnits(this.crtUnitSystem, container);
+     },
+
+     switchUnits : function(type, element) {
+       container = element || this._container;
+       container.select('.unit-conversion-values .unit-type').each(function(item) {
+          if (item.hasClassName(type)) {
+            item.show();
+          } else {
+            item.hide();
+          }
+       });
+     },
+
+     attachConverter : function(element) {
+       if (element.tagName.toLowerCase() != 'input' || element.type != 'text') {
+         return;
+       }
+       var unitElt = element.next('.unit');
+       var converterElement = new Element('div', {'class' : 'unit-conversion-values'});
+       var imperialUnits;
+       var type = (element.up('.weight')) ? 'weight' : 'length';
+
+       converterElement.addClassName(type);
+       converterElement._meta = this.CONVERSION_META[type];
+
+       var values = this.metricToImperial(converterElement._meta, parseFloat(element.value) || 0);
+
+       var metricZone = element.up('.metric');
+       if (!metricZone) {
+         metricZone = new Element('div', {'class' : 'unit-type metric'});
+         metricZone.insert(element).insert(unitElt || converterElement._meta.metric_unit);
+         element.insert({after: converterElement});
+       } else {
+         metricZone.addClassName('unit-type');
+         metricZone.insert({after: converterElement});
+       }
+       var imperialZone = new Element('div', {'class' : 'unit-type imperial'});
+       converterElement.insert(metricZone).insert(imperialZone);
+
+       converterElement._meta.imperial_units.each(function (unit) {
+         imperialZone.insert(new Element('label').insert(new Element('input', {'style' : 'width: auto', 'name' : unit, type: 'text', size : 3, value : (values[unit] || '')})).insert(unit));
+       });
+
+       this.enableSyncValues(converterElement);
+     },
+
+     enableSyncValues : function (element) {
+       var _this = this;
+       element.select('.imperial input').invoke('observe', 'change', function(event) {_this.syncMetricWithImperial(element);});
+       element.select('.metric input').invoke('observe', 'change', function(event) {_this.syncImperialWithMetric(element);});
+     },
+
+     syncMetricWithImperial : function (element) {
+        var metricInput =  element.down('.metric input');
+        metricInput.value  = this.imperialToMetric(element._meta,
+                                                      parseFloat(element.down('.imperial input[name="' + element._meta.imperial_units[0] + '"]').value) || 0,
+                                                      parseFloat(element.down('.imperial input[name="' + element._meta.imperial_units[1] + '"]').value) || 0
+                                                ) || '';
+        Event.fire(metricInput, 'phenotips:measurement-updated');
+     },
+
+     syncImperialWithMetric : function (element) {
+        var imperialValues = this.metricToImperial(element._meta, parseFloat(element.down('.metric input').value) || 0);
+        element._meta.imperial_units.each(function (unit) {
+          element.down('.imperial input[name="' + unit + '"]').value = imperialValues[unit] || '';
+        });
+     },
+
+     metricToImperial : function (conversionMeta, value) {
+        var result = {};
+        var lowerUnitValue = value / conversionMeta.inter_system_scale;
+        var higherUnitValue = Math.floor (lowerUnitValue / conversionMeta.inter_unit_scale);
+        lowerUnitValue = lowerUnitValue - higherUnitValue * conversionMeta.inter_unit_scale;
+        if (lowerUnitValue) {
+          lowerUnitValue = lowerUnitValue.toFixed(2);
+        }
+        result[conversionMeta.imperial_units[0]] = higherUnitValue;
+        result[conversionMeta.imperial_units[1]] = lowerUnitValue;
+        return result;
+     },
+
+     imperialToMetric : function (conversionMeta, higherUnitValue, lowerUnitValue) {
+        return ((conversionMeta.inter_unit_scale * higherUnitValue + lowerUnitValue) * conversionMeta.inter_system_scale).toFixed(2);
+     }
+  });
+  return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name>Switcher between metric and imperial units for measurements</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>10</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>34bc814b-fee0-4738-bc6d-b5803a08a0dc</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var PhenoTips = (function(PhenoTips) {
+  // Start augmentation
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+
+  widgets.HelpButton =  Class.create({
+    initialize : function(icon) {
+      this.icon = icon;
+      this.icon._information = this.icon.title;
+      this.icon.title = 'How to enter this information';
+      this.icon.observe("click", this.toggleHelp.bindAsEventListener(this));
+      this.hideAllHelpOnOutsideClick = this.hideAllHelpOnOutsideClick.bindAsEventListener(this);
+    },
+    toggleHelp : function() {
+      if (!this.helpBox) {
+        this.createHelpBox();
+      }
+      $$('div.xTooltip:not(.hidden)').invoke('addClassName', 'hidden');
+      this.helpBox.toggleClassName('hidden');
+      if (! this.helpBox.hasClassName('hidden')) {
+        document.observe('click', this.hideAllHelpOnOutsideClick);
+      }
+    },
+    hideAllHelpOnOutsideClick : function (event) {
+      if (!event.findElement('.xTooltip') &amp;&amp; !event.findElement('.xHelpButton')) {
+        this.hideHelp();
+        document.stopObserving('click', this.hideAllHelpOnOutsideClick);
+      }
+    },
+    hideHelp : function() {
+      if (this.helpBox) {
+        this.helpBox.addClassName('hidden');
+      }
+    },
+    showHelp : function() {
+      if (!this.helpBox) {
+        this.createHelpBox();
+      }
+      $$('div.xTooltip:not(.hidden)').invoke('addClassName', 'hidden');
+      this.helpBox.removeClassName('hidden');
+    },
+    createHelpBox : function() {
+      this.helpBox = new Element('div', {'class': 'hidden xTooltip'});
+      this.helpBox.update(this.icon._information);
+      var closeButton = new Element('span', {'class': 'hide-tool', 'title': 'Hide'});
+      closeButton.update('×');
+      closeButton.observe('click', this.hideHelp.bindAsEventListener(this));
+      this.helpBox.insert({'top': closeButton});
+      this.icon.insert({'after' : this.helpBox});
+    }
+  });
+
+  var init = function(event) {
+    ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
+      element.select(".xHelpButton").each(function(icon) {
+        if (!icon.__helpController) {
+          icon.__helpController = new PhenoTips.widgets.HelpButton(icon);
+        }
+      });
+    });
+    return true;
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
+  document.observe("xwiki:dom:updated", init);
+
+  // End augmentation.
+  return PhenoTips;
+}(PhenoTips || {}));</code>
+    </property>
+    <property>
+      <name>Help buttons</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>3adf8acf-b6e8-4d05-a382-fa56ee969cf9</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+.msdialog-modal-container {
+  position: absolute;/*fixed;*/
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  z-index: 100014;/*1005;*/
+}
+/* For IE6, which doesn't understand position: fixed. */
+* html .msdialog-modal-container {
+  position: absolute;
+}
+/* Semi-transparent overlay screen that covers the entire page. */
+.msdialog-screen {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+}
+.msdialog-box {
+  text-align: left;
+  padding: 0;
+  margin: auto;
+  position: relative;
+  width: 60%;
+  color: #000;
+  border: 2px solid #333;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 0 6px $theme.linkColor;
+}
+.msdialog-box .content{
+  margin: .8em;
+}
+.msdialog-close {
+  float: right;
+  cursor: pointer;
+  width: .8em;
+  margin-right: .4em;
+  height: 1.4em;
+  text-align : center;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.4em;
+  color: #FFF;
+}
+* html .msdialog-close {
+  width: 22px;
+}
+.msdialog-title {
+  font-size: 80%;
+  font-weight: bold;
+  color: #FFF;
+  background-color: #333;
+  border-radius: 5.5px 5.5px 0 0;
+  padding: .3em 1.2em .3em .8em;
+  cursor: move;
+}
+.msdialog-box .xform {
+  width: 100%;
+}</code>
+    </property>
+    <property>
+      <name>Modified Modal popup</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>1</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>95d4225b-2cf1-4680-9922-a2d82e238ffe</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+.xhover {
+  background:red;
+}
+
+input[type="text"].suggest {
+  border-width: 1px;
+}
+
+body {
+  position: relative;
+}
+
+div.suggestItems {
+  position:absolute;
+  border: 1px solid #eee;
+  border-top: none;
+  background: white;
+  z-index: 100013;
+  text-align:left;
+  box-shadow: 0 4px 8px #777;
+  margin-left: 1px;
+  margin-top: 5px;
+}
+div.suggestItems:before {
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 0 none;
+  border-bottom: 11px solid $theme.borderColor;
+  content: "";
+  display: block;
+  left: 50%;
+  margin-left: -11px;
+  position: absolute;
+  top: -11px;
+}
+div.suggestItems:after {
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 0 none;
+  border-bottom: 10px solid $theme.pageContentBackgroundColor;
+  content: "";
+  display: block;
+  left: 50%;
+  margin-left: -10px;
+  position: absolute;
+  top: -10px;
+}
+
+div.suggestItems .hide-button-wrapper {
+  text-align: right;
+  line-height: 1em;
+  border-bottom: 1px dotted;
+}
+div.suggestItems .hide-button {
+  cursor: pointer;
+  font-size: 0.8em;
+  font-style: italic;
+  opacity: .4;
+  padding: 0 0.5em;
+  margin: 0 4px;
+}
+div.suggestItems ul {
+  margin: 0px;
+}
+
+div.suggestItems li {
+  overflow:hidden;
+  white-space:normal !important;
+  width: auto !important;
+  float: none !important;
+  padding: 4px;
+}
+
+div.suggestItems .suggestItem.custom-value .suggestId {
+  display: none !important;
+}
+
+div.suggestItems em {
+  font-weight:normal !important;
+  margin-right:2px;
+}
+
+div.suggestItems span.info span.hint {
+  color: #777;
+  margin-left:5px;
+}
+
+div.suggestItems span.suggestSynonym{
+  display: inline-block;
+  padding-left: 55px;
+}
+
+div.suggestItems span.suggestSynonym:before {
+  content: "(also known as: ";
+  font-size: 0.8em;
+  opacity: .4;
+}
+
+div.suggestItems span.suggestSynonym:after {
+  content: ")";
+  font-size: 0.8em;
+  opacity: .4;
+}
+
+div.suggestItems div.info {
+  color: #777;
+  font-size: 0.8em;
+  padding-left:5px;
+}
+
+div.suggestItems div.info span.legend {
+  font-weight: normal;
+}
+
+ul.suggestList {
+  margin:0px !important;
+  text-transform:none;
+  color: #333;
+  font-weight:normal;
+  padding: 0;
+}
+
+ul.suggestList li{
+  padding: 4px;
+  border-top: 1px dotted #777;
+}
+ul.suggestList li:first-child{
+  border-top: 0 none;
+}
+ul.suggestList .xhighlight {
+  background-color: $theme.highlightColor;
+  cursor:pointer;
+}
+
+div.suggestItemName {
+  text-indent: 0;
+}
+
+div.suggestItem, li.noSuggestion div {
+  color: #333;
+  font-size: 0.875em;
+}
+
+div.suggestItemName,
+div.suggestItemInfo {
+  text-decoration: inherit;
+}
+
+.highlight {
+  background-color: $theme.highlightColor;
+  color: #000;
+  font-weight:bold;
+  text-decoration: inherit;
+}
+
+div.resultContainer div.sourceName {
+  background-color: #DDD;
+  font-variant: small-caps;
+  font-weight: 700;
+  color: #333;
+  padding-top:3px;
+  font-size:0.875em;
+  background-position:3px 3px;
+  background-repeat:no-repeat;
+}
+
+.horizontalLayout div.resultContainer div.sourceName {
+  float:left;
+  width:150px;
+  margin-right:3px;
+  padding-right:20px;
+  text-align:right;
+  background-position:right center;
+}
+
+.horizontalLayout div.resultContainer div.xitemcontainer {
+  margin-left:10px;
+}
+
+.horizontalLayout div.resultContainer div.results {
+  clear:both;
+  background-color: #DDD;
+}
+
+.horizontalLayout div.resultContainer ul.suggestList {
+  background-color:white;
+}
+
+div.resultContainer div.sourceContent.loading {
+  background-position:center center;
+  min-height:30px;
+}
+
+.suggestId:before {
+  content: "[";
+}
+.suggestId:after {
+  content: "] ";
+}
+.suggestId {
+  font-size: 87%;
+}
+.suggestInfo {
+  font-size: 100%;
+  word-wrap: normal !important;
+  display: inline-block;
+  width: 100%;
+  float: right;
+  line-height:1.2em !important;
+}
+.suggestInfo dl {
+  display: inline;
+}
+.suggestInfo dt {
+  font-style: italic;
+}
+
+.suggestInfo dt, .suggestInfo dd {
+  margin-left: 1.2em;
+  position: relative;
+}
+.suggestInfo dt.collapsed + dd {
+  display: none;
+}
+.suggestInfo dt .expand-tool {
+  cursor: pointer;
+  position: absolute;
+  top: 0em;
+  left: -1.2em;
+}</code>
+    </property>
+    <property>
+      <name>Modified suggest</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>2</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>64464fe6-5214-4cab-b03d-ba1892d3bb2c</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+.accepted-suggestions {
+  margin: 0 0 1em !important;
+  list-style-type: none;
+  padding: 0;
+}
+
+.accepted-suggestions li {
+  position: relative;
+  line-height: 1.3em;
+}
+.accepted-suggestion {
+  padding: .05em 0;
+}
+.accepted-suggestions li .key {
+  font-size: 87%;
+  color: #777;
+}
+.accepted-suggestions li .value {
+  margin-right: 1em;
+}
+.accepted-suggestions li .delete-tool,
+.clear-tool {
+  display: none;
+  color: #a00;
+  line-height: 1em;
+  font-size: 87%;
+  margin: 0 0.5em;
+  cursor: pointer;
+  float: right;
+}
+.clear-tool {
+  display: block;
+}
+.accepted-suggestions li:hover {
+  background: $theme.highlightColor;
+}
+.accepted-suggestions li:hover .delete-tool {
+  position: absolute;
+  top: .4em;
+  right: 0;
+  display: inline;
+}
+.accepted-suggestions li .tooltip {
+  display: none;
+  position: absolute;
+  top: 1.35em;
+  left: 12.5%;
+  width: 75%;
+  border: 0 none;
+  background: #fff;
+  padding: 4px 8px;
+  border-radius: 0 12px 12px 12px;
+  box-shadow: 0 0 6px #777;
+  z-index: 20;
+}
+.accepted-suggestions li:hover .tooltip {
+  display: block;
+}
+.accepted-suggestions li .tooltip dt {
+  color: #000;
+  font-style: italic;
+  margin: .4em 0 0.2em;
+}</code>
+    </property>
+    <property>
+      <name>Multi suggest</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>3</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>8b79ea53-be8b-4d5e-a725-4d60224414b7</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template("colorThemeInit.vm")
+
+.ontology-tree {
+}
+.ontology-tree .parents{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ontology-tree .parents .parent:before {
+  display: inline-block;
+  float: left;
+  font-size: 1.2em;
+  content: "\251C"; /*"\2523";*/
+  width: .8em;
+}
+.ontology-tree .parent:first-child:before {
+  content: "\250C";/*"\250f";*/
+}
+
+.ontology-tree .root:before {
+  display: inline-block;
+  float: left;
+  content: "\2514\2500";/*"\2517\2501";*/
+  width: 1.4em;
+  font-size: 1.2em;
+  font-weight: normal;
+  color: transparent;
+}
+
+.ontology-tree .parents+.root:before {
+  color: $theme.textColor;
+}
+
+.ontology-tree .key {
+  opacity: .4;
+  font-size: .8em;
+}
+.ontology-tree .root&gt;.entry-data .value {
+  font-weight: bold;
+}
+.ontology-tree .root&gt;.descendents {
+  margin-left: 2.4em;
+}
+.ontology-tree .no-root&gt;.descendents {
+  margin: 0 0;
+}
+.ontology-tree .no-root:before {
+  display: none;
+}
+.ontology-tree .root&gt;.empty {
+  margin-left: 3.8em;
+}
+.ontology-tree .descendents li {
+  clear: both;
+}
+.ontology-tree .collapsed .descendents {
+  display: none;
+}
+.ontology-tree .descendents {
+  list-style-type: none;
+  margin: 0 0 0 1em;
+  padding: 0;
+}
+.ontology-tree .hint {
+  margin-left: 1.6em;
+}
+.ontology-tree .entry-tools {
+  /* float: right; */
+  display: inline-block;
+  font-size: 0.8em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  min-width: 17px;
+  vertical-align: middle;
+}
+.ontology-tree .entry-data {
+  line-height: 1.4em;
+}
+.ontology-tree .info {
+  cursor: pointer;
+}
+.ontology-tree .entry-data:hover {
+  background: $theme.highlightColor;
+}
+.ontology-tree .entry-tool, .term-entry .entry-tool {
+  background: #FCFFF4;
+  #css3_backgroundLinearGradient({
+    'to': 'bottom',
+    'colors': [
+        {'color': '#FCFFF4', 'position': '0%'},
+        {'color': '#DFE5D7', 'position': '40%'},
+        {'color': '#B3BEAD', 'position': '100%'}
+    ]
+  })
+  border: 1px solid #FFFFFF;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px #555555;
+  color: #333333;
+  cursor: pointer;
+  display: inline-block;
+  font-family: serif;
+  font-size: 0.87em;
+  font-weight: normal;
+  height: 15px;
+  line-height: 16px;
+  margin-top: 1px;
+  text-align: center;
+  text-shadow: 0 1px 1px #FFFFFF;
+  vertical-align: top;
+  width: 15px;
+}
+
+.ontology-tree .entry-tool:hover, .term-entry .entry-tool:hover {
+  color: #FFFFFF;
+  text-shadow: 0 1px 1px #333333;
+}
+
+.ontology-tree .info-tool:hover, .term-entry .info-tool:hover {
+  background: #2B88D9;
+  #css3_backgroundLinearGradient({
+    'to': 'bottom',
+    'colors': [
+        {'color': '#3B679E', 'position': '0%'},
+        {'color': '#2B88D9', 'position': '50%'},
+        {'color': '#207CCA', 'position': '51%'},
+        {'color': '#7DB9E8', 'position': '100%'}
+    ]
+  })
+  cursor: help;
+}
+.ontology-tree .browse-tool {
+  background-color: #333;
+}
+.ontology-tree .accept-tool {
+  background-color: $theme.notificationSuccessColor;
+}
+.ontology-tree .remove-tool {
+  background-color: $theme.notificationErrorColor;
+}
+.ontology-tree .accepted &gt;.entry-data {
+  background-color: $theme.backgroundSecondaryColor;
+}
+.ontology-tree .accepted &gt;.entry-data .info .value {
+  font-weight: bold;
+}
+
+.ontology-tree .entry, .term-entry {
+  position: relative;
+}
+.ontology-tree .entry .tooltip, .term-entry .tooltip {
+  position: absolute;
+  top: .7em;
+  width: 80%;
+  right: 2.8em;
+  border: 0 none;
+  background: #fff;
+  padding: 4px 8px;
+  border-radius: 0 12px 12px 12px;
+  box-shadow: 0 0 6px #777;
+  z-index: 20000;
+}
+.term-entry .tooltip {
+  font-size: 1em !important;
+}
+.ontology-tree .entry .tooltip .value, .term-entry .tooltip .value {
+  font-weight: bold;
+}
+.ontology-tree .entry .tooltip .key, .term-entry .tooltip .key {
+  font-size: .8em;
+  color: $theme.textColor;
+}
+.ontology-tree .entry .tooltip dl, .term-entry .tooltip dl {
+  margin: .3em 0;
+}
+.ontology-tree .entry .tooltip dt, .term-entry .tooltip dt {
+  color: $theme.textColor;
+  font-style: italic;
+  margin: .4em 0 0.2em;
+}
+.ontology-tree .entry .tooltip .hide-tool, .term-entry .tooltip .hide-tool {
+  position: absolute;
+  top: .2em;
+  right: .5em;
+  cursor: pointer;
+}
+.expand-tool {
+  display: inline-block;
+  color: $theme.linkColor;
+  width: .8em;
+  text-shadow: 0 0 5px #ccc;
+  cursor: pointer;
+  font-size: .8em;
+  vertical-align: middle;
+}
+.expand-tool.locked {
+  color: $theme.textColor;
+  opacity: .4;
+  cursor: default;
+}
+.expand-tool.disabled {
+  visibility: hidden;
+  cursor: default;
+}
+.select-tool {
+  vertical-align: middle;
+}
+.ontology-tree .subterm-selected .select-tool {
+  opacity: .5;
+}
+.ontology-tree .subterm-selected .expand-tool:after {
+  background: none repeat scroll 0 0 $theme.linkColor;
+  color: $theme.linkColor;
+  content: "...";
+  display: inline-block;
+  font-weight: bold;
+  margin-left: 1.3em;
+  position: absolute;
+  text-align: center;
+  top: .3em;
+  width: 11px;
+}</code>
+    </property>
+    <property>
+      <name>Ontology browser</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>4</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>a629e713-040b-4000-b42e-4b34bb397448</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+.dropdown {
+  margin-left: 1em;
+  border-left: .5em solid $theme.backgroundSecondaryColor;
+  font-size: .9em;
+  width: 95%;
+  z-index: 100;
+}
+.dropdown.emphasized-box {
+  margin-left: -4px;
+  padding: 0.25em 0.25em 0.25em 1.05em;
+  /*position: absolute;*/
+}
+.dropdown .close {
+  cursor: pointer;
+  right: .25em;
+  position: absolute;
+}
+.dropdown .ontology-tree .entry-data {
+  line-height: 1.4em;
+  padding-right: 1.1em;
+}
+.dropdown .ontology-tree .key {
+  display: none;
+}
+.dropdown .ontology-tree .tooltip {
+  right: 0;
+}
+.term-label .expand-tool {
+  display: inline-block;
+  margin-top: -0.5em;
+}
+.dropdown:not(.invisible) + br {
+  display: none;
+}</code>
+    </property>
+    <property>
+      <name>Dropdown style</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>5</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>6a32e24f-34dd-4972-b5da-305be3db4027</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>ol.xwiki-free-multiselect {
+  list-style-position: outside;
+}
+input.xwiki-free-multiselect-value {
+  max-width: 50% !important;
+}</code>
+    </property>
+    <property>
+      <name>Free Multiselect</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>6</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>db98aaff-6646-4778-8d05-160724bac290</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.unit-system-selector {
+  float: right;
+  padding: 3px 3px 0;
+  border-radius: 3px;
+}</code>
+    </property>
+    <property>
+      <name>Unit system selector</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Widgets</name>
+    <number>7</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>00ed2265-5601-43d6-94b9-c1cab4eaae52</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+
+/* The help icon, already displayed as a question mark character. */
+.xHelpButton {
+  cursor: pointer;
+  font-size: 1.33333em;
+  line-height: 0.75em;
+  vertical-align: -15%;
+}
+.xHelpButton:hover {
+  color: $theme.linkColor;
+}
+
+/* The box containing the tooltip, displayed when clicking on the help icon. */
+.xTooltip {
+  background: $theme.pageContentBackgroundColor;
+  border: 0 none;
+  border-radius: 0 1em 1em;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  margin: 0.7em 0 0 -0.3em;
+  max-width: 80%;
+  padding: 0.75em 1em;
+  position: absolute;
+  z-index: 2;
+}
+.xTooltip .hide-tool {
+  cursor: pointer;
+  float: right;
+  margin-right: -0.5em;
+  margin-top: -0.6em;
+}</code>
+    </property>
+    <property>
+      <name>Help buttons</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>

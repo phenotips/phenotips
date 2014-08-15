@@ -26,7 +26,7 @@ import com.xpn.xwiki.user.api.XWikiUser;
 /**
  * Cached LIMS credentials, storing the original installation ID (the PN), the authentication token, and the resulting
  * PhenoTips user.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -44,7 +44,7 @@ public final class LimsAuthentication
 
     /**
      * Constructor passing all the data.
-     * 
+     *
      * @param token the authentication token sent by LIMS
      * @param user the authenticated user
      * @param pn the LIMS instance identifier
@@ -58,7 +58,7 @@ public final class LimsAuthentication
 
     /**
      * The authentication token sent by LIMS that was used to authenticate the user.
-     * 
+     *
      * @return the token, validated by LIMS
      */
     public String getToken()
@@ -68,7 +68,7 @@ public final class LimsAuthentication
 
     /**
      * An authenticated user, as used by XWiki/PhenoTips.
-     * 
+     *
      * @return the user, must not be {@code null}
      */
     public XWikiUser getUser()
@@ -78,7 +78,7 @@ public final class LimsAuthentication
 
     /**
      * The LIMS instance identifier that originated the authentication.
-     * 
+     *
      * @return an identifier, with a corresponding LIMS Server configuration object present in the global administration
      */
     public String getPn()

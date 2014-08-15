@@ -124,17 +124,40 @@
         <enabled>false</enabled>
       </snapshots>
     </pluginRepository>
+    <pluginRepository>
+      <id>uoft-external-snapshots</id>
+      <name>UofT external snapshot repositories mirror</name>
+      <url>http://nexus.cs.toronto.edu/nexus/content/groups/public-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
   </pluginRepositories>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <xwiki.version>5.4.5</xwiki.version>
     <slf4j.version>1.7.7</slf4j.version>
+    <testframework.version>1.0-SNAPSHOT</testframework.version>
     <solr.version>4.9.0</solr.version>
     <enforcer.skip>false</enforcer.skip>
     <checkstyle.skip>false</checkstyle.skip>
     <clirr.skip>false</clirr.skip>
     <coverage.instructionRatio>1.00</coverage.instructionRatio>
+
+    <!-- Functional test environment -->
+    <xwiki.defaultSkin>PhenoTips.Skin</xwiki.defaultSkin>
+    <it.pattern>.*</it.pattern>
+    <it.patternMethod>.*</it.patternMethod>
+    <it.server.directory>${project.build.directory}/package/</it.server.directory>
+    <it.server.port>8080</it.server.port>
+    <it.server.stopPort>8079</it.server.stopPort>
+    <it.server.startCommand>sh start.sh ${it.server.port} ${it.server.stopPort}</it.server.startCommand>
+    <it.server.stopCommand>sh stop.sh ${it.server.stopPort}</it.server.stopCommand>
+    <it.server.baseURL>http://localhost</it.server.baseURL>
   </properties>
 
   <dependencyManagement>
@@ -149,6 +172,16 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
       <!-- Most plugins depend on the servlet API -->
@@ -212,6 +245,31 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.9</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>${solr.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-queryparser</artifactId>
+        <version>${solr.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-analyzers-common</artifactId>
+        <version>${solr.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>xalan</artifactId>
+        <version>2.7.2</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -222,6 +280,12 @@
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-webdav-jackrabbit</artifactId>
         <version>2.2</version>
+      </extension>
+      <!-- Needed to add support for the "functional-tests" packaging -->
+      <extension>
+        <groupId>org.phenotips</groupId>
+        <artifactId>phenotips-functional-tests-lifecycle</artifactId>
+        <version>${testframework.version}</version>
       </extension>
     </extensions>
     <plugins>
@@ -255,59 +319,6 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release 1.0-rc-1 -->
-            <difference>
-              <className>**/script/OtologyScriptService</className>
-              <differenceType>8001</differenceType>
-            </difference>
-            <difference>
-              <differenceType>4001</differenceType>
-              <className>**/data/PatientData</className>
-              <to>**/util/List</to>
-            </difference>
-            <difference>
-              <differenceType>4001</differenceType>
-              <className>**/data/PatientData</className>
-              <to>**/util/Collection</to>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>boolean isIndexed()</method>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>boolean isNamed()</method>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>java.lang.Object get(java.lang.String)</method>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>java.lang.Object get(int)</method>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>java.lang.Object getValue()</method>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>java.util.Iterator keyIterator()</method>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>**/data/PatientData</className>
-              <method>java.util.Iterator dictionaryIterator()</method>
-            </difference>
-            <difference>
-              <differenceType>8001</differenceType>
-              <className>**/data/SimpleNamedData</className>
-            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
@@ -461,9 +472,6 @@
           </dependencies>
           <configuration>
             <consoleOutput>true</consoleOutput>
-            <!-- We use this to disable checkstyle when the clover profile is executed since there's a
-                 conflict between checkstyle and clover. Namely the clovered code doesn't pass our
-                 checkstyle rules -->
             <skip>${checkstyle.skip}</skip>
             <configLocation>checkstyle.xml</configLocation>
           </configuration>
@@ -615,6 +623,56 @@
             </includes>
             <parallel>classesAndMethods</parallel>
             <threadCount>2</threadCount>
+            <systemProperties>
+              <property>
+                <name>pattern</name>
+                <value>${it.pattern}</value>
+              </property>
+              <property>
+                <name>patternMethod</name>
+                <value>${it.patternMethod}</value>
+              </property>
+              <property>
+                <name>xwiki.test.baseURL</name>
+                <value>${it.server.baseURL}</value>
+              </property>
+              <property>
+                <name>xwiki.test.skipStart</name>
+                <value>${it.skipStart}</value>
+              </property>
+              <property>
+                <name>xwikiPort</name>
+                <value>${it.server.port}</value>
+              </property>
+              <property>
+                <name>xwikiStopPort</name>
+                <value>${it.server.stopPort}</value>
+              </property>
+              <property>
+                <name>xwikiExecutionDirectory</name>
+                <value>${it.server.directory}</value>
+              </property>
+              <property>
+                <name>screenshotDirectory</name>
+                <value>${basedir}/target/screenshots</value>
+              </property>
+              <property>
+                <name>xwikiExecutionStartCommand</name>
+                <value>${it.server.startCommand}</value>
+              </property>
+              <property>
+                <name>xwikiExecutionStopCommand</name>
+                <value>${it.server.stopCommand}</value>
+              </property>
+              <property>
+                <name>xwikiWebappName</name>
+                <value>phenotips</value>
+              </property>
+              <property>
+                <name>xwikiWebappPath</name>
+                <value></value>
+              </property>
+            </systemProperties>
           </configuration>
         </plugin>
         <plugin>
@@ -776,6 +834,12 @@
           <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
           <version>${xwiki.version}</version>
         </plugin>
+        <plugin>
+          <groupId>org.phenotips</groupId>
+          <artifactId>phenotips-packager-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>${testframework.version}</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -836,6 +900,20 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+
+    <!-- Test profiles -->
+    <profile>
+      <id>windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+        <it.server.startCommand>cmd /c start.bat ${it.server.port} ${it.server.stopPort}</it.server.startCommand>
+        <it.server.stopCommand>cmd /c stop.bat ${it.server.stopPort}</it.server.stopCommand>
+      </properties>
     </profile>
   </profiles>
 

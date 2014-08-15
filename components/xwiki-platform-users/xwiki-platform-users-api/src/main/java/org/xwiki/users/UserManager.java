@@ -24,7 +24,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * User management APIs.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -34,7 +34,7 @@ public interface UserManager
 {
     /**
      * The user corresponding to the identifier.
-     * 
+     *
      * @param identifier the user identifier to resolve: the username passed in the login form, a serialized identifier
      *            stored in the document's metadata, or an identifier passed by an external authentication service
      * @return the corresponding user, if found, or {@code null} otherwise
@@ -44,7 +44,7 @@ public interface UserManager
     /**
      * The user corresponding to the identifier. If no existing user is found and the {@code force} parameter is
      * {@code true}, return a new user in the default user management system.
-     * 
+     *
      * @param identifier the user identifier to resolve: the username passed in the login form, a serialized identifier
      *            stored in the document's metadata, or an identifier passed by an external authentication service
      * @param force whether to force returning a new profile in case the user is not found
@@ -55,7 +55,7 @@ public interface UserManager
 
     /**
      * Get the currently logged in user.
-     * 
+     *
      * @return the currently logged in user, or {@code null} if no user is logged in
      */
     User getCurrentUser();

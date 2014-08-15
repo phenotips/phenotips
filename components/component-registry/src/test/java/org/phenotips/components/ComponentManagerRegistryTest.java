@@ -19,17 +19,17 @@
  */
 package org.phenotips.components;
 
-import java.lang.reflect.ParameterizedType;
-import java.util.List;
-
-import javax.inject.Provider;
-
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.observation.event.ApplicationStartedEvent;
 import org.xwiki.observation.event.Event;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import java.lang.reflect.ParameterizedType;
+import java.util.List;
+
+import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the {@link ComponentManagerRegistry} component.
- * 
+ *
  * @version $Id$
  */
 public class ComponentManagerRegistryTest

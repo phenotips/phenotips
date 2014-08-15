@@ -81,7 +81,7 @@ public class FormFieldTest
     public void testDisplayEditWithNothingSelected()
     {
         FormField f = new FormField("HP:0000722", "OCD", "Obsessive-compulsive disorder", "", false, false, false);
-        String output = f.display(DisplayMode.Edit, new String[] {"phenotype", "negative_phenotype"});
+        String output = f.display(DisplayMode.Edit, new String[] { "phenotype", "negative_phenotype" });
         Assert.assertNotNull(output);
         LSInput input = this.domls.createLSInput();
         input.setStringData(output);
@@ -142,7 +142,7 @@ public class FormFieldTest
     public void testDisplayEditWithYesSelected()
     {
         FormField f = new FormField("HP:0000722", "OCD", "Obsessive-compulsive disorder", "", false, true, false);
-        String output = f.display(DisplayMode.Edit, new String[] {"phenotype", "negative_phenotype"});
+        String output = f.display(DisplayMode.Edit, new String[] { "phenotype", "negative_phenotype" });
         Assert.assertNotNull(output);
         LSInput input = this.domls.createLSInput();
         input.setStringData(output);
@@ -203,7 +203,7 @@ public class FormFieldTest
     public void testDisplayEditWithNoSelected()
     {
         FormField f = new FormField("HP:0000722", "OCD", "Obsessive-compulsive disorder", "", false, false, true);
-        String output = f.display(DisplayMode.Edit, new String[] {"phenotype", "negative_phenotype"});
+        String output = f.display(DisplayMode.Edit, new String[] { "phenotype", "negative_phenotype" });
         Assert.assertNotNull(output);
         LSInput input = this.domls.createLSInput();
         input.setStringData(output);

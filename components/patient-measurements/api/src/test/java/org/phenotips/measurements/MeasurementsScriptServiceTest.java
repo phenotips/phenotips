@@ -19,6 +19,13 @@
  */
 package org.phenotips.measurements;
 
+import org.phenotips.measurements.internal.HeightMeasurementHandler;
+
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.DefaultParameterizedType;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,13 +34,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Provider;
-
-import org.phenotips.measurements.internal.HeightMeasurementHandler;
-
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.component.util.DefaultParameterizedType;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the {@link MeasurementsScriptService} component.
- * 
+ *
  * @version $Id$
  * @since 1.0M1
  */
@@ -85,7 +85,7 @@ public class MeasurementsScriptServiceTest
         when(provider.get()).thenReturn(cm);
         List<MeasurementHandler> toReturn = new ArrayList<MeasurementHandler>();
         toReturn.add(Mockito.mock(MeasurementHandler.class));
-        when(cm.<MeasurementHandler> getInstanceList(MeasurementHandler.class)).thenReturn(toReturn);
+        when(cm.<MeasurementHandler>getInstanceList(MeasurementHandler.class)).thenReturn(toReturn);
         List<MeasurementHandler> response = this.mocker.getComponentUnderTest().getAvailableMeasurementHandlers();
         Assert.assertEquals(toReturn, response);
     }
@@ -122,7 +122,7 @@ public class MeasurementsScriptServiceTest
         when(provider.get()).thenReturn(cm);
         Map<String, MeasurementHandler> toReturn = new HashMap<String, MeasurementHandler>();
         toReturn.put("hand", Mockito.mock(MeasurementHandler.class));
-        when(cm.<MeasurementHandler> getInstanceMap(MeasurementHandler.class)).thenReturn(toReturn);
+        when(cm.<MeasurementHandler>getInstanceMap(MeasurementHandler.class)).thenReturn(toReturn);
         Set<String> response = this.mocker.getComponentUnderTest().getAvailableMeasurementNames();
         Assert.assertEquals(toReturn.keySet(), response);
     }

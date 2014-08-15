@@ -39,7 +39,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests the wiki user manager.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -180,7 +180,7 @@ public class WikiUserManagerTest
     {
         setupMocks("xwiki");
         User u = this.userManager.getUser("Admin", true);
-        when(this.serializer.serialize(Mockito.same(new DocumentReference("xwiki", "XWiki", "Admin")))).
+        when(this.serializer.serialize(Matchers.same(new DocumentReference("xwiki", "XWiki", "Admin")))).
             thenReturn("xwiki:XWiki.Admin");
         Assert.assertEquals("xwiki:XWiki.Admin", u.getId());
         Assert.assertTrue(u.exists());
@@ -238,7 +238,8 @@ public class WikiUserManagerTest
     {
         final DocumentReference targetUser = new DocumentReference(targetUserWiki, "XWiki", "Admin");
         when(this.configuration.getProperty("users.defaultWiki", "local")).thenReturn("users");
-        when(this.modelContext.getCurrentEntityReference()).thenReturn(new DocumentReference("local", "Main", "WebHome"));
+        when(this.modelContext.getCurrentEntityReference()).thenReturn(
+            new DocumentReference("local", "Main", "WebHome"));
 
         when(this.bridge.exists(new DocumentReference("xwiki", targetSpace, "Admin"))).thenReturn(false);
         when(this.bridge.exists(new DocumentReference("users", targetSpace, "Admin"))).thenReturn(false);

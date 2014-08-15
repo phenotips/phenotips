@@ -25,7 +25,7 @@ import org.xwiki.model.reference.DocumentReference;
 
 /**
  * Default implementation for {@link Group}.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -36,7 +36,7 @@ public class DefaultGroup implements Group
 
     /**
      * Simple constructor.
-     * 
+     *
      * @param reference the reference to the document where this group is defined
      */
     public DefaultGroup(DocumentReference reference)

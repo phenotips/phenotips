@@ -88,11 +88,11 @@ public class PhenoTipsPatient implements Patient
     private static final String PHENOTYPE_NEGATIVE_PROPERTY = "negative_phenotype";
 
     private static final String[] PHENOTYPE_PROPERTIES =
-        new String[] {PHENOTYPE_POSITIVE_PROPERTY, PHENOTYPE_NEGATIVE_PROPERTY};
+        new String[] { PHENOTYPE_POSITIVE_PROPERTY, PHENOTYPE_NEGATIVE_PROPERTY };
 
     private static final String DISORDER_PROPERTIES_OMIMID = "omim_id";
 
-    private static final String[] DISORDER_PROPERTIES = new String[] {DISORDER_PROPERTIES_OMIMID};
+    private static final String[] DISORDER_PROPERTIES = new String[] { DISORDER_PROPERTIES_OMIMID };
 
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);

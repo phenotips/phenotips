@@ -47,7 +47,7 @@ public interface PushServerConfigurationResponse extends PushServerResponse
     /**
      * Get the list of patient data fields accepted by the remote server. The list may or may not be different depending
      * on the remote group. All other fields will be discarded by the remote server.
-     * 
+     *
      * @param groupName remote group name (optional, may be {@code null}).
      * @return List of remote field names accepted by the remote server.
      */

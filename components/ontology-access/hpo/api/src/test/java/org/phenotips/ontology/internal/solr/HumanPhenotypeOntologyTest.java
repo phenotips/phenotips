@@ -41,6 +41,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import static org.mockito.Matchers.any;
@@ -86,7 +87,7 @@ public class HumanPhenotypeOntologyTest
     {
         Mockito.verify(this.server).deleteByQuery("*:*");
         Mockito.verify(this.server).commit();
-        Mockito.verify(this.server).add(Mockito.anyCollectionOf(SolrInputDocument.class));
+        Mockito.verify(this.server).add(Matchers.anyCollectionOf(SolrInputDocument.class));
         Mockito.verify(this.cache).removeAll();
         Mockito.verifyNoMoreInteractions(this.cache, this.server);
         Assert.assertTrue(this.ontologyServiceResult == 0);

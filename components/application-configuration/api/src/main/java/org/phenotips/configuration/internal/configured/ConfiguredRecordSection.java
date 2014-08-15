@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * Implementation of {@link RecordSection} that takes into account a {@link CustomConfiguration custom configuration}.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -45,7 +45,7 @@ public class ConfiguredRecordSection extends DefaultRecordSection implements Rec
 
     /**
      * Simple constructor passing all the needed components.
-     * 
+     *
      * @param configuration the custom configuration
      * @param extension the extension defining this element
      * @param uixManager the UIExtension manager
@@ -78,7 +78,7 @@ public class ConfiguredRecordSection extends DefaultRecordSection implements Rec
             result.add(new ConfiguredRecordElement(this.configuration, element.getExtension(), this));
         }
         if (overrides != null && !overrides.isEmpty()) {
-            Collections.<RecordElement> sort(result, new Comparator<RecordElement>()
+            Collections.<RecordElement>sort(result, new Comparator<RecordElement>()
             {
                 @Override
                 public int compare(RecordElement o1, RecordElement o2)

@@ -19,6 +19,13 @@
  */
 package org.phenotips.measurements;
 
+import org.phenotips.measurements.internal.AbstractMeasurementHandler;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.script.service.ScriptService;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -31,19 +38,12 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.phenotips.measurements.internal.AbstractMeasurementHandler;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
-import org.xwiki.component.annotation.Component;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.script.service.ScriptService;
-
 
 /**
  * Bridge offering access to specific {@link MeasurementHandler measurement handlers} to scripts.
- * 
+ *
  * @version $Id$
  * @since 1.0M3
  */
@@ -78,7 +78,7 @@ public class MeasurementsScriptService implements ScriptService
 
     /**
      * Get the handler for a specific kind of measurements.
-     * 
+     *
      * @param measurementType the type of measurement to return
      * @return the requested handler, {@code null} if not found
      */
@@ -94,7 +94,7 @@ public class MeasurementsScriptService implements ScriptService
 
     /**
      * Get all the measurements handlers.
-     * 
+     *
      * @return a list of all the measurement handlers, or an empty list if there was a problem retrieving the actual
      *         list
      */
@@ -115,7 +115,7 @@ public class MeasurementsScriptService implements ScriptService
 
     /**
      * Get the names of all the measurements handlers.
-     * 
+     *
      * @return a set with the names of all the measurement handlers, or an empty set if there was a problem retrieving
      *         the actual values
      */
@@ -137,7 +137,7 @@ public class MeasurementsScriptService implements ScriptService
 
     /**
      * Convert a percentile number into a string grossly describing the value.
-     * 
+     *
      * @param percentile a number between 0 and 100
      * @return the percentile description
      */
@@ -158,7 +158,7 @@ public class MeasurementsScriptService implements ScriptService
 
     /**
      * Convert a standard deviation number into a string grossly describing the value.
-     * 
+     *
      * @param deviation standard deviation value
      * @return the deviation description
      */

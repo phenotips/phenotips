@@ -28,7 +28,7 @@ import org.xwiki.stability.Unstable;
 /**
  * A collaborator on a patient record, either a user or a group that has been granted a specific {@link AccessLevel
  * access level}.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -47,21 +47,21 @@ public interface Collaborator
 
     /**
      * The user or group that has been set as collaborator.
-     * 
+     *
      * @return a reference to the user's or group's profile
      */
     EntityReference getUser();
 
     /**
      * The username or group name.
-     * 
+     *
      * @return the name of the document holding the user or group (just the name without the space or instance name)
      */
     String getUsername();
 
     /**
      * The access that has been granted to this collaborator.
-     * 
+     *
      * @return an access level, must not be null.
      */
     AccessLevel getAccessLevel();

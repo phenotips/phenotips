@@ -19,15 +19,15 @@
  */
 package org.phenotips.hpoa.prediction;
 
+import org.phenotips.hpoa.annotation.SearchResult;
+
+import org.xwiki.component.annotation.Component;
+
 import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.phenotips.hpoa.annotation.SearchResult;
-
-import org.xwiki.component.annotation.Component;
 
 @Component
 @Named("bn")

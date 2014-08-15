@@ -19,14 +19,14 @@
  */
 package org.phenotips.data.securestorage;
 
-import javax.persistence.Entity;
 import javax.persistence.Column;
-import javax.persistence.Id;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
- * Used to store given local user's remote credentials on the given remote server
- * (which can be used for more convenient passwordless logins and pre-filled username fields)
+ * Used to store given local user's remote credentials on the given remote server (which can be used for more convenient
+ * passwordless logins and pre-filled username fields).
  *
  * @version $Id$
  * @since 1.0M10
@@ -39,16 +39,16 @@ public class RemoteLoginData
     @GeneratedValue
     private long id;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String localUserName;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String serverName;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String remoteUserName;
 
-    private String loginToken;   // may be null when tokens are disabled. In that case username is stored only to pre-populate UI user/password boxes
+    private String loginToken; // may be null when tokens are disabled. In that case username is stored only to pre-populate UI user/password boxes
 
     /** Default constructor used by Hibernate. */
     protected RemoteLoginData()
@@ -58,19 +58,20 @@ public class RemoteLoginData
 
     /**
      * For use by SecureStorageManager
+     *
      * @param
      */
     public RemoteLoginData(String localUserName, String serverName, String remoteUserName, String loginToken)
     {
-        this.localUserName  = localUserName;
-        this.serverName     = serverName;
+        this.localUserName = localUserName;
+        this.serverName = serverName;
         this.remoteUserName = remoteUserName;
-        this.loginToken     = loginToken;
+        this.loginToken = loginToken;
     }
 
     public String getLoginToken()
     {
-        return loginToken;
+        return this.loginToken;
     }
 
     public void setLoginToken(String newToken)
@@ -80,7 +81,7 @@ public class RemoteLoginData
 
     public String getRemoteUserName()
     {
-        return remoteUserName;
+        return this.remoteUserName;
     }
 
     public void setRemoteUserName(String remoteUserName)
@@ -90,11 +91,11 @@ public class RemoteLoginData
 
     public String getLocalUserName()
     {
-        return localUserName;
+        return this.localUserName;
     }
 
     public String getServerName()
     {
-        return serverName;
+        return this.serverName;
     }
 }
