@@ -38,7 +38,6 @@ import javax.inject.Singleton;
 @Singleton
 public class EthnicityController extends AbstractComplexController<List<String>>
 {
-
     @Override
     public String getName()
     {

@@ -80,7 +80,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                     Object propertyValue = field.getValue();
                     /* If the controller only works with codes, store the Ontology Instances rather than Strings */
                     if (getCodeFields().contains(propertyName) && isCodeFieldsOnly()) {
-                        List<OntologyProperty> propertyValuesList = new LinkedList<OntologyProperty>();
+                        List<OntologyProperty> propertyValuesList = new LinkedList<>();
                         @SuppressWarnings("unchecked")
                         List<String> terms = (List<String>) propertyValue;
                         for (String termId : terms) {
@@ -91,7 +91,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                     result.put(propertyName, (T) propertyValue);
                 }
             }
-            return new DictionaryPatientData<T>(getName(), result);
+            return new DictionaryPatientData<>(getName(), result);
         } catch (Exception e) {
             this.logger.error(
                 "Could not find requested document or some unforeseen error has occurred during controller loading");
