@@ -39,11 +39,16 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Consts;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
@@ -62,6 +67,10 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class RemoteSynchronizationEventListener implements EventListener
 {
+    /** The content type of the data sent in a request. */
+    private static final ContentType REQUEST_CONTENT_TYPE = ContentType.create(
+        ContentType.APPLICATION_XML.getMimeType(), Consts.UTF_8);
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
@@ -71,7 +80,7 @@ public class RemoteSynchronizationEventListener implements EventListener
     private Execution execution;
 
     /** HTTP client used for communicating with the remote server. */
-    private final HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
+    private final CloseableHttpClient client = HttpClients.createSystem();
 
     @Override
     public String getName()
@@ -171,14 +180,14 @@ public class RemoteSynchronizationEventListener implements EventListener
     private void submitData(String doc, BaseObject serverConfiguration)
     {
         // FIXME This should be asynchronous; reimplement!
-        PostMethod method = null;
+        HttpPost method = null;
         try {
             String submitURL = getSubmitURL(serverConfiguration);
             if (StringUtils.isNotBlank(submitURL)) {
                 this.logger.debug("Pushing updated document to [{}]", submitURL);
-                method = new PostMethod(submitURL);
-                method.setRequestEntity(new StringRequestEntity(doc, "application/xml", XWiki.DEFAULT_ENCODING));
-                this.client.executeMethod(method);
+                method = new HttpPost(submitURL);
+                method.setEntity(new StringEntity(doc, REQUEST_CONTENT_TYPE));
+                this.client.execute(method).close();
             }
         } catch (Exception ex) {
             this.logger.warn("Failed to notify remote server of patient update: {}", ex.getMessage(), ex);
@@ -198,14 +207,15 @@ public class RemoteSynchronizationEventListener implements EventListener
     private void deleteData(String doc, BaseObject serverConfiguration)
     {
         // FIXME This should be asynchronous; reimplement!
-        PostMethod method = null;
+        HttpPost method = null;
         try {
             String deleteURL = getDeleteURL(serverConfiguration);
             if (StringUtils.isNotBlank(deleteURL)) {
                 this.logger.debug("Pushing deleted document to [{}]", deleteURL);
-                method = new PostMethod(deleteURL);
-                method.addParameter("document", doc);
-                this.client.executeMethod(method);
+                method = new HttpPost(deleteURL);
+                NameValuePair data = new BasicNameValuePair("document", doc);
+                method.setEntity(new UrlEncodedFormEntity(Collections.singletonList(data), Consts.UTF_8));
+                this.client.execute(method).close();
             }
         } catch (Exception ex) {
             this.logger.warn("Failed to notify remote server of patient removal: {}", ex.getMessage(), ex);
