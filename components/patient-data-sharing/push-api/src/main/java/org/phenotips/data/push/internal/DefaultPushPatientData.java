@@ -154,7 +154,7 @@ public class DefaultPushPatientData implements PushPatientData
 
     private List<NameValuePair> generateRequestData(String actionName, String userName, String password,
         String userToken)
-        {
+    {
         List<NameValuePair> result = new LinkedList<>();
         result.add(new BasicNameValuePair(XWIKI_RAW_OUTPUT_KEY, XWIKI_RAW_OUTPUT_VALUE));
         result.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER,
@@ -167,7 +167,7 @@ public class DefaultPushPatientData implements PushPatientData
             result.add(new BasicNameValuePair(ShareProtocol.CLIENT_POST_KEY_NAME_PASSWORD, password));
         }
         return result;
-        }
+    }
 
     /**
      * Get the push server configuration given its name.
