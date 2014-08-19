@@ -119,7 +119,8 @@ public class OmimScriptService extends AbstractSolrScriptService
             SimpleOrderedMap<Float> omimTerm = (SimpleOrderedMap<Float>) explanations.get(omimId);
             float score = omimTerm.get("value");
             for (Object hpoId : disorder.getFieldValues("actual_symptom")) {
-                if (allAncestors.contains(hpoId) || nphenotypes.contains(hpoId)) {
+                if (allAncestors.contains(hpoId) || nphenotypes.contains(hpoId)
+                    || !hpoService.getAllAncestorsAndSelfIDs((String) hpoId).contains("HP:0000118")) {
                     continue;
                 }
                 cummulativeScore.addTo((String) hpoId, (double) score);

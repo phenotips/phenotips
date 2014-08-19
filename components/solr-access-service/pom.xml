@@ -29,6 +29,9 @@
   </parent>
   <artifactId>solr-access-service</artifactId>
   <name>PhenoTips - Solr Access Service</name>
+  <properties>
+    <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
