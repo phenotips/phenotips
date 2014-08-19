@@ -46,5 +46,10 @@
       <artifactId>xwiki-commons-script</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-localization-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
   </dependencies>
 </project>

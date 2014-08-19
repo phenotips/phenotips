@@ -18,20 +18,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.phenotips.script.jodatime;
+package org.phenotips.jodatime.script;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.localization.LocalizationContext;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
 
-import java.util.Locale;
-
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
+import org.joda.time.IllegalFieldValueException;
 import org.joda.time.MutableDateTime;
 import org.joda.time.ReadableInstant;
 import org.joda.time.format.DateTimeFormat;
@@ -51,12 +52,17 @@ import org.joda.time.format.ISODateTimeFormat;
 @Singleton
 public class JodaTimeScriptService implements ScriptService
 {
-    /**
-     * ISO8601 date time formatter.
-     */
+    /** ISO8601 date time formatter, printing dates in the format {@code 2000-12-31T23:00:00.123Z}. */
     private static final DateTimeFormatter ISO_DATE_FORMATTER = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
 
+    /** Provides access to the currently active locale. */
+    @Inject
+    private LocalizationContext localizationContext;
+
     /**
+     * Get the current date and time.
+     *
+     * @return a Joda Time {@link DateTime} object for the current moment
      * @see org.joda.time.DateTime#DateTime()
      */
     public DateTime getDateTime()
@@ -65,15 +71,35 @@ public class JodaTimeScriptService implements ScriptService
     }
 
     /**
+     * Get a datetime object representing the specified moment.
+     *
+     * @param year the target year, in the standard chronology
+     * @param monthOfYear the month of the year, from 1 to 12
+     * @param dayOfMonth the day of the month, from 1 to 31
+     * @param hourOfDay the hour of the day, from 0 to 23
+     * @param minuteOfHour the minute of the hour, from 0 to 59
+     * @param secondOfMinute the second of the minute, from 0 to 59
+     * @param millisOfSecond the millisecond of the second, from 0 to 999
+     * @return a Joda Time {@link DateTime} object for the requested moment, if the provided parameters represent a
+     *         valid date, or {@code null} if the date is not valid, for example asking for an invalid month, hour,
+     *          minute, or asking for April 31
      * @see org.joda.time.DateTime#DateTime(int, int, int, int, int, int, int)
      */
     public DateTime getDateTime(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour,
         int secondOfMinute, int millisOfSecond)
     {
-        return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);
+        try {
+            return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);
+        } catch (IllegalFieldValueException ex) {
+            // TODO Put a message in the script logs
+            return null;
+        }
     }
 
     /**
+     * Get a datetime object representing the specified moment.
+     *
+     * @param instant the 
      * @see org.joda.time.DateTime#DateTime(long)
      */
     public DateTime getDateTime(long instant)
@@ -110,17 +136,17 @@ public class JodaTimeScriptService implements ScriptService
     /**
      * @see org.joda.time.format.DateTimeFormat#forPattern(String)
      */
-    public DateTimeFormatter getDateTimeFormatterForPattern(String pattern, XWikiContext context)
+    public DateTimeFormatter getDateTimeFormatterForPattern(String pattern)
     {
-        return DateTimeFormat.forPattern(pattern).withLocale((Locale) context.get("locale"));
+        return DateTimeFormat.forPattern(pattern).withLocale(this.localizationContext.getCurrentLocale());
     }
 
     /**
      * @see org.joda.time.format.DateTimeFormat#forStyle(String)
      */
-    public DateTimeFormatter getDateTimeFormatterForStyle(String style, XWikiContext context)
+    public DateTimeFormatter getDateTimeFormatterForStyle(String style)
     {
-        return DateTimeFormat.forStyle(style).withLocale((Locale) context.get("locale"));
+        return DateTimeFormat.forStyle(style).withLocale(this.localizationContext.getCurrentLocale());
     }
 
     /**
