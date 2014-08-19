@@ -101,9 +101,8 @@ public class OmimScriptService extends AbstractSolrScriptService
         List<SuggestedPhenotype> result = new LinkedList<SuggestedPhenotype>();
         try {
             response = this.server.query(prepareParams(phenotypes, nphenotypes));
-        } catch (SolrServerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (SolrServerException ex) {
+            this.logger.warn("Failed to query OMIM index: {}", ex.getMessage());
             return result;
         }
         SolrDocumentList matchingDisorders = response.getResults();
