@@ -525,7 +525,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>solr-access-service</artifactId>
+      <artifactId>solr-access-service-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
