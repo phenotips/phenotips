@@ -169,7 +169,7 @@
       #if ($options.isImage)
         #set ($content = "$!{content}[[image:${targetDocument.fullName}@${name}||style=""max-width:100%""]]${util.newline}")
       #else
-        #set ($content = "$!{content}(% class='attachment-link #__getExtension($name)' %)attach:${targetDocument.fullName}@${name} (%%)${util.newline}")
+        #set ($content = "$!{content}[[attach:${targetDocument.fullName}@${name}||class='attachment-link #__getExtension($name)']]${util.newline}")
       #end
     #end
   #end
