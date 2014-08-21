@@ -156,7 +156,7 @@ public class Lims247AuthServiceImpl extends XWikiLDAPAuthServiceImpl implements 
             context.setUserReference(previousUserReference);
         }
         if (isValid) {
-            return new XWikiUser(XWiki.SYSTEM_SPACE + '.' + username);
+            return toXWikiUser(username, context);
         }
         return null;
     }
@@ -175,7 +175,7 @@ public class Lims247AuthServiceImpl extends XWikiLDAPAuthServiceImpl implements 
     private XWikiUser checkRemoteToken(String token, String username, String pn, XWikiContext context)
     {
         if (Utils.getComponent(LimsServer.class).checkToken(token, username, pn)) {
-            return new XWikiUser(XWiki.SYSTEM_SPACE + '.' + username);
+            return toXWikiUser(username, context);
         }
         return null;
     }
@@ -206,5 +206,17 @@ public class Lims247AuthServiceImpl extends XWikiLDAPAuthServiceImpl implements 
         if (access != null) {
             request.getSession().setAttribute(ACCESS_KEY, access);
         }
+    }
+
+    /**
+     * Convert a username to an XWikiUser object, taking care of proper escapes.
+     *
+     * @param username the username to process
+     * @return an XWikiUser object holding the specified username
+     */
+    private XWikiUser toXWikiUser(String username, XWikiContext context)
+    {
+        DocumentReference ref = new DocumentReference(context.getDatabase(), XWiki.SYSTEM_SPACE, username);
+        return new XWikiUser(ref.toString());
     }
 }

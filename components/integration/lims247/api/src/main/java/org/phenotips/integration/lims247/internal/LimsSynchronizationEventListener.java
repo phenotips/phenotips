@@ -33,6 +33,7 @@ import org.xwiki.csrf.CSRFToken;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 
@@ -89,6 +90,9 @@ public class LimsSynchronizationEventListener implements EventListener
     /** Does the actual communication with the LIMS servers. */
     @Inject
     private LimsServer server;
+
+    @Inject
+    private EntityReferenceResolver<String> referenceResolver;
 
     @Override
     public String getName()
@@ -175,7 +179,8 @@ public class LimsSynchronizationEventListener implements EventListener
         if (auth != null) {
             // FIXME Reuse this authentication only if the authentication server is the same as the target server
             result.put(LimsServer.INSTANCE_IDENTIFIER_KEY, context.getDatabase());
-            result.put(LimsServer.USERNAME_KEY, StringUtils.substringAfter(auth.getUser().getUser(), "."));
+            result.put(LimsServer.USERNAME_KEY,
+                this.referenceResolver.resolve(auth.getUser().getUser(), EntityType.DOCUMENT).getName());
             result.put(LimsServer.TOKEN_KEY, auth.getToken());
         } else if (context.getUserReference() != null) {
             result.put(LimsServer.INSTANCE_IDENTIFIER_KEY, context.getUserReference().getWikiReference().getName());
