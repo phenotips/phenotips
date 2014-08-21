@@ -82,7 +82,7 @@ public class JodaTimeScriptService implements ScriptService
      * @param millisOfSecond the millisecond of the second, from 0 to 999
      * @return a Joda Time {@link DateTime} object for the requested moment, if the provided parameters represent a
      *         valid date, or {@code null} if the date is not valid, for example asking for an invalid month, hour,
-     *          minute, or asking for April 31
+     *         minute, or asking for April 31
      * @see org.joda.time.DateTime#DateTime(int, int, int, int, int, int, int)
      */
     public DateTime getDateTime(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour,
@@ -99,7 +99,8 @@ public class JodaTimeScriptService implements ScriptService
     /**
      * Get a datetime object representing the specified moment.
      *
-     * @param instant the 
+     * @param instant the target moment, in milliseconds from 1970-01-01T00:00:00Z
+     * @return a Joda Time {@link DateTime} object for the requested moment
      * @see org.joda.time.DateTime#DateTime(long)
      */
     public DateTime getDateTime(long instant)
@@ -108,6 +109,9 @@ public class JodaTimeScriptService implements ScriptService
     }
 
     /**
+     * Get the current date and time as a mutable object.
+     *
+     * @return a Joda Time {@link MutableDateTime} object for the current moment
      * @see org.joda.time.MutableDateTime#MutableDateTime()
      */
     public MutableDateTime getMutableDateTime()
@@ -116,6 +120,18 @@ public class JodaTimeScriptService implements ScriptService
     }
 
     /**
+     * Get a mutable datetime object representing the specified moment.
+     *
+     * @param year the target year, in the standard chronology
+     * @param monthOfYear the month of the year, from 1 to 12
+     * @param dayOfMonth the day of the month, from 1 to 31
+     * @param hourOfDay the hour of the day, from 0 to 23
+     * @param minuteOfHour the minute of the hour, from 0 to 59
+     * @param secondOfMinute the second of the minute, from 0 to 59
+     * @param millisOfSecond the millisecond of the second, from 0 to 999
+     * @return a Joda Time {@link MutableDateTime} object for the requested moment, if the provided parameters represent
+     *         a valid date, or {@code null} if the date is not valid, for example asking for an invalid month, hour,
+     *         minute, or asking for April 31
      * @see org.joda.time.MutableDateTime#MutableDateTime(int, int, int, int, int, int, int)
      */
     public MutableDateTime getMutableDateTime(int year, int monthOfYear, int dayOfMonth, int hourOfDay,
@@ -126,6 +142,10 @@ public class JodaTimeScriptService implements ScriptService
     }
 
     /**
+     * Get a mutable datetime object representing the specified moment.
+     *
+     * @param instant the target moment, in milliseconds from 1970-01-01T00:00:00Z
+     * @return a Joda Time {@link MutableDateTime} object for the requested moment
      * @see org.joda.time.MutableDateTime#MutableDateTime(long)
      */
     public MutableDateTime getMutableDateTime(long instant)
@@ -134,19 +154,43 @@ public class JodaTimeScriptService implements ScriptService
     }
 
     /**
+     * Get a datetime formatter for the specified pattern.
+     *
+     * @param pattern the format used by the returned formatter, both for parsing and printing
+     * @return a formatter object set up with the current locale, if the specified format is correct, or {@code null} if
+     *         the format is invalid
+     * @see org.joda.time.format.DateTimeFormat
      * @see org.joda.time.format.DateTimeFormat#forPattern(String)
      */
     public DateTimeFormatter getDateTimeFormatterForPattern(String pattern)
     {
-        return DateTimeFormat.forPattern(pattern).withLocale(this.localizationContext.getCurrentLocale());
+        try {
+            return DateTimeFormat.forPattern(pattern).withLocale(this.localizationContext.getCurrentLocale());
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     /**
+     * Get a datetime formatter for the specified date, time or datetime style. The style is specified as a two letter
+     * code. The first character is the date style, and the second character is the time style. Specify a character of
+     * 'S' for short style, 'M' for medium, 'L' for long, and 'F' for full. A date or time may be omitted by specifying
+     * a style character '-'. The actual format used depends on the locale.
+     *
+     * @param style the type of date/time used by the returned formatter, both for parsing and printing; valid values
+     *            contain two characters from the set {@code "S", "M", "L", "F", "-"}
+     * @return a formatter object set up with the current locale, if the specified style is correct, or {@code null} if
+     *         the style is invalid
+     * @see org.joda.time.format.DateTimeFormat
      * @see org.joda.time.format.DateTimeFormat#forStyle(String)
      */
     public DateTimeFormatter getDateTimeFormatterForStyle(String style)
     {
-        return DateTimeFormat.forStyle(style).withLocale(this.localizationContext.getCurrentLocale());
+        try {
+            return DateTimeFormat.forStyle(style).withLocale(this.localizationContext.getCurrentLocale());
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     /**
