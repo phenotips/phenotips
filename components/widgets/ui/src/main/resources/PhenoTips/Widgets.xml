@@ -2368,7 +2368,8 @@ return PhenoTips;
         idPrefix : 'ontology-browser-window-',
         title : "Related terms",
         backgroundColor: "#ffffff",
-        verticalPosition : "top"
+        verticalPosition : "top",
+        removeOnClose : true
       });
       this.options.modal = true;
     }
