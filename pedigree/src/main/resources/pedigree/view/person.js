@@ -421,18 +421,31 @@ var Person = Class.create(AbstractPerson, {
      * @param status One of {'', 'carrier', 'affected', 'presymptomatic'}
      */    
     setCarrierStatus: function(status) {
+        var numDisorders = this.getDisorders().length;
+
         if (status === undefined || status === null) {
-            status = this.getCarrierStatus();
+            if (numDisorders == 0) {
+                status = ""
+            } else {
+                status = this.getCarrierStatus();
+                if (status == "") {
+                    status = "affected";
+                }
+            }
         }
         
         if (!this._isValidCarrierStatus(status)) return;
-        
-        var numDisorders = this.getDisorders().length;
                 
         if (numDisorders > 0 && status == '') {
-            status = 'affected';
+            if (numDisorders == 1 && this.getDisorders()[0] == "affected") {
+                this.removeDisorder("affected");
+                this.getGraphics().updateDisorderShapes();
+            } else {
+                status = 'affected';
+            }
         } else if (numDisorders == 0 && status == 'affected') {
-            status = '';
+            this.addDisorder("affected");
+            this.getGraphics().updateDisorderShapes();
         }
         
         if (status != this._carrierStatus) {
@@ -480,9 +493,12 @@ var Person = Class.create(AbstractPerson, {
      * Adds disorder to the list of this node's disorders and updates the Legend.
      *
      * @method addDisorder
-     * @param {Disorder} disorder Disorder object
+     * @param {Disorder} disorder Disorder object or a free-text name string
      */
     addDisorder: function(disorder) {
+        if (typeof disorder != 'object') {
+            disorder = editor.getDisorderLegend().getDisorder(disorder);
+        }
         if(!this.hasDisorder(disorder.getDisorderID())) {
             editor.getDisorderLegend().addCase(disorder.getDisorderID(), disorder.getName(), this.getID());
             this.getDisorders().push(disorder.getDisorderID());
@@ -523,9 +539,6 @@ var Person = Class.create(AbstractPerson, {
         }
         for(var i = 0; i < disorders.length; i++) {
             var disorder = disorders[i];
-            if (typeof disorder != 'object') {
-                disorder = editor.getDisorderLegend().getDisorder(disorder);
-            }
             this.addDisorder( disorder );
         }        
         this.getGraphics().updateDisorderShapes();
@@ -638,15 +651,15 @@ var Person = Class.create(AbstractPerson, {
             }
         }
 
-        var inactiveCarriers = false;
-        if (disorders.length == 0) {
-            inactiveCarriers = ['affected'];
-        } else {
-            inactiveCarriers = [''];
+        var inactiveCarriers = [];
+        if (disorders.length > 0) {
+            if (disorders.length != 1 || disorders[0].id != "affected") {
+                inactiveCarriers = [''];
+            }
         }
-        //if (this.getLifeStatus() == "aborted") {
-        //    inactiveCarriers.push('presymptomatic');
-        //}
+        if (this.getLifeStatus() == "aborted") {
+            inactiveCarriers.push('presymptomatic');
+        }
 
         return {
             identifier:    {value : this.getID()},

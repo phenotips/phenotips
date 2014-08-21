@@ -278,12 +278,15 @@ var DisorgerLegend = Class.create( {
     _generateColor: function(disorderID) {
         if(this._disorderColors.hasOwnProperty(disorderID)) {
             return this._disorderColors[disorderID];
-        }        
+        }
         var usedColors = Object.values(this._disorderColors),
             prefColors = ["#FEE090", '#E0F8F8', '#8ebbd6', '#4575B4', '#fca860', '#9a4500', '#81a270'];
         usedColors.each( function(color) {
             prefColors = prefColors.without(color);
         });
+        if (disorderID == "affected" && usedColors.indexOf('#FEE090') > -1 ) {
+            return "#dbad71";
+        }
         if(prefColors.length > 0) {
             return prefColors[0];
         }
