@@ -47,6 +47,11 @@ public class ReceivePatientDataScriptService implements ScriptService
     @Inject
     private ReceivePatientData internalService;
 
+    public boolean isServerTrusted()
+    {
+        return this.internalService.isServerTrusted();
+    }
+
     public JSONObject getConfiguration()
     {
         return this.internalService.getConfiguration();
@@ -55,6 +60,11 @@ public class ReceivePatientDataScriptService implements ScriptService
     public JSONObject receivePatient()
     {
         return this.internalService.receivePatient();
+    }
+
+    public JSONObject untrustedServerResponse()
+    {
+        return this.internalService.untrustedServerResponse();
     }
 
     public JSONObject getPatientURL()

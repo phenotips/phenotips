@@ -79,9 +79,9 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
     private final static boolean DEFAULT_USER_TOKENS_ENABLED = true;
 
-    private final static String SERVER_CONFIG_IP_PROPERTY_NAME = "ip";
+    private final static String MAIN_CONFIG_ALLOW_ANY_SOURCE_PROPERTY_NAME = "AllowPushesFromNonListedServers";
 
-    private final static String SERVER_CONFIG_USE_TOKEN_PROPERTY_NAME = "user_tokens";
+    private final static String SERVER_CONFIG_IP_PROPERTY_NAME = "ip";
 
     private final static String SERVER_CONFIG_SERVER_NAME_PROPERTY_NAME = "name";
 
@@ -136,6 +136,37 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
     @Inject
     private PermissionsManager permisionManager;
+
+    @Override
+    public boolean isServerTrusted()
+    {
+        // server is trusted if either "allow pushes from non-listed servers" is checked,
+        // or the server is listed and thus have a configuration
+        XWikiContext context = getXContext();
+
+        BaseObject mainConfig = getMainConfiguration(context);
+        if (mainConfig == null) {
+            this.logger.error("Receive configuration not found");
+            return false;
+        }
+
+        if (mainConfig.getIntValue(MAIN_CONFIG_ALLOW_ANY_SOURCE_PROPERTY_NAME) == 1) {
+            return true;
+        }
+
+        BaseObject serverConfig = getSourceServerConfiguration(context.getRequest().getRemoteAddr(), context);
+        if (serverConfig == null) {
+            this.logger.error("Connection from an untrusted server {}", context.getRequest().getRemoteAddr());
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public JSONObject untrustedServerResponse()
+    {
+        return generateFailedLoginResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_UNTRUSTEDSERVER);
+    }
 
     @Override
     public JSONObject unsupportedeActionResponse()
@@ -330,11 +361,7 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
     protected boolean userTokensEnabled(BaseObject serverConfig)
     {
-        // if no specific configuratio nis given for the push server => use default: allow user tokens
-        if (serverConfig == null) {
-            return DEFAULT_USER_TOKENS_ENABLED;
-        }
-        return (serverConfig.getIntValue(SERVER_CONFIG_USE_TOKEN_PROPERTY_NAME) == 1);
+        return DEFAULT_USER_TOKENS_ENABLED;
     }
 
     /**
@@ -640,6 +667,32 @@ public class DefaultReceivePatientData implements ReceivePatientData
             String domainName = InetAddress.getByName(serverIP).getHostName();
             return prefsDoc.getXObject(new DocumentReference(context.getDatabase(), Constants.CODE_SPACE,
                 "ReceivePatientServer"), SERVER_CONFIG_IP_PROPERTY_NAME, domainName);
+        } catch (Exception ex) {
+            this.logger.warn("Failed to get server info: [{}] {}", ex.getMessage(), ex);
+            return null;
+        }
+    }
+
+    /**
+     * Get the non-server specific part of the "Receive Patient Configuration".
+     *
+     * @param context the current request object
+     * @return {@link BaseObject XObjects} receive configuration
+     */
+    private BaseObject getMainConfiguration(XWikiContext context)
+    {
+        try {
+            XWiki xwiki = context.getWiki();
+            XWikiDocument prefsDoc =
+                xwiki.getDocument(new DocumentReference(context.getDatabase(), "XWiki", "XWikiPreferences"), context);
+            BaseObject result = prefsDoc.getXObject(new DocumentReference(context.getDatabase(), Constants.CODE_SPACE,
+                "ReceivePatientSettings"));
+
+            if (result != null) {
+                return result;
+            }
+
+            return null;
         } catch (Exception ex) {
             this.logger.warn("Failed to get server info: [{}] {}", ex.getMessage(), ex);
             return null;

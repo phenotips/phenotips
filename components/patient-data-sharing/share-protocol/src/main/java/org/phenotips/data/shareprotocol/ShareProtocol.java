@@ -72,6 +72,7 @@ public class ShareProtocol
 
     // one of the following may be set in case SERVER_JSON_KEY_NAME_ERROR_LOGINFAILED is set:
     public static final String SERVER_JSON_KEY_NAME_ERROR_WRONGCREDENTIALS = "incorrect_credentials";     // incorrect username or password or token
+    public static final String SERVER_JSON_KEY_NAME_ERROR_UNTRUSTEDSERVER  = "unauthorized_server";       // unapproved source server
     public static final String SERVER_JSON_KEY_NAME_ERROR_EXPIREDUSERTOKEN = "user_token_expired";
     public static final String SERVER_JSON_KEY_NAME_ERROR_NOUSERTOKENS     = "user_tokens_not_supported"; // user_tokens are disabled on the server (in case a token is provided)
 

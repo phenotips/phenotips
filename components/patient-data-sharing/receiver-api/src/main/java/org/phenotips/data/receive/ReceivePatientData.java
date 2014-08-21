@@ -36,6 +36,13 @@ import net.sf.json.JSONObject;
 public interface ReceivePatientData
 {
     /**
+     * Check that the server pushing the patient is authorized to push to this server.
+     *
+     * @return {@code true} if source server is authorized.
+     */
+    boolean isServerTrusted();
+
+    /**
      * Validates the username and credentials (password or user_token) given in the request, and iff credentials are
      * valid, returns the list of Phenotips patient fields accepted in push requests by the server and the list of local
      * Phenotips groups that the given user is a member of.<br>
@@ -119,4 +126,6 @@ public interface ReceivePatientData
     JSONObject getPatientURL();
 
     JSONObject unsupportedeActionResponse();
+
+    JSONObject untrustedServerResponse();
 }

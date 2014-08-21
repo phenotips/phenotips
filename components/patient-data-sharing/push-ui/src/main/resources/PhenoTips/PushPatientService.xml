@@ -101,6 +101,9 @@
   #elseif ($response.isSuccessful())
     ## yay!
     #set ($data = {'status':'success', 'groups':$response.getRemoteUserGroups(), 'serverfields': $response.getRemoteAcceptedPatientFields(), 'updatesEnabled': $response.remoteUpdatesEnabled()})
+  #elseif ($response.isLoginFailed_UnauthorizedServer())
+    #set ($data.serverconnectproblem = 'true')
+    #set ($data.unauthorizedserver = 'true')
   #elseif ($response.isLoginFailed())
     #set ($data.loginfailed = 'true')    ## one form or another of incorrect username, password or stored token
   #end
@@ -129,6 +132,9 @@
   #elseif ($response.isSuccessful())
     ## DONE!
     #set ($data = {'status':'success', 'patientid':$response.getRemotePatientID(), 'patientguid':$response.getRemotePatientGUID(), 'patienturl':$response.getRemotePatientURL()})        ## TODO
+  #elseif ($response.isLoginFailed_UnauthorizedServer())
+    #set ($data.serverconnectproblem = 'true')
+    #set ($data.unauthorizedserver = 'true')
   #elseif ($response.isLoginFailed())
     #set ($data.loginfailed = 'true')    ## one form or another of incorrect username, password or stored token
   #else

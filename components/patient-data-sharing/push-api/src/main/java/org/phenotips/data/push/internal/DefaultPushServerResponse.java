@@ -93,9 +93,16 @@ public class DefaultPushServerResponse implements PushServerResponse
     @Override
     public boolean isLoginFailed_knownReason()
     {
-        return (isLoginFailed_IncorrectCredentials() ||
+        return (isLoginFailed_UnauthorizedServer() ||
+                isLoginFailed_IncorrectCredentials() ||
                 isLoginFailed_TokensNotSuported() ||
                 isLoginFailed_UserTokenExpired());
+    }
+
+    @Override
+    public boolean isLoginFailed_UnauthorizedServer()
+    {
+        return isLoginFailed() && hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_UNTRUSTEDSERVER);
     }
 
     @Override

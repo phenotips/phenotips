@@ -323,6 +323,36 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release 1.0-rc-1 -->
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/receive/ReceivePatientData</className>
+              <method>boolean isServerTrusted()</method>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/receive/ReceivePatientData</className>
+              <method>net.sf.json.JSONObject untrustedServerResponse()</method>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/receive/script/ReceivePatientDataScriptService</className>
+              <method>boolean isServerTrusted()</method>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/receive/script/ReceivePatientDataScriptService</className>
+              <method>net.sf.json.JSONObject untrustedServerResponse()</method>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/push/PushServerResponse</className>
+              <method>boolean isLoginFailed_UnauthorizedServer()</method>
+            </difference>
+            <difference>
+              <differenceType>6000</differenceType>
+              <className>**/data/shareprotocol/ShareProtocol</className>
+              <field>SERVER_JSON_KEY_NAME_ERROR_UNTRUSTEDSERVER</field>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

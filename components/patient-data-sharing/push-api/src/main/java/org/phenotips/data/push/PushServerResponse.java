@@ -77,6 +77,11 @@ public interface PushServerResponse
     boolean isLoginFailed_knownReason();
 
     /**
+     * @return {@code true} iff remote server does not allow pushes from this server.
+     */
+    boolean isLoginFailed_UnauthorizedServer();
+
+    /**
      * @return {@code true} iff the user name was a not a valid user on the remote server, or either the password or the
      *         token were not correct for the user provided.
      */
