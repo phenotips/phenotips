@@ -118,7 +118,7 @@
 
   <properties>
     <checkstyle.skip>true</checkstyle.skip>
-    <coverage.instructionRatio>0.14</coverage.instructionRatio>
+    <coverage.instructionRatio>0.16</coverage.instructionRatio>
   </properties>
 
   <build>

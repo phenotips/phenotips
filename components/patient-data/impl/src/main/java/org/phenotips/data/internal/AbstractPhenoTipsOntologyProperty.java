@@ -59,9 +59,13 @@ public abstract class AbstractPhenoTipsOntologyProperty implements OntologyPrope
      * Simple constructor providing the {@link #id term identifier}.
      *
      * @param id the ontology term identifier
+     * @throws IllegalArgumentException if the identifier is {@code null} or otherwise malformed for the ontology
      */
     protected AbstractPhenoTipsOntologyProperty(String id)
     {
+        if (id == null) {
+            throw new IllegalArgumentException();
+        }
         if (ONTOLOGY_TERM_PATTERN.matcher(id).matches()) {
             this.id = id;
             this.name = null;
