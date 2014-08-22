@@ -112,8 +112,11 @@
 #editor-menu .import {
   background-image: url("$xwiki.getSkinFile('icons/silk/shape_square_go.png')"); /* bullet_go.png, folder_go.png, page_white_go.png */
 }
-#editor-menu .settings {
-  background-image: url("$xwiki.getSkinFile('icons/silk/control_equalizer_blue.png')");
+#editor-menu .options {
+  background-image: url("$xwiki.getSkinFile('icons/silk/control_equalizer.png')");
+}
+#editor-menu .number {
+  background-image: url("$xwiki.getSkinFile('icons/silk/text_list_numbers.png')");
 }
 
 .loading-indicator {
@@ -233,13 +236,13 @@
   overflow: hidden;
 
   /* fallback */
-  background-color: #FAFAFA;
+  background-color: #F8F8F8;
   background-position: center center;
   background-repeat: no-repeat;
 
-  background: -o-radial-gradient(circle, #FFFFFF, #D2D2D2);
-  background: -webkit-radial-gradient(circle, #FFFFFF, #D2D2D2);
-  background: radial-gradient(circle, #FFFFFF, #D2D2D2);
+  background: -o-radial-gradient(circle, #FBFBFB, #DFDFDF);
+  background: -webkit-radial-gradient(circle, #FBFBFB, #DFDFDF);
+  background: radial-gradient(circle, #FBFBFB, #DFDFDF);
 }
 /* ===========================================
  * LEGEND
@@ -300,8 +303,11 @@
  */
 .menu-box {
   position: absolute;
-  width: 330px;
+  width: 340px;
   color: #000000;
+}
+.width80px {
+  width: 80px;
 }
 .relationship-menu {
   width: 290px;
@@ -458,12 +464,12 @@
 .menu-box .field-last_name_birth {
   width: 48%;
   float: left;
-  padding: .5em 0 1em;
+  padding: .5em 0 0.9em;
 }
 .menu-box .field-external_id {
   width: 48%;
   float: right;
-  padding: .5em 0 1em;
+  padding: .5em 0 0.9em;
 }
 .menu-box .field-date_of_birth {
   width: 48%;

@@ -275,7 +275,7 @@
         appendChild = "appendChild",
         apply = "apply",
         concat = "concat",
-        supportsTouch = "createTouch" in g.doc,
+        supportsTouch = false, //"createTouch" in g.doc,
         E = "",
         S = " ",
         Str = String,
