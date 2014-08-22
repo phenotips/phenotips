@@ -52,8 +52,15 @@ import org.joda.time.format.ISODateTimeFormat;
 @Singleton
 public class JodaTimeScriptService implements ScriptService
 {
-    /** ISO8601 date time formatter, printing dates in the format {@code 2000-12-31T23:00:00.123Z}. */
-    private static final DateTimeFormatter ISO_DATE_FORMATTER = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
+    /** ISO8601 date formatter, printing dates in the format {@code 2000-12-31}. */
+    private static final DateTimeFormatter ISO_DATE_FORMATTER = ISODateTimeFormat.date().withZone(DateTimeZone.UTC);
+
+    /** ISO8601 time formatter, printing dates in the format {@code 23:00:00.123Z}. */
+    private static final DateTimeFormatter ISO_TIME_FORMATTER = ISODateTimeFormat.time().withZone(DateTimeZone.UTC);
+
+    /** ISO8601 date and time formatter, printing dates in the format {@code 2000-12-31T23:00:00.123Z}. */
+    private static final DateTimeFormatter ISO_DATETIME_FORMATTER = ISODateTimeFormat.dateTime().withZone(
+        DateTimeZone.UTC);
 
     /** Provides access to the currently active locale. */
     @Inject
@@ -154,6 +161,30 @@ public class JodaTimeScriptService implements ScriptService
     }
 
     /**
+     * @return an ISO8601 date formatter, printing dates in the format {@code 2000-12-31}
+     */
+    public DateTimeFormatter getISODateFormatter()
+    {
+        return ISO_DATE_FORMATTER;
+    }
+
+    /**
+     * @return an ISO8601 time formatter, printing dates in the format {@code 23:00:00.123Z}
+     */
+    public DateTimeFormatter getISOTimeFormatter()
+    {
+        return ISO_TIME_FORMATTER;
+    }
+
+    /**
+     * @return an ISO8601 date and time formatter, printing dates in the format {@code 2000-12-31T23:00:00.123Z}
+     */
+    public DateTimeFormatter getISODateTimeFormatter()
+    {
+        return ISO_DATETIME_FORMATTER;
+    }
+
+    /**
      * Get a datetime formatter for the specified pattern.
      *
      * @param pattern the format used by the returned formatter, both for parsing and printing
@@ -194,6 +225,7 @@ public class JodaTimeScriptService implements ScriptService
     }
 
     /**
+     * @return the server's default timezone
      * @see org.joda.time.DateTimeZone#getDefault()
      */
     public DateTimeZone getServerTimezone()
@@ -202,6 +234,7 @@ public class JodaTimeScriptService implements ScriptService
     }
 
     /**
+     * @return the UTC timezone
      * @see org.joda.time.DateTimeZone#UTC
      */
     public DateTimeZone getUTCTimezone()
@@ -210,14 +243,24 @@ public class JodaTimeScriptService implements ScriptService
     }
 
     /**
+     * @param locationOrOffset the standard identifier of the timezone (e.g. EST), or the official name of the location
+     *            (e.g. America/Chicago), or a standard offset in the format {@code [+-]hh:mm} (e.g. +02:00)
+     * @return the requested timezone, or {@code null} if the argument is not valid
      * @see org.joda.time.DateTimeZone#forID(String)
      */
     public DateTimeZone getTimezone(String locationOrOffset)
     {
-        return DateTimeZone.forID(locationOrOffset);
+        try {
+            return DateTimeZone.forID(locationOrOffset);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     /**
+     * @param offsetHours the number of hours to offset from UTC, positive or negative integer
+     * @return a timezone with the requested offset
+     * @see #getTimezone(int, int)
      * @see org.joda.time.DateTimeZone#forOffsetHours(int)
      */
     public DateTimeZone getTimezone(int offsetHours)
@@ -226,14 +269,25 @@ public class JodaTimeScriptService implements ScriptService
     }
 
     /**
+     * @param offsetHours the number of hours to offset from UTC, positive or negative integer
+     * @param offsetMinutes the number of minutes to offset from UTC, a number between {@code 0} and {@code 59}
+     * @return a timezone with the requested offset, or {@code null} if the {@code offsetMinutes} parameter is wrong
      * @see org.joda.time.DateTimeZone#forOffsetHoursMinutes(int, int)
      */
     public DateTimeZone getTimezone(int offsetHours, int offsetMinutes)
     {
-        return DateTimeZone.forOffsetHoursMinutes(offsetHours, offsetMinutes);
+        try {
+            return DateTimeZone.forOffsetHoursMinutes(offsetHours, offsetMinutes);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     /**
+     * Get a duration object equal to the specified number of milliseconds.
+     *
+     * @param millis the number of milliseconds to represent, both positive and negative values are accepted
+     * @return the requested duration
      * @see org.joda.time.Duration#Duration(long)
      */
     public Duration getDuration(long millis)
@@ -242,19 +296,23 @@ public class JodaTimeScriptService implements ScriptService
     }
 
     /**
+     * Compute the duration between two different moments.
+     *
+     * @param from the start moment
+     * @param to the end moment
+     * @return the difference between the two moments, or {@code null} if the parameters are invalid or the duration
+     *         exceeds 64 bits
      * @see org.joda.time.Duration#Duration(ReadableInstant, ReadableInstant)
      */
     public Duration getDuration(ReadableInstant from, ReadableInstant to)
     {
-        return new Duration(from, to);
-    }
-
-    /**
-     * @return an ISO8601 date time formatter
-     * @since 5.2RC1
-     */
-    public DateTimeFormatter getISODateTimeFormatter()
-    {
-        return ISO_DATE_FORMATTER;
+        if (from == null || to == null) {
+            return null;
+        }
+        try {
+            return new Duration(from, to);
+        } catch (ArithmeticException ex) {
+            return null;
+        }
     }
 }
