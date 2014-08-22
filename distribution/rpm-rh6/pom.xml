@@ -150,6 +150,7 @@
                 <xwikiCfgAdditionalProperties>
 xwiki.plugin.watchlist.automaticwatch=none
 xwiki.authentication.group.allgroupimplicit=1
+xwiki.authentication.rightsclass=org.phenotips.security.authorization.ModularRightServiceImpl
 xwiki.section.edit=0
 xwiki.backlinks=0
 xwiki.showviewaction=0
