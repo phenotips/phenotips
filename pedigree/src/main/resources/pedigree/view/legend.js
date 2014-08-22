@@ -11,6 +11,12 @@ var DisorgerLegend = Class.create( {
     initialize: function() {
         this._disorderCache = {};
         
+        this._specialDisordersRegexps = [new RegExp("^1BrCa", "i"),
+                                         new RegExp("^2BrCa", "i"),
+                                         new RegExp("^OvCa",  "i"),
+                                         new RegExp("^ProCa", "i"),
+                                         new RegExp("^PanCa", "i") ];
+
         this._disorderColors = {};
         this._affectedNodes  = {};
 
@@ -279,6 +285,20 @@ var DisorgerLegend = Class.create( {
         if(this._disorderColors.hasOwnProperty(disorderID)) {
             return this._disorderColors[disorderID];
         }
+
+        // check special disorder prefixes
+        for (var i = 0; i < this._specialDisordersRegexps.length; i++) {
+            if (disorderID.match(this._specialDisordersRegexps[i]) !== null) {
+                for (var disorder in this._disorderColors) {
+                    if (this._disorderColors.hasOwnProperty(disorder)) {
+                        if (disorder.match(this._specialDisordersRegexps[i]) !== null)
+                            return this._disorderColors[disorder];
+                    }
+                }
+                break;
+            }
+        }
+
         var usedColors = Object.values(this._disorderColors),
             prefColors = ["#FEE090", '#E0F8F8', '#8ebbd6', '#4575B4', '#fca860', '#9a4500', '#81a270'];
         usedColors.each( function(color) {

@@ -137,7 +137,7 @@ function removeFirstOccurrenceByValue(array, item) {
 function isInt(n) {
     //return +n === n && !(n % 1);
     //return !(n % 1);
-    return (parseInt(n) == parseFloat(n));
+    return (!isNaN(n) && parseInt(n) == parseFloat(n));
 }
 
 function toObjectWithTrue(array) {
