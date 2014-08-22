@@ -75,7 +75,7 @@
       "returnedrows": $finalResults.size(),
       "rows": [
       #foreach($result in $finalResults)
-        #if ($foreach.count > 1)
+        #if ($foreach.count &gt; 1)
           ,
         #end
         { "index": "$foreach.count", "ethnicity": "$escapetool.xml($result)" }
