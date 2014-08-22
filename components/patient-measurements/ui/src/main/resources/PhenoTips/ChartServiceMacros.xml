@@ -73,11 +73,11 @@
       #set ($discard = $measurements.add({'a': $age, 'x' : $o.getProperty($measurementName).value}))
     #end
   #end
-  #set ($bDate = $xwiki.jodatime.getMutableDateTime($obj.getProperty('date_of_birth').value.time).toMutableDateTime($xwiki.jodatime.getUTCTimezone()))
+  #set ($bDate = $services.jodatime.getMutableDateTime($obj.getProperty('date_of_birth').value.time).toMutableDateTime($services.jodatime.getUTCTimezone()))
   #foreach ($o in $doc.getObjects($targetClassName))
     #if ($o.getProperty('date') &amp;&amp; $o.getProperty('date').value)
-      #set ($mDate = $xwiki.jodatime.getMutableDateTime($o.getProperty('date').value.time).toMutableDateTime($xwiki.jodatime.getUTCTimezone()))
-      #set ($age = $mDate.toInstant().minus($bDate.toInstant().getMillis()).toDateTime($xwiki.jodatime.getUTCTimezone()))
+      #set ($mDate = $services.jodatime.getMutableDateTime($o.getProperty('date').value.time).toMutableDateTime($services.jodatime.getUTCTimezone()))
+      #set ($age = $mDate.toInstant().minus($bDate.toInstant().getMillis()).toDateTime($services.jodatime.getUTCTimezone()))
       #set ($age = ($age.year - 1970) * 12 + $age.monthOfYear - 1)
     #else
       #set ($age = $o.getProperty('age').value)

@@ -407,11 +407,11 @@
       #else
         #if ($filterValueLowLimit != '')
           #set($whereSql = "${whereSql} and ${safe_tableAlias} &gt;= ?")
-          #set($discard = $whereParams.add($xwiki.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy').parseMutableDateTime($filterValueLowLimit).toDate()))
+          #set($discard = $whereParams.add($services.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy').parseMutableDateTime($filterValueLowLimit).toDate()))
         #end
         #if ($filterValueHighLimit != '')
           #set($whereSql = "${whereSql} and ${safe_tableAlias} &lt; ?")
-          #set($filterValueHighLimit = $xwiki.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy').parseMutableDateTime($filterValueHighLimit))
+          #set($filterValueHighLimit = $services.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy').parseMutableDateTime($filterValueHighLimit))
           #set($discard = $filterValueHighLimit.addDays(1))
           #set($discard = $whereParams.add($filterValueHighLimit.toDate()))
         #end
@@ -455,11 +455,11 @@
       #else
         #if ($filterValueLowLimit != '')
           #set($whereSql = "${whereSql} and ${safe_tableAlias}.value &gt;= ?")
-          #set($discard = $whereParams.add($xwiki.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy').parseDateTime($filterValueLowLimit).toDate()))
+          #set($discard = $whereParams.add($services.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy').parseDateTime($filterValueLowLimit).toDate()))
         #end
         #if ($filterValueHighLimit != '')
           #set($whereSql = "${whereSql} and ${safe_tableAlias}.value &lt; ?")
-          #set($filterValueHighLimit = $xwiki.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy').parseMutableDateTime($filterValueHighLimit))
+          #set($filterValueHighLimit = $services.jodatime.getDateTimeFormatterForPattern('MM/dd/yyyy').parseMutableDateTime($filterValueHighLimit))
           #set($discard = $filterValueHighLimit.addDays(1))
           #set($discard = $whereParams.add($filterValueHighLimit.toDate()))
         #end

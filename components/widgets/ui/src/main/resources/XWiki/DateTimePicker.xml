@@ -133,7 +133,7 @@
 #set($weekdays = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'])
 #set($months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
 
-#set ($templateDate = $xwiki.jodatime.mutableDateTime)
+#set ($templateDate = $services.jodatime.mutableDateTime)
 
 #macro(datePicker_generateLocalizedDateComponent $jsvar2FormatMap, $values, $templateDate, $targetDateComponent)
   #foreach ($entry in $jsvar2FormatMap.entrySet())
