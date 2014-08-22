@@ -32,16 +32,19 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.user.api.XWikiAuthService;
 import com.xpn.xwiki.user.api.XWikiUser;
 import com.xpn.xwiki.web.Utils;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 public class ModularRightServiceImplTest
@@ -84,6 +87,9 @@ public class ModularRightServiceImplTest
 
     private ModularRightServiceImpl service;
 
+    @Mock
+    private XWikiAuthService authService;
+
     @Before
     public void setupMocks() throws ComponentLookupException
     {
@@ -112,6 +118,8 @@ public class ModularRightServiceImplTest
         when(this.cm.getInstance(DocumentReferenceResolver.TYPE_STRING, "currentmixed")).thenReturn(this.docResolver);
         when(this.docResolver.resolve("Some.Document", new WikiReference("xwiki"))).thenReturn(this.documentReference);
 
+        when(this.xwiki.getAuthService()).thenReturn(this.authService);
+
         this.service = new ModularRightServiceImpl();
     }
 
@@ -120,6 +128,7 @@ public class ModularRightServiceImplTest
     {
         when(this.context.getUserReference()).thenReturn(this.userReference);
         Assert.assertTrue(this.service.checkAccess("view", this.document, this.context));
+        Mockito.verify(this.authService, never()).checkAuth(this.context);
     }
 
     @Test
@@ -141,6 +150,18 @@ public class ModularRightServiceImplTest
     }
 
     @Test
+    public void checkAccessWithNullUserDoesntShowLoginOnLoginAction() throws XWikiException
+    {
+        when(this.context.getUserReference()).thenReturn(null);
+        XWikiUser oldcoreUser = mock(XWikiUser.class);
+        when(this.xwiki.checkAuth(this.context)).thenReturn(oldcoreUser);
+        when(oldcoreUser.getUser()).thenReturn("XWiki.XWikiGuest");
+        when(this.context.getAction()).thenReturn("login");
+        Assert.assertFalse(this.service.checkAccess("view", this.document, this.context));
+        Mockito.verify(this.authService, never()).checkAuth(this.context);
+    }
+
+    @Test
     public void checkAccessWithNullUserAndGuestAuthentication() throws XWikiException
     {
         when(this.context.getUserReference()).thenReturn(null);
@@ -149,6 +170,8 @@ public class ModularRightServiceImplTest
         when(oldcoreUser.getUser()).thenReturn("XWiki.XWikiGuest");
 
         Assert.assertFalse(this.service.checkAccess("view", this.document, this.context));
+        // Will show the login screen
+        Mockito.verify(this.authService).showLogin(this.context);
     }
 
     @Test

@@ -28,6 +28,8 @@ import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -45,6 +47,9 @@ import com.xpn.xwiki.web.Utils;
  */
 public class ModularRightServiceImpl extends XWikiCachingRightService implements XWikiRightService
 {
+    /** Logging helper object. */
+    private final Logger logger = LoggerFactory.getLogger(ModularRightServiceImpl.class);
+
     /** Converts usernames into proper {@link User} objects. */
     @SuppressWarnings("deprecation")
     private UserManager userManager = Utils.getComponent(UserManager.class);
@@ -68,7 +73,14 @@ public class ModularRightServiceImpl extends XWikiCachingRightService implements
     {
         DocumentReference userReference = getCurrentUser(context);
         User user = this.userManager.getUser(userReference != null ? userReference.toString() : null, true);
-        return this.service.hasAccess(user, actionToRight(action), doc.getDocumentReference());
+        boolean result = this.service.hasAccess(user, actionToRight(action), doc.getDocumentReference());
+        if (!result && context.getUserReference() == null && !"login".equals(context.getAction())) {
+            this.logger.debug("Redirecting unauthenticated user to login, since it have been denied [{}] on [{}].",
+                actionToRight(action), doc.getDocumentReference());
+            context.getWiki().getAuthService().showLogin(context);
+        }
+
+        return result;
     }
 
     @Override
