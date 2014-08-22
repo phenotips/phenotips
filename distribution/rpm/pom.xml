@@ -165,6 +165,7 @@ model.reference.default.space=data
 extension.repositories=maven-xwiki:maven:http://nexus.xwiki.org/nexus/content/groups/public
 extension.repositories=maven-phenotips:maven:http://nexus.cs.toronto.edu/nexus/content/repositories/releases/
 extension.repositories=phenotips.org:xwiki:http://phenotips.org/rest/
+rendering.transformations=macro
                 </xwikiPropertiesAdditionalProperties>
               </properties>
             </configuration>
