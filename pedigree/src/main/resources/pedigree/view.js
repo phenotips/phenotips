@@ -103,9 +103,11 @@ var View = Class.create({
         renumberButton.hide();
         for (var node in this._nodeMap) {
             if (this._nodeMap.hasOwnProperty(node)) {
-                var generation = editor.getGraph().getGeneration(node);
-                var order      = editor.getGraph().getOrderWithinGeneration(node);
-                this._nodeMap[node].setPedNumber && this._nodeMap[node].setPedNumber(generation, order);
+                if (editor.getGraph().isPerson(node)) {
+                    var generation = editor.getGraph().getGeneration(node);
+                    var order      = editor.getGraph().getOrderWithinGeneration(node);
+                    this._nodeMap[node].setPedNumber(generation, order);
+                }
             }
         }
     },
