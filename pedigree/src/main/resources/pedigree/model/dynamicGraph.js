@@ -1162,6 +1162,9 @@ DynamicPositionedGraph.prototype = {
         if (importType == "ped") {
             var baseGraph = PedigreeImport.initFromPED(importString, importOptions.acceptUnknownPhenotypes, importOptions.markEvaluated, importOptions.externalIdMark);
             if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
+        } else if (importType == "BOADICEA") {
+            var baseGraph = PedigreeImport.initFromBOADICEA(importString, importOptions.externalIdMark);
+            if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
         } else if (importType == "gedcom") {
             var baseGraph = PedigreeImport.initFromGEDCOM(importString, importOptions.markEvaluated, importOptions.externalIdMark);
             if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
