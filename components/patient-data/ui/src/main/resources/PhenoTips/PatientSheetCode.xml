@@ -651,108 +651,34 @@ document.observe('xwiki:dom:loaded', function() {
           } else {
             if (commentPreview) {commentPreview.update('');}
           }
-          var onsetPreview = pdItem.down('.onset-preview');
-          var onset = false;
-          pdItem.select('.age_of_onset input[type="radio"]').each(function(item) {
-            if (item.checked &amp;&amp; item.value != '') {
-              onset = item;
-            }
-          });
-          if (onset) {
-             if (!onsetPreview) {
-               onsetPreview = new Element('dd', {'class' : 'onset-preview preview' });
-               onset.up('dd').insert({after: onsetPreview});
+
+          var qualifiers = [
+             'age_of_onset',
+             'pace_of_progression',
+             'severity',
+             'temporal_pattern',
+             'spatial_pattern',
+             'laterality'
+          ];
+          qualifiers.each (function (qualifier) {
+             var qualifierPreview = pdItem.down('.' + qualifier + '-preview');
+             var qualifierElt = false;
+             pdItem.select('.' + qualifier + ' input[type="radio"]').each(function(item) {
+               if (item.checked &amp;&amp; item.value != '') {
+                 qualifierElt = item;
+               }
+             });
+             if (qualifierElt) {
+               if (!qualifierPreview) {
+                 qualifierPreview = new Element('dd', {'class' : qualifier + '-preview preview' });
+                 qualifierElt.up('dd').insert({after: qualifierPreview});
+               }
+               qualifierPreview.update(qualifierElt.title);
+               details += qualifierElt.title;
+             } else {
+               if (qualifierPreview) {qualifierPreview .update('');}
              }
-             onsetPreview.update(onset.title);
-             details += onset.title;
-          } else {
-            if (onsetPreview) {onsetPreview.update('');}
-          }
-          var progressionPreview = pdItem.down('.progression-preview');
-          var progression = false;
-          pdItem.select('.pace_of_progression input[type="radio"]').each(function(item) {
-            if (item.checked &amp;&amp; item.value != '') {
-              progression = item;
-            }
           });
-          if (progression) {
-             if (!progressionPreview) {
-               progressionPreview = new Element('dd', {'class' : 'progression-preview preview' });
-               progression.up('dd').insert({after: progressionPreview});
-             }
-             progressionPreview.update(progression.title);
-             details += progression.title;
-          } else {
-            if (progressionPreview) {progressionPreview.update('');}
-          }
-          var severityPreview = pdItem.down('.severity-preview');
-          var severity = false;
-          pdItem.select('.severity input[type="radio"]').each(function(item) {
-            if (item.checked &amp;&amp; item.value != '') {
-              severity = item;
-            }
-          });
-          if (severity) {
-             if (!severityPreview) {
-               severityPreview = new Element('dd', {'class' : 'severity-preview preview' });
-               severity.up('dd').insert({after: severityPreview});
-             }
-             severityPreview.update(severity.title);
-             details += severity.title;
-          } else {
-            if (severityPreview) {severityPreview.update('');}
-          }
-          var temporalPreview = pdItem.down('.temporal-preview');
-          var temporal = false;
-          pdItem.select('.temporal_pattern input[type="radio"]').each(function(item) {
-            if (item.checked &amp;&amp; item.value != '') {
-              temporal = item;
-            }
-          });
-          if (temporal) {
-             if (!temporalPreview) {
-               temporalPreview = new Element('dd', {'class' : 'temporal-preview preview' });
-               temporal.up('dd').insert({after: temporalPreview});
-             }
-             temporalPreview.update(temporal.title);
-             details += temporal.title;
-          } else {
-            if (temporalPreview) {temporalPreview.update('');}
-          }
-          var spatialPreview = pdItem.down('.spatial-preview');
-          var spatial = false;
-          pdItem.select('.spatial_pattern input[type="radio"]').each(function(item) {
-            if (item.checked &amp;&amp; item.value != '') {
-              spatial = item;
-            }
-          });
-          if (spatial) {
-             if (!spatialPreview) {
-               spatialPreview = new Element('dd', {'class' : 'spatial-preview preview' });
-               spatial.up('dd').insert({after: spatialPreview});
-             }
-             spatialPreview.update(spatial.title);
-             details += spatial.title;
-          } else {
-            if (spatialPreview) {spatialPreview.update('');}
-          }
-          var lateralityPreview = pdItem.down('.laterality-preview');
-          var laterality = false;
-          pdItem.select('.laterality input[type="radio"]').each(function(item) {
-            if (item.checked &amp;&amp; item.value != '') {
-              laterality = item;
-            }
-          });
-          if (laterality) {
-             if (!lateralityPreview) {
-               lateralityPreview = new Element('dd', {'class' : 'laterality-preview preview' });
-               laterality.up('dd').insert({after: lateralityPreview});
-             }
-             lateralityPreview.update(laterality.title);
-             details += laterality.title;
-          } else {
-            if (lateralityPreview) {lateralityPreview.update('');}
-          }
           var noPreview = pdItem.down('.no-preview');
           if (details.strip() == '') {
             if (!noPreview) {
