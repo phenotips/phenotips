@@ -22,6 +22,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         this._adoptedShape   = null;
         this._genderShape    = null;                        
         this._genderGraphics = null;  // == set(_genderShape, shadow)
+        this._numberLabel    = null;
                      
         this.setGenderGraphics();
         
@@ -41,7 +42,17 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
         this._idLabel = editor.getPaper().text(x, y, this.getNode().getID()).attr(PedigreeEditor.attributes.dragMeLabel).toFront();
         this._idLabel.node.setAttribute("class", "no-mouse-interaction");
     },
-    
+
+    updateNumberLabel: function() {
+        this._numberLabel && this._numberLabel.remove();
+        if (this.getNode().getPedNumber() != "") {
+            var x = this.getX();
+            var y = this.getY();
+            this._numberLabel = editor.getPaper().text(x, y, this.getNode().getPedNumber()).attr(PedigreeEditor.attributes.pedNumberLabel).toFront();
+            this._numberLabel.node.setAttribute("class", "no-mouse-interaction");
+        }
+    },
+
     generateHoverbox: function(x, y) {
         return null;
     },
@@ -232,7 +243,7 @@ var AbstractPersonVisuals = Class.create(AbstractNodeVisuals, {
      * @return {Raphael.st}
      */
     getAllGraphics: function($super) {
-        return editor.getPaper().set(this.getHighlightBox(), this._idLabel).concat($super());        
+        return editor.getPaper().set(this.getHighlightBox(), this._idLabel, this._numberLabel).concat($super());
     },
 
     /**

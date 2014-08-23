@@ -88,6 +88,11 @@ var PedigreeEditor = Class.create({
             window.location=XWiki.currentDocument.getURL('edit');
         });
 
+        var renumberButton = $('action-number');
+        renumberButton && renumberButton.on("click", function(event) {
+            editor.getView().renumberAllNodes();
+        });
+
         var unsupportedBrowserButton = $('action-readonlymessage');
         unsupportedBrowserButton && unsupportedBrowserButton.on("click", function(event) {
             alert("Your browser does not support all the features required for " +
@@ -674,6 +679,7 @@ PedigreeEditor.attributes = {
     orbHue : .53,
         phShape: {fill: "white","fill-opacity": 0, "stroke": 'black', "stroke-dasharray": "- "},
     dragMeLabel: {'font-size': 14, 'font-family': 'Tahoma'},
+    pedNumberLabel: {'font-size': 20, 'font-family': 'Arial'},
     descendantGroupLabel: {'font-size': 21, 'font-family': 'Tahoma'},
     label: {'font-size': 20, 'font-family': 'Arial'},
     nameLabels: {'font-size': 20, 'font-family': 'Arial'},    

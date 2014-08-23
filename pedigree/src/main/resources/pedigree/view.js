@@ -98,6 +98,28 @@ var View = Class.create({
         return max;
     },
 
+    renumberAllNodes: function() {
+        var renumberButton = $('action-number');
+        renumberButton.hide();
+        for (var node in this._nodeMap) {
+            if (this._nodeMap.hasOwnProperty(node)) {
+                var generation = editor.getGraph().getGeneration(node);
+                var order      = editor.getGraph().getOrderWithinGeneration(node);
+                this._nodeMap[node].setPedNumber && this._nodeMap[node].setPedNumber(generation, order);
+            }
+        }
+    },
+
+    clearNodeNumbering: function() {
+        var renumberButton = $('action-number');
+        renumberButton.show();
+        for (var node in this._nodeMap) {
+            if (this._nodeMap.hasOwnProperty(node)) {
+                this._nodeMap[node].setPedNumber && this._nodeMap[node].setPedNumber("");
+            }
+        }
+    },
+
     /**
      * Returns the person node containing x and y coordinates, or null if outside all person nodes
      *
@@ -536,6 +558,8 @@ var View = Class.create({
 
 
         if (changeSet.hasOwnProperty("removed")) {
+            this.clearNodeNumbering();
+
             var affectedByLineRemoval = {};
 
             for (var i = 0; i < changeSet.removed.length; i++) {
@@ -645,6 +669,10 @@ var View = Class.create({
             this.moveNode(movedPersons[i], animate.hasOwnProperty(movedPersons[i]));
 
         timer.printSinceLast("=== Move persons runtime: ");
+
+        if (newPersons.length > 0) {
+            this.clearNodeNumbering();
+        }
 
         for (var i = 0; i < newPersons.length; i++) {
             var newPerson = this.addNode(newPersons[i]);

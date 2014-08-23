@@ -73,7 +73,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     },
 
     /**
-     * Marks the node in  away different from glow
+     * Marks the node in a way different from glow
      *
      * @method grow
      */
@@ -95,7 +95,7 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     
     markPermanently: function() {
         if (this.mark2) return;
-        this.mark2 = this.getJunctionShape().glow({width: 10, fill: true, opacity: 0.3, color: "#ee8d00"}).insertBefore(this.getJunctionShape().flatten());
+        this.mark2 = this.getJunctionShape().glow({width: 18, fill: true, opacity: 0.4, color: "#ee8d00"}).insertBefore(this.getJunctionShape().flatten());
     },
     unmark: function() {
         this.mark2 && this.mark2.remove();
@@ -426,11 +426,12 @@ var PartnershipVisuals = Class.create(AbstractNodeVisuals, {
     remove: function() {
         this.getJunctionShape().remove();
         this.getHoverBox().remove();
-        this._idLabel.remove();
+        this._idLabel && this._idLabel.remove();
         this.getChildlessShape() && this.getChildlessShape().remove();
         this.getChildlessStatusLabel() && this.getChildlessStatusLabel().remove();
         this._childhubConnection && this._childhubConnection.remove();
         this._partnerConnections && this._partnerConnections.remove();
+        this.area && this.area.remove();
         this.mark && this.mark.remove();
         this.mark2 && this.mark2.remove();
     },

@@ -50,6 +50,7 @@ var Person = Class.create(AbstractPerson, {
         this._twinGroup = null;
         this._monozygotic = false;
         this._evaluated = false;
+        this._pedNumber = "";
     },
 
     /**
@@ -128,6 +129,32 @@ var Person = Class.create(AbstractPerson, {
      */
     getExternalID: function() {
         return this._externalID;
+    },
+
+    /**
+     * Sets the user-visible node ID for this person
+     * ("I-1","I-2","I-3", "II-1", "II-2", etc.)
+     *
+     * @method setPedNumber
+     */
+    setPedNumber: function(generation, number) {
+        if (!number || !isInt(number) || !generation || !isInt(generation)) {
+            this._pedNumber = "";
+        }
+        else {
+            this._pedNumber = romanize(generation) + "-" + number;
+        }
+        this.getGraphics().updateNumberLabel();
+    },
+
+    /**
+     * Returns the user-visible node ID for this person, e.g. "I", "II", "III", "IV", etc.
+     *
+     * @method getPedNumber
+     * @return {String}
+     */
+    getPedNumber: function() {
+        return this._pedNumber;
     },
 
     /**

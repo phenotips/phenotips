@@ -163,7 +163,8 @@ var Workspace = Class.create({
                     { key : 'undo',   label : 'Undo'},
                     { key : 'redo',   label : 'Redo'},
                     { key : 'layout', label : 'Automatic layout'},
-                    { key : 'clear',  label : 'Clear all'}
+                    { key : 'clear',  label : 'Clear all'},
+                    { key : 'number', label : 'Renumber'}
                 ]
             }, {
                 name : 'external',
