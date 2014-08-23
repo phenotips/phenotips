@@ -1350,7 +1350,7 @@ document.observe('xwiki:dom:loaded', function() {
         });
       }
     });
-    if (selectionSummary && selectionSummary._givePhenotypeQualifiersCollapseButtons) {
+    if (selectionSummary &amp;&amp; selectionSummary._givePhenotypeQualifiersCollapseButtons) {
         selectionSummary._givePhenotypeQualifiersCollapseButtons(selectionSummary);
     }
   };
