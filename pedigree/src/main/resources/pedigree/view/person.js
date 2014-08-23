@@ -505,7 +505,13 @@ var Person = Class.create(AbstractPerson, {
         }
         else {
             alert("This person already has the specified disorder");
-        }        
+        }
+
+        // if any "real" disorder has been added
+        // the virtual "affected" disorder should be automatically removed
+        if (this.getDisorders().length > 1) {
+            this.removeDisorder("affected");
+        }
     },
 
     /**
