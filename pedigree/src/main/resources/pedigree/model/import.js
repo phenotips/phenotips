@@ -377,7 +377,7 @@ PedigreeImport.initFromPED = function(inputText, acceptOtherPhenotypes, markEval
  *   PR: Progestrogen receptor status, 0 = unspecified, N = negative, P = positive
  *   HER2: Human epidermal growth factor receptor 2 status, 0 = unspecified, N = negative, P = positive
  *   CK14: Cytokeratin 14 status, 0 = unspecified, N = negative, P = positive
- *   CK56: Cytoke ratin 56 status, 0 = unspecified, N = negative, P = positive
+ *   CK56: Cytokeratin 56 status, 0 = unspecified, N = negative, P = positive
  * ===============================================================================================
  */
 PedigreeImport.initFromBOADICEA = function(inputText, saveIDAsExternalID)
@@ -427,25 +427,28 @@ PedigreeImport.initFromBOADICEA = function(inputText, saveIDAsExternalID)
 
         var genderValue = parts[6];
         var gender = "M";
-        if (genderValue == "F")
-            gender = "F";
+        if (genderValue == "F") {
+          gender = "F";
+        }
         var name = parts[1];
-        if (isInt(name))
-            name = "";
+        if (isInt(name)) {
+          name = "";
+        }
         var properties = {"gender": gender, "fName": name};
 
-        if (saveIDAsExternalID)
-            properties["externalID"] = extID;
+        if (saveIDAsExternalID) {
+          properties["externalID"] = extID;
+        }
 
         var deadStatus = parts[8];
         if (deadStatus == "1") {
-            properties["lifeStatus"] = "deceased";
+          properties["lifeStatus"] = "deceased";
         }
 
         var yob = parts[10];
         if (yob != "0") {
-            var dob = yob + "-01-01T00:00:00.000Z";
-            properties["dob"] = dob;
+          var dob = yob + "-01-01T00:00:00.000Z";
+          properties["dob"] = dob;
         }
 
         // TODO: handle all the columns and proper cancer handling
@@ -462,34 +465,36 @@ PedigreeImport.initFromBOADICEA = function(inputText, saveIDAsExternalID)
                         { "column": 15, "label": "Pancreatic cancer",       "disorder": "PanCa"} ];
 
         for (var c = 0; c < cancers.length; c++) {
-            var cancer = cancers[c];
-            if (parts[cancer["column"]].toUpperCase() != "AU") {
-                if (!properties.hasOwnProperty("comments"))
-                    properties["comments"] = "";
-                else
-                    properties["comments"] += "\n";
-
-                if (parts[cancer["column"]] == "0") {
-                    properties["comments"] += "[-] " + cancer["label"] + ": unaffected";
-                } else {
-                    properties["comments"] += "[+] " + cancer["label"] + ": at age " + parts[cancer["column"]];
-                    if (!properties.hasOwnProperty("disorders"))
-                        properties["disorders"] = [];
-                    properties["disorders"].push(cancer["disorder"]);
-                }
+          var cancer = cancers[c];
+          if (parts[cancer["column"]].toUpperCase() != "AU") {
+            if (!properties.hasOwnProperty("comments")) {
+              properties["comments"] = "";
+            } else {
+              properties["comments"] += "\n";
             }
+
+            if (parts[cancer["column"]] == "0") {
+              properties["comments"] += "[-] " + cancer["label"] + ": unaffected";
+            } else {
+              properties["comments"] += "[+] " + cancer["label"] + ": at age " + parts[cancer["column"]];
+              if (!properties.hasOwnProperty("disorders")) {
+                properties["disorders"] = [];
+              }
+              properties["disorders"].push(cancer["disorder"]);
+            }
+          }
         }
 
         var ashkenazi = parts[18];
         if (ashkenazi != "0") {
-            properties["ethnicities"] = ["Ashkenazi Jews"];
+          properties["ethnicities"] = ["Ashkenazi Jews"];
         }
 
         var proband = (parts[2] == 1);
         var useID = proband ? 0 : nextID++;
         if (i == inputLines.length-1 && newG.v[0] === undefined) {
-            // last node and no proband yet
-            useID = 0;
+          // last node and no proband yet
+          useID = 0;
         }
 
         var pedigreeID = newG._addVertex( useID, TYPE.PERSON, properties, newG.defaultPersonNodeWidth );
@@ -503,44 +508,48 @@ PedigreeImport.initFromBOADICEA = function(inputText, saveIDAsExternalID)
 
     // second pass (once all vertex IDs are known): process edges
     for (var i = 0; i < inputLines.length; i++) {
-        var parts = inputLines[i].split(/\s+/);
+      var parts = inputLines[i].split(/\s+/);
 
-        var extID = parts[3];
-        var id    = nameToId[extID];
+      var extID = parts[3];
+      var id    = nameToId[extID];
 
-        // check if parents are given for this individual; if at least one parent is given,
-        // check if the corresponding relationship has already been created. If not, create it. If yes,
-        // add an edge from childhub to this person
+      // check if parents are given for this individual; if at least one parent is given,
+      // check if the corresponding relationship has already been created. If not, create it. If yes,
+      // add an edge from childhub to this person
 
-        var fatherID = parts[4];
-        var motherID = parts[5];
+      var fatherID = parts[4];
+      var motherID = parts[5];
 
-        if (fatherID == 0 && motherID == 0) continue;
+      if (fatherID == 0 && motherID == 0) {
+        continue;
+      }
 
-        // .PED supports specifying only mohter of father. Pedigree editor requires both (for now).
-        // So create a virtual parent in case one of the parents is missing
-        if (fatherID == 0) {
-           fatherID = newG._addVertex( null, TYPE.PERSON, {"gender": "M", "comments": "unknown"}, newG.defaultPersonNodeWidth );
-        } else {
-            fatherID = nameToId[fatherID];
-            if (newG.properties[fatherID].gender == "F")
-                throw "Unable to import pedigree: a person declared as female [id: " + fatherID + "] is also declared as being a father for [id: "+extID+"]";
+      // .PED supports specifying only mother or father. Pedigree editor requires both (for now).
+      // So create a virtual parent in case one of the parents is missing
+      if (fatherID == 0) {
+       fatherID = newG._addVertex( null, TYPE.PERSON, {"gender": "M", "comments": "unknown"}, newG.defaultPersonNodeWidth );
+      } else {
+        fatherID = nameToId[fatherID];
+        if (newG.properties[fatherID].gender == "F") {
+          throw "Unable to import pedigree: a person declared as female [id: " + fatherID + "] is also declared as being a father for [id: "+extID+"]";
         }
-        if (motherID == 0) {
-            motherID = newG._addVertex( null, TYPE.PERSON, {"gender": "F", "comments": "unknown"}, newG.defaultPersonNodeWidth );
-        } else {
-            motherID = nameToId[motherID];
-            if (newG.properties[motherID].gender == "M")
-                throw "Unable to import pedigree: a person declared as male [id: " + motherID + "] is also declared as being a mother for [id: "+extID+"]";
+      }
+      if (motherID == 0) {
+        motherID = newG._addVertex( null, TYPE.PERSON, {"gender": "F", "comments": "unknown"}, newG.defaultPersonNodeWidth );
+      } else {
+        motherID = nameToId[motherID];
+        if (newG.properties[motherID].gender == "M") {
+          throw "Unable to import pedigree: a person declared as male [id: " + motherID + "] is also declared as being a mother for [id: "+extID+"]";
         }
+      }
 
-        // both motherID and fatherID are now given and represent valid existing nodes in the pedigree
+      // both motherID and fatherID are now given and represent valid existing nodes in the pedigree
 
-        // if there is a relationship between motherID and fatherID the corresponding childhub is returned
-        // if there is no relationship, a new one is created together with the chldhub
-        var chhubID = relationshipTracker.createOrGetChildhub(motherID, fatherID);
+      // if there is a relationship between motherID and fatherID the corresponding childhub is returned
+      // if there is no relationship, a new one is created together with the childhub
+      var chhubID = relationshipTracker.createOrGetChildhub(motherID, fatherID);
 
-        newG.addEdge( chhubID, id, defaultEdgeWeight );
+      newG.addEdge( chhubID, id, defaultEdgeWeight );
     }
 
     PedigreeImport.validateBaseGraph(newG);
