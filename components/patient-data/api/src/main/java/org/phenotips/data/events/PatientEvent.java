@@ -50,9 +50,9 @@ public interface PatientEvent extends Event
     Patient getPatient();
 
     /**
-     * The user performing this action
+     * The user performing this action.
      *
-     * @return a user reference, may be either the special "system" user or the guest user
+     * @return a user reference, may be a real user, the special "system" user, or an anonymous user
      */
     User getAuthor();
 }

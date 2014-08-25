@@ -24,26 +24,27 @@ import org.phenotips.data.Patient;
 import org.xwiki.users.User;
 
 /**
- * Notifies that a new patient record has been created.
+ * Notifies that a patient record is being saved. Canceling this event should prevent the update, although this behavior
+ * isn't implemented yet. This event is also sent for new patient records, right after a {@link PatientCreatingEvent}.
  *
  * @version $Id$
  * @since 1.0RC1
  */
-public class PatientCreatedEvent extends AbstractPatientEvent
+public class PatientChangingEvent extends AbstractCancelablePatientEvent
 {
     /**
      * Simple constructor passing all the required information.
      *
-     * @param patient the new patient
+     * @param patient the new version of the patient being saved
      * @param author the user performing this action
      */
-    public PatientCreatedEvent(Patient patient, User author)
+    public PatientChangingEvent(Patient patient, User author)
     {
-        super("patientRecordCreated", patient, author);
+        super("patientRecordChanging", patient, author);
     }
 
     /** Default constructor, to be used for declaring the events a listener wants to observe. */
-    public PatientCreatedEvent()
+    public PatientChangingEvent()
     {
         this(null, null);
     }

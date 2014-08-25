@@ -21,26 +21,22 @@ package org.phenotips.data.events;
 
 import org.phenotips.data.Patient;
 
+import org.xwiki.observation.event.CancelableEvent;
 import org.xwiki.users.User;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
- * Base class for implementing {@link PatientEvent}.
+ * Base class for implementing cancelable pre-notification {@link PatientEvent}s.
  *
  * @version $Id$
  * @since 1.0RC1
  */
-public abstract class AbstractPatientEvent implements PatientEvent
+public abstract class AbstractCancelablePatientEvent extends AbstractPatientEvent implements CancelableEvent
 {
-    /** The type of this event. */
-    protected final String eventType;
+    /** @see #isCanceled() */
+    protected boolean canceled;
 
-    /** The affected patient. */
-    protected final Patient patient;
-
-    /** The user performing this action. */
-    protected final User author;
+    /** @see #getReason() */
+    protected String cancelReason;
 
     /**
      * Constructor initializing the required fields.
@@ -49,40 +45,33 @@ public abstract class AbstractPatientEvent implements PatientEvent
      * @param patient the affected patient
      * @param author the user performing this action
      */
-    protected AbstractPatientEvent(String eventType, Patient patient, User author)
+    protected AbstractCancelablePatientEvent(String eventType, Patient patient, User author)
     {
-        this.eventType = eventType;
-        this.patient = patient;
-        this.author = author;
+        super(eventType, patient, author);
     }
 
     @Override
-    public boolean matches(Object otherEvent)
+    public boolean isCanceled()
     {
-        if (otherEvent instanceof PatientEvent) {
-            PatientEvent otherPatientEvent = (PatientEvent) otherEvent;
-            return StringUtils.equals(otherPatientEvent.getEventType(), this.eventType)
-                && (this.patient == null || this.patient.getDocument() == null
-                || this.patient.getDocument().equals(otherPatientEvent.getPatient().getDocument()));
-        }
-        return false;
+        return this.canceled;
     }
 
     @Override
-    public String getEventType()
+    public void cancel()
     {
-        return this.eventType;
+        cancel(null);
     }
 
     @Override
-    public Patient getPatient()
+    public void cancel(String reason)
     {
-        return this.patient;
+        this.canceled = true;
+        this.cancelReason = reason;
     }
 
     @Override
-    public User getAuthor()
+    public String getReason()
     {
-        return this.author;
+        return this.cancelReason;
     }
 }

@@ -24,26 +24,27 @@ import org.phenotips.data.Patient;
 import org.xwiki.users.User;
 
 /**
- * Notifies that a new patient record has been created.
+ * Notifies that a patient record has been saved. This event is also sent for new patient records, right after a
+ * {@link PatientCreatedEvent}.
  *
  * @version $Id$
  * @since 1.0RC1
  */
-public class PatientCreatedEvent extends AbstractPatientEvent
+public class PatientChangedEvent extends AbstractPatientEvent
 {
     /**
      * Simple constructor passing all the required information.
      *
-     * @param patient the new patient
+     * @param patient the new version of the patient
      * @param author the user performing this action
      */
-    public PatientCreatedEvent(Patient patient, User author)
+    public PatientChangedEvent(Patient patient, User author)
     {
-        super("patientRecordCreated", patient, author);
+        super("patientRecordChanged", patient, author);
     }
 
     /** Default constructor, to be used for declaring the events a listener wants to observe. */
-    public PatientCreatedEvent()
+    public PatientChangedEvent()
     {
         this(null, null);
     }

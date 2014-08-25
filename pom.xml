@@ -353,6 +353,11 @@
               <className>**/data/shareprotocol/ShareProtocol</className>
               <field>SERVER_JSON_KEY_NAME_ERROR_UNTRUSTEDSERVER</field>
             </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/PatientRepository</className>
+              <method>org.phenotips.data.Patient loadPatientFromDocument(org.xwiki.bridge.DocumentModelBridge)</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
