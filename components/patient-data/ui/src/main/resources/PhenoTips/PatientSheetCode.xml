@@ -2378,9 +2378,9 @@ document.observe('xwiki:dom:loaded', function() {
                   ], id, name, true, nameElt);
               item.insert({top: ynpicker});
 
-              ynpicker.select('label').invoke('observe', 'click', function(event) {
+              ynpicker.select('label, .yes-no-picker-label').invoke('observe', 'click', function(event) {
                var option = Event.findElement(event);
-               var input = option.down('input[type="checkbox"]');
+               var input = option.down('input[type="checkbox"]') || option.previous('.yes-no-picker').down('.yes input[type="checkbox"]'); // defaults to 'Y' when clicking on the text
                if (!input) {return;}
                if (input.checked) {
                  var negative = option.hasClassName('no');
