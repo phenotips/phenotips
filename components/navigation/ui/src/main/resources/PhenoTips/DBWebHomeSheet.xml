@@ -413,7 +413,50 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
 
   var enhanceDialog = function(content) {
     // =============================================================================
-    // Phenotype suggest
+    // Prepare to copy existing filters:
+    var tableFilters = $('patients-topfilters');
+    if (tableFilters) {
+      tableFilters = tableFilters.down('ul.filters');
+    }
+    //============================================================================
+    // Copy all text inputs, checkboxes and radio buttons
+    if (tableFilters) {
+      content.select('input[type="text"]').each(function(input) {
+        var source = tableFilters.down('input[type="' + input.type + '"][name="' + input.name + '"]');
+        if (source) {
+          input.value = source.value;
+        }
+      });
+      content.select('input[type="radio"], input[type="checkbox"]').each(function(input) {
+        var source = tableFilters.down('input[type="' + input.type + '"][name="' + input.name + '"][value="' + input.value + '"]');
+        if (source) {
+          input.checked = source.checked;
+        }
+      });
+    }
+    // =============================================================================
+    // Copy entries from users suggest
+    if (tableFilters) {
+      content.select('input.suggestUsers').each(function(input) {
+        var source = tableFilters.down('input[type="text"][name="' + input.name + '"]');
+        var selectionContainer = source &amp;&amp; source.previous('ul.accepted-suggestions')
+        if (selectionContainer) {
+          selectionContainer.select('li').each(function(entry) {
+            var entryData = {
+              'id': entry.down('.user-alias').childNodes[0].nodeValue,
+              'value': entry.down('input[type="hidden"]').value,
+              'info': entry.down('img').alt,
+              'icon' : entry.down('img').src,
+              'hint' : ''
+            };
+            input.__x_suggest.options.callback(entryData);
+          });
+        } // done with selected entries
+      });
+      // TODO: Groups
+    }
+    // =============================================================================
+    // Phenotype suggest: create suggest and copy existing entries
     if (typeof(PhenoTips.widgets.Suggest) != "undefined") {
       var keys = Object.keys(suggestionsMapping);
       var specialClasses = Object.keys(pickerSpecialClassOptions);
@@ -456,6 +499,24 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
               });
               item.value = '';
             }
+            if (tableFilters) {
+              // Integrate the custom fields
+              // 1. find the container element displaying them
+              var source = tableFilters.down('input[type="text"][name="' + item.name + '"]');
+              var selectionContainer = source &amp;&amp; source.next('.accepted-suggestions');
+              if (selectionContainer) {
+                // 2. find all the values and display them as part of the multi suggest picker
+                var tmp = suggestPicker.silent;
+                suggestPicker.silent = true;
+                selectionContainer.select('.accepted-suggestion').each(function(entry) {
+                  var value =  entry.down('input[type="checkbox"]').value;
+                  var text = entry.down('.value').innerHTML;
+                  var category = entry.down('.term-category');
+                  suggestPicker.addItem(value, text, '', category || '');
+                });
+                suggestPicker.silent = tmp;
+              }
+            } // done with selected entries
             item.addClassName('initialized');
           }
         });
@@ -463,8 +524,17 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
     }
 
     //============================================================================
-    // Date pickers
+    // Date pickers: create pickers and copy existing dates
     var crtYear = new Date().getFullYear();
+    if (tableFilters) {
+      content.select('.xwiki-date').each(function(input) {
+        var source = tableFilters.down('input[name="' + input.name + '"]');
+        if (source) {
+          input.value = source.value;
+          input.alt = source.alt;
+        }
+      });
+    }
     window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
 
     //============================================================================
