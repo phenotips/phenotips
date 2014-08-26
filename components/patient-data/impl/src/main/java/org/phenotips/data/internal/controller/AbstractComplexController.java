@@ -51,6 +51,8 @@ import net.sf.json.JSONObject;
  * Base class for handling data in different types of objects (String, List, etc) and preserving the object type. Has
  * custom functions for dealing with conversion to booleans, and ontology codes to human readable labels.
  *
+ * @param <T> the type of data being managed by this component, usually {@code String}, but other types are possible,
+ *            even more complex types
  * @version $Id$
  * @since 1.0RC1
  */
@@ -214,21 +216,21 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     protected abstract List<String> getProperties();
 
     protected abstract String getJsonPropertyName();
-}
 
-/**
- * There exists no class currently that would be able to covert an ontology code into a human readable format given only
- * a code string. Considering that there is a need for such functionality, there are 3 options: copy the code that
- * performs the function needed into the controller, create a class extending
- * {@link org.phenotips.data.internal.AbstractPhenoTipsOntologyProperty} in a separate file, or create such class here.
- * Given the fact the the {@link org.phenotips.data.internal.AbstractPhenoTipsOntologyProperty} is abstract only by
- * having a protected constructor, which fully satisfies the needed functionality, it makes the most sense to put
- * {@link QuickOntologyProperty} here.
- */
-class QuickOntologyProperty extends AbstractPhenoTipsOntologyProperty
-{
-    public QuickOntologyProperty(String id)
+    /**
+     * There exists no class currently that would be able to covert an ontology code into a human readable format given
+     * only a code string. Considering that there is a need for such functionality, there are 3 options: copy the code
+     * that performs the function needed into the controller, create a class extending
+     * {@link org.phenotips.data.internal.AbstractPhenoTipsOntologyProperty} in a separate file, or create such class
+     * here. Given the fact the the {@link org.phenotips.data.internal.AbstractPhenoTipsOntologyProperty} is abstract
+     * only by having a protected constructor, which fully satisfies the needed functionality, it makes the most sense
+     * to put {@link QuickOntologyProperty} here.
+     */
+    protected static final class QuickOntologyProperty extends AbstractPhenoTipsOntologyProperty
     {
-        super(id);
+        public QuickOntologyProperty(String id)
+        {
+            super(id);
+        }
     }
 }
