@@ -63,7 +63,7 @@ public class PhenoTipsDisorder extends AbstractPhenoTipsOntologyProperty impleme
     @Override
     public String getValue()
     {
-        if (getId().equals("")) {
+        if (StringUtils.isEmpty(getId())) {
             return getName();
         }
         String id = StringUtils.removeStart(getId(), MIM_PREFIX);
