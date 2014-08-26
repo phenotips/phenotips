@@ -41,9 +41,9 @@ import javax.inject.Singleton;
 @Singleton
 public class FamilyHistoryController extends AbstractComplexController<Integer>
 {
-    final static String CONSANGUINITY = "consanguinity";
+    private static final String CONSANGUINITY = "consanguinity";
 
-    final static String MISCARRIAGES = "miscarriages";
+    private static final String MISCARRIAGES = "miscarriages";
 
     private List<String> booleans = Arrays.asList(CONSANGUINITY, MISCARRIAGES);
 

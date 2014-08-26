@@ -41,11 +41,11 @@ import javax.inject.Singleton;
 @Singleton
 public class PrenatalPerinatalHistoryController extends AbstractComplexController<String>
 {
-    final static String IVF = "ivf";
+    private static final String IVF = "ivf";
 
-    final static String ASSISTED_REPRODUCTION_FERTILITY_MEDS = "assistedReproduction_fertilityMeds";
+    private static final String ASSISTED_REPRODUCTION_FERTILITY_MEDS = "assistedReproduction_fertilityMeds";
 
-    final static String ASSISTED_REPRODUCTION_SURROGACY = "assistedReproduction_surrogacy";
+    private static final String ASSISTED_REPRODUCTION_SURROGACY = "assistedReproduction_surrogacy";
 
     private List<String> booleans =
         Arrays.asList(IVF, ASSISTED_REPRODUCTION_FERTILITY_MEDS, ASSISTED_REPRODUCTION_SURROGACY);
