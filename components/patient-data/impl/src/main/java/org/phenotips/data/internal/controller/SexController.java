@@ -93,7 +93,7 @@ public class SexController implements PatientDataController<String>
                 throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
             String gender = parseGender(data.getStringValue(INTERNAL_PROPERTY_NAME));
-            return new SimpleValuePatientData<String>(DATA_NAME, gender);
+            return new SimpleValuePatientData<>(DATA_NAME, gender);
         } catch (Exception e) {
             this.logger.error("Failed to load patient gender: [{}]", e.getMessage());
         }
@@ -134,7 +134,7 @@ public class SexController implements PatientDataController<String>
             return;
         }
 
-        PatientData<String> patientData = patient.<String>getData(DATA_NAME);
+        PatientData<String> patientData = patient.getData(DATA_NAME);
         if (patientData != null && patientData.getValue() != null) {
             json.put(DATA_NAME, patientData.getValue());
         }
@@ -150,7 +150,7 @@ public class SexController implements PatientDataController<String>
 
         String gender = parseGender(json.getString(DATA_NAME));
 
-        return new SimpleValuePatientData<String>(DATA_NAME, gender);
+        return new SimpleValuePatientData<>(DATA_NAME, gender);
     }
 
     @Override

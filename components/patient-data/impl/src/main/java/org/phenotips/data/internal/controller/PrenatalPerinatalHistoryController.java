@@ -74,6 +74,6 @@ public class PrenatalPerinatalHistoryController extends AbstractComplexControlle
     @Override
     protected List<String> getCodeFields()
     {
-        return new LinkedList<String>();
+        return new LinkedList<>();
     }
 }

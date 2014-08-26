@@ -68,14 +68,14 @@ public abstract class AbstractSimpleController implements PatientDataController<
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
-            Map<String, String> result = new LinkedHashMap<String, String>();
+            Map<String, String> result = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {
                 String value = data.getStringValue(propertyName);
                 if (StringUtils.isNotBlank(value)) {
                     result.put(propertyName, value);
                 }
             }
-            return new DictionaryPatientData<String>(getName(), result);
+            return new DictionaryPatientData<>(getName(), result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document");
         }

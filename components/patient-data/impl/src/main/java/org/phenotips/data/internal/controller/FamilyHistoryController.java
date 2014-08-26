@@ -71,6 +71,6 @@ public class FamilyHistoryController extends AbstractComplexController<Integer>
     @Override
     protected List<String> getCodeFields()
     {
-        return new LinkedList<String>();
+        return new LinkedList<>();
     }
 }

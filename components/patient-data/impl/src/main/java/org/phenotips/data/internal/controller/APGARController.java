@@ -145,7 +145,7 @@ public class APGARController implements PatientDataController<Integer>
 
     protected List<String> getProperties()
     {
-        List<String> list = new LinkedList<String>();
+        List<String> list = new LinkedList<>();
         list.add("apgar1");
         list.add("apgar5");
         return list;

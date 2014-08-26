@@ -82,14 +82,14 @@ public class GlobalQualifiersController implements PatientDataController<Ontolog
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
-            Map<String, OntologyTerm> result = new LinkedHashMap<String, OntologyTerm>();
+            Map<String, OntologyTerm> result = new LinkedHashMap<>();
             for (String propertyName : getProperties()) {
                 String propertyValue = data.getStringValue(propertyName);
                 if (StringUtils.isNotBlank(propertyValue)) {
                     result.put(propertyName, this.ontologyManager.resolveTerm(propertyValue));
                 }
             }
-            return new DictionaryPatientData<OntologyTerm>(DATA_NAME, result);
+            return new DictionaryPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document");
         }

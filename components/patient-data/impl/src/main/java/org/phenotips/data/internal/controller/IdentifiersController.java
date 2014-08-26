@@ -79,7 +79,7 @@ public class IdentifiersController implements PatientDataController<String>
             }
             Map<String, String> result = new LinkedHashMap<String, String>();
             result.put(EXTERNAL_IDENTIFIER_PROPERTY_NAME, data.getStringValue(EXTERNAL_IDENTIFIER_PROPERTY_NAME));
-            return new DictionaryPatientData<String>(DATA_NAME, result);
+            return new DictionaryPatientData<>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document");
         }

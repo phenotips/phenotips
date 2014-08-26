@@ -66,7 +66,7 @@ public class PrenatalPhenotypeController extends AbstractComplexController<List<
     @Override
     protected List<String> getBooleanFields()
     {
-        return new LinkedList<String>();
+        return new LinkedList<>();
     }
 
     @Override
