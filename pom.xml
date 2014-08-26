@@ -141,6 +141,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <xwiki.version>5.4.5</xwiki.version>
     <slf4j.version>1.7.7</slf4j.version>
+    <buildtools.version>1.0-SNAPSHOT</buildtools.version>
     <testframework.version>1.0-SNAPSHOT</testframework.version>
     <solr.version>4.9.0</solr.version>
     <enforcer.skip>false</enforcer.skip>
@@ -372,13 +373,13 @@
         <artifactId>maven-remote-resources-plugin</artifactId>
         <executions>
           <execution>
-            <id>xwiki-license-resources</id>
+            <id>license-resources</id>
             <goals>
               <goal>process</goal>
             </goals>
             <configuration>
               <resourceBundles>
-                <resourceBundle>org.xwiki.commons:xwiki-commons-tool-license-resources:${xwiki.version}</resourceBundle>
+                <resourceBundle>org.phenotips:phenotips-license-resources:${buildtools.version}</resourceBundle>
               </resourceBundles>
             </configuration>
           </execution>
@@ -504,9 +505,9 @@
           <version>2.12</version>
           <dependencies>
             <dependency>
-              <groupId>org.xwiki.commons</groupId>
-              <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-              <version>${xwiki.version}</version>
+              <groupId>org.phenotips</groupId>
+              <artifactId>phenotips-checkstyle-configuration</artifactId>
+              <version>${buildtools.version}</version>
             </dependency>
           </dependencies>
           <configuration>
@@ -571,9 +572,9 @@
           <!-- Add a dependency since this is where the maven-license-plugin plugin will find the license.txt file -->
           <dependencies>
             <dependency>
-              <groupId>org.xwiki.commons</groupId>
-              <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-              <version>${xwiki.version}</version>
+              <groupId>org.phenotips</groupId>
+              <artifactId>phenotips-license-verification-resources</artifactId>
+              <version>${buildtools.version}</version>
             </dependency>
           </dependencies>
           <executions>
