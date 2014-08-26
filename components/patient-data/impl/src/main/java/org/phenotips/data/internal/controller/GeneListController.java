@@ -72,7 +72,7 @@ public class GeneListController extends AbstractComplexController<Map<String, St
     @Override
     protected String getJsonPropertyName()
     {
-        return "genes";
+        return getName();
     }
 
     @Override

@@ -80,6 +80,8 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
 
     private static final String NOTES_JSON_KEY_NAME = "notes";
 
+    private static final String CATEGORIES_JSON_KEY_NAME = "categories";
+
     private static final String METADATA_JSON_KEY_NAME = "qualifiers";
 
     private static final String JSON_PRESENTSTATUS_YES = "yes";
@@ -142,19 +144,19 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
         // Readonly from now on
         this.metadata = Collections.unmodifiableMap(this.metadata);
 
-        List<String> categories = Collections.emptyList();
+        List<String> categoriesList = Collections.emptyList();
         try {
             BaseObject categoriesObject = findCategoriesObject(doc);
             if (categoriesObject != null && categoriesObject.getListValue(META_PROPERTY_CATEGORIES) != null) {
                 @SuppressWarnings("unchecked")
-                List<String> categoriesList = categoriesObject.getListValue(META_PROPERTY_CATEGORIES);
-                categories = Collections.unmodifiableList(categoriesList);
+                List<String> originalCategories = categoriesObject.getListValue(META_PROPERTY_CATEGORIES);
+                categoriesList = Collections.unmodifiableList(originalCategories);
             }
         } catch (XWikiException ex) {
             // Cannot access metadata, simply ignore
-            this.logger.info("Failed to retrieve phenotype metadata: {}", ex.getMessage());
+            this.logger.info("Failed to retrieve phenotype categories: {}", ex.getMessage());
         }
-        this.categories = categories;
+        this.categories = categoriesList;
     }
 
     /**
@@ -169,13 +171,13 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
         this.type = json.getString(TYPE_JSON_KEY_NAME);
         this.propertyName = null;
         this.notes = json.optString(NOTES_JSON_KEY_NAME);
-        if (json.has("categories")) {
-            List<String> categories = new ArrayList<String>();
-            JSONArray categoriesList = json.getJSONArray("categories");
-            for (int i = 0; i < categoriesList.size(); ++i) {
-                categories.add(categoriesList.getJSONObject(i).getString("id"));
+        if (json.has(CATEGORIES_JSON_KEY_NAME)) {
+            List<String> categoriesList = new ArrayList<>();
+            JSONArray jsonCategories = json.getJSONArray(CATEGORIES_JSON_KEY_NAME);
+            for (int i = 0; i < jsonCategories.size(); ++i) {
+                categoriesList.add(jsonCategories.getJSONObject(i).getString(ID_JSON_KEY_NAME));
             }
-            this.categories = Collections.unmodifiableList(categories);
+            this.categories = Collections.unmodifiableList(categoriesList);
         } else {
             this.categories = Collections.emptyList();
         }
@@ -239,15 +241,15 @@ public class PhenoTipsFeature extends AbstractPhenoTipsOntologyProperty implemen
                     OntologyTerm term = om.resolveTerm(category);
                     if (term != null && StringUtils.isNotEmpty(term.getName())) {
                         JSONObject categoryObject = new JSONObject();
-                        categoryObject.put("id", term.getId());
-                        categoryObject.put("label", term.getName());
+                        categoryObject.put(ID_JSON_KEY_NAME, term.getId());
+                        categoryObject.put(NAME_JSON_KEY_NAME, term.getName());
                         categoriesList.add(categoryObject);
                     }
                 }
             } catch (ComponentLookupException ex) {
                 // Shouldn't happen
             }
-            result.element("categories", categoriesList);
+            result.element(CATEGORIES_JSON_KEY_NAME, categoriesList);
         }
         return result;
     }
