@@ -42,9 +42,9 @@ import javax.inject.Singleton;
 @Singleton
 public class PrenatalPhenotypeController extends AbstractComplexController<List<OntologyProperty>>
 {
-    final static String PRENATAL_PHENOTYPE = "prenatal_phenotype";
+    private static final String PRENATAL_PHENOTYPE = "prenatal_phenotype";
 
-    final static String NEGATIVE_PRENATAL_PHENOTYPE = "negative_prenatal_phenotype";
+    private static final String NEGATIVE_PRENATAL_PHENOTYPE = "negative_prenatal_phenotype";
 
     private List<String> hpoCodes = Arrays.asList(PRENATAL_PHENOTYPE, NEGATIVE_PRENATAL_PHENOTYPE);
 
