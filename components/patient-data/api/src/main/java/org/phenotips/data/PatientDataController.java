@@ -46,8 +46,8 @@ import net.sf.json.JSONObject;
  * existing one.
  * </p>
  *
- * @param <T> the type of data being managed by this component; usually a key-value pair, where the {@code key} is a
- *            String (name)
+ * @param <T> the type of data being managed by this component, usually {@code String}, but other types are possible,
+ *            even more complex types
  * @version $Id$
  * @since 1.0M10
  */
