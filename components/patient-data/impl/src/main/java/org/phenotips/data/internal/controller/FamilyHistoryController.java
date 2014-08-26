@@ -32,6 +32,9 @@ import javax.inject.Singleton;
 
 /**
  * Handles the information found in the family history section of the patient record.
+ *
+ * @version $Id$
+ * @since 1.0RC1
  */
 @Component(roles = { PatientDataController.class })
 @Named("familyHistory")
