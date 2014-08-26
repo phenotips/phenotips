@@ -50,6 +50,9 @@ import net.sf.json.JSONObject;
 
 /**
  * Handles the patients genes.
+ *
+ * @version $Id$
+ * @since 1.0RC1
  */
 @Component(roles = { PatientDataController.class })
 @Named("gene")
