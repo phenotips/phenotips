@@ -50,7 +50,7 @@ public class EthnicityController extends AbstractComplexController<List<String>>
     @Override
     protected String getJsonPropertyName()
     {
-        return "ethnicity";
+        return getName();
     }
 
     @Override
