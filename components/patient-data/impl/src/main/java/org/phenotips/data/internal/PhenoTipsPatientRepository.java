@@ -106,7 +106,7 @@ public class PhenoTipsPatientRepository implements PatientRepository
         try {
             Query q = this.qm.createQuery("where doc.object(PhenoTips.PatientClass).external_id = :eid", Query.XWQL);
             q.bindValue("eid", externalId);
-            List<String> results = q.<String>execute();
+            List<String> results = q.execute();
             if (results.size() == 1) {
                 DocumentReference reference =
                     this.stringResolver.resolve(results.get(0), Patient.DEFAULT_DATA_SPACE);
@@ -161,8 +161,8 @@ public class PhenoTipsPatientRepository implements PatientRepository
             Patient patient = new PhenoTipsPatient(doc);
             List<PatientRecordInitializer> initializers = Collections.emptyList();
             try {
-                initializers = ComponentManagerRegistry.getContextComponentManager()
-                    .<PatientRecordInitializer>getInstanceList(PatientRecordInitializer.class);
+                initializers = ComponentManagerRegistry.getContextComponentManager().getInstanceList(
+                    PatientRecordInitializer.class);
             } catch (ComponentLookupException e) {
                 this.logger.error("Failed to get initializers", e);
             }
