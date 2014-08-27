@@ -70,5 +70,12 @@
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
     </dependency>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-test-component</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
