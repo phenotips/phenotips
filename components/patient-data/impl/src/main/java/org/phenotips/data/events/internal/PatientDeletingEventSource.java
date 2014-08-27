@@ -42,6 +42,12 @@ import javax.inject.Singleton;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
+/**
+ * Detects the deletion of patient records and fires {@link PatientDeletingEvent}s.
+ *
+ * @version $Id$
+ * @since 1.0RC1
+ */
 @Component
 @Named("patientDeletingEventSource")
 @Singleton

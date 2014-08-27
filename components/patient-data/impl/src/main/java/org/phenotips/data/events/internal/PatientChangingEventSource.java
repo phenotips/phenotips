@@ -42,6 +42,12 @@ import javax.inject.Singleton;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
+/**
+ * Detects changes to patient records and fires {@link PatientChangingEvent}s.
+ *
+ * @version $Id$
+ * @since 1.0RC1
+ */
 @Component
 @Named("patientChangingEventSource")
 @Singleton
