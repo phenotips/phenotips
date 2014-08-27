@@ -103,8 +103,7 @@ public class PatientRecordTest extends AbstractTest
         patientEdit.setGestationAtDelivery("3");
         // Checking more information button for gestation at delivery
         patientEdit.moreInfoGestation();
-        Assert.assertTrue(patientEdit.checkMoreInfoGestation().contains(
-            "Numeric value in weeks, such as â38â or blank if unknown."));
+        Assert.assertTrue(patientEdit.checkMoreInfoGestation().contains("Numeric value in weeks"));
         patientEdit.closeMoreInfoGestation();
         patientEdit.setConceptionAfterFertilityMedication();
         patientEdit.setInVitroFertilization();
