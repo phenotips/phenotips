@@ -2320,18 +2320,6 @@ return PhenoTips;
     resultCategory : "term_category",
     resultParent : {
       selector : 'is_a',
-//    json : false,
-//    responseFormat : "application/xml",
-//    resultsParameter : "doc",
-//    resultId : "str[name=id]",
-//    resultValue : "str[name=name]",
-//    resultCategory : "arr[name=term_category] str",
-//    resultInfo : {
-//                           "Definition"    : {"selector"  : "str[name=def]"},
-//                           "Synonyms"      : {"selector"  : "arr[name=synonym] str"}
-//    },
-//    resultParent : {
-//      selector : 'arr[name=is_a] str',
       processingFunction : function (text){
         var data = {};
         data.id = text.replace(/\s+/gm, ' ').replace(/(HP:[0-9]+)\s*!\s*(.*)/m, "$1");
@@ -2407,7 +2395,6 @@ return PhenoTips;
   },
 
   expandTo : function (termId, categories) {
-    //alert ("start expanding " + termId + " " + categories);
     if (categories.indexOf(this.__crtRoot) == -1) {
       // not in the right tree, nothing to do
       return;
@@ -2432,8 +2419,6 @@ return PhenoTips;
         if (categoryEntry.hasClassName('collapsed') || !categoryEntry.down('.descendents')) {
           Event.observe(categoryEntry, "obrowser:expand:finished", function(event) {
             Event.stopObserving(categoryEntry, "obrowser:expand:finished");
-console.log(termId);
-console.log(categories);
             _this._expandToStep(termId, categories.without(category));
           });
           _this._toggleExpandState(categoryEntry);
