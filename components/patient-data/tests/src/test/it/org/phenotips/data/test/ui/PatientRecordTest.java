@@ -174,11 +174,8 @@ public class PatientRecordTest extends AbstractTest
         Assert.assertTrue(patientEdit.getBMINumber().contains("3333.33"));
 
         patientEdit.moreInfoNewEntryMeasurements();
-        Assert
-            .assertTrue(patientEdit
-                .checkMoreInfoNewEntryMeasurements()
-                .contains(
-                    "Create a list of patient measurements. These are dated, and a new set of measurements from a different date may be recorded by clicking the âNew Entryâ button again. The age of the patient at each measurement date will be displayed."));
+        Assert.assertTrue(patientEdit.checkMoreInfoNewEntryMeasurements().contains(
+            "Create a list of patient measurements. These are dated, and a new set of measurements from a different date may be recorded"));
         patientEdit.closeMoreInfoNewEntryMeasurements();
 
         // Expanding growth charts tab and checking they appear
@@ -201,11 +198,8 @@ public class PatientRecordTest extends AbstractTest
 
         // Filling in all the phenotypes of the patient
         patientEdit.moreInfoSelectObservedPhenotypes();
-        Assert
-            .assertTrue(patientEdit
-                .checkMoreInfoSelectObservedPhenotypes()
-                .contains(
-                    "For each phenotype, choose the most specific term possible, based on the definition (available by clicking the âiâ) and not necessarily simply based on the label. The more specific the item chosen, the better the specificity of the whole phenotypic profile. Record âYâ for Yes, to indicate a phenotype being present in the patient. You may provide annotations for things that were investigated and specifically not observed by clicking on the âNâ for No. Choose terms that are thought to be pathological or unusual, even if they are not so in the greater populace. For example, âblue iridesâ is a common phenotype in the population, but as a phenotype annotation, it is a subtype of âabnormal iris pigmentationâ and should only be chosen in cases where abnormal pigmentation is suspected, such as Heterochromia."));
+        Assert.assertTrue(patientEdit.checkMoreInfoSelectObservedPhenotypes().contains(
+            "For each phenotype, choose the most specific term possible, based on the definition"));
         patientEdit.closeMoreInfoSelectObservedPhenotypes();
         Assert.assertTrue(patientEdit.checkShortStatureLightningBoltAppearsOnRight());
         Assert.assertTrue(patientEdit.checkHypotelorismLightningBoltAppearsOnRight());
@@ -605,5 +599,4 @@ public class PatientRecordTest extends AbstractTest
             .assertTrue(patientEdit.checkChartTitleChangesOlderMale().contains("Weight for age, 2 to 20 years, boys"));
 
     }
-
 }
