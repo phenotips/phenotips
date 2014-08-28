@@ -474,22 +474,8 @@ document.observe('xwiki:dom:loaded', function() {
             resultValue : "name",
             resultSynonym: "synonym",
             resultCategory : "term_category",
-            resultInfo : {
-                 "Browse related terms..." : {"extern" : true,
-                                              "processor" : function(trigger) {
-                                                              trigger._obrowser = new PhenoTips.widgets.OntologyBrowser(this, null, {
-                                                                 isTermSelected : isPhenotypeSelected,
-                                                                 unselectTerm : unselectPhenotype
-                                                              });
-                                                              trigger.observe('click', function(event){
-                                                                event.stop();
-                                                                event.element()._obrowser.show(
-                                                                  event.element().up('.suggestItem').down('.suggestId').firstChild.nodeValue
-                                                                );
-                                                              }.bindAsEventListener(this));
-                                                            }
-                                             }
-                         },
+            resultInfo : {},
+            tooltip: 'phenotype-info',
             enableHierarchy: true,
             resultParent : "is_a",
             fadeOnClear : false,

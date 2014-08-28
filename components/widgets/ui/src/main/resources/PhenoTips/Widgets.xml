@@ -176,6 +176,8 @@
     resultIcon: "icon",
     // The name of the JSON parameter or XML attribute holding a potential result hint (displayed next to the value).
     resultHint: "hint",
+    // What kind of tooltip (if any) should be attached to each entry. Default: none.
+    tooltip: false,
     // The id of the element that will hold the suggest element
     //parentContainer : "body",
     // Should results fragments be highlighted when matching typed input
@@ -897,7 +899,9 @@
     }
 
     // create and populate list
-    div.appendChild(this.createListElement(arr, pointer));
+    var list = this.createListElement(arr, pointer);
+    div.appendChild(list);
+    Event.fire(document, "xwiki:dom:updated", {elements : [list]})
 
     this.suggest = div;
 
@@ -965,6 +969,12 @@
         displayNode.insert(new Element('span', {'class':'suggestId'}).update(data.id));
     }
     displayNode.insert(new Element('span', {'class':'suggestValue'}).update(data.value));
+
+    if (this.options.tooltip) {
+      var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton ' + this.options.tooltip, 'title' : data.id});
+      infoTool.observe('click', function(event) {event.stop()});
+      displayNode.insert(' ').insert(infoTool);
+    }
     var displayInfo = new Element('div', {'class':'suggestInfo'}).update(data.info);
     displayNode.insert(displayInfo);
     if(data.synonym){
