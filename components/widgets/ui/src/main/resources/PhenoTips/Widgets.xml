@@ -2308,15 +2308,6 @@ return PhenoTips;
     resultId : "id",
     resultValue : "name",
     resultCategory : "term_category",
-    resultInfo : {
-                           ""              : {"selector"  : "def",
-                                              "processor" : function(text) { return text.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;'); }
-                           },
-                           "Also known as" : {"selector"  : "synonym"},
-                           "Is a type of"  : {"selector"  : "is_a",
-                                              "processor" : function(text) { return text.replace(/^([A-Z]+:[0-9]+)\s+!\s+/, ''); }
-                           }
-    },
     resultParent : {
       selector : 'is_a',
 //    json : false,
@@ -2372,11 +2363,6 @@ return PhenoTips;
       });
       this.options.modal = true;
     }
-    document.observe('click', function (event) {
-       if (this.activeTooltip &amp;&amp; event.element() &amp;&amp; event.element() != this.activeTooltip &amp;&amp; event.element().up('.tooltip') != this.activeTooltip) {
-         this._hideEntryInfo(event);
-       }
-    }.bindAsEventListener(this));
     this._obrowserExpandEventHandler = this._obrowserExpandEventHandler.bindAsEventListener(this);
   },
 
@@ -2401,6 +2387,7 @@ return PhenoTips;
         onSuccess: function (response) {
           this.setContent(this.buildTree(this._getDataFromResponse(response)));
           this.__crtRoot = id;
+          Event.fire(document, 'xwiki:dom:updated', {'elements' : [this.container.content]});
         }.bind(this),
         onFailure: function (response) {
           this.setContent("Failed to retrieve data : " + respose.statusText);
@@ -2472,6 +2459,7 @@ console.log(categories);
             Event.fire(document, "obrowser:content:added", {added: newAdditions, obrowser: this});
             Event.fire(element, "obrowser:expand:finished");
             Event.fire(this.container.contentContainer || document, "obrowser:expand:finished");
+            Event.fire(document, 'xwiki:dom:updated', {'elements' : [newAdditions]});
             //memo.data = this.buildDescendentsList(this._getDataFromResponse(response));
             //Event.fire(element, 'obrowser:expand:done', memo);
           } else {
@@ -2574,7 +2562,6 @@ console.log(categories);
     var data = {
       id : this._getResultFieldValue(targetResult, this.options.resultId),
       value : this._getResultFieldValue(targetResult, this.options.resultValue),
-      info : this._generateEntryInfo(targetResult),
       category: this._generateEntryCategory(targetResult)
     }
     var root = this._createRoot(data);
@@ -2595,7 +2582,6 @@ console.log(categories);
         var data = {
           id : this._getResultFieldValue(results[i], this.options.resultId),
           value : this._getResultFieldValue(results[i], this.options.resultValue),
-          info : this._generateEntryInfo(results[i]),
           category: this._generateEntryCategory(results[i])
         };
         list.insert({'bottom': this._createDescendentBranch(data)});
@@ -2613,20 +2599,16 @@ console.log(categories);
     var wrapper = new Element('div', {'class' : 'entry-data'});
     wrapper.insert({'bottom': this._generateEntryTitle(data.id, data.value)});
     var entryTools = new Element('span', {'class' : 'entry-tools'});
-    wrapper.insert({'top': entryTools});
+    entryTools.observe('click', function(event) {event.stop()}); // don't forward click events
+    wrapper.insert({'bottom': entryTools});
     element.update(wrapper);
 
     if (!this._isRootEntry(element)) {
       if (this.options.defaultEntryAction == 'browse') {
         wrapper.down('.info').observe('click', this._browseEntry.bindAsEventListener(this));
-      } else if (this.options.enableBrowse) {
-        entryTools.insert({'top' : this._createTool('...', 'browse-tool', "Browse related terms", this._browseEntry)})
       }
     }
-    if (data.info) {
-      entryTools.insert({'top' : this._createTool('i', 'info-tool', "Information about this term", this._showEntryInfo)});
-      element.insert({bottom : data.info});
-    }
+    entryTools.insert(new Element('span', {'class' : 'fa fa-info-circle phenotype-info xHelpButton', title : data.id}));
 
     if (this.options.enableSelection) {
       element.__selectTool = new Element('input', {'type' : 'checkbox', name: 'term_selector', value: data.id, 'class' : 'select-tool'});
@@ -2677,48 +2659,6 @@ console.log(categories);
     } else {
       return null;
     }
-  },
-
-  _generateEntryInfo : function(xmlFragment) {
-    var title = this._generateEntryTitle(
-      this._getResultFieldValue(xmlFragment, this.options.resultId),
-      this._getResultFieldValue(xmlFragment, this.options.resultValue)
-    );
-    var info = new Element("dl");
-    for (var section in this.options.resultInfo) {
-      var sOptions = this.options.resultInfo[section];
-      sectionClass = section.strip().toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, "-");
-      var selector = sOptions.selector;
-      if (!selector) {
-        continue;
-      }
-      var sectionContents = null;
-      this._getResultFieldValueAsArray(xmlFragment, selector).each(function(item) {
-        if (!item) {
-          return;
-        }
-        if (!sectionContents) {
-          info.insert({"bottom" : new Element("dt", {'class' : sectionClass}).insert({'bottom' : section})});
-          sectionContents = new Element("dd");
-          info.insert({"bottom" : sectionContents});
-        }
-        var text = item;
-        if (typeof sOptions.processor == 'function') {
-          text = sOptions.processor(text);
-        }
-        sectionContents.insert({"bottom" : new Element("div").update(text)});
-      });
-    }
-    if (!info.hasChildNodes()) {
-      return null;
-    }
-    var result = new Element("div", {'class' : "tooltip invisible"}).update(title);
-    result.insert({bottom : info});
-
-    var hideTool = new Element('span', {'class' : 'hide-tool', title : 'Hide'}).update("&amp;#215;");
-    result.insert({top : hideTool});
-    hideTool.observe('click', this._hideEntryInfo.bindAsEventListener(this));
-    return result;
   },
 
   _toggleExpandState : function(target) {
@@ -2822,27 +2762,6 @@ console.log(categories);
      this.options.unselectTerm(entry.__termId, true);
      entry.removeClassName('accepted');
   },
-  _createTool : function (text, className, title, method) {
-    var element = new Element('span', {'class' : 'entry-tool ' + className, "title" : title}).update(text);
-    element.observe('click', method.bindAsEventListener(this));
-    return element;
-  },
-  _showEntryInfo : function(event) {
-    event.stop();
-    // First hide open tooltips
-    $$('.tooltip:not(.invisible)').each(function(item){
-      item.addClassName('invisible');
-    }.bind(this));
-    var elt = event.element().up('.entry');
-    this.activeTooltip = elt.down('.tooltip');
-    this.activeTooltip.removeClassName('invisible');
-  },
-  _hideEntryInfo : function(event) {
-    if (this.activeTooltip) {
-      this.activeTooltip.addClassName('invisible');
-      this.activeTooltip = null;
-    }
-  },
 
   _browseEntry : function(event) {
     event.stop();
@@ -2852,15 +2771,11 @@ console.log(categories);
 
   _createParentBranch: function (parent) {
     var parent = this._createBranch('li', 'parent', parent, false);
-    //parent.down('.info-tool').remove();
     return parent;
   },
 
   _createRoot : function (data) {
     var root = this._createBranch('div', 'root', data, true);
-    if (root.down('.browse-tool')) {
-      root.down('.browse-tool').remove();
-    }
     if (!this.options.showRoot) {
       root.addClassName('no-root');
       root.down('.entry-data').addClassName('invisible');
@@ -3949,55 +3864,174 @@ document.observe("xwiki:dom:loaded", function() {
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
 
   widgets.HelpButton =  Class.create({
+
+    infoServices : {
+      'xHelpButton' : {
+         'hint'     : 'How to enter this information',
+         'callback' : function (helpButton) {
+           helpButton.helpBox.content.update(helpButton._information || '');
+         }
+       },
+      'phenotype-info' : {
+        'hint'     : 'About this term',
+        'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
+        'callback' : function (helpButton, json) {
+          var c = helpButton.helpBox.content;
+          var elt = function(type, cssClass, content) {
+            return new Element(type, cssClass &amp;&amp; {'class' : cssClass} || {}).update(content || '');
+          };
+
+          c.update(
+                    elt('span', 'info').insert(elt('span', 'key').update(json.id))
+                                       .insert(' ')
+                                       .insert(elt('span', 'value').update(json.label))
+                  );
+          json.def &amp;&amp; c.insert(elt('p').update(json.def.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;')));
+
+          var labels = {'synonym' : 'Also known as', 'is_a' : 'Is a type of'};
+          var advancedInfo = elt('dl');
+          for (var l in labels) {
+            if (json[l]) {
+              advancedInfo.insert(elt('dt', '', labels[l]));
+              json[l].each(function (item) {
+                advancedInfo.insert(elt('dd', '', item.label || item));
+              })
+            }
+          }
+          if (advancedInfo.firstDescendant()) {
+            c.insert(advancedInfo);
+          }
+
+          if (PhenoTips.widgets.OntologyBrowser) {
+            var browseButton = new Element('a', {'class' : 'button', href : '#'}).update('Browse related terms...');
+            browseButton._id = json.id;
+            browseButton.observe('click', function(event){
+              event.stop();
+              browseButton._obrowser = new PhenoTips.widgets.OntologyBrowser($('quick-phenotype-search')._suggest, null, {
+                                                                   isTermSelected : isPhenotypeSelected,
+                                                                   unselectTerm : unselectPhenotype
+              });
+              browseButton._obrowser.show(browseButton._id);
+            });
+            c.insert(elt('div', 'term-tools').insert(browseButton.wrap('span', {'class' : 'buttonwrapper'})));
+          }
+        }
+      },
+      'phenotype-qualifier-info' : {
+        'hint'     : 'About this term',
+        'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
+        'callback' : function (helpButton, json) {
+          var c = helpButton.helpBox.content;
+          var elt = function(type, cssClass, content) {
+            return new Element(type, cssClass &amp;&amp; {'class' : cssClass} || {}).update(content || '');
+          };
+          c.update(
+                    elt('span', 'info').insert(elt('span', 'key').update(json.id))
+                                       .insert(' ')
+                                       .insert(elt('span', 'value').update(json.label))
+                  );
+          json.def &amp;&amp; c.insert(elt('p').update(json.def.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;')));
+        }
+      }
+    },
+
     initialize : function(icon) {
       this.icon = icon;
-      this.icon._information = this.icon.title;
-      this.icon.title = 'How to enter this information';
+      this._information = this.icon._information || this.icon.title;
+      for (var label in this.infoServices) {
+        if (this.icon.hasClassName(label)) {
+          this._builder = this.infoServices[label];
+          this.icon.title = this.infoServices[label].hint || '';
+        }
+      }
+      if (!this._builder) {
+        return;
+      }
       this.icon.observe("click", this.toggleHelp.bindAsEventListener(this));
       this.hideAllHelpOnOutsideClick = this.hideAllHelpOnOutsideClick.bindAsEventListener(this);
     },
+
     toggleHelp : function() {
-      if (!this.helpBox) {
-        this.createHelpBox();
-      }
-      $$('div.xTooltip:not(.hidden)').invoke('addClassName', 'hidden');
-      this.helpBox.toggleClassName('hidden');
-      if (! this.helpBox.hasClassName('hidden')) {
+      if (!this.helpBox || this.helpBox.hasClassName('hidden')) {
+        this.showHelp();
         document.observe('click', this.hideAllHelpOnOutsideClick);
+      } else {
+        this.hideHelp();
       }
     },
+
     hideAllHelpOnOutsideClick : function (event) {
       if (!event.findElement('.xTooltip') &amp;&amp; !event.findElement('.xHelpButton')) {
         this.hideHelp();
         document.stopObserving('click', this.hideAllHelpOnOutsideClick);
       }
     },
-    hideHelp : function() {
+
+    hideHelp : function(event) {
+      event &amp;&amp; event.stop();
       if (this.helpBox) {
-        this.helpBox.addClassName('hidden');
+        if (this.helpBox.hasClassName('error')) {
+          this.helpBox.remove();
+          delete this.helpBox;
+        } else {
+          this.helpBox.addClassName('hidden');
+        }
       }
     },
+
     showHelp : function() {
       if (!this.helpBox) {
         this.createHelpBox();
       }
-      $$('div.xTooltip:not(.hidden)').invoke('addClassName', 'hidden');
+      $$('div.xTooltip:not(.hidden)').invoke('_hideHelp');
       this.helpBox.removeClassName('hidden');
     },
+
     createHelpBox : function() {
       this.helpBox = new Element('div', {'class': 'hidden xTooltip'});
-      this.helpBox.update(this.icon._information);
+      this.helpBox._behavior = this;
+      this.helpBox._hideHelp = function() {
+         this._behavior.hideHelp();
+      }.bind(this.helpBox);
+
+      this.helpBox.content = new Element('div');
+      this.helpBox.insert(this.helpBox.content);
+
+      if (this._builder.service) {
+        this.createHelpContentFromService();
+      } else {
+        this._builder.callback &amp;&amp; this._builder.callback(this);
+      }
+
       var closeButton = new Element('span', {'class': 'hide-tool', 'title': 'Hide'});
       closeButton.update('×');
       closeButton.observe('click', this.hideHelp.bindAsEventListener(this));
       this.helpBox.insert({'top': closeButton});
       this.icon.insert({'after' : this.helpBox});
+    },
+
+    createHelpContentFromService : function() {
+      var _this = this;
+      new Ajax.Request(_this._builder.service, {
+        parameters: {'id' : _this._information},
+        onCreate : function () {
+          _this.helpBox.content.update(new Element('span', {'class' : 'hint temporary'}).update('Loading...'));
+        },
+        onSuccess: function (response) {
+          _this._builder.callback(_this, response.responseJSON);
+        },
+        onFailure: function (response) {
+          _this.helpBox.addClassName('error');
+          _this.helpBox.down('.temporary').remove();
+          _this.helpBox.insert("Failed to retrieve information about " + _this._information + " : " + response.statusText);
+        }
+      });
     }
   });
 
   var init = function(event) {
     ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
-      element.select(".xHelpButton").each(function(icon) {
+      (element.hasClassName("xHelpButton") ? [element] : element.select(".xHelpButton")).each(function(icon) {
         if (!icon.__helpController) {
           icon.__helpController = new PhenoTips.widgets.HelpButton(icon);
         }
@@ -4017,7 +4051,7 @@ document.observe("xwiki:dom:loaded", function() {
       <name>Help buttons</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
@@ -4811,7 +4845,6 @@ div.resultContainer div.sourceContent.loading {
 .ontology-tree .entry-tools {
   /* float: right; */
   display: inline-block;
-  font-size: 0.8em;
   margin-left: 0.5em;
   margin-right: 0.5em;
   min-width: 17px;
@@ -4826,61 +4859,7 @@ div.resultContainer div.sourceContent.loading {
 .ontology-tree .entry-data:hover {
   background: $theme.highlightColor;
 }
-.ontology-tree .entry-tool, .term-entry .entry-tool {
-  background: #FCFFF4;
-  #css3_backgroundLinearGradient({
-    'to': 'bottom',
-    'colors': [
-        {'color': '#FCFFF4', 'position': '0%'},
-        {'color': '#DFE5D7', 'position': '40%'},
-        {'color': '#B3BEAD', 'position': '100%'}
-    ]
-  })
-  border: 1px solid #FFFFFF;
-  border-radius: 50%;
-  box-shadow: 0 1px 2px #555555;
-  color: #333333;
-  cursor: pointer;
-  display: inline-block;
-  font-family: serif;
-  font-size: 0.87em;
-  font-weight: normal;
-  height: 15px;
-  line-height: 16px;
-  margin-top: 1px;
-  text-align: center;
-  text-shadow: 0 1px 1px #FFFFFF;
-  vertical-align: top;
-  width: 15px;
-}
 
-.ontology-tree .entry-tool:hover, .term-entry .entry-tool:hover {
-  color: #FFFFFF;
-  text-shadow: 0 1px 1px #333333;
-}
-
-.ontology-tree .info-tool:hover, .term-entry .info-tool:hover {
-  background: #2B88D9;
-  #css3_backgroundLinearGradient({
-    'to': 'bottom',
-    'colors': [
-        {'color': '#3B679E', 'position': '0%'},
-        {'color': '#2B88D9', 'position': '50%'},
-        {'color': '#207CCA', 'position': '51%'},
-        {'color': '#7DB9E8', 'position': '100%'}
-    ]
-  })
-  cursor: help;
-}
-.ontology-tree .browse-tool {
-  background-color: #333;
-}
-.ontology-tree .accept-tool {
-  background-color: $theme.notificationSuccessColor;
-}
-.ontology-tree .remove-tool {
-  background-color: $theme.notificationErrorColor;
-}
 .ontology-tree .accepted &gt;.entry-data {
   background-color: $theme.backgroundSecondaryColor;
 }
@@ -4890,42 +4869,6 @@ div.resultContainer div.sourceContent.loading {
 
 .ontology-tree .entry, .term-entry {
   position: relative;
-}
-.ontology-tree .entry .tooltip, .term-entry .tooltip {
-  position: absolute;
-  top: .7em;
-  width: 80%;
-  right: 2.8em;
-  border: 0 none;
-  background: #fff;
-  padding: 4px 8px;
-  border-radius: 0 12px 12px 12px;
-  box-shadow: 0 0 6px #777;
-  z-index: 20000;
-}
-.term-entry .tooltip {
-  font-size: 1em !important;
-}
-.ontology-tree .entry .tooltip .value, .term-entry .tooltip .value {
-  font-weight: bold;
-}
-.ontology-tree .entry .tooltip .key, .term-entry .tooltip .key {
-  font-size: .8em;
-  color: $theme.textColor;
-}
-.ontology-tree .entry .tooltip dl, .term-entry .tooltip dl {
-  margin: .3em 0;
-}
-.ontology-tree .entry .tooltip dt, .term-entry .tooltip dt {
-  color: $theme.textColor;
-  font-style: italic;
-  margin: .4em 0 0.2em;
-}
-.ontology-tree .entry .tooltip .hide-tool, .term-entry .tooltip .hide-tool {
-  position: absolute;
-  top: .2em;
-  right: .5em;
-  cursor: pointer;
 }
 .expand-tool {
   display: inline-block;
@@ -4962,6 +4905,9 @@ div.resultContainer div.sourceContent.loading {
   text-align: center;
   top: .3em;
   width: 11px;
+}
+.msdialog-box .ontology-tree .term-tools {
+  display: none;
 }</code>
     </property>
     <property>
@@ -5056,9 +5002,7 @@ div.resultContainer div.sourceContent.loading {
     <property>
       <code>#template('colorThemeInit.vm')
 .dropdown {
-  margin-left: 1em;
-  border-left: .5em solid $theme.backgroundSecondaryColor;
-  font-size: .9em;
+  margin-left: 1.2em;
   width: 95%;
   z-index: 100;
 }
@@ -5076,11 +5020,8 @@ div.resultContainer div.sourceContent.loading {
   line-height: 1.4em;
   padding-right: 1.1em;
 }
-.dropdown .ontology-tree .key {
+.dropdown .ontology-tree .entry-data&gt;.info .key {
   display: none;
-}
-.dropdown .ontology-tree .tooltip {
-  right: 0;
 }
 .term-label .expand-tool {
   display: inline-block;
@@ -5378,9 +5319,9 @@ input.xwiki-free-multiselect-value {
 /* The help icon, already displayed as a question mark character. */
 .xHelpButton {
   cursor: pointer;
-  font-size: 1.33333em;
   line-height: 0.75em;
-  vertical-align: -15%;
+  display: inline-block;
+  padding: .125em;
 }
 .xHelpButton:hover {
   color: $theme.linkColor;
@@ -5392,6 +5333,7 @@ input.xwiki-free-multiselect-value {
   border: 0 none;
   border-radius: 0 1em 1em;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+  color: $theme.textColor;
   display: inline-block;
   margin: 0.7em 0 0 -0.3em;
   max-width: 80%;
@@ -5399,11 +5341,33 @@ input.xwiki-free-multiselect-value {
   position: absolute;
   z-index: 2;
 }
+.xTooltip.error {
+  color: $theme.notificationErrorColor;
+  font-weight: bold;
+}
 .xTooltip .hide-tool {
   cursor: pointer;
   float: right;
   margin-right: -0.5em;
   margin-top: -0.6em;
+}
+
+.xTooltip .value {
+  font-weight: bold;
+}
+.xTooltip .key {
+  font-size: .8em;
+  opacity: .7;
+}
+.xTooltip dl {
+  margin: .3em 0;
+}
+.xTooltip dt {
+  font-style: italic;
+  margin: .4em 0 0.2em;
+}
+.xTooltip .term-tools {
+  margin: .4em 0;
 }</code>
     </property>
     <property>

@@ -1144,22 +1144,7 @@ document.observe('xwiki:dom:loaded', function() {
             }
 
             // Info buttons behavior
-            var itemParent = item.up('.term-entry');
-            var infoTool = itemParent.down('.info-tool');
-            var tooltip = itemParent.down('.tooltip');
-            if (infoTool) {
-              if (!tooltip) {
-                infoTool.setOpacity(0);
-              } else {
-                infoTool.observe('click', function (event) {
-                  event.findElement('.chapter').select('.tooltip').invoke('addClassName', 'invisible');
-                  event.findElement('.term-entry').down('.tooltip').removeClassName('invisible');
-                });
-                tooltip.down('.hide-tool').observe('click', function (event) {
-                  event.findElement('.tooltip').addClassName('invisible');
-                });
-              }
-            }
+            item.up('.term-entry').insert(' ').insert(new Element('span', {'class' : 'fa fa-info-circle phenotype-info xHelpButton', title : item.value}));
 
             // ------------------------------------------------------------------------
             // Add  y/n selection
@@ -1279,6 +1264,8 @@ document.observe('xwiki:dom:loaded', function() {
     if (selectionSummary &amp;&amp; selectionSummary._givePhenotypeQualifiersCollapseButtons) {
         selectionSummary._givePhenotypeQualifiersCollapseButtons(selectionSummary);
     }
+
+    Event.fire(document, 'xwiki:dom:updated', {'elements' : $$('.chapter.phenotype-info .xHelpButton')});
   };
   (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
   return XWiki;

@@ -26,8 +26,6 @@ import org.phenotips.ontology.OntologyTerm;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.xml.XMLUtils;
 
-import java.util.List;
-
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -86,22 +84,17 @@ public class FormField extends AbstractFormElement
     protected String generateFormField(String[] fieldNames)
     {
         if (fieldNames[NO] != null) {
-            return String
-                .format(
-                    "<div class='%s%s'><span class='yes-no-picker'>%s%s%s</span><span class='entry-tools'>"
-                        + "<span class='entry-tool info-tool' title='Information about this term'>i</span></span>"
-                        + " <span title='%s'>%s</span>%s</div>",
-                    DEFAULT_CSS_CLASS,
-                    this.expandable ? EXPANDABLE_CSS_CLASS : "",
-                    generateCheckbox("none", this.value, "", (!isSelected(YES) && !isSelected(NO)), "na", "NA"),
-                    generateCheckbox(fieldNames[YES], this.value, this.hint, isSelected(YES), "yes", "Y"),
-                    generateCheckbox(fieldNames[NO], this.value, this.hint, isSelected(NO), "no", "N"),
-                    this.term == null ? this.title + "\n(custom term)" : (this.term.getName() + (StringUtils
-                        .isNotBlank(this.term.getDescription()) ? "\n"
-                        + StringEscapeUtils.escapeXml10(this.term.getDescription()) : "")),
-                    generateLabel(fieldNames[YES] + '_' + this.value, "yes-no-picker-label", this.title),
-                    generateTooltip());
-
+            return String.format(
+                "<div class='%s%s'><span class='yes-no-picker'>%s%s%s</span> <span title='%s'>%s</span></div>",
+                DEFAULT_CSS_CLASS,
+                this.expandable ? EXPANDABLE_CSS_CLASS : "",
+                generateCheckbox("none", this.value, "", (!isSelected(YES) && !isSelected(NO)), "na", "NA"),
+                generateCheckbox(fieldNames[YES], this.value, this.hint, isSelected(YES), "yes", "Y"),
+                generateCheckbox(fieldNames[NO], this.value, this.hint, isSelected(NO), "no", "N"),
+                this.term == null ? this.title + "\n(custom term)" : (this.term.getName() + (StringUtils
+                    .isNotBlank(this.term.getDescription()) ? "\n"
+                    + StringEscapeUtils.escapeXml10(this.term.getDescription()) : "")),
+                generateLabel(fieldNames[YES] + '_' + this.value, "yes-no-picker-label", this.title));
         } else {
             return generateCheckbox(fieldNames[YES], this.value, this.hint, isSelected(YES), DEFAULT_CSS_CLASS
                 + (this.expandable ? EXPANDABLE_CSS_CLASS : ""), this.title);
@@ -130,39 +123,6 @@ public class FormField extends AbstractFormElement
     {
         return String.format("<label class='%s' for='%s'>%s</label>", labelClass, forId,
             XMLUtils.escapeElementContent(labelText));
-    }
-
-    private String generateTooltip()
-    {
-        if (this.term == null) {
-            return "";
-        }
-        StringBuilder result = new StringBuilder();
-        result.append("<div class='tooltip invisible'>");
-        result.append("<span class='hide-tool' title='Hide'>×</span>");
-        result.append("<span class='info'><span class='key'>[" + this.term.getId() + "]</span> <span class='value'>"
-            + this.term.getName() + "</span></span>");
-        result.append("<dl>");
-        if (StringUtils.isNotBlank(this.term.getDescription())) {
-            result.append("<dt class=''></dt>");
-            result.append("<dd><div>" + this.term.getDescription() + "</div></dd>");
-        }
-        @SuppressWarnings("unchecked")
-        List<String> synonyms = (List<String>) this.term.get("synonym");
-        if (synonyms != null && !synonyms.isEmpty()) {
-            result.append("<dt class='also-known-as'>Also known as</dt><dd>");
-            for (String s : synonyms) {
-                result.append("<div>" + s + "</div>");
-            }
-            result.append("</dd>");
-        }
-        result.append("<dt class='is-a-type-of'>Is a type of</dt><dd>");
-        for (OntologyTerm parent : this.term.getParents()) {
-            result.append("<div>" + parent.getName() + "</div>");
-        }
-        result.append("</dd></dl></div>");
-
-        return result.toString();
     }
 
     @Override
