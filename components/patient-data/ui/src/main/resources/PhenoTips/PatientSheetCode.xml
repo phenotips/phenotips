@@ -2270,7 +2270,8 @@ document.observe('xwiki:dom:loaded', function() {
        'script' : new XWiki.Document('DiffDiagnosisService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
        'source' : [defaultSearchTermIDsInput],
        'target' : $('diffDiagnosis-search-results'),
-       'suggestFor' : $('quick-phenotype-search')
+       'suggestFor' : $('quick-phenotype-search'),
+       'tooltip': 'phenotype-info'
     }
   };
 
@@ -2402,6 +2403,11 @@ document.observe('xwiki:dom:loaded', function() {
                }
             });
            } // generate simple checkboxes, not yn pickers
+           // -----------------------------------------------------
+           // Insert info boxes where available
+           if (typeof(service.tooltip) != 'undefined') {
+             item.insert(new Element('span', {'class' : 'xHelpButton fa fa-info-circle ' + service.tooltip, 'title' : id}));
+           }
           }
         });
     }
@@ -2413,6 +2419,7 @@ document.observe('xwiki:dom:loaded', function() {
          service.target.__hiddenParent.addClassName('hidden');
       }
     }
+    Event.fire (document, 'xwiki:dom:updated', {'elements' : [service.target]});
   };
 
   var doSearch = function(service) {
