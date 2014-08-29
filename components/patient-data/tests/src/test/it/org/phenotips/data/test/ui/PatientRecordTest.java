@@ -24,7 +24,8 @@ import org.phenotips.data.test.po.PatientRecordViewPage;
 import org.phenotips.navigation.test.po.HomePage;
 
 import org.xwiki.test.ui.AbstractTest;
-import org.xwiki.test.ui.SuperAdminAuthenticationRule;
+import org.xwiki.test.ui.AuthenticationRule;
+import org.xwiki.test.ui.JDoeAuthenticationRule;
 
 import java.util.List;
 
@@ -42,7 +43,7 @@ import org.openqa.selenium.By;
 public class PatientRecordTest extends AbstractTest
 {
     @Rule
-    public SuperAdminAuthenticationRule authenticationRule = new SuperAdminAuthenticationRule(getUtil(), getDriver());
+    public AuthenticationRule authenticationRule = new JDoeAuthenticationRule(getUtil(), getDriver(), true);
 
     @Test
     public void verifyPatientRecordEdit()
