@@ -64,6 +64,7 @@ public class ConversionHelpers
 
     public void featureSetUp(Boolean positive, Boolean negative, Boolean mapCategories) throws Exception
     {
+        // Set to true to include, and false to not include
         this.positive = positive;
         this.negative = negative;
         if (!mapCategories) {
@@ -144,6 +145,21 @@ public class ConversionHelpers
         return sortedFeatures;
     }
 
+    /**
+     * Filters features based on their prenatal status
+     * @param prenatal if true returns prenatal features, if false non-prenatal
+     */
+    public Set<Feature> filterFeaturesByPrenatal(Set<? extends Feature> features, Boolean prenatal)
+    {
+        Set<Feature> filtered = new HashSet<>();
+        for (Feature feature : features) {
+            if (StringUtils.equals(feature.getType(), "prenatal_phenotype") == prenatal) {
+                filtered.add(feature);
+            }
+        }
+        return filtered;
+    }
+
     @SuppressWarnings("unchecked")
     private List<String> getCategoriesFromOntology(String value)
     {
@@ -172,6 +188,9 @@ public class ConversionHelpers
 
     public static String wrapString(String string, Integer charactersPerLine)
     {
+        if (string == null) {
+            return "";
+        }
         StringBuilder returnString = new StringBuilder(string);
         Integer counter = charactersPerLine;
         Character nextChar = null;

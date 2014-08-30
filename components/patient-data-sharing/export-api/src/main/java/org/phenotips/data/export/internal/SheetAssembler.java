@@ -25,7 +25,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Assembles the various DataSections.
@@ -36,7 +39,8 @@ public class SheetAssembler
 
     Integer headerHeight = 0;
 
-    public SheetAssembler(Set<String> enabledFields, List<Patient> patients) throws Exception
+    public SheetAssembler(Set<String> enabledFields, List<Patient> patients,
+        Map<Patient, XWikiDocument> patientToDocMap) throws Exception
     {
         DataToCellConverter converter = new DataToCellConverter();
 
@@ -46,7 +50,7 @@ public class SheetAssembler
 
         /* Important. Headers MUST be generated first. Some of them contain setup code for the body */
         List<DataSection> headers = generateHeader(converter, enabledFields);
-        List<List<DataSection>> bodySections = generateBody(converter, patients);
+        List<List<DataSection>> bodySections = generateBody(converter, patients, patientToDocMap);
 
         List<DataSection> patientsCombined = new LinkedList<DataSection>();
         for (List<DataSection> patientSections : bodySections) {
@@ -81,20 +85,26 @@ public class SheetAssembler
         Styler.extendStyleVertically(oneSection, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
     }
 
-    private List<List<DataSection>> generateBody(DataToCellConverter converter, List<Patient> patients) throws Exception
+    private List<List<DataSection>> generateBody(DataToCellConverter converter, List<Patient> patients,
+        Map<Patient, XWikiDocument> patientToDocMap) throws Exception
     {
         List<List<DataSection>> allSections = new LinkedList<List<DataSection>>();
         for (Patient patient : patients) {
+            /* To weed out null sections */
             List<DataSection> _patientSections = new LinkedList<DataSection>();
             List<DataSection> patientSections = new LinkedList<DataSection>();
             _patientSections.add(converter.idBody(patient));
-            _patientSections.add(converter.phenotypeBody(patient));
+            /* An unfortunate need for the XWiki patient doc. This should be fixed in PhenoTipsPatient */
+            _patientSections.add(converter.documentInfoBody(patientToDocMap.get(patient)));
             _patientSections.add(converter.patientInfoBody(patient));
             _patientSections.add(converter.familyHistoryBody(patient));
             _patientSections.add(converter.prenatalPerinatalHistoryBody(patient));
             _patientSections.add(converter.prenatalPhenotypeBody(patient));
+            _patientSections.add(converter.medicalHistoryBody(patient));
+            _patientSections.add(converter.phenotypeBody(patient));
+            _patientSections.add(converter.omimBody(patient));
 
-            //This is needed for a null check
+            /* Null section filter */
             for (DataSection section : _patientSections) {
                 if (section != null) {
                     patientSections.add(section);
@@ -110,11 +120,14 @@ public class SheetAssembler
         List<DataSection> headerSections = new LinkedList<DataSection>();
         List<DataSection> _headerSections = new LinkedList<DataSection>();
         _headerSections.add(converter.idHeader(enabledFields));
-        _headerSections.add(converter.phenotypeHeader());
+        _headerSections.add(converter.documentInfoHeader(enabledFields));
         _headerSections.add(converter.patientInfoHeader(enabledFields));
         _headerSections.add(converter.familyHistoryHeader(enabledFields));
         _headerSections.add(converter.prenatalPerinatalHistoryHeader(enabledFields));
         _headerSections.add(converter.prenatalPhenotypeHeader());
+        _headerSections.add(converter.medicalHistoryHeader(enabledFields));
+        _headerSections.add(converter.phenotypeHeader());
+        _headerSections.add(converter.omimHeader(enabledFields));
 
         for (DataSection section : _headerSections) {
             if (section != null) {
@@ -135,7 +148,8 @@ public class SheetAssembler
                 cell.setX(cell.getX() + offset);
                 combinedSection.addCell(cell);
             }
-            offset = section.getMaxX() + 1;
+            // Don't forget that offset needs to be added to the previous value
+            offset = offset + section.getMaxX() + 1;
         }
         if (finalize) {
             combinedSection.finalizeToMatrix();

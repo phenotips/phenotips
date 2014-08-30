@@ -40,6 +40,8 @@ public class Styler
 {
     Map<Set<StyleOption>, CellStyle> styleCache = new HashMap<Set<StyleOption>, CellStyle>();
 
+    Font defaultFont = null;
+
     /** Use only on finalized sections */
     public static void styleSectionBottom(DataSection section, StyleOption style) throws Exception
     {
@@ -181,12 +183,15 @@ public class Styler
         CellStyle cellStyle = wBook.createCellStyle();
         /* For \n to work properly set to true */
         cellStyle.setWrapText(true);
+        if (defaultFont == null) {
+            defaultFont = createDefaultFont(wBook);
+        }
+        cellStyle.setFont(defaultFont);
         if (styles == null) {
             if (styleCache.containsKey(Collections.<StyleOption>emptySet())) {
                 cell.setCellStyle(styleCache.get(Collections.<StyleOption>emptySet()));
                 return;
             }
-            cellStyle.setFont(createDefaultFont(wBook));
             cell.setCellStyle(cellStyle);
             styleCache.put(Collections.<StyleOption>emptySet(), cellStyle);
             return;

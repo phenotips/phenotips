@@ -113,10 +113,13 @@ public class SpreadsheetExporter
         throws Exception
     {
         List<Patient> patients = new LinkedList<Patient>();
-        for (XWikiDocument patient : _patients) {
-            patients.add(new PhenoTipsPatient(patient));
+        Map<Patient, XWikiDocument> patientXWikiDocumentMap = new HashMap<>();
+        for (XWikiDocument patientDoc : _patients) {
+            Patient patientInstance = new PhenoTipsPatient(patientDoc);
+            patients.add(patientInstance);
+            patientXWikiDocumentMap.put(patientInstance, patientDoc);
         }
-        return new SheetAssembler(enabledFields, patients);
+        return new SheetAssembler(enabledFields, patients, patientXWikiDocumentMap);
     }
 
     protected void write(DataSection section, Sheet sheet)

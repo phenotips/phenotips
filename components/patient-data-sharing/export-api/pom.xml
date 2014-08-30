@@ -33,7 +33,7 @@
   <name>PhenoTips - Patient data sharing - Spreadsheet Export APIs</name>
 
   <properties>
-    <!-- FIXME -->
+      <!-- FIXME -->
     <coverage.instructionRatio>0.0</coverage.instructionRatio>
   </properties>
 
@@ -102,8 +102,8 @@
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>

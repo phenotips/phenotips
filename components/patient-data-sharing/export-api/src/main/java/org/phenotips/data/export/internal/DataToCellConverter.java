@@ -19,6 +19,7 @@
  */
 package org.phenotips.data.export.internal;
 
+import org.phenotips.data.Disorder;
 import org.phenotips.data.Feature;
 import org.phenotips.data.FeatureMetadatum;
 import org.phenotips.data.Patient;
@@ -40,9 +41,13 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.xpn.xwiki.doc.XWikiDocument;
+
 /**
  * Each of functions need to be written with certain specification. Body producing functions must return null if they
  * produce no cells, and they must not remove from {@link #enabledHeaderIdsBySection}.
+ * If there are cells requested (header present) but there is no data to put inside the cells,
+ * do not return null as cell value or no cell at all, return cell containing an empty string
  */
 public class DataToCellConverter
 {
@@ -206,6 +211,17 @@ public class DataToCellConverter
                     }
                     y++;
                 }
+                // Because otherwise the section has smaller width than the header
+                if (!metaPresent) {
+                    if (present.contains("meta")) {
+                        DataCell cell = new DataCell("", mX, y);
+                        section.addCell(cell);
+                    }
+                    if (present.contains("meta_code")) {
+                        DataCell cell = new DataCell("", mCX, y);
+                        section.addCell(cell);
+                    }
+                }
                 if (metaPresent) {
                     y--;
                 }
@@ -222,16 +238,28 @@ public class DataToCellConverter
         String sectionName = "id";
         Set<String> present = new HashSet<String>();
         if (enabledFields.remove("doc.name")) {
+            present.add("id");
+        }
+        if (enabledFields.remove("external_id")) {
             present.add("external_id");
-        } else {
+        }
+        if (present.size() == 0) {
             return null;
         }
-        DataSection section = new DataSection(sectionName);
         enabledHeaderIdsBySection.put(sectionName, present);
-        DataCell cell = new DataCell("Identifier", 0, 0, StyleOption.HEADER);
-        cell.addStyle(StyleOption.LARGE_HEADER);
-        section.addCell(cell);
 
+        DataSection section = new DataSection(sectionName);
+        DataCell topCell = new DataCell("Identifiers", 0, 0, StyleOption.HEADER);
+        topCell.addStyle(StyleOption.LARGE_HEADER);
+        section.addCell(topCell);
+        if (present.contains("id")) {
+            DataCell idCell = new DataCell("Report ID", 0, 1, StyleOption.HEADER);
+            section.addCell(idCell);
+        }
+        if (present.contains("external_id")) {
+            DataCell externalIdCell = new DataCell("Patient Identifier", 1, 1, StyleOption.HEADER);
+            section.addCell(externalIdCell);
+        }
 //        section.finalizeToMatrix();
         return section;
     }
@@ -245,24 +273,108 @@ public class DataToCellConverter
         }
         DataSection section = new DataSection(sectionName);
 
-        DataCell cell = new DataCell(patient.getExternalId(), 0, 0);
-        section.addCell(cell);
-
+        if (present.contains("id")) {
+            DataCell cell = new DataCell(patient.getId(), 0, 0);
+            section.addCell(cell);
+        }
+        if (present.contains("external_id")) {
+            DataCell cell = new DataCell(patient.getExternalId(), 1, 0);
+            section.addCell(cell);
+        }
 //        section.finalizeToMatrix();
         return section;
+    }
+
+    public DataSection documentInfoHeader(Set<String> enabledFields) throws Exception
+    {
+        String sectionName = "documentInfo";
+
+        // Must be linked to keep order; in other sections as well
+        Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
+        fieldToHeaderMap.put("referrer", "Referrer");
+        fieldToHeaderMap.put("creationDate", "Creation date");
+        fieldToHeaderMap.put("author", "Last modified by");
+        fieldToHeaderMap.put("date", "Last modification date");
+
+        Set<String> present = new LinkedHashSet<>();
+        for (String fieldId : fieldToHeaderMap.keySet()) {
+            if (enabledFields.remove(fieldId)) {
+                present.add(fieldId);
+            }
+        }
+        enabledHeaderIdsBySection.put(sectionName, present);
+
+        DataSection headerSection = new DataSection(sectionName);
+        if (present.isEmpty()) {
+            return null;
+        }
+
+        int x = 0;
+        for (String fieldId : present) {
+            DataCell headerCell = new DataCell(fieldToHeaderMap.get(fieldId), x, 1, StyleOption.HEADER);
+            headerSection.addCell(headerCell);
+            x++;
+        }
+        DataCell headerCell = new DataCell("Report Information", 0, 0, StyleOption.LARGE_HEADER);
+        headerCell.addStyle(StyleOption.HEADER);
+        headerSection.addCell(headerCell);
+
+        return headerSection;
+    }
+
+    public DataSection documentInfoBody(XWikiDocument patientDoc)
+    {
+        String sectionName = "documentInfo";
+        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        if (present == null || present.isEmpty()) {
+            return null;
+        }
+
+        DataSection bodySection = new DataSection(sectionName);
+        Integer x = 0;
+        if (present.contains("referrer")) {
+            String creator = patientDoc.getCreatorReference().getName();
+            DataCell cell = new DataCell(creator, x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (present.contains("creationDate")) {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+            Date creationDate = patientDoc.getCreationDate();
+            DataCell cell = new DataCell(format.format(creationDate), x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (present.contains("author")) {
+            String lastModifiedBy = patientDoc.getAuthorReference().getName();
+            DataCell cell = new DataCell(lastModifiedBy, x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (present.contains("date")) {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+            Date modificationDate = patientDoc.getDate();
+            DataCell cell = new DataCell(format.format(modificationDate), x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+
+        return bodySection;
     }
 
     public DataSection patientInfoHeader(Set<String> enabledFields) throws Exception
     {
         String sectionName = "patientInfo";
-        Map<String, String> fieldToHeaderMap = new HashMap<String, String>();
+
+        // Must be linked to keep order; in other sections as well
+        Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
         fieldToHeaderMap.put("first_name", "First Name");
         fieldToHeaderMap.put("last_name", "Last Name");
         fieldToHeaderMap.put("date_of_birth", "Date of birth");
         fieldToHeaderMap.put("gender", "Sex");
         fieldToHeaderMap.put("indication_for_referral", "Indication for referral");
 
-        Set<String> present = new HashSet<String>();
+        Set<String> present = new LinkedHashSet<>();
         for (String fieldId : fieldToHeaderMap.keySet()) {
             if (enabledFields.remove(fieldId)) {
                 present.add(fieldId);
@@ -311,7 +423,7 @@ public class DataToCellConverter
             x++;
         }
         if (present.contains("date_of_birth")) {
-            SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
             Date dob = patient.<Date>getData("dates").get("date_of_birth");
             DataCell cell = new DataCell(format.format(dob), x, 0);
             bodySection.addCell(cell);
@@ -341,6 +453,7 @@ public class DataToCellConverter
         fieldToHeaderMap.put("global_mode_of_inheritance", "Mode of inheritance");
         fieldToHeaderMap.put("miscarriages", "3+ miscarriages");
         fieldToHeaderMap.put("consanguinity", "Consanguinity");
+        fieldToHeaderMap.put("family_history", "Family conditions");
         fieldToHeaderMap.put("maternal_ethnicity", "Maternal");
         fieldToHeaderMap.put("paternal_ethnicity", "Paternal");
 
@@ -399,9 +512,17 @@ public class DataToCellConverter
         PatientData<List<String>> ethnicities = patient.getData("ethnicity");
         Integer x = 0;
         if (present.contains("global_mode_of_inheritance")) {
-            String mode =
-                patient.<SolrOntologyTerm>getData("global-qualifiers").get("global_mode_of_inheritance").getName();
+            PatientData<SolrOntologyTerm> globalControllers = patient.<SolrOntologyTerm>getData("global-qualifiers");
+            SolrOntologyTerm modeTerm = globalControllers !=
+                null ? globalControllers.get("global_mode_of_inheritance") : null;
+            String mode = modeTerm != null ? modeTerm.getName() : "";
             DataCell cell = new DataCell(mode, x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (present.contains("miscarriages")) {
+            Integer miscarriages = familyHistory.get("miscarriages");
+            DataCell cell = new DataCell(ConversionHelpers.integerToStrBool(miscarriages), x, 0);
             bodySection.addCell(cell);
             x++;
         }
@@ -411,9 +532,11 @@ public class DataToCellConverter
             bodySection.addCell(cell);
             x++;
         }
-        if (present.contains("miscarriages")) {
-            Integer miscarriages = familyHistory.get("miscarriages");
-            DataCell cell = new DataCell(ConversionHelpers.integerToStrBool(miscarriages), x, 0);
+        if (present.contains("family_history")) {
+            PatientData<String> notes = patient.<String>getData("notes");
+            String familyConditions = notes != null ? notes.get("indication_for_referral") : "";
+            familyConditions = ConversionHelpers.wrapString(familyConditions, charactersPerLine);
+            DataCell cell = new DataCell(familyConditions, x, 0);
             bodySection.addCell(cell);
             x++;
         }
@@ -425,6 +548,10 @@ public class DataToCellConverter
                 bodySection.addCell(cell);
                 y++;
             }
+            if (maternalEthnicity.size() == 0) {
+                DataCell cell = new DataCell("", x, y);
+                bodySection.addCell(cell);
+            }
             x++;
         }
         if (present.contains("paternal_ethnicity")) {
@@ -434,6 +561,10 @@ public class DataToCellConverter
                 DataCell cell = new DataCell(pEthnicity, x, y);
                 bodySection.addCell(cell);
                 y++;
+            }
+            if (paternalEthnicity.size() == 0) {
+                DataCell cell = new DataCell("", x, y);
+                bodySection.addCell(cell);
             }
             x++;
         }
@@ -445,6 +576,8 @@ public class DataToCellConverter
     {
         String sectionName = "prenatalPerinatalHistory";
         Map<String, String> fieldToHeaderMap = new LinkedHashMap<String, String>();
+        fieldToHeaderMap.put("gestation", "Gestation at delivery");
+        fieldToHeaderMap.put("prenatal_development", "Notes");
         fieldToHeaderMap.put("assistedReproduction_fertilityMeds", "Fertility medication");
         fieldToHeaderMap.put("ivf", "In vitro fertilization");
         fieldToHeaderMap.put("assistedReproduction_surrogacy", "Surrogacy");
@@ -470,7 +603,8 @@ public class DataToCellConverter
         apgarFields.retainAll(present);
         assitedReproductionFields.retainAll(present);
         int apgarOffset = apgarFields.size();
-        int assistedReproductionOffset = apgarOffset + assitedReproductionFields.size() + 1;
+        // there used to be a +1 for the offset
+        int assistedReproductionOffset = apgarOffset + assitedReproductionFields.size();
         int bottomY = (apgarOffset > 0 || assistedReproductionOffset > 0) ? 2 : 1;
 
         int x = 0;
@@ -508,6 +642,19 @@ public class DataToCellConverter
         PatientData<Integer> history = patient.getData("prenatalPerinatalHistory");
         PatientData<String> apgarScores = patient.getData("apgar");
         Integer x = 0;
+        if (present.contains("gestation")) {
+            Integer gestation = history.get("gestation");
+            DataCell cell = new DataCell(ConversionHelpers.integerToStrBool(gestation), x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (present.contains("prenatal_development")) {
+            PatientData<String> notes = patient.getData("notes");
+            String prenatalNotes = notes != null ? notes.get("prenatal_development") : "";
+            DataCell cell = new DataCell(ConversionHelpers.wrapString(prenatalNotes, charactersPerLine), x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
         if (present.contains("assistedReproduction_fertilityMeds")) {
             Integer assisted = history.get("assistedReproduction_fertilityMeds");
             DataCell cell = new DataCell(ConversionHelpers.integerToStrBool(assisted), x, 0);
@@ -527,14 +674,16 @@ public class DataToCellConverter
             x++;
         }
         if (present.contains("apgar1")) {
-            String apgar = apgarScores.get("apgar1");
-            DataCell cell = new DataCell(apgar, x, 0);
+            Object apgar = apgarScores.get("apgar1");
+            String cellValue = apgar != null ? apgar.toString() : "";
+            DataCell cell = new DataCell(cellValue, x, 0);
             bodySection.addCell(cell);
             x++;
         }
         if (present.contains("apgar5")) {
-            String apgar = apgarScores.get("apgar5");
-            DataCell cell = new DataCell(apgar, x, 0);
+            Object apgar = apgarScores.get("apgar5");
+            String cellValue = apgar != null ? apgar.toString() : "";
+            DataCell cell = new DataCell(cellValue, x, 0);
             bodySection.addCell(cell);
             x++;
         }
@@ -547,7 +696,7 @@ public class DataToCellConverter
         String sectionName = "prenatalPhenotype";
         String[] fieldIds =
             { "prenatal_phenotype", "prenatal_phenotype_code", "prenatal_phenotype_combined",
-                "negative_prenatal__phenotype", "prenatal_phenotype_by_section" };
+                "negative_prenatal_phenotype", "prenatal_phenotype_by_section" };
         /* FIXME These will not work properly in different configurations */
         String[][] headerIds =
             { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "negative" }, { "category" } };
@@ -569,7 +718,6 @@ public class DataToCellConverter
         prenatalPhenotypeHelper
             .featureSetUp(present.contains("phenotype"), present.contains("negative"), present.contains("category"));
     }
-
 
     public DataSection prenatalPhenotypeHeader() throws Exception
     {
@@ -631,15 +779,17 @@ public class DataToCellConverter
         int x;
         int y = 0;
         Set<? extends Feature> features = patient.getFeatures();
-        phenotypeHelper.newPatient();
+
+        prenatalPhenotypeHelper.newPatient();
+        features = prenatalPhenotypeHelper.filterFeaturesByPrenatal(features, true);
         Boolean categoriesEnabled = present.contains("category");
         List<Feature> sortedFeatures;
         Map<String, String> sectionFeatureLookup = new HashMap<String, String>();
         if (!categoriesEnabled) {
-            sortedFeatures = phenotypeHelper.sortFeaturesSimple(features);
+            sortedFeatures = prenatalPhenotypeHelper.sortFeaturesSimple(features);
         } else {
-            sortedFeatures = phenotypeHelper.sortFeaturesWithSections(features);
-            sectionFeatureLookup = phenotypeHelper.getSectionFeatureTree();
+            sortedFeatures = prenatalPhenotypeHelper.sortFeaturesWithSections(features);
+            sectionFeatureLookup = prenatalPhenotypeHelper.getSectionFeatureTree();
         }
 
         Boolean lastStatus = false;
@@ -706,4 +856,155 @@ public class DataToCellConverter
         return section;
     }
 
+    public DataSection omimHeader(Set<String> enabledFields) throws Exception
+    {
+        String sectionName = "omim";
+
+        String[] fieldIds =
+            { "omim_id", "omim_id_code", "omim_id_combined" };
+        /* FIXME These will not work properly in different configurations */
+        String[][] headerIds =
+            { { "disorder" }, { "code" }, { "disorder", "code" } };
+        Set<String> present = new HashSet<String>();
+
+        int counter = 0;
+        for (String fieldId : fieldIds) {
+            if (enabledFields.remove(fieldId)) {
+                for (String headerId : headerIds[counter]) {
+                    present.add(headerId);
+                }
+            }
+            counter++;
+        }
+        enabledHeaderIdsBySection.put(sectionName, present);
+
+        // Must be linked to keep order; in other sections as well
+        Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
+        fieldToHeaderMap.put("disorder", "Label");
+        fieldToHeaderMap.put("code", "ID");
+
+        DataSection headerSection = new DataSection(sectionName);
+        if (present.isEmpty()) {
+            return null;
+        }
+
+        int x = 0;
+        for (String fieldId : present) {
+            DataCell headerCell = new DataCell(fieldToHeaderMap.get(fieldId), x, 1, StyleOption.HEADER);
+            headerSection.addCell(headerCell);
+            x++;
+        }
+        DataCell headerCell = new DataCell("Disorders", 0, 0, StyleOption.LARGE_HEADER);
+        headerCell.addStyle(StyleOption.HEADER);
+        headerSection.addCell(headerCell);
+
+        return headerSection;
+    }
+
+    public DataSection omimBody(Patient patient)
+    {
+        String sectionName = "omim";
+        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        if (present == null || present.isEmpty()) {
+            return null;
+        }
+
+        DataSection bodySection = new DataSection(sectionName);
+
+        Set<? extends Disorder> disorders = patient.getDisorders();
+        Integer y = 0;
+        for (Disorder disorder : disorders) {
+            Integer x = 0;
+            if (present.contains("disorder")) {
+                DataCell cell = new DataCell(ConversionHelpers.wrapString(disorder.getName(), charactersPerLine), x, y);
+                bodySection.addCell(cell);
+                x++;
+            }
+            if (present.contains("code")) {
+                DataCell cell = new DataCell(disorder.getId(), x, y);
+                bodySection.addCell(cell);
+                x++;
+            }
+            y++;
+        }
+        /* If there is no data, but there are headers present, create empty cells */
+        if (disorders.size() == 0) {
+            Integer x = 0;
+            if (present.contains("disorder")) {
+                DataCell cell = new DataCell("", x, y);
+                bodySection.addCell(cell);
+                x++;
+            }
+            if (present.contains("code")) {
+                DataCell cell = new DataCell("", x, y);
+                bodySection.addCell(cell);
+                x++;
+            }
+        }
+
+        return bodySection;
+    }
+
+    public DataSection medicalHistoryHeader(Set<String> enabledFields) throws Exception
+    {
+        String sectionName = "medicalHistory";
+
+        // Must be linked to keep order; in other sections as well
+        Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
+        fieldToHeaderMap.put("global_age_of_onset", "Age of onset");
+        fieldToHeaderMap.put("medical_history", "Notes");
+
+        Set<String> present = new LinkedHashSet<>();
+        for (String fieldId : fieldToHeaderMap.keySet()) {
+            if (enabledFields.remove(fieldId)) {
+                present.add(fieldId);
+            }
+        }
+        enabledHeaderIdsBySection.put(sectionName, present);
+
+        DataSection headerSection = new DataSection(sectionName);
+        if (present.isEmpty()) {
+            return null;
+        }
+
+        int x = 0;
+        for (String fieldId : present) {
+            DataCell headerCell = new DataCell(fieldToHeaderMap.get(fieldId), x, 1, StyleOption.HEADER);
+            headerSection.addCell(headerCell);
+            x++;
+        }
+        DataCell headerCell = new DataCell("Medical History", 0, 0, StyleOption.LARGE_HEADER);
+        headerCell.addStyle(StyleOption.HEADER);
+        headerSection.addCell(headerCell);
+
+        return headerSection;
+    }
+
+    public DataSection medicalHistoryBody(Patient patient)
+    {
+        String sectionName = "medicalHistory";
+        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        if (present == null || present.isEmpty()) {
+            return null;
+        }
+        DataSection bodySection = new DataSection(sectionName);
+
+        Integer x = 0;
+        if (present.contains("global_age_of_onset")) {
+            PatientData<SolrOntologyTerm> qualifiers = patient.getData("global-qualifiers");
+            SolrOntologyTerm ageOfOnset = qualifiers != null ? qualifiers.get("global_age_of_onset") : null;
+            DataCell cell = new DataCell(ageOfOnset != null ? ageOfOnset.getName() : "", x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+        if (present.contains("medical_history")) {
+            PatientData<String> notes = patient.getData("notes");
+            String medicalNotes = notes != null ? notes.get("medical_history") : "";
+            DataCell cell = new DataCell(ConversionHelpers.wrapString(medicalNotes, charactersPerLine), x, 0);
+            bodySection.addCell(cell);
+            x++;
+        }
+
+        return bodySection;
+    }
 }
