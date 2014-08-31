@@ -101,6 +101,7 @@ public class SheetAssembler
             _patientSections.add(converter.prenatalPerinatalHistoryBody(patient));
             _patientSections.add(converter.prenatalPhenotypeBody(patient));
             _patientSections.add(converter.medicalHistoryBody(patient));
+            _patientSections.add(converter.isNormalBody(patient));
             _patientSections.add(converter.phenotypeBody(patient));
             _patientSections.add(converter.omimBody(patient));
 
@@ -126,6 +127,7 @@ public class SheetAssembler
         _headerSections.add(converter.prenatalPerinatalHistoryHeader(enabledFields));
         _headerSections.add(converter.prenatalPhenotypeHeader());
         _headerSections.add(converter.medicalHistoryHeader(enabledFields));
+        _headerSections.add(converter.isNormalHeader(enabledFields));
         _headerSections.add(converter.phenotypeHeader());
         _headerSections.add(converter.omimHeader(enabledFields));
 

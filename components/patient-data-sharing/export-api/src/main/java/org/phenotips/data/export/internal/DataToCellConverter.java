@@ -47,7 +47,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * Each of functions need to be written with certain specification. Body producing functions must return null if they
  * produce no cells, and they must not remove from {@link #enabledHeaderIdsBySection}.
  * If there are cells requested (header present) but there is no data to put inside the cells,
- * do not return null as cell value or no cell at all, return cell containing an empty string
+ * do not return null as cell value or no cell at all, return a cell containing an empty string.
  */
 public class DataToCellConverter
 {
@@ -64,7 +64,7 @@ public class DataToCellConverter
         String sectionName = "phenotype";
         String[] fieldIds =
             { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta", "phenotype_meta",
-                "negative_phenotype", "phenotype_by_section" };
+                "negative_phenotype", "phenotype_by_section"};
         /* FIXME These will not work properly in different configurations */
         String[][] headerIds =
             { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "meta_code" }, { "meta" }, { "negative" },
@@ -1003,6 +1003,53 @@ public class DataToCellConverter
             DataCell cell = new DataCell(ConversionHelpers.wrapString(medicalNotes, charactersPerLine), x, 0);
             bodySection.addCell(cell);
             x++;
+        }
+
+        return bodySection;
+    }
+
+    public DataSection isNormalHeader(Set<String> enabledFields) throws Exception
+    {
+        String sectionName = "isNormal";
+
+        // Must be linked to keep order; in other sections as well
+        Map<String, String> fieldToHeaderMap = new LinkedHashMap<>();
+        fieldToHeaderMap.put("unaffected", "Clinically normal");
+
+        Set<String> present = new LinkedHashSet<>();
+        for (String fieldId : fieldToHeaderMap.keySet()) {
+            if (enabledFields.remove(fieldId)) {
+                present.add(fieldId);
+            }
+        }
+        enabledHeaderIdsBySection.put(sectionName, present);
+
+        DataSection headerSection = new DataSection(sectionName);
+        if (present.isEmpty()) {
+            return null;
+        }
+
+        DataCell headerCell = new DataCell("Clinically Normal", 0, 0, StyleOption.LARGE_HEADER);
+        headerCell.addStyle(StyleOption.HEADER);
+        headerSection.addCell(headerCell);
+
+        return headerSection;
+    }
+
+    public DataSection isNormalBody(Patient patient)
+    {
+        String sectionName = "isNormal";
+        Set<String> present = enabledHeaderIdsBySection.get(sectionName);
+        if (present == null || present.isEmpty()) {
+            return null;
+        }
+        DataSection bodySection = new DataSection(sectionName);
+
+        if (present.contains("unaffected")) {
+            PatientData<Integer> isNormal = patient.getData("isClinicallyNormal");
+            Integer isNormalValue = isNormal != null ? isNormal.get("unaffected") : 0;
+            DataCell cell = new DataCell(isNormalValue == 0 ? "No" : "Yes", 0, 0);
+            bodySection.addCell(cell);
         }
 
         return bodySection;
