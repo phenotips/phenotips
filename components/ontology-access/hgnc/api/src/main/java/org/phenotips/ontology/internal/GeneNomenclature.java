@@ -36,7 +36,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -94,6 +96,10 @@ public class GeneNomenclature implements OntologyService, Initializable
 
     private static final String WILDCARD = "*";
 
+    private static final String DEFAULT_OPERATOR = "AND";
+
+    private static final Map<String, String> QUERY_OPERATORS = new HashMap<>();
+
     /** Performs HTTP requests to the remote REST service. */
     private final CloseableHttpClient client = HttpClients.createSystem();
 
@@ -118,6 +124,9 @@ public class GeneNomenclature implements OntologyService, Initializable
         } catch (final CacheException ex) {
             throw new InitializationException("Cannot create cache: " + ex.getMessage());
         }
+        QUERY_OPERATORS.put("OR", "");
+        QUERY_OPERATORS.put(DEFAULT_OPERATOR, DEFAULT_OPERATOR + ' ');
+        QUERY_OPERATORS.put("NOT", "-");
     }
 
     @Override
@@ -126,6 +135,7 @@ public class GeneNomenclature implements OntologyService, Initializable
         OntologyTerm result = this.cache.get(id);
         if (result == null) {
             HttpGet method = new HttpGet(FETCH_SERVICE_URL + "symbol/" + id);
+            method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
             try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
                 String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
                 JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
@@ -147,7 +157,7 @@ public class GeneNomenclature implements OntologyService, Initializable
     public Set<OntologyTerm> getTerms(Collection<String> ids)
     {
         // FIXME Reimplement with a bunch of async connections fired in parallel
-        Set<OntologyTerm> result = new HashSet<>();
+        Set<OntologyTerm> result = new LinkedHashSet<>();
         for (String id : ids) {
             OntologyTerm term = getTerm(id);
             if (term != null) {
@@ -175,7 +185,7 @@ public class GeneNomenclature implements OntologyService, Initializable
                 JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
                 JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
                 if (docs.size() >= 1) {
-                    Set<String> ids = new HashSet<>();
+                    Set<String> ids = new LinkedHashSet<>();
                     // The remote service doesn't offer any query control, manually select the right range
                     int start = 0;
                     if (queryOptions.containsKey(CommonParams.START)) {
@@ -297,35 +307,61 @@ public class GeneNomenclature implements OntologyService, Initializable
     {
         StringBuilder query = new StringBuilder();
         for (Map.Entry<String, ?> field : fieldValues.entrySet()) {
-            if (Collection.class.isInstance(field.getValue()) && ((Collection<?>) field.getValue()).isEmpty()) {
-                continue;
-            }
-            query.append("+");
-            query.append(ClientUtils.escapeQueryChars(field.getKey()));
-            query.append(":(");
-            if (Collection.class.isInstance(field.getValue())) {
-                for (Object value : (Collection<?>) field.getValue()) {
-                    String svalue = String.valueOf(value);
-                    if (svalue.endsWith(WILDCARD)) {
-                        svalue = ClientUtils.escapeQueryChars(StringUtils.removeEnd(svalue, WILDCARD)) + WILDCARD;
-                    } else {
-                        svalue = ClientUtils.escapeQueryChars(svalue);
-                    }
-                    query.append(ClientUtils.escapeQueryChars(svalue));
-                    query.append(' ');
-                }
-            } else {
-                String svalue = String.valueOf(field.getValue());
+            processQueryPart(query, field, true);
+        }
+        return StringUtils.removeStart(query.toString().trim(), DEFAULT_OPERATOR);
+    }
+
+    private StringBuilder processQueryPart(StringBuilder query, Map.Entry<String, ?> field, boolean includeOperator)
+    {
+        if (Collection.class.isInstance(field.getValue()) && ((Collection<?>) field.getValue()).isEmpty()) {
+            return query;
+        }
+        if (Map.class.isInstance(field.getValue()) && QUERY_OPERATORS.containsKey(field.getKey())) {
+            @SuppressWarnings("unchecked")
+            Map.Entry<String, Map<String, ?>> subquery = (Map.Entry<String, Map<String, ?>>) field;
+            return processSubquery(query, subquery);
+        }
+        query.append(' ');
+        if (includeOperator) {
+            query.append(QUERY_OPERATORS.get(DEFAULT_OPERATOR));
+        }
+
+        query.append(ClientUtils.escapeQueryChars(field.getKey()));
+        query.append(":(");
+        if (Collection.class.isInstance(field.getValue())) {
+            for (Object value : (Collection<?>) field.getValue()) {
+                String svalue = String.valueOf(value);
                 if (svalue.endsWith(WILDCARD)) {
                     svalue = ClientUtils.escapeQueryChars(StringUtils.removeEnd(svalue, WILDCARD)) + WILDCARD;
                 } else {
                     svalue = ClientUtils.escapeQueryChars(svalue);
                 }
-                query.append(svalue);
+                query.append(ClientUtils.escapeQueryChars(svalue));
+                query.append(' ');
             }
-            query.append(')');
+        } else {
+            String svalue = String.valueOf(field.getValue());
+            if (svalue.endsWith(WILDCARD)) {
+                svalue = ClientUtils.escapeQueryChars(StringUtils.removeEnd(svalue, WILDCARD)) + WILDCARD;
+            } else {
+                svalue = ClientUtils.escapeQueryChars(svalue);
+            }
+            query.append(svalue);
         }
-        return query.toString();
+        query.append(')');
+        return query;
+
+    }
+
+    private StringBuilder processSubquery(StringBuilder query, Map.Entry<String, Map<String, ?>> subquery)
+    {
+        query.append(' ').append(QUERY_OPERATORS.get(subquery.getKey())).append('(');
+        for (Map.Entry<String, ?> field : subquery.getValue().entrySet()) {
+            processQueryPart(query, field, false);
+        }
+        query.append(')');
+        return query;
     }
 
     private class JSONOntologyTerm implements OntologyTerm
