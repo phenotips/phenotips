@@ -502,6 +502,7 @@ document.observe('xwiki:dom:loaded', function() {
             resultInfo : {
                            "Locus"      : {"selector"  : "Locus"}
                          },
+            tooltip: 'omim-disease-info',
             enableHierarchy: false,
             fadeOnClear : false,
             timeout : 30000,
@@ -2264,7 +2265,8 @@ document.observe('xwiki:dom:loaded', function() {
        'script' : new XWiki.Document('OmimPredictService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
        'source' : [defaultSearchTermIDsInput],
        'target' : $('omim-search-results'),
-       'suggestFor' : omimField
+       'suggestFor' : omimField,
+       'tooltip': 'omim-disease-info'
     },
     'diffDiagnosis' : {
        'script' : new XWiki.Document('DiffDiagnosisService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
