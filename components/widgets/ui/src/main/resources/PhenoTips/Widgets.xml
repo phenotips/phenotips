@@ -170,8 +170,8 @@
     resultInfo : "info",
     // The name of the JSON parameter or XML attribute holding the result category.
     resultCategory : "category",
-    // The name of the JSON parameter or XML attribute holding the result synonym.
-    resultSynonym : "synonym",
+    // The name of the JSON parameter or XML attribute holding the result alternative name.
+    resultAltName : "",
     // The name of the JSON parameter or XML attribute holding the result icon.
     resultIcon: "icon",
     // The name of the JSON parameter or XML attribute holding a potential result hint (displayed next to the value).
@@ -599,27 +599,24 @@
         category = '';
       }
 
-      var suggestValue = _getResultFieldValue(results[i], source.resultValue || this.options.resultValue);
-      var currFieldValue = this.sInput;
-      var curSimilarity = this.computeSimilarity(suggestValue,currFieldValue);
-      var synonym = _getResultFieldValueAsArray(results[i], source.resultSynonym || this.options.resultSynonym);
-      var synSimilarity = this.computeSimilarity(synonym[0], currFieldValue);
-      var matchSynonym = synonym[0];
-      for (var k = 1; k &lt; synonym.length; ++k) {
-        var tempSimilarity = this.computeSimilarity(synonym[k], currFieldValue);
-        if (tempSimilarity &gt; synSimilarity) {
-          synSimilarity = tempSimilarity;
-          matchSynonym = synonym[k];
+      if (this.options.resultAltName) {
+        var bestNameMatch = '';
+        var name =  _getResultFieldValue(results[i], source.resultValue || this.options.resultValue);
+        var altNames = _getResultFieldValueAsArray(results[i], source.resultAltName || this.options.resultAltName);
+        var nameMatchScore = this.computeSimilarity(name, this.sInput);
+        for (var k = 0; k &lt; altNames.length; ++k) {
+           var altNameMatchScore = this.computeSimilarity(altNames[k], this.sInput);
+           if (altNameMatchScore &gt; nameMatchScore) {
+             bestNameMatch = altNames[k];
+             nameMatchScore = altNameMatchScore;
+           }
         }
-      }
-      if (curSimilarity &gt;= synSimilarity) {
-        matchSynonym = "";
       }
 
       aSuggestions.push({
         'id': _getResultFieldValue(results[i], source.resultId || this.options.resultId),
         'value': _getResultFieldValue(results[i], source.resultValue || this.options.resultValue),
-        'synonym': matchSynonym,
+        'altName': bestNameMatch,
         'info'    : info,
         'category': category
       });
@@ -977,8 +974,8 @@
     }
     var displayInfo = new Element('div', {'class':'suggestInfo'}).update(data.info);
     displayNode.insert(displayInfo);
-    if(data.synonym){
-        displayInfo.insert({'top' : new Element('span', {'class':'suggestSynonym'}).update(data.synonym)});
+    if(data.altName){
+        displayInfo.insert({'top' : new Element('span', {'class':'matching-alternative-name'}).update(data.altName)});
     }
 
     var valueNode = new Element('div')
@@ -4416,18 +4413,18 @@ div.suggestItems span.info span.hint {
   margin-left:5px;
 }
 
-div.suggestItems span.suggestSynonym{
+div.suggestItems span.matching-alternative-name {
   display: inline-block;
   padding-left: 55px;
 }
 
-div.suggestItems span.suggestSynonym:before {
+div.suggestItems span.matching-alternative-name:before {
   content: "(also known as: ";
   font-size: 0.8em;
   opacity: .4;
 }
 
-div.suggestItems span.suggestSynonym:after {
+div.suggestItems span.matching-alternative-name:after {
   content: ")";
   font-size: 0.8em;
   opacity: .4;
