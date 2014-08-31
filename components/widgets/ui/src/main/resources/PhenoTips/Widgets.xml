@@ -3865,7 +3865,7 @@ document.observe("xwiki:dom:loaded", function() {
          }
        },
       'phenotype-info' : {
-        'hint'     : 'About this term',
+        'hint'     : 'About this phenotype',
         'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
@@ -3910,7 +3910,7 @@ document.observe("xwiki:dom:loaded", function() {
         }
       },
       'phenotype-qualifier-info' : {
-        'hint'     : 'About this term',
+        'hint'     : 'About this phenotype qualifier',
         'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
