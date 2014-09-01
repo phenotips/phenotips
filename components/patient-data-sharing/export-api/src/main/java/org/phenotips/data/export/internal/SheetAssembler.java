@@ -78,7 +78,7 @@ public class SheetAssembler
         /* Add style through functions. Use only with finalized sections. */
         Styler.styleSectionBottom(headerCombined, StyleOption.HEADER_BOTTOM);
 
-        headerHeight = headerCombined.getMaxX();
+        headerHeight = headerCombined.getMaxY() + 1;
         oneSection = assembleSectionsY(Arrays.asList(headerCombined, bodyCombined), true);
 
         /* Extend the section borders all the way to the bottom of the sheet */

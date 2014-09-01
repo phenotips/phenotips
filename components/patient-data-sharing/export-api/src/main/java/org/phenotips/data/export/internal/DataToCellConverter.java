@@ -228,7 +228,15 @@ public class DataToCellConverter
             }
             y++;
         }
-
+        /* Creating empites */
+        if (sortedFeatures.size() == 0) {
+            Integer emptyX = 0;
+            for (String header : present) {
+                DataCell cell = new DataCell("", emptyX, 0);
+                section.addCell(cell);
+                emptyX++;
+            }
+        }
 //        section.finalizeToMatrix();
         return section;
     }
@@ -854,7 +862,15 @@ public class DataToCellConverter
             }
             y++;
         }
-
+        /* Creating empites */
+        if (sortedFeatures.size() == 0) {
+            Integer emptyX = 0;
+            for (String header : present) {
+                DataCell cell = new DataCell("", emptyX, 0);
+                section.addCell(cell);
+                emptyX++;
+            }
+        }
 //        section.finalizeToMatrix();
         return section;
     }
