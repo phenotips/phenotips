@@ -19,16 +19,16 @@
  */
 package org.phenotips.data.securestorage;
 
-import javax.persistence.Entity;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 /**
- * Stores information about previous pushes of patient data to a given remote server.<p>
- *
+ * Stores information about previous pushes of patient data to a given remote server.
+ * <p>
  * Stored data includes the last know patient URL on the remote server (for quick linking in UI)
  *
  * @version $Id$
@@ -41,22 +41,22 @@ public class PatientPushedToInfo
     @GeneratedValue
     private long id;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String localPatientID;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String remoteServerName;
 
-    @Column(nullable=false)
-    private Timestamp lastTimePushed;   // last time this patient was pushed to this server
+    @Column(nullable = false)
+    private Timestamp lastTimePushed; // last time this patient was pushed to this server
 
-    @Column(nullable=false)
-    private String remotePatientID;     // ID as of last push (in theory may change - GUID should be used for updating)
+    @Column(nullable = false)
+    private String remotePatientID; // ID as of last push (in theory may change - GUID should be used for updating)
 
-    private String remotePatientURL;    // URL as of last push. In practice can recostruct form ID, but stored
-                                        // to acount for possibly differently configured remote server
+    private String remotePatientURL; // URL as of last push. In practice can recostruct form ID, but stored
+    // to acount for possibly differently configured remote server
 
-    private String remotePatientGUID;   // supposedly never changes; nullable: in case remote server does not provide a GUID
+    private String remotePatientGUID; // supposedly never changes; nullable: in case remote server does not provide a GUID
 
     /** Default constructor used by Hibernate. */
     protected PatientPushedToInfo()
@@ -66,16 +66,17 @@ public class PatientPushedToInfo
 
     /**
      * Used by the SecureStorageManager
+     *
      * @param
      */
     public PatientPushedToInfo(String patientID, String remoteServerName,
-                               String remotePatientGUID, String remotePatientID, String remotePatientURL)
+        String remotePatientGUID, String remotePatientID, String remotePatientURL)
     {
-        this.localPatientID    = patientID;
-        this.remoteServerName  = remoteServerName;
+        this.localPatientID = patientID;
+        this.remoteServerName = remoteServerName;
         this.remotePatientGUID = remotePatientGUID;
-        this.remotePatientID   = remotePatientID;
-        this.remotePatientURL  = remotePatientURL;
+        this.remotePatientID = remotePatientID;
+        this.remotePatientURL = remotePatientURL;
         this.setLastPushTimeToNow();
     }
 
@@ -102,7 +103,7 @@ public class PatientPushedToInfo
 
     public String getRemotePatientGUID()
     {
-        return remotePatientGUID;
+        return this.remotePatientGUID;
     }
 
     public void setRemotePatientGUID(String remotePatientGUID)
@@ -112,7 +113,7 @@ public class PatientPushedToInfo
 
     public String getRemotePatientID()
     {
-        return remotePatientID;
+        return this.remotePatientID;
     }
 
     public void setRemotePatientID(String remotePatientID)
@@ -122,7 +123,7 @@ public class PatientPushedToInfo
 
     public String getRemotePatientURL()
     {
-        return remotePatientURL;
+        return this.remotePatientURL;
     }
 
     public void setRemotePatientURL(String remotePatientURL)

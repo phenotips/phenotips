@@ -41,7 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Implementation of {@link RecordConfiguration} that takes into account a {@link CustomConfiguration custom
  * configuration}.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -52,7 +52,7 @@ public class ConfiguredRecordConfiguration extends GlobalRecordConfiguration imp
 
     /**
      * Simple constructor passing all the needed components.
-     * 
+     *
      * @param configuration the custom configuration
      * @param execution the execution context manager
      * @param uixManager the UIExtension manager
@@ -76,7 +76,7 @@ public class ConfiguredRecordConfiguration extends GlobalRecordConfiguration imp
                 this.orderFilter));
         }
         if (overrides != null && !overrides.isEmpty()) {
-            Collections.<RecordSection> sort(result, new Comparator<RecordSection>()
+            Collections.<RecordSection>sort(result, new Comparator<RecordSection>()
             {
                 @Override
                 public int compare(RecordSection o1, RecordSection o2)

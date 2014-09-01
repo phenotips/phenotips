@@ -19,6 +19,11 @@
  */
 package org.phenotips.hpoa.annotation;
 
+import org.phenotips.hpoa.ontology.Ontology;
+import org.phenotips.hpoa.utils.graph.BGraph;
+
+import org.xwiki.component.annotation.Component;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,11 +36,6 @@ import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.phenotips.hpoa.ontology.Ontology;
-import org.phenotips.hpoa.utils.graph.BGraph;
-
-import org.xwiki.component.annotation.Component;
 
 @Component
 @Named("omim-hpo")

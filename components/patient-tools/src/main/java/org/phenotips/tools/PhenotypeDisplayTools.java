@@ -40,7 +40,7 @@ import com.xpn.xwiki.api.Document;
 
 /**
  * Display lists of phenotype properties.
- * 
+ *
  * @version $Id$
  */
 @Component

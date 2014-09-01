@@ -19,17 +19,17 @@
  */
 package org.phenotips.ncbieutils;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.phenotips.ncbieutils.internal.AbstractSpecializedNCBIEUtilsAccessService;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 /**
  * Script service exposing services provided by the online NCBI Entrez Utilities webserver.
- * 
+ *
  * @version $Id$
  * @since 1.0M1
  */

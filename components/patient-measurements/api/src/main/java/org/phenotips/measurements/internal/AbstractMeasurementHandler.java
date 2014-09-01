@@ -19,6 +19,13 @@
  */
 package org.phenotips.measurements.internal;
 
+import org.phenotips.measurements.MeasurementHandler;
+import org.phenotips.measurements.MeasurementsChartConfiguration;
+import org.phenotips.measurements.MeasurementsChartConfigurationsFactory;
+
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,19 +36,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.phenotips.measurements.MeasurementHandler;
-import org.phenotips.measurements.MeasurementsChartConfiguration;
-import org.phenotips.measurements.MeasurementsChartConfigurationsFactory;
-
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.slf4j.Logger;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
-
 
 /**
  * Base class for implementing a {@link MeasurementHandler}.
- * 
+ *
  * @version $Id$
  */
 public abstract class AbstractMeasurementHandler implements MeasurementHandler, Initializable
@@ -66,7 +66,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
 
         /**
          * Constructor specifying all three values of the triplet.
-         * 
+         *
          * @param l L value, the power
          * @param m M value, the median
          * @param s S value, the generalized coefficient of variation
@@ -110,7 +110,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
 
     /**
      * Get the name of this specific kind of measurements.
-     * 
+     *
      * @return a simple name, all lowercase keyword
      */
     public abstract String getName();
@@ -225,7 +225,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
      * found in the list, then return that entry. If there's no entry for the requested month, but there are valid
      * entries in previous and later months, a linear interpolation of the nearest surrounding entries is computed and
      * returned. Otherwise, if the requested month is beyond the last valid entry, return the last valid entry.
-     * 
+     *
      * @param list the standard list of measurements where to look in
      * @param ageInMonths the target age (in months) for which to compute the LMS triplet
      * @return a LMS triplet computed according to the rules above, possibly {@code null}
@@ -264,7 +264,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     /**
      * Compute the percentile corresponding to a given absolute value, according to a normal distribution specified by
      * the given Box-Cox triplet.
-     * 
+     *
      * @param x the absolute value to fit into the normal distribution
      * @param lms the parameters defining the normal distribution
      * @return a number between 0 and 100 (inclusive) specifying the percentile of this measurement
@@ -280,7 +280,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     /**
      * Compute the percentile corresponding to a given absolute value, according to a normal distribution specified by
      * the given Box-Cox triplet.
-     * 
+     *
      * @param x the absolute value to fit into the normal distribution
      * @param m the M value, the median
      * @param l the L value, the power
@@ -297,7 +297,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     /**
      * Compute the standard deviation corresponding to a given absolute value, according to a normal distribution
      * specified by the given Box-Cox triplet.
-     * 
+     *
      * @param x the absolute value to fit into the normal distribution
      * @param lms the parameters defining the normal distribution
      * @return a number specifying how many standard deviations does this measurement deviate from the mean
@@ -313,7 +313,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     /**
      * Compute the standard deviation corresponding to a given absolute value, according to a normal distribution
      * specified by the given Box-Cox triplet.
-     * 
+     *
      * @param x the absolute value to fit into the normal distribution
      * @param m the M value, the median
      * @param l the L value, the power
@@ -328,7 +328,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     /**
      * Compute the value that would correspond to a target percentile, according to a normal distribution specified by
      * the given Box-Cox triplet.
-     * 
+     *
      * @param percentile the target percentile to extract from the normal distribution, a number between 0 and 100
      *            (inclusive)
      * @param m the M value, the median
@@ -352,7 +352,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     /**
      * Compute the value that would correspond to a target standard deviation, according to a normal distribution
      * specified by the given Box-Cox triplet.
-     * 
+     *
      * @param deviation the target standard deviation to extract from the normal distribution
      * @param m the M value, the median
      * @param l the L value, the power
@@ -367,7 +367,7 @@ public abstract class AbstractMeasurementHandler implements MeasurementHandler, 
     /**
      * Choose between the girls and boys measurements list, depending on the requested sex and on the availability of
      * distinct measurements for girls.
-     * 
+     *
      * @param male {@code true} for boys, {@code false} for girls
      * @return a list of {@link LMS} triplets
      */

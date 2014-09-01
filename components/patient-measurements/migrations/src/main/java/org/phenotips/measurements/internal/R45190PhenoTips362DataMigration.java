@@ -40,7 +40,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
  * Migration for PhenoTips issue #362: Inconsistently named head_circumference property in the MeasurementsClass.
- * 
+ *
  * @version $Id$
  */
 @Component

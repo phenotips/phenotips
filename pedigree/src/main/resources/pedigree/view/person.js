@@ -50,6 +50,7 @@ var Person = Class.create(AbstractPerson, {
         this._twinGroup = null;
         this._monozygotic = false;
         this._evaluated = false;
+        this._pedNumber = "";
     },
 
     /**
@@ -128,6 +129,32 @@ var Person = Class.create(AbstractPerson, {
      */
     getExternalID: function() {
         return this._externalID;
+    },
+
+    /**
+     * Sets the user-visible node ID for this person
+     * ("I-1","I-2","I-3", "II-1", "II-2", etc.)
+     *
+     * @method setPedNumber
+     */
+    setPedNumber: function(generation, number) {
+        if (!number || !isInt(number) || !generation || !isInt(generation)) {
+            this._pedNumber = "";
+        }
+        else {
+            this._pedNumber = romanize(generation) + "-" + number;
+        }
+        this.getGraphics().updateNumberLabel();
+    },
+
+    /**
+     * Returns the user-visible node ID for this person, e.g. "I", "II", "III", "IV", etc.
+     *
+     * @method getPedNumber
+     * @return {String}
+     */
+    getPedNumber: function() {
+        return this._pedNumber;
     },
 
     /**
@@ -400,7 +427,8 @@ var Person = Class.create(AbstractPerson, {
      */
     setDeathDate: function(deathDate) {
         deathDate = deathDate ? (new Date(deathDate)) : '';
-        if(!deathDate || deathDate && !this.getBirthDate() || deathDate.getDate()>this.getBirthDate().getDate()) {
+        // only set death date if it happens ot be after the birth date, or there is no birth or death date
+        if(!deathDate || !this.getBirthDate() || deathDate.getTime() > this.getBirthDate().getTime()) {
             this._deathDate =  deathDate;
             this._deathDate && (this.getLifeStatus() == 'alive') && this.setLifeStatus('deceased');
         }
@@ -420,18 +448,31 @@ var Person = Class.create(AbstractPerson, {
      * @param status One of {'', 'carrier', 'affected', 'presymptomatic'}
      */    
     setCarrierStatus: function(status) {
+        var numDisorders = this.getDisorders().length;
+
         if (status === undefined || status === null) {
-            status = this.getCarrierStatus();
+            if (numDisorders == 0) {
+                status = ""
+            } else {
+                status = this.getCarrierStatus();
+                if (status == "") {
+                    status = "affected";
+                }
+            }
         }
         
         if (!this._isValidCarrierStatus(status)) return;
-        
-        var numDisorders = this.getDisorders().length;
                 
         if (numDisorders > 0 && status == '') {
-            status = 'affected';
+            if (numDisorders == 1 && this.getDisorders()[0] == "affected") {
+                this.removeDisorder("affected");
+                this.getGraphics().updateDisorderShapes();
+            } else {
+                status = 'affected';
+            }
         } else if (numDisorders == 0 && status == 'affected') {
-            status = '';
+            this.addDisorder("affected");
+            this.getGraphics().updateDisorderShapes();
         }
         
         if (status != this._carrierStatus) {
@@ -479,16 +520,25 @@ var Person = Class.create(AbstractPerson, {
      * Adds disorder to the list of this node's disorders and updates the Legend.
      *
      * @method addDisorder
-     * @param {Disorder} disorder Disorder object
+     * @param {Disorder} disorder Disorder object or a free-text name string
      */
     addDisorder: function(disorder) {
+        if (typeof disorder != 'object') {
+            disorder = editor.getDisorderLegend().getDisorder(disorder);
+        }
         if(!this.hasDisorder(disorder.getDisorderID())) {
             editor.getDisorderLegend().addCase(disorder.getDisorderID(), disorder.getName(), this.getID());
             this.getDisorders().push(disorder.getDisorderID());
         }
         else {
             alert("This person already has the specified disorder");
-        }        
+        }
+
+        // if any "real" disorder has been added
+        // the virtual "affected" disorder should be automatically removed
+        if (this.getDisorders().length > 1) {
+            this.removeDisorder("affected");
+        }
     },
 
     /**
@@ -522,9 +572,6 @@ var Person = Class.create(AbstractPerson, {
         }
         for(var i = 0; i < disorders.length; i++) {
             var disorder = disorders[i];
-            if (typeof disorder != 'object') {
-                disorder = editor.getDisorderLegend().getDisorder(disorder);
-            }
             this.addDisorder( disorder );
         }        
         this.getGraphics().updateDisorderShapes();
@@ -637,15 +684,15 @@ var Person = Class.create(AbstractPerson, {
             }
         }
 
-        var inactiveCarriers = false;
-        if (disorders.length == 0) {
-            inactiveCarriers = ['affected'];
-        } else {
-            inactiveCarriers = [''];
+        var inactiveCarriers = [];
+        if (disorders.length > 0) {
+            if (disorders.length != 1 || disorders[0].id != "affected") {
+                inactiveCarriers = [''];
+            }
         }
-        //if (this.getLifeStatus() == "aborted") {
-        //    inactiveCarriers.push('presymptomatic');
-        //}
+        if (this.getLifeStatus() == "aborted") {
+            inactiveCarriers.push('presymptomatic');
+        }
 
         return {
             identifier:    {value : this.getID()},

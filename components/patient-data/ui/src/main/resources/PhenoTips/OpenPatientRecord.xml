@@ -54,7 +54,7 @@
       #set ($value = $request.getParameter($property))
       #if ($patientClass.get($property).type == 'DateClass' &amp;&amp; "$!value" != '')
         ## Dates are expected in the standard format, regardless of the format used to display them in PhenoTips
-        #set ($value = $xwiki.jodatime.getDateTimeFormatterForPattern('yyyy-M-d').parseDateTime($value).toDate())
+        #set ($value = $services.jodatime.getDateTimeFormatterForPattern('yyyy-M-d').parseDateTime($value).toDate())
       #elseif ($property == 'gender' &amp;&amp; $value != 'M' &amp;&amp; $value != 'F')
         ## Unknown values should be ignored
         #set ($value = '')
@@ -70,7 +70,7 @@
   #end
 #end
 #macro (fixMode)
-  #set ($canEditPatientRecord = $xwiki.hasAccessLevel($mode, $xcontext.user, $patientDoc.fullName))
+  #set ($canEditPatientRecord = $mode == 'edit' &amp;&amp; $xwiki.hasAccessLevel($mode, $xcontext.user, $patientDoc.fullName))
   #if (!$canEditPatientRecord)
     #set ($mode = 'view')
   #end

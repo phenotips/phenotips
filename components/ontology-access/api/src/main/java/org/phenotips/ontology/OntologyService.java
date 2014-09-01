@@ -28,7 +28,7 @@ import java.util.Set;
 
 /**
  * Provides access to an ontology, such as the Human Phenotype Ontology.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -38,7 +38,7 @@ public interface OntologyService
 {
     /**
      * Access an individual term from the ontology, identified by its {@link OntologyTerm#getId() term identifier}.
-     * 
+     *
      * @param id the term identifier, in the format {@code <ontology prefix>:<term id>}, for example {@code HP:0002066}
      * @return the requested term, or {@code null} if the term doesn't exist in this ontology
      */
@@ -46,7 +46,7 @@ public interface OntologyService
 
     /**
      * Access a list of terms from the ontology, identified by their {@link OntologyTerm#getId() term identifiers}.
-     * 
+     *
      * @param ids a set of term identifiers, in the format {@code <ontology prefix>:<term id>}, for example
      *            {@code HP:0002066}
      * @return a set with the requested terms that were found in the ontology, an empty set if no terms were found
@@ -55,7 +55,7 @@ public interface OntologyService
 
     /**
      * Generic search method, which looks for terms that match the specified meta-properties.
-     * 
+     *
      * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
      *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
      *            single value, or a collection of values that can (OR) be matched by the term;
@@ -65,7 +65,7 @@ public interface OntologyService
 
     /**
      * Generic search method, which looks for terms that match the specified meta-properties.
-     * 
+     *
      * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
      *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
      *            single value, or a collection of values that can (OR) be matched by the term;
@@ -77,7 +77,7 @@ public interface OntologyService
 
     /**
      * Get the number of entries that match a specific query.
-     * 
+     *
      * @param fieldValues a map with term meta-property values that must be matched by the returned terms; the keys are
      *            property names, like {@code id}, {@code description}, {@code is_a}, and the values can be either a
      *            single value, or a collection of values that can (OR) be matched by the term;
@@ -88,7 +88,7 @@ public interface OntologyService
     /**
      * Find the distance between two terms identified by their {@link OntologyTerm#getId() term identifiers}. The
      * parameters are interchangeable.
-     * 
+     *
      * @param fromTermId the identifier of the term that is considered the start point
      * @param toTermId the identifier of the term that is considered the end point
      * @return the minimum number of edges that connect the two terms in the DAG representing the ontology, and -1 if
@@ -99,7 +99,7 @@ public interface OntologyService
 
     /**
      * Find the distance between two terms. The parameters are interchangeable.
-     * 
+     *
      * @param fromTerm the term that is considered the start point
      * @param toTerm the term that is considered the end point
      * @return the minimum number of edges that connect the two terms in the DAG representing the ontology, and -1 if
@@ -111,14 +111,14 @@ public interface OntologyService
      * An ontology has an official name, but it can also have other aliases, for example the Human Phenotype Ontology is
      * known both as {@code HP}, which is the official prefix for its terms, {@code HPO}, which is its acronym, or the
      * lowercase {@code hpo}.
-     * 
+     *
      * @return a set of identifiers which can be used to reference this ontology, including the official name
      */
     Set<String> getAliases();
 
     /**
      * Get the size (i.e. total number of entries) in the index.
-     * 
+     *
      * @return the number of entries in the index
      */
     long size();
@@ -128,7 +128,7 @@ public interface OntologyService
      *
      * @param ontologyUrl the url to be indexed
      * @return {@code 0} if the indexing succeeded, {@code 1} if writing to the Solr server failed, {@code 2} if the
-     * specified URL is invalid
+     *         specified URL is invalid
      */
     int reindex(String ontologyUrl);
 

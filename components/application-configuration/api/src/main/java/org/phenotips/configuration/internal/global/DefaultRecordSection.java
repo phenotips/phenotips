@@ -34,7 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Default (global) implementation for {@link RecordSection}.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -51,7 +51,7 @@ public class DefaultRecordSection implements RecordSection
 
     /**
      * Simple constructor passing all the needed components.
-     * 
+     *
      * @param extension the extension defining this element
      * @param uixManager the UIExtension manager
      * @param orderFilter UIExtension filter for ordering sections and elements
@@ -123,7 +123,7 @@ public class DefaultRecordSection implements RecordSection
     /**
      * Check if an extension is enabled. Extensions are disabled by adding a {@code enabled=false} parameter. By default
      * extensions are enabled, so this method returns {@code false } only if it is explicitly disabled.
-     * 
+     *
      * @param extension the extension to check
      * @return {@code false} if this extension has a parameter named {@code enabled} with the value {@code false},
      *         {@code true} otherwise

@@ -47,7 +47,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 /**
  * Migration for PhenoTips issue #670: Automatically migrate {@code target_property_category} values from
  * {@code StringList} to {@code DBStringList}.
- * 
+ *
  * @version $Id$
  * @since 1.0M10
  */
@@ -93,7 +93,7 @@ public class R52091PhenoTips670DataMigration extends AbstractHibernateDataMigrat
 
         /**
          * Simple constructor passing the {@link #propertyClass expected property class}.
-         * 
+         *
          * @param propertyClass see {@link #propertyClass}
          */
         public MigrateCustomPhenotypeCategoryCallback(DBListClass propertyClass)

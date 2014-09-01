@@ -21,7 +21,7 @@ package org.phenotips.tools;
 
 /**
  * Base class for implementing a {@link FormElement}.
- * 
+ *
  * @version $Id$
  */
 public abstract class AbstractFormElement implements FormElement

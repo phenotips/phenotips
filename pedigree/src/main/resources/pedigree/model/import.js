@@ -342,6 +342,221 @@ PedigreeImport.initFromPED = function(inputText, acceptOtherPhenotypes, markEval
     return newG;
 }
 
+
+/* ===============================================================================================
+ *
+ * Creates and returns a BaseGraph from a text string in the BOADICEA format.
+ *
+ *  BOADICEA format:
+ *  (from https://pluto.srl.cam.ac.uk/bd3/v3/docs/BWA_v3_user_guide.pdf)
+ *
+ *  line1: BOADICEA import pedigree file format 2.0
+ *  line2: column titles
+ *  line3+: one patient per line, with values separated by spaces or tabs, as follows:
+ *
+ *   FamID: Family/pedigree ID, character string (maximum 13 characters)
+ *   Name: First name/ID of the family member, character string (maximum 8 characters)
+ *   Target: The family member for whom the BOADICEA risk calculation is made, 1 = target for BOADICEA risk calculation, 0 = other family members. There must only be one BOADICEA target individual.
+ *   IndivID: Unique ID of the family member, character string (maximum 7 characters)
+ *   FathID: Unique ID of their father, 0 = no father, or character string (maximum 7 characters)
+ *   MothID: Unique ID of their mother, 0 = unspecified, or character string (maximum 7 characters)
+ *   Sex: M or F
+ *   Twin: Identical twins, 0 = no identical twin, any non-zero character = twin.
+ *   Dead: The current status of the family member, 0 = alive, 1 = dead
+ *   Age: Age at last follow up, 0 = unspecified, integer = age at last follow up
+ *   Yob: Year of birth, 0 = unspecified, or integer (consistent with Age if the person is alive)
+ *   1BrCa: Age at first breast cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
+ *   2BrCa: Age at contralateral breast cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
+ *   OvCa: Age at ovarian cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
+ *   ProCa: Age at prostate cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
+ *   PanCa: Age at pancreatic cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
+ *   Gtest: Genetic test status, 0 = untested, S = mutation search, T = direct gene test
+ *   Mutn: 0 = untested, N = no mutation, 1 = BRCA1 positive, 2 = BRCA2 positive, 3 = BRCA1 and BRCA2 positive
+ *   Ashkn: 0 = not Ashkenazi, 1 = Ashkenazi
+ *   ER: Estrogen receptor status, 0 = unspecified, N = negative, P = positive
+ *   PR: Progestrogen receptor status, 0 = unspecified, N = negative, P = positive
+ *   HER2: Human epidermal growth factor receptor 2 status, 0 = unspecified, N = negative, P = positive
+ *   CK14: Cytokeratin 14 status, 0 = unspecified, N = negative, P = positive
+ *   CK56: Cytokeratin 56 status, 0 = unspecified, N = negative, P = positive
+ * ===============================================================================================
+ */
+PedigreeImport.initFromBOADICEA = function(inputText, saveIDAsExternalID)
+{
+    var inputLines = inputText.match(/[^\r\n]+/g);
+
+    if (inputLines.length <= 2) {
+        throw "Unable to import: no data";
+    }
+    if (inputLines[0].match(/^BOADICEA import pedigree file format 2/i) === null) {
+        throw "Unable to import: unsupported version of the BOADICEA format";
+    }
+    inputLines.splice(0,2); // remove 2 header lines
+
+    var familyPrefix = "";
+
+    var newG = new BaseGraph();
+
+    var nameToId = {};
+
+    var nextID = 1;
+
+    // first pass: add all vertices and assign vertex IDs
+    for (var i = 0; i < inputLines.length; i++) {
+
+        inputLines[i] = inputLines[i].replace(/[^a-zA-Z0-9_.\-\s*]/g, ' ');
+        inputLines[i] = inputLines[i].replace(/^\s+|\s+$/g, '');  // trim()
+
+        var parts = inputLines[i].split(/\s+/);
+        //console.log("Parts: " + stringifyObject(parts));
+
+        if (parts.length < 24) {
+            throw "Input line has not enough columns: [" + inputLines[i] + "]";
+        }
+
+        if (familyPrefix == "") {
+            familyPrefix = parts[0];
+        } else {
+            if (parts[0] != familyPrefix) {
+                throw "Unsupported feature: multiple families detected within the same pedigree";
+            }
+        }
+
+        var extID = parts[3];
+        if (nameToId.hasOwnProperty(extID))
+            throw "Multiple persons with the same ID [" + extID + "]";
+
+        var genderValue = parts[6];
+        var gender = "M";
+        if (genderValue == "F") {
+          gender = "F";
+        }
+        var name = parts[1];
+        if (isInt(name)) {
+          name = "";
+        }
+        var properties = {"gender": gender, "fName": name};
+
+        if (saveIDAsExternalID) {
+          properties["externalID"] = extID;
+        }
+
+        var deadStatus = parts[8];
+        if (deadStatus == "1") {
+          properties["lifeStatus"] = "deceased";
+        }
+
+        var yob = parts[10];
+        if (yob != "0") {
+          var dob = yob + "-01-01T00:00:00.000Z";
+          properties["dob"] = dob;
+        }
+
+        // TODO: handle all the columns and proper cancer handling
+        //
+        // 11: 1BrCa: Age at first breast cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
+        // 12: 2BrCa: Age at contralateral breast cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
+        // 13: OvCa:  Age at ovarian cancer diagnosis, 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
+        // 14: ProCa: Age at prostate cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
+        // 15: PanCa: Age at pancreatic cancer diagnosis 0 = unaffected, integer = age at diagnosis, AU = unknown age at diagnosis (affected unknown)
+        var cancers = [ { "column": 11, "label": "Breast cancer",           "disorder": "1BrCa"},
+                        { "column": 12, "label": "Contralateral breast c.", "disorder": "2BrCa"},
+                        { "column": 13, "label": "Ovarian cancer",          "disorder": "OvCa"},
+                        { "column": 14, "label": "Prostate cancer",         "disorder": "ProCa"},
+                        { "column": 15, "label": "Pancreatic cancer",       "disorder": "PanCa"} ];
+
+        for (var c = 0; c < cancers.length; c++) {
+          var cancer = cancers[c];
+          if (parts[cancer["column"]].toUpperCase() != "AU") {
+            if (!properties.hasOwnProperty("comments")) {
+              properties["comments"] = "";
+            } else {
+              properties["comments"] += "\n";
+            }
+
+            if (parts[cancer["column"]] == "0") {
+              properties["comments"] += "[-] " + cancer["label"] + ": unaffected";
+            } else {
+              properties["comments"] += "[+] " + cancer["label"] + ": at age " + parts[cancer["column"]];
+              if (!properties.hasOwnProperty("disorders")) {
+                properties["disorders"] = [];
+              }
+              properties["disorders"].push(cancer["disorder"]);
+            }
+          }
+        }
+
+        var ashkenazi = parts[18];
+        if (ashkenazi != "0") {
+          properties["ethnicities"] = ["Ashkenazi Jews"];
+        }
+
+        var proband = (parts[2] == 1);
+        var useID = proband ? 0 : nextID++;
+        if (i == inputLines.length-1 && newG.v[0] === undefined) {
+          // last node and no proband yet
+          useID = 0;
+        }
+
+        var pedigreeID = newG._addVertex( useID, TYPE.PERSON, properties, newG.defaultPersonNodeWidth );
+
+        nameToId[extID] = pedigreeID;
+    }
+
+    var defaultEdgeWeight = 1;
+
+    var relationshipTracker = new RelationshipTracker(newG, defaultEdgeWeight);
+
+    // second pass (once all vertex IDs are known): process edges
+    for (var i = 0; i < inputLines.length; i++) {
+      var parts = inputLines[i].split(/\s+/);
+
+      var extID = parts[3];
+      var id    = nameToId[extID];
+
+      // check if parents are given for this individual; if at least one parent is given,
+      // check if the corresponding relationship has already been created. If not, create it. If yes,
+      // add an edge from childhub to this person
+
+      var fatherID = parts[4];
+      var motherID = parts[5];
+
+      if (fatherID == 0 && motherID == 0) {
+        continue;
+      }
+
+      // .PED supports specifying only mother or father. Pedigree editor requires both (for now).
+      // So create a virtual parent in case one of the parents is missing
+      if (fatherID == 0) {
+       fatherID = newG._addVertex( null, TYPE.PERSON, {"gender": "M", "comments": "unknown"}, newG.defaultPersonNodeWidth );
+      } else {
+        fatherID = nameToId[fatherID];
+        if (newG.properties[fatherID].gender == "F") {
+          throw "Unable to import pedigree: a person declared as female [id: " + fatherID + "] is also declared as being a father for [id: "+extID+"]";
+        }
+      }
+      if (motherID == 0) {
+        motherID = newG._addVertex( null, TYPE.PERSON, {"gender": "F", "comments": "unknown"}, newG.defaultPersonNodeWidth );
+      } else {
+        motherID = nameToId[motherID];
+        if (newG.properties[motherID].gender == "M") {
+          throw "Unable to import pedigree: a person declared as male [id: " + motherID + "] is also declared as being a mother for [id: "+extID+"]";
+        }
+      }
+
+      // both motherID and fatherID are now given and represent valid existing nodes in the pedigree
+
+      // if there is a relationship between motherID and fatherID the corresponding childhub is returned
+      // if there is no relationship, a new one is created together with the childhub
+      var chhubID = relationshipTracker.createOrGetChildhub(motherID, fatherID);
+
+      newG.addEdge( chhubID, id, defaultEdgeWeight );
+    }
+
+    PedigreeImport.validateBaseGraph(newG);
+
+    return newG;
+}
+
 /* ===============================================================================================
  * 
  * Validates the generated basegraph and throws one of the following exceptions:

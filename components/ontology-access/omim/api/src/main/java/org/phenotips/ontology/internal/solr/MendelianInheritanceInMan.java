@@ -33,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Provides access to the Online Mendelian Inheritance in Man (OMIM) ontology. The ontology prefix is {@code MIM}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -77,7 +77,7 @@ public class MendelianInheritanceInMan extends AbstractSolrOntologyService
     @Override
     public String getDefaultOntologyLocation()
     {
-        //FIX ME. For now returns just an empty string.
+        // FIX ME. For now returns just an empty string.
         return "";
     }
 }

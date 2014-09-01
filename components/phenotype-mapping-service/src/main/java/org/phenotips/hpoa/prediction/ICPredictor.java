@@ -19,6 +19,12 @@
  */
 package org.phenotips.hpoa.prediction;
 
+import org.phenotips.hpoa.annotation.AnnotationTerm;
+import org.phenotips.hpoa.annotation.SearchResult;
+import org.phenotips.hpoa.ontology.OntologyTerm;
+
+import org.xwiki.component.annotation.Component;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,12 +36,6 @@ import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.phenotips.hpoa.annotation.AnnotationTerm;
-import org.phenotips.hpoa.annotation.SearchResult;
-import org.phenotips.hpoa.ontology.OntologyTerm;
-
-import org.xwiki.component.annotation.Component;
 
 @Component
 @Named("ic")

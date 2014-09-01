@@ -77,27 +77,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </name>
-    <token>
-      <algorithm/>
-      <customDisplay>{{velocity}}
-#if ($type == 'edit')
-{{html clean="false"}}&lt;input type="password" name="${prefix}${name}" value="#if ("$!{value}" != '')********#end" /&gt;{{/html}}
-#else
-********
-#end
-{{/velocity}}</customDisplay>
-      <disabled>0</disabled>
-      <name>token</name>
-      <number>3</number>
-      <picker>0</picker>
-      <prettyName>Authentication token</prettyName>
-      <size>25</size>
-      <storageType>Clear</storageType>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.PasswordClass</classType>
-    </token>
     <url>
       <customDisplay/>
       <disabled>0</disabled>

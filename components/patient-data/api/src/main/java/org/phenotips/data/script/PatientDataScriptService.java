@@ -38,7 +38,7 @@ import javax.inject.Singleton;
 
 /**
  * API that provides access to patient data.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -67,7 +67,7 @@ public class PatientDataScriptService implements ScriptService
 
     /**
      * Retrieve a {@link Patient patient} by it's PhenoTips identifier.
-     * 
+     *
      * @param id the patient identifier, i.e. the serialized document reference
      * @return the patient data, or {@code null} if the requested patient does not exist, is not a valid patient, or is
      *         not accessible by the current user
@@ -85,7 +85,7 @@ public class PatientDataScriptService implements ScriptService
     /**
      * Retrieve a {@link Patient patient} by it's clinical identifier. Only works if external identifiers are enabled
      * and used.
-     * 
+     *
      * @param externalId the patient's clinical identifier, as set by the patient's reporter
      * @return the patient data, or {@code null} if the requested patient does not exist, is not a valid patient, or is
      *         not accessible by the current user
@@ -102,7 +102,7 @@ public class PatientDataScriptService implements ScriptService
 
     /**
      * Create and return a new empty patient record.
-     * 
+     *
      * @return the created patient record, or {@code null} if the user does not have the right to create a new patient
      *         record or the creation fails
      */

@@ -26,17 +26,21 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpContentTooLargeException;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Consts;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
@@ -51,7 +55,7 @@ import net.sf.json.JSONSerializer;
 /**
  * Communication via HTTP requests with a LIMS server, configured in the wiki preferences via
  * {@code PhenoTips.LimsAuthServer} objects.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -59,12 +63,16 @@ import net.sf.json.JSONSerializer;
 @Singleton
 public class DefaultLimsServer implements LimsServer
 {
+    /** The content type of the data sent in a checkToken request. */
+    private static final ContentType REQUEST_CONTENT_TYPE =
+        ContentType.create(ContentType.APPLICATION_FORM_URLENCODED.getMimeType(), Consts.UTF_8);
+
     /** Logging helper object. */
     @Inject
     private Logger logger;
 
     /** HTTP client used for communicating with the LIMS server. */
-    private final HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
+    private final CloseableHttpClient client = HttpClients.createSystem();
 
     /** Provides access to the current context. */
     @Inject
@@ -73,23 +81,21 @@ public class DefaultLimsServer implements LimsServer
     @Override
     public boolean checkToken(String token, String username, String pn)
     {
-        PostMethod method = null;
+        HttpPost method = null;
         try {
             String checkURL = getTokenCheckURL(pn, getXContext());
             if (StringUtils.isNotBlank(checkURL)) {
-                method = new PostMethod(checkURL);
+                method = new HttpPost(checkURL);
                 String body = String.format("%s=%s&%s=%s",
                     USERNAME_KEY, URLEncoder.encode(username, XWiki.DEFAULT_ENCODING),
                     TOKEN_KEY, URLEncoder.encode(token, XWiki.DEFAULT_ENCODING));
-                method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                    XWiki.DEFAULT_ENCODING));
-                this.client.executeMethod(method);
-                String response;
-                try {
-                    response = method.getResponseBodyAsString(128);
-                } catch (HttpContentTooLargeException ex) {
-                    response = method.getResponseBodyAsString();
-                    this.logger.warn("LIMS token check returned wrong response: {} - [{}]", ex.getMessage(), response);
+                method.setEntity(new StringEntity(body, REQUEST_CONTENT_TYPE));
+                String response = null;
+                try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
+                    response = IOUtils.toString(httpResponse.getEntity().getContent(),
+                        ContentType.APPLICATION_JSON.getCharset());
+                } catch (IOException ex) {
+                    this.logger.warn("LIMS token check returned wrong response: {}", ex.getMessage());
                 }
                 JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
                 boolean success = responseJSON.getBoolean("success");
@@ -116,15 +122,14 @@ public class DefaultLimsServer implements LimsServer
     @Override
     public void notify(JSONObject payload, String pn)
     {
-        // FIXME This should be asynchronous; reimplement once commons-httpclient 4 is released
-        PostMethod method = null;
+        // FIXME This should be asynchronous
+        HttpPost method = null;
         try {
             String notificationURL = getNotificationURL(pn, getXContext());
             if (StringUtils.isNotBlank(notificationURL)) {
-                method = new PostMethod(notificationURL);
-                method.setRequestEntity(new StringRequestEntity(payload.toString(), "application/json",
-                    XWiki.DEFAULT_ENCODING));
-                this.client.executeMethod(method);
+                method = new HttpPost(notificationURL);
+                method.setEntity(new StringEntity(payload.toString(), ContentType.APPLICATION_JSON));
+                this.client.execute(method);
             }
         } catch (Exception ex) {
             this.logger.warn("Failed to notify LIMS server [{}] of patient update: {}", pn, ex.getMessage(), ex);
@@ -137,7 +142,7 @@ public class DefaultLimsServer implements LimsServer
 
     /**
      * Return the URL of the specified LIMS instance, where the authentication token can be checked.
-     * 
+     *
      * @param pn the LIMS instance identifier
      * @param context the current request context
      * @return the configured URL, in the format {@code http://lims.host.name/session/check_token}, or {@code null} if
@@ -155,7 +160,7 @@ public class DefaultLimsServer implements LimsServer
 
     /**
      * Return the URL of the specified LIMS instance, where the phenotype update notification should be sent.
-     * 
+     *
      * @param pn the LIMS instance identifier
      * @param context the current request context
      * @return the configured URL, in the format {@code http://lims.host.name/api/phenotype_updated}, or {@code null} if
@@ -173,7 +178,7 @@ public class DefaultLimsServer implements LimsServer
 
     /**
      * Return the base URL of the specified LIMS instance.
-     * 
+     *
      * @param pn the LIMS instance identifier
      * @param context the current request context
      * @return the configured URL, in the format {@code http://lims.host.name}, or {@code null} if the LIMS instance
@@ -204,7 +209,7 @@ public class DefaultLimsServer implements LimsServer
 
     /**
      * Helper method for obtaining a valid xcontext from the execution context.
-     * 
+     *
      * @return the current request context
      */
     private XWikiContext getXContext()

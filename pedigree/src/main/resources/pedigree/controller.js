@@ -165,6 +165,9 @@ var Controller = Class.create({
                 if (propertySetFunction == "setDisorders") {
                     undoEvent.memo.properties["setCarrierStatus"] = node.getCarrierStatus();
                 }
+                if (propertySetFunction == "setCarrierStatus") {
+                    undoEvent.memo.properties["setDisorders"] = node.getDisorders().slice(0);
+                }
 
                 node[propertySetFunction](propValue);
 

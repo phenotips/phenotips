@@ -54,7 +54,6 @@
       <classname/>
       <customDisplay>{{velocity}}
 #set ($order = [
-  'HP:0011007',
   'HP:0003577',
   'HP:0011460',
   'HP:0011461',
@@ -67,7 +66,7 @@
   'HP:0003596',
   'HP:0003584'
 ])
-#set ($startWith = 'HP:0011007')
+#set ($startWith = 'HP:0003674')
 {{/velocity}}
 
 {{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
@@ -96,7 +95,7 @@
       <disabled>0</disabled>
       <editor>---</editor>
       <name>comments</name>
-      <number>6</number>
+      <number>9</number>
       <picker>0</picker>
       <prettyName>Comments</prettyName>
       <rows>5</rows>
@@ -106,35 +105,17 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </comments>
-    <suspected_mode_of_inheritance>
+    <laterality>
       <cache>0</cache>
       <classname/>
       <customDisplay>{{velocity}}
 #set ($order = [
-  'HP:0003745',
-
-  'HP:0000006',
-  'HP:0001470',
-  'HP:0001475',
-  'HP:0001444',
-  'HP:0001452',
-
-  'HP:0000007',
-
-  'HP:0010985',
-  'HP:0001417',
-  'HP:0001423',
-  'HP:0001419',
-  'HP:0001450',
-
-  'HP:0001426',
-  'HP:0010984',
-  'HP:0010983',
-  'HP:0010982',
-
-  'HP:0001427'
+  'HP:0012832',
+  'HP:0012833',
+  'HP:0012834',
+  'HP:0012835'
 ])
-#set ($startWith = 'HP:0000005')
+#set ($startWith = 'HP:0012831')
 {{/velocity}}
 
 {{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
@@ -142,10 +123,10 @@
       <displayType>select</displayType>
       <idField/>
       <multiSelect>0</multiSelect>
-      <name>suspected_mode_of_inheritance</name>
-      <number>5</number>
+      <name>laterality</name>
+      <number>8</number>
       <picker>0</picker>
-      <prettyName>Suspected mode of inheritance</prettyName>
+      <prettyName>Laterality</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators/>
@@ -157,7 +138,7 @@
       <validationRegExp/>
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
-    </suspected_mode_of_inheritance>
+    </laterality>
     <pace_of_progression>
       <cache>0</cache>
       <classname/>
@@ -193,6 +174,75 @@
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </pace_of_progression>
+    <severity>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay>{{velocity}}
+#set ($order = [
+  'HP:0012827',
+  'HP:0012825',
+  'HP:0012826',
+  'HP:0012828',
+  'HP:0012829'
+])
+#set ($startWith = 'HP:0012824')
+{{/velocity}}
+
+{{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <idField/>
+      <multiSelect>0</multiSelect>
+      <name>severity</name>
+      <number>5</number>
+      <picker>0</picker>
+      <prettyName>Severity</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+    </severity>
+    <spatial_pattern>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay>{{velocity}}
+#set ($order = [
+  'HP:0012837',
+  'HP:0012838',
+  'HP:0012839',
+  'HP:0012840'
+])
+#set ($startWith = 'HP:0012836')
+{{/velocity}}
+
+{{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <idField/>
+      <multiSelect>0</multiSelect>
+      <name>spatial_pattern</name>
+      <number>7</number>
+      <picker>0</picker>
+      <prettyName>Spatial pattern</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+    </spatial_pattern>
     <supporting_documents>
       <cache>0</cache>
       <classname/>
@@ -202,7 +252,7 @@
       <idField/>
       <multiSelect>0</multiSelect>
       <name>supporting_documents</name>
-      <number>8</number>
+      <number>11</number>
       <picker>0</picker>
       <prettyName>Medical report (optional)</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -226,7 +276,7 @@
       <idField/>
       <multiSelect>0</multiSelect>
       <name>supporting_images</name>
-      <number>7</number>
+      <number>10</number>
       <picker>0</picker>
       <prettyName>Image / photo (optional)</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -267,5 +317,39 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </target_property_value>
+    <temporal_pattern>
+      <cache>0</cache>
+      <classname/>
+      <customDisplay>{{velocity}}
+#set ($order = [
+  'HP:0003587',
+  'HP:0011010',
+  'HP:0011011',
+  'HP:0011009'
+])
+#set ($startWith = 'HP:0011008')
+{{/velocity}}
+
+{{include reference="PhenoTips.HPOBranchDisplayer"/}}</customDisplay>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <idField/>
+      <multiSelect>0</multiSelect>
+      <name>temporal_pattern</name>
+      <number>6</number>
+      <picker>0</picker>
+      <prettyName>Temporal pattern</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
+      <sql/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+    </temporal_pattern>
   </class>
 </xwikidoc>

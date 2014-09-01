@@ -40,98 +40,148 @@
       <artifactId>xwiki-platform-administration-ui</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.enterprise</groupId>
-      <artifactId>xwiki-enterprise-ui-common</artifactId>
-      <version>${xwiki.version}</version>
-      <type>xar</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.xwiki.enterprise</groupId>
       <artifactId>xwiki-enterprise-ui-admin-user</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>
-      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-livetable-ui</artifactId>
+      <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-index-ui</artifactId>
+      <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-wikimacro-ui</artifactId>
+      <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-extension-ui</artifactId>
+      <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-sheet-ui</artifactId>
+      <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-user-profile-ui</artifactId>
+      <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-uiextension-ui</artifactId>
+      <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-colorthemes-ui</artifactId>
+      <version>${xwiki.version}</version>
+      <type>xar</type>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-widgets-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-skin-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-navigation-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-data-export-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ontology-hpo-access-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>patient-measurements-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>application-configuration-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>studies-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>users-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>patient-data-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>patient-access-rules-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>ontology-access-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>patient-data-sharing-push-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>specificity-meter-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.xwiki.commons</groupId>
-          <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-          <configuration>
-            <includeDependencies>true</includeDependencies>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <extensions>
       <extension>
         <groupId>org.xwiki.commons</groupId>
@@ -139,31 +189,5 @@
         <version>${xwiki.version}</version>
       </extension>
     </extensions>
-    <plugins>
-      <plugin>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-        <version>${xwiki.version}</version>
-        <configuration>
-          <includes>
-            <include>**/Main/*.xml</include>
-            <include>**/Groups/*.xml</include>
-            <include>**/XWiki/*.xml</include>
-            <include>**/PhenoTips/*.xml</include>
-            <include>**/ColorThemes/*.xml</include>
-            <include>**/data/*.xml</include>
-            <include>**/Studies/*.xml</include>
-          </includes>
-          <excludes>
-            <exclude>**/Main/Welcome*.xml</exclude>
-            <exclude>**/Main/Solr*.xml</exclude>
-            <exclude>**/XWiki/Solr*.xml</exclude>
-            <exclude>**/ColorThemes/Dusk.xml</exclude>
-            <exclude>**/ColorThemes/DefaultColorTheme.xml</exclude>
-            <exclude>**/ColorThemes/Mint.xml</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
   </build>
 </project>

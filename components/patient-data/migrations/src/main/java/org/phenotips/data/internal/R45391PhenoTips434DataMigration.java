@@ -51,7 +51,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 /**
  * Migration for PhenoTips issue #434: Automatically migrate existing old {@code ClinicalInformationCode.PatientClass}
  * to the new {@code PhenoTips.PatientClass}.
- * 
+ *
  * @version $Id$
  * @since 1.0M6
  */
@@ -106,7 +106,7 @@ public class R45391PhenoTips434DataMigration extends AbstractHibernateDataMigrat
 
         /**
          * Simple constructor.
-         * 
+         *
          * @param className the name of the class to migrate, without a space prefix, for example {@code PatientClass}
          */
         public MigrateObjectsCallback(String className)

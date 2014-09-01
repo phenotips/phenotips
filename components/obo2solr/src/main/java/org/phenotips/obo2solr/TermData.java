@@ -19,16 +19,17 @@
  */
 package org.phenotips.obo2solr;
 
+import org.phenotips.obo2solr.maps.SetMap;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.phenotips.obo2solr.maps.SetMap;
-
-
 public class TermData extends SetMap<String, String>
 {
+    private static final long serialVersionUID = 1L;
+
     public static final String ID_FIELD_NAME = "id";
 
     public static final String PARENT_FIELD_NAME = "is_a";

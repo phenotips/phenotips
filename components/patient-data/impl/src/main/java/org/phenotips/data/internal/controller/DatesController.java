@@ -115,7 +115,7 @@ public class DatesController implements PatientDataController<Date>
         DateFormat dateFormat =
             new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
 
-        PatientData<Date> datesData = patient.<Date>getData(DATA_NAME);
+        PatientData<Date> datesData = patient.getData(DATA_NAME);
         if (datesData == null) {
             return;
         }

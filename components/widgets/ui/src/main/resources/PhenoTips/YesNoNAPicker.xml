@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>YesNoNAPicker</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822208000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822208000</date>
+  <contentUpdateDate>1401822208000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Yes/No picker</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+$xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
+$xwiki.ssx.use('PhenoTips.YesNoNAPicker')##
+#set ($doDisplay = ($xcontext.action == 'edit' || "$!value" != ''))
+{{html clean=false wiki=false}}##
+#if ($xcontext.action == 'edit')&lt;span class="yes-no-picker"&gt;&lt;label class="na" title="NA (irrelevant or unknown)"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="" #if($value == '')checked="checked"#end /&gt;NA&lt;/label&gt;&lt;label class="yes" title="YES (investigated and observed)"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="1" #if($value == '1')checked="checked"#end /&gt;Y&lt;/label&gt;&lt;label class="no" title="NO (investigated and NOT observed)"&gt;&lt;input type="checkbox" name="${prefix}${name}" value="0" #if($value == '0')checked="checked" #end/&gt;N&lt;/label&gt;&lt;/span&gt;#elseif ($value == '0')NO #{end}#if ($doDisplay)&lt;label class="yes-no-picker-label"&gt;$!object.xWikiClass.get($name).prettyName&lt;/label&gt;#end{{/html}}{{/velocity}}
+</content>
+  <object>
+    <name>PhenoTips.YesNoNAPicker</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>ec504294-9ed2-4288-a088-fc12b010c398</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var YesNoPicker = Class.create({
+
+  hints : {
+    yes : {unselectedTitle : "Select as present", selectedTitle : "Unselect as present", labelTitle : "YES (investigated and observed)"},
+    no  : {unselectedTitle : "Select as absent",  selectedTitle : "Unselect as absent", labelTitle : "NO (investigated and NOT observed)"},
+    na  : {unselectedTitle : "Unselect", selectedTitle : "", labelTitle : "NA (irrelevant or unknown)"}
+  },
+
+  initialize : function(element, label, isLabelActive) {
+    var _this = this;
+    this._hints = _this.hints;
+    this.element = $(element);
+    this.label = label;
+    element.select('input[type="checkbox"]').invoke("hide");
+    element.addClassName('yes-no-picker');
+    element.addClassName('initialized');
+
+    var yes = this.yes = element.down('label.yes');
+    var no = this.no = element.down('label.no');
+    var na = this.na = element.down('label.na');
+
+    this.yesInput = this.yes &amp;&amp; this.yes.down('input');
+    this.noInput = this.no &amp;&amp; this.no.down('input');
+    this.naInput = this.na &amp;&amp; this.na.down('input');
+
+    var _onYes = this._onYes.bindAsEventListener(this);
+    var _onNo = this._onNo.bindAsEventListener(this);
+    var _onNA = this._onNA.bindAsEventListener(this);
+    var _onUnselect = this._onUnselect.bindAsEventListener(this);
+
+    this.yes &amp;&amp; (this.yes.title = this.hints.yes.labelTitle);
+    this.no &amp;&amp; (this.no.title = this.hints.no.labelTitle);
+    this.na &amp;&amp; (this.na.title = this.hints.na.labelTitle);
+
+    this.yes &amp;&amp; this.yes.observe('click', _onYes);
+    this.no &amp;&amp; this.no.observe('click', _onNo);
+    this.na &amp;&amp; this.na.observe('click', _onNA);
+    //this.element.observe('click', _onUnselect);
+    document.observe('ynpicker:change', this._sync.bindAsEventListener(this));
+
+    if (this.yesInput) this.yesInput.observe('suggest:change', function(event) {
+      var input = event.findElement();
+      _this._onSelect(input.checked ? 'yes' : 'na');
+    });
+    if (this.noInput) this.noInput.observe('suggest:change', function(event) {
+      var input = event.findElement();
+      _this._onSelect(input.checked ? 'no' : 'na');
+    });
+
+    if (yes.down('input').checked) this._onSelect('yes');
+    else if (no.down('input').checked) this._onSelect('no');
+    else this._onSelect('na');
+
+    if (this.label) {
+      this.label.addClassName('yes-no-picker-label');
+      if (isLabelActive) {
+        this.label.observe('click', function(event) {
+          if (!_this._isSelected('no')) {
+            _this._onYes(event);
+          }
+        });
+      }
+    }
+  },
+
+  _onYes : function (event) {
+    if (this._isSelected('yes')) this._onClick(event, 'na'); else
+    this._onClick(event, 'yes');
+  },
+  _onNo : function (event) {
+    if (this._isSelected('no')) this._onClick(event, 'na'); else
+    this._onClick(event, 'no');
+  },
+  _onNA : function (event) {
+    this._onClick(event, 'na');
+  },
+  _onClick : function (event, target) {
+    if (event) {
+      event.stop();
+    }
+    this._onSelect(target);
+    this.element.fire('ynpicker:selectionChanged', {'selected' : target});
+  },
+  _onSelect : function (target) {
+    (target == 'yes') &amp;&amp; this._select('yes') || this._unselect('yes');
+    (target == 'no') &amp;&amp; this._select('no') || this._unselect('no');
+    (target == 'na') &amp;&amp; this._select('na') || this._unselect('na');
+  },
+  _onUnselect : function () {
+    this._unselect('yes');
+    this._unselect('no');
+    this._select('na');
+  },
+
+  _getInput : function(name) {
+    this[name] &amp;&amp; this[name].down('input');
+  },
+  _isSelected : function (name) {
+     return this[name] &amp;&amp; this[name].down('input').checked;
+  },
+  _select : function (name) {
+     if (this[name]) {
+       this[name].addClassName('selected');
+       var input = this[name].down('input');
+       input.checked = true;
+       Event.fire(input, 'picker:change');
+       document.fire('ynpicker:change', {'element' : input});
+       this.label &amp;&amp; this.label.addClassName(name + '-selected');
+       //Expanding and collapsing the terms descendants
+       if (input._dropDown) {
+         var dropDownEnabled = false;
+         if (name == "yes") {
+           dropDownEnabled = input._dropDown.show(true);
+           dropDownEnabled ? input._trigger._root._expanded = false : null;
+         } 
+         if (dropDownEnabled) {
+           input._trigger.click();
+         }
+       }
+       //this[name].title = this._hints[name].selectedTitle;
+     }
+     return this[name];
+  },
+  _unselect : function (name) {
+     if (this[name]) {
+       this[name].removeClassName('selected');
+       var input = this[name].down('input');
+       input.checked = false;
+       Event.fire(input, 'picker:change');
+       this.label &amp;&amp; this.label.removeClassName(name + '-selected');
+       //Expanding and collapsing the terms descendants
+       if (input._dropDown) {
+         var dropDownEnabled = false;
+         if (name == "yes") {
+           dropDownEnabled = input._dropDown.show(true);
+           dropDownEnabled ? input._trigger._root._expanded = true : null;
+         } 
+         if (dropDownEnabled) {
+           input._trigger.click();
+         }
+       }
+       //this[name].title = this._hints[name].unselectedTitle;
+     }
+     return this[name];
+  },
+  _sync : function(event) {
+    if (!event.memo || !event.memo.element) {
+      return;
+    }
+    var element = event.memo.element;
+    var value = element.value;
+    var selected = element.checked;
+    var label = element.parentNode;
+    if (value != this.yesInput.value || !selected || !label || (this.yesInput.name != element.name &amp;&amp; this.noInput.name != element.name)) {
+      return;
+    }
+    if (label.hasClassName('na')) {
+      this.na &amp;&amp; (this.naInput.checked = true);
+      this.na &amp;&amp; this.na.addClassName('selected');
+      this.label &amp;&amp; this.label.addClassName('na-selected');
+      this.yesInput.checked = false;
+      this.yes.removeClassName('selected');
+      this.label &amp;&amp; this.label.removeClassName('yes-selected');
+      this.noInput.checked = false;
+      this.no.removeClassName('selected');
+      this.label &amp;&amp; this.label.removeClassName('no-selected');
+      this.element.up('li') &amp;&amp; this.element.up('li').removeClassName('accepted');
+    } else if (label.hasClassName('no')) {
+      this.na &amp;&amp; (this.naInput.checked = false);
+      this.na &amp;&amp; this.na.removeClassName('selected');
+      this.yesInput.checked = false;
+      this.yes.removeClassName('selected');
+      this.label &amp;&amp; this.label.removeClassName('yes-selected');
+      this.noInput.checked = true;
+      this.no.addClassName('selected');
+      this.label &amp;&amp; this.label.addClassName('no-selected');
+      this.element.up('li') &amp;&amp; this.element.up('li').removeClassName('accepted');
+    } else {
+      this.na &amp;&amp; (this.naInput.checked = false);
+      this.na &amp;&amp; this.na.removeClassName('selected');
+      this.yesInput.checked = true;
+      this.yes.addClassName('selected');
+      this.label &amp;&amp; this.label.addClassName('yes-selected');
+      this.noInput.checked = false;
+      this.no.removeClassName('selected');
+      this.label &amp;&amp; this.label.removeClassName('no-selected');
+      this.element.up('li') &amp;&amp; this.element.up('li').addClassName('accepted');
+    }
+  }
+});
+
+YesNoPicker.generatePickerElement = function(buttons, value, title, activate, label) {
+  var supportedValues = {
+      yes : {label: 'Y', title : 'YES (investigated and observed)'},
+      no  : {label: 'N', title : 'NO (investigated and NOT observed)'},
+      na  : {label: 'NA', title : 'NA (irrelevant or unknown)'}
+  };
+  var ynPickerElt = new Element("span", {'class': 'yes-no-picker'});
+  buttons.each(function(b) {
+     if (b.type &amp;&amp; supportedValues[b.type]) {
+       var bLabel = new Element('label', {'class' : b.type + (b.selected &amp;&amp; ' selected' || ''), title : supportedValues[b.type].title}).update(supportedValues[b.type].label);
+       var bInput = new Element('input', {type : 'checkbox', value : value, title: title || ''});
+       b.selected &amp;&amp; (bInput.checked = true);
+       if (b.name) {
+         bInput.name = b.name;
+         bInput.id = typeof b.id != "undefined" ? b.id : (b.name + "_" + value);
+         bLabel.htmlFor = bInput.id;
+       }
+       bInput.hide();
+       bLabel.insert({top: bInput});
+       ynPickerElt.insert(bLabel);
+     }
+  });
+  if (activate) {
+    ynPickerElt._ynpicker = new YesNoPicker(ynPickerElt, label, label &amp;&amp; true);
+    ynPickerElt.select('input').each(function (item) {item._ynpicker = ynPickerElt._ynpicker});
+  }
+  return ynPickerElt;
+};</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.YesNoNAPicker</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>6cb766b8-0d90-4b54-a866-a92cc2ffdf6b</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.yes-no-picker {
+  border: 1px solid #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 10px #eee;
+  display: inline-block;
+  margin: 0 5px;
+  background: #fff;
+  position: relative;
+  cursor: pointer;
+  vertical-align: middle;
+  height: 20px;
+}
+.yes-no-picker label {
+  display: inline-block;
+  width: 20px !important;
+  height: 20px;
+  text-align: center;
+  overflow: hidden;
+  background: transparent none center center no-repeat;
+  box-shadow: inset 0 1px 2px #999;
+  font-size: .7em;
+  line-height: 20px !important;
+  cursor: pointer;
+  margin: 0px !important;
+  padding: 0px !important;
+  float: none !important;
+}
+#body .yes-no-picker label.highlighted {
+  background-color: #999;
+  color: #fff;
+  text-shadow: 0 1px 1px #000;
+}
+.yes-no-picker label.selected {
+  text-shadow: 0 1px 1px #000;
+}
+
+.yes-no-picker label:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.yes-no-picker label:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.yes-no-picker label.yes {
+  color: #000;
+  border-right: 1px solid #fff;
+  border-left: 1px solid #fff;
+}
+.yes-no-picker label.selected.yes {
+  background: #333;
+  color: #FFF;
+}
+
+.yes-no-picker label.no {
+  color: #a00;
+  border-left: 1px solid #fff;
+}
+.yes-no-picker label.semi-selected {
+  background-color: #ccc;
+}
+.yes-no-picker label.selected.no {
+  background: #a00;
+  color: #FFF;
+}
+.yes-no-picker label.na {
+  color: #888;
+  border-right: 4px solid #fff;
+}
+.yes-no-picker label.selected.na {
+  background-color: #888;
+  color: #fff;
+  cursor: default;
+}
+.yes-no-picker-label {
+  color: #777;
+}
+.yes-no-picker-label.yes-selected {
+  color: #000;
+}
+.yes-no-picker-label.no-selected {
+  color: #a00;
+  text-decoration: line-through;
+}</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>

@@ -88,11 +88,11 @@ public class PhenoTipsPatient implements Patient
     private static final String PHENOTYPE_NEGATIVE_PROPERTY = "negative_phenotype";
 
     private static final String[] PHENOTYPE_PROPERTIES =
-        new String[] {PHENOTYPE_POSITIVE_PROPERTY, PHENOTYPE_NEGATIVE_PROPERTY};
+        new String[] { PHENOTYPE_POSITIVE_PROPERTY, PHENOTYPE_NEGATIVE_PROPERTY };
 
     private static final String DISORDER_PROPERTIES_OMIMID = "omim_id";
 
-    private static final String[] DISORDER_PROPERTIES = new String[] {DISORDER_PROPERTIES_OMIMID};
+    private static final String[] DISORDER_PROPERTIES = new String[] { DISORDER_PROPERTIES_OMIMID };
 
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
@@ -131,30 +131,8 @@ public class PhenoTipsPatient implements Patient
         }
 
         try {
-            @SuppressWarnings("unchecked")
-            Collection<BaseProperty<EntityReference>> fields = data.getFieldList();
-            for (BaseProperty<EntityReference> field : fields) {
-                if (field == null || !field.getName().matches("(.*_)?phenotype")
-                    || field.getName().startsWith("extended_") || !ListProperty.class.isInstance(field)) {
-                    continue;
-                }
-                ListProperty values = (ListProperty) field;
-                for (String value : values.getList()) {
-                    if (StringUtils.isNotBlank(value)) {
-                        this.features.add(new PhenoTipsFeature(doc, values, value));
-                    }
-                }
-            }
-            for (String property : DISORDER_PROPERTIES) {
-                ListProperty values = (ListProperty) data.get(property);
-                if (values != null) {
-                    for (String value : values.getList()) {
-                        if (StringUtils.isNotBlank(value)) {
-                            this.disorders.add(new PhenoTipsDisorder(values, value));
-                        }
-                    }
-                }
-            }
+            loadFeatures(doc, data);
+            loadDisorders(doc, data);
         } catch (XWikiException ex) {
             this.logger.warn("Failed to access patient data for [{}]: {}", doc.getDocumentReference(), ex.getMessage());
         }
@@ -165,6 +143,38 @@ public class PhenoTipsPatient implements Patient
 
         loadSerializers();
         readPatientData();
+    }
+
+    private void loadFeatures(XWikiDocument doc, BaseObject data)
+    {
+        @SuppressWarnings("unchecked")
+        Collection<BaseProperty<EntityReference>> fields = data.getFieldList();
+        for (BaseProperty<EntityReference> field : fields) {
+            if (field == null || !field.getName().matches("(?!extended_)(.*_)?phenotype")
+                || !ListProperty.class.isInstance(field)) {
+                continue;
+            }
+            ListProperty values = (ListProperty) field;
+            for (String value : values.getList()) {
+                if (StringUtils.isNotBlank(value)) {
+                    this.features.add(new PhenoTipsFeature(doc, values, value));
+                }
+            }
+        }
+    }
+
+    private void loadDisorders(XWikiDocument doc, BaseObject data) throws XWikiException
+    {
+        for (String property : DISORDER_PROPERTIES) {
+            ListProperty values = (ListProperty) data.get(property);
+            if (values != null) {
+                for (String value : values.getList()) {
+                    if (StringUtils.isNotBlank(value)) {
+                        this.disorders.add(new PhenoTipsDisorder(values, value));
+                    }
+                }
+            }
+        }
     }
 
     private void loadSerializers()
@@ -303,8 +313,6 @@ public class PhenoTipsPatient implements Patient
 
         if (!this.features.isEmpty() && isFieldIncluded(onlyFieldNames, PHENOTYPE_PROPERTIES)) {
             result.element(JSON_KEY_FEATURES, featuresToJSON());
-        }
-        if (!this.features.isEmpty() && isFieldIncluded(onlyFieldNames, PHENOTYPE_PROPERTIES)) {
             result.element(JSON_KEY_NON_STANDARD_FEATURES, nonStandardFeaturesToJSON());
         }
 

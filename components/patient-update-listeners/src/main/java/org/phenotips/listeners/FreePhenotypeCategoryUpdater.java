@@ -48,7 +48,7 @@ import com.xpn.xwiki.objects.classes.BaseClass;
 
 /**
  * Store the target category specified for free text phenotypes.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -83,7 +83,7 @@ public class FreePhenotypeCategoryUpdater implements EventListener
     public List<Event> getEvents()
     {
         // The list of events this listener listens to
-        return Arrays.<Event> asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
+        return Arrays.<Event>asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
     }
 
     @Override
@@ -121,7 +121,7 @@ public class FreePhenotypeCategoryUpdater implements EventListener
 
     /**
      * Store the category specified for a free-text phenotype in an object attached to the patient sheet.
-     * 
+     *
      * @param phenotype the free-text phenotype value found in the request
      * @param category the specified category where the phenotype belongs
      * @param targetPropertyName the name of the phenotype property where the {@code phenotype} was specified
@@ -140,7 +140,7 @@ public class FreePhenotypeCategoryUpdater implements EventListener
     /**
      * Find an XObject for storing the category for a phenotype. This method first searches for an existing object for
      * that phenotype, which will be updated, or if one isn't found, then a new object will be created.
-     * 
+     *
      * @param phenotype the free-text phenotype value found in the request
      * @param targetPropertyName the name of the phenotype property where the {@code phenotype} was specified
      * @param doc the patient sheet
@@ -175,7 +175,7 @@ public class FreePhenotypeCategoryUpdater implements EventListener
 
     /**
      * Read a property from the request.
-     * 
+     *
      * @param propertyName the name of the property as it would appear in the class, for example
      *            {@code age_of_onset_years}
      * @param objectNumber the object's number

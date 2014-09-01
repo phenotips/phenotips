@@ -122,17 +122,39 @@
     <property>
       <code>(function() {
   var init = function() {
+    // Save before opening the pedigree
     var pedigreeTrigger = $("pedigree-trigger");
-    if (!pedigreeTrigger) {
-      return;
-    }
-    pedigreeTrigger.observe("click", function(event) {
-      event.stop();
-      document.observe("xwiki:document:saved", function () {
-        window.self.location = pedigreeTrigger.href;
+    if (pedigreeTrigger) {
+      pedigreeTrigger.observe("click", function(event) {
+        event.stop();
+        document.observe("xwiki:document:saved", function () {
+          window.self.location = pedigreeTrigger.href;
+        });
+        document.fire("xwiki:actions:save", {"continue" : true, "form" : pedigreeTrigger.up("form")});
       });
-      document.fire("xwiki:actions:save", {"continue" : true, "form" : pedigreeTrigger.up("form")});
-    });
+    }
+
+    // Resize the pedigree image to fit in the viewport
+    var pedigreeElt = document.documentElement.down('.pedigree-wrapper svg');
+    if (pedigreeElt) {
+      var __fixPedigreeSize = function() {
+        if (!pedigreeElt._originalWidth) {
+          pedigreeElt._originalWidth = pedigreeElt.getAttribute('width');
+          pedigreeElt._originalHeight = pedigreeElt.getAttribute('height');
+        }
+        var newWidth = Element.up(pedigreeElt, '.pedigree-wrapper').up().getWidth();
+        if (newWidth &lt; pedigreeElt._originalWidth) {
+          var newHeight = pedigreeElt._originalHeight * newWidth / pedigreeElt._originalWidth;
+          pedigreeElt.setAttribute('width', newWidth);
+          pedigreeElt.setAttribute('height', newHeight);
+        } else {
+          pedigreeElt.setAttribute('width', pedigreeElt._originalWidth);
+          pedigreeElt.setAttribute('height', pedigreeElt._originalHeight);
+        }
+      };
+      __fixPedigreeSize();
+      Event.observe(window, 'resize', __fixPedigreeSize);
+    }
   };
   (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
 })();</code>
@@ -226,6 +248,7 @@
   #set ($image = $pedigreeObj.getProperty('image').value)
 #end## pedigree obj exists
 #if ($xcontext.action == 'edit' || "$!data" != '')
+  $xwiki.jsx.use('PhenoTips.UIX_Field__pedigree')##
 
   === Pedigree ===
 
@@ -235,13 +258,10 @@
     #else
       #set ($pAction = 'Draw pedigree')
     #end## pedigree data exists
-    $xwiki.jsx.use('PhenoTips.UIX_Field__pedigree')##
     (% class="buttonwrapper" %)[[$!{pAction}&gt;&gt;||queryString="sheet=PhenoTips.PedigreeEditor" rel="__blank" class="button" id="pedigree-trigger"]](%%)
   #end## action == edit
   #if ("$!image" != '')
-    {{html clean="false"}}
-      $!image
-    {{/html}}
+    (% class="pedigree-wrapper" %)((({{html clean="false"}}$!image{{/html}})))
   #end
 #end## action == edit || data
 {{/velocity}}</content>

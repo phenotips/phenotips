@@ -77,9 +77,7 @@ public interface PushServerResponse
     boolean isLoginFailed_knownReason();
 
     /**
-     * @return {@code true} iff remote server token configured on this server does not match the token configured on the
-     *         remote server for this server (including the case when remote server does not have a token for this
-     *         server at all).
+     * @return {@code true} iff remote server does not allow pushes from this server.
      */
     boolean isLoginFailed_UnauthorizedServer();
 

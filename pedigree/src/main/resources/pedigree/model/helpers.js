@@ -137,7 +137,7 @@ function removeFirstOccurrenceByValue(array, item) {
 function isInt(n) {
     //return +n === n && !(n % 1);
     //return !(n % 1);
-    return (parseInt(n) == parseFloat(n));
+    return (!isNaN(n) && parseInt(n) == parseFloat(n));
 }
 
 function toObjectWithTrue(array) {
@@ -145,6 +145,20 @@ function toObjectWithTrue(array) {
   for (var i = 0; i < array.length; ++i)
     if (array[i] !== undefined) obj[array[i]] = true;
   return obj;
+}
+
+function romanize (num) {
+    if (!+num)
+        return false;
+    var digits = String(+num).split(""),
+        key = ["","C","CC","CCC","CD","D","DC","DCC","DCCC","CM",
+               "","X","XX","XXX","XL","L","LX","LXX","LXXX","XC",
+               "","I","II","III","IV","V","VI","VII","VIII","IX"],
+        roman = "",
+        i = 3;
+    while (i--)
+        roman = (key[+digits.pop() + (i * 10)] || "") + roman;
+    return Array(+digits.join("") + 1).join("M") + roman;
 }
 
 /*function objectKeys(obj) {

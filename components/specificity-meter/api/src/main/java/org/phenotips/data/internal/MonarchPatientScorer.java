@@ -27,7 +27,6 @@ import org.phenotips.data.PatientSpecificity;
 import org.xwiki.component.annotation.Component;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Date;
 
 import javax.inject.Named;
@@ -73,6 +72,9 @@ public class MonarchPatientScorer implements PatientScorer
     @Override
     public double getScore(Patient patient)
     {
+        if (patient.getFeatures().isEmpty()) {
+            return 0.0;
+        }
         CloseableHttpResponse response = null;
         try {
             JSONObject data = new JSONObject();
@@ -94,13 +96,11 @@ public class MonarchPatientScorer implements PatientScorer
                     data.toString()).build());
             response = this.client.execute(method);
             JSONObject score = (JSONObject) JSONSerializer.toJSON(IOUtils.toString(response.getEntity().getContent()));
-            if (score != null && !score.isNullObject()) {
+            if (!score.isNullObject()) {
                 return score.getDouble("scaled_score");
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             // Just return failure below
-        } catch (URISyntaxException ex) {
-            // Shouldn't happen, the URI is correctly built
         } finally {
             if (response != null) {
                 try {

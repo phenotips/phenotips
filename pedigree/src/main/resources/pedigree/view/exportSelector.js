@@ -26,6 +26,7 @@ var ExportSelector = Class.create( {
           };          
         var typeListElement = new Element('table');
         typeListElement.insert(_addTypeOption(true,  "PED", "ped"));        
+        typeListElement.insert(_addTypeOption(false, "BOADICEA", "BOADICEA"));
         typeListElement.insert(_addTypeOption(false, "Simple JSON", "simpleJSON"));
         //TODO: typeListElement.insert(_addTypeOption(false, "Phenotips Pedigree JSON", "phenotipsJSON"));
         
@@ -53,11 +54,11 @@ var ExportSelector = Class.create( {
         configListElementJSON.insert(_addConfigOption(false, "export-options", "import-config-label", "Remove personal information and free-form comments", "minimal"));
 
         var configListElementPED = new Element('table', {"id": "pedOptions"});
-        var label = new Element('label', {'class': 'export-config-header'}).insert("Which of the following fields should be used to generate IDs in the PED file?");
+        var label = new Element('label', {'class': 'export-config-header'}).insert("Which of the following fields should be used to generate person IDs?");
         configListElementPED.insert(label.wrap('td').wrap('tr'));         
         configListElementPED.insert(_addConfigOption(true,  "ped-options", "export-subconfig-label", "External ID", "external"));
-        configListElementPED.insert(_addConfigOption(false, "ped-options", "export-subconfig-label", "First and Last Name", "name"));
-        configListElementPED.insert(_addConfigOption(false, "ped-options", "export-subconfig-label", "None, generate new ID for everyone", "newid"));
+        configListElementPED.insert(_addConfigOption(false, "ped-options", "export-subconfig-label", "Name", "name"));
+        configListElementPED.insert(_addConfigOption(false, "ped-options", "export-subconfig-label", "None, generate new numeric ID for everyone", "newid"));
 
         var promptConfig = new Element('div', {'class': 'import-section'}).update("Options:");
         var dataSection3 = new Element('div', {'class': 'import-block'});        
@@ -91,7 +92,7 @@ var ExportSelector = Class.create( {
         var pedOptionsTable = $("pedOptions");
         var jsonOptionsTable = $("jsonOptions");
         
-        if (exportType == "ped") {
+        if (exportType == "ped" || exportType == "BOADICEA") {
             pedOptionsTable.show();
             jsonOptionsTable.hide();
         } else {
@@ -108,8 +109,6 @@ var ExportSelector = Class.create( {
      * @private
      */
     _onExportStarted: function() {   
-        console.log("Exporting");
-        
         this.hide();
         
         var patientDocument = XWiki.currentDocument.page + " pedigree";
@@ -120,12 +119,17 @@ var ExportSelector = Class.create( {
         if (exportType == "simpleJSON") { 
             var privacySetting = $$('input:checked[type=radio][name="export-options"]')[0].value;
             var exportString = PedigreeExport.exportAsSimpleJSON(editor.getGraph().DG, privacySetting);
-            var filaName = patientDocument + ".json";
+            var fileName = patientDocument + ".json";
             var mimeType = "application/json";
         } else {
             var idGenerationSetting = $$('input:checked[type=radio][name="ped-options"]')[0].value;
-            var exportString = PedigreeExport.exportAsPED(editor.getGraph().DG, idGenerationSetting);
-            var filaName = patientDocument + ".ped";
+            if (exportType == "ped") {
+                var exportString = PedigreeExport.exportAsPED(editor.getGraph().DG, idGenerationSetting);
+                var fileName = patientDocument + ".ped";
+            } else if (exportType == "BOADICEA") {
+                var exportString = PedigreeExport.exportAsBOADICEA(editor.getGraph().DG, idGenerationSetting);
+                var fileName = patientDocument + ".dat";
+            }
             var mimeType = "text/plain";
         }
         
@@ -140,7 +144,7 @@ var ExportSelector = Class.create( {
         // Note: as of today, the only way to specify the filename is via the "download" attribute,
         //       which is not supported in all (even modern) browsers: http://caniuse.com/download
         //       (also see: http://stackoverflow.com/questions/7717851/save-file-javascript-with-file-name)
-        downloadLink.setAttribute("download", filaName);
+        downloadLink.setAttribute("download", fileName);
         
         downloadLink.click();      
     },

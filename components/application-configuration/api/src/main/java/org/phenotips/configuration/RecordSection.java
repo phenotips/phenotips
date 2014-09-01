@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * Represents a section that can be displayed in the patient record.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -35,28 +35,28 @@ public interface RecordSection
 {
     /**
      * The extension defining this section.
-     * 
+     *
      * @return a valid {@link UIExtension} object
      */
     UIExtension getExtension();
 
     /**
      * The name of this section, displayed in the patient record and in the form designer.
-     * 
+     *
      * @return a user-friendly title for this section
      */
     String getName();
 
     /**
      * Whether this section and its elements are going to be displayed in the patient record or not.
-     * 
+     *
      * @return {@code true} if this section must be displayed, {@code false} otherwise
      */
     boolean isEnabled();
 
     /**
      * The list of elements configured in this section, whether they are enabled or not.
-     * 
+     *
      * @return an unmodifiable ordered list of {@link RecordElement elements}, empty if this section doesn't have any
      *         elements
      */
@@ -64,7 +64,7 @@ public interface RecordSection
 
     /**
      * The list of elements displayed in the patient record by this section.
-     * 
+     *
      * @return an unmodifiable ordered list of {@link RecordElement#isEnabled() enabled elements}, empty if none are
      *         configured or enabled
      */

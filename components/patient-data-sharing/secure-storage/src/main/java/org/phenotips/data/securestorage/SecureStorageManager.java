@@ -21,15 +21,11 @@ package org.phenotips.data.securestorage;
 
 import org.xwiki.component.annotation.Role;
 
-import org.phenotips.data.securestorage.LocalLoginToken;
-import org.phenotips.data.securestorage.RemoteLoginData;
-import org.phenotips.data.securestorage.PatientPushedToInfo;
-
 /**
- * Used to store data in a way inaccessible from any of the wiki pages by regular users without programming rights.<p>
- *
- * Most sensitive information stored is remote user names and login tokens, which can be used to push data to a
- * remote server without a password.
+ * Used to store data in a way inaccessible from any of the wiki pages by regular users without programming rights.
+ * <p>
+ * Most sensitive information stored is remote user names and login tokens, which can be used to push data to a remote
+ * server without a password.
  *
  * @version $Id$
  * @since 1.0M10
@@ -39,26 +35,31 @@ public interface SecureStorageManager
 {
     /**
      * TODO
+     *
      * @param
      * @return
-    */
+     */
     void storeRemoteLoginData(String userName, String serverName, String remoteUserName, String remoteLoginToken);
+
     void storeLocalLoginToken(String userName, String sourceServerName, String loginToken);
 
     void removeRemoteLoginData(String userName, String serverName);
 
     // null if not found
     RemoteLoginData getRemoteLoginData(String userName, String serverName);
+
     LocalLoginToken getLocalLoginToken(String userName, String sourceServerName);
 
     void removeAllLocalTokens(String sourceServerName);
 
     void storePatientSourceServerInfo(String patientGUID, String sourceServerName);
+
     // null if local
     PatientSourceServerInfo getPatientSourceServerInfo(String patientGUID);
 
     void storePatientPushInfo(String localPatientID, String remoteServerName,
-                              String remotePatientGUID, String remotePatientID, String remotePatientURL);
+        String remotePatientGUID, String remotePatientID, String remotePatientURL);
+
     // null if never pushed to the given server
     PatientPushedToInfo getPatientPushInfo(String localPatientID, String remoteServerName);
 }

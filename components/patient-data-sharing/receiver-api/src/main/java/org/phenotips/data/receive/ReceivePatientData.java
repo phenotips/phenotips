@@ -20,10 +20,10 @@
 
 package org.phenotips.data.receive;
 
-import net.sf.json.JSONObject;
-
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
+
+import net.sf.json.JSONObject;
 
 /**
  * API that allows receiving patient data from a remote PhenoTips instance.
@@ -36,25 +36,24 @@ import org.xwiki.stability.Unstable;
 public interface ReceivePatientData
 {
     /**
-     * Check that the server token received in the request is valid. The expected token
-     * is configured per-server in the Administration->Receive patient information.
+     * Check that the server pushing the patient is authorized to push to this server.
      *
-     * @return {@code true} if a token parameter is present in the request, and it's value
-     * matches the configuration for the pushing server.
+     * @return {@code true} if source server is authorized.
      */
     boolean isServerTrusted();
 
     /**
-     * Validates the username and credentials (password or user_token) given in the request, and iff credentials
-     * are valid, returns the list of Phenotips patient fields accepted in push requests by the server and
-     * the list of local Phenotips groups that the given user is a member of.<br>
+     * Validates the username and credentials (password or user_token) given in the request, and iff credentials are
+     * valid, returns the list of Phenotips patient fields accepted in push requests by the server and the list of local
+     * Phenotips groups that the given user is a member of.<br>
      * If enabled on the server, also generates a user_token which can be used to push patients without providing
-     * password again. This token can only be used for pushing patients and its lifetime is configured per-server.<p>
-     *
-     * If the username or credentilas are incorrect returns a {@code JSONObject} with {@code "success"} key
-     * set to {@code false}, {@code "login_failed"} field set to {@code true} and possibly some other fields indicating the
-     * exact failure reason. See description of the protocol in {@code org.phenotips.data.shareprotocol.ShareProtocol.java}.<p>
-     *
+     * password again. This token can only be used for pushing patients and its lifetime is configured per-server.
+     * <p>
+     * If the username or credentilas are incorrect returns a {@code JSONObject} with {@code "success"} key set to
+     * {@code false}, {@code "login_failed"} field set to {@code true} and possibly some other fields indicating the
+     * exact failure reason. See description of the protocol in
+     * {@code org.phenotips.data.shareprotocol.ShareProtocol.java}.
+     * <p>
      * In case of any failures after provided credentials were successfully validated returns a {@code JSONObject} with
      * {@code "success"} key set to {@code false} and {@code "action_failed"} field set to {@code true};
      * {@code "login_failed"} is guaranteed to be absent in the output.
@@ -72,11 +71,11 @@ public interface ReceivePatientData
     JSONObject getConfiguration();
 
     /**
-     * Receives patient data and either updates an existing patient or creates a new patient.<p>
-     *
+     * Receives patient data and either updates an existing patient or creates a new patient.
+     * <p>
      * Requires a valid username and credentials to be supplied in the request, which are validated the same way
-     * {@code getConfiguration()} does, and returns the same {@code JSONObject} in case of any problems.<p>
-     *
+     * {@code getConfiguration()} does, and returns the same {@code JSONObject} in case of any problems.
+     * <p>
      * If credentials are valid, checks if "remote_guid" parameter is supplied in the request:<br>
      *   1) if it is supplied, but updating existing patients is disabled on the server, returns a {@code JSONObject}
      *      with {@code "success"} key set to {@code false}, {@code "action_failed"} field set to {@code true} and
@@ -126,6 +125,7 @@ public interface ReceivePatientData
      */
     JSONObject getPatientURL();
 
-    JSONObject untrustedServerResponse();
     JSONObject unsupportedeActionResponse();
+
+    JSONObject untrustedServerResponse();
 }

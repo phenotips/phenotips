@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+
+# Stop Tomcat
+if [[ -a /etc/init.d/tomcat6 ]]
+then
+  /sbin/service tomcat6 stop >/dev/null 2>&1 || true
+fi

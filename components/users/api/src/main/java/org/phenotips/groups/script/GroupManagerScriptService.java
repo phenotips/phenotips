@@ -36,7 +36,7 @@ import javax.inject.Singleton;
 
 /**
  * Service for manipulating groups.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -52,7 +52,7 @@ public class GroupManagerScriptService implements ScriptService
 
     /**
      * List the groups that this user is a member of.
-     * 
+     *
      * @param user the user whose groups will be retrieved
      * @return an unmodifiable set of groups, empty if the user isn't part of any groups.
      */

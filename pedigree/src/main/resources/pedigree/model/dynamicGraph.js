@@ -63,6 +63,26 @@ DynamicPositionedGraph.prototype = {
         return this.DG.GG.isAdopted(id);
     },
 
+    getGeneration: function( id )
+    {
+        return (this.DG.ranks[id] + 1)/2;
+    },
+
+    getOrderWithinGeneration: function( id )
+    {
+        if (!this.isPerson(id))
+            throw "Assertion failed: getOrderWithinGeneration() is applied to a non-person";
+
+        var order = 0;
+        var rank  = this.DG.ranks[id];
+        for (var i = 0; i < this.DG.order.order[rank].length; i++) {
+            var next = this.DG.order.order[rank][i];
+            if (this.DG.GG.isPerson(next)) order++;
+            if (next == id) break;
+        }
+        return order;
+    },
+
     // returns null if person has no twins
     getTwinGroupId: function( id )
     {
@@ -216,7 +236,7 @@ DynamicPositionedGraph.prototype = {
     getAllChildren: function( v )
     {
         if (!this.isPerson(v))
-            throw "Assertion failed: getAllChildren() is applied to a non-relationship";
+            throw "Assertion failed: getAllChildren() is applied to a non-person";
 
         var rels = this.DG.GG.getAllRelationships(v);
 
@@ -1161,6 +1181,9 @@ DynamicPositionedGraph.prototype = {
 
         if (importType == "ped") {
             var baseGraph = PedigreeImport.initFromPED(importString, importOptions.acceptUnknownPhenotypes, importOptions.markEvaluated, importOptions.externalIdMark);
+            if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
+        } else if (importType == "BOADICEA") {
+            var baseGraph = PedigreeImport.initFromBOADICEA(importString, importOptions.externalIdMark);
             if (!this._recreateUsingBaseGraph(baseGraph)) return null;  // no changes
         } else if (importType == "gedcom") {
             var baseGraph = PedigreeImport.initFromGEDCOM(importString, importOptions.markEvaluated, importOptions.externalIdMark);

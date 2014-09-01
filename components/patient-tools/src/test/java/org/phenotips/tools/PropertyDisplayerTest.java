@@ -33,6 +33,7 @@ import java.util.Vector;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -43,7 +44,7 @@ import org.w3c.dom.ls.LSInput;
 
 /**
  * Tests for the {@link PropertyDisplayer}.
- * 
+ *
  * @version $Id$
  */
 public class PropertyDisplayerTest
@@ -69,7 +70,8 @@ public class PropertyDisplayerTest
         configuration.setPositiveFieldName("PhenoTips.PatientClass_0_phenotype");
         Collection<Map<String, ?>> data = Collections.emptySet();
         OntologyService ontologyService = Mockito.mock(OntologyService.class);
-        Mockito.doReturn(new HashSet<OntologyTerm>()).when(ontologyService).search(Mockito.any(Map.class));
+        Mockito.doReturn(new HashSet<OntologyTerm>()).when(ontologyService)
+            .search(Matchers.anyMapOf(String.class, Object.class));
 
         PropertyDisplayer displayer = new PropertyDisplayer(data, configuration, ontologyService);
         String output = displayer.display();

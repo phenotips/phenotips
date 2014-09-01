@@ -52,6 +52,7 @@ var ImportSelector = Class.create( {
         //TODO: typeListElement.insert(_addTypeOption(true,  "Autodetect", "auto"));
         typeListElement.insert(_addTypeOption(true,  "PED or LINKAGE (pre- or post- makeped)", "ped"));        
         typeListElement.insert(_addTypeOption(false, "GEDCOM", "gedcom"));
+        typeListElement.insert(_addTypeOption(false, "BOADICEA", "BOADICEA"));
         typeListElement.insert(_addTypeOption(false, "Simple JSON", "simpleJSON"));
         //TODO: typeListElement.insert(_addTypeOption(false, "Phenotips Pedigree JSON", "phenotipsJSON"));
 
@@ -145,11 +146,11 @@ var ImportSelector = Class.create( {
             pedAndGedcomOption.disabled = false;
         }
         
-        var pedAndGedcomOption = $$('input[type=checkbox][name="mark-external"]')[0];
-        if (importType != "ped" && importType != "gedcom") {
-            pedAndGedcomOption.disabled = true;
+        var saveExternalID = $$('input[type=checkbox][name="mark-external"]')[0];
+        if (importType == "simpleJSON") {
+            saveExternalID.disabled = true;
         } else {
-            pedAndGedcomOption.disabled = false;
+            saveExternalID.disabled = false;
         }
     },
     

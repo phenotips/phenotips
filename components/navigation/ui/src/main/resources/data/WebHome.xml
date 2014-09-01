@@ -1,0 +1,2964 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>data</web>
+  <name>WebHome</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822185000</creationDate>
+  <parent>Main.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401825901000</date>
+  <contentUpdateDate>1401822185000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Phenotype database</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{dashboard style="panels" /}}</content>
+  <object>
+    <name>data.WebHome</name>
+    <number>0</number>
+    <className>PhenoTips.DBConfigurationClass</className>
+    <guid>380d3252-75ab-4be3-8b4b-d212e9939b6f</guid>
+    <class>
+      <name>PhenoTips.DBConfigurationClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <dateOfBirthFormat>
+        <customDisplay>{{velocity}}
+#if ($xcontext.action == 'edit' || $xcontext.action == 'admin')
+{{html wiki=false clean=false}}
+&lt;select name="$prefix$name" id="$prefix$iname"&gt;
+#foreach ($val in ['MM/dd/yyyy', 'dd/MM/yyyy', 'yyyy-MM-dd', 'MM/yyyy', 'MMMM yyyy'])
+  &lt;option #if ($val == $value) selected="selected"#end value="$val"&gt;$val (e.g. $xwiki.formatDate($util.date, $val) for today)&lt;/option&gt;
+#end
+&lt;/select&gt;
+{{/html}}
+#else
+$!value
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>dateOfBirthFormat</name>
+        <number>5</number>
+        <picker>0</picker>
+        <prettyName>Date of birth format</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </dateOfBirthFormat>
+      <enableImperialUnitSystem>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>enableImperialUnitSystem</name>
+        <number>6</number>
+        <prettyName>Enable imperial unit system for entering measurements</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </enableImperialUnitSystem>
+      <livetableColumns>
+        <cache>0</cache>
+        <customDisplay>//Meta information: //
+
+{{velocity output=false}}
+#set ($docFields = ['doc.name', 'doc.creator', 'doc.author', 'doc.creationDate', 'doc.date'])
+#macro(__xclass__displayLivetableColOption $option $value)
+  &lt;li&gt;
+    &lt;label for="${prefix}${name}_${sectionId}"&gt;
+    &lt;input type="checkbox" name="${prefix}${name}" id="${prefix}${name}_${option}" value="$option"#if ($value.contains($option)) checked="checked"#end/&gt;
+    $services.localization.render("patient.livetable.${option}")
+    &lt;/label&gt;
+  &lt;/li&gt;
+#end
+{{/velocity}}
+
+{{velocity}}{{html wiki=false clean=false}}
+&lt;ul style="list-style-type: none; margin: 0 0 0 16px"&gt;
+#foreach ($option in $docFields)
+  #__xclass__displayLivetableColOption($option $value)
+#end
+&lt;/ul&gt;
+{{/html}}{{/velocity}}
+
+//Patient information: //
+
+{{include document="PhenoTips.DBConfigurationClassDisplayer" /}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>livetableColumns</name>
+        <number>8</number>
+        <picker>0</picker>
+        <prettyName>Livetable columns</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>40</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </livetableColumns>
+      <livetableRows>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>livetableRows</name>
+        <number>10</number>
+        <numberType>integer</numberType>
+        <prettyName>Number of rows to display by default</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </livetableRows>
+      <livetableSortColumn>
+        <customDisplay>{{velocity}}
+#if ($type == 'edit')
+{{html clean="false"}}
+&lt;select name="${prefix}${name}"&gt;
+#foreach($column in $object.getProperty('livetableColumns').value)
+  &lt;option value="$escapetool.xml($column)"#if ($column == $value) selected="selected"#{end}&gt;$services.localization.render("patient.livetable.${column}")&lt;/option&gt;
+#end
+&lt;/select&gt;
+{{/html}}
+#else
+  $services.localization.render("patient.livetable.${value}")
+#end
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>livetableSortColumn</name>
+        <number>9</number>
+        <picker>0</picker>
+        <prettyName>Column to sort by default</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </livetableSortColumn>
+      <measurementUnitSystem>
+        <cache>0</cache>
+        <customDisplay>{{velocity}}
+#if ($value != 'imperial')#set ($value = 'metric')#end
+{{html clean=false}}&lt;p&gt;&lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_metric" value="metric" #if ($value == 'metric') checked="checked"#end /&gt;metric&lt;/label&gt;  &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" id="${prefix}${name}_imperial" value="imperial" #if ($value == 'imperial') checked="checked"#end /&gt;imperial&lt;/label&gt;&lt;/p&gt;
+&lt;br/&gt;
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>radio</displayType>
+        <multiSelect>0</multiSelect>
+        <name>measurementUnitSystem</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>Default unit system for entering measurements, when "Imperial unit system" is enabled</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>metric|imperial</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </measurementUnitSystem>
+      <phenotypeMapping>
+        <cache>0</cache>
+        <classname>PhenoTips.PhenotypeMappingClass</classname>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>radio</displayType>
+        <idField>doc.fullName</idField>
+        <multiSelect>0</multiSelect>
+        <name>phenotypeMapping</name>
+        <number>4</number>
+        <picker>0</picker>
+        <prettyName>Phenotype configuration document</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>30</size>
+        <sort>none</sort>
+        <sql>select doc.fullName, doc.name from XWikiDocument doc, BaseObject obj where doc.fullName &lt;&gt; 'PhenoTips.PhenotypeMappingTemplate' and obj.name = doc.fullName and obj.className = 'PhenoTips.PhenotypeMappingClass'</sql>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField>doc.name</valueField>
+        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+      </phenotypeMapping>
+    </class>
+    <property>
+      <dateOfBirthFormat>yyyy-MM-dd</dateOfBirthFormat>
+    </property>
+    <property>
+      <enableImperialUnitSystem>0</enableImperialUnitSystem>
+    </property>
+    <property>
+      <livetableColumns>
+        <value>doc.name</value>
+        <value>doc.creator</value>
+        <value>doc.author</value>
+        <value>doc.creationDate</value>
+        <value>external_id</value>
+        <value>first_name</value>
+        <value>last_name</value>
+      </livetableColumns>
+    </property>
+    <property>
+      <livetableRows/>
+    </property>
+    <property>
+      <livetableSortColumn>doc.name</livetableSortColumn>
+    </property>
+    <property>
+      <measurementUnitSystem>metric</measurementUnitSystem>
+    </property>
+    <property>
+      <phenotypeMapping>PhenoTips.Generic phenotype configuration</phenotypeMapping>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>0</number>
+    <className>PhenoTips.PedigreeClass</className>
+    <guid>d47bf21d-9bfd-4cf3-8b4e-3ed955ba546a</guid>
+    <class>
+      <name>PhenoTips.PedigreeClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <data>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>data</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>data</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </data>
+      <description>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>description</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>Description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <image>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>image</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Image</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </image>
+    </class>
+    <property>
+      <data>{
+  "proband": {"type": "Person", "x": 9, "y": 395, "gender": "F", "id": 1},
+  "placeHolders" : [],
+  "partnerships": [],
+  "pregnancies": [],
+  "personGroups": [],
+  "persons": []
+}</data>
+    </property>
+    <property>
+      <description>Single Proband</description>
+    </property>
+    <property>
+      <image>&lt;svg version="1.1" width="200" height="200" viewBox="-170.0 -170.0 500.0 500.0" fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"&gt;
+  &lt;clipPath id="p.0"&gt;
+    &lt;path d="m0 0l960.0 0l0 720.0l-960.0 0l0 -720.0z" clip-rule="nonzero"&gt;
+    &lt;/path&gt;
+  &lt;/clipPath&gt;
+  &lt;g clip-path="url(#p.0)"&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m0 0l960.0 0l0 720.0l-960.0 0 z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m60.614174 35.2231l33.574806 0l0 33.5748l-33.574806 0z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m60.614174 35.2231l33.574806 0l0 33.5748l-33.574806 0z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m36.195755 90.68575l14.783466 -14.712616l-2.4566956 -2.464569l9.846458 0.019699097l-0.019687653 9.83857l-2.4566917 -2.464569l-14.783463 14.712616z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m36.195755 90.68575l14.783466 -14.712616l-2.4566956 -2.464569l9.846458 0.019699097l-0.019687653 9.83857l-2.4566917 -2.464569l-14.783463 14.712616z" fill-rule="nonzero"/&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;</image>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>1</number>
+    <className>PhenoTips.PedigreeClass</className>
+    <guid>93bcc2c5-7dd0-4112-a8f4-4b10deb3a824</guid>
+    <class>
+      <name>PhenoTips.PedigreeClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <data>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>data</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>data</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </data>
+      <description>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>description</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>Description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+      <image>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>image</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Image</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </image>
+    </class>
+    <property>
+      <data>{
+  "placeHolders": [],
+  "partnerships": [
+    {
+      "type": "Partnership",
+      "x": 960,
+      "y": 312.5,
+      "id": 4,
+      "partner1ID": 2,
+      "partner2ID": 3,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Partnership",
+      "x": 1360,
+      "y": 112.5,
+      "id": 8,
+      "partner1ID": 6,
+      "partner2ID": 7,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Partnership",
+      "x": 560,
+      "y": 112.5,
+      "id": 12,
+      "partner1ID": 10,
+      "partner2ID": 11,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Partnership",
+      "x": 1560,
+      "y": -87.5,
+      "id": 16,
+      "partner1ID": 14,
+      "partner2ID": 15,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Partnership",
+      "x": 1160,
+      "y": -87.5,
+      "id": 20,
+      "partner1ID": 18,
+      "partner2ID": 19,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Partnership",
+      "x": 760,
+      "y": -87.5,
+      "id": 24,
+      "partner1ID": 22,
+      "partner2ID": 23,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Partnership",
+      "x": 360,
+      "y": -87.5,
+      "id": 28,
+      "partner1ID": 26,
+      "partner2ID": 27,
+      "childlessStatus": null,
+      "childlessReason": ""
+    }
+  ],
+  "pregnancies": [
+    {
+      "type": "Pregnancy",
+      "x": 960,
+      "y": 392.5,
+      "id": 5,
+      "partnershipID": 4,
+      "gender": "F",
+      "childrenIDs": [
+        1
+      ]
+    },
+    {
+      "type": "Pregnancy",
+      "x": 1360,
+      "y": 192.5,
+      "id": 9,
+      "partnershipID": 8,
+      "gender": "M",
+      "childrenIDs": [
+        3
+      ]
+    },
+    {
+      "type": "Pregnancy",
+      "x": 560,
+      "y": 192.5,
+      "id": 13,
+      "partnershipID": 12,
+      "gender": "F",
+      "childrenIDs": [
+        2
+      ]
+    },
+    {
+      "type": "Pregnancy",
+      "x": 1560,
+      "y": -7.5,
+      "id": 17,
+      "partnershipID": 16,
+      "gender": "M",
+      "childrenIDs": [
+        7
+      ]
+    },
+    {
+      "type": "Pregnancy",
+      "x": 1160,
+      "y": -7.5,
+      "id": 21,
+      "partnershipID": 20,
+      "gender": "F",
+      "childrenIDs": [
+        6
+      ]
+    },
+    {
+      "type": "Pregnancy",
+      "x": 760,
+      "y": -7.5,
+      "id": 25,
+      "partnershipID": 24,
+      "gender": "F",
+      "childrenIDs": [
+        10
+      ]
+    },
+    {
+      "type": "Pregnancy",
+      "x": 360,
+      "y": -7.5,
+      "id": 29,
+      "partnershipID": 28,
+      "gender": "M",
+      "childrenIDs": [
+        11
+      ]
+    }
+  ],
+  "personGroups": [],
+  "persons": [
+    {
+      "type": "Person",
+      "x": 560,
+      "y": 312.5,
+      "id": 2,
+      "gender": "F",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 1360,
+      "y": 312.5,
+      "id": 3,
+      "gender": "M",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 1160,
+      "y": 112.5,
+      "id": 6,
+      "gender": "F",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 1560,
+      "y": 112.5,
+      "id": 7,
+      "gender": "M",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 760,
+      "y": 112.5,
+      "id": 10,
+      "gender": "F",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 360,
+      "y": 112.5,
+      "id": 11,
+      "gender": "M",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 1460,
+      "y": -87.5,
+      "id": 14,
+      "gender": "F",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 1660,
+      "y": -87.5,
+      "id": 15,
+      "gender": "M",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 1060,
+      "y": -87.5,
+      "id": 18,
+      "gender": "F",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 1260,
+      "y": -87.5,
+      "id": 19,
+      "gender": "M",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 660,
+      "y": -87.5,
+      "id": 22,
+      "gender": "F",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 860,
+      "y": -87.5,
+      "id": 23,
+      "gender": "M",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 260,
+      "y": -87.5,
+      "id": 26,
+      "gender": "F",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    },
+    {
+      "type": "Person",
+      "x": 460,
+      "y": -87.5,
+      "id": 27,
+      "gender": "M",
+      "fName": "",
+      "lName": "",
+      "dob": "",
+      "disorders": [],
+      "isAdopted": false,
+      "lifeStatus": "alive",
+      "dod": "",
+      "gestationAge": null,
+      "childlessStatus": null,
+      "childlessReason": ""
+    }
+  ],
+  "proband": {
+    "type": "Person",
+    "x": 960,
+    "y": 512.5,
+    "id": 1,
+    "gender": "F",
+    "fName": "",
+    "lName": "",
+    "dob": "",
+    "disorders": [],
+    "isAdopted": false,
+    "lifeStatus": "alive",
+    "dod": "",
+    "gestationAge": null,
+    "childlessStatus": null,
+    "childlessReason": ""
+  }
+}</data>
+    </property>
+    <property>
+      <description>Four generations</description>
+    </property>
+    <property>
+      <image>&lt;svg version="1.1" width="200" height="200" viewBox="0.0 -100.0 600.0 500.0" fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"&gt;
+  &lt;clipPath id="p.0"&gt;
+    &lt;path d="m0 0l960.0 0l0 720.0l-960.0 0l0 -720.0z" clip-rule="nonzero"/&gt;
+  &lt;/clipPath&gt;
+  &lt;g clip-path="url(#p.0)"&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m0 0l960.0 0l0 720.0l-960.0 0z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m48.328083 88.049866l0 0c0 -8.36689 6.782711 -15.149605 15.149609 -15.149605l0 0c4.0179214 0 7.8712845 1.5961151 10.712387 4.4372177c2.8411026 2.8411026 4.4372177 6.6944656 4.437217 7 10.712387l0 0c0 8.366898 -6.782707 15.149612 -15.149605 15.149612l0 0c-8.366898 0 -15.149609 -6.782715 -15.149609 -15.149612z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m48.328083 88.049866l0 0c0 -8.36689 6.782711 -15.149605 15.149609 -15.149605l0 0c4.0179214 0 7.8712845 1.5961151 10.712387 4.4372177c2.8411026 2.8411026 4.4372177 6.6944656 4.4372177 10.712387l0 0c0 8.366898 -6.782707 15.149612 -15.149605 15.149612l0 0c-8.366898 0 -15.149609 -6.782715 -15.149609 -15.149612z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m18.028872 31.149607l0 0c0 -8.366898 6.782709 -15.149607 15.149607 -15.149607l0 0c4.0179 253 0 7.8712883 1.5961151 10.712387 4.4372177c2.8411026 2.8411007 4.4372177 6.6944637 4.4372177 10.712389l0 0c0 8.366896 -6.782707 15.149607 -15.149605 15.149607l0 0c-8.366898 0 -15.149607 -6.782711 -15.149607 -15.149607z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m18.028872 31.149607l0 0c0 -8.366898 6.782709 -15.149607 15.149607 -15.149607l0 0c4.0179253 0 7.8712883 1.5961151 10.712387 4.4372177c2.8411026 2.8411007 4.4372177 6.6944637 4.4372177 10.712389l0 0c0 8.366896 -6.782707 15.149607 -15.149605 15.149607l0 0c-8.366898 0 -15.149607 -6.782711 -15.149607 -15.149607z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m78.6273 16.818897l28.661415 0l0 28.661419l-28.661415 0z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m78.6273 16.818897l28.661415 0l0 28.661419l-28.661415 0z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m48.328083 31.149607l30.299213 0" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m48.328083 31.149607l30.299213 0" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m63.47769 72.90026l0 -40.944878" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m63.47769 72.90026l0 -40.944878" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m215.03674 73.71916l28.661423 0l0 28.661415l-28.661423 0z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m215.03674 73.71916l28.661423 0l0 28.661415l-28.661423 0z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m184.73753 31.968504l0 0c0 -8.366896 6.782715 -15.149607 15.149612 -15.149607l0 0c4.017914 0 7.871277 1.5961151 10.712387 4.4372177c2.841095 2.8411026 4.43721 6.6944637 4.43721 10.712389l0 0c0 8.366896 -6.782715 15.149607 -15.149597 15.149607l0 0c-8.366898 0 -15.149612 -6.782711 -15.149612 -15.149607z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m184.73753 31.968504l0 0c0 -8.366896 6.782715 -15.149607 15.149612 -15.149607l0 0c4.017914 0 7.871277 1.5961151 10.712387 4.4372177c2.841095 2.8411026 4.43721 6.6944637 4.43721 10.712389l0 0c0 8.366896 -6.782715 15.149607 -15.149597 15.149607l0 0c-8.366898 0 -15.149612 -6.782711 -15.149612 -15.149607z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m245.33595 17.637794l28.661423 0l0 28.661419l-28.661423 0z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m245.33595 17.637794l28.661423 0l0 28.661419l-28.661423 0z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m215.03674 31.968504l30.29921 0" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m215.03674 31.968504l30.29921 0" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m230.18636 73.71916l0 -40.944885" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m230.18636 73.71916l0 -40.944885" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m132.74278 130.61942l28.661423 0l0 28.661423l-28.661423 0z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m132.74278 130.61942l28.661423 0l0 28.661423l-28.661423 0z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m78.6273 88.049866l136.40945 0" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m78.6273 88.049866l136.40945 0" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m147.8924 130.61942l0 -40.944878" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m147.8924 130.61942l0 -40.944878" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m352.65616 88.45932l0 0c0 -8.366898 6.782715 -15.149612 15.149628 -15.149612l0 0c4.017914 0 7.871277 1.5961151 10.712372 4.4372177c2.841095 2.8411026 4.4372253 6.6944656 4.4372253 10.712395l0 0c0 8.366898 -6.782715 15.149605 -15.149597 15.149605l0 0c-8.366913 0 -15.149628 -6.782707 -15.149628 -15.149605z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m352.65616 88.45932l0 0c0 -8.366898 6.782715 -15.149612 15.149628 -15.149612l0 0c4.017914 0 7.871277 1.5961151 10.712372 4.4372177c2.841095 2.8411026 4.4372253 6.6944656 4.4372253 10.712395l0 0c0 8.366898 -6.782715 15.149605 -15.149597 15.149605l0 0c-8.366913 0 -15.149628 -6.782707 -15.149628 -15.149605z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m322.35696 31.559055l0 0c0 -8.366898 6.782715 -15.149607 15.149597 -15.149607l0 0c4.017914 0 7.871277 1.5961151 10.712402 4.4372177c2.841095 2.8411026 4.437195 6.6944637 4.437195 10.712389l0 0c0 8.366898 -6.782715 15.149605 -15.149597 15.149605l0 0c-8.366882 0 -15.149597 -6.782707 -15.149597 -15.149605z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m322.35696 31.559055l0 0c0 -8.366898 6.782715 -15.149607 15.149597 -15.149607l0 0c4.017914 0 7.871277 1.5961151 10.712402 4.4372177c2.841095 2.8411026 4.437195 6.6944637 4.437195 10.712389l0 0c0 8.366898 -6.782715 15.149605 -15.149597 15.149605l0 0c-8.366882 0 -15.149597 -6.782707 -15.149597 -15.149605z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m382.95538 17.228346l28.661407 0l0 28.661417l-28.661407 0z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m382.95538 17.228346l28.661407 0l0 28.661417l-28.661407 0z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m352.65616 31.559055l30.299225 0" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m352.65616 31.559055l30.299225 0" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m367.8058 73.30971l0 -40.944878" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m367.8058 73.30971l0 -40.944878" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m519.3648 74.12861l28.661438 0l0 28.661415l-28.661438 0z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m519.3648 74.12861l28.661438 0l0 28.661415l-28.661438 0z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m489.0656 32.377953l0 0c0 -8.366896 6.782715 -15.149607 15.149597 -15.149607l0 0c4.0179443 0 7.871277 1.5961151 10.712402 4.4372177c2.8411255 2.8411026 4.437195 6.6944637 4.437195 10.712389l0 0c0 8.366898 -6.782715 15.149605 -15.149597 15.149605l0 0c-8.366882 0 -15.149597 -6.782707 -15.149597 -15.149605z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m489.0656 32.377953l0 0c0 -8.366896 6.782715 -15.149607 15.149597 -15.149607l0 0c4.0179443 0 7.871277 1.5961151 10.712402 4.4372177c2.8411255 2.8411026 4.437195 6.6944637 4.437195 10.712389l0 0c0 8.366898 -6.782715 15.149605 -15.149597 15.149605l0 0c-8.366882 0 -15.149597 -6.782707 -15.149597 -15.149605z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m549.66406 18.047245l28.661377 0l0 28.661415l-28.661377 0z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m549.66406 18.047245l28.661377 0l0 28.661415l-28.661377 0z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m519.3648 32.377953l30.299255 0" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m519.3648 32.377953l30.299255 0" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m534.51447 74.12861l0 -40.94488" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m534.51447 74.12861l0 -40.94488" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m382.95538 88.45932l136.40942 0" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m382.95538 88.45932l136.40942 0" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m452.22046 131.02887l0 -40.944878" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m452.22046 131.02887l0 -40.944878" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m437.07086 144.95013l0 0c0 -8.366898 6.782715 -15.149612 15.149597 -15.149612l0 0c4.0179443 0 7.8713074 1.5961151 10.712402 4.4372253c2.841095 2.841095 4.4372253 6.694458 4.4372253 10.712387l0 0c0 8.366898 -6.782715 15.149597 -15.149628 15.149597l0 0c-8.366882 0 -15.149597 -6.7826996 -15.149597 -15.149597z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m437.07086 144.95013l0 0c0 -8.366898 6.782715 -15.149612 15.149597 -15.149612l0 0c4.0179443 0 7.8713074 1.5961151 10.712402 4.4372253c2.841095 2.841095 4.4372253 6.694458 4.4372253 10.712387l0 0c0 8.366898 -6.782715 15.149597 -15.149628 15.149597l0 0c-8.366882 0 -15.149597 -6.7826996 -15.149597 -15.149597z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m161.4042 144.95013l275.66666 0" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m161.4042 144.95013l275.66666 0" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m284.90683 185.89502l28.661407 0l0 28.661407l-28.661407 0z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m284.90683 185.89502l28.661407 0l0 28.661407l-28.661407 0z" fill-rule="nonzero"/&gt;
+    &lt;path fill="#000000" fill-opacity="0.0" d="m300.05643 185.89502l0 -40.944885" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m300.05643 185.89502l0 -40.944885" fill-rule="nonzero"/&gt;
+    &lt;path fill="#cfe2f3" d="m261.97586 233.11229l12.893677 -13.153473l-2.1968384 -2.1495972l8.696838 -0.09063721l0.09057617 8.689056l-2.196869 -2.1496124l-12.893707 13.153473z" fill-rule="nonzero"/&gt;
+    &lt;path stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="butt" d="m261.97586 233.11229l12.893677 -13.153473l-2.1968384 -2.1495972l8.696838 -0.09063721l0.09057617 8.689056l-2.196869 -2.1496124l-12.893707 13.153473z" fill-rule="nonzero"/&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;</image>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>0</number>
+    <className>XWiki.ConfigurableClass</className>
+    <guid>73d1fb26-3da7-4f17-91be-25c84b0282f3</guid>
+    <class>
+      <name>XWiki.ConfigurableClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <advancedOnly>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>advancedOnly</name>
+        <number>5</number>
+        <prettyName>advancedOnly</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </advancedOnly>
+      <categoryPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryPriority</name>
+        <number>2</number>
+        <numberType>integer</numberType>
+        <prettyName>categoryPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </categoryPriority>
+      <codeToExecute>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>codeToExecute</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>codeToExecute</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </codeToExecute>
+      <configurationClass>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>configurationClass</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>configurationClass</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </configurationClass>
+      <configureGlobally>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>configureGlobally</name>
+        <number>8</number>
+        <prettyName>configureGlobally</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </configureGlobally>
+      <displayInCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInCategory</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>displayInCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInCategory>
+      <displayInSection>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInSection</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>displayInSection</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInSection>
+      <heading>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>heading</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>heading</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </heading>
+      <iconAttachment>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>iconAttachment</name>
+        <number>12</number>
+        <picker>0</picker>
+        <prettyName>iconAttachment</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </iconAttachment>
+      <linkPrefix>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>linkPrefix</name>
+        <number>9</number>
+        <picker>0</picker>
+        <prettyName>linkPrefix</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </linkPrefix>
+      <propertiesToShow>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>propertiesToShow</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>propertiesToShow</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>20</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </propertiesToShow>
+      <sectionPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionPriority</name>
+        <number>4</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionPriority>
+    </class>
+    <property>
+      <advancedOnly>1</advancedOnly>
+    </property>
+    <property>
+      <categoryPriority>0</categoryPriority>
+    </property>
+    <property>
+      <codeToExecute/>
+    </property>
+    <property>
+      <configurationClass>PhenoTips.DBConfigurationClass</configurationClass>
+    </property>
+    <property>
+      <configureGlobally>1</configureGlobally>
+    </property>
+    <property>
+      <displayInCategory>phenotips</displayInCategory>
+    </property>
+    <property>
+      <displayInSection>tablesconfig</displayInSection>
+    </property>
+    <property>
+      <heading>Data tables</heading>
+    </property>
+    <property>
+      <iconAttachment>clinicaldata.png</iconAttachment>
+    </property>
+    <property>
+      <linkPrefix/>
+    </property>
+    <property>
+      <propertiesToShow>
+        <value>livetableColumns</value>
+        <value>livetableSortColumn</value>
+        <value>livetableRows</value>
+      </propertiesToShow>
+    </property>
+    <property>
+      <sectionPriority>300</sectionPriority>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>2</number>
+    <className>XWiki.ConfigurableClass</className>
+    <guid>5ba6063a-8aa3-4790-9264-61feef60ad35</guid>
+    <class>
+      <name>XWiki.ConfigurableClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <advancedOnly>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>advancedOnly</name>
+        <number>5</number>
+        <prettyName>advancedOnly</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </advancedOnly>
+      <categoryPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryPriority</name>
+        <number>2</number>
+        <numberType>integer</numberType>
+        <prettyName>categoryPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </categoryPriority>
+      <codeToExecute>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>codeToExecute</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>codeToExecute</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </codeToExecute>
+      <configurationClass>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>configurationClass</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>configurationClass</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </configurationClass>
+      <configureGlobally>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>configureGlobally</name>
+        <number>8</number>
+        <prettyName>configureGlobally</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </configureGlobally>
+      <displayInCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInCategory</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>displayInCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInCategory>
+      <displayInSection>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInSection</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>displayInSection</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInSection>
+      <heading>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>heading</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>heading</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </heading>
+      <iconAttachment>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>iconAttachment</name>
+        <number>12</number>
+        <picker>0</picker>
+        <prettyName>iconAttachment</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </iconAttachment>
+      <linkPrefix>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>linkPrefix</name>
+        <number>9</number>
+        <picker>0</picker>
+        <prettyName>linkPrefix</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </linkPrefix>
+      <propertiesToShow>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>propertiesToShow</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>propertiesToShow</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>20</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </propertiesToShow>
+      <sectionPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionPriority</name>
+        <number>4</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionPriority>
+    </class>
+    <property>
+      <advancedOnly/>
+    </property>
+    <property>
+      <categoryPriority>0</categoryPriority>
+    </property>
+    <property>
+      <codeToExecute>{{include document="PhenoTips.FormDesigner"/}}</codeToExecute>
+    </property>
+    <property>
+      <configurationClass/>
+    </property>
+    <property>
+      <configureGlobally>1</configureGlobally>
+    </property>
+    <property>
+      <displayInCategory>phenotips</displayInCategory>
+    </property>
+    <property>
+      <displayInSection>FormConfig</displayInSection>
+    </property>
+    <property>
+      <heading>Organize the patient form</heading>
+    </property>
+    <property>
+      <iconAttachment/>
+    </property>
+    <property>
+      <linkPrefix/>
+    </property>
+    <property>
+      <propertiesToShow/>
+    </property>
+    <property>
+      <sectionPriority>100</sectionPriority>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>3</number>
+    <className>XWiki.ConfigurableClass</className>
+    <guid>7a2b8d61-609c-4751-b25b-ec13d7664244</guid>
+    <class>
+      <name>XWiki.ConfigurableClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <advancedOnly>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>advancedOnly</name>
+        <number>5</number>
+        <prettyName>advancedOnly</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </advancedOnly>
+      <categoryPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryPriority</name>
+        <number>2</number>
+        <numberType>integer</numberType>
+        <prettyName>categoryPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </categoryPriority>
+      <codeToExecute>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>codeToExecute</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>codeToExecute</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </codeToExecute>
+      <configurationClass>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>configurationClass</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>configurationClass</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </configurationClass>
+      <configureGlobally>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>configureGlobally</name>
+        <number>8</number>
+        <prettyName>configureGlobally</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </configureGlobally>
+      <displayInCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInCategory</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>displayInCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInCategory>
+      <displayInSection>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInSection</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>displayInSection</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInSection>
+      <heading>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>heading</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>heading</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </heading>
+      <iconAttachment>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>iconAttachment</name>
+        <number>12</number>
+        <picker>0</picker>
+        <prettyName>iconAttachment</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </iconAttachment>
+      <linkPrefix>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>linkPrefix</name>
+        <number>9</number>
+        <picker>0</picker>
+        <prettyName>linkPrefix</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </linkPrefix>
+      <propertiesToShow>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>propertiesToShow</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>propertiesToShow</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>20</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </propertiesToShow>
+      <sectionPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionPriority</name>
+        <number>4</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionPriority>
+    </class>
+    <property>
+      <advancedOnly/>
+    </property>
+    <property>
+      <categoryPriority>0</categoryPriority>
+    </property>
+    <property>
+      <codeToExecute>#set($targetDocName = 'data.WebHome')
+#set($targetDoc = $xwiki.getDocument($targetDocName))
+#set($className = 'XWiki.GadgetClass')
+#set($gadgetObj = $targetDoc.getObject($className))
+#set($prefix = "${className}_${gadgetObj.number}_")
+#set($fullPrefix = "${targetDocName}_${prefix}")
+
+{{html clean=false}}
+&lt;form id="welcome_${targetDocName}" method="post" action="$targetDoc.getURL('save')" class="xform half"&gt;
+&lt;fieldset&gt;&lt;dl&gt;
+&lt;dt&gt;&lt;label for="${targetDocName}_title"&gt;Homepage title&lt;/label&gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;input id="${targetDocName}title" name="title" size="30" type="text" value="$!targetDoc.title"&gt;&lt;/input&gt;&lt;/dd&gt;
+&lt;dt&gt;&lt;label for="${fullPrefix}title"&gt;Welcome message box title&lt;/label&gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;input id="${fullPrefix}title" name="${prefix}title" size="30" type="text" value="$!gadgetObj.getProperty('title').value"&gt;&lt;/input&gt;&lt;/dd&gt;
+&lt;dt&gt;&lt;label for="${fullPrefix}content"&gt;Welcome message content&lt;/label&gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;textarea cols="40" id="${fullPrefix}content" name="${prefix}content" rows="5"&gt;$!gadgetObj.getProperty('content').value&lt;/textarea&gt;&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;input type="hidden" id="${targetDocName}_redirect" name="xredirect" value="$doc.getURL($xcontext.action, $request.queryString)" /&gt;
+&lt;input type="hidden" name="form_token" value="$!{services.csrf.token}" /&gt;
+&lt;/fieldset&gt;
+&lt;div class="bottombuttons"&gt;&lt;p class="admin-buttons"&gt;
+&lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="action_saveandcontinue" value="Save" /&gt;&lt;/span&gt;
+&lt;/p&gt;&lt;/div&gt;
+&lt;/form&gt;
+{{/html}}</codeToExecute>
+    </property>
+    <property>
+      <configurationClass/>
+    </property>
+    <property>
+      <configureGlobally>1</configureGlobally>
+    </property>
+    <property>
+      <displayInCategory>phenotips</displayInCategory>
+    </property>
+    <property>
+      <displayInSection>welcome</displayInSection>
+    </property>
+    <property>
+      <heading/>
+    </property>
+    <property>
+      <iconAttachment/>
+    </property>
+    <property>
+      <linkPrefix/>
+    </property>
+    <property>
+      <propertiesToShow/>
+    </property>
+    <property>
+      <sectionPriority>0</sectionPriority>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>4</number>
+    <className>XWiki.ConfigurableClass</className>
+    <guid>2227bbb8-f5a2-4749-acf1-a63e68f453cd</guid>
+    <class>
+      <name>XWiki.ConfigurableClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <advancedOnly>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>advancedOnly</name>
+        <number>5</number>
+        <prettyName>advancedOnly</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </advancedOnly>
+      <categoryPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryPriority</name>
+        <number>2</number>
+        <numberType>integer</numberType>
+        <prettyName>categoryPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </categoryPriority>
+      <codeToExecute>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>codeToExecute</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>codeToExecute</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </codeToExecute>
+      <configurationClass>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>configurationClass</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>configurationClass</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </configurationClass>
+      <configureGlobally>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>configureGlobally</name>
+        <number>8</number>
+        <prettyName>configureGlobally</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </configureGlobally>
+      <displayInCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInCategory</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>displayInCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInCategory>
+      <displayInSection>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInSection</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>displayInSection</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInSection>
+      <heading>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>heading</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>heading</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </heading>
+      <iconAttachment>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>iconAttachment</name>
+        <number>12</number>
+        <picker>0</picker>
+        <prettyName>iconAttachment</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </iconAttachment>
+      <linkPrefix>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>linkPrefix</name>
+        <number>9</number>
+        <picker>0</picker>
+        <prettyName>linkPrefix</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </linkPrefix>
+      <propertiesToShow>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>propertiesToShow</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>propertiesToShow</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>20</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </propertiesToShow>
+      <sectionPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionPriority</name>
+        <number>4</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionPriority>
+    </class>
+    <property>
+      <advancedOnly/>
+    </property>
+    <property>
+      <categoryPriority>0</categoryPriority>
+    </property>
+    <property>
+      <codeToExecute>{{info}}The phenotype categories and phenotypes that are displayed by default in the patient form, on the in the left side of the "Clinical symptoms &amp; physical findings" section, are defined in a separate configuration document. Choose the configuration document to use from the options listed below. A preview of the selected configuration will be displayed on the right.{{/info}}
+
+#if ($isAdvancedUser)
+#set ($errorMessage = '')
+#if ($request.doCreate == '1' &amp;&amp; $services.csrf.isTokenValid($request.form_token))
+  #if ("$!{request.name.trim()}" == '')
+    #set ($errorMessage = 'Please enter a phenotype configuration name')
+  #else
+    #set ($targetDocument = $services.model.createDocumentReference($xcontext.database, $request.space, $request.name.trim()))
+    #if ($xwiki.exists($targetDocument))
+      #set ($errorMessage = "A document named //${request.name}// already exists. Please choose a different name")
+    #else
+      $response.sendRedirect($xwiki.getURL($targetDocument, 'edit', "editor=inline&amp;template=$escapetool.url($!{request.classTemplate})&amp;title=$!escapetool.url($request.name)&amp;parent=$!escapetool.url($request.parent)"))
+      #break
+    #end
+  #end
+#end
+
+
+#if ("$!errorMessage" != '')
+{{error}}$errorMessage{{/error}}
+
+#end
+{{html clean=false}}
+&lt;form class="xformInline" action="$doc.getURL($xcontext.action, $request.queryString)" method="post"&gt;&lt;div&gt;
+  &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+  &lt;input type="hidden" name="doCreate" value="1" /&gt;
+  &lt;input type="hidden" name="classTemplate" value="PhenoTips.PhenotypeMappingTemplate" /&gt;
+  &lt;input type="hidden" name="space" value="PhenoTips" /&gt;
+  &lt;input type="hidden" name="parent" value="data.WebHome" /&gt;
+  &lt;label for="config-name"&gt;New configuration name:&lt;/label&gt;&lt;input type="text" name="name" id="config-name" placeholder="E.g. My configuration"/&gt;&lt;input class="button" type="submit" value="Create"/&gt;
+&lt;/div&gt;&lt;/form&gt;
+{{/html}}
+#end
+
+(% class="mappingPreviewContainer side" %)(((
+(% class="hint side" %)(((Preview)))
+(% id="mappingPreview"%)((()))
+)))
+$xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.ssx.use('PhenoTips.Widgets', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.ssx.use('PhenoTips.PhenotypeMappingPreview', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
+    </property>
+    <property>
+      <configurationClass>PhenoTips.DBConfigurationClass</configurationClass>
+    </property>
+    <property>
+      <configureGlobally>1</configureGlobally>
+    </property>
+    <property>
+      <displayInCategory>phenotips</displayInCategory>
+    </property>
+    <property>
+      <displayInSection>mapping</displayInSection>
+    </property>
+    <property>
+      <heading>Phenotypes displayed by default</heading>
+    </property>
+    <property>
+      <iconAttachment/>
+    </property>
+    <property>
+      <linkPrefix/>
+    </property>
+    <property>
+      <propertiesToShow>
+        <value>phenotypeMapping</value>
+      </propertiesToShow>
+    </property>
+    <property>
+      <sectionPriority>150</sectionPriority>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>5</number>
+    <className>XWiki.ConfigurableClass</className>
+    <guid>1a9fbd0f-69b8-4a86-b441-2572e8d872a2</guid>
+    <class>
+      <name>XWiki.ConfigurableClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <advancedOnly>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>advancedOnly</name>
+        <number>5</number>
+        <prettyName>advancedOnly</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </advancedOnly>
+      <categoryPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryPriority</name>
+        <number>2</number>
+        <numberType>integer</numberType>
+        <prettyName>categoryPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </categoryPriority>
+      <codeToExecute>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>codeToExecute</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>codeToExecute</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </codeToExecute>
+      <configurationClass>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>configurationClass</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>configurationClass</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </configurationClass>
+      <configureGlobally>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>configureGlobally</name>
+        <number>8</number>
+        <prettyName>configureGlobally</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </configureGlobally>
+      <displayInCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInCategory</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>displayInCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInCategory>
+      <displayInSection>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInSection</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>displayInSection</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInSection>
+      <heading>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>heading</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>heading</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </heading>
+      <iconAttachment>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>iconAttachment</name>
+        <number>12</number>
+        <picker>0</picker>
+        <prettyName>iconAttachment</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </iconAttachment>
+      <linkPrefix>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>linkPrefix</name>
+        <number>9</number>
+        <picker>0</picker>
+        <prettyName>linkPrefix</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </linkPrefix>
+      <propertiesToShow>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>propertiesToShow</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>propertiesToShow</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>20</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </propertiesToShow>
+      <sectionPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionPriority</name>
+        <number>4</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionPriority>
+    </class>
+    <property>
+      <advancedOnly/>
+    </property>
+    <property>
+      <categoryPriority>0</categoryPriority>
+    </property>
+    <property>
+      <codeToExecute/>
+    </property>
+    <property>
+      <configurationClass>PhenoTips.DBConfigurationClass</configurationClass>
+    </property>
+    <property>
+      <configureGlobally>1</configureGlobally>
+    </property>
+    <property>
+      <displayInCategory>phenotips</displayInCategory>
+    </property>
+    <property>
+      <displayInSection>dataformats</displayInSection>
+    </property>
+    <property>
+      <heading>Data formats</heading>
+    </property>
+    <property>
+      <iconAttachment/>
+    </property>
+    <property>
+      <linkPrefix/>
+    </property>
+    <property>
+      <propertiesToShow>
+        <value>dateOfBirthFormat</value>
+        <value>enableImperialUnitSystem</value>
+        <value>measurementUnitSystem</value>
+      </propertiesToShow>
+    </property>
+    <property>
+      <sectionPriority>170</sectionPriority>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>0</number>
+    <className>XWiki.GadgetClass</className>
+    <guid>2b239e71-7417-4b63-a8bf-83b76a14015d</guid>
+    <class>
+      <name>XWiki.GadgetClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>content</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>content</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <position>
+        <disabled>0</disabled>
+        <name>position</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>position</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </position>
+      <title>
+        <disabled>0</disabled>
+        <name>title</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>title</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </title>
+    </class>
+    <property>
+      <content>PhenoTips enables the capture and analysis of phenotypic information for patients with genetic disorders.</content>
+    </property>
+    <property>
+      <position>1,1</position>
+    </property>
+    <property>
+      <title>About</title>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>1</number>
+    <className>XWiki.GadgetClass</className>
+    <guid>954a4ff4-88eb-4246-8f18-cb25893498fa</guid>
+    <class>
+      <name>XWiki.GadgetClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>content</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>content</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <position>
+        <disabled>0</disabled>
+        <name>position</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>position</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </position>
+      <title>
+        <disabled>0</disabled>
+        <name>title</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>title</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </title>
+    </class>
+    <property>
+      <content>{{phenotips-groups /}}</content>
+    </property>
+    <property>
+      <position>1,2</position>
+    </property>
+    <property>
+      <title>Active groups (% style="float: right;" %)[[Read more »&gt;&gt;Groups.WebHome]]</title>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>2</number>
+    <className>XWiki.GadgetClass</className>
+    <guid>1662b049-1db2-42d1-8093-8cfcace7069c</guid>
+    <class>
+      <name>XWiki.GadgetClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>content</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>content</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <position>
+        <disabled>0</disabled>
+        <name>position</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>position</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </position>
+      <title>
+        <disabled>0</disabled>
+        <name>title</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>title</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </title>
+    </class>
+    <property>
+      <content>{{velocity}}
+#if ($isGuest)
+#set ($availableData = $services.query.xwql("from doc.object(PhenoTips.PatientClass) as pat, doc.object(PhenoTips.OwnerClass) as owner where doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and (owner.owner = '' or owner.owner is null) and pat.identifier &gt;= 0").addFilter('unique').count())
+#else
+#set ($availableData = $services.query.xwql("from doc.object(PhenoTips.PatientClass) as pat, doc.object(PhenoTips.OwnerClass) as owner where doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and owner.owner = :o and pat.identifier &gt;= 0").bindValue('o', $services.model.serialize($xcontext.userReference, 'default')).addFilter('unique').count())
+#end
+#if ($availableData &gt; 0)
+$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
+$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
+$xwiki.ssx.use('PhenoTips.DatabaseFilters')##
+$xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('PhenoTips.DBWebHomeSheet')##
+$xwiki.ssx.use('PhenoTips.DBWebHomeSheet')##
+$xwiki.ssx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('XWiki.DateTimePicker')##
+$xwiki.ssx.use('XWiki.DateTimePicker')##
+#set ($config = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))
+#set ($patientClassName = 'PhenoTips.PatientClass')
+#if ($config)
+#set ($columns = ['external_id', 'doc.creator', 'doc.creationDate', '_actions'])
+#set ($columnsProperties = {
+  '_actions' : {'actions': ['edit', 'delete']}
+})
+#foreach ($column in $columns)
+  #set ($isFilterable = ($column == 'external_id'))
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true  }))
+#end
+##
+##
+#set ($options = {
+  'className'         : $patientClassName,
+  'translationPrefix' : 'patient.livetable.',
+  'rowCount'          : 25,
+  'maxPages'          : 10,
+  'selectedColumn'    : $config.getProperty('livetableSortColumn').value,
+  'defaultOrder'      : 'asc',
+  'resultPage'        : 'PhenoTips.LiveTableResults'
+})
+#set ($filterFrom = ", BaseObject ownerObj, StringProperty ownerProp, LongProperty iid")
+#if ($isGuest)
+  #set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and ownerObj.name = doc.fullName and ownerObj.className = 'PhenoTips.OwnerClass' and ownerProp.id.id = ownerObj.id and (ownerProp.value = '' or ownerProp.value is null)")
+#else
+  #set ($o = $escapetool.sql($services.model.serialize($xcontext.userReference, 'default')))
+  #set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and ownerObj.name = doc.fullName and ownerObj.className = 'PhenoTips.OwnerClass' and ownerProp.id.id = ownerObj.id and ownerProp.value = '${o}'")
+#end
+#set ($discard = $options.put('extraParams', "&amp;filterFrom=${escapetool.url($filterFrom)}&amp;filterWhere=${escapetool.url($filterWhere)}"))
+#if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
+  #set ($options.rowCount = $config.getProperty('livetableRows').value)
+#end
+#livetable('mypatients' $columns $columnsProperties $options)
+$xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
+#else
+{{warning}}**Configuration missing.**{{/warning}}
+#end
+#else
+{{info}}You are not the owner of any data.{{/info}}
+#end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <position>2,1</position>
+    </property>
+    <property>
+      <title>My Data#if ($hasCreatePage) {{html clean=false}}&lt;label for="create-patient-record" style="float:right;cursor:pointer;color:$theme.linkColor;"&gt;&lt;span class="fa fa-plus-circle"&gt; &lt;/span&gt;New patient record&lt;/label&gt;{{/html}}#end</title>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>3</number>
+    <className>XWiki.GadgetClass</className>
+    <guid>347deddb-651f-4750-b314-10b6f4ed5443</guid>
+    <class>
+      <name>XWiki.GadgetClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>content</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>content</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <position>
+        <disabled>0</disabled>
+        <name>position</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>position</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </position>
+      <title>
+        <disabled>0</disabled>
+        <name>title</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>title</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </title>
+    </class>
+    <property>
+      <content>{{velocity}}
+#if (!$isGuest)
+#set ($groupsAndSelf = [$xcontext.userReference.toString()])
+#set ($groups = [])
+#foreach ($group in $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
+  #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+  #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
+    #set ($group = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)))
+    #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+  #end
+  #if ($groupObj)
+    #set ($discard = $groups.add($escapetool.sql($group.documentReference.toString())))
+    #set ($discard = $groupsAndSelf.add($escapetool.sql($group.documentReference.toString())))
+  #end
+#end
+#set ($groupsString = "('${stringtool.join($groups, ""','"")}')")
+#if ($groups.empty)
+  #set ($query = ", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj, LongProperty iid where patientObj.name = doc.fullName and doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and patientObj.className = 'PhenoTips.PatientClass' and iid.id.id = patientObj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}')")
+#else
+  #set ($query = ", BaseObject accessObj, StringProperty accessProp, BaseObject patientObj, LongProperty iid where patientObj.name = doc.fullName and doc.fullName &lt;&gt; 'PhenoTips.PatientTemplate' and patientObj.className = 'PhenoTips.PatientClass' and iid.id.id = patientObj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and ((accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ('${stringtool.join($groups, ""','"")}')) or (accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groupsAndSelf, ""','"")}')))")
+#end
+#set ($availableData = $services.query.hql($query).count())
+#if ($availableData &gt; 0)
+$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
+$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
+$xwiki.ssx.use('PhenoTips.DatabaseFilters')##
+$xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('PhenoTips.DBWebHomeSheet')##
+$xwiki.ssx.use('PhenoTips.DBWebHomeSheet')##
+$xwiki.ssx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('XWiki.DateTimePicker')##
+$xwiki.ssx.use('XWiki.DateTimePicker')##
+#set ($config = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))
+#set ($patientClassName = 'PhenoTips.PatientClass')
+#if ($config)
+#set ($columns = ['external_id', 'doc.creator', 'doc.creationDate', '_actions'])
+#set ($columnsProperties = {
+  '_actions' : {'actions': ['edit', 'delete']}
+})
+#foreach ($column in $columns)
+  #set ($isFilterable = ($column == 'external_id'))
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'view', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true  }))
+#end
+##
+##
+#set ($options = {
+  'className'         : $patientClassName,
+  'translationPrefix' : 'patient.livetable.',
+  'rowCount'          : 25,
+  'maxPages'          : 10,
+  'selectedColumn'    : $config.getProperty('livetableSortColumn').value,
+  'defaultOrder'      : 'asc',
+  'resultPage'        : 'PhenoTips.LiveTableResults'
+})
+#set ($filterFrom = ", BaseObject accessObj, StringProperty accessProp, LongProperty iid")
+#set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and accessObj.name = doc.fullName and accessProp.id.id = accessObj.id and (")
+#if (!$groups.isEmpty())
+  #set ($filterWhere = "${filterWhere}(accessObj.className = 'PhenoTips.OwnerClass' and accessProp.value in ('${stringtool.join($groups, ""','"")}')) or ")
+#end
+#set ($discard = $groups.add($services.model.serialize($xcontext.userReference, 'default')))
+#set ($filterWhere = "${filterWhere}(accessObj.className = 'PhenoTips.CollaboratorClass' and accessProp.value in ('${stringtool.join($groups, ""','"")}')))")
+#set ($discard = $options.put('extraParams', "&amp;filterFrom=${escapetool.url($filterFrom)}&amp;filterWhere=${escapetool.url($filterWhere)}"))
+#if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
+  #set ($options.rowCount = $config.getProperty('livetableRows').value)
+#end
+#livetable('sharedpatients' $columns $columnsProperties $options)
+$xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
+#else
+{{warning}}**Configuration missing.**{{/warning}}
+#end
+#else
+{{info}}No data has been shared with you.{{/info}}
+#end
+#else
+{{info}}No data has been shared with you.{{/info}}
+#end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <position>2,2</position>
+    </property>
+    <property>
+      <title>Data shared with me (% style="float: right;" %)[[Browse all data »&gt;&gt;data.AllData]]</title>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>454b809e-0edd-4d8f-9a54-d17c25cd9319</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{velocity}}{{html clean=false}}
+$xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
+&lt;div id="phenotips-mainmenu" class="layoutsubsection actionmenu"&gt;
+&lt;strong id="xwikimenutitle" class="hidden"&gt;$services.localization.render('core.menu.main.title')&lt;/strong&gt;
+&lt;div class="rightmenu"&gt;
+#set ($workspaceManagerMainDocumentReference = $services.model.createDocumentReference($xcontext.mainWikiName, 'WorkspaceManager', 'WebHome'))
+#set ($isWorkspaceManagerAppInstalled = $xwiki.exists($workspaceManagerMainDocumentReference))
+#set ($isWorkspace = $services.workspace.isWorkspace($xcontext.database))
+#set ($isMainWikiUser = ($xcontext.mainWikiName == "$!{xcontext.userReference.wikiReference.name}"))
+##
+## User
+##
+#if (!$xcontext.action.startsWith('login'))
+  #if ($isGuest)
+    #set ($loginurl = $xwiki.getURL('XWiki.XWikiLogin', 'login', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
+    #xwikitopmenuentry($!loginurl $!services.localization.render('login') 'tmLogin' 'fa fa-sign-in')
+  #else
+    #set ($logouturl = $xwiki.getURL('XWiki.XWikiLogout', 'logout', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
+    #xwikitopmenuentry($!logouturl $!services.localization.render('logout') 'tmLogout' 'fa fa-sign-out')
+  #end
+#end
+#if ($isGuest &amp;&amp; $xwiki.hasAccessLevel('register', 'XWiki.XWikiPreferences'))
+  #set ($regurl = $xwiki.getURL('XWiki.Register', 'register'))
+  #xwikitopmenuentry($!regurl $!services.localization.render('core.register') 'tmRegister' 'fa fa-plus-square')
+#end
+##
+##
+#if (!$isGuest)
+#if ($isSuperAdmin)
+  #xwikitopmenuentry('#' $!services.localization.render('superadmin') 'tmUser' 'fa fa-user')
+#else
+  #xwikitopmenuentry("$!xwiki.getURL($xcontext.user)" "$!xwiki.getUserName($xcontext.user, false)" 'tmUser' 'fa fa-user')
+#end
+#end
+&lt;/div&gt;
+&lt;div class="leftmenu"&gt;
+##
+## Administration
+##
+#set ($isAdminAppInstalled = $xwiki.exists('XWiki.AdminSheet'))
+#if ($isAdminAppInstalled &amp;&amp; $hasSpaceAdmin)
+  #set ($adminspaceaction = $!xwiki.getURL("XWiki.XWikiPreferences", 'admin'))
+  #xwikitopmenuentry($adminspaceaction 'Administration' 'tmAdminSpace' 'fa fa-cogs')
+#end
+&lt;/div&gt;
+&lt;/div&gt;
+{{/html}}{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.header.top:data</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.header.top.globalMenu</name>
+    </property>
+    <property>
+      <parameters/>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>1</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>554855a7-0987-4b6c-a437-aa9679825a47</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{velocity}}{{html clean=false}}
+$xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
+$xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
+&lt;div id="phenotips-globalTools" class="layoutsubsection actionmenu"&gt;
+  &lt;div class="rightmenu"&gt;
+    &lt;div class="topmenuentry search"&gt;
+      #if ($displayQuickSearch &amp;&amp; ($xwiki.exists('Main.Search') || $xwiki.exists('Main.WebSearch')))
+        &lt;div class="globalsearch"&gt;&lt;input type="hidden" name="space" value="data"/&gt;
+          &lt;label for="headerglobalsearchinput"&gt;&lt;span class="fa fa-search"&gt; &lt;/span&gt;&lt;/label&gt;&lt;input class="globalsearchinput" id="headerglobalsearchinput" type="text" name="text" placeholder="Search for a patient record..." size="20"/&gt;
+        &lt;/div&gt;
+      #end
+    &lt;/div&gt;
+    &lt;div class="topmenuentry all"&gt;&lt;label for="browse-all-patients"&gt;&lt;span class="fa fa-folder-open"&gt; &lt;/span&gt;&lt;a id="browse-all-patients" href="$xwiki.getURL('data.AllData')"&gt;Browse All Data&lt;/a&gt;&lt;/label&gt;&lt;/div&gt;
+    #if ($hasCreatePage)
+      &lt;div class="topmenuentry add"&gt;
+{{/html}}
+
+{{include reference="PhenoTips.CreatePatientRecordForm" /}}
+
+{{html clean=false}}&lt;/div&gt;
+    #end
+  &lt;/div&gt;
+  &lt;div class="breadcrumbs leftmenu"&gt;
+    &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;&lt;span class="fa fa-home fa-lg"&gt;&lt;/span&gt;&lt;/a&gt; &amp;raquo;
+    &lt;a href="$!xwiki.getURL("${doc.space}.WebHome")" &gt;$!{doc.space}&lt;/a&gt;
+    #if ($doc.name != 'WebHome')
+      &amp;raquo; &lt;a href="$doc.getURL()"&gt;$doc.displayTitle&lt;/a&gt;
+    #end
+  &lt;/div&gt;
+&lt;/div&gt;
+{{/html}}{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.header.bottom:data</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.header.bottom.globalTools</name>
+    </property>
+    <property>
+      <parameters/>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>2</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>abf81c0c-b0e8-458c-b89d-35a229a8c24e</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content/>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.main.top:data</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.main.top.empty</name>
+    </property>
+    <property>
+      <parameters/>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>3</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>5db691f3-5585-4feb-bfde-a03ad02677c5</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content/>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.content.top:data</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.content.top.empty</name>
+    </property>
+    <property>
+      <parameters/>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <object>
+    <name>data.WebHome</name>
+    <number>0</number>
+    <className>XWiki.XWikiRights</className>
+    <guid>ae386edc-2864-4bcb-97e3-d74fe2e85f24</guid>
+    <class>
+      <name>XWiki.XWikiRights</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <allow>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>allow</displayType>
+        <name>allow</name>
+        <number>4</number>
+        <prettyName>Allow/Deny</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </allow>
+      <groups>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>groups</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>Groups</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
+      </groups>
+      <levels>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>1</multiSelect>
+        <name>levels</name>
+        <number>2</number>
+        <prettyName>Levels</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>3</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.LevelsClass</classType>
+      </levels>
+      <users>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>users</name>
+        <number>3</number>
+        <picker>1</picker>
+        <prettyName>Users</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
+      </users>
+    </class>
+    <property>
+      <allow>1</allow>
+    </property>
+    <property>
+      <groups>XWiki.XWikiAdminGroup</groups>
+    </property>
+    <property>
+      <levels>edit,delete</levels>
+    </property>
+    <property>
+      <users/>
+    </property>
+  </object>
+</xwikidoc>

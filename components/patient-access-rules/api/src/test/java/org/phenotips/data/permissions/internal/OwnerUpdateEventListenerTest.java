@@ -34,7 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.Matchers;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -135,7 +135,7 @@ public class OwnerUpdateEventListenerTest
         when(this.doc.getCreatorReference()).thenReturn(null);
         this.mocker.getComponentUnderTest().onEvent(new DocumentCreatingEvent(), this.doc, this.context);
         verify(this.mocker.getMockedLogger()).error(anyString(), anyString(), anyString(),
-            Mockito.any(XWikiException.class));
+            Matchers.any(XWikiException.class));
     }
 
     /** Non empty name. */

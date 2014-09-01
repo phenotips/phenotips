@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the default {@link GroupManager} implementation, {@link DefaultGroupManager}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultGroupManagerTest
@@ -77,7 +77,7 @@ public class DefaultGroupManagerTest
         List<Object> groupNames = new LinkedList<Object>();
         groupNames.add("Groups.Group A");
         groupNames.add("Group B Administrators");
-        when(q.<Object> execute()).thenReturn(groupNames);
+        when(q.<Object>execute()).thenReturn(groupNames);
 
         DocumentReferenceResolver<String> resolver =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
@@ -93,7 +93,7 @@ public class DefaultGroupManagerTest
             .thenReturn(q);
         groupNames = new LinkedList<Object>();
         groupNames.add("Groups.Group B");
-        when(q.<Object> execute()).thenReturn(groupNames);
+        when(q.<Object>execute()).thenReturn(groupNames);
 
         q = mock(Query.class);
         DocumentReference b = new DocumentReference("xwiki", "Groups", "Group B");
@@ -101,7 +101,7 @@ public class DefaultGroupManagerTest
         when(q.bindValue(1, "xwiki:Groups.Group B")).thenReturn(q);
         when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (?1)", Query.XWQL))
             .thenReturn(q);
-        when(q.<Object> execute()).thenReturn(Collections.emptyList());
+        when(q.<Object>execute()).thenReturn(Collections.emptyList());
 
         q = mock(Query.class);
         when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp, doc.object(PhenoTips.PhenoTipsGroupClass) phgrp",
@@ -109,7 +109,7 @@ public class DefaultGroupManagerTest
         groupNames = new LinkedList<Object>();
         groupNames.add("Groups.Group A");
         groupNames.add("Groups.Group B");
-        when(q.<Object> execute()).thenReturn(groupNames);
+        when(q.<Object>execute()).thenReturn(groupNames);
 
         Set<Group> result = this.mocker.getComponentUnderTest().getGroupsForUser(u);
         Assert.assertEquals(2, result.size());
@@ -139,7 +139,7 @@ public class DefaultGroupManagerTest
         Query q = mock(Query.class);
         when(q.bindValue(any(String.class), any(String.class))).thenReturn(q);
         when(qm.createQuery(any(String.class), any(String.class))).thenReturn(q);
-        when(q.<String> execute()).thenThrow(new QueryException("Failed", q, null));
+        when(q.<String>execute()).thenThrow(new QueryException("Failed", q, null));
 
         Assert.assertTrue(this.mocker.getComponentUnderTest().getGroupsForUser(u).isEmpty());
     }

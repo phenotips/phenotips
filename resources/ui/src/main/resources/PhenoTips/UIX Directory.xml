@@ -133,11 +133,11 @@ Sort UI extensions alphabetically by: ##
 #foreach ($uixDatum in $uixSortedData)
 | [[$uixDatum.get('doc.fullName')]] | $uixDatum.get('doc.space') | $uixDatum.extensionId | $uixDatum.extensionPointId | (% class="tools" %)(((##
   [[{{icon name="pencil" title="Edit this extension"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('edit', "editor=object&amp;object=${uixDatum.obj.number}&amp;classname=${uixClassName}")]] ##
-  [[{{icon name="time" title="View change history"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('view', "viewer=history")]] ##
+  [[{{icon name="history" title="View change history"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('view', "viewer=history")]] ##
   [[{{icon name="copy" title="Copy"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('view', "xpage=copy")]] ##
   [[{{icon name="file" title="Rename"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('view', "xpage=rename")]] ##
   [[{{icon name="download" title="Export this extension as xar"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('export', "format=xar&amp;pages=${uixDatum.get('doc.fullName')}&amp;name=${uixDatum.get('doc.fullName')}")]] ##
-  [[{{icon name="remove" title="Delete this extension"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('delete')]] ##
+  [[{{icon name="times" title="Delete this extension"/}}&gt;&gt;path:$xwiki.getDocument($uixDatum.get('doc.fullName')).getURL('delete')]] ##
 )))\\
 #end
 #end## Has Admin

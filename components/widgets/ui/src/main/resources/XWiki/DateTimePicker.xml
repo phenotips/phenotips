@@ -1,0 +1,3034 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>XWiki</web>
+  <name>DateTimePicker</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822130000</creationDate>
+  <parent>Main.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822130000</date>
+  <contentUpdateDate>1401822130000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Date Time Picker</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>XWiki.DateTimePicker</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>6f429c0b-173f-4a3a-bd45-f5bc1f977bb4</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#set($dayFormats = {
+   'dayNames' : 'EEEE',
+   'abbreviatedDayNames' : 'EEE',
+   'shortestDayNames' : 'EE',
+   'firstLetterDayNames' : 'E'
+})
+#set($monthFormats = {
+   'monthNames' : 'MMMM',
+   'abbreviatedMonthNames' : 'MMM'
+})
+#set($weekdays = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'])
+#set($months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
+
+#set ($templateDate = $services.jodatime.mutableDateTime)
+
+#macro(datePicker_generateLocalizedDateComponent $jsvar2FormatMap, $values, $templateDate, $targetDateComponent)
+  #foreach ($entry in $jsvar2FormatMap.entrySet())
+  $entry.key : [ ##
+    #foreach($i in $values)
+      #set($discard = $targetDateComponent.set($i))
+      '$xwiki.formatDate($templateDate.toDate(), $entry.value)'#if ($velocityHasNext), #end
+    #end
+  ],
+  #end
+#end
+
+#macro(datePicker_generateLocalizedDateComponentRegExp $varnames, $jsvar2FormatMap, $templateDate, $targetDateComponent)
+  #foreach ($varname in $varnames)
+    #set($discard = $targetDateComponent.set($velocityCount))
+    $varname : /^#foreach ($format in $jsvar2FormatMap)($xwiki.formatDate($templateDate.toDate(), $format))#if($velocityHasNext)|#end#end/i#if ($velocityHasNext), #end
+  #end
+#end
+
+Date.CultureInfo={
+  name:"en-US",
+  englishName:"English (United States)",
+  nativeName:"English (United States)",
+  #datePicker_generateLocalizedDateComponent ($dayFormats, [1..7], $templateDate, $templateDate.dayOfWeek())
+  #datePicker_generateLocalizedDateComponent ($monthFormats, [1..12], $templateDate, $templateDate.monthOfYear())
+  amDesignator:"AM",
+  pmDesignator:"PM",
+  firstDayOfWeek: $mathtool.add($datetool.calendar.firstDayOfWeek, -1),
+  dateElementOrder:"mdy",
+  formatPatterns:{
+    shortDate:"M/d/yyyy",
+    longDate:"dddd, MMMM dd, yyyy",
+    shortTime:"h:mm tt",
+    longTime:"h:mm:ss tt",
+    fullDateTime:"dddd, MMMM dd, yyyy h:mm:ss tt",
+    sortableDateTime:"yyyy-MM-ddTHH:mm:ss",
+    universalSortableDateTime:"yyyy-MM-dd HH:mm:ssZ",
+    rfc1123:"ddd, dd MMM yyyy HH:mm:ss GMT",
+    monthDay:"MMMM dd",yearMonth:"MMMM, yyyy"},
+    regexPatterns:{
+        #datePicker_generateLocalizedDateComponentRegExp($months, $monthFormats, $templateDate, $templateDate.monthOfYear()),
+        #datePicker_generateLocalizedDateComponentRegExp($weekdays, $dayFormats, $templateDate, $templateDate.dayOfWeek()),
+        future:/^next/i,
+        past:/^last|past|prev(ious)?/i,
+        add:/^(\+|aft(er)?|from|hence)/i,
+        subtract:/^(\-|bef(ore)?|ago)/i,
+        yesterday:/^yes(terday)?/i,today:/^t(od(ay)?)?/i,
+        tomorrow:/^tom(orrow)?/i,
+        now:/^n(ow)?/i,
+        millisecond:/^ms|milli(second)?s?/i,
+        second:/^sec(ond)?s?/i,
+        minute:/^mn|min(ute)?s?/i,
+        hour:/^h(our)?s?/i,
+        week:/^w(eek)?s?/i,
+        month:/^m(onth)?s?/i,
+        day:/^d(ay)?s?/i,
+        year:/^y(ear)?s?/i,
+        shortMeridian:/^(a|p)/i,
+        longMeridian:/^(a\.?m?\.?|p\.?m?\.?)/i,
+        timezone:/^((e(s|d)t|c(s|d)t|m(s|d)t|p(s|d)t)|((gmt)?\s*(\+|\-)\s*\d\d\d\d?)|gmt|utc)/i,
+        ordinalSuffix:/^\s*(st|nd|rd|th)/i,
+        timeContext:/^\s*(\:|a(?!u|p)|p)/i},
+        timezones:[
+          {name:"UTC",offset:"-000"},
+          {name:"GMT",offset:"-000"},
+          {name:"EST",offset:"-0500"},
+          {name:"EDT",offset:"-0400"},
+          {name:"CST",offset:"-0600"},
+          {name:"CDT",offset:"-0500"},
+          {name:"MST",offset:"-0700"},
+          {name:"MDT",offset:"-0600"},
+          {name:"PST",offset:"-0800"},
+          {name:"PDT",offset:"-0700"}
+        ]
+  };
+
+_translations = {
+  "OK": 'OK', //"$services.localization.render('xe.dateTimePicker.confirm')",
+  "Now": 'Now', //"$services.localization.render('xe.dateTimePicker.now')",
+  "Today": 'Today', //"$services.localization.render('xe.dateTimePicker.today')",
+  "Clear": 'Clear' //"$services.localization.render('xe.dateTimePicker.clear')"
+};
+</code>
+    </property>
+    <property>
+      <name>Datejs - Localization</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>XWiki.DateTimePicker</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>a7431ce6-0522-4fdc-a212-0759f788415d</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>/**
+ * Version: 1.0 Alpha-1 
+ * Build Date: 12-Nov-2007
+ * Copyright (c) 2006-2007, Coolite Inc. (http://www.coolite.com/). All rights reserved.
+ * License: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/. 
+ * Website: http://www.datejs.com/ or http://www.coolite.com/datejs/
+ */
+
+/**
+ * Gets the month number (0-11) if given a Culture Info specific string which is a valid monthName or abbreviatedMonthName.
+ * @param {String}   The name of the month (eg. "February, "Feb", "october", "oct").
+ * @return {Number}  The day number
+ */
+Date.getMonthNumberFromName = function (name) {
+    var n = Date.CultureInfo.monthNames, m = Date.CultureInfo.abbreviatedMonthNames, s = name.toLowerCase();
+    for (var i = 0; i &lt; n.length; i++) {
+        if (n[i].toLowerCase() == s || m[i].toLowerCase() == s) { 
+            return i; 
+        }
+    }
+    return -1;
+};
+
+/**
+ * Gets the day number (0-6) if given a CultureInfo specific string which is a valid dayName, abbreviatedDayName or shortestDayName (two char).
+ * @param {String}   The name of the day (eg. "Monday, "Mon", "tuesday", "tue", "We", "we").
+ * @return {Number}  The day number
+ */
+Date.getDayNumberFromName = function (name) {
+    var n = Date.CultureInfo.dayNames, m = Date.CultureInfo.abbreviatedDayNames, o = Date.CultureInfo.shortestDayNames, s = name.toLowerCase();
+    for (var i = 0; i &lt; n.length; i++) { 
+        if (n[i].toLowerCase() == s || m[i].toLowerCase() == s) { 
+            return i; 
+        }
+    }
+    return -1;  
+};
+
+/**
+ * Determines if the current date instance is within a LeapYear.
+ * @param {Number}   The year (0-9999).
+ * @return {Boolean} true if date is within a LeapYear, otherwise false.
+ */
+Date.isLeapYear = function (year) { 
+    return (((year % 4 === 0) &amp;&amp; (year % 100 !== 0)) || (year % 400 === 0)); 
+};
+
+/**
+ * Gets the number of days in the month, given a year and month value. Automatically corrects for LeapYear.
+ * @param {Number}   The year (0-9999).
+ * @param {Number}   The month (0-11).
+ * @return {Number}  The number of days in the month.
+ */
+Date.getDaysInMonth = function (year, month) {
+    return [31, (Date.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+};
+
+Date.getTimezoneOffset = function (s, dst) {
+    return (dst || false) ? Date.CultureInfo.abbreviatedTimeZoneDST[s.toUpperCase()] :
+        Date.CultureInfo.abbreviatedTimeZoneStandard[s.toUpperCase()];
+};
+
+Date.getTimezoneAbbreviation = function (offset, dst) {
+    var n = (dst || false) ? Date.CultureInfo.abbreviatedTimeZoneDST : Date.CultureInfo.abbreviatedTimeZoneStandard, p;
+    for (p in n) { 
+        if (n[p] === offset) { 
+            return p; 
+        }
+    }
+    return null;
+};
+
+/**
+ * Returns a new Date object that is an exact date and time copy of the original instance.
+ * @return {Date}    A new Date instance
+ */
+Date.prototype.clone = function () {
+    return new Date(this.getTime()); 
+};
+
+/**
+ * Compares this instance to a Date object and return an number indication of their relative values.  
+ * @param {Date}     Date object to compare [Required]
+ * @return {Number}  1 = this is greaterthan date. -1 = this is lessthan date. 0 = values are equal
+ */
+Date.prototype.compareTo = function (date) {
+    if (isNaN(this)) { 
+        throw new Error(this); 
+    }
+    if (date instanceof Date &amp;&amp; !isNaN(date)) {
+        return (this &gt; date) ? 1 : (this &lt; date) ? -1 : 0;
+    } else { 
+        throw new TypeError(date); 
+    }
+};
+
+/**
+ * Compares this instance to another Date object and returns true if they are equal.  
+ * @param {Date}     Date object to compare [Required]
+ * @return {Boolean} true if dates are equal. false if they are not equal.
+ */
+Date.prototype.equals = function (date) { 
+    return (this.compareTo(date) === 0); 
+};
+
+/**
+ * Determines is this instance is between a range of two dates or equal to either the start or end dates.
+ * @param {Date}     Start of range [Required]
+ * @param {Date}     End of range [Required]
+ * @return {Boolean} true is this is between or equal to the start and end dates, else false
+ */
+Date.prototype.between = function (start, end) {
+    var t = this.getTime();
+    return t &gt;= start.getTime() &amp;&amp; t &lt;= end.getTime();
+};
+
+/**
+ * Adds the specified number of milliseconds to this instance. 
+ * @param {Number}   The number of milliseconds to add. The number can be positive or negative [Required]
+ * @return {Date}    this
+ */
+Date.prototype.addMilliseconds = function (value) {
+    this.setMilliseconds(this.getMilliseconds() + value);
+    return this;
+};
+
+/**
+ * Adds the specified number of seconds to this instance. 
+ * @param {Number}   The number of seconds to add. The number can be positive or negative [Required]
+ * @return {Date}    this
+ */
+Date.prototype.addSeconds = function (value) { 
+    return this.addMilliseconds(value * 1000); 
+};
+
+/**
+ * Adds the specified number of seconds to this instance. 
+ * @param {Number}   The number of seconds to add. The number can be positive or negative [Required]
+ * @return {Date}    this
+ */
+Date.prototype.addMinutes = function (value) { 
+    return this.addMilliseconds(value * 60000); /* 60*1000 */
+};
+
+/**
+ * Adds the specified number of hours to this instance. 
+ * @param {Number}   The number of hours to add. The number can be positive or negative [Required]
+ * @return {Date}    this
+ */
+Date.prototype.addHours = function (value) { 
+    return this.addMilliseconds(value * 3600000); /* 60*60*1000 */
+};
+
+/**
+ * Adds the specified number of days to this instance. 
+ * @param {Number}   The number of days to add. The number can be positive or negative [Required]
+ * @return {Date}    this
+ */
+Date.prototype.addDays = function (value) { 
+    return this.addMilliseconds(value * 86400000); /* 60*60*24*1000 */
+};
+
+/**
+ * Adds the specified number of weeks to this instance. 
+ * @param {Number}   The number of weeks to add. The number can be positive or negative [Required]
+ * @return {Date}    this
+ */
+Date.prototype.addWeeks = function (value) { 
+    return this.addMilliseconds(value * 604800000); /* 60*60*24*7*1000 */
+};
+
+/**
+ * Adds the specified number of months to this instance. 
+ * @param {Number}   The number of months to add. The number can be positive or negative [Required]
+ * @return {Date}    this
+ */
+Date.prototype.addMonths = function (value) {
+    var n = this.getDate();
+    this.setDate(1);
+    this.setMonth(this.getMonth() + value);
+    this.setDate(Math.min(n, this.getDaysInMonth()));
+    return this;
+};
+
+/**
+ * Adds the specified number of years to this instance. 
+ * @param {Number}   The number of years to add. The number can be positive or negative [Required]
+ * @return {Date}    this
+ */
+Date.prototype.addYears = function (value) {
+    return this.addMonths(value * 12);
+};
+
+/**
+ * Adds (or subtracts) to the value of the year, month, day, hour, minute, second, millisecond of the date instance using given configuration object. Positive and Negative values allowed.
+ * Example
+&lt;pre&gt;&lt;code&gt;
+Date.today().add( { day: 1, month: 1 } )
+ 
+new Date().add( { year: -1 } )
+&lt;/code&gt;&lt;/pre&gt; 
+ * @param {Object}   Configuration object containing attributes (month, day, etc.)
+ * @return {Date}    this
+ */
+Date.prototype.add = function (config) {
+    if (typeof config == "number") {
+        this._orient = config;
+        return this;    
+    }
+    var x = config;
+    if (x.millisecond || x.milliseconds) { 
+        this.addMilliseconds(x.millisecond || x.milliseconds); 
+    }
+    if (x.second || x.seconds) { 
+        this.addSeconds(x.second || x.seconds); 
+    }
+    if (x.minute || x.minutes) { 
+        this.addMinutes(x.minute || x.minutes); 
+    }
+    if (x.hour || x.hours) { 
+        this.addHours(x.hour || x.hours); 
+    }
+    if (x.month || x.months) { 
+        this.addMonths(x.month || x.months); 
+    }
+    if (x.year || x.years) { 
+        this.addYears(x.year || x.years); 
+    }
+    if (x.day || x.days) {
+        this.addDays(x.day || x.days); 
+    }
+    return this;
+};
+
+// private
+Date._validate = function (value, min, max, name) {
+    if (typeof value != "number") {
+        throw new TypeError(value + " is not a Number."); 
+    } else if (value &lt; min || value &gt; max) {
+        throw new RangeError(value + " is not a valid value for " + name + "."); 
+    }
+    return true;
+};
+
+/**
+ * Validates the number is within an acceptable range for milliseconds [0-999].
+ * @param {Number}   The number to check if within range.
+ * @return {Boolean} true if within range, otherwise false.
+ */
+Date.validateMillisecond = function (n) {
+    return Date._validate(n, 0, 999, "milliseconds");
+};
+
+/**
+ * Validates the number is within an acceptable range for seconds [0-59].
+ * @param {Number}   The number to check if within range.
+ * @return {Boolean} true if within range, otherwise false.
+ */
+Date.validateSecond = function (n) {
+    return Date._validate(n, 0, 59, "seconds");
+};
+
+/**
+ * Validates the number is within an acceptable range for minutes [0-59].
+ * @param {Number}   The number to check if within range.
+ * @return {Boolean} true if within range, otherwise false.
+ */
+Date.validateMinute = function (n) {
+    return Date._validate(n, 0, 59, "minutes");
+};
+
+/**
+ * Validates the number is within an acceptable range for hours [0-23].
+ * @param {Number}   The number to check if within range.
+ * @return {Boolean} true if within range, otherwise false.
+ */
+Date.validateHour = function (n) {
+    return Date._validate(n, 0, 23, "hours");
+};
+
+/**
+ * Validates the number is within an acceptable range for the days in a month [0-MaxDaysInMonth].
+ * @param {Number}   The number to check if within range.
+ * @return {Boolean} true if within range, otherwise false.
+ */
+Date.validateDay = function (n, year, month) {
+    return Date._validate(n, 1, Date.getDaysInMonth(year, month), "days");
+};
+
+/**
+ * Validates the number is within an acceptable range for months [0-11].
+ * @param {Number}   The number to check if within range.
+ * @return {Boolean} true if within range, otherwise false.
+ */
+Date.validateMonth = function (n) {
+    return Date._validate(n, 0, 11, "months");
+};
+
+/**
+ * Validates the number is within an acceptable range for years [0-9999].
+ * @param {Number}   The number to check if within range.
+ * @return {Boolean} true if within range, otherwise false.
+ */
+Date.validateYear = function (n) {
+    return Date._validate(n, 1, 9999, "seconds");
+};
+
+/**
+ * Set the value of year, month, day, hour, minute, second, millisecond of date instance using given configuration object.
+ * Example
+&lt;pre&gt;&lt;code&gt;
+Date.today().set( { day: 20, month: 1 } )
+
+new Date().set( { millisecond: 0 } )
+&lt;/code&gt;&lt;/pre&gt;
+ * 
+ * @param {Object}   Configuration object containing attributes (month, day, etc.)
+ * @return {Date}    this
+ */
+Date.prototype.set = function (config) {
+    var x = config;
+
+    if (!x.millisecond &amp;&amp; x.millisecond !== 0) { 
+        x.millisecond = -1; 
+    }
+    if (!x.second &amp;&amp; x.second !== 0) { 
+        x.second = -1; 
+    }
+    if (!x.minute &amp;&amp; x.minute !== 0) { 
+        x.minute = -1; 
+    }
+    if (!x.hour &amp;&amp; x.hour !== 0) { 
+        x.hour = -1; 
+    }
+    if (!x.day &amp;&amp; x.day !== 0) { 
+        x.day = -1; 
+    }
+    if (!x.month &amp;&amp; x.month !== 0) { 
+        x.month = -1; 
+    }
+    if (!x.year &amp;&amp; x.year !== 0) { 
+        x.year = -1; 
+    }
+
+    if (x.millisecond != -1 &amp;&amp; Date.validateMillisecond(x.millisecond)) {
+        this.addMilliseconds(x.millisecond - this.getMilliseconds()); 
+    }
+    if (x.second != -1 &amp;&amp; Date.validateSecond(x.second)) {
+        this.addSeconds(x.second - this.getSeconds()); 
+    }
+    if (x.minute != -1 &amp;&amp; Date.validateMinute(x.minute)) {
+        this.addMinutes(x.minute - this.getMinutes()); 
+    }
+    if (x.hour != -1 &amp;&amp; Date.validateHour(x.hour)) {
+        this.addHours(x.hour - this.getHours()); 
+    }
+    if (x.month !== -1 &amp;&amp; Date.validateMonth(x.month)) {
+        this.addMonths(x.month - this.getMonth()); 
+    }
+    if (x.year != -1 &amp;&amp; Date.validateYear(x.year)) {
+        this.addYears(x.year - this.getFullYear()); 
+    }
+    
+	/* day has to go last because you can't validate the day without first knowing the month */
+    if (x.day != -1 &amp;&amp; Date.validateDay(x.day, this.getFullYear(), this.getMonth())) {
+        this.addDays(x.day - this.getDate()); 
+    }
+    if (x.timezone) { 
+        this.setTimezone(x.timezone); 
+    }
+    if (x.timezoneOffset) { 
+        this.setTimezoneOffset(x.timezoneOffset); 
+    }
+    
+    return this;   
+};
+
+/**
+ * Resets the time of this Date object to 12:00 AM (00:00), which is the start of the day.
+ * @return {Date}    this
+ */
+Date.prototype.clearTime = function () {
+    this.setHours(0); 
+    this.setMinutes(0); 
+    this.setSeconds(0);
+    this.setMilliseconds(0); 
+    return this;
+};
+
+/**
+ * Determines whether or not this instance is in a leap year.
+ * @return {Boolean} true if this instance is in a leap year, else false
+ */
+Date.prototype.isLeapYear = function () { 
+    var y = this.getFullYear(); 
+    return (((y % 4 === 0) &amp;&amp; (y % 100 !== 0)) || (y % 400 === 0)); 
+};
+
+/**
+ * Determines whether or not this instance is a weekday.
+ * @return {Boolean} true if this instance is a weekday
+ */
+Date.prototype.isWeekday = function () { 
+    return !(this.is().sat() || this.is().sun());
+};
+
+/**
+ * Get the number of days in the current month, adjusted for leap year.
+ * @return {Number}  The number of days in the month
+ */
+Date.prototype.getDaysInMonth = function () { 
+    return Date.getDaysInMonth(this.getFullYear(), this.getMonth());
+};
+
+/**
+ * Moves the date to the first day of the month.
+ * @return {Date}    this
+ */
+Date.prototype.moveToFirstDayOfMonth = function () {
+    return this.set({ day: 1 });
+};
+
+/**
+ * Moves the date to the last day of the month.
+ * @return {Date}    this
+ */
+Date.prototype.moveToLastDayOfMonth = function () { 
+    return this.set({ day: this.getDaysInMonth()});
+};
+
+/**
+ * Move to the next or last dayOfWeek based on the orient value.
+ * @param {Number}   The dayOfWeek to move to.
+ * @param {Number}   Forward (+1) or Back (-1). Defaults to +1. [Optional]
+ * @return {Date}    this
+ */
+Date.prototype.moveToDayOfWeek = function (day, orient) {
+    var diff = (day - this.getDay() + 7 * (orient || +1)) % 7;
+    return this.addDays((diff === 0) ? diff += 7 * (orient || +1) : diff);
+};
+
+/**
+ * Move to the next or last month based on the orient value.
+ * @param {Number}   The month to move to. 0 = January, 11 = December.
+ * @param {Number}   Forward (+1) or Back (-1). Defaults to +1. [Optional]
+ * @return {Date}    this
+ */
+Date.prototype.moveToMonth = function (month, orient) {
+    var diff = (month - this.getMonth() + 12 * (orient || +1)) % 12;
+    return this.addMonths((diff === 0) ? diff += 12 * (orient || +1) : diff);
+};
+
+/**
+ * Get the numeric day number of the year, adjusted for leap year.
+ * @return {Number} 0 through 364 (365 in leap years)
+ */
+Date.prototype.getDayOfYear = function () {
+    return Math.floor((this - new Date(this.getFullYear(), 0, 1)) / 86400000);
+};
+
+/**
+ * Get the week of the year for the current date instance.
+ * @param {Number}   A Number that represents the first day of the week (0-6) [Optional]
+ * @return {Number}  0 through 53
+ */
+Date.prototype.getWeekOfYear = function (firstDayOfWeek) {
+    var y = this.getFullYear(), m = this.getMonth(), d = this.getDate();
+    
+    var dow = firstDayOfWeek || Date.CultureInfo.firstDayOfWeek;
+	
+    var offset = 7 + 1 - new Date(y, 0, 1).getDay();
+    if (offset == 8) {
+        offset = 1;
+    }
+    var daynum = ((Date.UTC(y, m, d, 0, 0, 0) - Date.UTC(y, 0, 1, 0, 0, 0)) / 86400000) + 1;
+    var w = Math.floor((daynum - offset + 7) / 7);
+    if (w === dow) {
+        y--;
+        var prevOffset = 7 + 1 - new Date(y, 0, 1).getDay();
+        if (prevOffset == 2 || prevOffset == 8) { 
+            w = 53; 
+        } else { 
+            w = 52; 
+        }
+    }
+    return w;
+};
+
+/**
+ * Determine whether Daylight Saving Time (DST) is in effect
+ * @return {Boolean} True if DST is in effect.
+ */
+Date.prototype.isDST = function () {
+    console.log('isDST');
+    /* TODO: not sure if this is portable ... get from Date.CultureInfo? */
+    return this.toString().match(/(E|C|M|P)(S|D)T/)[2] == "D";
+};
+
+/**
+ * Get the timezone abbreviation of the current date.
+ * @return {String} The abbreviated timezone name (e.g. "EST")
+ */
+Date.prototype.getTimezone = function () {
+    return Date.getTimezoneAbbreviation(this.getUTCOffset, this.isDST());
+};
+
+Date.prototype.setTimezoneOffset = function (s) {
+    var here = this.getTimezoneOffset(), there = Number(s) * -6 / 10;
+    this.addMinutes(there - here); 
+    return this;
+};
+
+Date.prototype.setTimezone = function (s) { 
+    return this.setTimezoneOffset(Date.getTimezoneOffset(s)); 
+};
+
+/**
+ * Get the offset from UTC of the current date.
+ * @return {String} The 4-character offset string prefixed with + or - (e.g. "-0500")
+ */
+Date.prototype.getUTCOffset = function () {
+    var n = this.getTimezoneOffset() * -10 / 6, r;
+    if (n &lt; 0) { 
+        r = (n - 10000).toString(); 
+        return r[0] + r.substr(2); 
+    } else { 
+        r = (n + 10000).toString();  
+        return "+" + r.substr(1); 
+    }
+};
+
+/**
+ * Gets the name of the day of the week.
+ * @param {Boolean}  true to return the abbreviated name of the day of the week
+ * @return {String}  The name of the day
+ */
+Date.prototype.getDayName = function (abbrev) {
+    return abbrev ? Date.CultureInfo.abbreviatedDayNames[this.getDay()] : 
+        Date.CultureInfo.dayNames[this.getDay()];
+};
+
+/**
+ * Gets the month name.
+ * @param {Boolean}  true to return the abbreviated name of the month
+ * @return {String}  The name of the month
+ */
+Date.prototype.getMonthName = function (abbrev) {
+    return abbrev ? Date.CultureInfo.abbreviatedMonthNames[this.getMonth()] : 
+        Date.CultureInfo.monthNames[this.getMonth()];
+};
+
+// private
+Date.prototype._toString = Date.prototype.toString;
+
+/**
+ * Converts the value of the current Date object to its equivalent string representation.
+ * Format Specifiers
+&lt;pre&gt;
+Format  Description                                                                  Example
+------  ---------------------------------------------------------------------------  -----------------------
+ s      The seconds of the minute between 1-59.                                      "1" to "59"
+ ss     The seconds of the minute with leading zero if required.                     "01" to "59"
+ 
+ m      The minute of the hour between 0-59.                                         "1"  or "59"
+ mm     The minute of the hour with leading zero if required.                        "01" or "59"
+ 
+ h      The hour of the day between 1-12.                                            "1"  to "12"
+ hh     The hour of the day with leading zero if required.                           "01" to "12"
+ 
+ H      The hour of the day between 1-23.                                            "1"  to "23"
+ HH     The hour of the day with leading zero if required.                           "01" to "23"
+ 
+ d      The day of the month between 1 and 31.                                       "1"  to "31"
+ dd     The day of the month with leading zero if required.                          "01" to "31"
+ ddd    Abbreviated day name. Date.CultureInfo.abbreviatedDayNames.                  "Mon" to "Sun" 
+ dddd   The full day name. Date.CultureInfo.dayNames.                                "Monday" to "Sunday"
+ 
+ M      The month of the year between 1-12.                                          "1" to "12"
+ MM     The month of the year with leading zero if required.                         "01" to "12"
+ MMM    Abbreviated month name. Date.CultureInfo.abbreviatedMonthNames.              "Jan" to "Dec"
+ MMMM   The full month name. Date.CultureInfo.monthNames.                            "January" to "December"
+
+ yy     Displays the year as a maximum two-digit number.                             "99" or "07"
+ yyyy   Displays the full four digit year.                                           "1999" or "2007"
+ 
+ t      Displays the first character of the A.M./P.M. designator.                    "A" or "P"
+        Date.CultureInfo.amDesignator or Date.CultureInfo.pmDesignator
+ tt     Displays the A.M./P.M. designator.                                           "AM" or "PM"
+        Date.CultureInfo.amDesignator or Date.CultureInfo.pmDesignator
+&lt;/pre&gt;
+ * @param {String}   A format string consisting of one or more format spcifiers [Optional].
+ * @return {String}  A string representation of the current Date object.
+ */
+Date.prototype.toString = function (format) {
+    var self = this;
+
+    var p = function p(s) {
+        return (s.toString().length == 1) ? "0" + s : s;
+    };
+
+    return format ? format.replace(/dd?d?d?|MM?M?M?|yy?y?y?|hh?|HH?|mm?|ss?|tt?|zz?z?/g, 
+    function (format) {
+        switch (format) {
+        case "hh":
+            return p(self.getHours() &lt; 13 ? self.getHours() : (self.getHours() - 12));
+        case "h":
+            return self.getHours() &lt; 13 ? self.getHours() : (self.getHours() - 12);
+        case "HH":
+            return p(self.getHours());
+        case "H":
+            return self.getHours();
+        case "mm":
+            return p(self.getMinutes());
+        case "m":
+            return self.getMinutes();
+        case "ss":
+            return p(self.getSeconds());
+        case "s":
+            return self.getSeconds();
+        case "yyyy":
+            return self.getFullYear();
+        case "yy":
+            return self.getFullYear().toString().substring(2, 4);
+        case "dddd":
+            return self.getDayName();
+        case "ddd":
+            return self.getDayName(true);
+        case "dd":
+            return p(self.getDate());
+        case "d":
+            return self.getDate().toString();
+        case "MMMM":
+            return self.getMonthName();
+        case "MMM":
+            return self.getMonthName(true);
+        case "MM":
+            return p((self.getMonth() + 1));
+        case "M":
+            return self.getMonth() + 1;
+        case "t":
+            return self.getHours() &lt; 12 ? Date.CultureInfo.amDesignator.substring(0, 1) : Date.CultureInfo.pmDesignator.substring(0, 1);
+        case "tt":
+            return self.getHours() &lt; 12 ? Date.CultureInfo.amDesignator : Date.CultureInfo.pmDesignator;
+        case "zzz":
+        case "zz":
+        case "z":
+            return "";
+        }
+    }
+    ) : this._toString();
+};
+
+/**
+ * Version: 1.0 Alpha-1 
+ * Build Date: 12-Nov-2007
+ * Copyright (c) 2006-2007, Coolite Inc. (http://www.coolite.com/). All rights reserved.
+ * License: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/. 
+ * Website: http://www.datejs.com/ or http://www.coolite.com/datejs/
+ */
+ 
+/* 
+ * TimeSpan(days, hours, minutes, seconds, milliseconds);
+ * TimeSpan(milliseconds);
+ */
+TimeSpan = function (days, hours, minutes, seconds, milliseconds) {
+    this.days = 0;
+    this.hours = 0;
+    this.minutes = 0;
+    this.seconds = 0;
+    this.milliseconds = 0;
+    
+    if (arguments.length == 5) { 
+        this.days = days; 
+        this.hours = hours; 
+        this.minutes = minutes; 
+        this.seconds = seconds; 
+        this.milliseconds = milliseconds; 
+    } 
+    else if (arguments.length == 1 &amp;&amp; typeof days == "number") {
+        var orient = (days &lt; 0) ? -1 : +1;
+        this.milliseconds = Math.abs(days);
+        
+        this.days = Math.floor(this.milliseconds / (24 * 60 * 60 * 1000)) * orient;
+        this.milliseconds = this.milliseconds % (24 * 60 * 60 * 1000);
+
+        this.hours = Math.floor(this.milliseconds / (60 * 60 * 1000)) * orient;
+        this.milliseconds = this.milliseconds % (60 * 60 * 1000);
+
+        this.minutes = Math.floor(this.milliseconds / (60 * 1000)) * orient;
+        this.milliseconds = this.milliseconds % (60 * 1000);
+
+        this.seconds = Math.floor(this.milliseconds / 1000) * orient;
+        this.milliseconds = this.milliseconds % 1000;
+
+        this.milliseconds = this.milliseconds * orient;
+        return this;
+    } 
+    else {
+        return null;
+    }
+};
+
+TimeSpan.prototype.compare = function (timeSpan) {
+    var t1 = new Date(1970, 1, 1, this.hours(), this.minutes(), this.seconds()), t2;
+    if (timeSpan === null) { 
+        t2 = new Date(1970, 1, 1, 0, 0, 0); 
+    }
+    else { 
+        t2 = new Date(1970, 1, 1, timeSpan.hours(), timeSpan.minutes(), timeSpan.seconds()); /* t2 = t2.addDays(timeSpan.days()); */ 
+    }
+    return (t1 &gt; t2) ? 1 : (t1 &lt; t2) ? -1 : 0;
+};
+
+TimeSpan.prototype.add = function (timeSpan) { 
+    return (timeSpan === null) ? this : this.addSeconds(timeSpan.getTotalMilliseconds() / 1000); 
+};
+
+TimeSpan.prototype.subtract = function (timeSpan) { 
+    return (timeSpan === null) ? this : this.addSeconds(-timeSpan.getTotalMilliseconds() / 1000); 
+};
+
+TimeSpan.prototype.addDays = function (n) { 
+    return new TimeSpan(this.getTotalMilliseconds() + (n * 24 * 60 * 60 * 1000)); 
+};
+
+TimeSpan.prototype.addHours = function (n) { 
+    return new TimeSpan(this.getTotalMilliseconds() + (n * 60 * 60 * 1000)); 
+};
+
+TimeSpan.prototype.addMinutes = function (n) { 
+    return new TimeSpan(this.getTotalMilliseconds() + (n * 60 * 1000)); 
+};
+
+TimeSpan.prototype.addSeconds = function (n) {
+    return new TimeSpan(this.getTotalMilliseconds() + (n * 1000)); 
+};
+
+TimeSpan.prototype.addMilliseconds = function (n) {
+    return new TimeSpan(this.getTotalMilliseconds() + n); 
+};
+
+TimeSpan.prototype.getTotalMilliseconds = function () {
+    return (this.days() * (24 * 60 * 60 * 1000)) + (this.hours() * (60 * 60 * 1000)) + (this.minutes() * (60 * 1000)) + (this.seconds() * (1000)); 
+};
+
+TimeSpan.prototype.get12HourHour = function () {
+    return ((h = this.hours() % 12) ? h : 12); 
+};
+
+TimeSpan.prototype.getDesignator = function () { 
+    return (this.hours() &lt; 12) ? Date.CultureInfo.amDesignator : Date.CultureInfo.pmDesignator;
+};
+
+TimeSpan.prototype.toString = function (format) {
+    function _toString() {
+        if (this.days() !== null &amp;&amp; this.days() &gt; 0) {
+            return this.days() + "." + this.hours() + ":" + p(this.minutes()) + ":" + p(this.seconds());
+        }
+        else { 
+            return this.hours() + ":" + p(this.minutes()) + ":" + p(this.seconds());
+        }
+    }
+    function p(s) {
+        return (s.toString().length &lt; 2) ? "0" + s : s;
+    } 
+    var self = this;
+    return format ? format.replace(/d|dd|HH|H|hh|h|mm|m|ss|s|tt|t/g, 
+    function (format) {
+        switch (format) {
+        case "d":	
+            return self.days();
+        case "dd":	
+            return p(self.days());
+        case "H":	
+            return self.hours();
+        case "HH":	
+            return p(self.hours());
+        case "h":	
+            return self.get12HourHour();
+        case "hh":	
+            return p(self.get12HourHour());
+        case "m":	
+            return self.minutes();
+        case "mm":	
+            return p(self.minutes());
+        case "s":	
+            return self.seconds();
+        case "ss":	
+            return p(self.seconds());
+        case "t":	
+            return ((this.hours() &lt; 12) ? Date.CultureInfo.amDesignator : Date.CultureInfo.pmDesignator).substring(0, 1);
+        case "tt":	
+            return (this.hours() &lt; 12) ? Date.CultureInfo.amDesignator : Date.CultureInfo.pmDesignator;
+        }
+    }
+    ) : this._toString();
+};
+
+/* 
+ * TimePeriod(startDate, endDate);
+ */
+var TimePeriod = function (years, months, days, hours, minutes, seconds, milliseconds) {
+    this.years = 0;
+    this.months = 0;
+    this.days = 0;
+    this.hours = 0;
+    this.minutes = 0;
+    this.seconds = 0;
+    this.milliseconds = 0;
+    
+    // startDate and endDate as arguments
+    if (arguments.length == 2 &amp;&amp; arguments[0] instanceof Date &amp;&amp; arguments[1] instanceof Date) {
+    
+        var date1 = years.clone();
+        var date2 = months.clone();
+    
+        var temp = date1.clone();
+        var orient = (date1 &gt; date2) ? -1 : +1;
+        
+        this.years = date2.getFullYear() - date1.getFullYear();
+        temp.addYears(this.years);
+        
+        if (orient == +1) {
+            if (temp &gt; date2) {
+                if (this.years !== 0) {
+                    this.years--;
+                }
+            }
+        } else {
+            if (temp &lt; date2) {
+                if (this.years !== 0) {
+                    this.years++;
+                }
+            }
+        }
+        
+        date1.addYears(this.years);
+
+        if (orient == +1) {
+            while (date1 &lt; date2 &amp;&amp; date1.clone().addDays(date1.getDaysInMonth()) &lt; date2) {
+                date1.addMonths(1);
+                this.months++;
+            }
+        }
+        else {
+            while (date1 &gt; date2 &amp;&amp; date1.clone().addDays(-date1.getDaysInMonth()) &gt; date2) {
+                date1.addMonths(-1);
+                this.months--;
+            }
+        }
+        
+        var diff = date2 - date1;
+
+        if (diff !== 0) {
+            var ts = new TimeSpan(diff);
+            
+            this.days = ts.days;
+            this.hours = ts.hours;
+            this.minutes = ts.minutes;
+            this.seconds = ts.seconds;
+            this.milliseconds = ts.milliseconds;
+        }
+
+        // UTC Hacks required...
+        return this;
+    }
+ 
+};
+
+/**
+ * Version: 1.0 Alpha-1 
+ * Build Date: 12-Nov-2007
+ * Copyright (c) 2006-2007, Coolite Inc. (http://www.coolite.com/). All rights reserved.
+ * License: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/. 
+ * Website: http://www.datejs.com/ or http://www.coolite.com/datejs/
+ */
+
+/**
+ **************************************************************
+ ** SugarPak - Domain Specific Language -  Syntactical Sugar **
+ **************************************************************
+ */
+ 
+/**
+ * Gets a date that is set to the current date and time. 
+ * @return {Date}    The current date and time.
+ */
+Date.now = function () {
+    return new Date();
+};
+
+/** 
+ * Gets a date that is set to the current date. The time is set to the start of the day (00:00 or 12:00 AM).
+ * @return {Date}    The current date.
+ */
+Date.today = function () {
+    return Date.now().clearTime();
+};
+
+// private
+Date.prototype._orient = +1;
+
+/** 
+ * Moves the date to the next instance of a date as specified by a trailing date element function (eg. .day(), .month()), month name function (eg. .january(), .jan()) or day name function (eg. .friday(), fri()).
+ * Example
+&lt;pre&gt;&lt;code&gt;
+Date.today().next().friday();
+Date.today().next().fri();
+Date.today().next().march();
+Date.today().next().mar();
+Date.today().next().week();
+&lt;/code&gt;&lt;/pre&gt;
+ * 
+ * @return {Date}    this
+ */
+Date.prototype.next = function () {
+    this._orient = +1;
+    return this;
+};
+
+/** 
+ * Moves the date to the previous instance of a date as specified by a trailing date element function (eg. .day(), .month()), month name function (eg. .january(), .jan()) or day name function (eg. .friday(), fri()).
+ * Example
+&lt;pre&gt;&lt;code&gt;
+Date.today().last().friday();
+Date.today().last().fri();
+Date.today().last().march();
+Date.today().last().mar();
+Date.today().last().week();
+&lt;/code&gt;&lt;/pre&gt;
+ *  
+ * @return {Date}    this
+ */
+Date.prototype.last = Date.prototype.prev = Date.prototype.previous = function () {
+    this._orient = -1;
+    return this;
+};
+
+// private
+Date.prototype._is = false;
+    
+/** 
+ * Performs a equality check when followed by either a month name or day name function.
+ * Example
+&lt;pre&gt;&lt;code&gt;
+Date.today().is().friday(); // true|false
+Date.today().is().fri();
+Date.today().is().march();
+Date.today().is().mar();
+&lt;/code&gt;&lt;/pre&gt;
+ *  
+ * @return {bool}    true|false
+ */
+Date.prototype.is = function () { 
+    this._is = true; 
+    return this; 
+}; 
+
+// private
+Number.prototype._dateElement = "day";
+
+/** 
+ * Creates a new Date (Date.now()) and adds this (Number) to the date based on the preceding date element function (eg. second|minute|hour|day|month|year).
+ * Example
+&lt;pre&gt;&lt;code&gt;
+// Undeclared Numbers must be wrapped with parentheses. Requirment of JavaScript.
+(3).days().fromNow();
+(6).months().fromNow();
+
+// Declared Number variables do not require parentheses. 
+var n = 6;
+n.months().fromNow();
+&lt;/code&gt;&lt;/pre&gt;
+ *  
+ * @return {Date}    A new Date instance
+ */
+Number.prototype.fromNow = function () {
+    var c = {};
+    c[this._dateElement] = this;
+    return Date.now().add(c);
+};
+
+/** 
+ * Creates a new Date (Date.now()) and subtract this (Number) from the date based on the preceding date element function (eg. second|minute|hour|day|month|year).
+ * Example
+&lt;pre&gt;&lt;code&gt;
+// Undeclared Numbers must be wrapped with parentheses. Requirment of JavaScript.
+(3).days().ago();
+(6).months().ago();
+
+// Declared Number variables do not require parentheses. 
+var n = 6;
+n.months().ago();
+&lt;/code&gt;&lt;/pre&gt;
+ *  
+ * @return {Date}    A new Date instance
+ */
+Number.prototype.ago = function () {
+    var c = {};
+    c[this._dateElement] = this * -1;
+    return Date.now().add(c);
+};
+
+// Build dynamic date element, month name and day name functions.
+(function () {
+    var $D = Date.prototype, $N = Number.prototype;
+
+    /* Do NOT modify the following string tokens. These tokens are used to build dynamic functions. */
+    var dx = ("sunday monday tuesday wednesday thursday friday saturday").split(/\s/),
+        mx = ("january february march april may june july august september october november december").split(/\s/),
+        px = ("Millisecond Second Minute Hour Day Week Month Year").split(/\s/),
+        de;
+    
+    // Create day name functions and abbreviated day name functions (eg. monday(), friday(), fri()).
+    var df = function (n) {
+        return function () { 
+            if (this._is) { 
+                this._is = false; 
+                return this.getDay() == n; 
+            }
+            return this.moveToDayOfWeek(n, this._orient);
+        };
+    };
+    
+    for (var i = 0 ; i &lt; dx.length ; i++) { 
+        $D[dx[i]] = $D[dx[i].substring(0, 3)] = df(i);
+    }
+    
+    // Create month name functions and abbreviated month name functions (eg. january(), march(), mar()).
+    var mf = function (n) { 
+        return function () {
+            if (this._is) { 
+                this._is = false; 
+                return this.getMonth() === n; 
+            }
+            return this.moveToMonth(n, this._orient); 
+        };
+    };
+    
+    for (var j = 0 ; j &lt; mx.length ; j++) { 
+        $D[mx[j]] = $D[mx[j].substring(0, 3)] = mf(j);
+    }
+    
+    // Create date element functions and plural date element functions used with Date (eg. day(), days(), months()).
+    var ef = function (j) { 
+        return function () {
+            if (j.substring(j.length - 1) != "s") { 
+                j += "s"; 
+            }
+            return this["add" + j](this._orient); 
+        };
+    };
+    
+    // Create date element functions and plural date element functions used with Number (eg. day(), days(), months()).
+    var nf = function (n) {
+        return function () {
+            this._dateElement = n;
+            return this;
+        };
+    };
+    
+    for (var k = 0 ; k &lt; px.length ; k++) {
+        de = px[k].toLowerCase();
+        $D[de] = $D[de + "s"] = ef(px[k]);
+        $N[de] = $N[de + "s"] = nf(de);
+    }
+}());
+
+/**
+ * Converts the current date instance into a JSON string value.
+ * @return {String}  JSON string of date
+ */
+Date.prototype.toJSONString = function () {
+    return this.toString("yyyy-MM-ddThh:mm:ssZ");
+};
+
+/**
+ * Converts the current date instance to a string using the culture specific shortDatePattern.
+ * @return {String}  A string formatted as per the culture specific shortDatePattern
+ */
+Date.prototype.toShortDateString = function () {
+    return this.toString(Date.CultureInfo.formatPatterns.shortDatePattern);
+};
+
+/**
+ * Converts the current date instance to a string using the culture specific longDatePattern.
+ * @return {String}  A string formatted as per the culture specific longDatePattern
+ */
+Date.prototype.toLongDateString = function () {
+    return this.toString(Date.CultureInfo.formatPatterns.longDatePattern);
+};
+
+/**
+ * Converts the current date instance to a string using the culture specific shortTimePattern.
+ * @return {String}  A string formatted as per the culture specific shortTimePattern
+ */
+Date.prototype.toShortTimeString = function () {
+    return this.toString(Date.CultureInfo.formatPatterns.shortTimePattern);
+};
+
+/**
+ * Converts the current date instance to a string using the culture specific longTimePattern.
+ * @return {String}  A string formatted as per the culture specific longTimePattern
+ */
+Date.prototype.toLongTimeString = function () {
+    return this.toString(Date.CultureInfo.formatPatterns.longTimePattern);
+};
+
+/**
+ * Get the ordinal suffix of the current day.
+ * @return {String}  "st, "nd", "rd" or "th"
+ */
+Date.prototype.getOrdinal = function () {
+    switch (this.getDate()) {
+    case 1: 
+    case 21: 
+    case 31: 
+        return "st";
+    case 2: 
+    case 22: 
+        return "nd";
+    case 3: 
+    case 23: 
+        return "rd";
+    default: 
+        return "th";
+    }
+};
+/*
+ ********************************************************************************
+ * Formatting
+ ********************************************************************************
+ */
+Date.ISO8601Format = 'yyyy-MM-ddTHH:mm:ssZ';
+Date.prototype.toISO8601 = function() {
+   return this.toString(Date.ISO8601Format);
+};
+Date.prototype.toUTC = function() {
+   return new Date(
+          this.getUTCFullYear(),
+          this.getUTCMonth(),
+          this.getUTCDate(),
+          this.getUTCHours(),
+          this.getUTCMinutes(),
+          0,
+          0
+   );
+}
+Date.prototype.setAsUTC = function() {
+   var date = this.getDate();
+   var month = this.getMonth();
+   var year = this.getFullYear();
+   var hours = this.getHours();
+   var minutes = this.getMinutes();
+   this.setUTCDate( date );
+   this.setUTCMonth( month );
+   this.setUTCFullYear( year );
+   this.setUTCHours( hours );
+   this.setUTCMinutes( minutes );
+} 
+Date.prototype.toFormattedString = function(display_options){
+   var hour, str;
+   var mask = display_options.format_mask;
+   var display_date = display_options.convert_to_UTC ? this.toUTC() : this;
+   var sdf = new SimpleDateFormat(mask);
+   str = sdf.format(display_date);
+   return str;
+}
+Date.parseISO_8601 = function(string) {
+   if (/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(([+-](\d{2})([:]?(\d{2}))?)|Z)$/.match(string)) {
+     return new Date(
+             parseInt(string.substring(0,4), 10),
+             parseInt(string.substring(5,7), 10) - 1,
+             parseInt(string.substring(8,10), 10),
+             parseInt(string.substring(11,13), 10),
+             parseInt(string.substring(14,16), 10),
+             parseInt(string.substring(17,19), 10),
+             0
+           );
+   }
+}</code>
+    </property>
+    <property>
+      <name>Datejs - code</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>XWiki.DateTimePicker</name>
+    <number>2</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>7bda20e1-10df-458b-92da-57ff91e9f2d0</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>// CalendarDateSelect version 1.16.1 - a prototype based date picker
+// Questions, comments, bugs? - see the project page: http://code.google.com/p/calendardateselect
+if (typeof Prototype == 'undefined') alert("CalendarDateSelect Error: Prototype could not be found. Please make sure that your application's layout includes prototype.js *before* it includes calendar_date_select.js");
+if (Prototype.Version &lt; "1.6") alert("Prototype &gt; 1.6.0 is required.");
+
+DateUtils = Class.create({
+  weekdays : [],
+  months : $A(Date.CultureInfo.monthNames),
+  firstDayOfWeek : Date.CultureInfo.firstDayOfWeek,
+  msecondsInOneDay : 24 * 60 * 60 * 1000,
+  initialize : function () {
+    var wdays = $A(Date.CultureInfo.firstLetterDayNames);
+    this.weekdays = [];
+    var f = (this.firstDayOfWeek + 6) % 7;
+    for (var i = f; i &gt;= 0 &amp;&amp; i &lt; wdays.length; ++i) {
+      this.weekdays.push(wdays[i]);
+    }
+    for (var i = 0; i &lt; wdays.length &amp;&amp; i &lt; f; ++i) {
+      this.weekdays.push(wdays[i]);
+    }
+  },
+  daysDistance : function(date1, date2) {
+    return Math.round((date2 - date1) / this.msecondsInOneDay);
+  },
+  getAMPMHour : function(date) {
+    var hour = date.getHours();
+    return (hour == 0) ? 12 : (hour &gt; 12 ? hour - 12 : hour )
+  },
+  getAMPM : function() {
+    return (this.getHours() &lt; 12) ? "AM" : "PM";
+  }
+});
+
+SelectBox = Class.create({
+  initialize: function(parent, values, cssClass, changeListener) {
+    this.element = new Element('select', {'class' : cssClass || ''});
+    this.populate(values);
+    Element.insert(parent, this.element);
+    this.element.observe('change', changeListener);
+  },
+  populate: function (values) {
+    var container = this.element;
+    container.update('');
+    $A(values).each(function(data) {
+      if (typeof(data) != "object") {
+        data = [data, data];
+      }
+      container.insert(new Element("option", { value: data[1]}).update(data[0]));
+    });
+  },
+  setValue: function(value) {
+    var e = this.element;
+    var matched = false;
+    $R(0, e.options.length - 1 ).each(function(i) {
+      if(e.options[i].value == value.toString()) {
+        e.selectedIndex = i;
+        matched = true;
+      };
+    });
+    return matched;
+  },
+  getValue: function() { return $F(this.element)}
+});
+
+CalendarDateSelect = Class.create({
+  options : {
+      hour_format_12: false,
+      default_format_mask: "dd/MM/yyyy",
+      format_mask: null,
+      convert_to_UTC:false,
+      embedded: false,
+      popup: null,
+      time: false,
+      buttons: true,
+      clear_button: true,
+      year_range: 10,
+      close_on_click: null,
+      minute_interval: 5,
+      month_year: "dropdowns",
+      valid_date_check: null
+  },
+  initialize : function(target_element, options) {
+    this.target_element = $(target_element); // make sure it's an element, not a string
+    if (!this.target_element) { alert("Target element " + target_element + " not found!"); return false;}
+    if (this.target_element.tagName != "INPUT") this.target_element = this.target_element.down("INPUT")
+    
+    this.target_element.calendar_date_select = this;
+    this.last_click_at = 0;
+    // initialize the date control
+    this.options = Object.extend(Object.clone(this.options), options || {});
+    this.options.popup_by = this.target_element,
+    this.options.onchange = this.options.onchange || this.target_element.onchange;
+    // change the format to reflect the options
+    var mask = this.target_element.title || this.options.format_mask || this.options.default_format_mask;
+    if (this.options.time &amp;&amp; 
+         !mask.toLowerCase().include('h') &amp;&amp; 
+         !mask.include('m') &amp;&amp; 
+         !mask.include('a')) {
+      if( this.options.hour_format_12 ) {
+        this.options.format_mask = mask + " hh:mm tt";
+      } else {
+        this.options.format_mask = mask + " HH:mm";
+      }
+    } else {
+      this.options.format_mask = mask;
+    }
+    this.dateUtils = new DateUtils();
+    this.use_time = this.options.time;
+    this.parseDate();
+    this.callback("before_show")
+    this.initCalendarDiv();
+    if(!this.options.embedded) {
+      this.positionCalendarDiv()
+      // set the click handler to check if a user has clicked away from the document
+      Event.observe(document, "mousedown", this.closeIfClickedOut_handler = this.closeIfClickedOut.bindAsEventListener(this));
+      Event.observe(document, "keypress", this.keyPress_handler = this.keyPress.bindAsEventListener(this));
+    }
+    this.callback("after_show")
+  },
+  newElement : function (type, options) {
+    options = options || {};
+    var element = new Element(type, options.attrs || {}).update(options.content || '');
+    if (options.style) {
+      element.setStyle(options.style);
+    }
+    if (options.parent) {
+      Element.insert(options.parent, element);
+    }
+    if (options.events) {
+      for (var eventName in options.events) {
+        Event.observe(element, eventName, options.events[eventName]);
+      }
+    }
+    if (options.customData) {
+      for (var fieldName in options.customData) {
+        element[fieldName] = options.customData[fieldName];
+      }
+    }
+    return element;
+  },
+  positionCalendarDiv : function() {
+    var above = false;
+    var c_pos = this.calendar_div.cumulativeOffset(),
+        c_left = c_pos[0],
+        c_top = c_pos[1],
+        c_dim = this.calendar_div.getDimensions(),
+        c_height = c_dim.height,
+        c_width = c_dim.width; 
+    var w_top = document.viewport.getScrollOffsets().top,
+        w_height = document.viewport.getHeight();
+    var e_dim = $(this.options.popup_by).cumulativeOffset(),
+        e_top = e_dim[1],
+        e_left = e_dim[0],
+        e_height = $(this.options.popup_by).getDimensions().height,
+        e_bottom = e_top + e_height;
+    
+    if ((( e_bottom + c_height ) &gt; (w_top + w_height)) &amp;&amp; ( e_bottom - c_height &gt; w_top )) {
+      above = true;
+    }
+    var left_px = e_left.toString() + "px",
+        top_px = (above ? (e_top - c_height ) : ( e_top + e_height )).toString() + "px";
+    
+    this.calendar_div.style.left = left_px;
+    this.calendar_div.style.top = top_px;
+    
+    this.calendar_div.setStyle({visibility : ''});
+    
+    // draw an iframe behind the calendar -- ugly hack to make IE 6 happy
+    if(navigator.appName=="Microsoft Internet Explorer") {
+      this.iframe = this.newElement('iframe', {
+        parent : $(document.body),
+        attrs : {src : "javascript:false", 'class' : "ie6_blocker"},
+        style: {left : left_px, top : top_px, height : c_height.toString() + "px", width : c_width.toString() + "px", border : "0px"}
+      });
+    }
+  },
+  initCalendarDiv : function() {
+    if (this.options.embedded) {
+      var parent = this.target_element.parentNode;
+      var style = {}
+    } else {
+      var parent = document.body
+      var style = { position:"absolute", visibility: "hidden", left:0, top:0 }
+    }
+    this.calendar_div = this.newElement('div', {'parent' : $(parent), attrs: {'class': "calendar_date_select"}, 'style' : style});
+    
+    var context = this;
+    // create the divs
+    $w("top header body buttons footer bottom").each(function(name) {
+      eval("context." + name + "_div = context.newElement('div', {parent : context.calendar_div, attrs : { 'class': 'cds_part cds_" + name + "' } }); ");
+    });
+    
+    this.initHeaderDiv();
+    this.initButtonsDiv();
+    this.initCalendarGrid();
+    this.updateFooter("&amp;#160;");
+    
+    this.refresh();
+    this.setUseTime(this.use_time);
+  },
+  initHeaderDiv : function() {
+    this.close_button = this.newElement('a', {
+        attrs : {'href' : '#', 'class' : 'close'},
+        content : 'x',
+        parent : this.header_div,
+        events : {
+          'click': function(event) {
+             event.stop();
+             this.close();
+          }.bindAsEventListener(this)
+        }
+    });
+    this.next_month_button = this.newElement('a', {
+        attrs : {'href' : '#', 'class' : 'next'},
+        content : '&amp;raquo;',
+        parent : this.header_div,
+        events : {
+          'click': function(event) {
+             event.stop();
+             this.navMonth(event, this.date.getMonth() + 1);
+          }.bindAsEventListener(this)
+        }
+    });
+    this.prev_month_button = this.newElement('a', {
+        attrs : {'href' : '#', 'class' : 'prev'},
+        content : '&amp;laquo;',
+        parent : this.header_div,
+        events : {
+          'click': function(event) {
+             event.stop();
+             this.navMonth(event, this.date.getMonth() - 1);
+          }.bindAsEventListener(this)
+        }
+    });
+    var dateUtils = this.dateUtils;
+    if (this.options.month_year == "dropdowns") {
+      this.month_select = new SelectBox(
+        this.header_div,
+        $R(0,11).map(function(m){return [dateUtils.months[m], m]}),
+        "month",
+        this.navMonth.bindAsEventListener(this)
+      ); 
+      this.year_select = new SelectBox(
+        this.header_div,
+        [],
+        "year",
+        this.navYear.bindAsEventListener(this)
+      ); 
+      this.populateYearRange();
+    } else {
+      this.month_year_label = this.newElement("span", {parent : this.header_div});
+    }
+  },
+  initCalendarGrid : function() {
+    var body_div = this.body_div;
+    this.calendar_day_grid = [];
+    var days_table = this.newElement('table', {parent : body_div});
+    var weekdays_row =  this.newElement('tr', {parent : this.newElement('thead', {parent : days_table})});
+    function isLatin(str) {
+      var fcc = str.charCodeAt(0);
+      if (64 &lt;= fcc &amp;&amp; fcc &lt;= 7929) return true;
+      return false;
+    }
+    this.dateUtils.weekdays.each( function(weekday) {
+      Element.insert(weekdays_row, new Element('th').update(isLatin(weekday) ? weekday.substring(0,2) : weekday));
+    });
+    
+    var days_tbody = this.newElement('tbody', {parent : days_table});
+    var row_number = 0, weekday;
+    for (var cell_index = 0; cell_index &lt; 42; cell_index++) {
+      weekday = (cell_index) % 7;//(cell_index + this.dateUtils.firstDayOfWeek) % 7;
+      if (cell_index % 7 == 0) {
+        days_row = this.newElement('tr', {parent : days_tbody, attrs : {'class' : 'row_' + row_number++}});
+      }
+      this.calendar_day_grid[cell_index] = this.newElement('td', {
+          content : new Element('div'),
+          parent: days_row,
+          attrs : {'class': ((weekday == (7 - this.dateUtils.firstDayOfWeek) % 7) || (weekday == (13 - this.dateUtils.firstDayOfWeek) % 7)) ? "weekend" : ""},
+          events : {
+            mouseover: function () { this.calendar_date_select.dayHover(this); },
+            mouseout: function () { this.calendar_date_select.dayHoverOut(this) },
+            click: function() { this.calendar_date_select.updateSelectedDate(this, true); }
+          },
+          customData : {calendar_date_select: this}
+        }
+      );
+    }
+  },
+  initButtonsDiv : function() {
+    var _formatNumber0d = function(value) {
+      var formatted = parseInt(value, 10);
+      if (value &lt; 10) {
+        formatted = "0" + formatted;
+      }
+      return formatted;
+    }
+    
+    var buttons_div = this.buttons_div;
+    var time_div = this.newElement('div', {parent : buttons_div, attrs : {'class': "timediv"}});
+    if (this.options.time) {
+      var blank_time = $A(this.options.time == "mixed" ? [[" - ", ""]] : []);
+      time_div.update(new Element("span", {'class': "at_sign"}).update('@'));
+      
+      if (this.options.hour_format_12) {
+        var t = new Date();
+        blank_time = blank_time.concat($R(0, 23).map(function(x) {
+          t.setHours(x); return $A([this.dateUtils.getAMPMHour(t) + " " + this.dateUtils.getAMPM(t), x])
+        }));
+      } else { 
+        blank_time = blank_time.concat($R(0, 23).map(function(x) {
+          return $A([_formatNumber0d(x), x])
+        }));
+      }
+      this.hour_select = new SelectBox(
+        time_div,
+        blank_time,
+        "hour",
+        this.calendar_date_select.updateSelectedDate.bind(this, {hour: this.value })
+      );
+      this.hour_select.calendar_date_select = this;
+      
+      time_div.insert(new Element ("span", {'class' : "separator"}).update(':'));
+      var context = this;
+      blank_time = $A([]);
+      this.minute_select = new SelectBox(
+        time_div,
+        blank_time.concat($R(0,59).select(function(x) {
+          return (x % context.options.minute_interval == 0)
+        }).map(function(x) {
+          return $A([_formatNumber0d(x), x]);
+        })),
+        "minute",
+        this.calendar_date_select.updateSelectedDate.bind(this, {minute: this.value})
+      );
+      this.minute_select.calendar_date_select = this;
+      
+    } else if (!this.options.buttons) {
+      buttons_div.remove();
+    }
+    
+    if (this.options.buttons) {
+      var _insertButton = function(parent, textKey, clickListener) {
+        this.newElement("a", {
+          parent :  parent,
+          content : _translations[textKey],
+          attrs: {'href' : "#"},
+          events : {'click' : clickListener}
+        });
+      }.bind(this);
+      var _insertButtonSeparator = function(parent) {
+        this.newElement("span", {
+          parent : parent,
+          content : "&amp;#160;|&amp;#160;",
+          attrs : {'class' : "button_separator"}
+        })
+      }.bind(this);
+      
+      this.newElement('span', {parent : buttons_div, content : "&amp;#160;"});
+      if (this.options.time == "mixed" || !this.options.time) {
+        _insertButton(buttons_div, "Today", function() {this.today(false); return false;}.bindAsEventListener(this));
+      }
+      if (this.options.time == "mixed") {
+        _insertButtonSeparator(buttons_div);
+      }
+      if (this.options.time) {
+        _insertButton(buttons_div, "Now", function() {this.today(true); return false;}.bindAsEventListener(this));
+      }
+      if (!this.options.embedded &amp;&amp; !this.closeOnClick()) {
+        _insertButtonSeparator(buttons_div);
+        _insertButton(buttons_div, "OK", function() {this.close(); return false;}.bindAsEventListener(this));
+      }
+      if (this.options.clear_button) {
+        _insertButtonSeparator(buttons_div);
+        _insertButton(buttons_div, "Clear", function() {this.clearDate(); if (!this.options.embedded) this.close(); return false;}.bindAsEventListener(this));
+      }
+    }
+  },
+  refresh: function () {
+    this.refreshMonthYear();
+    this.refreshCalendarGrid();
+    
+    this.setSelectedClass();
+    this.updateFooter();
+  },
+  refreshCalendarGrid: function () {
+    this.beginning_date = new Date(this.date).clearTime();
+    this.beginning_date.setDate(1);
+    this.beginning_date.setHours(12); // Prevent daylight savings time boundaries from showing a duplicate day
+    var pre_days = this.beginning_date.getDay() // draw some days before the fact
+    if (pre_days &lt; 3) pre_days += 7;
+    this.beginning_date.setDate(1 - pre_days + this.dateUtils.firstDayOfWeek);
+    
+    var iterator = new Date(this.beginning_date);
+    
+    var today = new Date().clearTime();
+    var this_month = this.date.getMonth();
+    vdc = this.options.valid_date_check;
+    for (var cell_index = 0; cell_index &lt; 42; cell_index++) {
+      day = iterator.getDate();
+      month = iterator.getMonth();
+      cell = this.calendar_day_grid[cell_index];
+      cell.update(new Element('div', {'class' : (month != this_month) ? 'other' : ''}).update(day));
+      cell.day = day;
+      cell.month = month;
+      cell.year = iterator.getFullYear();
+      if (vdc) {
+        if (vdc(iterator.clearTime())) {
+          cell.removeClassName("disabled");
+        } else {
+          cell.addClassName("disabled")
+        };
+      }
+      iterator.setDate(day + 1);
+    }
+    
+    if (this.today_cell) {
+      this.today_cell.removeClassName("today");
+    }
+    
+    if ($R(0, 41).include(days_until = this.dateUtils.daysDistance(this.beginning_date.clearTime(), (today)))) {
+      this.today_cell = this.calendar_day_grid[days_until];
+      this.today_cell.addClassName("today");
+    }
+  },
+  
+  refreshMonthYear : function() {
+    var m = this.date.getMonth();
+    var y = this.date.getFullYear();
+    // set the month
+    if (this.options.month_year == "dropdowns") {
+      this.month_select.setValue(m, false);
+      var e = this.year_select.element; 
+      if (this.flexibleYearRange() &amp;&amp;
+        (!(this.year_select.setValue(y, false)) || e.selectedIndex &lt;= 1 || e.selectedIndex &gt;= e.options.length - 2 )
+      ) {
+        this.populateYearRange();
+      }
+      this.year_select.setValue(y);
+      
+    } else {
+      this.month_year_label.update(this.dateUtils.months[m] + " " + y.toString());
+    }
+  },
+  
+  populateYearRange : function() {
+    this.year_select.populate(this.yearRange().toArray());
+  },
+  yearRange : function() {
+    if (!this.flexibleYearRange()) {
+      return $R(this.options.year_range[0], this.options.year_range[1]);
+    }
+    var y = this.date.getFullYear();
+    return $R(y - this.options.year_range, y + this.options.year_range);
+  },
+  flexibleYearRange : function() {
+    return (typeof(this.options.year_range) == "number");
+  },
+  validYear : function(year) {
+    if (this.flexibleYearRange()) {
+      return true;
+    } else {
+      return this.yearRange().include(year);
+    }
+  },
+  dayHover: function(element) {
+    var hover_date = new Date(this.selected_date);
+    hover_date.setYear(element.year);
+    hover_date.setMonth(element.month);
+    hover_date.setDate(element.day);
+    this.updateFooter(hover_date.toFormattedString(this.options));
+  },
+  dayHoverOut: function(element) { this.updateFooter(); },
+  clearSelectedClass: function() {
+    if (this.selected_cell) {
+      this.selected_cell.removeClassName("selected");
+    }
+  },
+  setSelectedClass: function() {
+    if (!this.selection_made) return;
+    this.clearSelectedClass();
+    if ($R(0,42).include(days_until = this.dateUtils.daysDistance(this.beginning_date.clearTime(), this.selected_date.clearTime()))) {
+      this.selected_cell = this.calendar_day_grid[days_until];
+      this.selected_cell.addClassName("selected");
+    }
+  },
+  reparse: function() {
+    this.parseDate();
+    this.refresh();
+  },
+  dateString: function() {
+    return (this.selection_made) ? this.selected_date.toFormattedString( this.options ) : "&amp;#160;";
+  },
+  parseDate: function() {
+    var value = this.target_element.readAttribute('alt').strip()
+    var default_time = this.options.default_time;
+    this.selection_made = (value != "" || default_time);
+    this.date = value=="" ? NaN : Date.parseISO_8601(value);
+    if (isNaN(this.date) &amp;&amp; !default_time) {
+        this.date = new Date();
+    } else if (isNaN(this.date) &amp;&amp; default_time) {
+        this.date = (Object.prototype.toString.apply(default_time) === '[object Function]') ? default_time() : default_time;
+    }
+    if (!this.validYear(this.date.getFullYear())) {
+      this.date.setYear((this.date.getFullYear() &lt; this.yearRange().start) ? this.yearRange().start : this.yearRange().end);
+    }
+    this.selected_date = new Date(this.date);
+    this.use_time = /[0-9]:[0-9]{2}/.exec(value) ? true : false;
+    this.date.setDate(1);
+  },
+  updateFooter: function(text) {
+    this.footer_div.update(new Element('span').update(text || this.dateString()));
+  },
+  clearDate: function() {
+    if ((this.target_element.disabled || this.target_element.readOnly) &amp;&amp; this.options.popup != "force") {
+      return false;
+    }
+    var last_value = this.target_element.value;
+    this.target_element.value = "";
+    this.target_element.writeAttribute('alt', '');
+    this.clearSelectedClass();
+    this.updateFooter('&amp;#160;');
+    if (last_value!=this.target_element.value) {
+      this.callback("onchange");
+    }
+  },
+  updateSelectedDate:function(partsOrElement, via_click) {
+    var parts = $H(partsOrElement);
+    if ((this.target_element.disabled || this.target_element.readOnly) &amp;&amp; this.options.popup != "force") {
+      return false;
+    }
+    if (parts.get("day")) {
+      var t_selected_date = this.selected_date, vdc = this.options.valid_date_check;
+      t_selected_date.setYear(parts.get("year"));
+      t_selected_date.setMonth(parts.get("month"));
+      t_selected_date.setDate(parts.get("day"));
+      
+      if (vdc &amp;&amp; ! vdc(t_selected_date.clearTime())) { return false; }
+      this.selected_date = t_selected_date;
+      this.selection_made = true;
+    }
+    if (!isNaN(parts.get("hour"))) {
+      this.selected_date.setHours(parts.get("hour"));
+    }
+    if (!isNaN(parts.get("minute"))) {
+      this.selected_date.setMinutes(this.alignMinutesToInterval(parts.get("minute")) );
+    }
+    if (parts.get("hour") === "" || parts.get("minute") === "") {
+      this.setUseTime(false);
+    } else if (!isNaN(parts.get("hour")) || !isNaN(parts.get("minute"))) {
+      this.setUseTime(true);
+    }
+    this.updateFooter();
+    this.setSelectedClass();
+    if (this.selection_made) {
+      this.updateValue();
+    }
+    if (via_click &amp;&amp; this.closeOnClick()) {
+      this.close();
+    }
+    if (via_click &amp;&amp; !this.options.embedded) {
+      if ((new Date() - this.last_click_at) &lt; 333) {
+        this.close();
+      }
+      this.last_click_at = new Date();
+    }
+  },
+  closeOnClick: function() {
+    if (this.options.embedded) return false;
+    if (this.options.close_on_click === null) {
+      return (this.options.time) ? false : true
+    } else {
+      return (this.options.close_on_click)
+    }
+  },
+  navMonth: function(event, month) {
+    (target_date = new Date(this.date)).setMonth(typeof(month) == 'number' ? month : this.month_select.getValue());
+    return (this.navTo(target_date));
+  },
+  navYear: function(event, year) {
+    (target_date = new Date(this.date)).setYear(typeof(year) == 'number' ? year : this.year_select.getValue());
+    return (this.navTo(target_date));
+  },
+  navTo: function(date) {
+    if (!this.validYear(date.getFullYear())) return false;
+    this.date = date;
+    this.date.setDate(1);
+    this.refresh();
+    this.callback("after_navigate", this.date);
+    return true;
+  },
+  alignMinutesToInterval : function(value) {
+    var interval = this.options.minute_interval;
+    return Math.floor(value/interval) * interval;
+  },
+  setUseTime: function(turn_on) {
+    this.use_time = this.options.time &amp;&amp; (this.options.time == "mixed" ? turn_on : true) // force use_time to true if time==true &amp;&amp; time!="mixed"
+    if (this.use_time &amp;&amp; this.selected_date) { // only set hour/minute if a date is already selected
+      var minute = this.alignMinutesToInterval(this.selected_date.getMinutes());
+      var hour = this.selected_date.getHours();
+      
+      this.hour_select.setValue(hour);
+      this.minute_select.setValue(minute)
+    } else if (this.options.time == "mixed") {
+      this.hour_select.setValue(""); this.minute_select.setValue("");
+    }
+  },
+  updateValue: function() {
+    var last_value = this.target_element.value;
+    this.target_element.value = this.dateString();
+    this.target_element.writeAttribute('alt', this.selected_date.toISO8601());
+    if (last_value!=this.target_element.value) {
+      this.callback("onchange");
+    }
+  },
+  today: function(now) {
+    var d = new Date(); this.date = new Date();
+    var o = $H({ day: d.getDate(), month: d.getMonth(), year: d.getFullYear(), hour: d.getHours(), minute: d.getMinutes()});
+    if ( ! now ) o = o.merge({hour: "", minute:""}); 
+    this.updateSelectedDate(o, true);
+    this.refresh();
+  },
+  close: function() {
+    if (this.closed) return false;
+    this.callback("before_close");
+    this.target_element.calendar_date_select = null;
+    Event.stopObserving(document, "mousedown", this.closeIfClickedOut_handler);
+    Event.stopObserving(document, "keypress", this.keyPress_handler);
+    this.calendar_div.remove(); this.closed = true;
+    if (this.iframe) {
+      this.iframe.remove();
+    }
+    if (this.target_element.type != "hidden" &amp;&amp; ! this.target_element.disabled) {
+      this.target_element.focus();
+    }
+    this.callback("after_close");
+  },
+  closeIfClickedOut: function(e) {
+    if (! ($(Event.element(e)).descendantOf &amp;&amp; $(Event.element(e)).descendantOf(this.calendar_div)) ) this.close();
+  },
+  keyPress: function(e) {
+    if (e.keyCode==Event.KEY_ESC) this.close();
+  },
+  callback: function(name, param) {
+    if (this.options[name]) {
+      this.options[name].bind(this.target_element)(param);
+    }
+  }
+});</code>
+    </property>
+    <property>
+      <name>Calendar Date Select</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>XWiki.DateTimePicker</name>
+    <number>4</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>6ec8f73b-75c3-41b2-8869-c6fe927f6345</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var XWiki = (function (XWiki) {
+  var widgets = XWiki.widgets = XWiki.widgets || {};
+  widgets.DateTimePicker = Class.create({
+    selector : "input.xwiki-date",
+    options : {
+      year_range: 10,
+      time: false,
+      convert_to_UTC: false,
+      hour_format_12: false,
+      minute_interval: 1,
+      popup:'force'
+    },
+    initialize : function(options) {
+      this.options = Object.extend(Object.clone(this.options), options || {});
+      this.attachPickers();
+    },
+    attachPickers : function (container) {
+      var dateInputs = container &amp;&amp; container.select(this.selector) || $$(this.selector);
+      dateInputs.invoke('observe', 'click', this.onClick.bindAsEventListener(this));
+      dateInputs.each(function(element) {
+        element.readOnly = true;
+      });
+    },
+    onClick : function(event) {
+      this.showCalendar(event.element());
+    },
+    showCalendar : function (target) {
+      var cOptions = Object.clone(this.options);
+      cOptions.time = cOptions.time || target.hasClassName('withTime');
+      cOptions.convert_to_UTC = cOptions.convert_to_UTC || target.hasClassName('withUTC');
+      cOptions.onchange = function () {
+        Event.fire(target, 'xwiki:date:changed');
+        Event.fire(target, 'xwiki:form:field-value-changed');
+      }
+      target.addClassName('initialized');
+      target._selector = new CalendarDateSelect(target, cOptions);
+    }
+  });
+  return XWiki;
+}(XWiki || {}));
+
+document.observe('xwiki:dom:loaded', function () {
+  var crtYear = new Date().getFullYear();
+  window.dateTimePicker = new XWiki.widgets.DateTimePicker({year_range: [crtYear - 99, crtYear + 1]});
+});</code>
+    </property>
+    <property>
+      <name>Calendar activation</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>XWiki.DateTimePicker</name>
+    <number>5</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>3c2e2312-63bb-4599-bbec-ed37ae4ba254</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>/**
+ * Copyright 2007 Tim Down.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
+/**
+ * simpledateformat.js
+ *
+ * A faithful JavaScript implementation of Java's SimpleDateFormat's format
+ * method. All pattern layouts present in the Java implementation are
+ * implemented here except for z, the text version of the date's time zone.
+ *
+ * Thanks to Ash Searle (http://hexmen.com/blog/) for his fix to my
+ * misinterpretation of pattern letters h and k.
+ * 
+ * See the official Sun documentation for the Java version:
+ * http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html
+ *
+ * Author: Tim Down &lt;tim@timdown.co.uk&gt;
+ * Last modified: 6/2/2007
+ * Website: http://www.timdown.co.uk/code/simpledateformat.php
+ */
+ 
+/* ------------------------------------------------------------------------- */
+
+var SimpleDateFormat;
+
+(function() {
+	function isUndefined(obj) {
+		return typeof obj == "undefined";
+	}
+
+	var regex = /('[^']*')|(G+|y+|M+|w+|W+|D+|d+|F+|E+|a+|H+|k+|K+|h+|m+|s+|S+|Z+)|([a-zA-Z]+)|([^a-zA-Z']+)/;
+	var monthNames = Date.CultureInfo.monthNames;
+	var dayNames = Date.CultureInfo.dayNames;
+	var TEXT2 = 0, TEXT3 = 1, NUMBER = 2, YEAR = 3, MONTH = 4, TIMEZONE = 5;
+	var types = {
+		G : TEXT2,
+		y : YEAR,
+		M : MONTH,
+		w : NUMBER,
+		W : NUMBER,
+		D : NUMBER,
+		d : NUMBER,
+		F : NUMBER,
+		E : TEXT3,
+		a : TEXT2,
+		H : NUMBER,
+		k : NUMBER,
+		K : NUMBER,
+		h : NUMBER,
+		m : NUMBER,
+		s : NUMBER,
+		S : NUMBER,
+		Z : TIMEZONE
+	};
+	var ONE_DAY = 24 * 60 * 60 * 1000;
+	var ONE_WEEK = 7 * ONE_DAY;
+	var DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK = 1;
+
+	var newDateAtMidnight = function(year, month, day) {
+		var d = new Date(year, month, day, 0, 0, 0);
+		d.setMilliseconds(0);
+		return d;
+	}
+
+	Date.prototype.getDifference = function(date) {
+		return this.getTime() - date.getTime();
+	};
+
+	Date.prototype.isBefore = function(d) {
+		return this.getTime() &lt; d.getTime();
+	};
+
+	Date.prototype.getUTCTime = function() {
+		return Date.UTC(this.getFullYear(), this.getMonth(), this.getDate(), this.getHours(), this.getMinutes(),
+				this.getSeconds(), this.getMilliseconds());
+	};
+
+	Date.prototype.getTimeSince = function(d) {
+		return this.getUTCTime() - d.getUTCTime();
+	};
+
+	Date.prototype.getPreviousSunday = function() {
+		// Using midday avoids any possibility of DST messing things up
+		var midday = new Date(this.getFullYear(), this.getMonth(), this.getDate(), 12, 0, 0);
+		var previousSunday = new Date(midday.getTime() - this.getDay() * ONE_DAY);
+		return newDateAtMidnight(previousSunday.getFullYear(), previousSunday.getMonth(),
+				previousSunday.getDate());
+	}
+
+	Date.prototype.getWeekInYear = function(minimalDaysInFirstWeek) {
+		if (isUndefined(this.minimalDaysInFirstWeek)) {
+			minimalDaysInFirstWeek = DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK;
+		}
+		var previousSunday = this.getPreviousSunday();
+		var startOfYear = newDateAtMidnight(this.getFullYear(), 0, 1);
+		var numberOfSundays = previousSunday.isBefore(startOfYear) ?
+			0 : 1 + Math.floor(previousSunday.getTimeSince(startOfYear) / ONE_WEEK);
+		var numberOfDaysInFirstWeek =  7 - startOfYear.getDay();
+		var weekInYear = numberOfSundays;
+		if (numberOfDaysInFirstWeek &lt; minimalDaysInFirstWeek) {
+			weekInYear--;
+		}
+		return weekInYear;
+	};
+
+	Date.prototype.getWeekInMonth = function(minimalDaysInFirstWeek) {
+		if (isUndefined(this.minimalDaysInFirstWeek)) {
+			minimalDaysInFirstWeek = DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK;
+		}
+		var previousSunday = this.getPreviousSunday();
+		var startOfMonth = newDateAtMidnight(this.getFullYear(), this.getMonth(), 1);
+		var numberOfSundays = previousSunday.isBefore(startOfMonth) ?
+			0 : 1 + Math.floor((previousSunday.getTimeSince(startOfMonth)) / ONE_WEEK);
+		var numberOfDaysInFirstWeek =  7 - startOfMonth.getDay();
+		var weekInMonth = numberOfSundays;
+		if (numberOfDaysInFirstWeek &gt;= minimalDaysInFirstWeek) {
+			weekInMonth++;
+		}
+		return weekInMonth;
+	};
+
+	Date.prototype.getDayInYear = function() {
+		var startOfYear = newDateAtMidnight(this.getFullYear(), 0, 1);
+		return 1 + Math.floor(this.getTimeSince(startOfYear) / ONE_DAY);
+	};
+
+	/* ----------------------------------------------------------------- */
+
+	SimpleDateFormat = function(formatString) {
+		this.formatString = formatString;
+	};
+
+	/**
+	 * Sets the minimum number of days in a week in order for that week to
+	 * be considered as belonging to a particular month or year
+	 */
+	SimpleDateFormat.prototype.setMinimalDaysInFirstWeek = function(days) {
+		this.minimalDaysInFirstWeek = days;
+	};
+
+	SimpleDateFormat.prototype.getMinimalDaysInFirstWeek = function(days) {
+		return isUndefined(this.minimalDaysInFirstWeek)	?
+			DEFAULT_MINIMAL_DAYS_IN_FIRST_WEEK : this.minimalDaysInFirstWeek;
+	};
+
+	SimpleDateFormat.prototype.format = function(date) {
+		var formattedString = "";
+		var result;
+
+		var padWithZeroes = function(str, len) {
+			while (str.length &lt; len) {
+				str = "0" + str;
+			}
+			return str;
+		};
+
+		var formatText = function(data, numberOfLetters, minLength) {
+			return (numberOfLetters &gt;= 4) ? data : data.substr(0, Math.max(minLength, numberOfLetters));
+		};
+
+		var formatNumber = function(data, numberOfLetters) {
+			var dataString = "" + data;
+			// Pad with 0s as necessary
+			return padWithZeroes(dataString, numberOfLetters);
+		};
+
+		var searchString = this.formatString;
+		while ((result = regex.exec(searchString))) {
+			var matchedString = result[0];
+			var quotedString = result[1];
+			var patternLetters = result[2];
+			var otherLetters = result[3];
+			var otherCharacters = result[4];
+
+			// If the pattern matched is quoted string, output the text between the quotes
+			if (quotedString) {
+				if (quotedString == "''") {
+					formattedString += "'";
+				} else {
+					formattedString += quotedString.substring(1, quotedString.length - 1);
+				}
+			} else if (otherLetters) {
+				// Swallow non-pattern letters by doing nothing here
+			} else if (otherCharacters) {
+				// Simply output other characters
+				formattedString += otherCharacters;
+			} else if (patternLetters) {
+				// Replace pattern letters
+				var patternLetter = patternLetters.charAt(0);
+				var numberOfLetters = patternLetters.length;
+				var rawData = "";
+				switch (patternLetter) {
+					case "G":
+						rawData = "AD";
+						break;
+					case "y":
+						rawData = date.getFullYear();
+						break;
+					case "M":
+						rawData = date.getMonth();
+						break;
+					case "w":
+						rawData = date.getWeekInYear(this.getMinimalDaysInFirstWeek());
+						break;
+					case "W":
+						rawData = date.getWeekInMonth(this.getMinimalDaysInFirstWeek());
+						break;
+					case "D":
+						rawData = date.getDayInYear();
+						break;
+					case "d":
+						rawData = date.getDate();
+						break;
+					case "F":
+						rawData = 1 + Math.floor((date.getDate() - 1) / 7);
+						break;
+					case "E":
+						rawData = dayNames[date.getDay()];
+						break;
+					case "a":
+						rawData = (date.getHours() &gt;= 12) ? "PM" : "AM";
+						break;
+					case "H":
+						rawData = date.getHours();
+						break;
+					case "k":
+						rawData = date.getHours() || 24;
+						break;
+					case "K":
+						rawData = date.getHours() % 12;
+						break;
+					case "h":
+						rawData = (date.getHours() % 12) || 12;
+						break;
+					case "m":
+						rawData = date.getMinutes();
+						break;
+					case "s":
+						rawData = date.getSeconds();
+						break;
+					case "S":
+						rawData = date.getMilliseconds();
+						break;
+					case "Z":
+						rawData = date.getTimezoneOffset(); // This is returns the number of minutes since GMT was this time.
+						break;
+				}
+				// Format the raw data depending on the type
+				switch (types[patternLetter]) {
+					case TEXT2:
+						formattedString += formatText(rawData, numberOfLetters, 2);
+						break;
+					case TEXT3:
+						formattedString += formatText(rawData, numberOfLetters, 3);
+						break;
+					case NUMBER:
+						formattedString += formatNumber(rawData, numberOfLetters);
+						break;
+					case YEAR:
+						if (numberOfLetters &lt;= 3) {
+							// Output a 2-digit year
+							var dataString = "" + rawData;
+							formattedString += dataString.substr(2, 2);
+						} else {
+							formattedString += formatNumber(rawData, numberOfLetters);
+						}
+						break;
+					case MONTH:
+						if (numberOfLetters &gt;= 3) {
+							formattedString += formatText(monthNames[rawData], numberOfLetters, numberOfLetters);
+						} else {
+							// NB. Months returned by getMonth are zero-based
+							formattedString += formatNumber(rawData + 1, numberOfLetters);
+						}
+						break;
+					case TIMEZONE:
+						var isPositive = (rawData &gt; 0);
+						// The following line looks like a mistake but isn't
+						// because of the way getTimezoneOffset measures.
+						var prefix = isPositive ? "-" : "+";
+						var absData = Math.abs(rawData);
+
+						// Hours
+						var hours = "" + Math.floor(absData / 60);
+						hours = padWithZeroes(hours, 2);
+						// Minutes
+						var minutes = "" + (absData % 60);
+						minutes = padWithZeroes(minutes, 2);
+
+						formattedString += prefix + hours + minutes;
+						break;
+				}
+			}
+			searchString = searchString.substr(result.index + result[0].length);
+		}
+		return formattedString;
+	};
+})();</code>
+    </property>
+    <property>
+      <name>SimpleDateFormat</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>XWiki.DateTimePicker</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>ce37339d-1130-4b6a-94f4-f998389b5320</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+input.xwiki-date {
+  background-image: url("$xwiki.getSkinFile('icons/silk/date.png')");
+  background-position: right center;
+  background-repeat: no-repeat;
+  min-height: 16px;
+  cursor: pointer;
+}
+.calendar_date_select {
+  color:$theme.textColor;
+  border: $theme.pageContentBackgroundColor 1px solid;
+  box-shadow: 0 0 6px $theme.borderColor;
+  display:block;
+  width:13.929em;
+  z-index: 1000;
+}
+/* this is a fun ie6 hack to get drop downs to stay behind the popup window.  This should always be just underneath .calendar_date_select */
+iframe.ie6_blocker {
+  position: absolute;
+  z-index: 999;
+}
+
+.calendar_date_select thead th {
+  font-weight:bold;
+  background-color: $theme.panelHeaderBackgroundColor;
+  border-top:1px solid $theme.borderColor;
+  border-bottom:2px solid $theme.borderColor;
+  color: $theme.panelHeaderTextColor !important;
+  text-align:center;
+}
+
+.calendar_date_select .cds_part {
+  clear: left;
+}
+.calendar_date_select .cds_buttons {
+  text-align:center;
+  padding:0.357em 0;
+  background-color: $theme.backgroundSecondaryColor;
+}
+
+.calendar_date_select .cds_footer {
+  color: $theme.panelHeaderTextColor;
+  background-color: $theme.panelHeaderBackgroundColor;
+  padding:0.214em;
+  font-size:0.857em;
+  text-align:center;
+}
+
+.calendar_date_select table {
+  margin: 0;
+  padding: 0;
+}
+
+
+.calendar_date_select .cds_header {
+  background-color: $theme.backgroundSecondaryColor;
+  border-bottom:2px solid $theme.borderColor;
+  text-align:center;
+}
+
+.calendar_date_select .cds_header span {
+  font-size:1.071em;
+  color: $theme.textColor;
+  font-weight: bold;
+}
+
+.calendar_date_select select { font-size:0.786em;}
+
+.calendar_date_select .cds_header a:hover {
+  color: $theme.textColor;
+}
+.calendar_date_select .cds_header a {
+  width:1.571em;
+  height:1.429em;
+  text-decoration: none;
+  font-size:1em;
+  color:$theme.textColor !important;
+}
+
+.calendar_date_select .cds_header a.prev {
+  float:left;
+}
+.calendar_date_select .cds_header a.next {
+  float:right;
+}
+.calendar_date_select .cds_header a.close {
+  float:right;
+  display:none;
+}
+
+.calendar_date_select .cds_header select.month {
+  width:6.429em;
+}
+*html div.calendar_date_select .cds_header select.month {
+  width:5.714em;
+}
+
+.calendar_date_select .cds_header select.year {
+  width:4.357em;
+}
+
+.calendar_date_select .cds_buttons a {
+  color: $theme.textColor;
+  font-size:0.643em;
+}
+.calendar_date_select td {
+  cursor: pointer;
+  font-size:0.857em;
+  width: 1.714em;
+  height: 1.5em;
+  text-align:center;
+  vertical-align: middle;
+  background-color: $theme.pageContentBackgroundColor;
+}
+.calendar_date_select td.weekend {
+  background-color: $theme.backgroundSecondaryColor;
+}
+
+.calendar_date_select td div {
+  color: $theme.linkColor;
+}
+.calendar_date_select td div.other {
+  color: $theme.textSecondaryColor;
+}
+.calendar_date_select td.selected div {
+  color:$theme.textColor;
+  font-weight:bold;
+}
+
+.calendar_date_select .cds_body table {
+  cell-padding: 0;
+  cell-spacing: 0;
+  width: 100%;
+}
+
+.calendar_date_select tbody td {
+  border-bottom: 1px solid $theme.borderColor;
+}
+.calendar_date_select td.selected {
+  background-color: $theme.pageBackgroundColor;
+}
+
+.calendar_date_select td:hover {
+  background-color: $theme.highlightColor;
+}
+
+.calendar_date_select td.today {
+  border: 2px solid $theme.linkColor;
+}
+
+.calendar_date_select td.disabled div {
+  color: $theme.textSecondaryColor;
+}
+
+
+.fieldWithErrors .calendar_date_select {
+  border: 2px solid $theme.notificationWarningColor;
+}
+
+*html .calendar_date_select .cds_top, *html .calendar_date_select .cds_bottom {
+  display:none;
+}
+</code>
+    </property>
+    <property>
+      <name>Calendar styling</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>

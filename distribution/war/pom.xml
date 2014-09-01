@@ -41,30 +41,15 @@
     <xwiki.extension.distribution.ui>org.phenotips:phenotips-ui</xwiki.extension.distribution.ui>
   </properties>
   <dependencies>
-    <!-- Needed for compiling patched Java code -->
+    <!-- Extend the base war -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-container-servlet</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-skin-skinx</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <!-- XWiki dependencies -->
-    <!-- Depend on the platform WAR to get all web resources. We then need to add all libraries we need for XE. -->
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-web</artifactId>
-      <version>${xwiki.version}</version>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-base-war</artifactId>
+      <version>${project.version}</version>
       <type>war</type>
     </dependency>
 
+    <!-- XWiki dependencies -->
     <!-- Make sure to include the proper version of antlr for hibernate-core -->
     <dependency>
       <groupId>antlr</groupId>
@@ -79,17 +64,18 @@
       <version>2.8</version>
     </dependency>
 
-    <!-- Dependencies we need inside the XE WAR -->
+    <!-- The Big Old Core -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
     <!-- Components Modules -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-component-script</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-component-wiki</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
@@ -107,11 +93,11 @@
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <!-- Container -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-classloader-protocol-attachmentjar</artifactId>
+      <artifactId>xwiki-platform-container-servlet</artifactId>
       <version>${xwiki.version}</version>
-      <scope>runtime</scope>
     </dependency>
     <!-- Extension Manager -->
     <dependency>
@@ -207,8 +193,6 @@
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
-    <!-- Default Platform Macros we want available by default in XE.
-         Please keep them in alphabetical order -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-dashboard-macro</artifactId>
@@ -301,16 +285,6 @@
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
-    <!-- Skins
-         Note: even though the dependency plugin below doesn't need explicit dependencies set to work it's a best
-         practice to put them here since they are real dependencies -->
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-colibri</artifactId>
-      <version>${xwiki.version}</version>
-      <type>zip</type>
-      <scope>runtime</scope>
-    </dependency>
     <!-- Captcha component -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
@@ -355,9 +329,8 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-panels-api</artifactId>
+      <artifactId>xwiki-platform-skin-skinx</artifactId>
       <version>${xwiki.version}</version>
-      <scope>runtime</scope>
     </dependency>
     <!-- Activity Stream -->
     <dependency>
@@ -383,13 +356,6 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-scheduler-api</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <!-- Tags -->
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-tag-api</artifactId>
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
@@ -551,42 +517,6 @@
       <version>${xwiki.version}</version>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wiki-script</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wiki-template-default</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wiki-template-script</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wiki-user-default</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wiki-user-script</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wiki-workspaces-migrator</artifactId>
-      <version>${xwiki.version}</version>
-      <scope>runtime</scope>
-    </dependency>
     <!-- PhenoTips components -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -595,7 +525,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>solr-access-service</artifactId>
+      <artifactId>solr-access-service-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -631,6 +561,16 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>patient-data-indexing</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-authorization</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-security-bridge</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -715,111 +655,17 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>pedigree-editor</artifactId>
+      <artifactId>phenotips-navigation-api</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <!-- Database connectors for MySQL and HSQLDB, the most commonly used ones. -->
-    <dependency>
-      <groupId>org.hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <version>2.3.2</version>
     </dependency>
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.29</version>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.0.13</version>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>jodatime-service</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
   <build>
     <plugins>
-      <!-- Inject XWiki's configuration (only xwiki.cfg, not hibernate.cfg.xml) -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-remote-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>xwiki-configuration-resources</id>
-          </execution>
-          <execution>
-            <id>xwiki-platform-tool-configuration-resources</id>
-            <goals>
-              <goal>process</goal>
-            </goals>
-            <configuration>
-              <resourceBundles>
-                <resourceBundle>org.xwiki.platform:xwiki-platform-tool-configuration-resources:${xwiki.version}</resourceBundle>
-              </resourceBundles>
-              <properties>
-                <xwikiDbConnectionUrl>jdbc:hsqldb:file:${environment.permanentDirectory}/database/xwiki_db;shutdown=true;hsqldb.cache_size=50000;hsqldb.script_format=3;hsqldb.nio_max_size=512;hsqldb.lob_file_scale=16;hsqldb.default_table_type=cached;hsqldb.tx=mvcc</xwikiDbConnectionUrl>
-                <xwikiDbConnectionUsername>sa</xwikiDbConnectionUsername>
-                <xwikiDbConnectionPassword />
-                <xwikiDbConnectionDriverClass>org.hsqldb.jdbcDriver</xwikiDbConnectionDriverClass>
-                <xwikiDbDialect>org.hibernate.dialect.HSQLDialect</xwikiDbDialect>
-                <xwikiDbHbmXwiki>xwiki.hbm.xml</xwikiDbHbmXwiki>
-                <xwikiDbHbmFeeds>feeds.hbm.xml</xwikiDbHbmFeeds>
-                <xwikiDbHbmCommonExtraMappings>activitystream.hbm.xml</xwikiDbHbmCommonExtraMappings>
-                <xwikiCfgPlugins>\
-  com.xpn.xwiki.monitor.api.MonitorPlugin,\
-  com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
-  com.xpn.xwiki.plugin.skinx.JsSkinFileExtensionPlugin,\
-  com.xpn.xwiki.plugin.skinx.JsResourceSkinExtensionPlugin,\
-  com.xpn.xwiki.plugin.skinx.CssSkinExtensionPlugin,\
-  com.xpn.xwiki.plugin.skinx.CssSkinFileExtensionPlugin,\
-  com.xpn.xwiki.plugin.skinx.CssResourceSkinExtensionPlugin,\
-  com.xpn.xwiki.plugin.skinx.LinkExtensionPlugin,\
-  com.xpn.xwiki.plugin.mail.MailPlugin,\
-  com.xpn.xwiki.plugin.packaging.PackagePlugin,\
-  com.xpn.xwiki.plugin.svg.SVGPlugin,\
-  com.xpn.xwiki.plugin.fileupload.FileUploadPlugin,\
-  com.xpn.xwiki.plugin.image.ImagePlugin,\
-  com.xpn.xwiki.plugin.zipexplorer.ZipExplorerPlugin,\
-  com.xpn.xwiki.plugin.lucene.LucenePlugin,\
-  com.xpn.xwiki.plugin.diff.DiffPlugin,\
-  com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin,\
-  com.xpn.xwiki.plugin.jodatime.JodaTimePlugin,\
-  com.xpn.xwiki.plugin.scheduler.SchedulerPlugin,\
-  com.xpn.xwiki.plugin.mailsender.MailSenderPlugin,\
-  com.xpn.xwiki.plugin.activitystream.plugin.ActivityStreamPlugin, \
-  com.xpn.xwiki.plugin.watchlist.WatchListPlugin, \
-  com.xpn.xwiki.plugin.tag.TagPlugin</xwikiCfgPlugins>
-                <xwikiCfgVirtual>0</xwikiCfgVirtual>
-                <xwikiCfgVirtualUsepath>0</xwikiCfgVirtualUsepath>
-                <xwikiCfgEditCommentMandatory>0</xwikiCfgEditCommentMandatory>
-                <xwikiCfgDefaultSkin>colibri</xwikiCfgDefaultSkin>
-                <xwikiCfgDefaultBaseSkin>colibri</xwikiCfgDefaultBaseSkin>
-                <xwikiCfgEncoding>UTF-8</xwikiCfgEncoding>
-                <xwikiCfgAdditionalProperties>
-xwiki.plugin.watchlist.automaticwatch=none
-xwiki.authentication.group.allgroupimplicit=1
-xwiki.section.edit=0
-xwiki.backlinks=0
-xwiki.showviewaction=0
-xwiki.defaultweb=data
-xwiki.usedefaultweb=1
-xwiki.usedefaultaction=0
-xwiki.monitor=0
-                </xwikiCfgAdditionalProperties>
-                <xwikiPropertiesEnvironmentPermanentDirectory>/var/lib/phenotips/</xwikiPropertiesEnvironmentPermanentDirectory>
-                <xwikiPropertiesAdditionalProperties>
-model.reference.default.space=data
-extension.repositories=maven-xwiki:maven:http://nexus.xwiki.org/nexus/content/groups/public
-extension.repositories=maven-phenotips:maven:http://nexus.cs.toronto.edu/nexus/content/repositories/releases/
-extension.repositories=extensions.xwiki.org:xwiki:http://extensions.xwiki.org/xwiki/rest/
-solr.type=remote
-solr.remote.url=http://localhost:8080/solr/xwiki/
-rendering.transformations=macro
-                </xwikiPropertiesAdditionalProperties>
-              </properties>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -829,15 +675,6 @@ rendering.transformations=macro
             <resource>
               <directory>${project.build.directory}/maven-shared-archive-resources/META-INF</directory>
               <targetPath>META-INF</targetPath>
-            </resource>
-            <resource>
-              <directory>${project.build.directory}/maven-shared-archive-resources</directory>
-              <targetPath>WEB-INF</targetPath>
-              <includes>
-                <include>xwiki.cfg</include>
-                <include>xwiki.properties</include>
-                <include>hibernate.cfg.xml</include>
-              </includes>
             </resource>
           </webResources>
           <!-- - Exclude JCL and LOG4J since we want all logging to go through SLF4J. Note that we're excluding
@@ -857,15 +694,9 @@ rendering.transformations=macro
           <overlays>
             <overlay>
               <groupId>${project.groupId}</groupId>
-              <artifactId>pedigree-editor</artifactId>
-              <type>jar</type>
-              <targetPath>resources/uicomponents/</targetPath>
-            </overlay>
-            <overlay>
-              <groupId>org.xwiki.platform</groupId>
-              <artifactId>xwiki-platform-colibri</artifactId>
-              <type>zip</type>
-              <targetPath>skins/</targetPath>
+              <artifactId>phenotips-base-war</artifactId>
+              <type>war</type>
+              <targetPath>/</targetPath>
             </overlay>
           </overlays>
         </configuration>

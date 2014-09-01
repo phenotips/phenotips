@@ -31,7 +31,7 @@ import org.junit.Test;
 /**
  * Tests for the {@link BMIMeasurementHandler} component, and a few methods from the base @{link
  * {@link AbstractMeasurementHandler} class.
- * 
+ *
  * @version $Id$
  * @since 1.0M3
  */

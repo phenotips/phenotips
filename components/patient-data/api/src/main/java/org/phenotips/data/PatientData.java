@@ -57,7 +57,7 @@ public interface PatientData<T> extends Iterable<T>
      * @param key the name of the value to return
      * @return the value attached to the key, if any, {@code null} if there's no value stored for this key or if this is
      *         not a dictionary type of data
-     * @since 1.0RC1
+     * @since 1.0M13
      */
     T get(String key);
 
@@ -67,7 +67,7 @@ public interface PatientData<T> extends Iterable<T>
      * @param index the index of the value to return
      * @return the value at the index, if any, {@code null} if there's no value stored at the specified index or if this
      *         is not an indexed type of data
-     * @since 1.0RC1
+     * @since 1.0M13
      */
     T get(int index);
 
@@ -76,19 +76,19 @@ public interface PatientData<T> extends Iterable<T>
      *
      * @return the value stored for this type of patient data, if any, {@code null} if there's no value defined or if
      *         this is not a simple value type of patient data
-     * @since 1.0RC1
+     * @since 1.0M13
      */
     T getValue();
 
     /**
      * @return {@code true} if the data structure is index based
-     * @since 1.0RC1
+     * @since 1.0M13
      */
     boolean isIndexed();
 
     /**
      * @return {@code true} if the data structure is key-value based
-     * @since 1.0RC1
+     * @since 1.0M13
      */
     boolean isNamed();
 
@@ -97,7 +97,7 @@ public interface PatientData<T> extends Iterable<T>
      *
      * @return iterator containing all the keys, or an empty iterator if there are no keys or this is not a dictionary
      *         type of data
-     * @since 1.0RC1
+     * @since 1.0M13
      */
     Iterator<String> keyIterator();
 
@@ -106,7 +106,7 @@ public interface PatientData<T> extends Iterable<T>
      *
      * @return iterator containing all the data in this dictionary, or an empty iterator if there is no data or this is
      *         not a dictionary type of data
-     * @since 1.0RC1
+     * @since 1.0M13
      */
     Iterator<Entry<String, T>> dictionaryIterator();
 }

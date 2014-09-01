@@ -48,7 +48,7 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * Event listener that sets up newly created PhenoTips groups, by also creating the corresponding "Group Administrators"
  * group, and setting up access rights.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -85,7 +85,7 @@ public class GroupSetupEventListener implements EventListener
     @Override
     public List<Event> getEvents()
     {
-        return Collections.<Event> singletonList(new DocumentCreatingEvent());
+        return Collections.<Event>singletonList(new DocumentCreatingEvent());
     }
 
     @Override

@@ -27,7 +27,7 @@ import java.util.Map;
  * accessing the NCBI Entrez Utilities server. This is not exposed directly, but instances for specific databases can be
  * obtained through {@link NCBIEUtilsAccessService#get(String)}, available to scripts using
  * {@code $services.ncbi.get('dbname')}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8 (functionality available since 1.0M1)
  */

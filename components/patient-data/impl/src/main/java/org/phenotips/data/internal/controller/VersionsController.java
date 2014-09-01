@@ -73,7 +73,7 @@ public class VersionsController extends AbstractSimpleController
     @Override
     public PatientData<String> load(Patient patient)
     {
-        Map<String, String> versions = new LinkedHashMap<String, String>();
+        Map<String, String> versions = new LinkedHashMap<>();
 
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());

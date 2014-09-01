@@ -21,6 +21,8 @@ package org.phenotips.obo2solr.maps;
 
 public class IntegerMap<K> extends AbstractNumericValueMap<K, Integer>
 {
+    private static final long serialVersionUID = 1L;
+
     public IntegerMap()
     {
         super();

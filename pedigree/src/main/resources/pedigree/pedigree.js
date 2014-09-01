@@ -88,6 +88,11 @@ var PedigreeEditor = Class.create({
             window.location=XWiki.currentDocument.getURL('edit');
         });
 
+        var renumberButton = $('action-number');
+        renumberButton && renumberButton.on("click", function(event) {
+            editor.getView().renumberAllNodes();
+        });
+
         var unsupportedBrowserButton = $('action-readonlymessage');
         unsupportedBrowserButton && unsupportedBrowserButton.on("click", function(event) {
             alert("Your browser does not support all the features required for " +
@@ -635,6 +640,8 @@ var editor;
 PedigreeEditor.attributes = {
     propagateLastName: true,   // when true, father's last name is propagated as "last name at birth" to descendants 
     radius: 40,
+    orbRadius: 6,
+    touchOrbRadius: 8,
     personHoverBoxRadius: 90,  // 80    for old handles, 90 for new
     newHandles: true,          // false for old handles
     personHandleLength: 75,    // 60    for old handles, 75 for new
@@ -672,6 +679,7 @@ PedigreeEditor.attributes = {
     orbHue : .53,
         phShape: {fill: "white","fill-opacity": 0, "stroke": 'black', "stroke-dasharray": "- "},
     dragMeLabel: {'font-size': 14, 'font-family': 'Tahoma'},
+    pedNumberLabel: {'font-size': 19, 'font-family': 'Serif'},
     descendantGroupLabel: {'font-size': 21, 'font-family': 'Tahoma'},
     label: {'font-size': 20, 'font-family': 'Arial'},
     nameLabels: {'font-size': 20, 'font-family': 'Arial'},    

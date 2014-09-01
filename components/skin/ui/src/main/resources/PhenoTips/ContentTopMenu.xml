@@ -1,0 +1,1355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>ContentTopMenu</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822198000</creationDate>
+  <parent>PhenoTips.PatientSheet</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822198000</date>
+  <contentUpdateDate>1401822198000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Patient sheet top menu</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>PhenoTips.ContentTopMenu</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>e5d4f60d-d537-495d-bef2-c7e7894fb3f4</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function() {
+  var tocLinkClicked = function(event) {
+    //event.stop();
+    var trigger = event.findElement('a');
+    var targetName = trigger &amp;&amp; trigger.getAttribute('href');
+    var target = targetName &amp;&amp; $(targetName.substring(1));
+    var parent = target &amp;&amp; (target.up('.collapsible-group') || target.up('.chapter'));
+    if (parent &amp;&amp; parent.hasClassName('collapsed')) {
+       parent.removeClassName('collapsed');
+       if (parent.down('.expand-tool')) {
+         parent.down('.expand-tool').update('▼');
+       }
+       if (parent.up('.chapter')) {
+         parent.up('.chapter').removeClassName('collapsed');
+       }
+       //parent.scrollTo();
+    } else {
+       //target.scrollTo();
+    }
+  };
+
+  var tocElement = $('table-of-contents')
+  var tocMenuEntry = $('toc-entry')
+  if (!tocElement || !tocMenuEntry || !tocElement.down('ul')) {
+    tocMenuEntry &amp;&amp; tocMenuEntry.up('li').remove();
+     return;
+  }
+  tocMenuEntry.next('ul').replace(tocElement.down('ul'));
+
+  tocMenuEntry.next('ul').select('a').invoke('observe', 'click', tocLinkClicked);
+});</code>
+    </property>
+    <property>
+      <name>Fix ToC</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.ContentTopMenu</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>13a3388b-e108-4903-9b1a-2ef792c5c472</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function() {
+  var deleteTool = $('prActionDelete');
+  if (!deleteTool) {
+    return false;
+  }
+  deleteTool.observe('click', function(clickEvent) {
+    clickEvent.stop();
+    var item = clickEvent.element();
+    item.blur();
+    if (item.disabled) {
+      // Do nothing if the button was already clicked and it's waiting for a response from the server.
+      return;
+    } else {
+      var url = item.readAttribute('href') + "?confirm=1&amp;form_token=" + $$('meta[name=form_token]')[0].content + (Prototype.Browser.Opera ? "" : "&amp;ajax=1");
+      new XWiki.widgets.ConfirmedAjaxRequest(
+        /* Ajax request URL */
+        url,
+        /* Ajax request parameters */
+        {
+          onCreate : function() {
+            // Disable the button, to avoid a cascade of clicks from impatient users
+            item.disabled = true;
+          },
+          onSuccess : function() {
+            // Go to space WebHome
+            window.location = new XWiki.Document('WebHome', XWiki.Document.currentSpace).getURL('view');
+          },
+          onFailure : function() {
+            // Better luck next time!
+            item.disabled = false;
+          }
+        },
+        /* Interaction parameters */
+        {
+          confirmationText: "$services.localization.render('core.recyclebin.confirm')"
+        }
+      );
+    }
+  });
+});</code>
+    </property>
+    <property>
+      <name>Confirmed AJAX deletion</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.ContentTopMenu</name>
+    <number>2</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>4097e56a-9f34-410b-a188-84a459a3bbea</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function() {
+  // Only do this in edit mode
+  if (XWiki.contextaction != 'edit') { return; }
+  var form = $('edit') || $('inline');
+  if (!form) {return; }
+  var formToken = form.form_token &amp;&amp; form.form_token.value;
+
+  // What the form initially looked like
+  var originalFormData = form.serialize();
+
+  // Warn users when they navigate away from this page without submitting the form, if the data changed
+  /*window.onbeforeunload = function(uEvent) {
+    if (originalFormData != form.serialize()) {
+      return "There are unsaved changes on this page. Are you sure you wish to leave?";
+    }
+  };
+  form.observe('submit', function(event) {
+     window.onbeforeunload = function() {};
+  });*/
+
+  // Obtain the number of the loaded version
+  var originalVersion = ($$("meta[name=version]").length &gt; 0) ? $$("meta[name=version]")[0].content : false;
+
+  // What could happen on cancel:
+  var __getRollbackURL = function (version) {
+    return XWiki.currentDocument.getURL('rollback', 'rev=' + version + "&amp;confirm=1&amp;form_token=" + formToken);
+  }
+  var deleteURL =  XWiki.currentDocument.getURL('delete', "confirm=1&amp;form_token=" + formToken);
+  var NEW_DOCUMENT = 'none';
+
+  if (originalVersion) {
+     var cancelURL = __getRollbackURL(originalVersion);
+  }
+
+  var versionProviderURL = XWiki.currentDocument.getRestURL();
+  var __getDocumentVersionFromREST = function(xml) {
+    var version = xml.getElementsByTagName('version');
+    if (version.length &gt; 0) {
+       return version[0].firstChild.nodeValue;
+    }
+    return false;
+  };
+
+  // In background, check if the document actually exists; if not, it should be deleted on cancel
+  // (non-existing documents have 1.1 in their meta version)
+  new Ajax.Request(
+            versionProviderURL, {
+              method: 'get',
+              onSuccess : function (response) {
+                // only update if the information was unavailable in the meta section
+                if (!originalVersion &amp;&amp; (originalVersion = __getDocumentVersionFromREST(response.responseXML))) {
+                   cancelURL = __getRollbackURL(originalVersion);
+                }
+              },
+              onFailure : function (response) {
+                if (response.statusCode == 404) {
+                   //Document missing
+                   originalVersion = NEW_DOCUMENT;
+                   cancelURL = deleteURL;
+                }
+              }.bind(this)
+            }
+      );
+
+  //form.select('input[name=action_cancel]').invoke('stopOserving', 'click');
+  form.select('input[name=action_cancel]').invoke('observe', 'click', function (event) {
+    // Continue with the default behavior if the cancel action is being forced after form version verification
+    // or if at this point we still have no information regarding the original document version
+    if (form._isVersionVerified || !originalVersion || !cancelURL) { return; }
+    Event.stop(event);
+    // Find the current version
+    new Ajax.Request(
+            versionProviderURL,
+            {
+              method: 'get',
+              onCreate : function() {
+                form._isVersionVerified = true;
+              },
+              onSuccess : function(response) {
+                var crtVersion = __getDocumentVersionFromREST(response.responseXML);
+                window.onbeforeunload = function() {};
+                if (crtVersion &amp;&amp; crtVersion != originalVersion) {
+                  // Go to the original state (i.e. rollback or delete)
+                  window.location = cancelURL;
+                } else {
+                  //just cancel
+                  event.element().click();
+                }
+              }.bind(this),
+              onFailure : function (response) {
+                window.onbeforeunload = function() {};
+                // Fail silently
+                event.element().click();
+              }.bind(this),
+              on0 : function (response) {
+                response.request.options.onFailure(response);
+              }
+            }
+      );
+  });
+});</code>
+    </property>
+    <property>
+      <name>Fix uncancellable object changes</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.ContentTopMenu</name>
+    <number>3</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>5c370dd1-519a-4cae-a5b2-a555d2199cae</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>(function(){
+  var init = function(event) {
+    var docContent = $('mainContentArea');
+    if (docContent) {
+      docContent.style.position = 'relative';
+
+      var docActions = $('patient-record-actions');
+      if (docActions) {
+        var daSticky  = new StickyBox(docActions, docContent, {offsetTop : 0});
+      }
+    }
+  };
+
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", function() {init.defer()});
+})();</code>
+    </property>
+    <property>
+      <name>Make the menu in the doc header sticky</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.ContentTopMenu</name>
+    <number>4</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>dd3b46fe-acb2-43ee-bf76-b01d0c3bccae</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe("xwiki:dom:loaded", function () {
+  var exportLinks = $$('.editbody .export-link');
+  exportLinks.invoke('observe', 'click', function (event) {
+    event.stop();
+    new XWiki.widgets.ConfirmationBox(
+      {
+         onYes : function() {
+           document.fire('xwiki:actions:save', {'continue' : true, 'form' : event.findElement('form')});
+           document.observe('xwiki:document:saved', function () {
+             window.self.location = event.findElement().href;
+           });
+         },
+         onNo : function() {
+           window.self.location = event.findElement().href;
+         }
+      },
+      /* Interaction parameters */
+      { confirmationText: "Save before exporting?", showCancelButton: true }
+    );
+  });
+});</code>
+    </property>
+    <property>
+      <name>Prompt to save before exporting in edit mode</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.ContentTopMenu</name>
+    <number>5</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>d9cb78bc-4b20-4d9d-8cdf-2ad11f36a716</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe("xwiki:dom:loaded", function() {
+  // It's not possible to write a CSS selector that targets list items containing lists so we rely on JavaScript.
+  // The 'dropdown' CSS class is used only to display the down/left arrow.
+  $$('.menu-horizontal li ul').each(function(item) {
+    item.up().addClassName('xDropdown');
+  });
+
+  // Collapsible menu bahavior.
+  $$('.menu-vertical.collapsible').each(function(item){
+    var isOpen = item.hasClassName('open');
+    item.select('li ul').each(function(submenuList) {
+      submenuList.addClassName('xDropdown-menu');
+      var submenu = submenuList.up();
+      submenu.addClassName('xDropdown' + (isOpen ? ' open' : ''));
+      // Wrap everything (including text nodes) before the sub-menu in a DIV that will toggle its state.
+      var toggle = new Element('div');
+      submenu.childElements.each(function(c){
+        toggle.insert(c);
+      });
+      submenu.insert({top : toggle});
+      toggle.addClassName('xDropdown-toggle');
+      toggle.observe('click', function(event) {
+        event.findElement().up().toggleClassName('open');
+      });
+    });
+  });
+})</code>
+    </property>
+    <property>
+      <name>Enable dropdown menus</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.ContentTopMenu</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>b3934e65-aa68-4fcb-8df4-875c955e2f93</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template("colorThemeInit.vm")
+
+#patient-record-actions {
+  float: right;
+  margin: 0;
+  position: absolute;
+  right: 0px;
+  top: 0;
+  z-index: 3000;
+}
+
+#patient-record-actions .menu.menu-horizontal {
+  border: 0 none;
+  padding: 0 0 0 10px;
+  font-size: 1em;
+  height: 1.8em;
+  text-shadow: none;
+}
+#patient-record-actions .menu.menu-horizontal a:hover {
+  text-decoration: none !important;
+  text-shadow: 0 0 2px $theme.highlightColor;
+}
+
+#patient-record-actions .menu-horizontal &gt; ul &gt; li {
+  padding: 0.2em 1.3em 0.2em 0.3em;
+}
+#patient-record-actions .menu-horizontal &gt; ul {
+  white-space: nowrap;
+}
+#patient-record-actions .menu-horizontal ul ul {
+  white-space: normal;
+}
+.menu-vertical li:empty, .menu-horizontal li li:empty {
+  min-height: 1px !important;
+}
+
+#patient-record-actions .menu-horizontal input {
+  background: transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 none !important;
+}
+#patient-record-actions .menu-horizontal label:hover, #patient-record-actions .menu-horizontal label:hover input {
+  cursor: pointer;
+  text-shadow: 0 0 2px $theme.highlightColor;
+}</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.ContentTopMenu</name>
+    <number>1</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>87c40da3-7d05-4feb-ad36-18d4a49376d3</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+
+/* General Styles */
+
+.menu-vertical ul, .menu-horizontal ul {
+  list-style-type: none;
+  margin: auto;
+}
+
+.menu-vertical ul *, .menu-horizontal ul * {
+  line-height: normal;
+}
+
+.menu-vertical li, .menu-horizontal li {
+  cursor: default;
+  line-height: 16px;
+  min-height: 16px;
+}
+
+.menu-vertical img, .menu-horizontal img {
+  vertical-align: middle;
+}
+
+/* Horizontal separator */
+.menu-vertical li:empty, .menu-horizontal li li:empty {
+  border-top: 1px solid $theme.borderColor;
+  line-height: 1px;
+  min-height: auto;
+  padding: 0;
+}
+
+/* Horizontal Menu */
+
+.menu.menu-horizontal {
+  #css3_backgroundLinearGradient({
+    'to': 'bottom',
+    'colors': [
+      {'color': $theme.menuGradientColor, 'position': '0%'},
+      {'color': $theme.menuBackgroundColor, 'position': '50%'}
+    ]
+  })
+  color: $theme.menuLinkColor;
+  font-size: .85em;
+  height: 2em;
+  padding-left: 25px;
+}
+
+.menu-horizontal li {
+  padding: 0.2em 1.3em;
+}
+
+.menu-horizontal li li:empty {
+  border-top: 1px solid $theme.textSecondaryColor;
+  margin: .5em 1em;
+}
+
+/* Vertical separator */
+.menu-horizontal &gt; ul &gt; li:empty {
+  border-left: 1px solid $theme.textSecondaryColor;
+  margin: 0 .5em;
+  padding: 0;
+  vertical-align: middle;
+}
+
+.menu-horizontal li a, .menu-horizontal li a:visited {
+  color: inherit;
+}
+
+.menu-horizontal &gt; ul &gt; li {
+  display: inline-block;
+}
+
+.menu-horizontal &gt; ul &gt; li.xDropdown:after {
+  content: '\25BC';
+  font-size: .8em;
+  margin-left: .5em;
+}
+
+.menu-horizontal li li.xDropdown:after {
+  content: '\25B8';
+  float: right;
+  margin-left: .5em;
+}
+
+.menu-horizontal &gt; ul ul {
+  background: none repeat scroll 0 0 $theme.menuBackgroundColor;
+  border-radius: 0 0 .8em .8em;
+  box-shadow: 0 1px 1px $theme.borderColor;
+  display: none;
+  margin: 0.2em 0 0 -1.3em;
+  padding-bottom: .3em;
+  position: absolute;
+  z-index: 1000;
+}
+
+.menu-horizontal li:hover &gt; ul {
+  display: block;
+}
+
+/* The only way to have a menu with more than 2 levels without JavaScript is to use a fixed width. */
+.menu-horizontal.fixedWidth li li {
+  position: relative;
+}
+
+.menu-horizontal.fixedWidth ul ul {
+  width: 12em;
+}
+
+.menu-horizontal.fixedWidth ul ul ul {
+  left: 12em;
+  margin: 0;
+  top: 0;
+}
+
+/* Vertical Menu */
+
+.menu.menu-vertical {
+  color: inherit;
+}
+
+.menu.menu-vertical ul {
+  margin-top: .3em;
+}
+
+.menu.menu-vertical ul ul {
+  margin-left: 1em;
+}
+
+.menu-vertical li {
+  padding: .3em;
+}
+
+.menu-vertical li:empty {
+  margin: .3em 0;
+}
+
+.menu-vertical .xDropdown-toggle {
+  cursor: pointer;
+}
+
+.menu-vertical .xDropdown-toggle:hover {
+  background-color: $theme.highlightColor;
+}
+
+.menu-vertical .xDropdown-toggle:after {
+  content: '\25C2';
+  float: right;
+}
+
+.menu-vertical .xDropdown.open .xDropdown-toggle:after {
+  content: '\25BE';
+}
+
+.menu-vertical .xDropdown-menu {
+  display: none;
+}
+
+.menu-vertical .xDropdown.open &gt; .xDropdown-menu {
+  display: block;
+}</code>
+    </property>
+    <property>
+      <name>Menu styles</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.ContentTopMenu</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>9449621f-d20d-42a1-bc70-18096cd6be2a</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{velocity}}
+#macro (__icon $name){{html clean="false"}}&lt;span class="fa fa-${name}"&gt; &lt;/span&gt;{{/html}}#end
+#if ($doc.getObject('PhenoTips.PatientClass'))
+#set ($colorTheme = $xwiki.getUserPreference('colorTheme'))
+#if ("$!colorTheme" != '')
+  ## Make sure we use an absolute reference (see XWIKI-9672)
+  #set ($colorTheme = $services.model.resolveDocument($colorTheme, $doc.documentReference))
+#end
+$xwiki.ssx.use('PhenoTips.ContentTopMenu', {'colorTheme': $colorTheme})##
+$xwiki.jsx.use('PhenoTips.ContentTopMenu')##
+(% id="patient-record-actions" %)(((
+(% id="pr-more-actions-menu" class="menu menu-horizontal" %)(((
+#if ($xcontext.action == 'view')
+#if($hasEdit &amp;&amp; !$isReadOnly)
+  #set($editaction = $doc.getDefaultEditMode())
+* [[#__icon("pencil")$services.localization.render('core.menu.edit')&gt;&gt;path:$doc.getURL($editaction, $!languageparams)|| id="prActionEdit"]]
+#end## HAS EDIT
+#set ($canDelete = !$doc.isNew() &amp;&amp; $xwiki.checkAccess($doc.fullName, 'delete'))
+#if ($canDelete)
+* [[#__icon("times")$services.localization.render('core.menu.delete')&gt;&gt;path:$doc.getURL('delete', $!languageparams)|| id="prActionDelete"]]
+#end## HAS DELETE
+#else## NOT IN VIEW MODE, SHOW EDIT MODE ACTIONS
+* {{html clean="false"}}&lt;span class="fa fa-check"&gt; &lt;/span&gt;&lt;label&gt;&lt;input type="submit" value="Save" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
+** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSave" type="submit" value="Quick save" title="Save and continue editing" name="action_saveandcontinue"/&gt;&lt;/label&gt;{{/html}}
+** {{html clean="false"}}&lt;label&gt;&lt;input id="tmActionSaveAndContinue" type="submit" value="Save and view summary" title="Save and view summary"" name="action_save"/&gt;&lt;/label&gt;{{/html}}
+* {{html clean="false"}}&lt;span class="fa fa-ban"&gt; &lt;/span&gt;&lt;label&gt;&lt;input id="tmActionCancel" type="submit" value="Cancel" title="Cancel changes and go to summary view" name="action_cancel"/&gt;&lt;/label&gt;{{/html}}
+#end## DONE WITH EDIT MODE SPECIFIC ACTIONS
+* {{html clean="false"}}&lt;span class="fa fa-list"&gt; &lt;/span&gt;&lt;span id="toc-entry"&gt;Jump to...&lt;/span&gt;{{/html}}
+##The ToC will be populated by JS
+** ----
+* #__icon("cog") More actions
+#if ($xcontext.action != 'view' || $viewer != 'content')
+** [[Open in view mode&gt;&gt;$doc.fullName|| title="Open record in view mode in a new window" target="__blank"]]
+#end
+#if ($isAdvancedUser &amp;&amp; $xcontext.action != 'view' || $viewer != 'history')
+** [[History&gt;&gt;path:$doc.getURL('view', 'viewer=history')|| target="__blank" title="See how the record was modified over time since its creation"]]
+#end
+#if ($xwiki.getDocument($xwiki.getSpacePreference('colorTheme')).getObject('XWiki.PDFClass'))
+  #set ($pdfTemplate = $xwiki.getSpacePreference('colorTheme'))
+#else
+  #set ($pdfTemplate = 'PhenoTips.PatientSheetCode')
+#end
+** (% class="empty" %)----
+** [[Export PDF&gt;&gt;path:$doc.getURL('export', "format=pdf&amp;pdfcover=0&amp;pdftoc=0&amp;pdftemplate=${pdfTemplate}")|| class="export-link"]]
+#if($isAdvancedUser)
+** [[Export XAR&gt;&gt;path:$doc.getURL('export', "format=xar&amp;name=${doc.fullName}&amp;pages=${doc.fullName}")|| class="export-link"]]
+** [[Export JSON&gt;&gt;path:$xwiki.getURL('PhenoTips.ExportPatient', 'get', "id=${escapetool.url($doc.documentReference.name)}&amp;outputSyntax=plain")|| class="export-link"]]
+#end
+#foreach ($e in $services.uix.getExtensions("org.phenotips.patientRecordMenu.moreActions"))
+#if ($foreach.index == 0)
+** ----
+#end
+** {{html clean=false}}$services.rendering.render($e.execute(), 'xhtml/1.0'){{/html}}
+#end
+)))## menu
+)))## container
+#end{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.content.top:data</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.patientSheet.menu</name>
+    </property>
+    <property>
+      <parameters>title=Patient sheet top menu
+order=1</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+</xwikidoc>

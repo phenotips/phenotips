@@ -24,7 +24,6 @@ else
   rm -rf /var/lib/phenotips/data/solr/xwiki/
 fi
 
-
 # Cleanup
 rm -rf /var/lib/phenotips/next/
 
@@ -32,34 +31,48 @@ rm -rf /var/lib/phenotips/next/
 chown -R tomcat:tomcat /var/lib/phenotips/
 
 # Increase the amount of heap memory allocated for Tomcat, if needed
-if `cat /etc/tomcat6/tomcat6.conf | grep -E '^\s*JAVA_OPTS.*-Xmx' >/dev/null 2>&1`
+if `cat /etc/tomcat/tomcat.conf | grep -E '^\s*JAVA_OPTS.*-Xmx' >/dev/null 2>&1`
 then
-  CURRENT=`cat /etc/tomcat6/tomcat6.conf | grep -E '^\s*JAVA_OPTS.*-Xmx' | sed -r -e 's/^\s*JAVA_OPTS.*-Xmx([^" ]+).*/\1/'`
+  # There is a value for Xmx, check if it is large enough
+  CURRENT=`cat /etc/tomcat/tomcat.conf | grep -E '^\s*JAVA_OPTS.*-Xmx' | sed -r -e 's/^\s*JAVA_OPTS.*-Xmx([^" ]+).*/\1/'`
   echo $CURRENT | grep -i g >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024*1024*1024 | sed -e 's/[gG]//' | bc`
   echo $CURRENT | grep -i m >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024*1024 | sed -e 's/[mM]//' | bc`
   echo $CURRENT | grep -i k >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024 | sed -e 's/[kK]//' | bc`
   if [ "`echo "$CURRENT > 1073741823" | bc`" = "0" ]
   then
-    sed -i -r -e 's/^(\s*JAVA_OPTS.*-Xmx)([^" ]+)(.*)/\11g\3/' /etc/tomcat6/tomcat6.conf
+    # Not large enough, update the value in place
+    sed -i -r -e 's/^(\s*JAVA_OPTS.*-Xmx)([^" ]+)(.*)/\11g\3/' /etc/tomcat/tomcat.conf
   fi
+elif `cat /etc/tomcat/tomcat.conf | grep -E '^\s*JAVA_OPTS=' >/dev/null 2>&1`
+then
+  # No Xmx configured, but there is a JAVA_OPTS setting, update it
+  sed -i -r -e 's/^(\s*JAVA_OPTS=")(.*)/\1-Xmx1g \2/' /etc/tomcat/tomcat.conf
 else
-  echo -e -n '\nJAVA_OPTS="$JAVA_OPTS -Xmx1g"' >> /etc/tomcat6/tomcat6.conf
+  # No JAVA_OPTS setting, add one with both Xmx and MaxPermSize
+  echo -e -n '\nJAVA_OPTS="-Xmx1g -XX:MaxPermSize=192m"' >> /etc/tomcat/tomcat.conf
 fi
 
 # Increase the amount of permgen memory allocated for Tomcat, if needed
-if `cat /etc/tomcat6/tomcat6.conf | grep -E '^\s*JAVA_OPTS.*-XX:MaxPermSize=' >/dev/null 2>&1`
+if `cat /etc/tomcat/tomcat.conf | grep -E '^\s*JAVA_OPTS.*-XX:MaxPermSize=' >/dev/null 2>&1`
 then
-  CURRENT=`cat /etc/tomcat6/tomcat6.conf | grep -E '^\s*JAVA_OPTS.*-XX:MaxPermSize=' | sed -r -e 's/^\s*JAVA_OPTS.*-XX:MaxPermSize=([^" ]+).*/\1/'`
+  # There is a value for MaxPermSize, check if it is large enough
+  CURRENT=`cat /etc/tomcat/tomcat.conf | grep -E '^\s*JAVA_OPTS.*-XX:MaxPermSize=' | sed -r -e 's/^\s*JAVA_OPTS.*-XX:MaxPermSize=([^" ]+).*/\1/'`
   echo $CURRENT | grep -i g >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024*1024*1024 | sed -e 's/[gG]//' | bc`
   echo $CURRENT | grep -i m >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024*1024 | sed -e 's/[mM]//' | bc`
   echo $CURRENT | grep -i k >/dev/null 2>&1 && CURRENT=`echo ${CURRENT}\*1024 | sed -e 's/[kK]//' | bc`
   if [ "`echo "$CURRENT > 201326591" | bc`" = "0" ]
   then
-    sed -i -r -e 's/^(\s*JAVA_OPTS.*-XX:MaxPermSize=)([^" ]+)(.*)/\1192m\3/' /etc/tomcat6/tomcat6.conf
+    # Not large enough, update the value in place
+    sed -i -r -e 's/^(\s*JAVA_OPTS.*-XX:MaxPermSize=)([^" ]+)(.*)/\1192m\3/' /etc/tomcat/tomcat.conf
   fi
-else
-  echo -e -n '\nJAVA_OPTS="$JAVA_OPTS -XX:MaxPermSize=192m"' >> /etc/tomcat6/tomcat6.conf
+elif `cat /etc/tomcat/tomcat.conf | grep -E '^\s*JAVA_OPTS=' >/dev/null 2>&1`
+then
+  # No MaxPermSize configured, but there is a JAVA_OPTS setting, update it
+  sed -i -r -e 's/^(\s*JAVA_OPTS=")(.*)/\1-XX:MaxPermSize=192m \2/' /etc/tomcat/tomcat.conf
 fi
 
 # Start Tomcat
-/sbin/service tomcat6 start >/dev/null 2>&1 || true
+if [[ -a /usr/lib/systemd/system/tomcat.service ]]
+then
+  /bin/systemctl start tomcat.service
+fi

@@ -55,6 +55,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import com.xpn.xwiki.XWiki;
@@ -69,7 +70,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the default {@link PatientAccessHelper} implementation, {@link DefaultPatientAccessHelper}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultPatientAccessHelperTest
@@ -528,7 +529,7 @@ public class DefaultPatientAccessHelperTest
         Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
 
         Assert.assertFalse(this.mocker.getComponentUnderTest().removeCollaborator(this.patient, collaborator));
-        Mockito.verify(doc, Mockito.never()).removeXObject(Mockito.any(BaseObject.class));
+        Mockito.verify(doc, Mockito.never()).removeXObject(Matchers.any(BaseObject.class));
         Mockito.verify(xwiki, Mockito.never()).saveDocument(doc, "Removed collaborator: " + COLLABORATOR_STR, true,
             this.context);
     }
@@ -564,7 +565,7 @@ public class DefaultPatientAccessHelperTest
         when(this.context.getWiki()).thenReturn(xwiki);
         when(xwiki.getGroupService(this.context)).thenReturn(groupService);
         when(groupService.getAllGroupsReferencesForMember(COLLABORATOR, 0, 0, this.context)).
-            thenReturn(Collections.<DocumentReference> emptyList());
+            thenReturn(Collections.<DocumentReference>emptyList());
 
         Assert.assertSame(owner, this.mocker.getComponentUnderTest().getAccessLevel(this.patient, OWNER));
     }
@@ -630,7 +631,7 @@ public class DefaultPatientAccessHelperTest
         when(this.context.getWiki()).thenReturn(xwiki);
         when(xwiki.getGroupService(this.context)).thenReturn(groupService);
         when(groupService.getAllGroupsReferencesForMember(COLLABORATOR, 0, 0, this.context)).
-            thenReturn(Collections.<DocumentReference> emptyList());
+            thenReturn(Collections.<DocumentReference>emptyList());
 
         Assert.assertSame(edit, this.mocker.getComponentUnderTest().getAccessLevel(this.patient, COLLABORATOR));
     }

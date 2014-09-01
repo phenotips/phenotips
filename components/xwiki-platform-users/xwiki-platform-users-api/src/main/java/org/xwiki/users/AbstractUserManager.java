@@ -21,7 +21,7 @@ package org.xwiki.users;
 
 /**
  * Base class for implementing a user manager.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */

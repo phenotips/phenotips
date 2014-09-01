@@ -28,7 +28,6 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>solr-configuration</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <name>PhenoTips - Solr configuration files</name>
 
   <properties>

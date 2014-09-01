@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import com.xpn.xwiki.api.Property;
 
@@ -56,9 +56,9 @@ public class PropertyDisplayer
 
     private static final String ITEM_TYPE_SUBSECTION = "subsection";
 
-    private static final String ITEM_TYPE_FIELD = "field";
+    private static final String ITEM_TYPE_CONDITIONAL_SUBSECTION = "conditionalSubsection";
 
-    private static final String INDEXED_NAME_KEY = "name";
+    private static final String ITEM_TYPE_FIELD = "field";
 
     private static final String INDEXED_CATEGORY_KEY = "term_category";
 
@@ -152,18 +152,19 @@ public class PropertyDisplayer
     /**
      * Adds top sections (direct children of HP:0000118) to a copy of the existing templates list, if those are not
      * present. Also deletes any categories that are HP:0000118.
+     *
      * @param originalTemplate the existing templates list
      * @return a modified templates list
      */
     protected Collection<Map<String, ?>> replaceOtherWithTopSections(Collection<Map<String, ?>> originalTemplate)
     {
-        //Need to work with a copy to prevent concurrency problems.
+        // Need to work with a copy to prevent concurrency problems.
         List<Map<String, ?>> template = new LinkedList<Map<String, ?>>();
         template.addAll(originalTemplate);
 
         Map<String, String> m = new HashMap<String, String>();
         m.put("is_a", "HP:0000118");
-        Set<OntologyTerm> topSections = ontologyService.search(m);
+        Set<OntologyTerm> topSections = this.ontologyService.search(m);
         Set<String> topSectionsId = new HashSet<String>();
         for (OntologyTerm section : topSections) {
             topSectionsId.add(section.getId());
@@ -173,6 +174,7 @@ public class PropertyDisplayer
             try {
                 Object templateCategoriesUC = sectionTemplate.get("categories");
                 if (templateCategoriesUC instanceof ArrayList) {
+                    @SuppressWarnings("unchecked")
                     ArrayList<String> templateCategories = (ArrayList<String>) templateCategoriesUC;
                     for (String category : templateCategories) {
                         topSectionsId.remove(category);
@@ -184,9 +186,9 @@ public class PropertyDisplayer
                 } else {
                     String templateCategory = (String) templateCategoriesUC;
                     if (StringUtils.equals(templateCategory, "HP:0000118")) {
-                       template.remove(sectionTemplate);
+                        template.remove(sectionTemplate);
                     } else {
-                       topSectionsId.remove(templateCategory);
+                        topSectionsId.remove(templateCategory);
                     }
                 }
             } catch (Exception ex) {
@@ -197,7 +199,7 @@ public class PropertyDisplayer
             }
         }
         for (String sectionId : topSectionsId) {
-            OntologyTerm term = ontologyService.getTerm(sectionId);
+            OntologyTerm term = this.ontologyService.getTerm(sectionId);
             Map<String, Object> templateSection = new HashMap<String, Object>();
 
             String title = term.getName();
@@ -222,8 +224,21 @@ public class PropertyDisplayer
 
     private boolean isSubsection(Map<String, ?> item)
     {
-        return ITEM_TYPE_SUBSECTION.equals(item.get(TYPE_KEY)) && String.class.isInstance(item.get(TITLE_KEY))
+        return (ITEM_TYPE_SUBSECTION.equals(item.get(TYPE_KEY))
+            || ITEM_TYPE_CONDITIONAL_SUBSECTION.equals(item.get(TYPE_KEY)))
+            && (String.class.isInstance(item.get(TITLE_KEY)) || String.class.isInstance(item.get(ID_KEY)))
             && Collection.class.isInstance(item.get(DATA_KEY));
+    }
+
+    /**
+     * This function is meant to be used on sections that are already know to be subsections.
+     *
+     * @param item the configuration object of the subsection
+     * @return true if the subsection is conditional, false otherwise
+     */
+    private boolean isConditionalSubsection(Map<String, ?> item)
+    {
+        return ITEM_TYPE_CONDITIONAL_SUBSECTION.equals(item.get(TYPE_KEY));
     }
 
     private boolean isField(Map<String, ?> item)
@@ -247,11 +262,23 @@ public class PropertyDisplayer
         List<String> customNoSelected)
     {
         String title = (String) subsectionTemplate.get(TITLE_KEY);
+        String id = (String) subsectionTemplate.get(ID_KEY);
+        if (StringUtils.isEmpty(title) && StringUtils.isNotEmpty(id)) {
+            title = getLabelFromOntology(id);
+        }
         String type = (String) subsectionTemplate.get(GROUP_TYPE_KEY);
         if (type == null) {
             type = "";
         }
-        FormGroup subsection = new FormSubsection(title, type);
+        FormGroup subsection;
+        if (isConditionalSubsection(subsectionTemplate)) {
+            boolean yesSelected = customYesSelected.remove(id);
+            boolean noSelected = customNoSelected.remove(id);
+            FormElement titleYesNoPicker = generateField(id, title, true, yesSelected, noSelected);
+            subsection = new FormConditionalSubsection(title, type, titleYesNoPicker, yesSelected);
+        } else {
+            subsection = new FormSubsection(title, type);
+        }
         generateData(subsection, subsectionTemplate, customYesSelected, customNoSelected);
         return subsection;
     }
@@ -280,6 +307,11 @@ public class PropertyDisplayer
 
     }
 
+    private FormElement generateField(String id, String title, boolean yesSelected, boolean noSelected)
+    {
+        return generateField(id, title, hasDescendantsInOntology(id), yesSelected, noSelected);
+    }
+
     private FormElement generateField(String id, String title, boolean expandable, boolean yesSelected,
         boolean noSelected)
     {
@@ -296,11 +328,6 @@ public class PropertyDisplayer
         }
         return new FormField(id, StringUtils.defaultIfEmpty(title, hint), hint, StringUtils.defaultString(metadata),
             expandable, yesSelected, noSelected);
-    }
-
-    private FormElement generateField(String id, String title, boolean yesSelected, boolean noSelected)
-    {
-        return generateField(id, title, hasDescendantsInOntology(id), yesSelected, noSelected);
     }
 
     private List<String> assignCustomFields(FormSection section, Map<String, List<String>> customCategories)
@@ -386,8 +413,8 @@ public class PropertyDisplayer
                 } else if (StringUtils.equals("target_property_value", propname)) {
                     name = propvalue.toString();
                 } else {
-                    value.append(o.get(propname).toString().replaceAll("\\{\\{/?html[^}]*+}}", "").replaceAll(
-                        "<(/?)p>", "<$1dd>"));
+                    value.append(o.get(propname).toString().replaceAll("\\{\\{/?html[^}]*+}}", "")
+                        .replaceAll("<(/?)p>", "<$1dd>"));
                 }
             }
             if (StringUtils.isNotBlank(name) && value.length() > 0) {

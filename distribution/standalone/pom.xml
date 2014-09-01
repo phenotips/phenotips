@@ -31,9 +31,6 @@
   <name>PhenoTips - Standalone Distribution</name>
   <packaging>pom</packaging>
   <description>Distribution including a Jetty server, Solr, and an UI based on XWiki</description>
-  <properties>
-    <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.hsqldb</groupId>
@@ -71,7 +68,7 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>${project.artifactId}-${project.version}-${maven.build.timestamp}</finalName>
+    <finalName>${project.artifactId}-${project.version}</finalName>
     <pluginManagement>
       <plugins>
         <plugin>

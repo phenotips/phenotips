@@ -33,7 +33,7 @@ import org.apache.solr.common.params.SpellingParams;
 
 /**
  * Utility class for preparing the queries used by the {@link AbstractSolrOntologyService ontology service}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -51,7 +51,7 @@ public final class SolrQueryUtils
     /**
      * Convert a Lucene query string into Solr parameters. More specifically, places the input query under the "q"
      * parameter.
-     * 
+     *
      * @param query the lucene query string to use
      * @return the obtained parameters
      */
@@ -66,7 +66,7 @@ public final class SolrQueryUtils
      * Adds extra parameters to a Solr query for better term searches. More specifically, adds parameters for requesting
      * the score to be included in the results, for requesting a spellcheck result, and sets the {@code start} and
      * {@code rows} parameters when missing.
-     * 
+     *
      * @param originalParams the original Solr parameters to enhance
      * @return the enhanced parameters
      */
@@ -79,7 +79,7 @@ public final class SolrQueryUtils
      * Adds extra parameters to a Solr query for better term searches, including custom options. More specifically, adds
      * parameters for requesting the score to be included in the results, for requesting a spellcheck result, and sets
      * the {@code start} and {@code rows} parameters when missing.
-     * 
+     *
      * @param originalParams the original Solr parameters to enhance
      * @param queryOptions extra options to include in the query; these override the default values, but don't override
      *            values already set in the query
@@ -114,7 +114,7 @@ public final class SolrQueryUtils
     /**
      * Replaces the original query in the Solr parameters with the suggested spellchecked query. It also fixes the boost
      * query, if any.
-     * 
+     *
      * @param originalParams the original Solr parameters to fix
      * @param suggestedQuery the suggested query
      * @return new Solr parameters with the query and boost query fixed
@@ -152,7 +152,7 @@ public final class SolrQueryUtils
 
     /**
      * Serialize Solr parameters into a String.
-     * 
+     *
      * @param params the parameters to serialize
      * @return a String serialization of the parameters
      */

@@ -63,9 +63,8 @@
         </plugin>
         <!-- Step 3: Import the XAR content into the Database -->
         <plugin>
-          <groupId>org.xwiki.platform</groupId>
-          <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
-          <version>${xwiki.version}</version>
+          <groupId>org.phenotips</groupId>
+          <artifactId>phenotips-packager-maven-plugin</artifactId>
           <configuration>
             <hibernateConfig>
               ${project.build.directory}/maven-shared-archive-resources/hibernate.cfg.xml
@@ -222,8 +221,8 @@
       </plugin>
       <!-- Step 3: Import the XAR content into the Database -->
       <plugin>
-        <groupId>org.xwiki.platform</groupId>
-        <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
+        <groupId>org.phenotips</groupId>
+        <artifactId>phenotips-packager-maven-plugin</artifactId>
       </plugin>
       <!-- Step 4: Zip the generated database -->
       <plugin>

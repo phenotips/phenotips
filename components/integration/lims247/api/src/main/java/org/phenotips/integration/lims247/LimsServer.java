@@ -26,7 +26,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Communication with a LIMS server.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -48,7 +48,7 @@ public interface LimsServer
 
     /**
      * Check if the authentication parameters are validated by the remote LIMS server.
-     * 
+     *
      * @param token the authentication token to check
      * @param username the target username
      * @param pn the LIMS instance identifier
@@ -59,7 +59,7 @@ public interface LimsServer
 
     /**
      * Notify a remote LIMS instance that a patient's phenotype has changed.
-     * 
+     *
      * @param payload a JSON containing values for {@code pn} (the PhenoTips instance identifier), {@code username} (the
      *            username that performed the change), {@code auth_token} (the authentication token, either the one used
      *            by LIMS if the authentication originated on LIMS, or the one used by PhenoTips if the authentication

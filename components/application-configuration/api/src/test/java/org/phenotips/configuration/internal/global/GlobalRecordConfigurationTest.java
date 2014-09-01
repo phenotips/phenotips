@@ -46,7 +46,7 @@ import javax.inject.Provider;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.Matchers;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the default {@link RecordConfiguration} implementation, {@link GlobalRecordConfiguration}.
- * 
+ *
  * @version $Id$
  */
 public class GlobalRecordConfigurationTest
@@ -393,9 +393,9 @@ public class GlobalRecordConfigurationTest
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
-        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        when(x.getDocument(Matchers.any(EntityReference.class), Matchers.same(context))).thenReturn(wh);
         BaseObject o = mock(BaseObject.class);
-        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        when(wh.getXObject(RecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
         when(o.getStringValue("phenotypeMapping")).thenReturn("PhenoTips.XPhenotypeMapping");
         ComponentManager cm = mock(ComponentManager.class);
         @SuppressWarnings("unchecked")
@@ -426,9 +426,9 @@ public class GlobalRecordConfigurationTest
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
-        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        when(x.getDocument(Matchers.any(EntityReference.class), Matchers.same(context))).thenReturn(wh);
         BaseObject o = mock(BaseObject.class);
-        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        when(wh.getXObject(RecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
         when(o.getStringValue("phenotypeMapping")).thenReturn(null);
         ComponentManager cm = mock(ComponentManager.class);
         @SuppressWarnings("unchecked")
@@ -459,15 +459,15 @@ public class GlobalRecordConfigurationTest
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
-        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
-        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(null);
+        when(x.getDocument(Matchers.any(EntityReference.class), Matchers.same(context))).thenReturn(wh);
+        when(wh.getXObject(RecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(null);
         RecordConfiguration config =
             new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
         Assert.assertNull(config.getPhenotypeMapping());
 
         BaseObject o = mock(BaseObject.class);
         when(o.getStringValue("phenotypeMapping")).thenReturn("PhenoTips.XPhenotypeMapping");
-        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        when(wh.getXObject(RecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
         ComponentManager cm = mock(ComponentManager.class);
         @SuppressWarnings("unchecked")
         Provider<ComponentManager> mockProvider = mock(Provider.class);
@@ -493,9 +493,9 @@ public class GlobalRecordConfigurationTest
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
-        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        when(x.getDocument(Matchers.any(EntityReference.class), Matchers.same(context))).thenReturn(wh);
         BaseObject o = mock(BaseObject.class);
-        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        when(wh.getXObject(RecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
         when(o.getStringValue("dateOfBirthFormat")).thenReturn("MMMM yyyy");
 
         RecordConfiguration config =
@@ -515,9 +515,9 @@ public class GlobalRecordConfigurationTest
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
-        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
+        when(x.getDocument(Matchers.any(EntityReference.class), Matchers.same(context))).thenReturn(wh);
         BaseObject o = mock(BaseObject.class);
-        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
+        when(wh.getXObject(RecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(o);
         when(o.getStringValue("dateOfBirthFormat")).thenReturn("");
 
         RecordConfiguration config =
@@ -536,7 +536,8 @@ public class GlobalRecordConfigurationTest
         when(ec.getProperty("xwikicontext")).thenReturn(context);
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
-        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenThrow(new XWikiException());
+        when(x.getDocument(Matchers.any(EntityReference.class), Matchers.same(context)))
+            .thenThrow(new XWikiException());
 
         RecordConfiguration config =
             new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));
@@ -555,8 +556,8 @@ public class GlobalRecordConfigurationTest
         XWiki x = mock(XWiki.class);
         when(context.getWiki()).thenReturn(x);
         XWikiDocument wh = mock(XWikiDocument.class);
-        when(x.getDocument(Mockito.any(EntityReference.class), Mockito.same(context))).thenReturn(wh);
-        when(wh.getXObject(GlobalRecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(null);
+        when(x.getDocument(Matchers.any(EntityReference.class), Matchers.same(context))).thenReturn(wh);
+        when(wh.getXObject(RecordConfiguration.GLOBAL_PREFERENCES_CLASS)).thenReturn(null);
 
         RecordConfiguration config =
             new GlobalRecordConfiguration(e, mock(UIExtensionManager.class), mock(UIExtensionFilter.class));

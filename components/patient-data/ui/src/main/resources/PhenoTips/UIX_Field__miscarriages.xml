@@ -117,7 +117,7 @@
   $xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
   $xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
 #end
-#__displayIfTrue('miscarriages', false)
+#__displayIfSet('miscarriages', false)
 {{/velocity}}</content>
     </property>
     <property>

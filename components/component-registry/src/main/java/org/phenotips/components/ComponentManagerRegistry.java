@@ -19,6 +19,12 @@
  */
 package org.phenotips.components;
 
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.observation.EventListener;
+import org.xwiki.observation.event.ApplicationStartedEvent;
+import org.xwiki.observation.event.Event;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,17 +33,11 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.xwiki.component.annotation.Component;
-import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.observation.EventListener;
-import org.xwiki.observation.event.ApplicationStartedEvent;
-import org.xwiki.observation.event.Event;
-
 /**
  * Provides access to the component manager to non-components. The component manager type returned is "context", which
  * takes into account custom components available in the current scope: local wiki components, user-specific components,
  * etc.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -53,7 +53,7 @@ public class ComponentManagerRegistry implements EventListener
 
     /**
      * Use this method to get the current context component manager.
-     * 
+     *
      * @return the component manager active in the current context, or the root component manager if the context doesn't
      *         have a custom component manager registered
      */
@@ -71,7 +71,7 @@ public class ComponentManagerRegistry implements EventListener
     @Override
     public List<Event> getEvents()
     {
-        return Arrays.<Event> asList(new ApplicationStartedEvent());
+        return Arrays.<Event>asList(new ApplicationStartedEvent());
     }
 
     @Override

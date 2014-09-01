@@ -33,6 +33,7 @@ import org.xwiki.csrf.CSRFToken;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 
@@ -56,7 +57,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Announces LIMS of updates to patient phenotypes.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -90,6 +91,9 @@ public class LimsSynchronizationEventListener implements EventListener
     @Inject
     private LimsServer server;
 
+    @Inject
+    private EntityReferenceResolver<String> referenceResolver;
+
     @Override
     public String getName()
     {
@@ -99,8 +103,7 @@ public class LimsSynchronizationEventListener implements EventListener
     @Override
     public List<Event> getEvents()
     {
-        return Arrays
-            .<Event> asList(new DocumentCreatedEvent(), new DocumentUpdatedEvent(), new DocumentDeletedEvent());
+        return Arrays.<Event>asList(new DocumentCreatedEvent(), new DocumentUpdatedEvent(), new DocumentDeletedEvent());
     }
 
     @Override
@@ -122,7 +125,7 @@ public class LimsSynchronizationEventListener implements EventListener
 
     /**
      * Check if the modified document is a patient record, with an external identifier.
-     * 
+     *
      * @param doc the modified document
      * @return {@code true} if the document contains a PatientClass object and a non-empty external identifier,
      *         {@code false} otherwise
@@ -139,7 +142,7 @@ public class LimsSynchronizationEventListener implements EventListener
 
     /**
      * Prepare a JSON payload to send to the registered LIMS servers to notify of the change. The JSON looks like:
-     * 
+     *
      * <pre>
      * {
      *   "eid": "ExternalId123",
@@ -149,10 +152,10 @@ public class LimsSynchronizationEventListener implements EventListener
      *   "auth_token": "strtoken"
      * }
      * </pre>
-     * 
+     *
      * The username and authentication token is taken either from the cached LIMS authentication, or from the XWiki user
      * logged in.
-     * 
+     *
      * @param event the original event that notified of the change
      * @param doc the modified document, a patient sheet document
      * @param context the current request context
@@ -176,7 +179,8 @@ public class LimsSynchronizationEventListener implements EventListener
         if (auth != null) {
             // FIXME Reuse this authentication only if the authentication server is the same as the target server
             result.put(LimsServer.INSTANCE_IDENTIFIER_KEY, context.getDatabase());
-            result.put(LimsServer.USERNAME_KEY, StringUtils.substringAfter(auth.getUser().getUser(), "."));
+            result.put(LimsServer.USERNAME_KEY,
+                this.referenceResolver.resolve(auth.getUser().getUser(), EntityType.DOCUMENT).getName());
             result.put(LimsServer.TOKEN_KEY, auth.getToken());
         } else if (context.getUserReference() != null) {
             result.put(LimsServer.INSTANCE_IDENTIFIER_KEY, context.getUserReference().getWikiReference().getName());
@@ -192,7 +196,7 @@ public class LimsSynchronizationEventListener implements EventListener
 
     /**
      * Get all the LIMS servers configured in the current wiki.
-     * 
+     *
      * @param context the current request object
      * @return a list of {@link BaseObject XObjects} with LIMS server configurations, may be {@code null}
      */
@@ -211,7 +215,7 @@ public class LimsSynchronizationEventListener implements EventListener
 
     /**
      * Notify a remote LIMS instance that a patient's phenotype has changed.
-     * 
+     *
      * @param payload the JSON payload to send
      * @param serverConfiguration the XObject holding the LIMS server configuration
      * @param context the current request context

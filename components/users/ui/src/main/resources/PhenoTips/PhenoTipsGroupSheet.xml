@@ -46,7 +46,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('PhenoTips.ImageDisplayer')##
 $xwiki.ssx.use('PhenoTips.ImageDisplayer')##
-$xwiki.linkx.use('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css', {'rel': 'stylesheet'})##
+$xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 #if ($xcontext.action == 'edit')
 (% class="xform" %)(((
 ; {{html}}&lt;label&gt;Name&lt;/label&gt;{{/html}}

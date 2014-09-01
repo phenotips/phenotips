@@ -19,15 +19,15 @@
  */
 package org.phenotips.measurements.internal;
 
+import org.xwiki.component.annotation.Component;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
 
 /**
  * Height measurements, in centimeters, measured as recumbent length for infants that can't stand, and as stature for
  * persons over two years.
- * 
+ *
  * @version $Id$
  * @since 1.0M3
  */

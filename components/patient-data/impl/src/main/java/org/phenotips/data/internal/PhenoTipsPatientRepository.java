@@ -106,7 +106,7 @@ public class PhenoTipsPatientRepository implements PatientRepository
         try {
             Query q = this.qm.createQuery("where doc.object(PhenoTips.PatientClass).external_id = :eid", Query.XWQL);
             q.bindValue("eid", externalId);
-            List<String> results = q.<String>execute();
+            List<String> results = q.execute();
             if (results.size() == 1) {
                 DocumentReference reference =
                     this.stringResolver.resolve(results.get(0), Patient.DEFAULT_DATA_SPACE);
@@ -130,27 +130,17 @@ public class PhenoTipsPatientRepository implements PatientRepository
             String targetSpace = Patient.DEFAULT_DATA_SPACE.getName();
 
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-            long crtMaxID = 0;
-            Query q =
-                this.qm.createQuery(
-                    "select patient.identifier from Document doc, doc.object(PhenoTips.PatientClass) as patient"
-                        + " where patient.identifier is not null order by patient.identifier desc", Query.XWQL)
-                    .setLimit(1);
-            List<Long> crtMaxIDList = q.execute();
-            if (crtMaxIDList.size() > 0 && crtMaxIDList.get(0) != null) {
-                crtMaxID = crtMaxIDList.get(0);
-            }
-            crtMaxID = Math.max(crtMaxID, 0);
+            long id = getNextAvailableId();
             DocumentReference newDoc;
             SpaceReference space =
                 new SpaceReference(targetSpace, this.bridge.getCurrentDocumentReference().getWikiReference());
             do {
-                newDoc = new DocumentReference(prefix + String.format("%07d", ++crtMaxID), space);
+                newDoc = new DocumentReference(prefix + String.format("%07d", id), space);
             } while (this.bridge.exists(newDoc));
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(newDoc);
             doc.readFromTemplate(this.referenceResolver.resolve(PhenoTipsPatient.TEMPLATE_REFERENCE), context);
             doc.setTitle(newDoc.getName());
-            doc.getXObject(Patient.CLASS_REFERENCE).setLongValue("identifier", crtMaxID);
+            doc.getXObject(Patient.CLASS_REFERENCE).setLongValue("identifier", id);
             if (creator != null) {
                 doc.setCreatorReference(creator);
                 doc.setAuthorReference(creator);
@@ -161,8 +151,8 @@ public class PhenoTipsPatientRepository implements PatientRepository
             Patient patient = new PhenoTipsPatient(doc);
             List<PatientRecordInitializer> initializers = Collections.emptyList();
             try {
-                initializers = ComponentManagerRegistry.getContextComponentManager()
-                    .<PatientRecordInitializer>getInstanceList(PatientRecordInitializer.class);
+                initializers = ComponentManagerRegistry.getContextComponentManager().getInstanceList(
+                    PatientRecordInitializer.class);
             } catch (ComponentLookupException e) {
                 this.logger.error("Failed to get initializers", e);
             }
@@ -191,4 +181,19 @@ public class PhenoTipsPatientRepository implements PatientRepository
         return createNewPatient(this.bridge.getCurrentUserReference());
     }
 
+    private long getNextAvailableId() throws QueryException
+    {
+        long crtMaxID = 0;
+        Query q =
+            this.qm.createQuery(
+                "select patient.identifier from Document doc, doc.object(PhenoTips.PatientClass) as patient"
+                    + " where patient.identifier is not null order by patient.identifier desc", Query.XWQL)
+                .setLimit(1);
+        List<Long> crtMaxIDList = q.execute();
+        if (crtMaxIDList.size() > 0 && crtMaxIDList.get(0) != null) {
+            crtMaxID = crtMaxIDList.get(0);
+        }
+        crtMaxID = Math.max(crtMaxID, 0);
+        return crtMaxID + 1;
+    }
 }
