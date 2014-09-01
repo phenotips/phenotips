@@ -41,7 +41,8 @@ public class SheetAssembler
         DataToCellConverter converter = new DataToCellConverter();
 
         /* Some sections require setup, which need to be run here. */
-        converter.featureSetup(enabledFields);
+        converter.phenotypeSetup(enabledFields);
+        converter.prenatalPhenotypeSetup(enabledFields);
 
         /* Important. Headers MUST be generated first. Some of them contain setup code for the body */
         List<DataSection> headers = generateHeader(converter, enabledFields);
@@ -87,9 +88,13 @@ public class SheetAssembler
             List<DataSection> _patientSections = new LinkedList<DataSection>();
             List<DataSection> patientSections = new LinkedList<DataSection>();
             _patientSections.add(converter.idBody(patient));
-            _patientSections.add(converter.featuresBody(patient));
+            _patientSections.add(converter.phenotypeBody(patient));
             _patientSections.add(converter.patientInfoBody(patient));
+            _patientSections.add(converter.familyHistoryBody(patient));
+            _patientSections.add(converter.prenatalPerinatalHistoryBody(patient));
+            _patientSections.add(converter.prenatalPhenotypeBody(patient));
 
+            //This is needed for a null check
             for (DataSection section : _patientSections) {
                 if (section != null) {
                     patientSections.add(section);
@@ -105,8 +110,11 @@ public class SheetAssembler
         List<DataSection> headerSections = new LinkedList<DataSection>();
         List<DataSection> _headerSections = new LinkedList<DataSection>();
         _headerSections.add(converter.idHeader(enabledFields));
-        _headerSections.add(converter.featuresHeader());
+        _headerSections.add(converter.phenotypeHeader());
         _headerSections.add(converter.patientInfoHeader(enabledFields));
+        _headerSections.add(converter.familyHistoryHeader(enabledFields));
+        _headerSections.add(converter.prenatalPerinatalHistoryHeader(enabledFields));
+        _headerSections.add(converter.prenatalPhenotypeHeader());
 
         for (DataSection section : _headerSections) {
             if (section != null) {
