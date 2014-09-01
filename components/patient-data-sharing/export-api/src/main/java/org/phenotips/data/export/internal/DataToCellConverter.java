@@ -445,7 +445,7 @@ public class DataToCellConverter
         }
         if (present.contains("indication_for_referral")) {
             String indicationForReferral = patient.<String>getData("notes").get("indication_for_referral");
-            indicationForReferral = wrapString(indicationForReferral, this.charactersPerLine);
+            indicationForReferral = ConversionHelpers.wrapString(indicationForReferral, charactersPerLine);
             DataCell cell = new DataCell(indicationForReferral, x, 0);
             cell.setMultiline();
             bodySection.addCell(cell);
