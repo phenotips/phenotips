@@ -103,7 +103,7 @@ public class SheetAssembler
             _patientSections.add(converter.medicalHistoryBody(patient));
             _patientSections.add(converter.isNormalBody(patient));
             _patientSections.add(converter.phenotypeBody(patient));
-            _patientSections.add(converter.omimBody(patient));
+            _patientSections.add(converter.disordersBody(patient));
 
             /* Null section filter */
             for (DataSection section : _patientSections) {
@@ -129,7 +129,7 @@ public class SheetAssembler
         _headerSections.add(converter.medicalHistoryHeader(enabledFields));
         _headerSections.add(converter.isNormalHeader(enabledFields));
         _headerSections.add(converter.phenotypeHeader());
-        _headerSections.add(converter.omimHeader(enabledFields));
+        _headerSections.add(converter.disordersHeaders(enabledFields));
 
         for (DataSection section : _headerSections) {
             if (section != null) {

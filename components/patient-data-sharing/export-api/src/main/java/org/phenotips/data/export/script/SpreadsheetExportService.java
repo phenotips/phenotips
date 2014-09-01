@@ -31,6 +31,7 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
 
+import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -87,17 +88,22 @@ public class SpreadsheetExportService implements ScriptService
      *
      * @param enabledFields string array of 'non-pretty' names
      */
-    public void export(String[] enabledFields, List<String> patients) throws XWikiException
+    public void export(String[] enabledFields, List<String> patients, OutputStream outputStream) throws XWikiException
     {
         context = (XWikiContext) execution.getContext().getProperty("xwikicontext");
         wiki = context.getWiki();
 
         SpreadsheetExporter exporter = new SpreadsheetExporter();
         try {
-            exporter.export(enabledFields, patientListToXWikiDocument(patients));
+            exporter.export(enabledFields, patientListToXWikiDocument(patients), outputStream);
+//            OutputStream outputStream = exporter.export(enabledFields, patientListToXWikiDocument(patients));
+//            if (outputStream != null) {
+//                return outputStream;
+//            }
         } catch (Exception ex) {
             logger.error("Error caught while generating an export spreadsheet", ex);
         }
+//        return null;
     }
 
     protected List<XWikiDocument> patientListToXWikiDocument(List<String> patients) throws XWikiException

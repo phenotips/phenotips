@@ -22,8 +22,9 @@ package org.phenotips.data.export.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.internal.PhenoTipsPatient;
 
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,11 +52,12 @@ public class SpreadsheetExporter
 {
     protected Workbook wBook;
 
-    protected FileOutputStream wFile;
+    protected OutputStream wOutputStream;
 
     protected Map<String, Sheet> sheets = new HashMap<String, Sheet>();
 
-    public void export(String[] _enabledFields, List<XWikiDocument> patients) throws Exception
+    public void export(String[] _enabledFields, List<XWikiDocument> patients, OutputStream outputStream)
+        throws Exception
     {
         if (_enabledFields == null) {
             return;
@@ -64,20 +66,23 @@ public class SpreadsheetExporter
         try {
             createBlankWorkbook();
             processMainSheet(enabledFields, patients);
-            wBook.write(wFile);
+            wBook.write(outputStream);
+            outputStream.flush();
+//            wBook.write(wOutputStream);
         } catch (IOException ex) {
             //FIXME
         } catch (Exception ex) {
             //Nothing that can be really done, so just rethrow it.
             throw ex;
         } finally {
-            if (wFile != null) {
+            /* if (wOutputStream != null) {
                 try {
-                    wFile.close();
+                    wOutputStream.close();
                 } catch (IOException ex) {
                     //If this happens, something went very wrong.
                 }
-            }
+            } */
+//            return wOutputStream;
         }
     }
 
@@ -90,7 +95,7 @@ public class SpreadsheetExporter
         SheetAssembler assembler = runAssembler(enabledFields, patients);
 //        styleCells();
         write(assembler.getAssembled(), sheet);
-//        freezeHeader(formatter.getHeaderHeight(), sheet);
+        freezeHeader(assembler.headerHeight.shortValue(), sheet);
     }
 
     /*
@@ -130,6 +135,7 @@ public class SpreadsheetExporter
         Row row;
         for (Integer y = 0; y <= section.getMaxY(); y++) {
             row = sheet.createRow(y);
+            Integer maxLines = 0;
 
             for (Integer x = 0; x <= section.getMaxX(); x++) {
                 DataCell dataCell = cells[x][y];
@@ -137,15 +143,22 @@ public class SpreadsheetExporter
                     continue;
                 }
                 Cell cell = row.createCell(x);
-
                 cell.setCellValue(dataCell.getValue());
                 styler.style(dataCell, cell, wBook);
+
+                if (dataCell.getNumberOfLines() != null) {
+                    maxLines = maxLines < dataCell.getNumberOfLines() ? dataCell.getNumberOfLines() : maxLines;
+                }
+            }
+            if (maxLines > 1) {
+                Integer height = maxLines * 400;
+                row.setHeight(height.shortValue());
             }
         }
         for (int col = 0; section.getMaxX() >= col; col++) {
             sheet.autoSizeColumn(col);
-            if (sheet.getColumnWidth(col) > DataToCellConverter.charactersPerLine * 200) {
-                sheet.setColumnWidth(col, DataToCellConverter.charactersPerLine * 200);
+            if (sheet.getColumnWidth(col) > (DataToCellConverter.charactersPerLine * 210)) {
+                sheet.setColumnWidth(col, DataToCellConverter.charactersPerLine * 210);
             }
         }
 
@@ -156,7 +169,7 @@ public class SpreadsheetExporter
                 if (dataCell != null && dataCell.getMergeX() != null) {
                     sheet.addMergedRegion(new CellRangeAddress(y, y, x, x + dataCell.getMergeX()));
                 }
-                /* No longer will be merging cells on the Y axis
+                /* No longer will be merging cells on the Y axis, but keep this code for future reference.
                 if (dataCell.getYBoundry() != null) {
                     sheet.addMergedRegion(new CellRangeAddress(dataCell.y, dataCell.getYBoundry(), dataCell.x, dataCell.x));
                 } */
@@ -167,6 +180,7 @@ public class SpreadsheetExporter
     protected void createBlankWorkbook() throws IOException
     {
         wBook = new XSSFWorkbook();
-        wFile = new FileOutputStream("/home/anton/Documents/workbook.xlsx");
+//        wOutputStream = new FileOutputStream("/home/anton/Documents/workbook.xlsx");
+        wOutputStream = new ByteArrayOutputStream();
     }
 }

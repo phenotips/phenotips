@@ -45,6 +45,8 @@ public class DataCell
 
     Set<DataCell> generated;
 
+    private Integer numberOfLines = null;
+
     public DataCell(String value, Integer x, Integer y)
     {
         this.value = value;
@@ -163,5 +165,14 @@ public class DataCell
     public void setIsChild(Boolean isChild)
     {
         this.isChild = isChild;
+    }
+
+    public void setMultiline() {
+        this.numberOfLines = this.value.split("\n").length;
+    }
+
+    public Integer getNumberOfLines()
+    {
+        return numberOfLines;
     }
 }

@@ -186,7 +186,7 @@ public class ConversionHelpers
         return sectionFeatureTree;
     }
 
-    public static String wrapString(String string, Integer charactersPerLine)
+    /** No longer needed */ public static String wrapString(String string, Integer charactersPerLine)
     {
         if (string == null) {
             return "";
@@ -203,7 +203,7 @@ public class ConversionHelpers
                 found = true;
             }
             if (found) {
-                returnString.insert(counter, "\n");
+//                returnString.insert(counter, "\n");
             }
 
             counter += charactersPerLine;
