@@ -326,46 +326,10 @@
             resultsParameter : "docs",
             resultId : "symbol",
             resultValue : "symbol",
+            resultAltName : "alias_symbol",
             enableHierarchy: false,
-            resultInfo : {
-                 "Name" : {selector : "name"},
-                 "Gene family" : {selector: 'gene_family'},
-                 "Aliases" : {selector: 'alias_symbol'},
-                 "See also in" : {
-                    "selector"  : 'external_ids',
-                    "processor" : function (map) {
-                       var result = new Element('div');
-                       var externalDBs = [
-                          { name : 'GENECARDS', url : 'http://www.genecards.org/cgi-bin/carddisp.pl?gene=',          field : 'genecards_id'},
-                          { name : 'OMIM',      url : 'http://www.omim.org/entry/',                                  field : 'omim_id'},
-                          { name : 'Entrez',    url : 'http://www.ncbi.nlm.nih.gov/gene/?term=',                     field : 'entrez_id'},
-                          { name : 'RefSeq',    url : 'http://www.ncbi.nlm.nih.gov/nuccore/',                        field : 'refseq_accession'},
-                          { name : 'Ensembl',   url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_gene_id'}
-                       ];
-                       externalDBs.each(function (item) {
-                         var value = map[item.field];
-                         if (value) {
-                           if (!value.each) {
-                             value = [value];
-                           }
-                           value.each (function (id) {
-                             result.insert(new Element('a', {
-                               'href'   : item.url + id,
-                               'class'  : 'button secondary'
-                             }).update(item.name + ': ' + id).wrap('span', {'class' : 'buttonwrapper'}));
-                           });
-                         }
-                       });
-                       result.select('a').each(function(item) {
-                         item.observe('click', function(event) {
-                            event.stop();
-                            window.open(item.href);
-                         })
-                       });
-                       return result;
-                    }
-                 }
-                         },
+            tooltip : 'gene-info',
+            resultInfo : {},
             fadeOnClear : false,
             timeout : 30000,
             parentContainer : null

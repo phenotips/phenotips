@@ -3960,6 +3960,69 @@ document.observe("xwiki:dom:loaded", function() {
             window.open(viewButton.href);
           });
         }
+      },
+      'gene-info' : {
+        'hint' : 'About this gene',
+        'service'  : "$xwiki.getURL('PhenoTips.GeneInfoService', 'get')",
+        'callback' : function (helpButton, json) {
+          var c = helpButton.helpBox.content;
+          var elt = function(type, cssClass, content) {
+            return new Element(type, cssClass &amp;&amp; {'class' : cssClass} || {}).update(content || '');
+          };
+
+          c.update(
+                    elt('span', 'info').insert(elt('span', 'key').update(json.symbol))
+                                       .insert(' ')
+                                       .insert(elt('span', 'value').update(json.name))
+                  );
+
+          var labels = {'alias_symbol' : 'Aliases', 'gene_family' : 'Gene family'};
+          var advancedInfo = elt('dl');
+          for (var l in labels) {
+            if (json[l] &amp;&amp; json[l].length &gt; 0) {
+              advancedInfo.insert(elt('dt', '', labels[l]));
+              json[l].each(function (item) {
+                advancedInfo.insert(elt('dd', '', item.label || item));
+              })
+            }
+          }
+          if (advancedInfo.firstDescendant()) {
+            c.insert(advancedInfo);
+          }
+
+          if (json.external_ids) {
+            var tools = elt('div', 'term-tools');
+            var externalDBs = [
+                          { name : 'GENECARDS', url : 'http://www.genecards.org/cgi-bin/carddisp.pl?gene=',          field : 'genecards_id'},
+                          { name : 'OMIM',      url : 'http://www.omim.org/entry/',                                  field : 'omim_id'},
+                          { name : 'Entrez',    url : 'http://www.ncbi.nlm.nih.gov/gene/?term=',                     field : 'entrez_id'},
+                          { name : 'RefSeq',    url : 'http://www.ncbi.nlm.nih.gov/nuccore/',                        field : 'refseq_accession'},
+                          { name : 'Ensembl',   url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_gene_id'}
+            ];
+            externalDBs.each(function (item) {
+                         var value = json.external_ids[item.field];
+                         if (value) {
+                           if (!value.each) {
+                             value = [value];
+                           }
+                           value.each (function (id) {
+                             tools.insert(new Element('a', {
+                               'href'   : item.url + id,
+                               'class'  : 'button'
+                             }).update(item.name + ': ' + id).wrap('span', {'class' : 'buttonwrapper'}));
+                           });
+                         }
+            });
+            // We must stop the event, otherwise this item will be selected; as a consequence, we must also manually open the link
+            tools.select('a').each(function(item) {
+                         item.observe('click', function(event) {
+                            event.stop();
+                            window.open(item.href);
+                         })
+            });
+            c.insert(tools);
+          }
+        }
       }
     },
 
