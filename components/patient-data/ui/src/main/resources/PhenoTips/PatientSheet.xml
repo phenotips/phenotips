@@ -57,6 +57,7 @@ $xwiki.jsfx.use('js/xwiki/editors/autosave.js')##
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 $xwiki.ssfx.use('uicomponents/widgets/validation/livevalidation.css', true)##
 $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
+$xwiki.jsfx.use('uicomponents/widgets/validation/scrollValidation.js')##
 ##
 ##
 #set($config = $xwiki.getDocument("${doc.space}.WebHome").getObject('PhenoTips.DBConfigurationClass'))

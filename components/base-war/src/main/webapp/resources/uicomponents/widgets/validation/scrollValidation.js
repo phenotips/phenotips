@@ -51,13 +51,14 @@ require(['jquery'], function ($)
             }
         });
 
-        //In case somebody decides to resize the window, and through off visibility calculations
+        //In case somebody decides to resize the window, and throw off visibility calculations
         _window.resize(function ()
         {
             viewportHeight = $(window).height();
         });
 
         saveButtons.on("click", function(){
+            var numberMissing = 0;
             $.each(fieldsByPosition, function (index, fieldObject)
             {
                 if (!fieldObject['field'][0].__validation.validate()) {
@@ -65,8 +66,14 @@ require(['jquery'], function ($)
                     var position = fieldObject['field'].offset().top - (viewportHeight / 3);
                     position < 0 ? position = 0 : null;
                     _window.scrollTop(position);
+                    numberMissing++;
                 }
             });
+            if (numberMissing > 0) {
+                var dialog = new PhenoTips.widgets.ModalPopup("There are " + numberMissing + " missing fields",
+                    false, {'title': 'Missing fields', 'verticalPosition': 'top', 'removeOnClose': true});
+                dialog.showDialog();
+            }
         });
     });
 });
