@@ -185,7 +185,7 @@ public class GeneNomenclature implements OntologyService, Initializable
                 JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
                 JSONArray docs = responseJSON.getJSONObject(RESPONSE_KEY).getJSONArray(DATA_KEY);
                 if (docs.size() >= 1) {
-                    Set<String> ids = new LinkedHashSet<>();
+                    Set<OntologyTerm> result = new LinkedHashSet<>();
                     // The remote service doesn't offer any query control, manually select the right range
                     int start = 0;
                     if (queryOptions.containsKey(CommonParams.START)) {
@@ -197,9 +197,11 @@ public class GeneNomenclature implements OntologyService, Initializable
                     }
 
                     for (int i = start; i < end; ++i) {
-                        ids.add(docs.getJSONObject(i).getString(LABEL_KEY));
+                        result.add(new JSONOntologyTerm(docs.getJSONObject(i)));
                     }
-                    return getTerms(ids);
+                    return result;
+                    // This is too slow, for the moment only return summaries
+                    // return getTerms(ids);
                 }
             } catch (IOException ex) {
                 this.logger.warn("Failed to search gene names: {}", ex.getMessage());
