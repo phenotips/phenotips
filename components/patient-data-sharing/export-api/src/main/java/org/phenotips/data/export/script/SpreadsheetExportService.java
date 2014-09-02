@@ -37,6 +37,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -47,8 +48,6 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.classes.BaseClass;
 import com.xpn.xwiki.objects.classes.PropertyClass;
-
-import groovy.lang.Singleton;
 
 /**
  * FIXME
@@ -96,14 +95,9 @@ public class SpreadsheetExportService implements ScriptService
         SpreadsheetExporter exporter = new SpreadsheetExporter();
         try {
             exporter.export(enabledFields, patientListToXWikiDocument(patients), outputStream);
-//            OutputStream outputStream = exporter.export(enabledFields, patientListToXWikiDocument(patients));
-//            if (outputStream != null) {
-//                return outputStream;
-//            }
         } catch (Exception ex) {
             logger.error("Error caught while generating an export spreadsheet", ex);
         }
-//        return null;
     }
 
     protected List<XWikiDocument> patientListToXWikiDocument(List<String> patients) throws XWikiException

@@ -212,8 +212,8 @@
   #end
 #end
 
-$response.addHeader("content-disposition", "attachment; filename=phenotips_${xwiki.formatDate($util.date, 'yyyy-MM-dd_HH-mm')}.xlsx")##
-$response.setContentType('application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')##
+$response.addHeader("content-disposition", "attachment; filename=phenotips_${xwiki.formatDate($services.jodatime.getDateTime(), 'yyyy-MM-dd_HH-mm')}.xlsx")##
+$response.setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')##
 $services.spreadsheetexport.export($enabledFields, $patients, $response.getOutputStream())
 
 }}}
