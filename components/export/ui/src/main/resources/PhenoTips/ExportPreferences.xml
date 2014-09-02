@@ -42,7 +42,7 @@
   <content>{{include document="PhenoTips.DatabaseFilters" /}}
 
 {{velocity output=false}}
-#macro(__export__displayFieldList $xclassName $targetFieldName $customValues $ignored $codeFields $valueList)
+#macro(__export__displayFieldList $xclassName $targetFieldName $customValues $ignored $codeFields $valueList $simple)
   {{html clean="false"}}
     #set($xclass = $xwiki.getDocument($xclassName).getxWikiClass())
     &lt;ul class="field-list"&gt;
@@ -61,29 +61,31 @@
           &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}" value="${field.name}" #if($valueList.contains(${field.name}) || true) checked="checked" #end /&gt;
           ${field.prettyName}
         &lt;/li&gt;
-        #if ($codeFields.contains(${field.name}))
-        &lt;li&gt;
-          &lt;label for="${targetFieldName}_${field.name}_code"&gt;
-          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code" value="${field.name}_code" #if($valueList.contains("${field.name}_code")) checked="checked" #end /&gt;
-          ${field.prettyName} (ontology term ID)
-        &lt;/li&gt;
-        &lt;li&gt;
-          &lt;label for="${targetFieldName}_${field.name}_combined"&gt;
-          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_combined" value="${field.name}_combined" #if($valueList.contains("${field.name}_combined")) checked="checked" #end /&gt;
-          ${field.prettyName} (ontology term ID and term name)
-        &lt;/li&gt;
-        #end
-        #if ($metaFields.contains(${field.name}))
-        &lt;li&gt;
-          &lt;label for="${targetFieldName}_${field.name}_code_meta"&gt;
-          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code_meta" value="${field.name}_code_meta" #if($valueList.contains("${field.name}_code_meta")) checked="checked" #end /&gt;
-          ${field.prettyName} (ontology term and metadata IDs)
-        &lt;/li&gt;
-        &lt;li&gt;
-          &lt;label for="${targetFieldName}_${field.name}_meta"&gt;
-          &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_meta" value="${field.name}_meta" #if($valueList.contains("${field.name}_meta") || true) checked="checked" #end /&gt;
-          ${field.prettyName} (ontology term and metadata names)
-        &lt;/li&gt;
+        #if ($simple != true)
+          #if ($codeFields.contains(${field.name}))
+          &lt;li&gt;
+            &lt;label for="${targetFieldName}_${field.name}_code"&gt;
+            &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code" value="${field.name}_code" #if($valueList.contains("${field.name}_code")) checked="checked" #end /&gt;
+            ${field.prettyName} (ontology term ID)
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;label for="${targetFieldName}_${field.name}_combined"&gt;
+            &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_combined" value="${field.name}_combined" #if($valueList.contains("${field.name}_combined")) checked="checked" #end /&gt;
+            ${field.prettyName} (ontology term ID and term name)
+          &lt;/li&gt;
+          #end
+          #if ($metaFields.contains(${field.name}))
+          &lt;li&gt;
+            &lt;label for="${targetFieldName}_${field.name}_code_meta"&gt;
+            &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_code_meta" value="${field.name}_code_meta" #if($valueList.contains("${field.name}_code_meta")) checked="checked" #end /&gt;
+            ${field.prettyName} (ontology term and metadata IDs)
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;label for="${targetFieldName}_${field.name}_meta"&gt;
+            &lt;input type="checkbox" name="${targetFieldName}" id="${targetFieldName}_${field.name}_meta" value="${field.name}_meta" #if($valueList.contains("${field.name}_meta") || true) checked="checked" #end /&gt;
+            ${field.prettyName} (ontology term and metadata names)
+          &lt;/li&gt;
+          #end
         #end
         #end
       #end
@@ -94,7 +96,11 @@
 {{/velocity}}
 
 {{velocity}}
-{{html clean="false" filter="indent"}}&lt;form class="xform" action="$xwiki.getURL('PhenoTips.Export', 'get', "space=data&amp;outputSyntax=plain")" method="post"&gt;&lt;div&gt;{{/html}}
+#set ($simple = false)
+#if ($request.getParameter("simple") == "true")    
+  #set ($simple = true)
+#end
+{{html clean="false" filter="indent"}}&lt;form class="xform" action="$request.getParameter("processor")" method="post"&gt;&lt;div&gt;{{/html}}
 (% class="section filters"%)(((
 === (% class="step" %)1(%%) Filter records you wish to export ===
 
@@ -120,7 +126,7 @@
 #set($codeFields = ['phenotype', 'negative_phenotype', 'prenatal_phenotype', 'omim_id'])
 #set($metaFields = ['phenotype'])
 #set($selectedValues = ['phenotype'])
-#__export__displayFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $codeFields $selectedValues)
+#__export__displayFieldList( "PhenoTips.PatientClass" 'columns' $customValues $ignored $codeFields $selectedValues $simple)
 )))##section columns
 
 (% class="buttons"%)(((
