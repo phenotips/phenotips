@@ -35,7 +35,7 @@ import org.apache.solr.common.SolrDocument;
 
 /**
  * Implementation for {@link OntologyTerm} based on an indexed Solr document.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
@@ -48,35 +48,35 @@ public class SolrOntologyTerm implements OntologyTerm
 
     /**
      * The owner ontology.
-     * 
+     *
      * @see #getOntology()
      */
     private OntologyService ontology;
 
     /**
      * The parents of this term, transformed from a set of IDs into a real set of terms.
-     * 
+     *
      * @see #getParents()
      */
     private Set<OntologyTerm> parents;
 
     /**
      * The ancestors of this term, transformed from a set of IDs into a real set of terms.
-     * 
+     *
      * @see #getAncestors()
      */
     private Set<OntologyTerm> ancestors;
 
     /**
      * A set containing the term itself and its ancestors, transformed from a set of IDs into a real set of terms.
-     * 
+     *
      * @see #getAncestorsAndSelf()
      */
     private Set<OntologyTerm> ancestorsAndSelf;
 
     /**
      * Constructor that provides the backing {@link #doc Solr document} and the {@link #ontology owner ontology}.
-     * 
+     *
      * @param doc the {@link #doc Solr document} representing this term
      * @param ontology the {@link #ontology owner ontology}
      */
@@ -108,7 +108,8 @@ public class SolrOntologyTerm implements OntologyTerm
         if (!(value instanceof List)) {
             return;
         }
-        List listValue = (List) value;
+        @SuppressWarnings("unchecked")
+        List<String> listValue = (List<String>) value;
         listValue.remove(this.getId());
     }
 
@@ -133,13 +134,13 @@ public class SolrOntologyTerm implements OntologyTerm
     @Override
     public Set<OntologyTerm> getParents()
     {
-        return this.parents != null ? this.parents : Collections.<OntologyTerm> emptySet();
+        return this.parents != null ? this.parents : Collections.<OntologyTerm>emptySet();
     }
 
     @Override
     public Set<OntologyTerm> getAncestors()
     {
-        return this.ancestors != null ? this.ancestors : Collections.<OntologyTerm> emptySet();
+        return this.ancestors != null ? this.ancestors : Collections.<OntologyTerm>emptySet();
     }
 
     @Override

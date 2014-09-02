@@ -48,7 +48,7 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * Event listener that sets up newly created PhenoTips groups, by also creating the corresponding "Group Administrators"
  * group, and setting up access rights.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -85,7 +85,7 @@ public class GroupSetupEventListener implements EventListener
     @Override
     public List<Event> getEvents()
     {
-        return Collections.<Event> singletonList(new DocumentCreatingEvent());
+        return Collections.<Event>singletonList(new DocumentCreatingEvent());
     }
 
     @Override
@@ -96,10 +96,13 @@ public class GroupSetupEventListener implements EventListener
         if (doc.getXObject(Group.CLASS_REFERENCE) == null) {
             return;
         }
-        XWikiContext context = (XWikiContext) data;
         DocumentReference docReference = doc.getDocumentReference();
-        DocumentReference adminsReference = new DocumentReference(docReference.getName() + " Administrators",
-            docReference.getLastSpaceReference());
+        if ("PhenoTipsGroupTemplate".equals(docReference.getName())) {
+            return;
+        }
+        XWikiContext context = (XWikiContext) data;
+        DocumentReference adminsReference =
+            new DocumentReference(docReference.getName() + " Administrators", docReference.getLastSpaceReference());
         XWiki xwiki = context.getWiki();
         try {
             // Create the administrative group

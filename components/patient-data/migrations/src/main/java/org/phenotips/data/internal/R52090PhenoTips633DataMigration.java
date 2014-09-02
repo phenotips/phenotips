@@ -51,7 +51,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
  * Migration for PhenoTips issue #633: Automatically migrate existing {@code in_vitro} values to the {@code ivf} field.
- * 
+ *
  * @version $Id$
  * @since 1.0M10
  */

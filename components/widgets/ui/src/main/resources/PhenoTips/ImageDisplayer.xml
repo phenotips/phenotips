@@ -1,0 +1,1350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>ImageDisplayer</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822197000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822197000</date>
+  <contentUpdateDate>1401822197000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity output=false}}
+#set ($displayerName = 'PhenoTips.ImageDisplayer')
+#set ($displayer = $xwiki.getDocument($displayerName))
+#set($options = {
+  'fieldName' : "",
+  'filter' : ['png', 'jpg', 'jpeg', 'gif'],
+  'manage' : false,
+  'inputType' : 'checkbox',
+  'isImage' : true
+})
+
+#set($options.mode = "$!{xcontext.action}")
+
+#if ("$!{name}" != '' &amp;&amp; "$!{prefix}" != '' &amp;&amp; "$!{object}" != '')
+  ## In displayer mode
+  #set ($targetDoc = $doc)
+  #set ($property = "$!{name}")
+  #set ($propValue = $value)
+  #set ($fieldName = "$!{prefix}$!{name}")
+#elseif ("$!{request.doc}" != '' &amp;&amp; "$!{request.classname}" != '' &amp;&amp; "$!{request.object}" != '' &amp;&amp; "$!{request.property}" != '')
+  ## In external mode
+  #set ($targetDoc = $xwiki.getDocument("$!{request.doc}"))
+  #set ($property = "$!{request.property}")
+  #set ($object = $targetDoc.getObject("$!{request.classname}", $mathtool.toInteger("$!{request.object}")))
+  #set ($propValue = $object.getProperty("$!{request.property}").value)
+  #if ("$!{propValue.size()}" == '')
+    #set ($propValue = [])
+  #end
+  #set ($fieldName = "$!{request.dprefix}$!{request.classname}_$!{request.object}_$!{request.property}")
+  #if ("$!{request.mode}" != '')
+    #set($options.mode = "$!{request.mode}")
+  #else
+    #set($options.mode = "$!{xcontext.action}")
+  #end
+  #if ("$!{request.manage}" != '')
+    #set($options.manage = true)
+  #end
+#end
+#if ($object.getxWikiClass().get($property).getProperty('multiSelect').value != 1)
+  #set($options.inputType = 'radio')
+  #if ("$!{value}" == '')
+    #set ($propValue = [])
+  #else
+    #set ($propValue = [$value])
+  #end
+#end
+## TODO: This is a workaround. Find a better way to specify accepted file formats.
+#set($options.html5Filter = "$!{object.getxWikiClass().get($property).getProperty('validationRegExp').value}")
+#set($formats = "$!{object.getxWikiClass().get($property).getProperty('validationMessage').value}")
+#if ($formats != '')
+  #set ($options.filter = $formats.split('\\s*[,| ]\\s*'))
+  #if (!$options.html5Filter.contains('image'))
+    #set ($options.isImage = false)
+  #end
+#end
+#set ($qString = "doc=$!escapetool.url($!{targetDoc.fullName})&amp;property=$!{property}&amp;classname=$!escapetool.url($!{object.xWikiClass.name})&amp;object=${object.number}")
+
+#if ($options.filter &amp;&amp; $options.filter.size() &gt; 0)
+  #foreach($item in $options.filter)
+    #set($options.rawfilter = "$!{options.rawfilter}, ${item}")
+  #end
+  #if ($options.rawfilter)
+    #set($options.rawfilter = $options.rawfilter.substring(2))
+  #end
+#end
+
+#macro (__getExtension $filename)$!{filename.substring($mathtool.add($filename.lastIndexOf('.'), 1)).toLowerCase()}#end
+
+#macro (__displaySelectableAttachment $attachment $targetDocument $selection)
+  {{html wiki=true clean=false}}&lt;div class="attachment-item #if($options.isImage) image #else #__getExtension(${attachment.filename})#{end}#if($selection.contains(${attachment.filename})) selected#{end}"&gt;
+  &lt;label for='${fieldName}_${attachment.filename}' title='${attachment.filename}'&gt;
+  {{html wiki=false clean=false}}&lt;input id='${fieldName}_${attachment.filename}' type='${options.inputType}' name='${fieldName}' value='${attachment.filename}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${attachment.filename} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
+  #if ($options.manage)
+  &lt;a class='action delete fa fa-times-circle fa-lg fa-fw' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="Delete"&gt;&lt;/a&gt;##
+  #end
+  #if($options.isImage)(% class="attachment-preview" %)((([[image:${targetDoc.fullName}@${attachment.filename}||title="${attachment.filename}"]])))#else##
+ &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="Open $!{attachment.filename}"&gt; [open]&lt;/a&gt;#end##
+  &lt;/div&gt;{{/html}}##
+#end
+
+#macro (__displaySelectableAttachmentList $targetDocument $selection)
+  (% class="attachment-list" %)(((
+  #set ($sortedAttachments = $sorttool.sort($targetDocument.getAttachmentList(), 'date:desc') )
+  #if ($sortedAttachments.size() == 0)(% class="hint" %)None available(%%)#end
+  #foreach ($attachment in $sortedAttachments)
+    #set ($extension = "#__getExtension($attachment.getFilename())")
+    #if ($options.filter.size() == 0 || $options.filter.contains($extension))
+      #__displaySelectableAttachment($attachment $targetDocument $selection)
+    #end
+  #end
+  {{html wiki=false clean=false}}&lt;input type='hidden' name='${fieldName}' value=''/&gt;{{/html}}##
+  )))(% class="clear" %)((()))###
+#end
+
+#macro (__displayLastAttachmentSelected $targetDocument)
+  #set ($sortedAttachments = $sorttool.sort($targetDocument.getAttachmentList(), 'date:desc') )
+  #if ($sortedAttachments.size() &gt; 0)
+    #set ($attachment = $sortedAttachments.get(0))
+    #set ($extension = "#__getExtension($attachment.getFilename())")
+    #if ($options.filter.size() == 0 || $options.filter.contains($extension))
+      #__displaySelectableAttachment($attachment $targetDocument [${attachment.filename}])
+    #end
+  #end
+#end
+
+#macro (__displayUploadForm $targetDocument)
+  {{html wiki=false clean=false}}
+  &lt;form action="$targetDocument.getURL('upload')" enctype="multipart/form-data" method="post" id="${fieldName}-upload2" class="upload-attachment xform"&gt;
+  &lt;div&gt;
+    #if (${options.rawfilter} != '')
+      &lt;span class="xHint"&gt;Accepted file formats: ${options.rawfilter}&lt;/span&gt;
+    #end
+    &lt;input type="file" name="filepath" id="attachfile2" class="attachment" size="30" title="$!{escapetool.xml($options.rawfilter)}"/&gt;
+    &lt;input type="hidden" name="filter" value="$!{escapetool.xml($options.html5Filter)}" /&gt;
+    &lt;input type="hidden" name="xredirect" value="$!{escapetool.xml($doc.getURL($xcontext.action, $request.queryString))}" /&gt;
+    &lt;input type="hidden" name="ajaxxredirect" value="$!{escapetool.xml($displayer.getURL('get', "$!{qString}&amp;xaction=lastatt" ))}" /&gt;
+    &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+    &lt;input type="submit" name="action_upload" class="button" value='Upload and select'  title='Upload and select'/&gt;
+  &lt;/div&gt;
+  &lt;/form&gt;
+  {{/html}}
+#end
+
+#macro (__displayGallery $targetDocument  $selection)
+  #set ($content = '')
+  #foreach ($name in  $selection)
+    #if ("$!{targetDocument.getAttachment(${name})}" != '')
+      #if ($options.isImage)
+        #set ($content = "$!{content}[[image:${targetDocument.fullName}@${name}||style=""max-width:100%""]]${util.newline}")
+      #else
+        #set ($content = "$!{content}[[attach:${targetDocument.fullName}@${name}||class='attachment-link #__getExtension($name)']]${util.newline}")
+      #end
+    #end
+  #end
+  #if ($content != '')
+#if ($options.isImage &amp;&amp; $options.inputType == 'checkbox')
+{{gallery}}
+$content
+{{/gallery}}
+
+#else
+$content
+#end
+  #end
+#end
+
+{{/velocity}}
+
+{{velocity}}
+#if ("$!{request.xaction}" == 'lastatt')
+#__displayLastAttachmentSelected($targetDoc)
+#else
+  $xwiki.ssx.use($displayerName, {'colorTheme' : "$xwiki.getSpacePreferenceFor('colorTheme', ${targetDoc.space})"})##
+  $xwiki.jsx.use($displayerName)##
+  ## check if the property exists and its value has the right type (is a list)
+  #if ("$!{propValue.size()}" != '')
+    #if ($options.mode == 'edit')
+      (% id=$!{fieldName}_container %)(((
+      #if ($options.manage)
+        #__displayUploadForm($targetDoc)
+      #else
+        #set ($actionURL = $displayer.getURL('view', "$!{qString}&amp;mode=edit&amp;manage=true"))
+        {{html wiki=false clean=false}}&lt;div class="actions"&gt;&lt;label class="create-button-label"&gt;+&lt;/label&gt;&lt;span class="buttonwrapper"&gt;&lt;a class="add-data-button button manage-images-button" href="${actionURL}"&gt;Upload and manage&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;{{/html}}
+      #end
+      #__displaySelectableAttachmentList($targetDoc $propValue)
+      )))
+    #else## not edit
+      #__displayGallery($targetDoc $propValue)
+    #end## context action check
+  #end## target object &amp; property exist and are valid
+#end## not a custom action
+{{/velocity}}</content>
+  <object>
+    <name>PhenoTips.ImageDisplayer</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>92c4c790-a961-4909-a1e5-ec02c0cf2e85</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var XWiki = (function(XWiki) {
+  /** Handles the gallery buttons directly in the current page without reloading the window. */
+  XWiki.MultiImageSelector = Class.create({
+     DEDUPLICATION_PREFIX : "IMAGE_SELECTOR",
+     ENFORCE_POPUP_MARKER : "showmng",
+     CHECK_LASTATT_MARKER : "lastatt",
+    /**
+     * Constructor.
+     *
+     * @param dialog the modal dialog where the gallery was loaded
+     */
+    initialize : function(dialog, reloadTargetId, sourceList) {
+      this.dialog = dialog;
+      this.gallery = dialog.dialogBox;
+      this.list = this.gallery.down('.attachment-list');
+      this.sourceList = sourceList;
+      this.reloadTargetId = reloadTargetId;
+
+      this.filterFormUpload();
+      this.addDeleteListeners();
+      this.addCloseListener();
+    },
+    /**
+     * Catches the upload form submission and stops it if the selected file is not of the accepted types (or not selected at all),
+     * and saves the underlying form (if any) so that any unsaved changes won't be lost.
+     */
+    filterFormUpload : function() {
+      this.form = this.gallery.down('form');
+      // Make sure unsaved selections are not lost
+      this.gallery.select('.attachment-item input[type=checkbox], .attachment-item input[type=radio]').each(function(item) {
+          var twin = $(item.id.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length));
+          if (twin) {item.checked = twin.checked;}
+      });
+      if (typeof (XWiki.FileUploader) != 'undefined') {
+        // -------------------------------------------------------
+        // HTML5 ajax file uploader is available, use it
+        // -------------------------------------------------------
+        // Update the url that will provide the submission result
+        var xredirect = this.form.down('input[type=hidden][name=xredirect]');
+        var ajaxxredirect = this.form.down('input[type=hidden][name=ajaxxredirect]');
+        if (xredirect &amp;&amp; ajaxxredirect) {
+          xredirect.value = ajaxxredirect.value + "&amp;manage=true&amp;dprefix="+ this.DEDUPLICATION_PREFIX;;
+          //ajaxxredirect.remove();
+        }
+        new XWiki.FileUploader(this.form, {enablePreview : false, enableFileInfo: false});
+        this.form.observe('xwiki:ajaxupload:finish', function(event) {
+           var responseContainer = this.gallery.down('.progress-info .upload-response');
+           if (responseContainer) {
+             var attachmentField = responseContainer.down('.attachment-item input[type="checkbox"], .attachment-item input[type="radio"]');
+             if (attachmentField) {
+               // is this just another version of another attachment that already exists?
+               this.gallery.select('.attachment-list .attachment-item input[type="' + attachmentField.type + '"][value="' + attachmentField.value.replace(/"/g, '\\"') + '"]').each(function (item) {
+                 item.up('.attachment-item').remove();
+               })
+               // if the attachment list contained some "Empty list" message, make sure to remove it
+               if (!this.list.down('.attachment-item')) {
+                 this.list.update('');
+               }
+               // only update the gallery with valid attachment-item elements
+               this.list.insert({top: responseContainer.innerHTML});
+               responseContainer.update('');
+               // delete listener for the new-comer
+               var newItemAction = this.list.down('.attachment-item .action.delete')
+               if (newItemAction) {
+                 newItemAction.observe('click', this.onDelete.bindAsEventListener(this));
+               }
+             }
+           }
+        }.bindAsEventListener(this));
+      } else {
+        // -------------------------------------------------------
+        // The browser does not support AJAX file upload. Do what you can...
+        // -------------------------------------------------------
+        new XWiki.widgets.Notification("This feature works better in more advanced browsers (Mozilla Firefox 4.0+, Google Chrome). Please consider upgrading.", 'info');
+        // Setup the allowed extensions for each file input
+        this.form.select('.upload-attachment input[type=file]').each(function(fileInput) {
+          fileInput.__allowedExtensions = fileInput.title.toLowerCase().replace(/\s*[,|; ]\s*/g, " ").strip();
+          if (fileInput.__allowedExtensions != '') {
+            fileInput.__allowedExtensions = fileInput.__allowedExtensions.split(" ");
+          } else {
+            fileInput.__allowedExtensions = false;
+          }
+        });
+        // On submit, check file extensions and make sure no data is lost
+        this.form.observe('submit', function(event) {
+          event.stop();
+          var uploadForm = event.element();
+          var hasErrors = false;
+          uploadForm.select('input[type=file]').each(function(fileInput) {
+            if (fileInput.value == '') {
+              new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.error.noFile')", 'error');
+              hasErrors = true;
+            } else if (fileInput.__allowedExtensions &amp;&amp; fileInput.__allowedExtensions.indexOf(this.getFileExtension(fileInput.value)) == -1) {
+              new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.error.badExtension')", 'error');
+              hasErrors = true;
+            }
+          }.bind(this));
+          // No form submission by AJAX right now, because file uploads can't be done this way without HTML5, this is future work
+          // Save the document before submitting, since the current form data will be lost otherwise
+          if (!hasErrors) {
+            this.updateSource();
+            // Update the url that will provide the submission result
+            var xredirect = this.form.down('input[type=hidden][name=xredirect]');
+            if (xredirect) {
+              xredirect.value = window.location.toString().replace(/#.*$/g, "").replace(/\?.*$/g, '')
+                               + "?" + this.ENFORCE_POPUP_MARKER + "=1"
+                               + "&amp;" + this.CHECK_LASTATT_MARKER + "=" + this.getFileName(uploadForm.down('input[type=file]').value)
+                               + (this.reloadTargetId ? '#' + this.reloadTargetId : '');
+            }
+            document.observe('xwiki:document:saved', function() {
+              new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.inProgress')", 'inprogress');
+              uploadForm.submit();
+            })
+            document.fire('xwiki:actions:save', {'continue': true, form: $('edit') || $('inline')});
+          }
+        }.bindAsEventListener(this));
+      }
+    },
+    getFileName : function(filepath) {
+      var fpath = filepath.replace('\\', '/');
+      var pieces = fpath.split('/');
+      if (pieces.length == 0) {
+        return null;
+      }
+      return pieces[pieces.length-1];
+    },
+    getFileExtension : function(filepath) {
+      var basename = this.getFileName(filepath);
+      pieces = basename.split('.');
+      return pieces[pieces.length-1].toLowerCase();
+    },
+
+    /** Catch attachment delete requests. */
+    addDeleteListeners : function() {
+      this.gallery.select('.action.delete').invoke('observe', 'click', this.onDelete.bindAsEventListener(this));
+    },
+
+    /** AJAX deletion of attachments. */
+    onDelete : function(event) {
+      event.stop();
+      deleteTool = event.element();
+      if (!deleteTool.disabled) {
+        new XWiki.widgets.ConfirmedAjaxRequest(
+          deleteTool.readAttribute('href'),
+          {
+            onCreate : function() { deleteTool.disabled = true },
+            onSuccess : function() {
+              var imgElt = deleteTool.up('.attachment-item');
+              var list = imgElt.up('.attachment-list');
+              if (imgElt) {
+                imgElt.remove();
+              }
+              if (!list.down('.attachment-item')) {
+                list.update(new Element('span', {'class' : 'hint'}).update('No photos available'));
+              }
+            }.bind(this),
+            onComplete : function() {
+              deleteTool.disabled = false;
+            }
+          },
+          {
+            confirmationText: "$services.localization.render('core.viewers.attachments.delete.confirm')",
+            progressMessageText : "$services.localization.render('core.viewers.attachments.delete.inProgress')",
+            successMessageText : "$services.localization.render('core.viewers.attachments.delete.done')",
+            failureMessageText : "$services.localization.render('core.viewers.attachments.delete.failed')"
+          }
+        );
+      }
+    },
+
+    updateSource : function () {
+      var newList = new Element('div', {'class' : 'attachment-list'});
+      this.list.select('.attachment-item').each(function(item) {
+        var label = item.down('label');
+        var input = label.down('input');
+        var image = item.down('.attachment-preview img');
+        var viewlink = item.down('a.view.hidden');
+        var id = input.id.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length);
+        var lItem = new Element('div', {'class' : item.className + (input.checked &amp;&amp; ' selected' || '')});
+        lItem.insert({
+                  'top' : new Element('label', {'for' : id, 'title' : input.value}).update(input.value).insert({
+                              top : new Element('input', {
+                                        'type' : input.type,
+                                        'checked' : input.checked,
+                                        'id' : id,
+                                        'name' : input.name.substring(XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX.length),
+                                        'value' : input.value
+                                    })
+                   }),
+                  'bottom': image &amp;&amp; new Element ('div', {'class' : 'attachment-preview'}).update(image) ||
+                                 viewlink &amp;&amp; new Element('a', {
+                                       'class' : 'view',
+                                       'href': viewlink.href,
+                                       'title' : viewlink.title,
+                                       'target' : '_blank'}).update(viewlink.innerHTML) || ''
+        });
+        newList.insert({bottom: lItem});
+      });
+      // is there at least one
+      if (!newList.down('.attachment-item')) {
+        newList.update(this.list.innerHTML);
+      } else {
+        this.sourceList.replace(newList);
+        this.sourceList = newList;
+      }
+    },
+
+    addCloseListener : function () {
+      this.dialog.__controller = this;
+      var closeButton = new Element('input', {'type' : 'button', 'class' : 'button', 'value' : 'Done'});
+      this.gallery.down('.content').insert({bottom : closeButton});
+      closeButton.observe('click', this.dialog.closeDialog.bindAsEventListener(this.dialog));
+    }
+  });
+
+  var loading = new Element('div', {'class' : 'imgcenter'}).update("&lt;img src=\"$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')\"/&gt;");
+  var dialog;
+
+  /* Hook onto the picker buttons so that the gallery is loaded via AJAX in a modal dialog. */
+  var __hookImageSelector = function(evt) {
+    var __getParameter = function (name) {
+      var result;
+      if(result = (new RegExp('[?&amp;]'+encodeURIComponent(name)+'=([^&amp;#]*)')).exec(window.location.search))
+        return decodeURIComponent(result[1]);
+    };
+    $$('.manage-images-button:not(.initialized)').invoke('observe', 'click', function(event) {
+      event.stop();
+      var targetElement = event.element();
+      targetElement.addClassName('initialized');
+      var reloadTargetId = targetElement.up('*[id]');
+      if (reloadTargetId) {
+        reloadTargetId = reloadTargetId.id;
+      }
+      var url = targetElement.href;
+      if (url.indexOf('?') &lt; 0) {
+        url += '?';
+      }
+      url += "&amp;xpage=plain&amp;dprefix="+ XWiki.MultiImageSelector.prototype.DEDUPLICATION_PREFIX;
+      dialog = new PhenoTips.widgets.ModalPopup(
+        loading, {}, {
+          'verticalPosition' : 'top',
+          'removeOnClose' : true,
+          'title' : targetElement.innerHTML,
+           onClose : function() {this.__controller.updateSource()}
+        }
+      );
+      dialog.shortcuts.close.keys = [];
+      dialog.showDialog();
+      new Ajax.Updater(loading.up(), url, {
+        onComplete : function() {
+          // Play nice with the Lightbox widget
+          if (window.gallery_lb) {
+            window.gallery_lb.updateImageList();
+          }
+          // Manually convert the special rel values into target attributes for the newly inserted content (rel="_something" =&gt; target="something")
+          if (typeof (XWiki.fixLinksTargetAttribute) == 'function') {
+            // Trick the function into updating link targets in inline mode; normally the conversion only takes place in view mode
+            var __tmp = XWiki.contextaction;
+            XWiki.contextaction = 'view';
+            XWiki.fixLinksTargetAttribute(dialog.dialog);
+            XWiki.contextaction = __tmp;
+          }
+          new XWiki.MultiImageSelector(dialog, reloadTargetId,  targetElement.up('.actions').next('.attachment-list'));
+          var toCheck = null;
+          if (toCheck = __getParameter(XWiki.MultiImageSelector.prototype.CHECK_LASTATT_MARKER)) {
+            var lastAtt = dialog.dialogBox.down('.attachment-item input[type=checkbox]'); // in 3.4+ add "[value=' + toCheck + ']"
+            if (lastAtt) {lastAtt.checked = true}
+          }
+        }
+      });
+    });
+    var activeAction = null;
+    if (__getParameter(XWiki.MultiImageSelector.prototype.ENFORCE_POPUP_MARKER) &amp;&amp; window.location.hash
+        &amp;&amp; (activeAction = $(window.location.hash.substring(1)))
+        &amp;&amp; (activeAction = activeAction.down('.manage-images-button'))
+    ) {
+      activeAction.click();
+    }
+  };
+  ['xwiki:dom:loaded', 'xwiki:dom:updated'].each (function(eventName) {
+     document.observe(eventName, __hookImageSelector)
+  });
+
+  return XWiki;
+}(XWiki || {}));</code>
+    </property>
+    <property>
+      <name>Ajax photo management</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.ImageDisplayer</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>71632e63-756b-45e6-94bc-6b81867954b3</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var XWiki = (function(XWiki) {
+  if (typeof (FileReader) == 'undefined' || typeof (FormData) == 'undefined') {return XWiki;}
+  XWiki.FileUploader = Class.create({
+    options : {
+      maxFilesize : 5*1048576, // 5MB
+      fileFilter  : /^(image\/gif|image\/jpeg|image\/png|image\/tiff)$/i,
+      enablePreview : true,
+      enableFileInfo : true,
+      enableProgressInfo : true,
+      progressAutohide : true,
+      autoUpload : true
+    },
+
+    initialize : function(form, options) {
+      this.options = Object.extend(Object.clone(this.options), options || { });
+
+      // initialize upload variables
+      this.resetUploadData();
+
+      // attach listeners
+      this.form = form;
+      var customFilter = this.form.down('input[name=filter]');
+      if (customFilter &amp;&amp; customFilter.value != '') {
+         this.options.fileFilter = new RegExp(customFilter.value, "i");
+      }
+      this.form.select('input[type=file]').invoke('observe', 'change', this.fileSelected.bindAsEventListener(this));
+      this.form.observe('submit', this.startUploading.bindAsEventListener(this));
+      if (this.options.autoUpload) {
+        // Hide submit buttons
+        this.form.select('input[type=submit]').invoke('setStyle', {'display' : 'none'});
+      }
+
+      //initialize messages
+      this.initFeedbackMessages();
+    },
+
+    resetUploadData : function () {
+      this.fileIsValid = false;
+      this.bytesUploaded = 0;
+      this.bytesTotal = 0;
+      this.previousBytesLoaded = 0;
+      this.timer = 0;
+      this.resultFileSize = '';
+    },
+
+    initFeedbackMessages : function() {
+      var _getElt = function (cssClass, content) {
+        return new Element('div', {'class' : cssClass}).update(content ? content : '');
+      };
+
+      if (this.options.enablePreview || this.options.enableFileInfo) {
+        this.PREVIEW = new Element('img', {'class' : 'preview'});
+        this.form.insert({bottom : this.PREVIEW});
+        if (!this.options.enablePreview) {
+          this.PREVIEW.style.display = 'none';
+        }
+      }
+
+      if (this.options.enableFileInfo) {
+        this.FILE_INFO = _getElt('file-info');
+        this.FILE_NAME = _getElt('file-name');
+        this.FILE_SIZE = _getElt('file-size');
+        this.FILE_TYPE = _getElt('file-type');
+        this.FILE_DIM  = _getElt('file-dim');
+
+        this.FILE_INFO.insert({
+               top: this.FILE_NAME,
+               bottom: this.FILE_SIZE
+             }).insert({
+               bottom: this.FILE_TYPE
+             }).insert({
+               bottom: this.FILE_DIM
+             });
+
+        this.FILE_INFO.style.display = 'none';
+        this.form.insert({bottom : this.FILE_INFO});
+      }
+
+      if (this.options.enableProgressInfo) {
+        this.PROGRESS_INFO       = _getElt('progress-info');
+        this.PROGRESS_CONTAINER  = _getElt('progress-container');
+        this.PROGRESS            = _getElt('progress');
+        this.PROGRESS_PERCENTAGE = _getElt('progress-percentage', '&amp;nbsp;');
+        this.PROGRESS_SPEED      = _getElt('progress-speed', '&amp;nbsp;');
+        this.PROGRESS_REMAINING  = _getElt('progress-remaining', '&amp;nbsp;');
+        this.PROGRESS_TRANSFERED = _getElt('progress-transfered', '&amp;nbsp;');
+        this.UPLOAD_RESPONSE     = _getElt('upload-response');
+
+        this.PROGRESS_INFO.insert({
+             top: this.PROGRESS_CONTAINER.insert(this.PROGRESS),
+             bottom: this.PROGRESS_PERCENTAGE
+           }).insert({
+             bottom: new Element('div', {'class' : 'clear'})
+           }).insert({
+             bottom: new Element('div').insert({
+                                       top: this.PROGRESS_SPEED,
+                                       bottom: this.PROGRESS_REMAINING
+                                     }).insert({
+                                       bottom: this.PROGRESS_TRANSFERED
+                                     }).insert({
+                                       bottom: new Element('div', {'class' : 'clear'})
+                                     })
+           }).insert({
+             bottom: this.UPLOAD_RESPONSE
+           });
+
+        this.PROGRESS_HIDE = _getElt('progress-hide', 'hide');
+        this.PROGRESS_INFO.insert({bottom: this.PROGRESS_HIDE}).insert({bottom: new Element('div', {'class' : 'clear'})});
+        this._hideProgressInfo = function() {
+          this.PROGRESS_INFO.style.display = 'none';
+          this.PROGRESS_HIDE.style.display = 'none';
+        }.bind(this);
+        this.PROGRESS_HIDE.observe('click', this._hideProgressInfo);
+        this._hideProgressInfo()
+        this.form.insert({bottom : this.PROGRESS_INFO});
+      }
+
+      this.MESSAGE_CONTAINER      = _getElt('');
+      this.INVALID_FILE_MESSAGE   = _getElt('errormessage', 'The selected file has an unsupported format.');
+      this.UNKNOWN_ERROR_MESSAGE  = _getElt('errormessage', 'An error occurred while uploading the file');
+      this.UPLOAD_ABORTED_MESSAGE = _getElt('errormessage' , 'The upload has been canceled by the user or the browser dropped the connection');
+      this.UPLOAD_SIZE_MESSAGE    = _getElt('errormessage' , 'The selected file is too large. Please choose files under ' + this.bytesToSize(this.options.maxFilesize));
+
+      this.form.insert({top : this.MESSAGE_CONTAINER});
+    },
+
+    secondsToTime : function (secs) { // we will use this function to convert seconds in normal time format
+      var hr = Math.floor(secs / 3600);
+      var min = Math.floor((secs - (hr * 3600))/60);
+      var sec = Math.floor(secs - (hr * 3600) -  (min * 60));
+
+      if (hr &lt; 10) {hr = "0" + hr; }
+      if (min &lt; 10) {min = "0" + min;}
+      if (sec &lt; 10) {sec = "0" + sec;}
+      if (hr) {hr = "00";}
+      return hr + ':' + min + ':' + sec;
+    },
+
+    bytesToSize : function (bytes) {
+      var sizes = ['Bytes', 'KB', 'MB'];
+      if (bytes == 0) return 'n/a';
+      var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+      return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+    },
+
+    fileSelected : function (event) {
+      // hide different warnings
+      this.MESSAGE_CONTAINER.update('');
+      this.UPLOAD_RESPONSE.update('');
+
+      // get selected file element
+      var lFile = event.element().files[0];
+
+      // filter files
+      if (! this.options.fileFilter.test(lFile.type)) {
+        this.MESSAGE_CONTAINER.update(this.INVALID_FILE_MESSAGE);
+        this.fileIsValid = false;
+        return;
+      }
+
+      // little test for filesize
+      if (lFile.size &gt; this.options.maxFilesize) {
+        this.MESSAGE_CONTAINER.update(this.UPLOAD_SIZE_MESSAGE);
+        this.fileIsValid = false;
+        return;
+      }
+
+      this.fileIsValid = true;
+
+      // get preview element
+      var imgPreview = this.PREVIEW;
+
+      // prepare HTML5 FileReader
+      var fileReader = new FileReader();
+      fileReader.onload = function(e){
+        if (imgPreview) {
+          // e.target.result contains the DataURL which we will use as a source of the image
+          imgPreview.src = e.target.result;
+        }
+        if (this.options.enableFileInfo) {
+          imgPreview.onload = function () { // binding onload event
+            // we are going to display some custom image information here
+            this.resultFileSize = this.bytesToSize(lFile.size);
+            this.FILE_NAME.update('Name: ' + lFile.name);
+            this.FILE_SIZE.update('Size: ' + this.resultFileSize);
+            this.FILE_TYPE.update('Type: ' + lFile.type);
+            this.FILE_DIM.update('Dimension: ' + imgPreview.naturalWidth + ' x ' + imgPreview.naturalHeight);
+            this.FILE_INFO.style.display = 'block';
+          }.bindAsEventListener(this);
+        }
+      }.bindAsEventListener(this);
+
+    // read selected file as DataURL
+    fileReader.readAsDataURL(lFile);
+    if (this.options.autoUpload) {
+      this.startUploading();
+    }
+  },
+
+  startUploading : function (event) {
+    if (event) {
+      event.stop();
+    }
+    var fileExists = false;
+    this.form.select('input[type=file]').each(function(item) {
+      if (item.value != '') {
+         fileExists = true;
+      }
+    });
+    this.fileIsValid = this.fileIsValid &amp;&amp; fileExists;
+    if (!this.fileIsValid) {return;}
+    // cleanup all temp states
+    this.MESSAGE_CONTAINER.update('');
+    this.resetUploadData();
+
+    if (this.options.enableProgressInfo) {
+      this.UPLOAD_RESPONSE.update('');
+      this.PROGRESS_INFO.style.display = 'block';
+      this.PROGRESS_CONTAINER.style.display = 'block';
+      this.PROGRESS.style.width = '0px';
+    }
+    // get form data for POSTing
+    //var vFD = this.form.getFormData(); // for FF3
+    var vFD = new FormData(this.form);
+
+    // create XMLHttpRequest object, adding few event listeners, and POSTing our data
+    var oXHR = new XMLHttpRequest();
+    oXHR.upload.addEventListener('progress', this.uploadProgress.bindAsEventListener(this), false);
+    oXHR.addEventListener('load', this.uploadFinish.bindAsEventListener(this), false);
+    oXHR.addEventListener('error', this.uploadError.bindAsEventListener(this), false);
+    oXHR.addEventListener('abort', this.uploadAbort.bindAsEventListener(this), false);
+    oXHR.open('POST', this.form.action);
+    oXHR.send(vFD);
+
+    // set inner timer
+    this.timer = setInterval(this.doInnerUpdates.bind(this), 30);
+  },
+
+  doInnerUpdates : function () { // we will use this function to display upload speed
+    if (this.options.enableProgressInfo) {
+      var iCB = this.bytesUploaded;
+      var iDiff = iCB - this.previousBytesLoaded;
+
+      // if nothing new loaded - exit
+      if (iDiff == 0)
+        return;
+
+      this.previousBytesLoaded = iCB;
+      iDiff = iDiff * 2;
+      var iBytesRem = this.bytesTotal - this.previousBytesLoaded;
+      var secondsRemaining = iBytesRem / iDiff;
+
+      // update speed info
+      var iSpeed = iDiff.toString() + 'B/s';
+      if (iDiff &gt; 1024 * 1024) {
+        iSpeed = (Math.round(iDiff * 100/(1024*1024))/100).toString() + 'MB/s';
+      } else if (iDiff &gt; 1024) {
+        iSpeed =  (Math.round(iDiff * 100/1024)/100).toString() + 'KB/s';
+      }
+      this.PROGRESS_SPEED.update(iSpeed);
+      this.PROGRESS_REMAINING.update('| ' + this.secondsToTime(secondsRemaining));
+    }
+  },
+
+  uploadProgress : function(e) { // upload process in progress
+    if (this.options.enableProgressInfo) {
+      if (e.lengthComputable) {
+        this.bytesUploaded = e.loaded;
+        this.bytesTotal = e.total;
+        var iPercentComplete = Math.round(e.loaded * 100 / e.total);
+        var iBytesTransfered = this.bytesToSize(this.bytesUploaded);
+
+        this.PROGRESS_PERCENTAGE.update(iPercentComplete.toString() + '%');
+        this.PROGRESS.style.width = (iPercentComplete).toString() + '%';
+        this.PROGRESS_TRANSFERED.update(iBytesTransfered);
+        if (iPercentComplete == 100) {
+          this.UPLOAD_RESPONSE.update('Processing...');
+          this.UPLOAD_RESPONSE.style.display = 'block';
+        }
+      } else {
+        this.PROGRESS.update('unable to compute');
+      }
+    }
+  },
+
+  uploadFinish : function(e) { // upload successfully finished
+    if (this.options.enableProgressInfo) {
+      this.UPLOAD_RESPONSE.update(e.target.responseText);
+      this.UPLOAD_RESPONSE.style.display = 'block';
+
+      this.PROGRESS_PERCENTAGE.update('100%');
+      this.PROGRESS.style.width = "100%";
+      if (this.options.enableFileInfo) {
+        this.FILE_SIZE.update(this.resultFileSize);
+      }
+      this.PROGRESS_REMAINING.update('| 00:00:00');
+      if (this.options.progressAutohide) {
+        setTimeout(this._hideProgressInfo, 5000);
+      } else {
+        this.PROGRESS_HIDE.style.display = '';
+      }
+    }
+    clearInterval(this.timer);
+
+    this.form.fire('xwiki:ajaxupload:finish');
+  },
+
+  uploadError : function(e) { // upload error
+    this.uploadAbnormalFinish(this.UNKNOWN_ERROR_MESSAGE);
+  },
+
+  uploadAbort : function(e) { // upload abort
+    this.uploadAbnormalFinish(this.UPLOAD_ABORTED_MESSAGE);
+  },
+
+  uploadAbnormalFinish : function (message) {
+    this.MESSAGE_CONTAINER.update(message);
+    if (this.options.enableProgressInfo) {
+      this.PROGRESS_HIDE.style.display = '';
+    }
+    clearInterval(this.timer);
+  }
+  });
+  return XWiki;
+}(XWiki || {}));</code>
+    </property>
+    <property>
+      <name>HTML5 file upload</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.ImageDisplayer</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>138649f5-23c9-4416-884f-37b72d3b2309</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+.editbody .image-gallery {
+  background-color: $theme.backgroundSecondaryColor;
+  padding: 0.5em 1em;
+}
+.image-gallery {
+  margin: 0.5em 1em .5em 0;
+  position: relative;
+}
+.image-gallery .caption {
+  font-variant: small-caps;
+  font-weight: bold;
+  text-transform: lowercase;
+}
+.image-gallery .actions {
+  position: absolute;
+  right: 0;
+  top: 0.25em;
+}
+.image-gallery .attachment-list {
+}
+.actions {
+  position: relative;
+}
+.image-gallery .attachment-list label.selected {
+  background-color: transparent;
+  margin: 0;
+  padding: 0 5px;
+  font-weight: normal;
+}
+.image-gallery .xGallery {
+}
+.attachment-item.image {
+  position: relative;
+  width: 110px;
+  float: left;
+  margin: .5em;
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 0 4px #aaa;
+}
+.attachment-item.pdf {
+  position: relative;
+  width: 31%;
+  float: left;
+  margin: .5em 2% .5em 0;
+  overflow: hidden;
+}
+.attachment-item:hover {
+  background-color: $theme.pageContentBackgroundColor;
+}
+.attachment-item label {
+  font-size: 0.9em;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0 5px;
+}
+.attachment-item .size {
+  font-size: 0.9em;
+  opacity: 0.7;
+}
+.attachment-item.pdf label, .attachment-link.pdf {
+  background-image: url("$xwiki.getSkinFile('icons/silk/page_white_acrobat.png')");
+  background-position: left center;
+  background-repeat: no-repeat;
+  display: inline-block;
+  padding: 0 0 0 20px;
+}
+.attachment-item label input {
+  margin-left: 0px;
+  vertical-align: middle;
+}
+.attachment-item .action {
+  background: $theme.pageContentBackgroundColor;
+  border-radius: 1em;
+  display: none;
+  line-height: 1.286em;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.attachment-item:hover .action {
+  display: inline-block;
+}
+.attachment-item .view {
+  display: none;
+  position: absolute;
+  right: 0;
+}
+.attachment-item:hover .view {
+  display: inline-block;
+}
+.attachment-item .attachment-preview {
+  padding: 5px;
+  text-align: center;
+  width: 100px;
+  height: 60px;
+}
+.attachment-item .attachment-preview img{
+  max-width: 100px;
+  max-height: 60px;
+  width: auto;
+}
+.xdialog-modal-container, .xnotification-container {
+  z-index: 100015 !important;
+}</code>
+    </property>
+    <property>
+      <name>Image selector ui</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.ImageDisplayer</name>
+    <number>1</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>a716b014-bd8a-43c3-b18c-38f84a651e81</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.preview {
+  max-width: 400px;
+}
+.file-info {
+  font-style: italic;
+  display:none;
+  margin: .5em 0;
+  opacity: .5;
+}
+
+.progress-info, .file-info {
+  font-size: .9em;
+}
+.progress-info .progress-hide {
+  font-style: italic;
+  opacity: .5;
+  cursor: pointer;
+  float: right;
+}
+.progress-info .progress-speed, .progress-info .progress-remaining {
+  opacity: .5;
+  float:left;
+  width:100px;
+}
+.progress-info .progress-transfered {
+  opacity: .5;
+  float:right;
+  text-align:right;
+}
+.progress-info .progress-percentage {
+  opacity: .5;
+  float:right;
+}
+.progress-info .progress, .progress-info .progress-container {
+  height:6px;
+  border-radius:10px;
+}
+.progress-info .progress {
+  background: linear-gradient(#66cc00, #4b9500);
+}
+.progress-info .progress-container {
+  border:1px solid #fff;
+  display:none;
+  float:left;
+  background: linear-gradient(#f9f9f9, #ddd);
+  width: 92%;
+}
+.progress-info /*.upload-response*/ {
+  margin-top: .5em;
+  padding: 5px 10px;
+  overflow: hidden;
+  display: none;
+  border: 1px solid #fff;
+  border-radius:4px;
+  box-shadow: 0 0 5px #ccc;
+}</code>
+    </property>
+    <property>
+      <name>HTML5 file upload UI</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>

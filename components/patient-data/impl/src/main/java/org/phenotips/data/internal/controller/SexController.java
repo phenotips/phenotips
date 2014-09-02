@@ -22,22 +22,19 @@ package org.phenotips.data.internal.controller;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.SimpleNamedData;
+import org.phenotips.data.SimpleValuePatientData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiContext;
@@ -55,16 +52,16 @@ import net.sf.json.JSONObject;
 @Component(roles = { PatientDataController.class })
 @Named("sex")
 @Singleton
-public class SexController implements PatientDataController<ImmutablePair<String, String>>
+public class SexController implements PatientDataController<String>
 {
     private static final String DATA_NAME = "sex";
 
     private static final String INTERNAL_PROPERTY_NAME = "gender";
 
-    private static final String EXPOSED_PROPERTY_NAME = DATA_NAME;
+    private static final String SEX_MALE = "M";
 
-    private static final String SEX_MALE    = "M";
-    private static final String SEX_FEMALE  = "F";
+    private static final String SEX_FEMALE = "F";
+
     private static final String SEX_UNKNOWN = "U";
 
     private static final String ERROR_MESSAGE_NO_PATIENT_CLASS = "The patient does not have a PatientClass";
@@ -87,7 +84,7 @@ public class SexController implements PatientDataController<ImmutablePair<String
     }
 
     @Override
-    public PatientData<ImmutablePair<String, String>> load(Patient patient)
+    public PatientData<String> load(Patient patient)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
@@ -95,10 +92,8 @@ public class SexController implements PatientDataController<ImmutablePair<String
             if (data == null) {
                 throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
-            List<ImmutablePair<String, String>> result = new LinkedList<ImmutablePair<String, String>>();
             String gender = parseGender(data.getStringValue(INTERNAL_PROPERTY_NAME));
-            result.add(ImmutablePair.of(EXPOSED_PROPERTY_NAME, gender));
-            return new SimpleNamedData<String>(DATA_NAME, result);
+            return new SimpleValuePatientData<>(DATA_NAME, gender);
         } catch (Exception e) {
             this.logger.error("Failed to load patient gender: [{}]", e.getMessage());
         }
@@ -115,9 +110,7 @@ public class SexController implements PatientDataController<ImmutablePair<String
                 throw new NullPointerException(ERROR_MESSAGE_NO_PATIENT_CLASS);
             }
 
-            String gender = patient.<ImmutablePair<String, String>>getData(DATA_NAME).get(0).getValue();
-
-            this.logger.warn("Saving gender value: [{}]", gender);
+            String gender = patient.<String>getData(DATA_NAME).getValue();
 
             data.setStringValue(INTERNAL_PROPERTY_NAME, gender);
 
@@ -141,25 +134,23 @@ public class SexController implements PatientDataController<ImmutablePair<String
             return;
         }
 
-        for (ImmutablePair<String, String> data : patient.<ImmutablePair<String, String>>getData(DATA_NAME)) {
-            json.put(data.getKey(), data.getRight());
+        PatientData<String> patientData = patient.getData(DATA_NAME);
+        if (patientData != null && patientData.getValue() != null) {
+            json.put(DATA_NAME, patientData.getValue());
         }
     }
 
     @Override
-    public PatientData<ImmutablePair<String, String>> readJSON(JSONObject json)
+    public PatientData<String> readJSON(JSONObject json)
     {
         if (!json.containsKey(DATA_NAME)) {
             // no supported data in provided JSON
             return null;
         }
 
-        List<ImmutablePair<String, String>> result = new LinkedList<ImmutablePair<String, String>>();
-
         String gender = parseGender(json.getString(DATA_NAME));
-        result.add(ImmutablePair.of(EXPOSED_PROPERTY_NAME, gender));
 
-        return new SimpleNamedData<String>(DATA_NAME, result);
+        return new SimpleValuePatientData<>(DATA_NAME, gender);
     }
 
     @Override

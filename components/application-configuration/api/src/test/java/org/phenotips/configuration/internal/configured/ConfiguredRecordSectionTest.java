@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the default {@link RecordSection} implementation, {@link DefaultRecordSection}.
- * 
+ *
  * @version $Id$
  */
 public class ConfiguredRecordSectionTest
@@ -292,7 +292,7 @@ public class ConfiguredRecordSectionTest
         List<UIExtension> sorted = realFilter.filter(fields, "order");
         when(filter.filter(fields, "order")).thenReturn(sorted);
 
-        when(cc.getFieldsOverride()).thenReturn(Collections.<String> emptyList());
+        when(cc.getFieldsOverride()).thenReturn(Collections.<String>emptyList());
 
         List<RecordElement> result = s.getAllElements();
         Assert.assertEquals(5, result.size());

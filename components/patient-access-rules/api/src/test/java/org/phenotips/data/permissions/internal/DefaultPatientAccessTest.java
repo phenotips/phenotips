@@ -40,14 +40,14 @@ import java.util.HashSet;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.Matchers;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * Tests for the default {@link PatientAccess} implementation, {@link DefaultPatientAccess}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultPatientAccessTest
@@ -210,7 +210,7 @@ public class DefaultPatientAccessTest
         Patient p = mock(Patient.class);
         PatientAccessHelper h = mock(PatientAccessHelper.class);
         PatientAccess pa = new DefaultPatientAccess(p, h, mock(PermissionsManager.class));
-        when(h.addCollaborator(Mockito.same(p), Mockito.any(Collaborator.class))).thenReturn(true);
+        when(h.addCollaborator(Matchers.same(p), Matchers.any(Collaborator.class))).thenReturn(true);
         Assert.assertTrue(pa.addCollaborator(COLLABORATOR, mock(AccessLevel.class)));
     }
 
@@ -222,7 +222,7 @@ public class DefaultPatientAccessTest
         PatientAccessHelper helper = mock(PatientAccessHelper.class);
         PatientAccess pa = new DefaultPatientAccess(p, helper, mock(PermissionsManager.class));
 
-        when(helper.removeCollaborator(Mockito.same(p), Mockito.any(Collaborator.class))).thenReturn(true);
+        when(helper.removeCollaborator(Matchers.same(p), Matchers.any(Collaborator.class))).thenReturn(true);
         Assert.assertTrue(pa.removeCollaborator(COLLABORATOR));
 
         Collaborator collaborator = mock(Collaborator.class);

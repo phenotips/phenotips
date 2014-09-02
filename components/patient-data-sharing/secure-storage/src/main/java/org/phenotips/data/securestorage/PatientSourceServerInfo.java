@@ -19,14 +19,14 @@
  */
 package org.phenotips.data.securestorage;
 
-import javax.persistence.Entity;
 import javax.persistence.Column;
-import javax.persistence.Id;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
- * Used to store information about the source of the given patient's data (e.g. which remote PhenoTips
- * server the data was pushed form, if any)
+ * Used to store information about the source of the given patient's data (e.g. which remote PhenoTips server the data
+ * was pushed form, if any).
  *
  * @version $Id$
  * @since 1.0M10
@@ -39,10 +39,10 @@ public class PatientSourceServerInfo
     @GeneratedValue
     private long id;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String patientGUID;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String sourceServerName;
 
     /** Default constructor used by Hibernate. */
@@ -53,11 +53,12 @@ public class PatientSourceServerInfo
 
     /**
      * For use by SecureStorageManager
+     *
      * @param
      */
     public PatientSourceServerInfo(String patientGUID, String sourceServerName)
     {
-        this.patientGUID      = patientGUID;
+        this.patientGUID = patientGUID;
         this.sourceServerName = sourceServerName;
     }
 

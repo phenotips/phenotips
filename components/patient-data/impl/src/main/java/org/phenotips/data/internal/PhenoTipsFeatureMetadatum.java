@@ -19,12 +19,8 @@
  */
 package org.phenotips.data.internal;
 
-import org.phenotips.Constants;
 import org.phenotips.data.FeatureMetadatum;
 import org.phenotips.data.OntologyProperty;
-
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.EntityReference;
 
 import java.util.Locale;
 
@@ -35,22 +31,18 @@ import net.sf.json.JSONObject;
 /**
  * Implementation of patient data based on the XWiki data model, where feature metadata is represented by properties in
  * objects of type {@code PhenoTips.PhenotypeMetaClass}.
- * 
+ *
  * @version $Id$
  * @since 1.0M8
  */
 public class PhenoTipsFeatureMetadatum extends AbstractPhenoTipsOntologyProperty implements FeatureMetadatum
 {
-    /** The XClass used for storing phenotype metadata. */
-    public static final EntityReference CLASS_REFERENCE = new EntityReference("PhenotypeMetaClass",
-        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
     /** @see #getType() */
     private Type type;
 
     /**
      * Constructor that copies the data from an XProperty.
-     * 
+     *
      * @param data the XProperty representing this meta-feature in XWiki
      */
     PhenoTipsFeatureMetadatum(StringProperty data)

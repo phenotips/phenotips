@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests the {@link WikiUser local wiki user} flavor of {@link User}.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */

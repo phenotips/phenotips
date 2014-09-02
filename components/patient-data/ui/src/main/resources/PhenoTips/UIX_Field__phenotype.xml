@@ -27,12 +27,12 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1397259078000</creationDate>
+  <creationDate>1401822210000</creationDate>
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1397332388000</date>
-  <contentUpdateDate>1397259078000</contentUpdateDate>
+  <date>1401822210000</date>
+  <contentUpdateDate>1401822210000</contentUpdateDate>
   <version>1.1</version>
   <title>Clinical symptoms &amp; physical findings</title>
   <comment/>
@@ -552,22 +552,7 @@
 }
 label.selected, label.subterm-selected {
   background-color: $theme.backgroundSecondaryColor;
-  background-image: none;
   font-weight: bold;
-  padding-left: 4px;
-  margin-left: -4px;
-  border-radius: 2px;
-}
-label.subterm-selected {
-  background-image: url("$xwiki.getSkinFile('icons/silk/shading.gif')");
-  background-position: 14px center;
-  background-repeat: no-repeat;
-}
-label.subterm-selected input[type="checkbox"] {
-  opacity: .2;
-}
-label.selected input[type="checkbox"] {
-  opacity: 1;
 }
 /** -------------------------------------------- **/
 /** Suggestions **/
@@ -718,7 +703,7 @@ $xwiki.jsx.use('PhenoTips.UIX_Field__phenotype')##
   #if ($xcontext.action == 'edit')
     $doc.display('unaffected') #__label('unaffected' '' "$class.get('unaffected').prettyName")
 
-    (% class="hint controlled" %)Or select observed phenotypes:(%%)
+    (% class="hint controlled" %)Or select observed phenotypes:(%%) {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("PhenoTips.PatientClass_select_phenotypes_hint").replace('"', '~~~"')"/}}
   #else
     #if ($showUnaffected)$class.get('unaffected').prettyName#end
   #end

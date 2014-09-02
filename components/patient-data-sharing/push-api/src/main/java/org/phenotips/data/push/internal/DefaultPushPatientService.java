@@ -48,6 +48,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
@@ -56,7 +57,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
-import groovy.lang.Singleton;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -150,17 +150,14 @@ public class DefaultPushPatientService implements PushPatientService
 
             Set<PushServerInfo> response = new TreeSet<PushServerInfo>();
             for (BaseObject serverConfiguration : servers) {
-                if (!serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_TOKEN_PROPERTY_NAME)
-                    .equals("")) {
-                    this.logger.warn("   ...available: [{}]",
-                        serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME));
-                    PushServerInfo info = new DefaultPushServerInfo(
-                        serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME),
-                        serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_URL_PROPERTY_NAME),
-                        serverConfiguration.
-                            getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME));
-                    response.add(info);
-                }
+                this.logger.debug("   ...available: [{}]",
+                    serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME));
+                PushServerInfo info = new DefaultPushServerInfo(
+                    serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_ID_PROPERTY_NAME),
+                    serverConfiguration.getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_URL_PROPERTY_NAME),
+                    serverConfiguration.
+                        getStringValue(DefaultPushPatientData.PUSH_SERVER_CONFIG_DESC_PROPERTY_NAME));
+                response.add(info);
             }
             return response;
         } catch (Exception ex) {

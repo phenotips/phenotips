@@ -63,9 +63,8 @@
         </plugin>
         <!-- Step 3: Import the XAR content into the Database -->
         <plugin>
-          <groupId>org.xwiki.platform</groupId>
-          <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
-          <version>${xwiki.version}</version>
+          <groupId>org.phenotips</groupId>
+          <artifactId>phenotips-packager-maven-plugin</artifactId>
           <configuration>
             <hibernateConfig>
               ${project.build.directory}/maven-shared-archive-resources/hibernate.cfg.xml
@@ -84,11 +83,6 @@
               <version>${xwiki.version}</version>
             </dependency>
             <dependency>
-              <groupId>org.xwiki.platform</groupId>
-              <artifactId>xwiki-platform-annotation-io</artifactId>
-              <version>${xwiki.version}</version>
-            </dependency>
-            <dependency>
               <groupId>${project.groupId}</groupId>
               <artifactId>application-configuration-migrations</artifactId>
               <version>${project.version}</version>
@@ -96,6 +90,11 @@
             <dependency>
               <groupId>${project.groupId}</groupId>
               <artifactId>patient-data-migrations</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>patient-access-rules-migrations</artifactId>
               <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -222,8 +221,8 @@
       </plugin>
       <!-- Step 3: Import the XAR content into the Database -->
       <plugin>
-        <groupId>org.xwiki.platform</groupId>
-        <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
+        <groupId>org.phenotips</groupId>
+        <artifactId>phenotips-packager-maven-plugin</artifactId>
       </plugin>
       <!-- Step 4: Zip the generated database -->
       <plugin>

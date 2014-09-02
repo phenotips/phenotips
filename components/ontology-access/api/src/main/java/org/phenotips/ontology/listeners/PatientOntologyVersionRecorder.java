@@ -62,6 +62,7 @@ public class PatientOntologyVersionRecorder implements EventListener
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
     private static final String NAME_FIELD = "name";
+
     private static final String VERSION_FIELD = "version";
 
     /** Access to services that are needed to get the ontology version. */
@@ -117,7 +118,7 @@ public class PatientOntologyVersionRecorder implements EventListener
                 versionObject.set(VERSION_FIELD, versionType.getValue(), context);
             }
         } catch (XWikiException ex) {
-            //Storage Error. Shouldn't happen.
+            // Storage Error. Shouldn't happen.
         }
     }
 
@@ -128,9 +129,9 @@ public class PatientOntologyVersionRecorder implements EventListener
      */
     public Map<String, String> getOntologiesVersions()
     {
-        Map<String, String> result = new HashMap();
+        Map<String, String> result = new HashMap<>();
 
-        String hpoVersion = humanPhenotypeOntology.getVersion();
+        String hpoVersion = this.humanPhenotypeOntology.getVersion();
         if (StringUtils.isNotBlank(hpoVersion)) {
             result.put("hpo", hpoVersion);
         }

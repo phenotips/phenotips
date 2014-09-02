@@ -30,7 +30,7 @@ import org.junit.Test;
 
 /**
  * Tests for the {@link PhiltrumLengthMeasurementHandler} component. These tests are based on the Zankl charts.
- * 
+ *
  * @version $Id$
  * @since 1.0M3
  */

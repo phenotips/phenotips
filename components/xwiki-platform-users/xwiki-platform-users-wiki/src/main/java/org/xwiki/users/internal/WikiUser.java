@@ -34,7 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Class representing a XWiki User based on wiki documents holding {@code XWiki.XWikiUsers} XObjects.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -55,7 +55,7 @@ public class WikiUser extends AbstractUser
 
     /**
      * Constructor.
-     * 
+     *
      * @param reference reference to the user profile document
      * @param serializer the entity reference serializer to use
      * @param bridge the model access bridge to use
@@ -76,7 +76,7 @@ public class WikiUser extends AbstractUser
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.xwiki.users.User#exists()
      */
     @Override
@@ -87,7 +87,7 @@ public class WikiUser extends AbstractUser
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.xwiki.users.User#getName()
      */
     @Override
@@ -108,7 +108,7 @@ public class WikiUser extends AbstractUser
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.xwiki.users.User#getAttribute(String)
      */
     @Override
@@ -122,7 +122,7 @@ public class WikiUser extends AbstractUser
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.xwiki.users.User#getProfileURI()
      */
     @Override

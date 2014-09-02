@@ -28,61 +28,10 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>solr-configuration</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <name>PhenoTips - Solr configuration files</name>
 
   <properties>
     <!-- Most of the files come from the Solr project, so they shouldn't bear our license header -->
     <license.skip>true</license.skip>
   </properties>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.xwiki.platform</groupId>
-                  <artifactId>xwiki-platform-search-solr-api</artifactId>
-                  <version>${xwiki.version}</version>
-                </artifactItem>
-              </artifactItems>
-              <includes>solr/conf/**</includes>
-              <outputDirectory>${project.build.directory}/xwiki-core-configuration/</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-xwiki-core-configuration</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/classes/xwiki/</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}/xwiki-core-configuration/solr/</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

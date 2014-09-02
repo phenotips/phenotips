@@ -19,15 +19,15 @@
  */
 package org.phenotips.measurements;
 
-import java.util.List;
-
 import org.xwiki.component.annotation.Role;
+
+import java.util.List;
 
 /**
  * Handles measurements of a certain type: converting a measured value (in centimeters, kilograms or other units) at a
  * certain age (in months) into the corresponding percentile or standard deviation relative to a normal population, and
  * vice-versa. Most measurement types can distinguish between boys and girls.
- * 
+ *
  * @version $Id$
  * @since 1.0M3
  */
@@ -36,7 +36,7 @@ public interface MeasurementHandler
 {
     /**
      * Get the percentile for the given measured value and age.
-     * 
+     *
      * @param male {@code true} for boys, {@code false} for girls
      * @param ageInMonths the age of the measurement, in months
      * @param value the measured value, usually in centimeters or kilograms
@@ -46,7 +46,7 @@ public interface MeasurementHandler
 
     /**
      * Get the standard deviation for the given measured value and age.
-     * 
+     *
      * @param male {@code true} for boys, {@code false} for girls
      * @param ageInMonths the age of the measurement, in months
      * @param value the measured value, usually in centimeters or kilograms
@@ -56,7 +56,7 @@ public interface MeasurementHandler
 
     /**
      * Get the measurement that would correspond to the given percentile.
-     * 
+     *
      * @param male {@code true} for boys, {@code false} for girls
      * @param ageInMonths the age of the measurement, in months
      * @param targetPercentile a number between 0 and 100 (inclusive) specifying the target percentile
@@ -68,7 +68,7 @@ public interface MeasurementHandler
 
     /**
      * Get the measurement that would correspond to the given standard deviation.
-     * 
+     *
      * @param male {@code true} for boys, {@code false} for girls
      * @param ageInMonths the age of the measurement, in months
      * @param targetDeviation a number specifying the target deviation
@@ -79,7 +79,7 @@ public interface MeasurementHandler
     /**
      * Some measurements should be taken on both sides of the body, since they can differ, for example different left
      * and right ear lengths. This method is used to indicate those measurements.
-     * 
+     *
      * @return {@code true} if measurements on both sides should be recorded
      */
     boolean isDoubleSided();

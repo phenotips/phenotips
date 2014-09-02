@@ -19,14 +19,12 @@
  */
 package org.phenotips.data.internal.controller;
 
-import net.sf.json.JSONObject;
-
 import org.phenotips.Constants;
 import org.phenotips.components.ComponentManagerRegistry;
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.SimpleNamedData;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -35,19 +33,21 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+
+import net.sf.json.JSONObject;
 
 /**
  * Exposes the version of the ontologies used for creating the patient record, as well as the current PhenoTips version.
@@ -59,7 +59,7 @@ import com.xpn.xwiki.objects.BaseObject;
 @Named("versions")
 @Singleton
 public class VersionsController extends AbstractSimpleController
-    implements PatientDataController<ImmutablePair<String, String>>
+    implements PatientDataController<String>
 {
     /** The XClass used for storing version data of different ontologies. */
     private static final EntityReference ONTOLOGY_VERSION_CLASS_REFERENCE =
@@ -71,18 +71,18 @@ public class VersionsController extends AbstractSimpleController
     private Logger logger;
 
     @Override
-    public PatientData<ImmutablePair<String, String>> load(Patient patient)
+    public PatientData<String> load(Patient patient)
     {
-        List<ImmutablePair<String, String>> versions = new LinkedList<ImmutablePair<String, String>>();
+        Map<String, String> versions = new LinkedHashMap<>();
 
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
             addOntologyVersions(doc, versions);
             addPhenoTipsVersion(versions);
-        } catch (Exception e) {
-            this.logger.error("Could not find requested document");
+        } catch (Exception ex) {
+            this.logger.error("Could not find requested document: {}", ex.getMessage());
         }
-        return new SimpleNamedData<String>(getName(), versions);
+        return new DictionaryPatientData<String>(getName(), versions);
     }
 
     /**
@@ -90,7 +90,7 @@ public class VersionsController extends AbstractSimpleController
      *
      * @param doc the document storing the patient data
      */
-    private void addOntologyVersions(XWikiDocument doc, List<ImmutablePair<String, String>> versions)
+    private void addOntologyVersions(XWikiDocument doc, Map<String, String> versions)
     {
         List<BaseObject> ontologyVersionObjects = doc.getXObjects(ONTOLOGY_VERSION_CLASS_REFERENCE);
         if (ontologyVersionObjects == null) {
@@ -101,7 +101,7 @@ public class VersionsController extends AbstractSimpleController
             String versionType = versionObject.getStringValue("name");
             String versionString = versionObject.getStringValue("version");
             if (StringUtils.isNotEmpty(versionType) && StringUtils.isNotEmpty(versionString)) {
-                versions.add(new ImmutablePair<String, String>(versionType + "_version", versionString));
+                versions.put(versionType + "_version", versionString);
             }
         }
     }
@@ -111,13 +111,12 @@ public class VersionsController extends AbstractSimpleController
      *
      * @param versions the list of version data being constructed
      */
-    private void addPhenoTipsVersion(List<ImmutablePair<String, String>> versions)
+    private void addPhenoTipsVersion(Map<String, String> versions)
     {
         try {
             DistributionManager distribution =
                 ComponentManagerRegistry.getContextComponentManager().getInstance(DistributionManager.class);
-            versions.add(new ImmutablePair<String, String>("phenotips_version",
-                distribution.getDistributionExtension().getId().getVersion().toString()));
+            versions.put("phenotips_version", distribution.getDistributionExtension().getId().getVersion().toString());
         } catch (ComponentLookupException ex) {
             // Shouldn't happen
             this.logger.error("Could not find DistributionManager component");
@@ -129,9 +128,9 @@ public class VersionsController extends AbstractSimpleController
     {
         // unlike all other controllers, there is no field name controlling version information
         // so for this particular controller a special getEnablingFieldName() property is used
-        // which, if included in the list of fields, enbales version data to be dumped into JSON
+        // which, if included in the list of fields, enables version data to be dumped into JSON
         // (note that we may sometimes want to omit this data when presenting results for the end users)
-        if (selectedFieldNames == null || selectedFieldNames.contains(VersionsController.getEnablingFieldName())) {
+        if (selectedFieldNames == null || selectedFieldNames.contains(getEnablingFieldName())) {
             super.writeJSON(patient, json, null);
         }
     }
@@ -156,8 +155,8 @@ public class VersionsController extends AbstractSimpleController
     }
 
     /**
-     * Unlike all other controllers, there is no field name controlling presence of version information
-     * in JSON output. This method returns a name which can be used instead.
+     * Unlike all other controllers, there is no field name controlling presence of version information in JSON output.
+     * This method returns a name which can be used instead.
      *
      * @return a name which can be included in the list of enabled fields to enable version info in JSON output
      */

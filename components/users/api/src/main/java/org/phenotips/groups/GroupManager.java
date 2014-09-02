@@ -28,7 +28,7 @@ import java.util.Set;
 
 /**
  * API for manipulating groups.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -38,7 +38,7 @@ public interface GroupManager
 {
     /**
      * List the groups that this user is a member of.
-     * 
+     *
      * @param user the user whose groups will be retrieved
      * @return an unmodifiable set of groups, empty if the user isn't part of any groups.
      */
@@ -46,7 +46,7 @@ public interface GroupManager
 
     /**
      * Retrieves the group identified by the passed name.
-     * 
+     *
      * @param name the name of the group to retrieve, interpreted as a serialized reference to a document
      * @return the corresponding group, if found, or {@code null} if the requested group doesn't exist
      */
@@ -54,7 +54,7 @@ public interface GroupManager
 
     /**
      * Retrieves the group stored in the passed document.
-     * 
+     *
      * @param groupReference the document where the group is stored
      * @return the corresponding group, if found, or {@code null} if the requested group doesn't exist
      */

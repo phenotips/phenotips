@@ -26,7 +26,7 @@ import org.xwiki.model.reference.EntityReference;
 /**
  * Default implementation of the {@link Owner} interface, making use of a {@link PatientAccessHelper} component for any
  * actual owner type detection.
- * 
+ *
  * @version $Id$
  */
 public class DefaultOwner implements Owner
@@ -87,12 +87,12 @@ public class DefaultOwner implements Owner
     @Override
     public int hashCode()
     {
-        return this.user.hashCode();
+        return this.user != null ? this.user.hashCode() : 0;
     }
 
     @Override
     public String toString()
     {
-        return "[" + getUser() + "]";
+        return "[" + (this.user != null ? getUser() : "nobody") + "]";
     }
 }

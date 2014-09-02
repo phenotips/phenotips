@@ -121,6 +121,9 @@
     <property>
       <levels>view</levels>
     </property>
+    <property>
+      <users>XWiki.XWikiGuest</users>
+    </property>
   </object>
   <content>{{velocity}}
 #set ($service = $services.remoteData)

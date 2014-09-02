@@ -1,0 +1,940 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>Skin</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822199000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401823699000</date>
+  <contentUpdateDate>1401823699000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <attachment>
+    <filename>body-icon-left-s.png</filename>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1353452431000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAdCAYAAACjbey/AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH3AsVAjsos7xz5AAAAdxJREFUOMud1b9rFFEQwPHPxfNyiYkmYIwIKgQ0Vko0iIIoWAgpbO38IwQR/AcECwtbSS1YJIqF2NoIoqCi+BMNKAhigj+jaPTOZhZenrsbyYPl7c3MfWfezJtZ6td5XMKgVa5vuInJKoOe/4D8qlOuBJjGejxZDWAT9uIntqNVZrSmRNbAFVzETtxFB3vC4buw+SeCQngUJ7AhsfkdldiHteiWAYr3iZKouvG0sLEqBwX1FG7jUaLrxf0o664qQAdnsQWHcCezm8N17MdIGWAM53A6otmdHWMYC3iB42WAa7gQzzBGE92fiAyu4jOOFIB1uIGH4R12JGE2AjCUOJyJu3GgiZOYypLTj76kHzpop/UPh4eboTyD54lyIoznI7rBOFYbi2HzEkPNaNd8jcf+Ac9wMICjeB3v33GrJ340MkBxC5/icUQpOdaym9hNBdm1nklArRJHld04Fvvl2Ofiz/2Zg1JAO5pmNpF9inyM1EVQUCdDPp3ofuBt1L6vqhsLwFTs85mzRQzUdWMjq8DHDPAFS/mxy3LQi3t4lcnnIorOSoAW3mSlbSQRLFvNkoHyHl8ryrsUjVUKKHKwNbJetQbqJhIciyGqYjZuq5uJ49H3DyoAC9icfg7+AiLBYNpmi+VbAAAAAElFTkSuQmCC</content>
+    <filesize>573</filesize>
+  </attachment>
+  <attachment>
+    <filename>body-icon-right-s.png</filename>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1353452432000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAdCAYAAACjbey/AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH3AsVAwA4k3vmjwAAAddJREFUOMul1T9rFGEQBvBfLmeikpxnNKeFYiUaRPwHCmJMqZivIBYW2vgBxN4PYKFY2aYQqwiCCIJiIRYBRSHIgVUM5MC/xBgutzaz8LLu3kkcOIZ9Zt5nn5l5Z4/+dgRzOFeVUBtAMIUTuLpZAvjtP2wK73F2Mwq2oYUuZrGjLGm44vBFTGMCh3EZ11HHyziXVSnYF43bivUE34mbGMNGWQlD4SfThIKN4digHhxHG52QnNt9LOFKFUGGU2jgEZaj1lzZfPTmWpT4F0EDM3gRz7sT4nyk7yL+JC87JZjFayxgFNvRS+Lnw8/gI+4hq2NLSOvgVSQ1kynkJRzESGDT0afbNRyK4JvkbfX4ZfgZ2ESh5Du4VYs3PMfXJDiJcazhaWB7sCvJeYi7tWjMQmGUzfDrsQu5nU6a/xk3qnZhJJJyBSuBt5LJDBWnoHAru9EoeFASz5BVETSwisV4fhx+77+s83BIbSfYIr7gZPFcGUErNu9Dgq3gGS7FNLr9tvFA+F8F4qW4G0cHlTCK7yXfwk/JhAb2YBnfCvg8fqTyqwhqkVjE2oFnCne+aKuxYEWCXsTWBikYLyHOEr+/3xdJJPQqLtgGLvRT0IwpdCoUvMWZ+M8AfwASUl+BqVfCkAAAAABJRU5ErkJggg==</content>
+    <filesize>568</filesize>
+  </attachment>
+  <attachment>
+    <filename>body-icon-s.png</filename>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1353452432000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAdCAYAAACjbey/AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH3AsVAwAh9xBOTwAAAcFJREFUOMud1M+LjVEYB/DPfekamUIabGZjYzUxFBsLNUVmN/+FlY1SslDKzk5+l40skIbIXrJQFroLZUFDfowSavIrM/e1eU6dTu9777hn85znfb7v9/l9GHxO4y32GvF8Qo3zbYBqlUSdUSM4ExHsHiWCrdgT91ls9B/h3sL38N4P+RWnArNmUJ4z8UP6uZ/pSxhvSyHdpxvI+yHHsWtYPT7gKXqZ5xqXwnZlUP4nA9zBtYJgFlNxb4rSjjAeD/1ZQZC+P8Zi03z0cC7um7FQdOFehn2Ci0nZgEe4kQH24UcRwUt0M8xrnIWjAdiZGQ9mntM8LGIswxxDXYXxBF5lxunI7z2u4g+2YUuGuYMLbd24HMQvMIfl0OfK+anCU7ltae7fYD7GOO2HrNWdKitS01jfDXm9wV6nGrTNBNwM+TDk9tVs4xhWMu8wEWncD33toG08EOEdKey38Te60biNiSD9+KUg+Biep4YRpA58KwgWQnaHPWnr8DxGNT8P4kFZHkbQxbuitVUQLpUtz6uZDJ8DWDrq4yd+txGkGkziV0FQZ3KyLYX07h0q88zOCg63EaSV3hRL1BRBD/uxPhn+AWIFfIBgIfUHAAAAAElFTkSuQmCC</content>
+    <filesize>546</filesize>
+  </attachment>
+  <attachment>
+    <filename>contentview.vm</filename>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1364245595000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>IyMjCiMjIyBEaXNwbGF5IGRvY3VtZW50IGNvbnRlbnRzIGluICJ2aWV3IiBtb2RlLgojIyMKIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyBDb21wdXRlIHRoZSBjb250ZW50IHRvIGRpc3BsYXkgCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgSG9ub3IgdGhlIHN5bnRheCBpZiBpdCdzIHBhc3NlZCBpbiB0aGUgcmVxdWVzdC4KI3NldCgkb3V0cHV0U3ludGF4ID0gJHh3aWtpLmdldEF2YWlsYWJsZVJlbmRlcmVyU3ludGF4KCRyZXF1ZXN0Lm91dHB1dFN5bnRheCwgJHJlcXVlc3Qub3V0cHV0U3ludGF4VmVyc2lvbikpCiNpZiAoJG91dHB1dFN5bnRheCkKICAjIyBJZiB0aGUgcGFzc2VkIHN5bnRheCBpcyBub3QgYW4gSFRNTC1jb21wYXRpYmxlIHN5bnRheCB3ZSBuZWVkIHRvIEhUTUwtZXNjYXBlIGl0IHNvIHRoYXQgaXQgY2FuIGJlIAogICMjIGRpc3BsYXllZCBmaW5lIGluIEhUTUwgKHNpbmNlIGF0IHRoZSBwb2ludCB0aGlzIHZtIGZpbGUgaXMgY2FsbGVkIHdlJ3JlIGFscmVhZHkgaW5zaWRlIGFuIEhUTUwgcGFnZSB3aXRoCiAgIyMgcGFuZWxzIG9uIHRoZSBzaWRlLCBoZWFkZXIsIGV0YykuCiAgI3NldCgkc3ludGF4VHlwZSA9ICRvdXRwdXRTeW50YXgudHlwZS50b0lkU3RyaW5nKCkpCiAgI2lmICgoJHN5bnRheFR5cGUgPT0gInhodG1sIikgfHwgKCRzeW50YXhUeXBlID09ICJodG1sIikpCiAgICAjc2V0ICgkcmVuZGVyZWRDb250ZW50ID0gJHRkb2MuZ2V0UmVuZGVyZWRDb250ZW50KCRvdXRwdXRTeW50YXgpKQogICNlbHNlCiAgICAjIyBNYWtlIHN1cmUgdG8gcHJpbnQgY29ycmVjdGx5IHRoZSByZXN1bHQgd2hlbiBpdCdzIG5vdCBIVE1MCiAgICAjc2V0ICgkcmVuZGVyZWRDb250ZW50ID0gIjxwcmU+JGVzY2FwZXRvb2wuaHRtbCgkdGRvYy5nZXRSZW5kZXJlZENvbnRlbnQoJG91dHB1dFN5bnRheCkpPC9wcmU+IikKICAjZW5kCiNlbHNlCiAgI3NldCAoJHJlbmRlcmVkQ29udGVudCA9ICR0ZG9jLmdldFJlbmRlcmVkQ29udGVudCgpKQojZW5kCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgQ29tcHV0ZSB0aXRsZSB0byBkaXNwbGF5IGFuZCBtb2RpZnkgcmVuZGVyZWQgY29udGVudCBhY2NvcmRpbmdseS4KIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojdGVtcGxhdGUoInRpdGxldmFycy52bSIpCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgVGl0bGUgem9uZQojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCjxkaXYgaWQ9ImRvY3VtZW50LWhlYWQiPgojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMjIERpc3BsYXkgdGhlIHRpdGxlCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPGRpdiBpZD0iZG9jdW1lbnQtdGl0bGUiPjxoMT4kdGl0bGVUb0Rpc3BsYXk8L2gxPjwvZGl2PgojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyBEb2N1bWVudCBhdXRob3IocykKIyMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KJCF4d2lraS5nZXREb2N1bWVudCgnUGhlbm9UaXBzLkRvY3VtZW50TWV0YScpLmdldFJlbmRlcmVkQ29udGVudCgpCjwvZGl2PiMjZG9jdW1lbnQtaGVhZAojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyBEcm9wIHBlcm1pc3Npb25zIGFzIHRoZXkgYXJlIG5vIGxvbmdlciBuZWVkZWQuIFRoaXMgYWxsb3dzIHVzIG5vdCB0byBoYXZlCiMjIHRvIHJldmlldyB0aGUgY29kZSBiZWxvdyBmb3Igc2VjdXJpdHkgaG9sZXMgc2luY2Ugbm90aGluZyBiYWQgY2FuIGhhcHBlbi4KIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KJHhjb250ZXh0LmRyb3BQZXJtaXNzaW9ucygpCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgRGlzcGxheSB0aGUgc2hvcnRjdXRzCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KI2lmKCRkaXNwbGF5U2hvcnRjdXRzKQogICN0ZW1wbGF0ZSgic2hvcnRjdXRzLnZtIikKI2VuZAojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMjIERpc3BsYXkgdGhlIHJlbmRlcmVkIGNvbnRlbnQKIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo8ZGl2IGlkPSJ4d2lraWNvbnRlbnQiPgokcmVuZGVyZWRDb250ZW50CjwvZGl2PgojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyBEaXNwbGF5IHRoZSBmb290bm90ZXMgaWYgdGhlIGRvY3VtZW50IGlzIGluIDEuMCBzeW50YXggYW5kIGlmIHRoZXJlIGFyZSBhbnkgZGVmaW5lZAojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojc2V0KCRmb290bm90ZXMgPSAiI3B1dEZvb3Rub3RlcygpIikKJHh3aWtpLnJlbmRlclRleHQoJGZvb3Rub3RlcywgJGRvYykK</content>
+    <filesize>2751</filesize>
+  </attachment>
+  <attachment>
+    <filename>editinline.vm</filename>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1378847911000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>IyMgSW5zZXJ0IEpTIGFuZCBDU1MgbmVlZGVkIGZvciB0aGUgZnVsbHNjcmVlbiBlZGl0IGZlYXR1cmUKJHh3aWtpLmpzZngudXNlKCd1aWNvbXBvbmVudHMvd2lkZ2V0cy9mdWxsU2NyZWVuLmpzJywgeydmb3JjZVNraW5BY3Rpb24nOiB0cnVlLCAnbGFuZ3VhZ2UnOiAke3hjb250ZXh0Lmxhbmd1YWdlfX0pIyMKJHh3aWtpLnNzZngudXNlKCd1aWNvbXBvbmVudHMvd2lkZ2V0cy9mdWxsU2NyZWVuLmNzcycsIHRydWUpIyMKI3NldCgkZm9ybW5hbWUgPSAiaW5saW5lIikKI3NldCgkc2F2ZWFjdGlvbiA9ICJzYXZlIikKI3NldCgkcHJldmlld2VuYWJsZWQgPSBmYWxzZSkKIyMgRGV0ZXJtaW5lIGlmIGVkaXRpbmcgc2hvdWxkIGJlIGFsbG93ZWQKI3NldCgkZm9yY2UgPSAkIXJlcXVlc3QuZ2V0KCJmb3JjZSIpKQojc2V0KCRhbGxvd0RvY0VkaXQgPSAhKCgkZG9jLmdldExvY2tlZCgpPT10cnVlKSYmKCEkZm9yY2UpKSApCiMjCjxkaXYgY2xhc3M9Im1haW4gbGF5b3V0c3Vic2VjdGlvbiI+CiNmb3JlYWNoICgkdWl4IGluICRzZXJ2aWNlcy51aXguZ2V0RXh0ZW5zaW9ucygnb3JnLnh3aWtpLnBsYXRmb3JtLm1haW4udG9wJykpCiAgJHNlcnZpY2VzLnJlbmRlcmluZy5yZW5kZXIoJHVpeC5leGVjdXRlKCksICd4aHRtbC8xLjAnKQojZW5kCjxkaXYgaWQ9Im1haW5Db250ZW50QXJlYSI+CiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgU3RhcnQgRk9STSBhdCBzdGFydCBvZiBjb250ZW50IGFyZWEgSUYgZWRpdGluZyBpcyBhbGxvd2VkLgojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiNpZiAoJGFsbG93RG9jRWRpdCkKIDxmb3JtIGlkPSJpbmxpbmUiIG1ldGhvZD0icG9zdCIgYWN0aW9uPSIkZG9jLmdldFVSTCgicHJldmlldyIpIiBjbGFzcz0id2l0aExvY2siPgojZW5kCiNmb3JlYWNoICgkdWl4IGluICRzZXJ2aWNlcy51aXguZ2V0RXh0ZW5zaW9ucygnb3JnLnh3aWtpLnBsYXRmb3JtLmNvbnRlbnQudG9wJykpCiAgJHNlcnZpY2VzLnJlbmRlcmluZy5yZW5kZXIoJHVpeC5leGVjdXRlKCksICd4aHRtbC8xLjAnKQojZW5kCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgQ29tcHV0ZSB0aXRsZSB0byBkaXNwbGF5IGFuZCBtb2RpZnkgcmVuZGVyZWQgY29udGVudCBhY2NvcmRpbmdseS4KIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojc2V0ICgkcmVuZGVyZWRDb250ZW50ID0gJGNkb2MuZ2V0UmVuZGVyZWRDb250ZW50KCkpCiN0ZW1wbGF0ZSgidGl0bGV2YXJzLnZtIikKIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyBUaXRsZSB6b25lCiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPGRpdiBpZD0iZG9jdW1lbnQtaGVhZCI+CiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyMgRGlzcGxheSB0aGUgdGl0bGUKIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo8ZGl2IGlkPSJkb2N1bWVudC10aXRsZSI+PGgxPiR0aXRsZVRvRGlzcGxheTwvaDE+PC9kaXY+CiMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMjIERvY3VtZW50IGF1dGhvcihzKQojIy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQokIXh3aWtpLmdldERvY3VtZW50KCdQaGVub1RpcHMuRG9jdW1lbnRNZXRhJykuZ2V0UmVuZGVyZWRDb250ZW50KCkKPC9kaXY+IyNkb2N1bWVudC1oZWFkCiMjCiMjCiMjIElmIHRoZSBkb2N1bWVudCBjYW5ub3QgYmUgZWRpdGVkLCBkaXNwbGF5IGFuIGluZm9ybWF0aW9uIGFuZCBhIGZvcmNpbmcgbGluazoKIyMKI2lmICghJGFsbG93RG9jRWRpdCkKICA8ZGl2IGNsYXNzPSJsYXlvdXRzZWN0aW9uIj4KICAkcmVzcG9uc2Uuc2V0U3RhdHVzKDQyMykKICAjc2V0KCRuZXdxdWVyeXN0cmluZyA9ICIkIXtyZXF1ZXN0LmdldFF1ZXJ5U3RyaW5nKCkucmVwbGFjZUFsbCgnJicsICcmYW1wOycpLnJlcGxhY2VBbGwoJyZhbXA7YW1wOycsICcmYW1wOycpfSZhbXA7Zm9yY2U9MSIpCiAgI3NldCgkZm9yY2VFZGl0VVJMID0gJGRvYy5nZXRVUkwoJHhjb250ZXh0LmFjdGlvbiwgJHtuZXdxdWVyeXN0cmluZ30pKQogICN4d2lraW1lc3NhZ2Vib3hzdGFydCgkc2VydmljZXMubG9jYWxpemF0aW9uLnJlbmRlcignbm90aWNlJykgIiRzZXJ2aWNlcy5sb2NhbGl6YXRpb24ucmVuZGVyKCdkb2Nsb2NrZWRieScpICR4d2lraS5nZXRVc2VyTmFtZSgkZG9jLmdldExvY2tpbmdVc2VyKCkpIikKICAgIDxhIGhyZWY9IiRmb3JjZUVkaXRVUkwiPiRzZXJ2aWNlcy5sb2NhbGl6YXRpb24ucmVuZGVyKCdmb3JjZWxvY2snKTwvYT4KICAjeHdpa2ltZXNzYWdlYm94ZW5kKCkKICA8L2Rpdj4KI2Vsc2UKIyMKIyMgT3RoZXJ3aXNlLCBjYW4gZWRpdCAtIGNvbnRpbnVlIHRoZSBmb3JtLgojIwo8ZGl2Pgo8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJ4Y29udGludWUiIHZhbHVlPSIkZG9jLmdldFVSTCgkZG9jLmdldERlZmF1bHRFZGl0TW9kZSgpLCAnZWRpdG9yPWlubGluZScpIi8+CiMjIENTUkYgcHJldmVudGlvbgo8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJmb3JtX3Rva2VuIiB2YWx1ZT0iJCF7c2VydmljZXMuY3NyZi5nZXRUb2tlbigpfSIgLz4KIyMgVGhpcyBpbnB1dCBpcyB1c2VkIGJ5IHRoZSBmdWxsIHNjcmVlbiB3aWRnZXQ6IGl0IHN0b3JlcyB0aGUgc2VsZWN0b3Igb2YgdGhlIG1heGltaXplZCBlbGVtZW50LCBzbyB0aGF0IHRoZSBmdWxsIHNjcmVlbiBjYW4gYmUgcmVzdG9yZWQgd2hlbiBjb21pbmcgYmFjayBmcm9tIHByZXZpZXcuCjxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9IngtbWF4aW1pemVkIiB2YWx1ZT0iJCF7ZXNjYXBldG9vbC54bWwoJHtyZXF1ZXN0LmdldCgneC1tYXhpbWl6ZWQnKX0pfSIgLz4KPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0ieHJlZGlyZWN0IiB2YWx1ZT0iJCF7ZXNjYXBldG9vbC54bWwoJHJlcXVlc3QuZ2V0KCd4cmVkaXJlY3QnKSl9IiAvPgo8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJ4bm90aWZpY2F0aW9uIiB2YWx1ZT0iJCF7ZXNjYXBldG9vbC54bWwoJHJlcXVlc3QuZ2V0KCd4bm90aWZpY2F0aW9uJykpfSIgLz4KPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0idGVtcGxhdGUiIHZhbHVlPSIkIXtlc2NhcGV0b29sLnhtbCgkcmVxdWVzdC50ZW1wbGF0ZSl9IiAvPgojIyBXZSBuZWVkIHRvIHN1Ym1pdCB0aGUgbGFuZ3VhZ2Ugb2YgdGhlIHRyYW5zbGF0ZWQgZG9jdW1lbnQgYmVjYXVzZSB0aGUgaW5saW5lIGVkaXQgbW9kZSBpcyBub3QgbGltaXRlZCB0byBlZGl0aW5nIG9ubHkKIyMgdGhlIG9iamVjdHMsIHdoaWNoIGFyZSBzaGFyZWQgYnkgYWxsIHRyYW5zbGF0aW9ucy4gV2UgY2FuIGFsc28gZWRpdCB0aGUgY29udGVudCBvciB0aGUgdGl0bGUgb2YgdGhlIGRvY3VtZW50IHdoaWNoIGFyZQojIyBzcGVjaWZpYyB0byBlYWNoIHRyYW5zbGF0aW9uIGFuZCBzbyB3ZSBuZWVkIHRvIHNwZWNpZnkgd2hpY2ggdHJhbnNsYXRpb24gaXMgYmVpbmcgZWRpdGVkLgo8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJsYW5ndWFnZSIgdmFsdWU9IiQhe2VzY2FwZXRvb2wueG1sKCR0ZG9jLnJlYWxMYW5ndWFnZSl9IiAvPgojaWYoIiQhcmVxdWVzdC5wYXJlbnQiICE9ICcnKQogIDxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9InBhcmVudCIgdmFsdWU9IiRlc2NhcGV0b29sLnhtbCgkIXJlcXVlc3QucGFyZW50KSIgLz4KI2VuZAojaWYoIiQhcmVxdWVzdC50aXRsZSIgIT0gJycpCiAgPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0idGl0bGUiIHZhbHVlPSIkZXNjYXBldG9vbC54bWwoJCFyZXF1ZXN0LnRpdGxlKSIgLz4KI2VuZAojIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMjIERpc3BsYXkgdGhlIHJlbmRlcmVkIGNvbnRlbnQKIyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQokcmVuZGVyZWRDb250ZW50CiNzZXQoJGVkaXRhY3Rpb25zID0gImJvdHRvbSIpCjxkaXYgY2xhc3M9ImJvdHRvbWJ1dHRvbnMiPiN0ZW1wbGF0ZSgiZWRpdGFjdGlvbnMudm0iKTwvZGl2Pgo8L2Rpdj4gIyMgZm9ybQo8L2Zvcm0+CiN0ZW1wbGF0ZSgidGV4dGFyZWFfd3lzaXd5Zy52bSIpCiNlbmQgIyMgY2FuIGVkaXQKPC9kaXY+ICMjIG1haW5Db250ZW50QXJlYQo8L2Rpdj4gIyMgbWFpbgo=</content>
+    <filesize>4385</filesize>
+  </attachment>
+  <attachment>
+    <filename>eye.png</filename>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1353452800000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AsVAwcgz1boHgAAAlpJREFUOMvFUz1v01AUPX62Q+zETQc3FaVq3EgZOsAOytKlA1IRbAhUqRO/AfZOHeg/qGBmAQkJ0TliahiKKjo2kVtLVtqkPMXP7z0/X6ZElRg7cKQ73OF+nKNzLCLCXcBwRzi3m+Fw2CWid3meb2qtPSKCMQZlWYIxJj3POw6C4O3KykpvNmPNKMRx/FFK+VIpVbFtG0opjMdjKKXgOA4ajQa01jDG0PLy8tf19fVn8wVxHH/nnG9ZloWLiwskSQIAcF0XxhgURYGyLGHbNqIoAhFhaWnp18bGxiNnMBi8z/N8i4hwdnaG1dVVuK6LoiigtZ6XlBJra2tQSiHLMiilHgL4wIwxr7IsgxAC29vbMMZAaw2lFHZ2drC7uwspJZRSGAwG6Ha7iKII0+kU/X7/tTOZTJrNZhNhGALA/NrsbSKClBJSyrnY7XYbvu/j6OjIccIwLGu1mm2MAWMMQRBgNBpBSomDgwMopSCEgNYarVYLZVnCGINGo4FWq0WMc/6Hcz7nHIYhKpUKhBAQQiDPcwghEAQB2u02tNYoigJpmoJzrp1qtfppNBq9ybIMi4uLqNfr6HQ6sG0bw+EQABBFETqdDprNJrIsQxzHOD09BRH1LSLCycnJj5ubm8eu62JhYWHs+37ueZ6ybbuc8SYiXF9fV+M4vn95eQnOeZIkyYO5kXq93pc0TZ+6ruv4vo9KpQLHcUBEICJMp1NcXV0hTVOq1WrH5+fnT/b29grrdpgODw/vTSaT51LKF4yxTcZYHYBljCnzPP8phPhMRN/29/d//2Pl/5bGvyCjcnzpE2LzAAAAAElFTkSuQmCC</content>
+    <filesize>699</filesize>
+  </attachment>
+  <attachment>
+    <filename>head-icon-s.png</filename>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1363902620000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAVCAYAAABPPm7SAAAAsklEQVQ4y2NgwA5YgdgUiP2B2B3I02cgAdgD8S8g/o+GfwOxFSHNCVg0ouMEXJpFidAMwl+BmBGbAXOINACEu7EZcIkEAz6jawY56QsJBvwAYl50A/6TgEGxJEmpARLo3iDVABFkzetINACEO5AN2EOGAS3IBiwkw4B0ZAO8yDDADj0QTxCp8S8QHwNiLmypkRgDHuDLjduIMGAzLs2gxGRBhAHe+FygR4QBbvgM0Ke7AQD+P9Vh46YDYAAAAABJRU5ErkJggg==</content>
+    <filesize>235</filesize>
+  </attachment>
+  <attachment>
+    <filename>layoutExtraVars.vm</filename>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1378848245000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>IyogCiAqIFZvbHVudGFyeSBsZWZ0IGVtcHR5LgogKiBUaGlzIHRlbXBsYXRlIGlzIGludGVuZGVkIHRvIGJlIHVzZWQgYnkgY3VzdG9tIHNraW4gdGhhdCB3YW50IHRvIG92ZXJyaWRlIHZhbHVlcyBmcm9tIGxheW91dHZhcnMudm0gc2FmZWx5LgogKiAgCiAqIFNvbWUgZXhhbXBsZSBvZiB2YXJpYWJsZXMgdGhhdCBjYW4gYmUgb3ZlcnJpZGRlbiBoZXJlIDoKICogI3NldCgkZGlzcGxheUNvbnRlbnRNZW51ID0gZmFsc2UpCiAqICNzZXQoJGRpc3BsYXlNYWluTWVudSA9IGZhbHNlKQogKiAjc2V0KCRkaXNwbGF5RG9jRXh0cmEgPSBmYWxzZSkKICogI3NldCgkZGlzcGxheVNob3J0Y3V0cyA9IGZhbHNlKQogKiMKI3NldCAoJGRpc3BsYXlEb2NFeHRyYSA9IGZhbHNlKQojc2V0ICgkZGlzcGxheU1haW5NZW51ID0gZmFsc2UpCiNzZXQgKCRkaXNwbGF5U2hvcnRjdXRzID0gZmFsc2Up</content>
+    <filesize>444</filesize>
+  </attachment>
+  <attachment>
+    <filename>logo.png</filename>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1368557198000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>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</content>
+    <filesize>1782</filesize>
+  </attachment>
+  <attachment>
+    <filename>ratios-icon-s.png</filename>
+    <author>xwiki:XWiki.Admin</author>
+    <date>1363905937000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAQAAAAngNWGAAAACXBIWXMAABcSAAAXEgFnn9JSAAAAB3RJTUUH3QMVFisPvHdHFgAAAAJiS0dEAP+Hj8y/AAABtklEQVQoU2XRS0sUUBQA4K/UFJnJTKMwwUX0ArUcN5KZUCY4RgWViRqMgZILNc13MGkFRqQFZdgDH9GqVY9di6gkMLr/aVo4jmNxNvec+93DPfdK2QyFqvSZSkefSoVZu5lFox6XRDJ5xGU9Gu3YBg2Ii26dT1ej4gYy0F5LHujNxJDxrOyeFWUbsMO8FdMa7VfsmFXBCXuUOW3Ce28kUigwqVVUvWcWDWr1StBhzJLXupU6Z0oBFcbcMWlC0gfBum9+C4JPnnvovml3VXBNszoRUUWKRHwUBC/VO+qgcsVOaXGVUdVqM3PmSgiCeNbsMSeNMrINFqoVBEc23y8NR/6Ho4Lg8D8dR+hXkwWL/REEN+zMgrX6adK2CeUaFgTBz61/EnPdWUokxdKlUt+tWfdV0JQFk0rIM+RiSop8M1YlrVn02FwGXjAsV4oWSbly1Pmhyrgv5jT45VD6OknxFCmq9Uko0W5RvhcWzCv0zrgceRL61GzCmPNueyJhlzmLZuUrtyDulmaxLXjGbpWGTGo367O36rSb0eu4qAaxDbjPFZ06dek26Kllyx4ZclOXTp3aHEj5C58T1CMV/tRNAAAAAElFTkSuQmCC</content>
+    <filesize>549</filesize>
+  </attachment>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>8dda95b8-cd05-43f6-9f5b-c60c9566d28d</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+#macro (__img $name)$xwiki.getDocument('PhenoTips.Skin').getAttachmentURL("${name}.png")#end
+#body {
+  font-family: Arial,Verdana,sans-serif;
+}
+.edit_section {
+  display: none !important;
+}
+#headerglobal {
+  position: relative;
+}
+#company h1 a {
+  color: $theme.pageBackgroundColor !important;
+  text-decoration: none !important;
+}
+#company h1 {
+  border: 0 none;
+  color: $theme.pageBackgroundColor;
+  font-size: 1.2em;
+  margin: 0 20px 0;
+  position: absolute;
+  right: 5%;
+  text-shadow: 0 0 6px #777;
+  text-transform: uppercase;
+}
+.xdocCreation {
+  float: right;
+  width: 48%;
+}
+#document-title h1 {
+  margin: 0 0 0.5em;
+  padding: 5px 0 0;
+}
+#mainContentArea, #mainEditArea {
+  overflow: visible;
+  padding: 10px;
+}
+
+.actionmenu {
+  height: 1.8em;
+}
+#phenotips-mainmenu, #phenotips-globalTools {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+  color: $theme.menuLinkColor;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5)
+}
+#phenotips-mainmenu .topmenuentry {
+  background-image: none;
+  white-space: nowrap;
+}
+#phenotips-mainmenu a, #phenotips-globalTools a {
+  display: inline-block;
+  float: none;
+}
+#phenotips-globalTools .search input {
+  height: 1.7em;
+  margin-left: 0;
+  margin-right: 5px;
+  margin-top: 0.05em;
+  min-height: 22px;
+  padding: 0 3px;
+  width: 20em;
+}
+
+#phenotips-globalTools label {
+  margin-left: 2em;
+}
+
+#create-patient-record {
+  background: transparent;
+  border: 0 none;
+  color: $theme.menuLinkColor;
+  cursor: pointer;
+  display: inline-block;
+  font: 700 0.8em/1.8em sans-serif;
+  padding: 2px 0 0;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  text-transform: uppercase;
+  white-space: nowrap;
+  width: auto;
+}
+#create-patient-record:hover {
+  text-decoration: underline;
+}
+#create-patient-record::-moz-focus-inner {
+  border: 0;
+}
+#phenotips-globalTools .search .icon-search, #phenotips-globalTools .search .fa-search {
+  color: $theme.menuLinkColor;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.bottombuttons {
+  background: #F9F9F9;
+  border: 1px solid #FFFFFF;
+  bottom: 0;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  left: 0;
+  margin: 0 25px !important;
+  padding: 0.5em 10px;
+  position: fixed;
+  right: 0;
+  z-index: 3;
+}
+.bottombuttons input[name="action_cancel"] {
+  float: right;
+}
+
+input.button:disabled, .buttonwrapper button:disabled, input.button:disabled:hover, .buttonwrapper button:disabled:hover {
+    background-image: none;
+}
+
+.add-data-button,
+.buttonwrapper a.add-data-button:link,
+.buttonwrapper a.add-data-button:visited,
+.buttonwrapper a.add-data-button:active {
+  background-color: $theme.buttonPrimaryBackgroundColor;
+  border-radius: 4px;
+  box-shadow: 0 0 6px $theme.borderColor;
+  color: $theme.buttonPrimaryTextColor;
+  display: inline-block;
+  font: normal normal 700 .8em/140% "Helvetica",sans-serif;
+  padding: .3em .2em .3em  2.2em;
+  position: relative;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.add-data-button:hover,
+.buttonwrapper a.add-data-button:hover {
+  box-shadow: 0 0 6px $theme.linkColor;
+}
+.general-tools {
+  float: right;
+  margin: -1.6em 3px 0;
+  padding: 3px 0;
+  position: relative;
+}
+.general-tools label {
+  color: $theme.linkColor;
+  cursor: pointer;
+}
+.general-tools label:hover {
+  text-decoration: underline;
+}
+#patient-creation-form {
+  position: relative;
+}
+.xwiki-livetable-pagination #patient-creation-form {
+  float: left;
+}
+label.create-button-label, .add-data-button:before {
+  color: $theme.buttonPrimaryTextColor;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1.25em;
+  font-weight: bold;
+  height: .8em;
+  left: .4em;
+  line-height: .9em;
+  position: absolute;
+  text-align: center;
+  text-shadow: none;
+  top: .24em;
+  vertical-align: middle;
+  width: .8em !important;
+  z-index: 2;
+}
+
+thead.xwiki-livetable-display-header td.xwiki-livetable-display-header-filter input, thead.xwiki-livetable-display-header td.xwiki-livetable-display-header-filter select {
+  padding: .3em !important;
+}
+
+input[type=text], textarea {
+  border-color: $theme.pageContentBackgroundColor;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.4) inset !important;
+  width: 100%;
+}
+textarea {
+  width: 98%;
+}
+input[type=text]:focus, textarea:focus {
+  border-color: $theme.linkColor;
+}
+
+body .xwiki-livetable-topfilters-container, body .xwiki-livetable-tagcloud-container {
+  background-color: $theme.backgroundSecondaryColor;
+  border-color: $theme.buttonPrimaryBackgroundColor;
+}
+body .xwiki-livetable-topfilters-tip .tippointer, body .xwiki-livetable-tagcloud-tip .tippointer {
+  border-top-color: $theme.buttonPrimaryBackgroundColor;
+}
+body .xwiki-livetable-topfilters-tip .tippointer div, body .xwiki-livetable-tagcloud-tip .tippointer div {
+  border-top-color: $theme.backgroundSecondaryColor;
+  top: -22px;
+}
+body .xwiki-livetable-topfilters-container .value-cloud-tools a {
+  color: $theme.textColor;
+  font-weight: bold;
+}
+#patients.xwiki-livetable .actions {
+  text-align: right;
+}
+h1:target, h2:target, h3:target {
+  background-color: $theme.highlightColor;
+}
+#globallinks {
+  display: none;
+}
+
+## Disable gradients
+#mainmenu {
+  background-image: none;
+  box-shadow: none;
+}
+#mainmenu * {
+  text-shadow: none;
+}
+.editbody #footerglobal {
+  margin-bottom: 4em;
+}
+.main {
+  padding-bottom: 0;
+}</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>always</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>0</number>
+    <className>XWiki.XWikiRights</className>
+    <guid>4898ab6a-ab78-47af-962c-874bd555edf1</guid>
+    <class>
+      <name>XWiki.XWikiRights</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <allow>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>allow</displayType>
+        <name>allow</name>
+        <number>4</number>
+        <prettyName>Allow/Deny</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </allow>
+      <groups>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>groups</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>Groups</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
+      </groups>
+      <levels>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>1</multiSelect>
+        <name>levels</name>
+        <number>2</number>
+        <prettyName>Levels</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>3</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.LevelsClass</classType>
+      </levels>
+      <users>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>users</name>
+        <number>3</number>
+        <picker>1</picker>
+        <prettyName>Users</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
+      </users>
+    </class>
+    <property>
+      <allow>1</allow>
+    </property>
+    <property>
+      <groups>XWiki.XWikiAllGroup</groups>
+    </property>
+    <property>
+      <levels>view</levels>
+    </property>
+    <property>
+      <users>XWiki.XWikiGuest</users>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.Skin</name>
+    <number>0</number>
+    <className>XWiki.XWikiSkins</className>
+    <guid>deed3e95-9ca1-4315-85b2-4b70e05cd884</guid>
+    <class>
+      <name>XWiki.XWikiSkins</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <baseskin>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>baseskin</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Base Skin</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </baseskin>
+      <edit.vm>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>edit.vm</name>
+        <number>9</number>
+        <picker>0</picker>
+        <prettyName>Edit</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </edit.vm>
+      <footer.vm>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>footer.vm</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>Footer</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </footer.vm>
+      <header.vm>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>header.vm</name>
+        <number>5</number>
+        <picker>0</picker>
+        <prettyName>Header</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </header.vm>
+      <logo>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>logo</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>Logo</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </logo>
+      <name>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <style.css>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>style.css</name>
+        <number>4</number>
+        <picker>0</picker>
+        <prettyName>Style</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </style.css>
+      <view.vm>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>view.vm</name>
+        <number>8</number>
+        <picker>0</picker>
+        <prettyName>View</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </view.vm>
+      <viewheader.vm>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>viewheader.vm</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>View Header</prettyName>
+        <rows>15</rows>
+        <size>80</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </viewheader.vm>
+    </class>
+    <property>
+      <baseskin>colibri</baseskin>
+    </property>
+    <property>
+      <edit.vm>###
+### Main "edit" template
+###
+### General wrapper for edit actions
+###
+##
+## Is the document being edited by another user?
+## If yes, warn about it and show a forcing link:
+##
+#if($tdoc.getLocked() &amp;&amp; "$!request.get('force')" == '')
+  #template("startpage.vm")
+  &lt;div class="main layoutsubsection"&gt;
+  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.main.top'))
+    $services.rendering.render($uix.execute(), 'xhtml/1.0')
+  #end
+  &lt;div id="mainContentArea"&gt;
+  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.content.top'))
+    $services.rendering.render($uix.execute(), 'xhtml/1.0')
+  #end
+    ##
+    $response.setStatus(423)
+    #set($newquerystring = "$!{request.getQueryString().replaceAll('&amp;', '&amp;amp;').replaceAll('&amp;amp;amp;', '&amp;amp;')}"
+                         + '&amp;amp;force=1')
+    #set($forceEditURL = $doc.getURL($xcontext.getAction(), ${newquerystring}))
+    #xwikimessageboxstart($services.localization.render('notice') "$services.localization.render('doclockedby') $xwiki.getUserName($doc.getLockingUser())")
+    &lt;a href="$forceEditURL"&gt;$services.localization.render('forcelock')&lt;/a&gt;
+    #xwikimessageboxend()
+    ##
+   &lt;/div&gt;## mainContentArea
+  &lt;/div&gt;## main layoutsubsection
+  #template("endpage.vm")
+#else
+  ##
+  ## Determine what editor to show
+  ##
+  #if("$!editor" == '')
+    ## Normally no special characters should exist in the editor parameter, so this is just a protection measure.
+    #set($editor = "$!{escapetool.xml($request.getParameter('editor'))}")
+    #if($editor == '')
+      ## Determine the sheets using the default document translation because objects are accessible only from the default translation.
+      #if(!$services.sheet.getSheets($doc, $xcontext.action).isEmpty())
+        #set($editor = 'inline')
+      #elseif (($xwiki.getUserPreference('editor') == 'Wysiwyg') &amp;&amp; ($tdoc.syntax.toIdString() == 'xwiki/1.0' &amp;&amp; !$tdoc.isAdvancedContent() || $services.wysiwyg.isSyntaxSupported($tdoc.syntax.toIdString())))
+        #set($editor = 'wysiwyg')
+      #else
+        #set($editor = 'wiki')
+      #end
+    #end
+  #end
+  #if($editor == 'inline')
+    ## The inline editor uses the view layout, unlike the rest of the editors.
+    #template('startpage.vm')
+    #template('editinline.vm')
+    #template('endpage.vm')
+  #else
+  ##
+  ## "Compute" the title
+  ##
+  #set ($title = $services.localization.render("platform.web.editors.${editor}.pageTitle", [$tdoc.plainTitle]))
+  #if ($title == "platform.web.editors.${editor}.pageTitle")
+    #set ($title = $services.localization.render('platform.web.editors.unknown.pageTitle', [$tdoc.plainTitle]))
+  #end
+  ##
+  ## Header
+  ##
+  #template("xwikivars.vm")
+  #template("layoutvars.vm")
+  #template("htmlheader.vm")
+  #if($displayMainMenu)
+    &lt;div id="menuview"&gt;
+      #template("menuview.vm")
+    &lt;/div&gt;
+  #end
+  #template("header.vm")
+  #if($editor == 'wiki' || $editor == 'wysiwyg')
+    &lt;form id="edit" method="post" action="$doc.getURL('preview')" class="withLock"&gt;
+    &lt;div class="hidden"&gt;
+    ## CSRF prevention
+    &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+    ## Pass the section number when the form is submitted in order to affect only the specified section.
+    ## We need to test if the section number is present to prevent a NumberFormatException for the empty string.
+    #if("$!{request.section}" != '')
+      &lt;input type="hidden" name="section" value="$!{escapetool.xml($request.section)}" /&gt;
+    #end
+    ## This input is used by the full screen widget: it stores the selector of the maximized element, so that the full screen can be restored when coming back from preview.
+    &lt;input type="hidden" name="x-maximized" value="$!{escapetool.xml($request.get('x-maximized'))}"/&gt;
+    &lt;/div&gt;
+  #end
+  ##################
+  ##   Edit zone  ##
+  ##################
+  &lt;div id="xwikieditor" class="layoutsection"&gt;
+  &lt;div id="xwikieditorinner"&gt;
+  &lt;div class="leftsidecolumns"&gt;
+  &lt;div id="editcolumn" class="editor editor-${editor}"&gt;
+  &lt;div class="alleditcontent"&gt;
+  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.main.top'))
+    $services.rendering.render($uix.execute(), 'xhtml/1.0')
+  #end
+  &lt;div id="mainEditArea"&gt;
+  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.content.top'))
+    $services.rendering.render($uix.execute(), 'xhtml/1.0')
+  #end
+  #template("edit${editor}.vm")
+  ## This javascript must be placed here since it uses velocity variables set in the template above.
+  &lt;script type="text/javascript"&gt;
+    //&lt;![CDATA[
+    if ($('tmEditWysiwyg')) {
+      // Manage switch from wiki to wysiwyg, content must be preserved between those editors.
+      Event.observe($('tmEditWysiwyg'), "click", function(event) {
+        #if($doc.syntax.toIdString() == "xwiki/1.0")
+        if (checkAdvancedContent("$services.localization.render('checkadvancedcontent')") == false) {
+          Event.stop(event);
+          return;
+        }
+        #end
+        document.forms.${formname}.action='$doc.getURL("edit", "editor=wysiwyg&amp;$languageparams")';
+        document.forms.${formname}.submit();
+        Event.stop(event);
+      });
+
+      // Manage switch from wysiwyg to wiki, content must be preserved between those editors.
+      Event.observe($('tmEditWiki'), "click", function(event) {
+        document.forms.${formname}.action='$doc.getURL("edit", "editor=wiki&amp;$languageparams")';
+        document.forms.${formname}.submit();
+        Event.stop(event);
+      });
+    }
+    //]]&gt;
+  &lt;/script&gt;
+  &lt;/div&gt; ## mainEditArea
+  &lt;/div&gt; ## alleditcontent
+  &lt;/div&gt; ## editcolumn
+  &lt;div class="clearfloats"&gt;&lt;/div&gt;
+  &lt;/div&gt; ## leftsidecolumns
+  #template("editpanels.vm")
+  &lt;div class="clearfloats"&gt;&lt;/div&gt;
+  &lt;/div&gt; ## xwikieditorinner
+  &lt;/div&gt; ## xwikieditor
+  ##
+  ## Footer
+  ##
+  #if($editor == 'wiki' || $editor == 'wysiwyg')
+    &lt;/form&gt;
+  #end
+  #template("footer.vm")
+  #template("htmlfooter.vm")
+  #end ## $editor != 'inline'
+#end</edit.vm>
+    </property>
+    <property>
+      <footer.vm/>
+    </property>
+    <property>
+      <header.vm>###
+### Global header
+###
+### The uppermost area of each page
+### Contains the company logo, links to global actions and the search facility
+###
+#if($isInServletMode) ## Visible only in a page
+&lt;div id="headerglobal" class="layoutsection"&gt;
+#foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.header.top'))
+  $services.rendering.render($uix.execute(), 'xhtml/1.0')
+#end
+#if($xcontext.action == "view")
+&lt;div class="minwidthb"&gt;&lt;/div&gt;
+#else
+&lt;div class="minwidthd"&gt;&lt;/div&gt;
+#end
+  &lt;div id="company"&gt;
+  &lt;div id="companylogo"&gt;
+    &lt;a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home"&gt;
+#if("$!{themeDocFullName}" == '')
+  #set($themeDocFullName = "$!xwiki.getUserPreference('colorTheme')")
+#end
+#if($themeDocFullName == '')
+  #set($themeDocFullName = 'ColorThemes.DefaultColorTheme')
+#end
+#set($themeDoc = $xwiki.getDocument($themeDocFullName))
+#set($themeObj = $themeDoc.getObject('ColorThemes.ColorThemeClass'))
+#set($logoname = $themeObj.getProperty('logoImage').value)
+#if("$!{logoname}" != '')
+  #set($logourl = $themeDoc.getAttachmentURL($logoname))
+#else
+  #set($logoname = $xwiki.getSkinPreference('logo', 'logo.png'))
+  #set($logo = $!prefdoc.getAttachment($logoname))
+  #if(!$logo)
+    #set($logourl = $xwiki.getSkinFile($logoname))
+  #else
+    #set($logourl = $prefdoc.getAttachmentURL($logo.filename))
+  #end
+#end
+    &lt;img src="$!logourl" alt="Logo"/&gt;
+    &lt;/a&gt;
+  &lt;/div&gt; ## companylogo
+  &lt;/div&gt; ## company
+  &lt;div class="clearfloats"&gt;&lt;/div&gt;
+#foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.header.bottom'))
+  $services.rendering.render($uix.execute(), 'xhtml/1.0')
+#end
+&lt;/div&gt; ## headerglobal
+#end
+##
+### TODO: Format the header for pdf output</header.vm>
+    </property>
+    <property>
+      <logo/>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <style.css/>
+    </property>
+    <property>
+      <view.vm>###
+### Main "view" template
+###
+### General wrapper for view actions
+###
+#if ($services.distribution.jobStatus &amp;&amp; $services.distribution.jobStatus.state.name() != 'FINISHED' &amp;&amp; $services.distribution.canDisplayDistributionWizard())
+  $response.sendRedirect($xwiki.getURL('XWiki.Distribution', 'distribution', "xredirect=$escapetool.url($xwiki.relativeRequestURL)"))
+#elseif ($request.getParameter("raw").equals("1"))
+  #template("code.vm")
+#else
+  #template("startpage.vm")
+  #if("$!viewer" == '')
+    #set($viewer = $request.getParameter('viewer'))
+  #end
+  #if("$!viewer" == '')
+    #set($viewer = 'content')
+  #end
+  &lt;div class="main layoutsubsection"&gt;
+  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.main.top'))
+    $services.rendering.render($uix.execute(), 'xhtml/1.0')
+  #end
+  &lt;div id="mainContentArea"&gt;
+  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.content.top'))
+    $services.rendering.render($uix.execute(), 'xhtml/1.0')
+  #end
+  #if($viewer == 'content')
+    #template("contentview.vm")
+  #else
+    #template("${viewer}.vm")
+  #end
+  &lt;div class="clearfloats"&gt;&lt;/div&gt;
+  &lt;/div&gt;## mainContentArea
+  #if($viewer == 'content' &amp;&amp; $displayDocExtra)
+    #template("docextra.vm")
+  #end
+  &lt;/div&gt;## main
+  #template("endpage.vm")
+#end</view.vm>
+    </property>
+    <property>
+      <viewheader.vm/>
+    </property>
+  </object>
+</xwikidoc>

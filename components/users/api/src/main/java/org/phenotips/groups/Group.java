@@ -28,7 +28,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * A group of users.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -41,7 +41,7 @@ public interface Group
 
     /**
      * Get a reference to the XDocument where this group is defined.
-     * 
+     *
      * @return a valid document reference
      */
     DocumentReference getReference();

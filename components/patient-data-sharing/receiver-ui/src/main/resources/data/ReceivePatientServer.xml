@@ -77,19 +77,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </ip>
-    <token>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <name>token</name>
-      <number>3</number>
-      <picker>0</picker>
-      <prettyName>Token</prettyName>
-      <size>25</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </token>
     <description>
       <customDisplay/>
       <disabled>0</disabled>
@@ -105,20 +92,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
     </description>
-    <user_tokens>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <defaultValue>0</defaultValue>
-      <displayFormType>radio</displayFormType>
-      <displayType/>
-      <name>user_tokens</name>
-      <number>5</number>
-      <prettyName>Allow user tokens</prettyName>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-    </user_tokens>
     <user_token_life_in_days>
       <customDisplay/>
       <disabled>0</disabled>
@@ -133,20 +106,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
     </user_token_life_in_days>
-    <allow_updates>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <defaultValue>0</defaultValue>
-      <displayFormType>radio</displayFormType>
-      <displayType/>
-      <name>allow_updates</name>
-      <number>5</number>
-      <prettyName>Allow updating existing patients (by GUIDs)</prettyName>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-    </allow_updates>
   </class>
   <content/>
 </xwikidoc>

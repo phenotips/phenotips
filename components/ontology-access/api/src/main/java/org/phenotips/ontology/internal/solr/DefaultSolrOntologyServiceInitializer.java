@@ -20,6 +20,7 @@
 package org.phenotips.ontology.internal.solr;
 
 import org.phenotips.ontology.OntologyTerm;
+import org.phenotips.ontology.SolrCoreContainerHandler;
 import org.phenotips.ontology.SolrOntologyServiceInitializer;
 
 import org.xwiki.cache.Cache;
@@ -30,14 +31,11 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.configuration.ConfigurationSource;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 
 /**
  * Initializes cache and server connection for starting a Solr ontology service.
@@ -49,31 +47,27 @@ import org.apache.solr.client.solrj.impl.HttpSolrServer;
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServiceInitializer
 {
-    /** Character used in URLs to delimit path segments. */
-    private static final String URL_PATH_SEPARATOR = "/";
-
     /** The Solr server instance used. */
-    protected SolrServer server;
+    private SolrServer server;
 
     /**
      * Cache for the recently accessed terms; useful since the ontology rarely changes, so a search should always return
      * the same thing.
      */
-    protected Cache<OntologyTerm> cache;
+    private Cache<OntologyTerm> cache;
+
+    @Inject
+    private SolrCoreContainerHandler cores;
 
     /** Cache factory needed for creating the term cache. */
     @Inject
-    protected CacheManager cacheFactory;
-
-    @Inject
-    @Named("xwikiproperties")
-    protected ConfigurationSource configuration;
+    private CacheManager cacheFactory;
 
     @Override
     public void initialize(String serverName) throws InitializationException
     {
         try {
-            this.server = new HttpSolrServer(this.getSolrLocation() + serverName + URL_PATH_SEPARATOR);
+            this.server = new EmbeddedSolrServer(this.cores.getContainer(), serverName);
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
         } catch (RuntimeException ex) {
             throw new InitializationException("Invalid URL specified for the Solr server: {}");
@@ -92,20 +86,5 @@ public class DefaultSolrOntologyServiceInitializer implements SolrOntologyServic
     public SolrServer getServer()
     {
         return this.server;
-    }
-
-    /**
-     * Get the URL where the Solr server can be reached, without any core name.
-     *
-     * @return an URL as a String
-     */
-    protected String getSolrLocation()
-    {
-        String wikiSolrUrl = this.configuration.getProperty("solr.remote.url", String.class);
-        if (StringUtils.isBlank(wikiSolrUrl)) {
-            return "http://localhost:8080/solr/";
-        }
-        return StringUtils.substringBeforeLast(StringUtils.removeEnd(wikiSolrUrl, URL_PATH_SEPARATOR),
-            URL_PATH_SEPARATOR) + URL_PATH_SEPARATOR;
     }
 }

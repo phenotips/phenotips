@@ -34,12 +34,12 @@ function getSelectorFromXML(responseXML, selectorName, attributeName, attributeV
 
 function getSubSelectorTextFromXML(responseXML, selectorName, attributeName, attributeValue, subselectorName) {
     var selector = getSelectorFromXML(responseXML, selectorName, attributeName, attributeValue);
-    
+
     var value = selector.innerText || selector.text || selector.textContent;
-    
+
     if (!value)     // fix IE behavior where (undefined || "" || undefined) == undefined
         value = "";
-    
+
     return value;
 }
 
@@ -48,7 +48,7 @@ var ProbandDataLoader = Class.create( {
         this.probandData = undefined;
     },
 
-    load: function(callWhenReady) {       
+    load: function(callWhenReady) {
         new Ajax.Request(XWiki.currentDocument.getRestURL('objects/PhenoTips.PatientClass/0'), {
             method: "GET",
             onSuccess: this.onProbandDataReady.bind(this),
@@ -56,7 +56,7 @@ var ProbandDataLoader = Class.create( {
         });
     },
 
-    onProbandDataReady : function(response) {        
+    onProbandDataReady : function(response) {
         var responseXML = response.responseXML;  //documentElement.
         this.probandData = {};
         this.probandData.firstName = unescapeRestData(getSubSelectorTextFromXML(responseXML, "property", "name", "first_name", "value"));
@@ -86,40 +86,76 @@ var SaveLoadEngine = Class.create( {
 
     createGraphFromSerializedData: function(JSONString, noUndo, centerAround0) {
         console.log("---- load: parsing data ----");
-        var successfulLoad = false;
-
         document.fire("pedigree:load:start");
 
         try {
-            var positionedGraph = editor.getGraph(); 
-
-            var changeSet = positionedGraph.fromJSON(JSONString);
-
-            if (!noUndo) {
-                var probandData = editor.getProbandDataFromPhenotips();
-                var genderOk = positionedGraph.setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
-                if (!genderOk)
-                    alert("Gender defined in phenotips is incompatible with this pedigree. Setting proband gender to 'Unknown'");
-            }
-
-            if (editor.getGraphicsSet().applyChanges(changeSet, false)) {
-                successfulLoad = true;
-                editor.getWorkspace().adjustSizeToScreen();
-            }
-
-            if (centerAround0)
-                editor.getWorkspace().centerAroundNode(0);
-
-            if (!noUndo)
-                editor.getActionStack().addState(null, null, JSONString);
+            var changeSet = editor.getGraph().fromJSON(JSONString);
         }
         catch(err)
         {
             console.log("ERROR loading the graph: " + err);
+            alert("Error loading the graph");
+            document.fire("pedigree:graph:clear");
+            document.fire("pedigree:load:finish");
+            return;
         }
 
+        if (!noUndo) {
+            var probandData = editor.getProbandDataFromPhenotips();
+            var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
+            if (!genderOk)
+                alert("Proband gender defined in Phenotips is incompatible with this pedigree. Setting proband gender to 'Unknown'");
+            JSONString = editor.getGraph().toJSON();
+        }
+
+        if (editor.getView().applyChanges(changeSet, false)) {
+            editor.getWorkspace().adjustSizeToScreen();
+        }
+
+        if (centerAround0)
+            editor.getWorkspace().centerAroundNode(0);
+
+        if (!noUndo)
+            editor.getActionStack().addState(null, null, JSONString);
+
         document.fire("pedigree:load:finish");
-        return successfulLoad;
+    },
+
+    createGraphFromImportData: function(importString, importType, importOptions, noUndo, centerAround0) {
+        console.log("---- import: parsing data ----");
+        document.fire("pedigree:load:start");
+
+        try {
+            var changeSet = editor.getGraph().fromImport(importString, importType, importOptions);
+            
+            if (changeSet == null) throw "unable to create a pedigree from imported data"; 
+        }
+        catch(err)
+        {
+            alert("Error importing pedigree: " + err);
+            document.fire("pedigree:load:finish");
+            return;
+        }
+
+        if (!noUndo) {
+            var probandData = editor.getProbandDataFromPhenotips();
+            var genderOk = editor.getGraph().setProbandData( probandData.firstName, probandData.lastName, probandData.gender );
+            if (!genderOk)
+                alert("Proband gender defined in Phenotips is incompatible with the imported pedigree. Setting proband gender to 'Unknown'");
+            JSONString = editor.getGraph().toJSON();
+        }
+
+        if (editor.getView().applyChanges(changeSet, false)) {
+            editor.getWorkspace().adjustSizeToScreen();
+        }
+
+        if (centerAround0)
+            editor.getWorkspace().centerAroundNode(0);
+
+        if (!noUndo)
+            editor.getActionStack().addState(null, null, JSONString);
+
+        document.fire("pedigree:load:finish");
     },
 
     save: function() {
@@ -129,9 +165,9 @@ var SaveLoadEngine = Class.create( {
         var me = this;
 
         var jsonData = this.serialize();
-        
-        console.log("saving, data: " + stringifyObject(jsonData));        
-        
+
+        console.log("[SAVE] data: " + stringifyObject(jsonData));
+
         var image = $('canvas');
         var background = image.getElementsByClassName('panning-background')[0];
         var backgroundPosition = background.nextSibling;
@@ -148,9 +184,9 @@ var SaveLoadEngine = Class.create( {
                 me._saveInProgress = false;
             },
             onSuccess: function() {savingNotification.replace(new XWiki.widgets.Notification("Successfuly saved"));},
-            parameters: {"property#data": jsonData, "property#image": image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '').replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"500\" height=\"500\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"")}
+            parameters: {"property#data": jsonData, "property#image": image.innerHTML.replace(/xmlns:xlink=".*?"/, '').replace(/width=".*?"/, '').replace(/height=".*?"/, '').replace(/viewBox=".*?"/, "viewBox=\"" + bbox.x + " " + bbox.y + " " + bbox.width + " " + bbox.height + "\" width=\"" + bbox.width + "\" height=\"" + bbox.height + "\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"")}
         });
-        backgroundParent.insertBefore(background, backgroundPosition);        
+        backgroundParent.insertBefore(background, backgroundPosition);
     },
 
     load: function() {
@@ -163,12 +199,14 @@ var SaveLoadEngine = Class.create( {
             },
             onSuccess: function (response) {
                 //console.log("Data from LOAD: " + stringifyObject(response));
-                console.log("[Data from LOAD]");
-                                
-                var rawdata  = getSubSelectorTextFromXML(response.responseXML, "property", "name", "data", "value");                
+                //console.log("[Data from LOAD]");
+                var rawdata  = getSubSelectorTextFromXML(response.responseXML, "property", "name", "data", "value");
                 var jsonData = unescapeRestData(rawdata);
                 if (jsonData.trim()) {
-                    console.log("recived JSON: " + stringifyObject(jsonData));
+                    console.log("[LOAD] recived JSON: " + stringifyObject(jsonData));
+
+                    jsonData = editor.getVersionUpdater().updateToCurrentVersion(jsonData);
+
                     this.createGraphFromSerializedData(jsonData);
                 } else {
                     new TemplateSelector(true);

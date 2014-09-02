@@ -27,12 +27,12 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1395991357000</creationDate>
+  <creationDate>1401822126000</creationDate>
   <parent>PhenoTips.StudyClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1395991357000</date>
-  <contentUpdateDate>1395991357000</contentUpdateDate>
+  <date>1401822126000</date>
+  <contentUpdateDate>1401822126000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -239,7 +239,7 @@
    formDataWrapper.insert(submitButton);
    var cancelButton = new Element('input', {type : 'button', value : 'Cancel', 'class' : 'button secondary'});
    formDataWrapper.insert(' ').insert(cancelButton);
-   var modalBox = new MS.widgets.ModalPopup(templateSelectionForm, false, {'title': 'Study selection', 'verticalPosition': 'top', 'removeOnClose': false});
+   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': 'Study selection', 'verticalPosition': 'top', 'removeOnClose': false});
    cancelButton.observe('click', function(event) {
      modalBox.closeDialog();
    });
@@ -372,7 +372,7 @@
    formDataWrapper.insert(submitButton);
    var cancelButton = new Element('input', {type : 'button', value : 'Cancel', 'class' : 'button secondary'});
    formDataWrapper.insert(' ').insert(cancelButton);
-   var modalBox = new MS.widgets.ModalPopup(templateSelectionForm, false, {'title': 'Study selection', 'verticalPosition': 'top', 'removeOnClose': false});
+   var modalBox = new PhenoTips.widgets.ModalPopup(templateSelectionForm, false, {'title': 'Study selection', 'verticalPosition': 'top', 'removeOnClose': false});
    cancelButton.observe('click', function(event) {
      modalBox.closeDialog();
    });

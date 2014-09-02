@@ -46,7 +46,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * User meta-manager, trying to get a valid user from all the other user manager implementations, and falling back to
  * {@link InvalidUser} if no other manager can resolve the user.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -84,7 +84,7 @@ public class MetaUserManager extends AbstractUserManager
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see UserManager#getUser(String, boolean)
      */
     @Override
@@ -133,7 +133,7 @@ public class MetaUserManager extends AbstractUserManager
     /**
      * Transform a username into a document reference, belonging to the default wiki where user profiles should be
      * stored.
-     * 
+     *
      * @param identifier the user identifier to resolve
      * @return a document reference
      */

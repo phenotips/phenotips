@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -69,8 +68,9 @@ public class SolrUpdateGenerator
     public void transform(File input, File output, Map<String, Double> fieldSelection)
     {
         this.fieldSelection = fieldSelection;
+        BufferedReader in = null;
         try {
-            BufferedReader in = new BufferedReader(new FileReader(input));
+            in = new BufferedReader(new FileReader(input));
             FileOutputStream fos = new FileOutputStream(output);
             OutputFormat of = new OutputFormat("XML", "UTF-8", true);
             of.setIndent(2);
@@ -125,6 +125,13 @@ public class SolrUpdateGenerator
             ex.printStackTrace();
         } finally {
             this.fieldSelection = null;
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    // Closing a stream shouldn't fail
+                }
+            }
         }
     }
 
@@ -141,7 +148,6 @@ public class SolrUpdateGenerator
 
     public Map<String, TermData> transform(URL input, Map<String, Double> fieldSelection)
     {
-        Collection<String> dateVersion = null;
         this.fieldSelection = fieldSelection;
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(input.openConnection().getInputStream()));

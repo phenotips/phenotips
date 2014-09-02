@@ -20,10 +20,10 @@
 package org.phenotips.data.securestorage.internal;
 
 import org.phenotips.data.securestorage.LocalLoginToken;
-import org.phenotips.data.securestorage.RemoteLoginData;
-import org.phenotips.data.securestorage.PatientSourceServerInfo;
 import org.phenotips.data.securestorage.PatientPushedToInfo;
-import org.slf4j.Logger;
+import org.phenotips.data.securestorage.PatientSourceServerInfo;
+import org.phenotips.data.securestorage.RemoteLoginData;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.ApplicationStartedEvent;
@@ -39,13 +39,13 @@ import javax.inject.Singleton;
 import com.xpn.xwiki.store.hibernate.HibernateSessionFactory;
 
 /**
-* Registers {@link LocalLoginToken storage entity} and {@link RemoteLoginData storage entity}
-* in the Hibernate configuration at startup, since Hibernate doesn't
-* have a clean mechanism for auto-registering optional modular entities at runtime.
-*
-* @version $Id$
-* @since 1.0M10
-*/
+ * Registers {@link LocalLoginToken storage entity} and {@link RemoteLoginData storage entity} in the Hibernate
+ * configuration at startup, since Hibernate doesn't have a clean mechanism for auto-registering optional modular
+ * entities at runtime.
+ *
+ * @version $Id$
+ * @since 1.0M10
+ */
 @Component
 @Named("phenotips-data-secure-storage-registration")
 @Singleton
@@ -54,10 +54,6 @@ public class SecureStorageRegistrationHandler implements EventListener
     /** The Hibernate session factory where the entity must be registered. */
     @Inject
     private HibernateSessionFactory sessionFactory;
-
-    /** Logging helper object. */
-    @Inject
-    private Logger logger;
 
     @Override
     public String getName()
@@ -68,7 +64,7 @@ public class SecureStorageRegistrationHandler implements EventListener
     @Override
     public List<Event> getEvents()
     {
-        return Collections.<Event> singletonList(new ApplicationStartedEvent());
+        return Collections.<Event>singletonList(new ApplicationStartedEvent());
     }
 
     @Override

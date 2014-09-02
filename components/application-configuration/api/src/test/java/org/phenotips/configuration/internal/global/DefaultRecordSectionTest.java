@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the default {@link RecordSection} implementation, {@link DefaultRecordSection}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultRecordSectionTest
@@ -76,7 +76,7 @@ public class DefaultRecordSectionTest
     public void getNameWithMissingTitle()
     {
         UIExtension extension = mock(UIExtension.class);
-        when(extension.getParameters()).thenReturn(Collections.<String, String> emptyMap());
+        when(extension.getParameters()).thenReturn(Collections.<String, String>emptyMap());
         when(extension.getId()).thenReturn("org.phenotips.patientSheet.section.patient-info");
         RecordSection s = new DefaultRecordSection(extension, null, null);
         Assert.assertEquals("Patient info", s.getName());

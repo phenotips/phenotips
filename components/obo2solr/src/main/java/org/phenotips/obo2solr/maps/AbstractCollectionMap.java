@@ -29,6 +29,8 @@ import java.util.List;
 
 public abstract class AbstractCollectionMap<K, V> extends LinkedHashMap<K, Collection<V>>
 {
+    private static final long serialVersionUID = 1L;
+
     public AbstractCollectionMap()
     {
         super();

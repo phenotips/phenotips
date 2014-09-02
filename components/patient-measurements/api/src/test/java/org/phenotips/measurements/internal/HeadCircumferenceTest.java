@@ -30,7 +30,7 @@ import org.junit.Test;
 
 /**
  * Tests for the {@link HeadCircumferenceMeasurementHandler} component.
- * 
+ *
  * @version $Id$
  * @since 1.0M3
  */

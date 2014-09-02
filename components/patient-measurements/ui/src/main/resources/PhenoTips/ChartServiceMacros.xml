@@ -20,24 +20,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>ChartServiceMacros</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.ChartService</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822209000</creationDate>
+  <parent>PhenoTips.ChartService</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1332798937000</creationDate>
-  <date>1332860349000</date>
-  <contentUpdateDate>1332860349000</contentUpdateDate>
+  <date>1401822209000</date>
+  <contentUpdateDate>1401822209000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -76,11 +73,11 @@
       #set ($discard = $measurements.add({'a': $age, 'x' : $o.getProperty($measurementName).value}))
     #end
   #end
-  #set ($bDate = $xwiki.jodatime.getMutableDateTime($obj.getProperty('date_of_birth').value.time).toMutableDateTime($xwiki.jodatime.getUTCTimezone()))
+  #set ($bDate = $services.jodatime.getMutableDateTime($obj.getProperty('date_of_birth').value.time).toMutableDateTime($services.jodatime.getUTCTimezone()))
   #foreach ($o in $doc.getObjects($targetClassName))
     #if ($o.getProperty('date') &amp;&amp; $o.getProperty('date').value)
-      #set ($mDate = $xwiki.jodatime.getMutableDateTime($o.getProperty('date').value.time).toMutableDateTime($xwiki.jodatime.getUTCTimezone()))
-      #set ($age = $mDate.toInstant().minus($bDate.toInstant().getMillis()).toDateTime($xwiki.jodatime.getUTCTimezone()))
+      #set ($mDate = $services.jodatime.getMutableDateTime($o.getProperty('date').value.time).toMutableDateTime($services.jodatime.getUTCTimezone()))
+      #set ($age = $mDate.toInstant().minus($bDate.toInstant().getMillis()).toDateTime($services.jodatime.getUTCTimezone()))
       #set ($age = ($age.year - 1970) * 12 + $age.monthOfYear - 1)
     #else
       #set ($age = $o.getProperty('age').value)

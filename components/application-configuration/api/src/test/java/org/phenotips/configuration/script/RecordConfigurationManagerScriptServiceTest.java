@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the {@link RecordConfigurationManager} script service, {@link RecordConfigurationManagerScriptService}.
- * 
+ *
  * @version $Id$
  */
 public class RecordConfigurationManagerScriptServiceTest

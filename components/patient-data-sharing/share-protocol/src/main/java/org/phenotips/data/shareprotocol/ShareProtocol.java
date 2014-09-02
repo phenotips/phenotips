@@ -35,7 +35,6 @@ public class ShareProtocol
 
     // Every POST request should include the following parameters:
     public static final String CLIENT_POST_KEY_NAME_PROTOCOLVER  = "push_protocol_version";
-    public static final String CLIENT_POST_KEY_NAME_SERVER_TOKEN = "server_token";
     public static final String CLIENT_POST_KEY_NAME_ACTION       = "action";
     public static final String CLIENT_POST_KEY_NAME_USERNAME     = "username";
     // ...and either PASSWORD or USER_TOKEN:
@@ -72,8 +71,8 @@ public class ShareProtocol
     public static final String SERVER_JSON_KEY_NAME_ERROR_PROTOCOLFAILED = "unsupported_post_protocol_version";
 
     // one of the following may be set in case SERVER_JSON_KEY_NAME_ERROR_LOGINFAILED is set:
-    public static final String SERVER_JSON_KEY_NAME_ERROR_UNTRUSTEDSERVER  = "unauthorized_server";
     public static final String SERVER_JSON_KEY_NAME_ERROR_WRONGCREDENTIALS = "incorrect_credentials";     // incorrect username or password or token
+    public static final String SERVER_JSON_KEY_NAME_ERROR_UNTRUSTEDSERVER  = "unauthorized_server";       // unapproved source server
     public static final String SERVER_JSON_KEY_NAME_ERROR_EXPIREDUSERTOKEN = "user_token_expired";
     public static final String SERVER_JSON_KEY_NAME_ERROR_NOUSERTOKENS     = "user_tokens_not_supported"; // user_tokens are disabled on the server (in case a token is provided)
 

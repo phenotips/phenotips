@@ -35,11 +35,12 @@ In short, Maven handles everything related to building the project: downloading 
 Building the entire project is as simple as `mvn install`, but first the environment must be set-up:
 
 * Make sure a proper JDK is installed, Oracle Java SE 1.6 or 1.7 is recommended. Just a JRE isn't enough, since the project requires compilation.
-* Install maven by [downloading it](http://maven.apache.org/download.html) and following the [installation instructions](http://maven.apache.org/download.html#Installation).
+* Install maven by [downloading it](http://maven.apache.org/download.html) and following the [installation instructions](http://maven.apache.org/download.html#Installation). **Currently only Maven 3.0.x is supported**.
 * Clone the sources of the project locally, using one of:
     * `git clone git://github.com/phenotips/phenotips.git` if you need a read-only clone
     * `git clone git@github.com:phenotips/phenotips.git` if you also want to commit changes back to the project (and you have the right to do so)
     * download an [archive of the latest release](https://github.com/phenotips/phenotips/tags) if you don't want to use version control at all
+* It is advisable to increase the amount of memory available to Maven: `export MAVEN_OPTS="-Xmx2g -XX:MaxPermSize=256m"`
 * Execute `mvn install` at the command line to build the project
     * note that the first build will take a while longer, because all the required dependencies are downloaded, but all the subsequent builds should only take a few minutes
 
@@ -56,8 +57,6 @@ The project is split into several modules, among which `distribution/standalone`
 # Usage & limitations #
 
 The standalone distribution comes packaged with a *Java Servlet Container*, [Jetty](http://www.eclipse.org/jetty/), a lightweight *relational database management system*, [HyperSQL](http://hsqldb.org/), and the *phenotyping application* itself.
-
-**While good for a small to medium trial, this package isn't suited for production use and large quantities of data**.
 
 # LICENSE #
 

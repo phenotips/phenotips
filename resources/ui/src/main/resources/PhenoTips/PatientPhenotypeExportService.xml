@@ -20,131 +20,78 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>PatientPhenotypeExportService</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822206000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1366917816000</creationDate>
-  <date>1366929258000</date>
-  <contentUpdateDate>1366929258000</contentUpdateDate>
+  <date>1401825148000</date>
+  <contentUpdateDate>1401825148000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{include document="PhenoTips.JSONMacros" /}}
-
-{{velocity}}
+  <content>{{velocity}}
 #if ($xcontext.action != 'get')
   #break
 #end
-#set ($identifier = "$!{request.id}")
-#set ($externalIdentifier = "$!{request.eid}")
-#set ($results = [])
-#set ($metadata = {})
-#if ($identifier != '')
-  #set ($source = $xwiki.getDocument("data.$!{identifier}"))
-  #if (!$source || $source.isNew())
-    #set ($metadata.error = "Identifier not found.")
-  #else
-    #set ($metadata.source = $identifier)
-  #end
-#elseif ($externalIdentifier != '')
-  #set ($matchingDocuments = $xwiki.wrapDocs($services.query.xwql("where doc.object(PhenoTips.PatientClass).external_id = :eid").bindValue('eid', $externalIdentifier).execute()))
-  #if ($matchingDocuments.size() == 1)
-    #set ($source = $matchingDocuments.get(0))
-    #set ($metadata.source = $externalIdentifier)
-  #elseif ($matchingDocuments.size() &gt; 1)
-    #set ($metadata.error = "Non-unique identifier.")
-  #else
-    #set ($metadata.error = "Identifier not found.")
-  #end
-#end
-#if ($source &amp;&amp; !$source.isNew())
-  #set ($patientObject = $source.getObject('PhenoTips.PatientClass'))
-  #set ($metadata.source_url = "$!source.getExternalURL()")
-  #set ($onset = "$!patientObject.getProperty('global_age_of_onset').value")
-  #if ($onset != '')
-    #set ($metadata.global_age_of_onset = {'id' : $onset, 'label' : $services.ontologies.hpo.getTerm($onset).name})
-  #end
-  ## prepare phenotype meta information
-  #set ($metaObjects = $source.getObjects('PhenoTips.PhenotypeMetaClass'))
-  #set ($allMeta = {})
-  #foreach ($o in $metaObjects)
-    #set ($discard = $allMeta.put("$!{o.getProperty('target_property_name').value}__$!{o.getProperty('target_property_value').value}", $o))
-  #end
-  ##
-  ##
-  #macro (__build_clinical_data $propertyname $value)
-    #if ("$!value" != '')
-      #set ($hpoTerm = $services.ontologies.resolveTerm($value))
-      #if (!$hpoTerm)
-        #set ($id = '')
-        #set($text = $value)
-      #else
-        #set ($id = $value)
-        #set ($text = $hpoTerm.name)
-      #end
-      #set ($meta = $allMeta.get("${propertyname}__${value}"))
-      #if ($propertyname.startsWith('negative_'))
-        #set ($type = $propertyname.substring(9))
-        #set ($isPresent = 'no')
-      #else
-        #set ($type = $propertyname)
-        #set ($isPresent = 'yes')
-      #end
-      #set ($result = {
-        'type' : $type,
-        'phenotype_HP_id' : $escapetool.javascript($id),
-        'phenotype_name' : $escapetool.javascript($text),
-        'is_present' : $isPresent
-      })
-      #set ($onsetId = "$!meta.getProperty('age_of_onset').value")
-      #if ($onsetId != '')
-        #set ($discard = $result.put('onset_HP_id', $onsetId))
-        #set ($onsetText = "$!escapetool.javascript($services.ontologies.resolveTerm($onsetId).name)")
-        #if ($onsetText != '')
-          #set ($discard = $result.put('onset_name', $onsetText))
-        #end
-      #end
-      #set ($progressionId = "$!meta.getProperty('pace_of_progression').value")
-      #if ($progressionId != '')
-        #set ($discard = $result.put('progression_HP_id', $progressionId))
-        #set ($progressionText = "$!escapetool.javascript($!services.ontologies.resolveTerm($progressionId).name)")
-        #if ($progressionText != '')
-          #set ($discard = $result.put('progression_name', $progressionText))
-        #end
-      #end
-      #set ($phenotypeComments = "$!escapetool.javascript($!meta.getProperty('comments').value)")
-      #if ($phenotypeComments != '')
-        #set ($discard = $result.put('comments', $phenotypeComments))
-      #end
-      #set ($discard = $results.add($result))
-    #end## "$!value" != ''
-  #end##__build_clinical_data
-  ##
-  ##
-  #set($phenotypeProperties = ['prenatal_phenotype', 'negative_prenatal_phenotype', 'phenotype', 'negative_phenotype'])
-  #foreach ($p in $phenotypeProperties)
-     #foreach ($v in $patientObject.getProperty($p).value)
-       #__build_clinical_data($p $v)
-     #end
-  #end
-#end## !source.isNew
+$!response.setContentType('application/json')##
 #if ("$!{request.outputSyntax}" == 'plain')
-{{content syntax="plain/1.0"}}#json__respondJSON($results, $metadata){{/content}}
+  {{content syntax="plain/1.0"}}
 #else
-{{html wiki="false" clean="false"}}#json__respondJSON($results, $metadata){{/html}}
+  {{html wiki="false" clean="false"}}
+#end
+#set ($rows = [])
+#set ($result = {'rows': $rows, 'returnedrows': 0})
+#if ("$!request.id" != '')
+  #set ($patient = $services.patients.getPatientById($request.id))
+  #set ($result.source = $patient.id)
+#elseif ("$!request.eid" != '')
+  #set ($patient = $services.patients.getPatientByExternalId($request.eid))
+  #set ($result.source = $patient.externalId)
+#end
+#if (!$patient)
+  #set ($discard = $result.put('error', 'Identifier not found.'))
+  $jsontool.serialize($result)
+  #break
+#end
+#set ($result.source_url = $xwiki.getDocument($patient.document).externalURL)
+#set ($onset = $patient.getData('global-qualifiers').global_age_of_onset)
+#if ($onset)
+  #set ($result.global_age_of_onset = {'id' : $onset.id, 'label' : $onset.name})
+#end
+#set ($patientJSON = $patient.toJSON())
+#set ($discard = $result.put('hpo_version', $patient.getData('versions').hpo_version))
+#set ($discard = $result.put('specificity', $patientJSON.specificity))
+#foreach ($feature in $patientJSON.features)
+  #set ($item = {})
+  #set ($item.type = $feature.type)
+  #set ($item.phenotype_HP_id = $feature.id)
+  #set ($item.phenotype_name = $feature.label)
+  #set ($item.is_present = $feature.observed)
+  #foreach ($qualifier in $feature.qualifiers)
+    #set ($discard = $item.put($stringtool.substringAfterLast($qualifier.type, '_').concat('_HP_id'), $qualifier.id))
+    #set ($discard = $item.put($stringtool.substringAfterLast($qualifier.type, '_').concat('_name'), $qualifier.label))
+  #end
+  #if ("$!feature.notes" != '')
+    #set ($item.comments = $feature.notes)
+  #end
+  #set ($discard = $rows.add($item))
+#end
+#set ($result.returnedrows = $patient.features.size())
+$jsontool.serialize($result)
+#if ("$!{request.outputSyntax}" == 'plain')
+  {{/content}}
+#else
+  {{/html}}
 #end
 {{/velocity}}
 </content>

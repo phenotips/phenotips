@@ -30,7 +30,6 @@ import org.xwiki.configuration.ConfigurationSource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -46,16 +45,16 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.PartSource;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.http.Consts;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWiki;
@@ -73,7 +72,7 @@ import net.sf.json.JsonConfig;
 /**
  * Communication via HTTP requests with a LIMS server, configured in the wiki preferences via
  * {@code PhenoTips.LimsAuthServer} objects.
- * 
+ *
  * @version $Id$
  * @since 1.0M11
  */
@@ -81,6 +80,9 @@ import net.sf.json.JsonConfig;
 @Singleton
 public class JsonMedSavantServer implements MedSavantServer, Initializable
 {
+    private static final ContentType REQUEST_CONTENT_TYPE = ContentType.create(
+        ContentType.APPLICATION_FORM_URLENCODED.getMimeType(), Consts.UTF_8);
+
     private static final String ENCODING = "UTF-8";
 
     private static final double POLIPHEN_THRESHOLD = 0.2;
@@ -103,7 +105,7 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
     private Logger logger;
 
     /** HTTP client used for communicating with the MedSavant server. */
-    private final HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
+    private final CloseableHttpClient client = HttpClients.createSystem();
 
     /** Provides access to the configuration, where the location to the MedSavant server and project is specified. */
     @Inject
@@ -140,12 +142,12 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
     @Override
     public boolean hasVCF(Patient patient)
     {
-        PostMethod method = null;
+        HttpPost method = null;
         try {
-            PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
-            String eid = identifiers.get(0).getValue();
+            PatientData<String> identifiers = patient.getData("identifiers");
+            String eid = identifiers.get("external_id");
             String url = getMethodURL(VARIANT_MANAGER, "getVariantCountForDNAIDs");
-            method = new PostMethod(url);
+            method = new HttpPost(url);
             JSONArray parameters = new JSONArray();
             parameters.add(this.projectID);
             parameters.add(0);
@@ -156,13 +158,13 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             for (Integer refID : this.referenceIDs) {
                 parameters.set(1, refID);
                 String body = REQUEST_PARAMETER + URLEncoder.encode(parameters.toString(), ENCODING);
-                method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                    ENCODING));
-                this.client.executeMethod(method);
-                String response = method.getResponseBodyAsString();
-                Integer count = Integer.valueOf(response);
-                if (count > 0) {
-                    return true;
+                method.setEntity(new StringEntity(body, REQUEST_CONTENT_TYPE));
+                try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
+                    String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
+                    Integer count = Integer.valueOf(response);
+                    if (count > 0) {
+                        return true;
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -179,24 +181,27 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
     @Override
     public boolean uploadVCF(Patient patient)
     {
-        PostMethod method = null;
+        HttpPost method = null;
         try {
-            PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
+            MultipartEntityBuilder data = MultipartEntityBuilder.create();
+            PatientData<String> identifiers = patient.getData("identifiers");
             String url = getMethodURL("UploadManager", "upload");
-            String eid = identifiers.get(0).getValue();
+            String eid = identifiers.get("external_id");
             XWikiContext context = Utils.getContext();
             XWikiDocument doc = context.getWiki().getDocument(patient.getDocument(), context);
-            method = new PostMethod(url);
-            List<Part> parts = new LinkedList<Part>();
+            method = new HttpPost(url);
+
+            boolean hasData = false;
             for (XWikiAttachment attachment : doc.getAttachmentList()) {
                 if (StringUtils.endsWithIgnoreCase(attachment.getFilename(), ".vcf")
                     && isCorrectVCF(attachment, eid, context)) {
-                    parts.add(new FilePart(patient.getId() + ".vcf", new AttachmentPartSource(attachment)));
+                    data.addBinaryBody(patient.getId() + ".vcf", attachment.getContentInputStream(context));
+                    hasData = true;
                 }
             }
-            if (parts.size() > 0) {
-                method.setRequestEntity(new MultipartRequestEntity((Part[]) parts.toArray(), method.getParams()));
-                this.client.executeMethod(method);
+            if (hasData) {
+                method.setEntity(data.build());
+                this.client.execute(method).close();
                 return true;
             }
         } catch (Exception ex) {
@@ -212,13 +217,13 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
     @Override
     public List<JSONArray> getPatientVariants(Patient patient)
     {
-        PostMethod method = null;
+        HttpPost method = null;
         List<JSONArray> result = new LinkedList<JSONArray>();
         try {
-            PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
-            String eid = identifiers.get(0).getValue();
+            PatientData<String> identifiers = patient.getData("identifiers");
+            String eid = identifiers.get("external_id");
             String url = getMethodURL(VARIANT_MANAGER, "getVariants");
-            method = new PostMethod(url);
+            method = new HttpPost(url);
             JSONArray parameters = new JSONArray();
             // 1: Project ID
             parameters.add(this.projectID);
@@ -240,12 +245,12 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
                 parameters.set(1, refID);
                 parameters.getJSONArray(2).getJSONArray(0).getJSONObject(0).put("refId", refID);
                 String body = REQUEST_PARAMETER + URLEncoder.encode(parameters.toString(), ENCODING);
-                method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                    ENCODING));
-                this.client.executeMethod(method);
-                String response = method.getResponseBodyAsString();
-                JSONArray results = (JSONArray) JSONSerializer.toJSON(response);
-                result.addAll(results);
+                method.setEntity(new StringEntity(body, REQUEST_CONTENT_TYPE));
+                try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
+                    String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
+                    JSONArray results = (JSONArray) JSONSerializer.toJSON(response);
+                    result.addAll(results);
+                }
             }
         } catch (Exception ex) {
             this.logger.warn("Failed to get variants for patient [{}]: {}", patient.getDocument(), ex.getMessage(), ex);
@@ -260,14 +265,14 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
     @Override
     public List<JSONArray> getFilteredVariants(Patient patient)
     {
-        PostMethod method = null;
+        HttpPost method = null;
         List<JSONArray> result = new LinkedList<JSONArray>();
         try {
             for (Integer refID : this.referenceIDs) {
-                PatientData<ImmutablePair<String, String>> identifiers = patient.getData("identifiers");
-                String eid = identifiers.get(0).getValue();
+                PatientData<String> identifiers = patient.getData("identifiers");
+                String eid = identifiers.get("external_id");
                 String url = getMethodURL(VARIANT_MANAGER, "getVariants");
-                method = new PostMethod(url);
+                method = new HttpPost(url);
                 JSONArray parameters = new JSONArray();
                 // 1: Project ID
                 parameters.add(this.projectID);
@@ -280,12 +285,12 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
                 // 5: Max number of results -> all
                 parameters.add(-1);
                 String body = REQUEST_PARAMETER + URLEncoder.encode(parameters.toString(), ENCODING);
-                method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                    ENCODING));
-                this.client.executeMethod(method);
-                String response = method.getResponseBodyAsString();
-                JSONArray results = (JSONArray) JSONSerializer.toJSON(response);
-                result.addAll(results);
+                method.setEntity(new StringEntity(body, REQUEST_CONTENT_TYPE));
+                try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
+                    String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
+                    JSONArray results = (JSONArray) JSONSerializer.toJSON(response);
+                    result.addAll(results);
+                }
             }
         } catch (Exception ex) {
             this.logger.warn("Failed to get filtered variants for patient [{}]: {}", patient.getDocument(),
@@ -300,7 +305,7 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
 
     /**
      * Return the base URL of the specified LIMS instance.
-     * 
+     *
      * @param pn the LIMS instance identifier
      * @param context the current request context
      * @return the configured URL, in the format {@code http://lims.host.name}, or {@code null} if the LIMS instance
@@ -315,20 +320,20 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
 
     private Integer getProjectID()
     {
-        PostMethod method = null;
+        HttpPost method = null;
         String projectName = this.configuration.getProperty("phenotips.medsavant.projectName", "pc");
         try {
             String url = getMethodURL(PROJECT_MANAGER, "getProjectID");
-            method = new PostMethod(url);
+            method = new HttpPost(url);
             JSONArray parameters = new JSONArray();
             parameters.add(projectName);
             String body = REQUEST_PARAMETER + URLEncoder.encode(parameters.toString(), ENCODING);
-            method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                ENCODING));
-            this.client.executeMethod(method);
-            String response = method.getResponseBodyAsString();
-            Integer id = Integer.valueOf(response);
-            return (id >= 0) ? id : null;
+            method.setEntity(new StringEntity(body, REQUEST_CONTENT_TYPE));
+            try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
+                String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
+                Integer id = Integer.valueOf(response);
+                return (id >= 0) ? id : null;
+            }
         } catch (Exception ex) {
             this.logger.warn("Failed to get the ID of the project [{}]: {}", projectName, ex.getMessage(), ex);
         } finally {
@@ -342,21 +347,21 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
     @SuppressWarnings("unchecked")
     private Collection<Integer> getReferenceIDs()
     {
-        PostMethod method = null;
+        HttpPost method = null;
         try {
             String url = getMethodURL(PROJECT_MANAGER, "getReferenceIDsForProject");
-            method = new PostMethod(url);
+            method = new HttpPost(url);
             JSONArray parameters = new JSONArray();
             parameters.add(this.projectID);
             String body = REQUEST_PARAMETER + URLEncoder.encode(parameters.toString(), ENCODING);
-            method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                ENCODING));
-            this.client.executeMethod(method);
-            String response = method.getResponseBodyAsString();
-            JSONArray ids = (JSONArray) JSONSerializer.toJSON(response);
-            JsonConfig config = new JsonConfig();
-            config.setCollectionType(Set.class);
-            return JSONArray.toCollection(ids, config);
+            method.setEntity(new StringEntity(body, REQUEST_CONTENT_TYPE));
+            try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
+                String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
+                JSONArray ids = (JSONArray) JSONSerializer.toJSON(response);
+                JsonConfig config = new JsonConfig();
+                config.setCollectionType(Set.class);
+                return JSONArray.toCollection(ids, config);
+            }
         } catch (Exception ex) {
             this.logger.warn("Failed to get the reference IDs: {}", ex.getMessage(), ex);
         } finally {
@@ -373,32 +378,32 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
         if (this.annotationColumns.containsKey(alias)) {
             return this.annotationColumns.get(alias);
         }
-        PostMethod method = null;
+        HttpPost method = null;
         try {
             String url = getMethodURL("AnnotationManager", "getAnnotationFormats");
-            method = new PostMethod(url);
+            method = new HttpPost(url);
             JSONArray parameters = new JSONArray();
             parameters.add(this.projectID);
             parameters.add(refID);
             String body = REQUEST_PARAMETER + URLEncoder.encode(parameters.toString(), ENCODING);
-            method.setRequestEntity(new StringRequestEntity(body, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE,
-                ENCODING));
-            this.client.executeMethod(method);
-            String response = method.getResponseBodyAsString();
-            JSONArray annotations = (JSONArray) JSONSerializer.toJSON(response);
-            for (int i = 0; i < annotations.size(); ++i) {
-                JSONObject annotation = annotations.getJSONObject(i);
-                String program = annotation.getString("program");
-                if (!program.startsWith(programName + " ")) {
-                    continue;
-                }
-                JSONArray fields = annotation.getJSONArray("fields");
-                for (int j = 0; j < fields.size(); ++j) {
-                    String currentAlias = fields.getJSONObject(j).getString("alias");
-                    if (StringUtils.equals(currentAlias, alias)) {
-                        String name = fields.getJSONObject(j).getString("name");
-                        this.annotationColumns.put(alias, name);
-                        return name;
+            method.setEntity(new StringEntity(body, REQUEST_CONTENT_TYPE));
+            try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
+                String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
+                JSONArray annotations = (JSONArray) JSONSerializer.toJSON(response);
+                for (int i = 0; i < annotations.size(); ++i) {
+                    JSONObject annotation = annotations.getJSONObject(i);
+                    String program = annotation.getString("program");
+                    if (!program.startsWith(programName + " ")) {
+                        continue;
+                    }
+                    JSONArray fields = annotation.getJSONArray("fields");
+                    for (int j = 0; j < fields.size(); ++j) {
+                        String currentAlias = fields.getJSONObject(j).getString("alias");
+                        if (StringUtils.equals(currentAlias, alias)) {
+                            String name = fields.getJSONObject(j).getString("name");
+                            this.annotationColumns.put(alias, name);
+                            return name;
+                        }
                     }
                 }
             }
@@ -484,38 +489,5 @@ public class JsonMedSavantServer implements MedSavantServer, Initializable
             return true;
         }
         return false;
-    }
-
-    private static final class AttachmentPartSource implements PartSource
-    {
-        private final XWikiAttachment attachment;
-
-        private AttachmentPartSource(XWikiAttachment attachment)
-        {
-            this.attachment = attachment;
-        }
-
-        @Override
-        public long getLength()
-        {
-            return this.attachment.getFilesize();
-        }
-
-        @Override
-        public String getFileName()
-        {
-            return this.attachment.getFilename();
-        }
-
-        @Override
-        public InputStream createInputStream()
-        {
-            try {
-                return this.attachment.getContentInputStream(Utils.getContext());
-            } catch (XWikiException e) {
-                return org.apache.commons.io.input.ClosedInputStream.CLOSED_INPUT_STREAM;
-            }
-        }
-
     }
 }

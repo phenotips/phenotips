@@ -32,8 +32,9 @@ public interface Disorder extends OntologyProperty
 {
     /**
      * Returns the PhenoTips value of the disorder.
-     * TODO: move to OntologyProperty and or implement a OntologyProperty-to-PhenotipsPropertName mapping service
+     *
      * @return the value
+     * @todo move to OntologyProperty and/or implement a OntologyProperty-to-PhenotipsPropertyName mapping service
      */
     String getValue();
 }

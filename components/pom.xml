@@ -32,13 +32,20 @@
   <name>PhenoTips - Various Java components</name>
 
   <modules>
+    <module>base-war</module>
     <module>constants</module>
     <module>component-registry</module>
+    <module>jodatime-service</module>
+    <module>widgets</module>
+    <module>skin</module>
+    <module>navigation</module>
+    <module>export</module>
     <module>obo2solr</module>
     <module>solr-access-service</module>
     <module>ontology-access</module>
     <module>patient-update-listeners</module>
     <module>patient-data</module>
+    <module>security</module>
     <module>patient-access-rules</module>
     <module>patient-data-sharing</module>
     <module>patient-measurements</module>

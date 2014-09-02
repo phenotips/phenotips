@@ -30,7 +30,7 @@ import net.sf.json.JSONArray;
 
 /**
  * Communication with a MedSavant server.
- * 
+ *
  * @version $Id$
  * @since 1.0M11
  */
@@ -40,7 +40,7 @@ public interface MedSavantServer
 {
     /**
      * Upload the VCF files attached to a patient to MedSavant.
-     * 
+     *
      * @param patient the patient to process
      * @return {@code true} if the upload was successful, {@code false} otherwise
      */
@@ -48,7 +48,7 @@ public interface MedSavantServer
 
     /**
      * Check if there are any variants stored for a patient in MedSavant.
-     * 
+     *
      * @param patient the patient to check
      * @return {@code true} if there are variants for this patient, {@code false} otherwise
      */
@@ -56,7 +56,7 @@ public interface MedSavantServer
 
     /**
      * Get all the variants stored for a patient.
-     * 
+     *
      * @param patient the patient to process
      * @return a list of raw variants, as obtained from MedSavant
      */
@@ -65,7 +65,7 @@ public interface MedSavantServer
     /**
      * Get all the "interesting" variants stored for a patient, where "interesting" means that certain quality, rarity
      * and harmfulness thresholds have been passed.
-     * 
+     *
      * @param patient the patient to process
      * @return a list of raw variants, as obtained from MedSavant
      */

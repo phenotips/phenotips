@@ -40,7 +40,6 @@
   <modules>
     <module>hsqldb-database</module>
     <module>war</module>
-    <module>solr-war</module>
     <module>standalone</module>
   </modules>
 
@@ -55,6 +54,7 @@
       </activation>
       <modules>
         <module>rpm</module>
+        <module>rpm-rh6</module>
       </modules>
     </profile>
   </profiles>

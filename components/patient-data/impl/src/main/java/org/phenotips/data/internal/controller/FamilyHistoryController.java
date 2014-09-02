@@ -32,15 +32,18 @@ import javax.inject.Singleton;
 
 /**
  * Handles the information found in the family history section of the patient record.
+ *
+ * @version $Id$
+ * @since 1.0RC1
  */
-@Component(roles = {PatientDataController.class})
+@Component(roles = { PatientDataController.class })
 @Named("familyHistory")
 @Singleton
-public class FamilyHistoryController extends AbstractComplexController<String>
+public class FamilyHistoryController extends AbstractComplexController<Integer>
 {
-    final static String CONSANGUINITY = "consanguinity";
+    private static final String CONSANGUINITY = "consanguinity";
 
-    final static String MISCARRIAGES = "miscarriages";
+    private static final String MISCARRIAGES = "miscarriages";
 
     private List<String> booleans = Arrays.asList(CONSANGUINITY, MISCARRIAGES);
 
@@ -59,18 +62,18 @@ public class FamilyHistoryController extends AbstractComplexController<String>
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList("maternal_ethnicity", "paternal_ethnicity", CONSANGUINITY, MISCARRIAGES);
+        return Arrays.asList(CONSANGUINITY, MISCARRIAGES);
     }
 
     @Override
     protected List<String> getBooleanFields()
     {
-        return booleans;
+        return this.booleans;
     }
 
     @Override
     protected List<String> getCodeFields()
     {
-        return new LinkedList<String>();
+        return new LinkedList<>();
     }
 }

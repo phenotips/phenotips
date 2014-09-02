@@ -31,9 +31,6 @@
   <name>PhenoTips - Standalone Distribution</name>
   <packaging>pom</packaging>
   <description>Distribution including a Jetty server, Solr, and an UI based on XWiki</description>
-  <properties>
-    <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.hsqldb</groupId>
@@ -44,13 +41,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-war</artifactId>
-      <version>${project.version}</version>
-      <type>war</type>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>solr-war</artifactId>
       <version>${project.version}</version>
       <type>war</type>
       <optional>true</optional>
@@ -76,16 +66,9 @@
       <type>zip</type>
       <optional>true</optional>
     </dependency>
-    <!-- Replace the Java SE logging backend with Logback, since it's very hard to disable the verbose logging otherwise. -->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.0.13</version>
-      <optional>true</optional>
-    </dependency>
   </dependencies>
   <build>
-    <finalName>${project.artifactId}-${project.version}-${maven.build.timestamp}</finalName>
+    <finalName>${project.artifactId}-${project.version}</finalName>
     <pluginManagement>
       <plugins>
         <plugin>

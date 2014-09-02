@@ -45,31 +45,13 @@
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
-    <!-- "solr" webapp. -->
-    <dependencySet>
-      <includes>
-        <include>${project.groupId}:solr-war</include>
-      </includes>
-      <outputDirectory>webapps/solr</outputDirectory>
-      <unpack>true</unpack>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
     <!-- Solr configuration. -->
     <dependencySet>
       <includes>
         <include>${project.groupId}:solr-configuration</include>
       </includes>
-      <outputDirectory>solrconfig/</outputDirectory>
+      <outputDirectory>/data/solr/</outputDirectory>
       <unpack>true</unpack>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
-    <!-- Use Logback instead of Java SE logging -->
-    <dependencySet>
-      <includes>
-        <include>ch.qos.logback:*</include>
-      </includes>
-      <outputDirectory>webapps/solr/WEB-INF/lib</outputDirectory>
-      <unpack>false</unpack>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
     <!-- Unpack Jetty files -->
@@ -79,11 +61,6 @@
       </includes>
       <outputDirectory>/</outputDirectory>
       <unpack>true</unpack>
-      <unpackOptions>
-        <excludes>
-          <exclude>jetty/contexts/search.xml</exclude>
-        </excludes>
-      </unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>

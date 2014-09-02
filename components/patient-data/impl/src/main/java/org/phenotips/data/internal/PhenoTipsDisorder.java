@@ -19,12 +19,15 @@
  */
 package org.phenotips.data.internal;
 
-import net.sf.json.JSONObject;
-
 import org.phenotips.data.Disorder;
+
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 
-import com.xpn.xwiki.objects.DBStringListProperty;
+import com.xpn.xwiki.objects.ListProperty;
+
+import net.sf.json.JSONObject;
 
 /**
  * Implementation of patient data based on the XWiki data model, where disorder data is represented by properties in
@@ -35,6 +38,8 @@ import com.xpn.xwiki.objects.DBStringListProperty;
  */
 public class PhenoTipsDisorder extends AbstractPhenoTipsOntologyProperty implements Disorder
 {
+    protected static final Pattern OMIM_TERM_PATTERN = Pattern.compile("\\d++");
+
     protected static final String MIM_PREFIX = "MIM:";
 
     /**
@@ -42,10 +47,12 @@ public class PhenoTipsDisorder extends AbstractPhenoTipsOntologyProperty impleme
      *
      * @param property the disorder XProperty
      * @param value the specific value from the property represented by this object
+     * @throws IllegalArgumentException if one of the arguments is {@code null} or otherwise malformed for the ontology
      */
-    PhenoTipsDisorder(DBStringListProperty property, String value)
+    PhenoTipsDisorder(ListProperty property, String value)
     {
-        super(StringUtils.equals(property.getName(), "omim_id") ? MIM_PREFIX + value : value);
+        super((value != null && StringUtils.equals(property.getName(), "omim_id") && OMIM_TERM_PATTERN.matcher(
+            value).matches()) ? MIM_PREFIX + value : value);
     }
 
     PhenoTipsDisorder(JSONObject json)
@@ -56,7 +63,7 @@ public class PhenoTipsDisorder extends AbstractPhenoTipsOntologyProperty impleme
     @Override
     public String getValue()
     {
-        if (getId().equals("")) {
+        if (StringUtils.isEmpty(getId())) {
             return getName();
         }
         String id = StringUtils.removeStart(getId(), MIM_PREFIX);

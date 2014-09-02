@@ -19,14 +19,14 @@
  */
 package org.phenotips.measurements.internal;
 
+import org.xwiki.component.annotation.Component;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.xwiki.component.annotation.Component;
-
 /**
  * Weight measurements, in kilograms.
- * 
+ *
  * @version $Id$
  * @since 1.0M3
  */

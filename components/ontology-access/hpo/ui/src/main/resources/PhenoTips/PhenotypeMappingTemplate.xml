@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>PhenotypeMappingTemplate</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822201000</creationDate>
+  <parent>data.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822201000</date>
+  <contentUpdateDate>1401822201000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+#set($phenotype = [
+  {
+    "type"       : "section",
+    "title"      : "Growth parameters",
+    "categories" : ["HP:0001507"],
+    "data"       : [
+        {
+           "type"  : "subsection",
+           "id"    : "HP:0004323",
+           "title" : "Weight for age",
+           "data"  : [
+               {"id" : "HP:0004325", "title" : "&lt;3rd"},
+               {"id" : "HP:0001513", "title" : "&gt;97th"}
+           ]
+        },
+        {
+           "type"  : "subsection",
+           "id"    : "HP:0000002",
+           "title" : "Stature for age",
+           "data"  : [
+               {"id" : "HP:0004322", "title" : "&lt;3rd"},
+               {"id" : "HP:0000098", "title" : "&gt;97th"}
+           ]
+        },
+        {
+           "type"  : "subsection",
+           "id"    : "HP:0000240",
+           "title" : "Head circumference for age",
+           "data"  : [
+               {"id" : "HP:0000252", "title" : "&lt;3rd"},
+               {"id" : "HP:0000256", "title" : "&gt;97th"}
+           ]
+        },
+        {"id" : "HP:0001528"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Neurological signs",
+    "categories" : ["HP:0000707"],
+    "data"       : [
+        {"id" : "HP:0001290"},
+        {"id" : "HP:0001250"},
+        {"id" : "HP:0001251"},
+        {"id" : "HP:0001332"},
+        {"id" : "HP:0002072"},
+        {"id" : "HP:0001257"},
+        {"id" : "HP:0010301"},
+        {"id" : "HP:0007319"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Other",
+    "categories" : ["HP:0000118"],
+    "data"       : []
+  }
+])
+
+#set ($mappings = {
+  'phenotype': $phenotype
+})
+{{/velocity}}</content>
+  <object>
+    <name>PhenoTips.PhenotypeMappingTemplate</name>
+    <number>0</number>
+    <className>PhenoTips.PhenotypeMappingClass</className>
+    <guid>13b5405a-eb0d-49d7-be7f-9da3e33fd55c</guid>
+    <class>
+      <name>PhenoTips.PhenotypeMappingClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>1</number>
+        <prettyName>description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+    </class>
+    <property>
+      <description>Enter your description here. A configuration stub with three sections, "Growth parameters", "Neurological signs" and "Other", is provided below.</description>
+    </property>
+  </object>
+</xwikidoc>

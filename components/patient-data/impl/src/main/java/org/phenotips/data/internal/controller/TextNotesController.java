@@ -43,8 +43,8 @@ public class TextNotesController extends AbstractSimpleController
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList("indication_for_referral", "family_comments", "prenatal_comments",
-            "medical_developmental_history");
+        return Arrays.asList("indication_for_referral", "family_history", "prenatal_development", "medical_history",
+            "diagnosis_notes");
     }
 
     @Override

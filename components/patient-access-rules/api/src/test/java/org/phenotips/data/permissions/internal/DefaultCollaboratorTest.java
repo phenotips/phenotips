@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for the default {@link Collaborator} implementation, {@link DefaultCollaborator}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultCollaboratorTest

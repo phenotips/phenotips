@@ -20,10 +20,10 @@
 package org.phenotips.data.internal.controller;
 
 import org.phenotips.configuration.RecordConfigurationManager;
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.SimpleNamedData;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
@@ -33,14 +33,16 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -57,7 +59,7 @@ import net.sf.json.JSONObject;
 @Component(roles = { PatientDataController.class })
 @Named("dates")
 @Singleton
-public class DatesController implements PatientDataController<ImmutablePair<String, Date>>
+public class DatesController implements PatientDataController<Date>
 {
     private static final String DATA_NAME = "dates";
 
@@ -73,7 +75,7 @@ public class DatesController implements PatientDataController<ImmutablePair<Stri
     private RecordConfigurationManager configurationManager;
 
     @Override
-    public PatientData<ImmutablePair<String, Date>> load(Patient patient)
+    public PatientData<Date> load(Patient patient)
     {
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(patient.getDocument());
@@ -81,14 +83,14 @@ public class DatesController implements PatientDataController<ImmutablePair<Stri
             if (data == null) {
                 throw new NullPointerException("The patient does not have a PatientClass");
             }
-            List<ImmutablePair<String, Date>> result = new LinkedList<ImmutablePair<String, Date>>();
+            Map<String, Date> result = new LinkedHashMap<String, Date>();
             for (String propertyName : getProperties()) {
                 Date date = data.getDateValue(propertyName);
                 if (date != null) {
-                    result.add(ImmutablePair.of(propertyName, date));
+                    result.put(propertyName, date);
                 }
             }
-            return new SimpleNamedData<Date>(DATA_NAME, result);
+            return new DictionaryPatientData<Date>(DATA_NAME, result);
         } catch (Exception e) {
             this.logger.error("Could not find requested document");
         }
@@ -112,15 +114,23 @@ public class DatesController implements PatientDataController<ImmutablePair<Stri
     {
         DateFormat dateFormat =
             new SimpleDateFormat(this.configurationManager.getActiveConfiguration().getISODateFormat());
-        for (ImmutablePair<String, Date> data : patient.<ImmutablePair<String, Date>>getData(DATA_NAME)) {
-            if (selectedFieldNames == null || selectedFieldNames.contains(data.getKey())) {
-                json.put(data.getKey(), dateFormat.format(data.getRight()));
+
+        PatientData<Date> datesData = patient.getData(DATA_NAME);
+        if (datesData == null) {
+            return;
+        }
+
+        Iterator<Entry<String, Date>> data = datesData.dictionaryIterator();
+        while (data.hasNext()) {
+            Entry<String, Date> datum = data.next();
+            if (selectedFieldNames == null || selectedFieldNames.contains(datum.getKey())) {
+                json.put(datum.getKey(), dateFormat.format(datum.getValue()));
             }
         }
     }
 
     @Override
-    public PatientData<ImmutablePair<String, Date>> readJSON(JSONObject json)
+    public PatientData<Date> readJSON(JSONObject json)
     {
         throw new UnsupportedOperationException();
     }

@@ -19,6 +19,11 @@
  */
 package org.phenotips.measurements.internal;
 
+import org.phenotips.measurements.MeasurementsChartConfiguration;
+import org.phenotips.measurements.MeasurementsChartConfigurationsFactory;
+
+import org.xwiki.component.annotation.Component;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,18 +31,13 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
-import org.phenotips.measurements.MeasurementsChartConfiguration;
-import org.phenotips.measurements.MeasurementsChartConfigurationsFactory;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.xwiki.component.annotation.Component;
-
 
 /**
  * Implementation of {@link MeasurementsChartConfigurationsFactory} that uses a {@link ResourceBundle .properties} file
  * with the chart configurations.
- * 
+ *
  * @version $Id$
  * @since 1.0M3
  */
@@ -101,7 +101,7 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
 
         /**
          * Private constructor.
-         * 
+         *
          * @param identifier the chart identifier used, see {@link #chartIdentifier}
          */
         private SimpleMeasurementsChartConfiguration(String identifier)
@@ -225,7 +225,7 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
 
     /**
      * Load the settings for one chart.
-     * 
+     *
      * @param prefix the prefix for the configuration keys, in the format
      *            {@code charts.<measurement type>.configurations.<chart identifier>.}
      * @param configuration the resource bundle of the configuration
@@ -255,7 +255,7 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
 
     /**
      * Validate that the configured settings are valid: limits are in order, labels are present, grid fits evenly.
-     * 
+     *
      * @param settings the settings read from the configuration file
      * @return {@code true} if the settings are valid, {@code false} otherwise; encountered problems are logged
      */
@@ -270,7 +270,7 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
 
     /**
      * Validate that the configured age and value limits are valid.
-     * 
+     *
      * @param settings the settings read from the configuration file
      * @return {@code true} if the settings are valid, {@code false} otherwise; encountered problems are logged
      */
@@ -292,7 +292,7 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
 
     /**
      * Validate that the configured grid is valid.
-     * 
+     *
      * @param settings the settings read from the configuration file
      * @return {@code true} if the settings are valid, {@code false} otherwise; encountered problems are logged
      */
@@ -325,7 +325,7 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
 
     /**
      * Validate that all the labels are configured.
-     * 
+     *
      * @param settings the settings read from the configuration file
      * @return {@code true} if the settings are valid, {@code false} otherwise; encountered problems are logged
      */
@@ -352,7 +352,7 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
     /**
      * Read and return a setting from the configuration, parsing it as an {@code int} number, falling back on the
      * provided default value.
-     * 
+     *
      * @param settingName the name of the setting to read
      * @param defaultValue the default value to use when there's no value specified in the configuration, or the
      *            specified value is not a valid number
@@ -382,7 +382,7 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
     /**
      * Read and return a setting from the configuration, parsing it as a {@code double} number, falling back on the
      * provided default value.
-     * 
+     *
      * @param settingName the name of the setting to read
      * @param defaultValue the default value to use when there's no value specified in the configuration, or the
      *            specified value is not a valid double number
@@ -413,7 +413,7 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
     /**
      * Read and return a setting from the configuration, parsing it as a positive {@code double} number, falling back on
      * the provided default value.
-     * 
+     *
      * @param settingName the name of the setting to read
      * @param defaultValue the default value to use when there's no value specified in the configuration, or the
      *            specified value is not a valid double number
@@ -434,7 +434,7 @@ public class DefaultMeasurementsChartConfigurationsFactory implements Measuremen
 
     /**
      * Read and return a setting from the configuration, falling back on the provided default value.
-     * 
+     *
      * @param settingName the name of the setting to read
      * @param defaultValue the default value to use when there's no value specified in the configuration; can be
      *            {@code null} or the empty string

@@ -24,7 +24,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Provides access to {@code RecordConfiguration patient record configurations}.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -34,7 +34,7 @@ public interface RecordConfigurationManager
 {
     /**
      * Retrieves the {@code RecordConfiguration patient record configuration} active for the current user.
-     * 
+     *
      * @return a valid configuration, either the global one or one configured, for example in one of the user's groups
      */
     RecordConfiguration getActiveConfiguration();

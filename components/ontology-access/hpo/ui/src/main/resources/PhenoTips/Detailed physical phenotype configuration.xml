@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>Detailed physical phenotype configuration</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822197000</creationDate>
+  <parent>data.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822197000</date>
+  <contentUpdateDate>1401822197000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Detailed physical phenotype configuration</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+#set ($phenotype = [
+  {
+    "type"       : "section",
+    "title"      : "Growth parameters",
+    "categories" : ["HP:0001507"],
+    "data"       : [
+      {
+        "type"       : "subsection",
+        "title"      : "Weight for age",
+        "data"       : [
+          {"id": "HP:0004325", "title" : "&lt;3rd"},
+          {"id": "HP:0001513", "title" : "&gt;97th"}
+        ]
+      },
+      {
+        "type"       : "subsection",
+        "title"      : "Stature for age",
+        "data"       : [
+          {"id": "HP:0004322", "title" : "&lt;3rd"},
+          {"id": "HP:0000098", "title" : "&gt;97th"}
+        ]
+      },
+      {
+        "type"       : "subsection",
+        "title"      : "Head circumference for age",
+        "data"       : [
+          {"id": "HP:0000252", "title" : "&lt;3rd"},
+          {"id": "HP:0000256", "title" : "&gt;97th"}
+        ]
+      },
+      {"id": "HP:0001528", "title" : "Hemihypertrophy"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Hair",
+    "categories" : ["HP:0100037"],
+    "data"       : [
+      {"id": "HP:0005599", "title" : "Hypopigmentation"},
+      {"id": "HP:0010721", "title" : "Hair whorls"},
+      {"id": "HP:0002236", "title" : "Frontal upsweep"},
+      {
+        "type"       : "subsection",
+        "title"      : "Anterior hairline",
+        "data"       : [
+          {"id": "HP:0000294", "title" : "Low"},
+          {"id": "HP:0009890", "title" : "High"}
+        ]
+      },
+      {
+        "type"       : "subsection",
+        "title"      : "Posterior hairline",
+        "data"       : [
+          {"id": "HP:0002162", "title" : "Low"},
+          {"id": "_c_high_posterior_hairline", "title" : "High"}
+        ]
+      },
+      {"id": "HP:0002213", "title" : "Fine hair"},
+      {"id": "HP:0002208", "title" : "Coarse hair"},
+      {"id": "HP:0002209", "title" : "Sparse hair"},
+      {"id": "HP:0100874", "title" : "Thick hair"},
+      {"id": "HP:0001596", "title" : "Alopecia"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Scalp/skull",
+    "categories" : ["HP:0000152"],
+    "data"       : [
+      {"id": "HP:0007385", "title" : "Aplasia cutis congenita of scalp"},
+      {"id": "HP:0002697", "title" : "Parietal foramina"},
+      {"id": "HP:0007271", "title" : "Occipital myelomeningocele"},
+      {"id": "HP:0000268", "title" : "Dolichocephaly"},
+      {"id": "HP:0000243", "title" : "Trigonocephaly"},
+      {"id": "HP:0001357", "title" : "Plagiocephaly"},
+      {"id": "HP:0000248", "title" : "Brachycephaly"},
+      {"id": "HP:0001363", "title" : "Craniosynostosis"},
+      {"id": "HP:0000272", "title" : "Midface hypoplasia"},
+      {"id": "HP:0010823", "title" : "Ridged/overlapping sutures"},
+      {"id": "HP:0010537", "title" : "Wide/open sutures"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Face shape",
+    "categories" : ["HP:00001999"],
+    "data"       : [
+      {"id": "HP:0000311", "title" : "Round face"},
+      {"id": "HP:0000300", "title" : "Oval face"},
+      {"id": "HP:0000321", "title" : "Square face"},
+      {"id": "HP:0000325", "title" : "Triangular face"},
+      {"id": "HP:0000324", "title" : "Facial asymmetry"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Forehead",
+    "categories" : ["HP:00000290"],
+    "data"       : [
+      {"id": "HP:0000350", "title" : "Small forehead"},
+      {"id": "HP:0000348", "title" : "High forehead"},
+      {"id": "HP:0002007", "title" : "Frontal bossing"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Eyebrows",
+    "categories" : ["HP:00000534"],
+    "data"       : [
+      {"id": "HP:0011228", "title" : "Straight eyebrow"},
+      {"id": "HP:0002553", "title" : "Highly arched eyebrow"},
+      {"id": "HP:0000574", "title" : "Thick eyebrow"},
+      {"id": "HP:0000664", "title" : "Synophrys"},
+      {"id": "HP:0002223", "title" : "Absent eyebrow"},
+      {"id": "HP:0000535", "title" : "Sparse eyebrow"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Eyelashes",
+    "categories" : ["HP:0000499"],
+    "data"       : [
+      {"id": "HP:0000561"},
+      {"id": "HP:0000653"},
+      {"id": "HP:0011231"},
+      {"id": "HP:0008496"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Eyelids",
+    "categories" : ["HP:0000492"],
+    "data"       : [
+      {"id": "HP:0000506"},
+      {"id": "HP:0000508"},
+      {"id": "HP:0000286"},
+      {"id": "HP:0000537"},
+      {"id": "_c_euryblepharon", "title" : "Euryblepharon"},
+      {
+        "type"       : "subsection",
+        "title"      : "Eyelid coloboma",
+        "data"       : [
+           {"id": "HP:0000652", "title" : "Lower"},
+           {"id": "HP:0000636", "title" : "Upper"}
+        ]
+      }
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Eyes",
+    "categories" : ["HP:0000478"],
+    "data"       : [
+      {"id": "HP:0000316"},
+      {"id": "HP:0000601"},
+      {"id": "HP:0000582"},
+      {"id": "HP:0000494"},
+      {"id": "HP:0100876"},
+      {"id": "HP:0000612"},
+      {"id": "HP:0200032"},
+      {"id": "HP:0001088"},
+      {"id": "HP:0007759", "title" : "Corneal clouding"},
+      {"id": "HP:0000485"},
+      {"id": "HP:0001140"},
+      {"id": "HP:0000524"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Ears",
+    "categories" : ["HP:0000598"],
+    "data"       : [
+      {"id": "HP:0008577", "title" : "Underfolded helix"},
+      {"id": "HP:0000396", "title" : "Overfolded helix"},
+      {"id": "HP:0000400", "title" : "Macrotia"},
+      {"id": "HP:0008551", "title" : "Microtia"},
+      {"id": "HP:0000369", "title" : "Low-set ears"},
+      {"id": "HP:0000358", "title" : "Posteriorly rotated ears"},
+      {"id": "HP:0009907", "title" : "Attached earlobe"},
+      {"id": "HP:0000384", "title" : "Preauricular skin tag"},
+      {"id": "HP:0100277", "title" : "Periauricular skin pits"},
+      {"id": "HP:0009908", "title" : "Earlobe creases"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Nose",
+    "categories" : ["HP:0000336"],
+    "data"       : [
+      {
+        "type"       : "subsection",
+        "title"      : "Length",
+        "data"       : [
+          {"id": "HP:0003189", "title" : "Long"},
+          {"id": "HP:0003192", "title" : "Short"}
+        ]
+      },
+      {
+        "type"       : "subsection",
+        "title"      : "Shape",
+        "data"       : [
+          {"id": "HP:0000444", "title" : "Beaked"},
+          {"id": "_c_tubular_nose", "title" : "Tubular"},
+          {"id": "_c_helmet_nose", "title" : "Gladiator helmet"}
+        ]
+      },
+      {"id": "HP:0000424", "title" : "Broad nasal root"},
+      {"id": "HP:0005284", "title" : "Flat nasal root"},
+      {"id": "HP:0000432", "title" : "Prominent nasal root"},
+      {"id": "HP:0011222", "title" : "Depressed glabella"},
+      {"id": "HP:0002057", "title" : "Prominent glabella"},
+      {"id": "HP:0000431", "title" : "Broad nasal bridge"},
+      {"id": "HP:0000425", "title" : "Flat nasal bridge"},
+      {"id": "HP:0000426", "title" : "Prominent nasal bridge"},
+      {"id": "HP:0011120", "title" : "Saddle nose"},
+      {"id": "HP:0000455", "title" : "Broad nasal tip"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Philtrum",
+    "categories" : ["HP:0000288"],
+    "data"       : [
+      {
+        "type"       : "subsection",
+        "title"      : "Length",
+        "data"       : [
+          {"id": "HP:0000343", "title" : "Long"},
+          {"id": "HP:0000322", "title" : "Short"}
+        ]
+      },
+      {"id": "HP:0005326", "title" : "Hypoplastic philtrum"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Mouth",
+    "categories" : ["HP:0000153"],
+    "data"       : [
+      {
+        "type"       : "subsection",
+        "title"      : "Size",
+        "data"       : [
+          {"id": "HP:0009095", "title" : "Small"},
+          {"id": "HP:0000154", "title" : "Wide"}
+        ]
+      },
+      {"id": "HP:0000346", "title" : "Whistling appearance"},
+      {"id": "HP:0002263", "title" : "Cupid's bow"},
+      {"id": "HP:0010804", "title" : "Tented mouth"},
+      {"id": "HP:0100267", "title" : "Lip pit"},
+      {
+        "type"       : "subsection",
+        "title"      : "Thin lip",
+        "data"       : [
+          {"id": "HP:0000219", "title" : "Upper"},
+          {"id": "HP:0010282", "title" : "Lower"}
+        ]
+      },
+      {
+        "type"       : "subsection",
+        "title"      : "Thick lip",
+        "data"       : [
+          {"id": "HP:0000204", "title" : "Upper"},
+          {"id": "HP:0000179", "title" : "Lower"}
+        ]
+      },
+      {
+        "type"       : "subsection",
+        "title"      : "Cleft lip",
+        "data"       : [
+          {"id": "HP:0000215", "title" : "Upper"},
+          {"id": "HP:0010281", "title" : "Lower"}
+        ]
+      },
+      {"id": "HP:0000156", "title" : "High-arched palate"},
+      {"id": "HP:0000189", "title" : "Narrow palate"},
+      {"id": "HP:0000175", "title" : "Cleft palate"},
+      {"id": "HP:0000193", "title" : "Bifid/cleft uvula"},
+      {"id": "HP:0000687", "title" : "Widely spaced teeth"},
+      {"id": "HP:0006289", "title" : "Absent central incisor"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Chin",
+    "categories" : ["HP:0000306"],
+    "data"       : [
+      {"id": "HP:0000347", "title" : "Micrognathia"},
+      {"id": "HP:0009939", "title" : "Agnathia"},
+      {"id": "HP:0000278", "title" : "Retrognathia"},
+      {"id": "HP:0000303", "title" : "Prognathia"},
+      {"id": "HP:0010751", "title" : "Chin dimple"},
+      {"id": "HP:0011323", "title" : "Cleft of chin"},
+      {"id": "HP:0000307", "title" : "Pointed chin"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Neck",
+    "categories" : ["HP:0000152"],
+    "data"       : [
+      {"id": "HP:0000470", "title" : "Short neck"},
+      {"id": "HP:0000472", "title" : "Long neck"},
+      {"id": "HP:0000465", "title" : "Webbed neck"},
+      {"id": "HP:0000474", "title" : "Thickened nuchal skin fold"},
+      {"id": "HP:0000853", "title" : "Goiter"},
+      {"id": "HP:0009796", "title" : "Branchial cyst"},
+      {"id": "HP:0009795", "title" : "Branchial cleft fistula"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Heart",
+    "categories" : ["HP:0001627"],
+    "data"       : [
+      {"id": "HP:0001631", "title" : "ASD"},
+      {"id": "HP:0001629", "title" : "VSD"},
+      {"id": "HP:0001674", "title" : "AV canal defect"},
+      {"id": "HP:0001680", "title" : "Coarctation of aorta"},
+      {"id": "HP:0001636", "title" : "Tetralogy of fallot"},
+      {"id": "HP:0001638", "title" : "Cardiomyopathy"},
+      {"id": "HP:0001665", "title" : "Conduction defect"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Lungs",
+    "categories" : ["HP:0002086"],
+    "data"       : [
+      {"id": "HP:0002088", "title" : "Lung abnormality"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Nipples",
+    "categories" : ["HP:0002086","HP:0000765"],
+    "data"       : [
+      {"id": "HP:0002557", "title" : "Hypoplastic nipples"},
+      {"id": "HP:0003186", "title" : "Inverted nipples"},
+      {"id": "HP:0006610", "title" : "Wide-set"},
+      {"id": "HP:0002558", "title" : "Supernumerary nipples"},
+      {"id": "HP:0000771", "title" : "Gynecomastia"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Chest wall",
+    "categories" : ["HP:0000765"],
+    "data"       : [
+      {"id": "_c_broad_chest", "title" : "Broad chest"},
+      {"id": "HP:0000774", "title" : "Narrow chest"},
+      {"id": "HP:0005257", "title" : "Short chest"},
+      {"id": "HP:0001552", "title" : "Barrel-shaped chest"},
+      {"id": "HP:0000768", "title" : "Pectus carinatum"},
+      {"id": "HP:0000767", "title" : "Pectus excavatum"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Abdomen",
+    "categories" : ["HP:0001438"],
+    "data"       : [
+      {"id": "_c_increased_bowel_sounds", "title" : "Increased bowel sounds"},
+      {"id": "_c_decreased_bowel_sounds", "title" : "Decreased bowel sounds"},
+      {"id": "HP:0002240", "title" : "Hepatomegaly"},
+      {"id": "HP:0001744", "title" : "Splenomegaly"},
+      {"id": "HP:0001540", "title" : "Diastasis recti"},
+      {"id": "HP:0004299", "title" : "Hernia of the abdominal wall"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Genitalia",
+    "categories" : ["HP:0000078"],
+    "data"       : [
+      {"id": "HP:0000048", "title" : "Bifid scrotum"},
+      {"id": "HP:0000049", "title" : "Shawl scrotum"},
+      {"id": "HP:0000053", "title" : "Large testes"},
+      {"id": "HP:0008734", "title" : "Small testes"},
+      {"id": "HP:0000028", "title" : "Cryptorchidism"},
+      {"id": "HP:0000066", "title" : "Labial hypoplasia"},
+      {"id": "HP:0000057", "title" : "Clitoromegaly"},
+      {"id": "HP:0000047", "title" : "Hypospadias"},
+      {"id": "HP:0000062", "title" : "Ambiguous genitalia"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Anus",
+    "categories" : ["HP:0004378"],
+    "data"       : [
+      {"id": "HP:0002025", "title" : "Stenosis"},
+      {"id": "HP:0002575", "title" : "Imperforate"},
+      {"id": "HP:0001545", "title" : "Anteriorly placed"},
+      {"id": "_c_posterior_anus", "title" : "Posteriorly placed"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Upper extremities",
+    "categories" : ["HP:0002817"],
+    "data"       : [
+      {"id": "HP:0002968", "title" : "Rhizomelia"},
+      {"id": "HP:0005011", "title" : "Mesomelia"},
+      {"id": "HP:0010482", "title" : "Acromelia"},
+      {"id": "HP:0004279", "title" : "Short palm"},
+      {"id": "HP:0001176", "title" : "Large hands"},
+      {"id": "HP:0010049", "title" : "Short metacarpals"},
+      {"id": "HP:0100667", "title" : "Brachydactyly"},
+      {"id": "HP:0001182", "title" : "Tapered finger"},
+      {"id": "HP:0001500", "title" : "Broad finger"},
+      {"id": "HP:0011304", "title" : "Broad thumb"},
+      {"id": "HP:0100490", "title" : "Camptodactyly"},
+      {"id": "HP:0006101", "title" : "Syndactyly"},
+      {"id": "HP:0010557", "title" : "Overlapping fingers"},
+      {"id": "HP:0001161", "title" : "Polydactyly"},
+      {"id": "HP:0001166", "title" : "Arachnodactyly"},
+      {"id": "HP:0000954", "title" : "Single transverse palmar crease"},
+      {"id": "HP:0001161", "title" : "Polydactyly"},
+      {"id": "HP:0002164", "title" : "Nail dysplasia"},
+      {"id": "HP:0008402", "title" : "Ridged fingernail"},
+      {"id": "HP:0001814", "title" : "Thin, deep-set nails"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Lower extremities",
+    "categories" : ["HP:0002814"],
+    "data"       : [
+      {"id": "HP:0002968", "title" : "Rhizomelia"},
+      {"id": "HP:0004987", "title" : "Mesomelia"},
+      {"id": "HP:0010494", "title" : "Acromelia"},
+
+      {"id": "HP:0002857", "title" : "Genu valgu"},
+      {"id": "HP:0002970", "title" : "Genu varum"},
+      {"id": "HP:0001764", "title" : "Small feet"},
+      {"id": "HP:0001833", "title" : "Large feet"},
+
+      {"id": "HP:0001763", "title" : "Pes planus"},
+      {"id": "HP:0001761", "title" : "Pes cavus"},
+
+      {"id": "HP:0001838", "title" : "Vertical talus"},
+
+      {"id": "HP:0001831", "title" : "Brachydactyly"},
+      {"id": "HP:0001765", "title" : "Hammer toes"},
+      {"id": "HP:0010055", "title" : "Broad halluces"},
+      {"id": "HP:0001822", "title" : "Hallux valgus"},
+
+      {"id": "HP:0001863", "title" : "Clinodactyly of feet"},
+      {"id": "HP:0001166", "title" : "Arachnodactyly"},
+      {"id": "HP:0001852", "title" : "Sandal gap"},
+
+      {"id": "HP:0001845", "title" : "Overlapping toe"},
+      {"id": "HP:0001770", "title" : "Syndactyly"},
+      {"id": "HP:0001836", "title" : "Camptodactyly"},
+      {"id": "HP:0001829", "title" : "Polydactyly"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Musculoskeletal",
+    "categories" : ["HP:0000924","HP:0003549"],
+    "data"       : [
+      {"id": "HP:0100293", "title" : "Muscle fiber hypertrophy"},
+      {"id": "HP:0100294", "title" : "Muscle fiber hypotrophy"},
+      {"id": "_c_decreased_rom", "title" : "Decreased ROM"},
+      {"id": "HP:0010485", "title" : "Hyperextensibility at elbow"},
+      {"id": "HP:0010500", "title" : "Hyperextensibility of the knee"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Neurological",
+    "categories" : ["HP:0000707"],
+    "data"       : [
+      {"id": "HP:0001260", "title" : "Dysarthric speech"},
+      {"id": "HP:0001614", "title" : "Hypernasal speech"},
+      {"id": "HP:0007164", "title" : "Slowed slurred speech"},
+      {"id": "HP:0001257", "title" : "Spasticity"},
+      {"id": "HP:0002063", "title" : "Rigidity"},
+      {"id": "HP:0001276", "title" : "Hypertonia"},
+      {"id": "HP:0001252", "title" : "Hypotonia"},
+      {"id": "HP:0001337", "title" : "Tremor"},
+      {"id": "HP:0007164", "title" : "Slowed slurred speech"},
+      {"id": "HP:0002072", "title" : "Chorea"},
+      {"id": "HP:0002066", "title" : "Gait ataxia"},
+      {"id": "HP:0002064", "title" : "Spastic gait"},
+      {"id": "HP:0003377", "title" : "Foot drop"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Back",
+    "categories" : ["HP:0008518"],
+    "data"       : [
+      {"id": "HP:0002650", "title" : "Scoliosis"},
+      {"id": "HP:0002939", "title" : "Lordosis"},
+      {"id": "HP:0002808", "title" : "Kyphosis"},
+      {"id": "HP:0000960", "title" : "Sacral dimple"},
+      {"id": "_c_sacral_sinus", "title" : "Sacral sinus"},
+      {"id": "HP:0005765", "title" : "Sacral meningocele"}
+    ]
+  },
+  {
+    "type"       : "section",
+    "title"      : "Skin",
+    "categories" : ["HP:0000925"],
+    "data"       : [
+      {"id": "_c_skin_cals", "title" : "CALS"},
+      {"id": "HP:0009721", "title" : "Shagreen patch"},
+      {"id": "HP:0000953", "title" : "Hyperpigmentation"},
+      {"id": "HP:0001012", "title" : "Lipoma"},
+      {"id": "HP:0009125", "title" : "Lipodystrophy"},
+      {"id": "HP:0001067", "title" : "Neurofibroma"},
+      {"id": "_c_peringuinal_fibroma", "title" : "Peringuinal fibroma"},
+      {"id": "HP:0001028", "title" : "Hemangioma"},
+      {"id": "HP:0011369", "title" : "Mongolian spot"},
+      {"id": "HP:0001052", "title" : "Nevus flammeus"},
+      {"id": "HP:0010609", "title" : "Skin tags"},
+      {"id": "HP:0001480", "title" : "Freckling"}
+    ]
+  },
+   {
+    "type"       : "section",
+    "title"      : "Other",
+    "categories" : ["HP:0000118"],
+    "data"       : []
+  }
+])
+
+
+#set ($prenatal_history = [
+  {
+    "type"      : "section",
+    "title"     : "Prenatal growth parameters",
+    "categories": ["HP:0001507"],
+    "data"      : [
+      {
+        "type"  : "subsection",
+        "id"    : "HP:0004323",
+        "title" : "Weight for age",
+        "data"  : [
+          {"id" : "HP:0004325", "title" : "&lt;3rd"},
+          {"id" : "HP:0001513", "title" : "&gt;97th"}
+        ]
+      },
+      {
+        "type"  : "subsection",
+        "id"    : "HP:0000002",
+        "title" : "Stature for age",
+        "data"  : [
+          {"id" : "HP:0004322", "title" : "&lt;3rd"},
+          {"id" : "HP:0000098", "title" : "&gt;97th"}
+        ]
+      },
+      {
+        "type"  : "subsection",
+        "id"    : "HP:0000240",
+        "title" : "Head circumference for age",
+        "data"  : [
+          {"id" : "HP:0000252", "title" : "&lt;3rd"},
+          {"id" : "HP:0000256", "title" : "&gt;97th"}
+        ]
+      }
+    ]
+  },
+  {
+    "type"      : "section",
+    "title"     : "Prenatal development or birth",
+    "categories": ["HP:0001197"],
+    "data"      : [
+      {"id" : "HP:0001562"},
+      {"id" : "HP:0001561"},
+      {"id" : "HP:0001622"}
+    ]
+  }
+])
+
+#set ($mappings = {
+  'phenotype': $phenotype,
+  'prenatal_phenotype': $prenatal_history
+})
+{{/velocity}}</content>
+  <object>
+    <name>PhenoTips.Detailed physical phenotype configuration</name>
+    <number>0</number>
+    <className>PhenoTips.PhenotypeMappingClass</className>
+    <guid>6f6e330a-7a8f-49cc-9e32-0800ac48f433</guid>
+    <class>
+      <name>PhenoTips.PhenotypeMappingClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <description>
+        <disabled>0</disabled>
+        <name>description</name>
+        <number>1</number>
+        <prettyName>description</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </description>
+    </class>
+    <property>
+      <description>A thorough set of physical abnormalities affecting specific body parts. Includes several neurological signs.</description>
+    </property>
+  </object>
+</xwikidoc>

@@ -20,24 +20,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>PatientSheetMacros</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>PhenoTips.PatientSheet</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822205000</creationDate>
+  <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1377018137000</creationDate>
-  <date>1377027217000</date>
-  <contentUpdateDate>1377027217000</contentUpdateDate>
+  <date>1401822205000</date>
+  <contentUpdateDate>1401822205000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -56,6 +53,9 @@
        #set($for = "for='$!{class.name}_$!{obj.number}_$!{propName}'")
      #end
      {{html clean="false" wiki="false"}}&lt;label class="$!{cssClass}" $!{for}&gt;${displayedText}&lt;/label&gt;{{/html}}##
+     #if ($services.localization.get("$!{class.name}_${propName}_hint"))
+       #* Empty comment needed for the whitespace trimmer to leave an empty space before the icon *# {{icon name="question-circle" cssClass="xHelpButton" title="$services.localization.render("PhenoTips.PatientClass_${propName}_hint").replace('"', '~~~"')"/}}##
+     #end
    #end
 #end
 
@@ -203,13 +203,14 @@
 ##
 #macro (__phenotypeMeta_displayEntry $targetObj)
     #set($dataClass = $targetObj.xWikiClass)
-    #set($enabledProperties = ['age_of_onset', 'pace_of_progression', 'mode_of_inheritance', 'comments', 'supporting_images', 'supporting_documents'])
+    #set($enabledProperties = ['age_of_onset', 'pace_of_progression', 'severity', 'temporal_pattern', 'spatial_pattern', 'laterality', 'comments', 'supporting_images', 'supporting_documents'])
+    #set($collapsibleProperties = ['age_of_onset', 'pace_of_progression', 'severity', 'temporal_pattern', 'spatial_pattern', 'laterality'])
     #set($targetId = "phenotypeMeta__$!{class.name}_$!{obj.number}_$!{targetObj.getProperty('target_property_name').value}__$!{targetObj.getProperty('target_property_value').value}")
     {{html wiki="true" clean="false"}}##
     {{html wiki="false" clean="false"}}&lt;dl id="$targetId"&gt;{{/html}}##
       #foreach($prop in $dataClass.properties)##
         #if ($enabledProperties.contains($prop.name))#set($displayMode='')#else#set($displayMode=' hidden')#end##
-        &lt;dt class="${prop.name}${displayMode}"&gt;&lt;label for=""&gt;${prop.prettyName}:&lt;/label&gt;&lt;/dt&gt;##
+        &lt;dt class="${prop.name}${displayMode}"&gt; #if ($collapsibleProperties.contains($prop.name)) &lt;span class="collapse-button"&gt;&lt;/span&gt; #end &lt;label for=""&gt;${prop.prettyName}:&lt;/label&gt;&lt;/dt&gt;##
         &lt;dd class="${prop.name}${displayMode}"&gt;$doc.display($prop.getName(), $targetObj)&lt;/dd&gt;##
       #end##
     &lt;/dl&gt;##

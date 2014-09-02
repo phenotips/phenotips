@@ -19,36 +19,18 @@
  */
 package org.phenotips.ontology.internal.solr;
 
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
-
-import static org.mockito.Mockito.when;
 
 /**
- * Test for the implementation of DefaultSolrOntologyServiceInitializer. It is the class that creates a connection
- * to the Solr server and creates a cache.
+ * Test for the implementation of DefaultSolrOntologyServiceInitializer. It is the class that creates a connection to
+ * the Solr server and creates a cache.
  */
 public class DefaultSolrOntologyServiceInitializerTest
 {
     @Rule
     public final MockitoComponentMockingRule<DefaultSolrOntologyServiceInitializer> mocker =
-        new MockitoComponentMockingRule<DefaultSolrOntologyServiceInitializer>
-            (DefaultSolrOntologyServiceInitializer.class);
-
-    @Test
-    public void testGetSolrLocation() throws ComponentLookupException
-    {
-        ConfigurationSource configuration = mocker
-            .getInstance(ConfigurationSource.class, "xwikiproperties");
-        when(configuration.getProperty("solr.remote.url", String.class))
-            .thenReturn("http://localhost:8080/solr/wiki/");
-        DefaultSolrOntologyServiceInitializer initializer = mocker.getComponentUnderTest();
-        String location = initializer.getSolrLocation();
-        Assert.assertTrue(location.equalsIgnoreCase("http://localhost:8080/solr/"));
-    }
+        new MockitoComponentMockingRule<DefaultSolrOntologyServiceInitializer>(
+            DefaultSolrOntologyServiceInitializer.class);
 }

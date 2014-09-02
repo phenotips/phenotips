@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>PedigreeImageService</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1407808899000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1407896093000</date>
+  <contentUpdateDate>1407896093000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Pedigree image service</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+#if ($xcontext.action != 'get')
+  **Usage**: //http[s]:~/~/&lt;hostname&gt;[:&lt;port&gt;]/&lt;appname&gt;/bin/get/PhenoTips/PedigreeImageService?[e]id=&lt;identifier&gt;[&amp;format=raster]//
+  #break
+#end
+#if ("$!request.id" != '')
+  #set ($patient = $services.patients.getPatientById($request.id))
+#elseif ("$!request.eid" != '')
+  #set ($patient = $services.patients.getPatientByExternalId($request.eid))
+#end
+#if ("$!{request.outputSyntax}" == 'plain')
+  {{content syntax="plain/1.0"}}
+#else
+  {{html wiki="false" clean="false"}}
+#end
+#if (!$patient)
+  $response.setStatus(404)##
+  $response.setContentType('application/json')##
+  {"error" : "Patient not found."}
+  #break
+#end
+#set ($pedigree = $!xwiki.getDocument($patient.getDocument()).getObject('PhenoTips.PedigreeClass').getProperty('image').value)
+#if (!$pedigree)
+  $response.setStatus(404)##
+  $response.setContentType('application/json')##
+  {"error" : "Pedigree not found."}
+  #break
+#end
+#if ("$!request.format" == 'raster')
+  #set ($pedigreeDocRoot = $services.xml.parse($pedigree).getDocumentElement())
+  #set ($width = $mathtool.toInteger($pedigreeDocRoot.getAttribute('width')))
+  #set ($height = $mathtool.toInteger($pedigreeDocRoot.getAttribute('height')))
+  #set ($pedigreeRasterUrl = $xwiki.svg.getSVGImageURL($pedigreeSVG, $height, $width))
+  $response.sendRedirect($pedigreeRasterUrl)
+#else
+  $response.setContentType('image/svg+xml')##
+  $pedigree
+#end
+#if ("$!{request.outputSyntax}" == 'plain')
+  {{/content}}
+#else
+  {{/html}}
+#end
+{{/velocity}}
+
+</content>
+</xwikidoc>

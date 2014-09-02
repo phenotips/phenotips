@@ -55,6 +55,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import com.xpn.xwiki.XWiki;
@@ -69,7 +70,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for the default {@link PatientAccessHelper} implementation, {@link DefaultPatientAccessHelper}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultPatientAccessHelperTest
@@ -187,28 +188,17 @@ public class DefaultPatientAccessHelperTest
         Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
     }
 
-    /** {@link PatientAccessHelper#getOwner(Patient)} returns the referrer when the owner isn't specified. */
-    @Test
-    public void getOwnerWithMissingOwner() throws ComponentLookupException
-    {
-        when(this.patient.getReporter()).thenReturn(OWNER);
-        when(this.bridge.getProperty(PATIENT_REFERENCE, OWNER_CLASS, "owner")).thenReturn(null);
-        Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
-
-        when(this.bridge.getProperty(PATIENT_REFERENCE, OWNER_CLASS, "owner")).thenReturn("");
-        Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
-    }
-
-    /** {@link PatientAccessHelper#getOwner(Patient)} returns null when the owner and the referrer aren't specified. */
+    /** {@link PatientAccessHelper#getOwner(Patient)} returns a null user when the owner isn't specified. */
     @Test
     public void getOwnerWithMissingOwnerAndReferrer() throws ComponentLookupException
     {
-        when(this.patient.getReporter()).thenReturn(null);
         when(this.bridge.getProperty(PATIENT_REFERENCE, OWNER_CLASS, "owner")).thenReturn(null);
-        Assert.assertNull(this.mocker.getComponentUnderTest().getOwner(this.patient));
+        Assert.assertNull(this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
 
         when(this.bridge.getProperty(PATIENT_REFERENCE, OWNER_CLASS, "owner")).thenReturn("");
-        Assert.assertNull(this.mocker.getComponentUnderTest().getOwner(this.patient));
+        Assert.assertNull(this.mocker.getComponentUnderTest().getOwner(this.patient).getUser());
+
+        Mockito.verify(this.patient, Mockito.never()).getReporter();
     }
 
     /** {@link PatientAccessHelper#getOwner(Patient)} returns {@code null} when the patient is missing. */
@@ -539,7 +529,7 @@ public class DefaultPatientAccessHelperTest
         Collaborator collaborator = new DefaultCollaborator(COLLABORATOR, edit, this.mocker.getComponentUnderTest());
 
         Assert.assertFalse(this.mocker.getComponentUnderTest().removeCollaborator(this.patient, collaborator));
-        Mockito.verify(doc, Mockito.never()).removeXObject(Mockito.any(BaseObject.class));
+        Mockito.verify(doc, Mockito.never()).removeXObject(Matchers.any(BaseObject.class));
         Mockito.verify(xwiki, Mockito.never()).saveDocument(doc, "Removed collaborator: " + COLLABORATOR_STR, true,
             this.context);
     }
@@ -575,7 +565,7 @@ public class DefaultPatientAccessHelperTest
         when(this.context.getWiki()).thenReturn(xwiki);
         when(xwiki.getGroupService(this.context)).thenReturn(groupService);
         when(groupService.getAllGroupsReferencesForMember(COLLABORATOR, 0, 0, this.context)).
-            thenReturn(Collections.<DocumentReference> emptyList());
+            thenReturn(Collections.<DocumentReference>emptyList());
 
         Assert.assertSame(owner, this.mocker.getComponentUnderTest().getAccessLevel(this.patient, OWNER));
     }
@@ -641,7 +631,7 @@ public class DefaultPatientAccessHelperTest
         when(this.context.getWiki()).thenReturn(xwiki);
         when(xwiki.getGroupService(this.context)).thenReturn(groupService);
         when(groupService.getAllGroupsReferencesForMember(COLLABORATOR, 0, 0, this.context)).
-            thenReturn(Collections.<DocumentReference> emptyList());
+            thenReturn(Collections.<DocumentReference>emptyList());
 
         Assert.assertSame(edit, this.mocker.getComponentUnderTest().getAccessLevel(this.patient, COLLABORATOR));
     }

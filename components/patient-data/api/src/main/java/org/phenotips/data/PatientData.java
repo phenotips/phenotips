@@ -19,17 +19,30 @@
  */
 package org.phenotips.data;
 
-import java.util.List;
+import org.xwiki.stability.Unstable;
+
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 /**
- * Non-essential pieces of custom patient data that can be part of the patient record.
+ * Non-essential pieces of custom patient data that can be part of the patient record. The data can be structured in
+ * three ways:
+ * <ul>
+ * <li>Simple values, for which {@link #getValue()} must be called. {@link SimpleValuePatientData} provides the basic
+ * implementation.</li>
+ * <li>Lists of values, for which {@link #get(int)} must be called. {@link IndexedPatientData} provides the basic
+ * implementation.</li>
+ * <li>A collection of named values (dictionary), for which {@link #get(String)} must be called.
+ * {@link DictionaryPatientData} provides the basic implementation.</li>
+ * </ul>
  *
- * @param <T> the type of data being represented; usually a key-value pair, where the {@code key} is a String (name)
- * @see PatientDataController
+ * @param <T> the type of data expected back
  * @version $Id$
+ * @see PatientDataController
  * @since 1.0M10
  */
-public interface PatientData<T> extends List<T>
+@Unstable
+public interface PatientData<T> extends Iterable<T>
 {
     /**
      * The name of this custom data.
@@ -37,4 +50,63 @@ public interface PatientData<T> extends List<T>
      * @return a short string
      */
     String getName();
+
+    /**
+     * If this type of data is structured as a dictionary, will look up the value attached to the key.
+     *
+     * @param key the name of the value to return
+     * @return the value attached to the key, if any, {@code null} if there's no value stored for this key or if this is
+     *         not a dictionary type of data
+     * @since 1.0M13
+     */
+    T get(String key);
+
+    /**
+     * If this type of data is structured as a list of values, will lookup the value stored at a specific index.
+     *
+     * @param index the index of the value to return
+     * @return the value at the index, if any, {@code null} if there's no value stored at the specified index or if this
+     *         is not an indexed type of data
+     * @since 1.0M13
+     */
+    T get(int index);
+
+    /**
+     * If this type of data holds only a single value, return that value.
+     *
+     * @return the value stored for this type of patient data, if any, {@code null} if there's no value defined or if
+     *         this is not a simple value type of patient data
+     * @since 1.0M13
+     */
+    T getValue();
+
+    /**
+     * @return {@code true} if the data structure is index based
+     * @since 1.0M13
+     */
+    boolean isIndexed();
+
+    /**
+     * @return {@code true} if the data structure is key-value based
+     * @since 1.0M13
+     */
+    boolean isNamed();
+
+    /**
+     * For dictionary data only, return an iterator over the dictionary keys.
+     *
+     * @return iterator containing all the keys, or an empty iterator if there are no keys or this is not a dictionary
+     *         type of data
+     * @since 1.0M13
+     */
+    Iterator<String> keyIterator();
+
+    /**
+     * For dictionary data only, return an iterator over the dictionary entries.
+     *
+     * @return iterator containing all the data in this dictionary, or an empty iterator if there is no data or this is
+     *         not a dictionary type of data
+     * @since 1.0M13
+     */
+    Iterator<Entry<String, T>> dictionaryIterator();
 }

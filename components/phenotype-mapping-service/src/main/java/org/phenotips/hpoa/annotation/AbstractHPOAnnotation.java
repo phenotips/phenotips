@@ -19,16 +19,16 @@
  */
 package org.phenotips.hpoa.annotation;
 
+import org.phenotips.hpoa.ontology.Ontology;
+import org.phenotips.hpoa.utils.graph.BGraph;
+import org.phenotips.hpoa.utils.graph.IDAGNode;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-
-import org.phenotips.hpoa.ontology.Ontology;
-import org.phenotips.hpoa.utils.graph.BGraph;
-import org.phenotips.hpoa.utils.graph.IDAGNode;
 
 public abstract class AbstractHPOAnnotation extends BGraph<AnnotationTerm> implements HPOAnnotation
 {

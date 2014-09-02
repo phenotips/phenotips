@@ -25,7 +25,7 @@ import org.xwiki.stability.Unstable;
 /**
  * A specific access level that a user or a group can have on a patient record, determining which operations are allowed
  * on that record.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -35,21 +35,21 @@ public interface AccessLevel extends Comparable<AccessLevel>
 {
     /**
      * The internal name of this access level.
-     * 
+     *
      * @return a short lowercase identifier
      */
     String getName();
 
     /**
      * The user-friendly name of this access level which can be displayed to the users.
-     * 
+     *
      * @return a short titlecase name
      */
     String getLabel();
 
     /**
      * A descriptive label of this access level which can be displayed to the users to describe this access level.
-     * 
+     *
      * @return a long sentence describing the access level
      */
     String getDescription();
@@ -57,7 +57,7 @@ public interface AccessLevel extends Comparable<AccessLevel>
     /**
      * Some levels can be explicitly granted to {@link Collaborator}s, while others are implicit. This method indicates
      * which access levels can be assigned to collaborators.
-     * 
+     *
      * @return {@code true} if this level can be assigned to collaborators, {@code false} otherwise
      */
     boolean isAssignable();

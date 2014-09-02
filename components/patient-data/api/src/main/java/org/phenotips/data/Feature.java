@@ -59,6 +59,13 @@ public interface Feature extends OntologyProperty
     Map<String, ? extends FeatureMetadatum> getMetadata();
 
     /**
+     * Return optional notes/comments about this feature, entered as free text.
+     *
+     * @return a free hand text, may be {@code null} or the empty string if no notes are present
+     */
+    String getNotes();
+
+    /**
      * Retrieve all information about this feature and its associated metadata in a JSON format. For example:
      *
      * <pre>
@@ -79,13 +86,11 @@ public interface Feature extends OntologyProperty
     JSONObject toJSON();
 
     /**
-     * Returns PhenoTips name of this feature.<p>
-     *
-     * In current implementation it is either the ID, or the name iff ID is null or empty.
-     *
-     * TODO: move to OntologyProperty and or implement a OntologyProperty-to-PhenotipsPropertName mapping service
+     * Returns PhenoTips name of this feature. In current implementation it is either the ID, or the name iff ID is null
+     * or empty.
      *
      * @return feature name
+     * @todo move to OntologyProperty and/or implement a OntologyProperty-to-PhenotipsPropertyName mapping service
      */
     String getValue();
 }

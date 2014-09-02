@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>PhenotypeMappingPreview</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822208000</creationDate>
+  <parent>PhenoTips.PhenotypeMappingClass</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822208000</date>
+  <contentUpdateDate>1401822208000</contentUpdateDate>
+  <version>1.1</version>
+  <title>PhenotypeMappingPreview</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+$xwiki.ssx.use('PhenoTips.YesNoNAPicker', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.ssx.use('PhenoTips.Widgets', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.ssx.use('PhenoTips.PatientSheetCode', {'colorTheme' : "$!{themeDocFullName}"})##
+$xwiki.jsx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('PhenoTips.YesNoNAPicker')##
+$xwiki.jsx.use('PhenoTips.PatientSheetCode')##
+
+#set ($name = 'phenotype')
+#set ($document = $xwiki.getDocument('PhenoTips.PatientTemplate'))
+#if ("$!request.mapping" != '')
+  #set ($mapping = $xwiki.getDocument("$!request.mapping"))
+#else
+  #set ($mapping = $doc)
+#end
+#if ($mapping.getObject('PhenoTips.PhenotypeMappingClass'))
+  #set ($def = $mapping.content.replaceAll('\{\{/?velocity[^}]*}}', ''))
+  #set ($discard = "#evaluate($def)")
+  #if ("$!{phenotype}" != '')
+    #set($phenotypeDisplayTools = $services.phenotype)
+    $phenotypeDisplayTools.setMode('edit')##
+    $phenotypeDisplayTools.setDocument($document)##
+    $!phenotypeDisplayTools.use('', $name, "negative_${name}")##
+    #if ($mapping != $doc)
+
+{{info}}Showing preview of [[$mapping||target="_blank"]]:{{/info}}
+
+    #end
+    {{html clean=false}}$phenotypeDisplayTools.display($phenotype){{/html}}##
+    $!phenotypeDisplayTools.clear()##
+  #end
+#end
+{{/velocity}}
+</content>
+  <object>
+    <name>PhenoTips.PhenotypeMappingPreview</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>2046b272-5863-4c04-a6b7-c8bb2850868b</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>//
+// Enable the live preview of the selected phenotype mapping
+//
+var init = function(event) {
+  // Check for the elements needed to do the preview:
+  // 1. the container where the preview is to be displayed
+  var previewContainer = $('mappingPreview');
+  // 2. a/ the input containing the selected value
+  var textInputs = $$('input[type="text"][name$="apping_suggest"]');
+  // or b/ the radio buttons for the options
+  var options = $$('input[type="radio"][name$="apping"]');
+  // If 1 or 2 are missing, move along, there's nothing to do here
+  if (!previewContainer || !(textInputs.size() == 1 || options.size() &gt; 0)) {
+    return;
+  }
+
+
+  // Make it easy for the user to look at long mappings:
+  previewContainer.style.maxHeight = (.9 * document.viewport.getHeight()) + 'px';
+  Event.observe(window, 'resize', function (event) {
+    previewContainer.style.maxHeight = (.9 * document.viewport.getHeight()) + 'px';
+  });
+
+
+  // Preview requests should have increasing identifiers and only the response of the latest one should be displayed
+  // Store the ID of the latest request:
+  previewContainer.reqNo = 0;
+
+  // -------------------------------------------------------------------
+  // Requesting a preview based on the selected value:
+  var updatePreview = function(selectedValue) {
+    // Mark that this is a new request
+    previewContainer.reqNo++;
+    // No value? No preview
+    if (!selectedValue) {
+      previewContainer.update('');
+      return;
+    }
+    // Make the request:
+    new Ajax.Request(new XWiki.Document('PhenotypeMappingPreview', 'PhenoTips').getURL('get'), {
+        parameters: {
+           mapping: selectedValue,
+           reqNo : previewContainer.reqNo
+        },
+        onCreate : function() {
+           // Always ignore all but the latest request
+           if (this.parameters.reqNo &lt; previewContainer.reqNo) {
+             return;
+           }
+           // Clean up the preview container and add a spinner while waiting for the result to come
+           previewContainer.update('').addClassName('loading');
+        },
+        onSuccess : function(response) {
+           // Always ignore all but the latest request
+           if (response.request.options.parameters.reqNo &lt; previewContainer.reqNo) {
+             return;
+           }
+           // Display the results
+           previewContainer.update(response.responseText);
+           // Disable all inputs (this is a preview, there should be no interaction)
+           previewContainer.select('input').each(function (item) {
+             item.disabled = 'disabled';
+           });
+        },
+        onFailure : function(response) {
+           // Always ignore all but the latest request
+           if (response.request.options.parameters.reqNo &lt; previewContainer.reqNo) {
+             return;
+           }
+           // Tell the user why the preview request failed
+           var failureReason = response.responseText || response.statusText;
+           if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+              failureReason = 'Server not responding';
+           }
+           previewContainer.update(new Element('div', {'class' : 'errormessage'}).update('Failed to generate preview. ' + failureReason));
+        },
+        on0 : function (response) {
+           response.request.options.onFailure(response);
+        },
+        onComplete : function(response) {
+           // Always ignore all but the latest request
+           if (response.request.options.parameters.reqNo &lt; previewContainer.reqNo) {
+             return;
+           }
+           // Done one way or the other, remove spinner
+           previewContainer.removeClassName('loading');
+        }
+     });
+  };
+
+
+  // Handling the value in the input
+  var handleInputValue = function(event) {
+    // What do we have in the input, a newly selected value or the initial one?
+    var selectedValue = event &amp;&amp; event.memo &amp;&amp; event.memo.info || input.value &amp;&amp; input.previous('input').value;
+
+    // No value? No preview
+    if (!selectedValue) {
+      updatePreview();
+      mappingCustomizationTool.href = '#';
+      mappingCustomizationTool.addClassName('hidden');
+      return;
+    }
+
+    // Update the preview
+    updatePreview(selectedValue);
+
+    // Update the customization link
+    var targetDocumentReference = XWiki.resource.get(selectedValue, XWiki.EntityType.DOCUMENT);
+    mappingCustomizationTool.href = new XWiki.Document(targetDocumentReference.name, targetDocumentReference.space).getURL('edit');
+    mappingCustomizationTool.removeClassName('hidden');
+  }
+
+  // Handling the selected option
+  var handleSelectedOption = function(event) {
+    var selectedValue = '';
+    options.each(function (item) {
+      if (item.checked) {
+         selectedValue = item.value;
+      }
+    });
+
+    // Update the preview
+    updatePreview(selectedValue);
+  }
+
+
+  // -------------------------------------------------------------------
+  // What kind of config selection UI do we have?
+  // 1. input with suggestions:
+  if (textInputs.size() == 1) {
+    var input = textInputs[0];
+
+    // Add a link permitting the user to modify the selected mapping
+    var mappingCustomizationTool = new Element('a', {'class': 'button hidden', 'href' : '#', 'id' : 'customizeMapping', 'target' : '_blank'}).update('Customize');
+    input.insert({'before' : mappingCustomizationTool.wrap('span', {'class' : 'buttonwrapper customize-button'})});
+
+    // Show the preview for the initial value
+    handleInputValue();
+    // Update preview every time the value changes
+    input.observe('xwiki:suggest:selected', handleInputValue);
+    // Correct behavior for emptying the input
+    input.observe('change', function (event) {
+      if (input.value == '') {
+      input.previous('input').value = '';
+        input.fire('xwiki:suggest:selected', {'id' : '', 'value' : '', 'info' : ''});
+      }
+    });
+  }
+  // 2. radio buttons:
+  if (options.size() &gt; 0) {
+    options.each(function (item) {
+      var container = new Element('div', {'class' : 'option-container'});
+      var label = item.up('label');
+      label.insert({after : container});
+      container.insert(label);
+      // Add "customize" buttons to each options
+      if (item.value != '') {
+        //    - first compute urls
+        var targetDocumentReference = XWiki.resource.get(item.value, XWiki.EntityType.DOCUMENT);
+        var url = new XWiki.Document(targetDocumentReference.name, targetDocumentReference.space).getURL('edit');
+
+        //     - then generate and insert buttons
+        var container = new Element('div', {'class' : 'option-container'});
+        var label = item.up('label');
+        label.insert({after : container});
+        container.insert(
+                 new Element('a', {'class': 'button', 'href' : url, 'id' : 'customizeMapping', 'target' : '_blank'})
+                            .update('Customize')
+                            .wrap('span', {'class' : 'buttonwrapper customize-button'}
+                 )
+        );
+      }
+      // Handle selection change
+      item.observe('change', handleSelectedOption);
+    });
+    // Show preview for the initial value
+    handleSelectedOption();
+  }
+};
+
+(XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.PhenotypeMappingPreview</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>150b3f6c-a46d-4dd3-b362-c1cdbf63a83b</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template('colorThemeInit.vm')
+
+#mappingPreview {
+  background: none repeat scroll 0 0 $theme.backgroundSecondaryColor;
+  border: 1px solid $theme.pageContentBackgroundColor;
+  box-shadow: 0 0 4px $theme.borderColor, 0 0 4px $theme.borderColor inset;
+  font-size: 0.8em;
+  max-height: 300px;
+  min-height: 20px;
+  overflow: auto;
+  padding: 1em;
+}
+/*
+ * Fix the style of the mapping to match what is displayed in the actual patient form
+ */
+#mappingPreview h3 {
+  text-transform: uppercase;
+  font-weight: normal;
+  margin-bottom: 5px;
+}
+#mappingPreview .yes-no-picker input {
+  display: none;
+}
+
+#mappingPreview .term-entry:before {
+  content: "►";
+  cursor: default;
+  visibility: hidden;
+}
+#mappingPreview .term-entry.dropdown-root:before {
+  color: $theme.linkColor;
+  cursor: pointer;
+  visibility: visible;
+}
+/*
+ * Preview can be displayed either to the right of or under the mapping selector; style differently
+ */
+
+.mappingPreviewContainer {
+  width: 47%;
+  float: right;
+  padding: 0 1% 1em;
+}
+.mappingPreviewContainer.side {
+  width: 40%;
+}
+.customize-button {
+  float: right;
+  margin-top: -1.4em;
+  margin-right: 1%;
+}
+.mappingPreviewContainer .customize-button {
+  margin-right: 0;
+}
+.mappingPreviewContainer .hint.side:before {
+  border-bottom: 32px solid rgba(0, 0, 0, 0);
+  border-left: 32px solid;
+  border-top: 32px solid rgba(0, 0, 0, 0);
+  left: 50%;
+  margin-left: 16px;
+}
+
+.mappingPreviewContainer .hint:before, .mappingPreviewContainer .hint:after {
+  color: $theme.linkColor;
+  content: "";
+  display: block;
+  opacity: .3;
+  position: absolute;
+  top: 2.5em;
+  z-index: 10;
+}
+.mappingPreviewContainer .hint.side:after {
+  border: 16px solid;
+  left: 50%;
+  margin-left: -16px;
+  margin-top: 16px;
+}
+.mappingPreviewContainer .hint.side {
+  left: -15%;
+}
+.mappingPreviewContainer .hint.side,  .mappingPreviewContainer .hint.under {
+  position: relative;
+  text-align: center;
+  top: 1em;
+  width: 5%;
+  font-style: italic;
+}
+
+.mappingPreviewContainer .hint.under:before {
+  border-left: 32px solid rgba(0, 0, 0, 0);
+  border-top: 32px solid;
+  border-right: 32px solid rgba(0, 0, 0, 0);
+  top: 3.5em;
+  margin-top: 16px;
+  margin-left: -16px;
+}
+.mappingPreviewContainer .hint.under:after {
+  border: 16px solid;
+  top: 3.5em;
+  margin-top: -16px;
+}
+.mappingPreviewContainer .hint.under {
+  margin: auto;
+  margin-bottom: 64px;
+  padding-bottom: 3.5em;
+}
+/*
+ * Fix the styling of some default form elements
+ */
+.option-container {
+  padding: .3em 0;
+}
+.option-container:hover {
+  background: $theme.highlightColor;
+}
+.option-container .customize-button {
+##  margin-top: 0;
+  visibility: hidden;
+}
+.option-container:hover .customize-button {
+  visibility: visible;
+}
+.option-container label.default input[type="radio"][value=""], .option-container label.default option[value=""] {
+  display: inline-block !important;
+}
+.option-container label.default {
+  color: $theme.textPrimaryColor;
+}</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>

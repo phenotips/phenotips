@@ -38,7 +38,7 @@
   </properties>
 
   <modules>
-    <module>jetty-resources</module>
+    <module>jetty</module>
     <module>solr-configuration</module>
     <module>ui</module>
   </modules>

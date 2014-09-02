@@ -19,6 +19,7 @@
  */
 package org.phenotips.data.internal.controller;
 
+import org.phenotips.data.OntologyProperty;
 import org.phenotips.data.PatientDataController;
 
 import org.xwiki.component.annotation.Component;
@@ -32,45 +33,54 @@ import javax.inject.Singleton;
 
 /**
  * Handles the information found in the family history section of the patient record.
+ *
+ * @version $Id$
+ * @since 1.0RC1
  */
-@Component(roles = {PatientDataController.class})
+@Component(roles = { PatientDataController.class })
 @Named("prenatalPhenotype")
 @Singleton
-public class PrenatalPhenotypeController extends AbstractComplexController<List<String>>
+public class PrenatalPhenotypeController extends AbstractComplexController<List<OntologyProperty>>
 {
-    final static String PRENATAL_PHENOTYPE = "prenatal_phenotype";
+    private static final String PRENATAL_PHENOTYPE = "prenatal_phenotype";
 
-    final static String NEGATIVE_PRENATAL_PHENOTYPE = "negative_prenatal_phenotype";
+    private static final String NEGATIVE_PRENATAL_PHENOTYPE = "negative_prenatal_phenotype";
 
     private List<String> hpoCodes = Arrays.asList(PRENATAL_PHENOTYPE, NEGATIVE_PRENATAL_PHENOTYPE);
 
     @Override
     public String getName()
     {
-        return "PrenatalPerinatalHistory";
+        return "prenatalPerinatalPhenotype";
     }
 
     @Override
     protected String getJsonPropertyName()
     {
-        return "prenatal_perinatal_history";
+        return "prenatal_perinatal_phenotype";
     }
 
     @Override
     protected List<String> getProperties()
     {
-        return Arrays.asList("gestation", PRENATAL_PHENOTYPE, NEGATIVE_PRENATAL_PHENOTYPE);
+        return Arrays.asList(PRENATAL_PHENOTYPE, NEGATIVE_PRENATAL_PHENOTYPE);
     }
 
     @Override
     protected List<String> getBooleanFields()
     {
-        return new LinkedList<String>();
+        return new LinkedList<>();
     }
 
     @Override
     protected List<String> getCodeFields()
     {
-        return hpoCodes;
+        return this.hpoCodes;
+    }
+
+    @Override
+    protected boolean isCodeFieldsOnly()
+    {
+        return true;
     }
 }

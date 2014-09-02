@@ -34,9 +34,9 @@ import org.xwiki.observation.event.Event;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -106,8 +106,10 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
     {
         @SuppressWarnings("unchecked")
         List<String> phenotypes = patientRecordObj.getListValue(baseFieldName);
-        Set<String> extendedPhenotypes = new HashSet<String>();
+        Set<String> extendedPhenotypes = new TreeSet<String>();
+        Set<String> sortedPhenotypes = new TreeSet<String>();
         for (String phenotype : phenotypes) {
+            sortedPhenotypes.add(phenotype);
             OntologyTerm phenotypeTerm = this.ontologyManager.resolveTerm(phenotype);
             if (phenotypeTerm != null) {
                 for (OntologyTerm term : phenotypeTerm.getAncestorsAndSelf()) {
@@ -118,5 +120,6 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
             }
         }
         patientRecordObj.setDBStringListValue(extendedFieldName, new ArrayList<String>(extendedPhenotypes));
+        patientRecordObj.setDBStringListValue(baseFieldName, new ArrayList<String>(sortedPhenotypes));
     }
 }

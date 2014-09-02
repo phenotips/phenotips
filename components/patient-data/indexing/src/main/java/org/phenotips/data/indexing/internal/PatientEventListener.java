@@ -25,6 +25,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
+
 import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.bridge.event.DocumentCreatedEvent;
 import org.xwiki.bridge.event.DocumentDeletedEvent;
@@ -36,8 +37,8 @@ import org.xwiki.observation.event.Event;
 import org.xwiki.observation.event.FilterableEvent;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -156,8 +157,7 @@ public class PatientEventListener implements EventListener
     @Override
     public List<Event> getEvents()
     {
-        return Arrays
-            .<Event> asList(new DocumentCreatedEvent(), new DocumentUpdatedEvent(), new DocumentDeletedEvent());
+        return Arrays.<Event>asList(new DocumentCreatedEvent(), new DocumentUpdatedEvent(), new DocumentDeletedEvent());
     }
 
     @Override

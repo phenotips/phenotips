@@ -19,10 +19,10 @@
  */
 package org.phenotips.data.internal.controller;
 
+import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
-import org.phenotips.data.SimpleNamedData;
 import org.phenotips.data.permissions.Owner;
 import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.groups.Group;
@@ -35,15 +35,16 @@ import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -60,7 +61,7 @@ import net.sf.json.JSONObject;
 @Component(roles = { PatientDataController.class })
 @Named("owner-contact")
 @Singleton
-public class ContactInformationController implements PatientDataController<ImmutablePair<String, String>>
+public class ContactInformationController implements PatientDataController<String>
 {
     private static final String DATA_CONTACT = "contact";
 
@@ -94,14 +95,14 @@ public class ContactInformationController implements PatientDataController<Immut
     private PermissionsManager permissions;
 
     @Override
-    public PatientData<ImmutablePair<String, String>> load(Patient patient)
+    public PatientData<String> load(Patient patient)
     {
         Owner owner = this.permissions.getPatientAccess(patient).getOwner();
-        List<ImmutablePair<String, String>> contactInfo = getContactInfo(owner);
+        Map<String, String> contactInfo = getContactInfo(owner);
         if (contactInfo == null) {
             return null;
         }
-        return new SimpleNamedData<String>(DATA_CONTACT, contactInfo);
+        return new DictionaryPatientData<String>(DATA_CONTACT, contactInfo);
     }
 
     @Override
@@ -122,30 +123,37 @@ public class ContactInformationController implements PatientDataController<Immut
         if (selectedFieldNames != null && !selectedFieldNames.contains(getEnablingFieldName())) {
             return;
         }
-        PatientData<ImmutablePair<String, String>> data = patient.getData(DATA_CONTACT);
-        if (data == null || data.isEmpty()) {
+        PatientData<String> data = patient.getData(DATA_CONTACT);
+        if (data == null || !data.isNamed()) {
             return;
         }
+
+        Iterator<Entry<String, String>> iterator = data.dictionaryIterator();
+        if (!iterator.hasNext()) {
+            return;
+        }
+
         JSONObject container = json.getJSONObject(DATA_CONTACT);
         if (container == null || container.isNullObject()) {
             json.put(DATA_CONTACT, new JSONObject());
             container = json.getJSONObject(DATA_CONTACT);
         }
-        for (ImmutablePair<String, String> item : data) {
+        while (iterator.hasNext()) {
+            Entry<String, String> item = iterator.next();
             container.put(item.getKey(), item.getValue());
         }
     }
 
     @Override
-    public PatientData<ImmutablePair<String, String>> readJSON(JSONObject json)
+    public PatientData<String> readJSON(JSONObject json)
     {
         throw new UnsupportedOperationException();
     }
 
-    private List<ImmutablePair<String, String>> getContactInfo(Owner owner)
+    private Map<String, String> getContactInfo(Owner owner)
     {
-        List<ImmutablePair<String, String>> contactInfo = new LinkedList<ImmutablePair<String, String>>();
-        if (owner == null) {
+        Map<String, String> contactInfo = new LinkedHashMap<String, String>();
+        if (owner == null || owner.getUser() == null) {
             return null;
         }
         if (owner.isGroup()) {
@@ -164,7 +172,7 @@ public class ContactInformationController implements PatientDataController<Immut
         return contactInfo;
     }
 
-    private void populateUserInfo(List<ImmutablePair<String, String>> contactInfo, User user)
+    private void populateUserInfo(Map<String, String> contactInfo, User user)
     {
         String email = (String) user.getAttribute(ATTRIBUTE_EMAIL_USER);
         String institution = (String) user.getAttribute(ATTRIBUTE_INSTITUTION);
@@ -175,7 +183,7 @@ public class ContactInformationController implements PatientDataController<Immut
         addInfo(contactInfo, DATA_INSTITUTION, institution);
     }
 
-    private void populateGroupInfo(List<ImmutablePair<String, String>> contactInfo, Group group)
+    private void populateGroupInfo(Map<String, String> contactInfo, Group group)
     {
         addInfo(contactInfo, DATA_NAME, group.getReference().getName());
 
@@ -198,7 +206,7 @@ public class ContactInformationController implements PatientDataController<Immut
     /**
      * Unlike all other controllers, there is no field name controlling presence of version information in JSON output.
      * This method returns a name which can be used instead.
-     * 
+     *
      * @return a name which can be included in the list of enabled fields to enable version info in JSON output
      */
     public static String getEnablingFieldName()
@@ -206,10 +214,10 @@ public class ContactInformationController implements PatientDataController<Immut
         return DATA_CONTACT;
     }
 
-    private void addInfo(List<ImmutablePair<String, String>> contactInfo, String key, String value)
+    private void addInfo(Map<String, String> contactInfo, String key, String value)
     {
         if (StringUtils.isNotBlank(value)) {
-            contactInfo.add(ImmutablePair.of(key, value));
+            contactInfo.put(key, value);
         }
     }
 }

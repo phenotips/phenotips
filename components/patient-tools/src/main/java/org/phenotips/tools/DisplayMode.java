@@ -21,7 +21,7 @@ package org.phenotips.tools;
 
 /**
  * Different ways of displaying form elements. Used by the {@link FormElement#display(DisplayMode, String[])} method.
- * 
+ *
  * @version $Id$
  */
 public enum DisplayMode

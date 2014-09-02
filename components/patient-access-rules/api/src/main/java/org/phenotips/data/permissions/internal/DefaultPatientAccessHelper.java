@@ -122,10 +122,8 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
         String owner = String.valueOf(this.bridge.getProperty(patient.getDocument(), classReference, "owner"));
         if (StringUtils.isNotBlank(owner) && !"null".equals(owner)) {
             return new DefaultOwner(this.stringEntityResolver.resolve(owner, patient.getDocument()), this);
-        } else if (patient.getReporter() != null) {
-            return new DefaultOwner(patient.getReporter(), this);
         }
-        return null;
+        return new DefaultOwner(null, this);
     }
 
     @Override

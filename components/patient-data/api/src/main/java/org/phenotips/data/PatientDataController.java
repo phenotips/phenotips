@@ -19,10 +19,10 @@
  */
 package org.phenotips.data;
 
-import java.util.Collection;
-
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
+
+import java.util.Collection;
 
 import net.sf.json.JSONObject;
 
@@ -46,8 +46,8 @@ import net.sf.json.JSONObject;
  * existing one.
  * </p>
  *
- * @param <T> the type of data being managed by this component; usually a key-value pair, where the {@code key} is a
- *            String (name)
+ * @param <T> the type of data being managed by this component, usually {@code String}, but other types are possible,
+ *            even more complex types
  * @version $Id$
  * @since 1.0M10
  */
@@ -84,10 +84,10 @@ public interface PatientDataController<T>
      * Exports the data being managed by this data controller into the patient JSON export.
      *
      * @param patient the patient being exported
-     * @param selectedFieldNames the list of Patient record fields which this controller should
-     * consider when writing to JSON. All other fields, even if supported by this controller, should be ignored.
-     * May contain extra fields not supported by this controller. May be {@code null}, in which case
-     * all available data should be written to JSON.
+     * @param selectedFieldNames the list of Patient record fields which this controller should consider when writing to
+     *            JSON. All other fields, even if supported by this controller, should be ignored. May contain extra
+     *            fields not supported by this controller. May be {@code null}, in which case all available data should
+     *            be written to JSON.
      * @param json existing JSON object to which the data will be appended
      */
     void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames);

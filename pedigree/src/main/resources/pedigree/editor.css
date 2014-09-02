@@ -92,23 +92,32 @@
   background-image: url("$xwiki.getSkinFile('icons/silk/printer.png')");
 }
 #editor-menu .save {
-  background-image: url("$xwiki.getSkinFile('icons/silk/disk.png')");
+  background-image: url("$xwiki.getSkinFile('icons/silk/disk.png')"); /* bullet_disk.png */
 }
 #editor-menu .export {
-  background-image: url("$xwiki.getSkinFile('icons/silk/package.png')");
+  background-image: url("$xwiki.getSkinFile('icons/silk/drive_link.png')"); /* package.png computer_go.png drive_go.png */
 }
 #editor-menu .close {
   background-image: url("$xwiki.getSkinFile('icons/silk/bullet_go.png')");
 }
 #editor-menu .readonlymessage {
   background-image: url("$xwiki.getSkinFile('icons/silk/bullet_error.png')");
-} 
+}
 #editor-menu .reload {
   background-image: url("$xwiki.getSkinFile('icons/silk/arrow_refresh_small.png')");
-} 
+}
 #editor-menu .templates {
   background-image: url("$xwiki.getSkinFile('icons/silk/bullet_star.png')"); /* star.png */
-} 
+}
+#editor-menu .import {
+  background-image: url("$xwiki.getSkinFile('icons/silk/shape_square_go.png')"); /* bullet_go.png, folder_go.png, page_white_go.png */
+}
+#editor-menu .options {
+  background-image: url("$xwiki.getSkinFile('icons/silk/control_equalizer.png')");
+}
+#editor-menu .number {
+  background-image: url("$xwiki.getSkinFile('icons/silk/text_list_numbers.png')");
+}
 
 .loading-indicator {
     background-image: url("$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')");
@@ -227,13 +236,13 @@
   overflow: hidden;
 
   /* fallback */
-  background-color: #FAFAFA;
+  background-color: #F8F8F8;
   background-position: center center;
   background-repeat: no-repeat;
 
-  background: -o-radial-gradient(circle, #FFFFFF, #D2D2D2);
-  background: -webkit-radial-gradient(circle, #FFFFFF, #D2D2D2);
-  background: radial-gradient(circle, #FFFFFF, #D2D2D2);
+  background: -o-radial-gradient(circle, #FBFBFB, #DFDFDF);
+  background: -webkit-radial-gradient(circle, #FBFBFB, #DFDFDF);
+  background: radial-gradient(circle, #FBFBFB, #DFDFDF);
 }
 /* ===========================================
  * LEGEND
@@ -294,13 +303,20 @@
  */
 .menu-box {
   position: absolute;
-  width: 300px;
+  width: 340px;
+  color: #000000;
+}
+.width80px {
+  width: 80px;
+}
+.relationship-menu {
+  width: 290px;
 }
 .menu-box form:hover {
   box-shadow: 0 0 6px #FF9, 0 0 25px #DDDDDD inset;
 }
 .menu-box form {
-  padding: .5em 1.5em 1em;
+  padding: .3em 1.3em 0.7em;
   border: 1px solid #F5F5F5;
   border-radius: 0 .75em .75em .75em;
   background: #EEE;
@@ -309,11 +325,11 @@
 .menu-box .close-button {
   cursor: pointer;
   float: right;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: bold;
   height: 12px;
-  line-height: 8px;
-  margin: .3em .2em;
+  line-height: 9px;
+  margin: .3em .3em;
   text-align: center;
   width: 12px;
 }
@@ -324,7 +340,75 @@
   width: 99%;
 }
 .menu-box .field-box input[type=text]:focus {
-  border: 1px solif #333;
+  border: 1px solid #DDD;
+}
+.menu-box .field-box textarea {
+  width: 99%;
+  resize: none;
+  border: 1px solid #E8E8E8;
+}
+/* 3.3em height is set because firefox does not respect the rows qualifier for the textarea,
+   displaying one more line than most other browsers. Less than 3.3em and there is no scrollbar in FF */
+.menu-box .field-box .textarea-2-rows {
+  height: 3.3em;
+}
+.menu-box .field-box .textarea-3-rows {
+  height: 4.3em;
+}
+.import-upload {
+  display: block;
+  margin: 0.2em 0 0.75em 7.5em;
+  text-align: left;
+}
+/*
+.import-selector {
+  overflow: auto;
+}*/
+.import-selector .import-textarea {
+  height: 10em;
+  resize: none;
+  width: 84%;
+  /*border: 1px solid #E8E8E8;*/
+  margin: .2em .2em 0 7.5em;
+  display: block;
+}
+.import-block {
+  margin: 0.75em 0 0.5em 0;
+  display: block;
+}
+.import-block-bottom {
+  margin: 1.25em 0 0.5em 0;
+}
+.import-section {
+  font-weight: bold;
+  float: left;
+}
+.import-type-label {
+  float: left;
+  margin: 0 1em 0 0.8em;
+}
+.import-config-label {
+  float: left;
+  margin: 0 1em 0 2.5em;
+}
+.export-config-header {
+  float: left;
+  margin: 0 1em 0 2.95em;
+}
+.export-subconfig-label {
+  float: left;
+  margin: 0 1em 0 3.5em;
+}
+.import-mark-label1 {
+  float: left;
+  margin: 0.25em 1em 0 2.5em;
+}
+.import-mark-label2 {
+  float: left;
+  margin: 0 1em 0 2.5em;
+}
+.menu-box .field-box textarea:focus {
+  border: 1px solid #DDD;
 }
 .menu-box .field-name {
   display: block;
@@ -332,7 +416,8 @@
 }
 .menu-box .accepted-suggestions li {
   line-height: 1em;
-  padding: .2em 1em .2em 0;
+  padding: .2em 1em .1em 0;
+  font-size: 85%
 }
 .menu-box .accepted-suggestions li:hover {
   background-color: #FFEE99;
@@ -351,6 +436,14 @@
   -webkit-column-count: 2;
   column-count: 2;
 }
+.field-values-3-columns {
+  -moz-column-count: 3;
+  -webkit-column-count: 3;
+  column-count: 3;
+}
+.field-values-3-columns label {
+  display: block;
+}
 
 .field-inputs {
   display: table;
@@ -361,13 +454,77 @@
 }
 
 .menu-box .field-first_name {
-  width: 50%;
+  width: 48%;
   float: left;
 }
 .menu-box .field-last_name {
-  width: 50%;
+  width: 48%;
   float: right;
 }
+.menu-box .field-last_name_birth {
+  width: 48%;
+  float: left;
+  padding: .5em 0 0.9em;
+}
+.menu-box .field-external_id {
+  width: 48%;
+  float: right;
+  padding: .5em 0 0.9em;
+}
+.menu-box .field-date_of_birth {
+  width: 48%;
+  float: left;
+}
+.menu-box .field-date_of_death {
+  width: 48%;
+  float: right;
+}
+.menu-box .accepted-suggestions {
+  margin: 0px 0px 0.3em !important;
+}
+.menu-box .field-childlessText {
+  padding: 0 0;
+}
+.menu-box .field-adopted {
+  padding: 0.26em 0;
+}
+.menu-box .field-monozygotic {
+  padding: 0.26em 0;
+}
+.menu-box .field-placeholder {
+  padding: 0.26em 0;
+}
+.menu-box .field-gestation_age {
+  padding: 0.48em 0;
+}
+.menu-box .field-evaluated {
+  padding-top: 0;
+  padding-bottom: 0.5em;
+  padding-right: 0;
+  padding-left: 0.08em;
+}
+.menu-box .field-evaluated .field-name {
+  font-weight: normal;
+}
+.menu-box .field-carrier {
+  padding-top: 0.4em;
+  padding-bottom: 0.2em;
+  padding-right: 0;
+  padding-left: 0;
+}
+.menu-box .field-comments {
+  padding: 0.3em 0;
+}
+.menu-box .field-disorders {
+  padding: 0.6em 0;
+}
+.menu-box .field-identifier {
+  padding: 0.2em 0;
+}
+.menu-box .field-childlessSelect {
+  padding: 0.5em 0 0.5em;
+}
+
 /* ===========================================
  * NODE TYPE OPTIONS
  */
@@ -501,6 +658,11 @@
 .template-picture-container {
     display: inline-block;
     margin: 3px;
+}
+
+.msdialog-box {
+    /*overflow:auto;*/
+    width: 650px;
 }
 .msdialog-box .content {
     text-align: center;

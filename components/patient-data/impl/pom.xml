@@ -110,9 +110,26 @@
       <version>${xwiki.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
   </dependencies>
 
   <properties>
-    <checkstyle.skip>true</checkstyle.skip>
+    <coverage.instructionRatio>0.16</coverage.instructionRatio>
   </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- Tests use the Utils.getComponentManager singleton which can't be mocked in multiple threads -->
+          <parallel>classes</parallel>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

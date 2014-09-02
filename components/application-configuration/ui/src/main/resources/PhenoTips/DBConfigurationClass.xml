@@ -20,28 +20,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
   <name>DBConfigurationClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>XWiki.XWikiClasses</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822126000</creationDate>
+  <parent>XWiki.XWikiClasses</parent>
   <author>xwiki:XWiki.Admin</author>
-  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1323761824000</creationDate>
-  <date>1323905613000</date>
-  <contentUpdateDate>1323905613000</contentUpdateDate>
+  <date>1401822126000</date>
+  <contentUpdateDate>1401822126000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <defaultTemplate/>
-  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
+  <content/>
   <class>
     <name>PhenoTips.DBConfigurationClass</name>
     <customClass/>
@@ -224,6 +222,10 @@ $!value
     </phenotypeMapping>
   </class>
   <object>
+    <name>PhenoTips.DBConfigurationClass</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>b91750d7-c185-4e69-9f6d-53ab896b1778</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -295,10 +297,6 @@ $!value
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>PhenoTips.DBConfigurationClass</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>b91750d7-c185-4e69-9f6d-53ab896b1778</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -337,5 +335,4 @@ ul.custom-display-list li .move {
       <use>onDemand</use>
     </property>
   </object>
-  <content/>
 </xwikidoc>

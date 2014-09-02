@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>PatientToolsService</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822204000</creationDate>
+  <parent>PhenoTips.PatientClass</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822204000</date>
+  <contentUpdateDate>1401822204000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+#if ($xcontext.action == 'get')
+  #macro (dashIfEmpty $val)#if ("$!val" == '' || ($val.class.getName().endsWith('Integer') &amp;&amp; $val &lt; 0) || ($val.class.getName().endsWith('Double') &amp;&amp; $val.isNaN($val)))-#elseif ($val.class.getName().endsWith('Integer'))$val#else$mathtool.roundTo(2, $val)#end#end
+  $response.setContentType('application/json')
+  #set ($age = $mathtool.toInteger("$!request.a"))
+  #set ($sex = ("$!request.s" != 'F'))
+##
+  #set ($valueMapping = [])
+##
+  #if ("$!request.a" != '')
+    #foreach($measurement in $services.measurements.getAvailableMeasurementHandlers())
+      #set ($value = $mathtool.toDouble("$!request.get($measurement.name)"))
+      #if ("$!value" != '' &amp;&amp; $value != 0)
+        #set($data = {'id' : $measurement.name,
+                      'value' : $value,
+                      'percentile' : $!$measurement.valueToPercentile($sex, $age, $value),
+                      'deviation' : $!measurement.valueToStandardDeviation($sex, $age, $value)
+        })
+        #set($discard = $valueMapping.add($data))
+      #end
+      #if ($measurement.isDoubleSided())
+        #set ($value = $mathtool.toDouble("$!request.get(""${measurement.name}_right"")"))
+        #if ("$!value" != '' &amp;&amp; $value != 0)
+          #set($data = {'id' : "${measurement.name}_right",
+                        'value' : $value,
+                        'percentile' : $!measurement.valueToPercentile($sex, $age, $value),
+                        'deviation' : $!measurement.valueToStandardDeviation($sex, $age, $value)
+          })
+          #set($discard = $valueMapping.add($data))
+        #end
+      #end
+    #end
+    ## BMI is special, it's computed from two different measurements
+    #set ($weight = $mathtool.toDouble("$!request.weight"))
+    #set ($height = $mathtool.toDouble("$!request.height"))
+    #if ("$!weight" != '' &amp;&amp; $weight != 0 &amp;&amp; "$!height" != '' &amp;&amp; $height != 0)
+      #set($data = {'id' : 'bmi', 'value' : $!mathtool.roundTo(2, $services.measurements.bmi.computeBMI($weight, $height))})
+        #set($discard = $data.put('percentile', $!services.measurements.bmi.valueToPercentile($sex, $age, $weight, $height)))
+        #set($discard = $data.put('deviation', $!services.measurements.bmi.valueToStandardDeviation($sex, $age, $weight, $height)))
+      #set($discard = $valueMapping.add($data))
+    #end
+    ## Arm span is also special, it's computed as the difference from height
+    #set ($armspan = $mathtool.toDouble("$!request.armspan"))
+    #set ($height = $mathtool.toDouble("$!request.height"))
+    #if ("$!armspan" != '' &amp;&amp; $armspan != 0 &amp;&amp; "$!height" != '' &amp;&amp; $height != 0)
+      #set ($dValue = $armspan - $height)
+      #set ($dValue = $mathtool.roundTo(2, $dValue))
+      #set($data = {'id' : 'armspan', 'value' : $dValue})
+      #set($discard = $data.put('evaluation', "~= Height#if ($dValue != 0)#if($dValue &gt;= 0) + #else - #end$mathtool.abs($dValue)cm#end"))
+      #set($discard = $valueMapping.add($data))
+    #end
+  #end##age
+  {
+  #foreach ($entry in $valueMapping)
+    #if ("$!entry.evaluation" != '')
+      #set ($dValue = $entry.evaluation)
+    #elseif ("$!entry.value" == '' || $entry.percentile &lt; 0)
+      #set ($dValue = '-')
+    #else
+      #set ($pValue = $entry.percentile)
+      #set ($sdValue = $entry.deviation)
+      #set ($dValue = "${pValue}#if($pValue%10==1)&lt;sup&gt;st&lt;/sup&gt;#elseif($pValue%10==2)&lt;sup&gt;nd&lt;/sup&gt;#elseif($pValue%10==3)&lt;sup&gt;rd&lt;/sup&gt;#{else}&lt;sup&gt;th&lt;/sup&gt;#end pctl (#if ($sdValue &gt;= 0)+#end${mathtool.roundTo(2, $sdValue)}SD)")
+    #end
+    "$entry.id" : {
+        "value" : "#dashIfEmpty($entry.value)",
+        "percentile" : "#dashIfEmpty($entry.percentile)",
+        "deviation" : "#dashIfEmpty($entry.deviation)",
+        "valCategory" : "$!services.measurements.getFuzzyValue($entry.deviation)",
+        "evaluation" : "$dValue"
+    }#if($foreach.hasNext()),
+
+    #end
+  #end
+
+  }
+#end{{/velocity}}
+</content>
+</xwikidoc>

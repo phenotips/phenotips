@@ -47,7 +47,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Default implementation for the {@link RecordConfigurationManager} component.
- * 
+ *
  * @version $Id$
  * @since 1.0M9
  */
@@ -103,7 +103,7 @@ public class DefaultRecordConfigurationManager implements RecordConfigurationMan
     /**
      * If the current document is a patient record, and it has a valid specific study binding specified, then return
      * that configuration.
-     * 
+     *
      * @return a form configuration, if one is bound to the current document, or {@code null} otherwise
      */
     private RecordConfiguration getBoundConfiguration()
@@ -129,7 +129,7 @@ public class DefaultRecordConfigurationManager implements RecordConfigurationMan
 
     /**
      * Get the current request context from the execution context manager.
-     * 
+     *
      * @return the current request context
      */
     private XWikiContext getXContext()
