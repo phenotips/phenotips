@@ -84,7 +84,7 @@ public class GeneNomenclature implements OntologyService, Initializable
 
     private static final String SEARCH_SERVICE_URL = BASE_SERVICE_URL + "search/";
 
-    private static final String INFO_SERVICE_URL = BASE_SERVICE_URL + "info/";
+    private static final String INFO_SERVICE_URL = BASE_SERVICE_URL + "info";
 
     private static final String FETCH_SERVICE_URL = BASE_SERVICE_URL + "fetch/";
 
@@ -188,11 +188,13 @@ public class GeneNomenclature implements OntologyService, Initializable
                     Set<OntologyTerm> result = new LinkedHashSet<>();
                     // The remote service doesn't offer any query control, manually select the right range
                     int start = 0;
-                    if (queryOptions.containsKey(CommonParams.START)) {
-                        start = Integer.parseInt(queryOptions.get(CommonParams.START));
+                    if (queryOptions.containsKey(CommonParams.START)
+                        && StringUtils.isNumeric(queryOptions.get(CommonParams.START))) {
+                        start = Math.max(0, Integer.parseInt(queryOptions.get(CommonParams.START)));
                     }
                     int end = docs.size();
-                    if (queryOptions.containsKey(CommonParams.ROWS)) {
+                    if (queryOptions.containsKey(CommonParams.ROWS)
+                        && StringUtils.isNumeric(queryOptions.get(CommonParams.ROWS))) {
                         end = Math.min(end, start + Integer.parseInt(queryOptions.get(CommonParams.ROWS)));
                     }
 
@@ -266,7 +268,8 @@ public class GeneNomenclature implements OntologyService, Initializable
     @Override
     public int reindex(String ontologyUrl)
     {
-        // Remote ontology, we cannot reindex
+        // Remote ontology, we cannot reindex, but we can clear the local cache
+        this.cache.removeAll();
         return 0;
     }
 
@@ -319,10 +322,15 @@ public class GeneNomenclature implements OntologyService, Initializable
         if (Collection.class.isInstance(field.getValue()) && ((Collection<?>) field.getValue()).isEmpty()) {
             return query;
         }
-        if (Map.class.isInstance(field.getValue()) && QUERY_OPERATORS.containsKey(field.getKey())) {
-            @SuppressWarnings("unchecked")
-            Map.Entry<String, Map<String, ?>> subquery = (Map.Entry<String, Map<String, ?>>) field;
-            return processSubquery(query, subquery);
+        if (Map.class.isInstance(field.getValue())) {
+            if (QUERY_OPERATORS.containsKey(field.getKey())) {
+                @SuppressWarnings("unchecked")
+                Map.Entry<String, Map<String, ?>> subquery = (Map.Entry<String, Map<String, ?>>) field;
+                return processSubquery(query, subquery);
+            } else {
+                this.logger.warn("Invalid subquery operator: {}", field.getKey());
+                return query;
+            }
         }
         query.append(' ');
         if (includeOperator) {
@@ -339,7 +347,7 @@ public class GeneNomenclature implements OntologyService, Initializable
                 } else {
                     svalue = ClientUtils.escapeQueryChars(svalue);
                 }
-                query.append(ClientUtils.escapeQueryChars(svalue));
+                query.append(svalue);
                 query.append(' ');
             }
         } else {
