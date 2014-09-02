@@ -437,5 +437,11 @@ public class GeneNomenclature implements OntologyService, Initializable
         {
             return GeneNomenclature.this;
         }
+
+        @Override
+        public String toString()
+        {
+            return "HGNC:" + getId();
+        }
     }
 }

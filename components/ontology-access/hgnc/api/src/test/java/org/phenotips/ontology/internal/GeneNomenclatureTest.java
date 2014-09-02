@@ -288,6 +288,7 @@ public class GeneNomenclatureTest
         Assert.assertEquals(1, result.getAncestorsAndSelf().size());
         Assert.assertTrue(result.getAncestorsAndSelf().contains(result));
         Assert.assertEquals("BRCA1", result.getId());
+        Assert.assertEquals("HGNC:BRCA1", result.toString());
     }
 
     @Test
