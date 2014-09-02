@@ -47,30 +47,9 @@ $xwiki.jsx.use('PhenoTips.HPOBranchDisplayer')##
 ##
 ##
 #macro (_displayItem $itemId $itemName $itemData)
-  &lt;input type="radio" id="${prefix}${name}_${itemId}" #if("$!{value}" == $itemId)checked="checked"#end name="${prefix}${name}" value="${itemId}" title="${itemName}"/&gt; #if("$!{itemData}" != '')&lt;span class="entry-tool info-tool"&gt;i&lt;/span&gt; #end&lt;label for="${prefix}${name}_${itemId}" title="$!{itemName}$!{util.newline}$!{itemData.def}"&gt;${itemName}&lt;/label&gt;
+  &lt;input type="radio" id="${prefix}${name}_${itemId}" #if("$!{value}" == $itemId)checked="checked"#end name="${prefix}${name}" value="${itemId}" title="${itemName}"/&gt;&lt;label for="${prefix}${name}_${itemId}" title="$!{itemName}$!{util.newline}$!{itemData.def}"&gt;${itemName}&lt;/label&gt;
 #if("$!{itemData}" != '')
-  &lt;div class="tooltip invisible"&gt;
-    &lt;span class="hide-tool" title="Hide"&gt;×&lt;/span&gt;
-    &lt;span class="info"&gt;&lt;span class="key"&gt;[${itemId}]&lt;/span&gt; &lt;span class="value"&gt;$itemName&lt;/span&gt;&lt;/span&gt;
-    &lt;dl&gt;
-    #if ("$!{itemData.def}" != '')
-      &lt;dt class=""&gt;&lt;/dt&gt;
-      &lt;dd&gt;&lt;div&gt;$itemData.def&lt;/div&gt;&lt;/dd&gt;
-    #end
-    #if ($itemData.synonym.empty == false)
-      &lt;dt class="also-known-as"&gt;Also known as&lt;/dt&gt;&lt;dd&gt;
-      #foreach ($s in $itemData.synonym)
-        &lt;div&gt;$s&lt;/div&gt;
-      #end&lt;/dd&gt;
-    #end
-    #if ($itemData.is_a.empty == false)
-      &lt;dt class="is-a-type-of"&gt;Is a type of&lt;/dt&gt;&lt;dd&gt;
-      #foreach ($p in $itemData.is_a)
-        &lt;div&gt;$p.replaceAll("^([A-Z]+:[0-9]+)\s+!\s+", '')&lt;/div&gt;
-      #end&lt;/dd&gt;
-    #end
-    &lt;/dl&gt;
-  &lt;/div&gt;
+  &lt;span class="fa fa-info-circle phenotype-qualifier-info xHelpButton" title="${itemId}"&gt;&lt;/span&gt;
 #end
 #end
 ##

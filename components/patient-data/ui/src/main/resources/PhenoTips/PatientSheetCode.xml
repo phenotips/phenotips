@@ -472,24 +472,10 @@ document.observe('xwiki:dom:loaded', function() {
             resultsParameter : "rows",
             resultId : "id",
             resultValue : "name",
-            resultSynonym: "synonym",
+            resultAltName: "synonym",
             resultCategory : "term_category",
-            resultInfo : {
-                 "Browse related terms..." : {"extern" : true,
-                                              "processor" : function(trigger) {
-                                                              trigger._obrowser = new PhenoTips.widgets.OntologyBrowser(this, null, {
-                                                                 isTermSelected : isPhenotypeSelected,
-                                                                 unselectTerm : unselectPhenotype
-                                                              });
-                                                              trigger.observe('click', function(event){
-                                                                event.stop();
-                                                                event.element()._obrowser.show(
-                                                                  event.element().up('.suggestItem').down('.suggestId').firstChild.nodeValue
-                                                                );
-                                                              }.bindAsEventListener(this));
-                                                            }
-                                             }
-                         },
+            resultInfo : {},
+            tooltip: 'phenotype-info',
             enableHierarchy: true,
             resultParent : "is_a",
             fadeOnClear : false,
@@ -516,6 +502,7 @@ document.observe('xwiki:dom:loaded', function() {
             resultInfo : {
                            "Locus"      : {"selector"  : "Locus"}
                          },
+            tooltip: 'omim-disease-info',
             enableHierarchy: false,
             fadeOnClear : false,
             timeout : 30000,
@@ -1144,22 +1131,7 @@ document.observe('xwiki:dom:loaded', function() {
             }
 
             // Info buttons behavior
-            var itemParent = item.up('.term-entry');
-            var infoTool = itemParent.down('.info-tool');
-            var tooltip = itemParent.down('.tooltip');
-            if (infoTool) {
-              if (!tooltip) {
-                infoTool.setOpacity(0);
-              } else {
-                infoTool.observe('click', function (event) {
-                  event.findElement('.chapter').select('.tooltip').invoke('addClassName', 'invisible');
-                  event.findElement('.term-entry').down('.tooltip').removeClassName('invisible');
-                });
-                tooltip.down('.hide-tool').observe('click', function (event) {
-                  event.findElement('.tooltip').addClassName('invisible');
-                });
-              }
-            }
+            item.up('.term-entry').insert(' ').insert(new Element('span', {'class' : 'fa fa-info-circle phenotype-info xHelpButton', title : item.value}));
 
             // ------------------------------------------------------------------------
             // Add  y/n selection
@@ -1279,6 +1251,8 @@ document.observe('xwiki:dom:loaded', function() {
     if (selectionSummary &amp;&amp; selectionSummary._givePhenotypeQualifiersCollapseButtons) {
         selectionSummary._givePhenotypeQualifiersCollapseButtons(selectionSummary);
     }
+
+    Event.fire(document, 'xwiki:dom:updated', {'elements' : $$('.chapter.phenotype-info .xHelpButton')});
   };
   (XWiki.domIsLoaded &amp;&amp; init()) || document.observe("xwiki:dom:loaded", init);
   return XWiki;
@@ -2291,13 +2265,15 @@ document.observe('xwiki:dom:loaded', function() {
        'script' : new XWiki.Document('OmimPredictService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
        'source' : [defaultSearchTermIDsInput],
        'target' : $('omim-search-results'),
-       'suggestFor' : omimField
+       'suggestFor' : omimField,
+       'tooltip': 'omim-disease-info'
     },
     'diffDiagnosis' : {
        'script' : new XWiki.Document('DiffDiagnosisService', 'PhenoTips').getURL('get', 'format=html') + "&amp;q=",
        'source' : [defaultSearchTermIDsInput],
        'target' : $('diffDiagnosis-search-results'),
-       'suggestFor' : $('quick-phenotype-search')
+       'suggestFor' : $('quick-phenotype-search'),
+       'tooltip': 'phenotype-info'
     }
   };
 
@@ -2378,7 +2354,7 @@ document.observe('xwiki:dom:loaded', function() {
                   ], id, name, true, nameElt);
               item.insert({top: ynpicker});
 
-              ynpicker.select('label, .yes-no-picker-label').invoke('observe', 'click', function(event) {
+              ynpicker.up().select('label, .yes-no-picker-label').invoke('observe', 'click', function(event) {
                var option = Event.findElement(event);
                var input = option.down('input[type="checkbox"]') || option.previous('.yes-no-picker').down('.yes input[type="checkbox"]'); // defaults to 'Y' when clicking on the text
                if (!input) {return;}
@@ -2429,6 +2405,11 @@ document.observe('xwiki:dom:loaded', function() {
                }
             });
            } // generate simple checkboxes, not yn pickers
+           // -----------------------------------------------------
+           // Insert info boxes where available
+           if (typeof(service.tooltip) != 'undefined') {
+             item.insert(new Element('span', {'class' : 'xHelpButton fa fa-info-circle ' + service.tooltip, 'title' : id}));
+           }
           }
         });
     }
@@ -2440,6 +2421,7 @@ document.observe('xwiki:dom:loaded', function() {
          service.target.__hiddenParent.addClassName('hidden');
       }
     }
+    Event.fire (document, 'xwiki:dom:updated', {'elements' : [service.target]});
   };
 
   var doSearch = function(service) {
@@ -3629,6 +3611,10 @@ textarea {
 input[type=text]:focus, textarea:focus {
   border-color: $theme.linkColor;
 }
+.xform .xHint {
+  color: $theme.notificationInfoColor;
+  font-size: 87%;
+}
 .fullScreenEditLinkContainer {
   display: none !important;
 }
@@ -3684,8 +3670,8 @@ input[type=text]:focus, textarea:focus {
 /** ----------------------------------------------------------- */
 /** Specific form elements **/
 .hint {
-  color: $theme.textSecondaryColor;
-  font-size: 70%;
+  color: $theme.notificationInfoColor;
+  font-size: 87%;
   padding: 0;
   margin: 0;
   font-style: normal;

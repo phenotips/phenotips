@@ -36,6 +36,7 @@
     <module>ui</module>
     <module>hpo</module>
     <module>omim</module>
+    <module>hgnc</module>
     <module>ethnicity</module>
   </modules>
 </project>

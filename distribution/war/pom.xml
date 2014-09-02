@@ -545,6 +545,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>ontology-hgnc-access-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>ontology-ethnicity-access-api</artifactId>
       <version>${project.version}</version>
     </dependency>

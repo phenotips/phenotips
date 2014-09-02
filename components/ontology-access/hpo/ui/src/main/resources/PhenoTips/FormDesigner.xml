@@ -251,7 +251,7 @@
 $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')
 $xwiki.ssx.use('PhenoTips.FormDesigner')
 $xwiki.jsx.use('PhenoTips.FormDesigner')
-$xwiki.linkx.use('//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', {'rel': 'stylesheet'})
+$xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')
 
 ## ----------------------------------------------------------------------
 ## Initialize the form parameters

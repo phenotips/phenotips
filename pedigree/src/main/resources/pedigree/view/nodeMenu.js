@@ -66,6 +66,15 @@ NodeMenu = Class.create({
                 // Create the Suggest.
                 item._suggest = new PhenoTips.widgets.Suggest(item, {
                     script: Disorder.getOMIMServiceURL() + "&",
+                    queryProcessor: typeof(PhenoTips.widgets.SolrQueryProcessor) == "undefined" ? null : new PhenoTips.widgets.SolrQueryProcessor({
+                           'name' : {'wordBoost': 20, 'phraseBoost': 40},
+                           'nameSpell' : {'wordBoost': 50, 'phraseBoost': 100, 'stubBoost': 20},
+                           'keywords' : {'wordBoost': 2, 'phraseBoost': 6, 'stubBoost': 2},
+                           'text' : {'wordBoost': 1, 'phraseBoost': 3, 'stubBoost': 1},
+                           'textSpell' : {'wordBoost': 2, 'phraseBoost': 5, 'stubBoost': 2, 'stubTrigger': true}
+                         }, {
+                           '-nameSort': ['\\**', '\\+*', '\\^*']
+                         }),
                     varname: "q",
                     noresults: "No matching terms",
                     json: true,

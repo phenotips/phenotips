@@ -405,7 +405,7 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(xpath = "//*[contains(@class, 'summary-item')][.//input[@value = 'HP:0000639']]//*[@class = 'tool'][text() = 'Delete']")
     WebElement deleteNystagmusRight;
 
-    @FindBy(xpath = "//*[@class = 'resultContainer']//li[contains(@class, 'xitem')]//*[@class = 'suggestInfo']//*[contains(@class, 'browse-related-terms')]/a")
+    @FindBy(xpath = "//*[@class = 'resultContainer']//li[contains(@class, 'xitem')]//*[contains(@class, 'xTooltip')]//*[contains(text(), 'Browse related terms')]")
     WebElement browseRelatedTermsCataract;
 
     @FindBy(xpath = "//*[@class = 'entry-data'][.//*[contains(@class, 'yes-no-picker')]][.//*[@value = 'HP:0000517']]//*[@class = 'value'][text() = 'Abnormality of the lens']")
@@ -444,13 +444,13 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(xpath = "//*[@class = 'calendar_date_select']//*[contains(@class, 'cds_body')]//*[@class = 'row_2']//*[.//div[text() = '12']]")
     WebElement date12;
 
-    @FindBy(xpath = "//*[@class = 'term-entry'][.//*[@value = 'HP:0000601']]//*[contains(@class, 'info-tool')]")
+    @FindBy(xpath = "//*[@class = 'term-entry'][.//*[@value = 'HP:0000601']]//*[contains(@class, 'phenotype-info')]")
     WebElement moreInfoHypotelorism;
 
-    @FindBy(xpath = "//*[@class = 'term-entry'][.//*[@value = 'HP:0000601']]//*[@class = 'tooltip']//*[@class = 'value']")
+    @FindBy(xpath = "//*[@class = 'term-entry'][.//*[@value = 'HP:0000601']]//*[@class = 'xTooltip']//*[@class = 'value']")
     WebElement checkMoreInfoHypotelorismOpened;
 
-    @FindBy(xpath = "//*[@class = 'term-entry'][.//*[@value = 'HP:0000601']]//*[@class = 'tooltip']//*[@class = 'hide-tool']")
+    @FindBy(xpath = "//*[@class = 'term-entry'][.//*[@value = 'HP:0000601']]//*[@class = 'xTooltip']//*[@class = 'hide-tool']")
     WebElement closeMoreInfoHypotelorism;
 
     @FindBy(xpath = "//*[@class = 'fieldset gender gender']//*[contains(@class, 'fa-question-circle')]")
@@ -1716,8 +1716,12 @@ public class PatientRecordEditPage extends InlinePage
 
     public void browseRelatedTermsCataract()
     {
+        this.getDriver()
+            .findElement(
+                By.xpath("//*[contains(@class, 'suggestItems')]//*[contains(@class, 'suggestItem')][//*[text() = 'Cataract']]//*[contains(@class, 'xHelpButton')]"))
+            .click();
         this.waitUntilElementIsVisible(By
-            .xpath("//*[@class = 'resultContainer']//li[contains(@class, 'xitem')]//*[@class = 'suggestInfo']//*[contains(@class, 'browse-related-terms')]/a"));
+            .xpath("//*[@class = 'resultContainer']//li[contains(@class, 'xitem')]//*[contains(@class, 'xTooltip')]//*[contains(text(), 'Browse related terms')]"));
         this.browseRelatedTermsCataract.click();
     }
 
