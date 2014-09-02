@@ -2,7 +2,9 @@ require(['jquery'], function ($)
 {
     $(document).ready(function ()
     {
-        var mandatoryFields = $(".mandatory input:not([type='hidden'])");
+        var _mandatoryFields = $(".mandatory input:not([type='hidden'])");
+        var externalId = $("#PhenoTips\\.PatientClass_0_external_id");
+        var mandatoryFields = _mandatoryFields.add(externalId);
         var saveButtons = $("input[name='action_save']");
 
         //This will happen if the page is not in edit mode
@@ -41,9 +43,10 @@ require(['jquery'], function ($)
                     position = fieldObject['parent'].offset().top;
                 }
                 if (position > windowScroll && position < lowerVisibilityBound) {
-                    /* Only one section can be expanded at a time. */
-                    sectionToExpand == null ? sectionToExpand = fieldObject['parent'] : null;
-                    fieldObject['field'][0].__validation.validate();
+                    /* Only one section can be expanded at a time. Expands only if the fields inside fail validation. */
+                    if (fieldObject['field'][0].__validation.validate() == false) {
+                        sectionToExpand == null ? sectionToExpand = fieldObject['parent'] : null;
+                    }
                 }
             });
             if (sectionToExpand) {
