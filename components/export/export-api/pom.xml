@@ -20,21 +20,22 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-        <!-- FIXME remove unneeded dependencies -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>patient-data-sharing</artifactId>
+    <artifactId>phenotips-data-export</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>patient-data-sharing-export-api</artifactId>
-  <name>PhenoTips - Patient data sharing - Spreadsheet Export APIs</name>
+  <artifactId>phenotips-data-export-api</artifactId>
+  <name>PhenoTips - Data export - Spreadsheet Export APIs</name>
 
   <properties>
       <!-- FIXME -->
     <coverage.instructionRatio>0.0</coverage.instructionRatio>
+      <!-- FIXME. This module was written inside the patient-data-sharing module, which had skip checkstyle enabled.
+      There are now 234 checkstyle errors in this module. That is part of the documentation/tests issue now. -->
+    <checkstyle.skip>true</checkstyle.skip>
   </properties>
 
   <dependencies>
@@ -69,11 +70,6 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>application-configuration-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>patient-tools</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -87,30 +83,16 @@
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-observation-api</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-bridge</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-oldcore</artifactId>
       <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
       <version>3.10-FINAL</version>
     </dependency>
-    <!-- Test dependencies -->
+    <!-- Test dependencies. Is not used as of now, but will be once the tests are included into this module. -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-test-component</artifactId>

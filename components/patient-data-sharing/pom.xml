@@ -42,6 +42,5 @@
     <module>push-ui</module>
     <module>receiver-api</module>
     <module>receiver-ui</module>
-    <module>export-api</module>
   </modules>
 </project>
