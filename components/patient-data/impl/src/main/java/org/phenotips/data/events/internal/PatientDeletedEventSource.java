@@ -77,13 +77,14 @@ public class PatientDeletedEventSource implements EventListener
     public void onEvent(Event event, Object source, Object data)
     {
         XWikiDocument doc = (XWikiDocument) source;
+        XWikiDocument odoc = doc.getOriginalDocument();
 
-        BaseObject patientRecordObj = doc.getXObject(Patient.CLASS_REFERENCE);
+        BaseObject patientRecordObj = odoc.getXObject(Patient.CLASS_REFERENCE);
         if (patientRecordObj == null || "PatientTemplate".equals(doc.getDocumentReference().getName())) {
             return;
         }
-        Patient patient = this.repo.loadPatientFromDocument(doc.getOriginalDocument());
+        Patient patient = this.repo.loadPatientFromDocument(odoc);
         User user = this.userManager.getCurrentUser();
-        this.observationManager.notify(new PatientDeletedEvent(patient, user), doc);
+        this.observationManager.notify(new PatientDeletedEvent(patient, user), odoc);
     }
 }

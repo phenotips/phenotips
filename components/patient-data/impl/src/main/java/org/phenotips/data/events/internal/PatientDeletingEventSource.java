@@ -78,15 +78,16 @@ public class PatientDeletingEventSource implements EventListener
     public void onEvent(Event event, Object source, Object data)
     {
         XWikiDocument doc = (XWikiDocument) source;
+        XWikiDocument odoc = doc.getOriginalDocument();
 
-        BaseObject patientRecordObj = doc.getXObject(Patient.CLASS_REFERENCE);
+        BaseObject patientRecordObj = odoc.getXObject(Patient.CLASS_REFERENCE);
         if (patientRecordObj == null || "PatientTemplate".equals(doc.getDocumentReference().getName())) {
             return;
         }
-        Patient patient = this.repo.loadPatientFromDocument(doc.getOriginalDocument());
+        Patient patient = this.repo.loadPatientFromDocument(odoc);
         User user = this.userManager.getCurrentUser();
         CancelableEvent patientEvent = new PatientDeletingEvent(patient, user);
-        this.observationManager.notify(patientEvent, doc);
+        this.observationManager.notify(patientEvent, odoc);
         if (patientEvent.isCanceled()) {
             // FIXME DocumentDeletingEvent is not cancelable yet!
             // ((CancelableEvent) event).cancel();
