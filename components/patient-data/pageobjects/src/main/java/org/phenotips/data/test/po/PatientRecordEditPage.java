@@ -438,10 +438,10 @@ public class PatientRecordEditPage extends InlinePage
     @FindBy(xpath = "//*[@class = 'calendar_date_select']//*[@class = 'month']")
     WebElement setMonthDate;
 
-    @FindBy(xpath = "//*[@class = 'calendar_date_select']//*[contains(@class, 'cds_body')]//*[@class = 'row_0']//*[.//div[text() = '1']]")
+    @FindBy(xpath = "//*[@class = 'calendar_date_select']//*[contains(@class, 'cds_body')]//td[.//div[text() = '1']][1]")
     WebElement date1;
 
-    @FindBy(xpath = "//*[@class = 'calendar_date_select']//*[contains(@class, 'cds_body')]//*[@class = 'row_2']//*[.//div[text() = '12']]")
+    @FindBy(xpath = "//*[@class = 'calendar_date_select']//*[contains(@class, 'cds_body')]//td[.//div[text() = '12']][1]")
     WebElement date12;
 
     @FindBy(xpath = "//*[@class = 'term-entry'][.//*[@value = 'HP:0000601']]//*[contains(@class, 'phenotype-info')]")
