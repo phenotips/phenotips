@@ -61,9 +61,12 @@ public abstract class AbstractPatientEvent implements PatientEvent
     {
         if (otherEvent instanceof PatientEvent) {
             PatientEvent otherPatientEvent = (PatientEvent) otherEvent;
-            return StringUtils.equals(otherPatientEvent.getEventType(), this.eventType)
-                && (this.patient == null || this.patient.getDocument() == null
-                || this.patient.getDocument().equals(otherPatientEvent.getPatient().getDocument()));
+            if (!StringUtils.equals(otherPatientEvent.getEventType(), this.eventType)) {
+                return false;
+            }
+            return this.patient == null || this.patient.getDocument() == null
+                || (otherPatientEvent.getPatient() != null && this.patient.getDocument().equals(
+                    otherPatientEvent.getPatient().getDocument()));
         }
         return false;
     }
