@@ -837,23 +837,30 @@ $xwiki.ssx.use($serviceDocName)
         #end
         #if ($canTransfer)
           &lt;div id="new-owner-input"&gt;&lt;input type="text" name="owner" id="new-owner-user-select" class="suggestUsers" value="" placeholder="New owner" /&gt;&lt;/div&gt;
-          #set ($groups = $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.userReference)))
-          #set ($phgroups = $collectionstool.sortedMap)
-          #foreach ($group in $groups)
-            #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
-            #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
-              #set ($group = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)))
-              #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+          #set ($toProcess = $collectionstool.queue)
+          #set ($discard = $toProcess.add($xcontext.userReference.toString()))
+          #set ($groups = $collectionstool.sortedMap)
+          #foreach ($iteration in [0..1000])
+            #if ($toProcess.empty)
+              #break
             #end
-            #if ($groupObj)
-              #if ("$group.plainTitle" != '')
-                #set ($discard = $phgroups.put($group.documentReference, $group.plainTitle))
-              #else
-                #set ($discard = $phgroups.put($group.documentReference, $group.documentReference.name))
+            #set ($item = $toProcess.poll())
+            #foreach ($group in $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($item)))
+              #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+              #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
+                #set ($group = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)))
+                #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
+              #end
+              #if ($groupObj &amp;&amp; !$groups.containsKey($group.documentReference))
+                #set ($discard = $toProcess.add($group.documentReference.toString()))
+                #if ("$group.plainTitle" != '')
+                  #set ($discard = $groups.put($group.documentReference, $group.plainTitle))
+                #else
+                  #set ($discard = $groups.put($group.documentReference, $group.documentReference.name))
+                #end
               #end
             #end
           #end
-          #set ($groups = $phgroups)
           #if (!$groups.isEmpty())
           &lt;select name="owner" id="new-owner-group-select"&gt;
             &lt;option value="" selected="selected"&gt;New owner group&lt;/option&gt;
