@@ -681,8 +681,8 @@
       <picker>1</picker>
       <prettyName>Maternal ethnicity</prettyName>
       <relationalStorage>1</relationalStorage>
-      <separator> </separator>
-      <separators> ,|</separators>
+      <separator>, </separator>
+      <separators/>
       <size>1</size>
       <sort>none</sort>
       <unmodifiable>0</unmodifiable>
@@ -820,7 +820,7 @@
       <picker>1</picker>
       <prettyName>Paternal ethnicity</prettyName>
       <relationalStorage>1</relationalStorage>
-      <separator> </separator>
+      <separator>, </separator>
       <separators/>
       <size>1</size>
       <sort>none</sort>
