@@ -25,6 +25,7 @@ import org.phenotips.data.events.PatientChangingEvent;
 import org.phenotips.ontology.OntologyService;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.observation.AbstractEventListener;
@@ -68,6 +69,9 @@ public class PatientOntologyVersionRecorder extends AbstractEventListener
     @Inject
     private Map<String, OntologyService> ontologies;
 
+    @Inject
+    private Execution execution;
+
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public PatientOntologyVersionRecorder()
     {
@@ -77,7 +81,7 @@ public class PatientOntologyVersionRecorder extends AbstractEventListener
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        XWikiContext context = (XWikiContext) data;
+        XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
         XWikiDocument doc = (XWikiDocument) source;
 
         BaseObject patientRecordObj = doc.getXObject(Patient.CLASS_REFERENCE);
