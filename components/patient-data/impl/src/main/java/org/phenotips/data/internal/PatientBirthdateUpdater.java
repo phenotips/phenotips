@@ -17,23 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.phenotips.listeners;
+package org.phenotips.data.internal;
 
 import org.phenotips.Constants;
+import org.phenotips.data.Patient;
+import org.phenotips.data.events.PatientChangingEvent;
 
-import org.xwiki.bridge.event.DocumentCreatingEvent;
-import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
 import org.xwiki.container.Request;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.observation.EventListener;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -53,23 +50,16 @@ import com.xpn.xwiki.objects.BaseObject;
 @Component
 @Named("patient-birthdate-updater")
 @Singleton
-public class PatientBirthdateUpdater implements EventListener
+public class PatientBirthdateUpdater extends AbstractEventListener
 {
     /** Needed for getting access to the request. */
     @Inject
     private Container container;
 
-    @Override
-    public String getName()
+    /** Default constructor, sets up the listener name and the list of events to subscribe to. */
+    public PatientBirthdateUpdater()
     {
-        return "patient-birthdate-updater";
-    }
-
-    @Override
-    public List<Event> getEvents()
-    {
-        // The list of events this listener listens to
-        return Arrays.<Event>asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
+        super("patient-birthdate-updater", new PatientChangingEvent());
     }
 
     @Override
@@ -77,8 +67,7 @@ public class PatientBirthdateUpdater implements EventListener
     {
         XWikiDocument doc = (XWikiDocument) source;
 
-        BaseObject patientRecordObj = doc.getXObject(new DocumentReference(
-            doc.getDocumentReference().getRoot().getName(), Constants.CODE_SPACE, "PatientClass"));
+        BaseObject patientRecordObj = doc.getXObject(Patient.CLASS_REFERENCE);
         if (patientRecordObj == null) {
             return;
         }

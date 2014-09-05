@@ -17,18 +17,16 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.phenotips.listeners;
+package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
+import org.phenotips.data.events.PatientChangingEvent;
 import org.phenotips.ontology.OntologyManager;
 import org.phenotips.ontology.OntologyTerm;
 
-import org.xwiki.bridge.event.DocumentCreatingEvent;
-import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.observation.AbstractEventListener;
-import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 
 import java.util.HashSet;
@@ -41,23 +39,21 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.DBStringListProperty;
 
 /**
- * Listens for document being created or updated, and before the action takes place, iterates over all the HPO terms and
- * replaces the deprecated ones.
+ * Listens for patient records being changed, and before the action takes place, iterates over all the HPO terms and
+ * replaces the deprecated ones with their updated ID.
  *
  * @version $Id$
  */
 @Component
 @Named("deprecated-phenotype-updater")
 @Singleton
-public class DeprecatedPhenotypeUpdaterEventListener extends AbstractEventListener implements EventListener
+public class DeprecatedPhenotypeUpdaterEventListener extends AbstractEventListener
 {
     @Inject
     private OntologyManager ontologyManager;
@@ -71,7 +67,7 @@ public class DeprecatedPhenotypeUpdaterEventListener extends AbstractEventListen
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public DeprecatedPhenotypeUpdaterEventListener()
     {
-        super("deprecated-phenotype-updater", new DocumentCreatingEvent(), new DocumentUpdatingEvent());
+        super("deprecated-phenotype-updater", new PatientChangingEvent());
 
         this.fieldsToFix = new HashSet<String>();
         this.fieldsToFix.add("phenotype");
@@ -90,7 +86,7 @@ public class DeprecatedPhenotypeUpdaterEventListener extends AbstractEventListen
         XWikiDocument doc = (XWikiDocument) source;
         BaseObject patientObject = doc.getXObject(Patient.CLASS_REFERENCE);
 
-        if (patientObject != null && !StringUtils.equals("PatientTemplate", doc.getDocumentReference().getName())) {
+        if (patientObject != null) {
             XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
             for (String field : this.fieldsToFix) {
                 DBStringListProperty currentTermList = (DBStringListProperty) patientObject.getField(field);

@@ -17,23 +17,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.phenotips.listeners;
+package org.phenotips.data.internal;
 
-import org.phenotips.Constants;
+import org.phenotips.data.Patient;
+import org.phenotips.data.events.PatientChangingEvent;
 import org.phenotips.ontology.OntologyManager;
 import org.phenotips.ontology.OntologyTerm;
 
-import org.xwiki.bridge.event.DocumentCreatingEvent;
-import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.observation.EventListener;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -53,30 +48,16 @@ import com.xpn.xwiki.objects.BaseObject;
 @Component
 @Named("patient-extended-phenotype-updater")
 @Singleton
-public class PatientExtendedPhenotypeUpdater implements EventListener, Initializable
+public class PatientExtendedPhenotypeUpdater extends AbstractEventListener
 {
-    /**
-     * Needed for accessing the HPO ontology though indirect means.
-     */
+    /** Needed for accessing the feature ontologies. */
     @Inject
     private OntologyManager ontologyManager;
 
-    @Override
-    public void initialize() throws InitializationException
+    /** Default constructor, sets up the listener name and the list of events to subscribe to. */
+    public PatientExtendedPhenotypeUpdater()
     {
-    }
-
-    @Override
-    public String getName()
-    {
-        return "patient-extended-phenotype-updater";
-    }
-
-    @Override
-    public List<Event> getEvents()
-    {
-        // The list of events this listener listens to
-        return Arrays.<Event>asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
+        super("patient-extended-phenotype-updater", new PatientChangingEvent());
     }
 
     @Override
@@ -84,9 +65,7 @@ public class PatientExtendedPhenotypeUpdater implements EventListener, Initializ
     {
         XWikiDocument doc = (XWikiDocument) source;
 
-        BaseObject patientRecordObj =
-            doc.getXObject(new DocumentReference(doc.getDocumentReference().getRoot().getName(),
-                Constants.CODE_SPACE, "PatientClass"));
+        BaseObject patientRecordObj = doc.getXObject(Patient.CLASS_REFERENCE);
         if (patientRecordObj == null) {
             return;
         }

@@ -17,18 +17,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.phenotips.listeners;
+package org.phenotips.measurements.internal;
 
 import org.phenotips.Constants;
+import org.phenotips.data.Patient;
+import org.phenotips.data.events.PatientChangingEvent;
 
-import org.xwiki.bridge.event.DocumentCreatingEvent;
-import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.observation.EventListener;
+import org.xwiki.model.EntityType;
+import org.xwiki.model.reference.EntityReference;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -49,25 +49,22 @@ import com.xpn.xwiki.objects.BaseObject;
 @Component
 @Named("measurement-age-updater")
 @Singleton
-public class MeasurementAgeUpdater implements EventListener
+public class MeasurementAgeUpdater extends AbstractEventListener
 {
+    /** The XClass used for storing measurements data. */
+    private static final EntityReference CLASS_REFERENCE = new EntityReference("MeasurementsClass",
+        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
     /** The name of the XProperty holding the age at the time of measurement, which will be updated by this listener. */
     private static final String AGE_PROPERTY_NAME = "age";
 
     /** The name of the XProperty holding the date when the measurement occurred. */
     private static final String DATE_PROPERTY_NAME = "date";
 
-    @Override
-    public String getName()
+    /** Default constructor, sets up the listener name and the list of events to subscribe to. */
+    public MeasurementAgeUpdater()
     {
-        return "measurement-age-updater";
-    }
-
-    @Override
-    public List<Event> getEvents()
-    {
-        // The list of events this listener listens to
-        return Arrays.<Event>asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
+        super("measurement-age-updater", new PatientChangingEvent());
     }
 
     @Override
@@ -75,8 +72,7 @@ public class MeasurementAgeUpdater implements EventListener
     {
         XWikiDocument doc = (XWikiDocument) source;
 
-        BaseObject patientRecordObj = doc.getXObject(new DocumentReference(
-            doc.getDocumentReference().getRoot().getName(), Constants.CODE_SPACE, "PatientClass"));
+        BaseObject patientRecordObj = doc.getXObject(Patient.CLASS_REFERENCE);
         if (patientRecordObj == null) {
             return;
         }
@@ -84,8 +80,7 @@ public class MeasurementAgeUpdater implements EventListener
         if (birthDate == null) {
             return;
         }
-        List<BaseObject> objects = doc.getXObjects(new DocumentReference(
-            doc.getDocumentReference().getRoot().getName(), Constants.CODE_SPACE, "MeasurementsClass"));
+        List<BaseObject> objects = doc.getXObjects(CLASS_REFERENCE);
         if (objects == null || objects.isEmpty()) {
             return;
         }

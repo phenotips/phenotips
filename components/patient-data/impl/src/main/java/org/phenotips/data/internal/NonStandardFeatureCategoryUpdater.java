@@ -17,19 +17,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.phenotips.listeners;
+package org.phenotips.data.internal;
 
 import org.phenotips.Constants;
+import org.phenotips.data.Patient;
+import org.phenotips.data.events.PatientChangingEvent;
 
-import org.xwiki.bridge.event.DocumentCreatingEvent;
-import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.container.Container;
 import org.xwiki.container.servlet.ServletRequest;
+import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
-import org.xwiki.observation.EventListener;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
 import java.text.MessageFormat;
@@ -54,7 +54,7 @@ import com.xpn.xwiki.objects.classes.BaseClass;
 @Component
 @Named("phenotype-category-updater")
 @Singleton
-public class FreePhenotypeCategoryUpdater implements EventListener
+public class NonStandardFeatureCategoryUpdater extends AbstractEventListener
 {
     /** The name of the class where the mapping between phenotypes and categories is stored. */
     private static final EntityReference CATEGORY_CLASS_REFERENCE = new EntityReference("PhenotypeCategoryClass",
@@ -69,32 +69,26 @@ public class FreePhenotypeCategoryUpdater implements EventListener
     /** The name of the mapping class property where the target category is stored. */
     private static final String CATEGORY_PROPETY_NAME = "target_property_category";
 
+    @Inject
+    private Execution execution;
+
     /** Needed for getting access to the request. */
     @Inject
     private Container container;
 
-    @Override
-    public String getName()
+    /** Default constructor, sets up the listener name and the list of events to subscribe to. */
+    public NonStandardFeatureCategoryUpdater()
     {
-        return "phenotype-category-updater";
-    }
-
-    @Override
-    public List<Event> getEvents()
-    {
-        // The list of events this listener listens to
-        return Arrays.<Event>asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
+        super("phenotype-category-updater", new PatientChangingEvent());
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        XWikiContext context = (XWikiContext) data;
+        XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
         XWikiDocument doc = (XWikiDocument) source;
 
-        BaseObject patientRecordObj =
-            doc.getXObject(new DocumentReference(doc.getDocumentReference().getWikiReference().getName(),
-                Constants.CODE_SPACE, "PatientClass"));
+        BaseObject patientRecordObj = doc.getXObject(Patient.CLASS_REFERENCE);
         if (patientRecordObj == null) {
             return;
         }
@@ -164,8 +158,7 @@ public class FreePhenotypeCategoryUpdater implements EventListener
                 }
             }
             if (targetMappingObject == null) {
-                targetMappingObject =
-                    doc.getXObject(CATEGORY_CLASS_REFERENCE, doc.createXObject(CATEGORY_CLASS_REFERENCE, context));
+                targetMappingObject = doc.newXObject(CATEGORY_CLASS_REFERENCE, context);
             }
         } catch (XWikiException ex) {
             // Storage error, shouldn't happen

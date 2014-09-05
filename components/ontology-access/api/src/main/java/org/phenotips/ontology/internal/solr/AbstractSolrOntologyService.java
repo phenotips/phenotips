@@ -171,8 +171,7 @@ public abstract class AbstractSolrOntologyService implements OntologyService, In
     @Override
     public String getVersion()
     {
-        // FIXME Not implemented yet
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override

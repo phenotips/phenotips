@@ -19,16 +19,13 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
+import org.phenotips.data.events.PatientCreatingEvent;
 import org.phenotips.data.permissions.Owner;
 
-import org.xwiki.bridge.event.DocumentCreatingEvent;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.observation.EventListener;
+import org.xwiki.context.Execution;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
-
-import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -51,46 +48,35 @@ import com.xpn.xwiki.objects.BaseObject;
 @Component
 @Named("phenotips-patient-owner-updater")
 @Singleton
-public class OwnerUpdateEventListener implements EventListener
+public class OwnerUpdateEventListener extends AbstractEventListener
 {
     @Inject
     private Logger logger;
 
-    @Override
-    public String getName()
-    {
-        return "phenotips-patient-owner-updater";
-    }
+    @Inject
+    private Execution execution;
 
-    @Override
-    public List<Event> getEvents()
+    /** Default constructor, sets up the listener name and the list of events to subscribe to. */
+    public OwnerUpdateEventListener()
     {
-        return Collections.<Event>singletonList(new DocumentCreatingEvent());
+        super("phenotips-patient-owner-updater", new PatientCreatingEvent());
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
         XWikiDocument doc = (XWikiDocument) source;
-        XWikiContext context = (XWikiContext) data;
-        if (isPatient(doc)) {
-            try {
-                BaseObject ownerObject = doc.newXObject(Owner.CLASS_REFERENCE, context);
-                if (doc.getCreatorReference() != null) {
-                    ownerObject.setStringValue("owner", doc.getCreatorReference().toString());
-                } else {
-                    ownerObject.setStringValue("owner", "");
-                }
-            } catch (XWikiException ex) {
-                this.logger.error("Failed to set the initial owner for patient [{}]: {}", doc.getDocumentReference(),
-                    ex.getMessage(), ex);
+        XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
+        try {
+            BaseObject ownerObject = doc.newXObject(Owner.CLASS_REFERENCE, context);
+            if (doc.getCreatorReference() != null) {
+                ownerObject.setStringValue("owner", doc.getCreatorReference().toString());
+            } else {
+                ownerObject.setStringValue("owner", "");
             }
+        } catch (XWikiException ex) {
+            this.logger.error("Failed to set the initial owner for patient [{}]: {}", doc.getDocumentReference(),
+                ex.getMessage(), ex);
         }
-    }
-
-    private boolean isPatient(XWikiDocument doc)
-    {
-        return (doc.getXObject(Patient.CLASS_REFERENCE) != null)
-            && !"PatientTemplate".equals(doc.getDocumentReference().getName());
     }
 }

@@ -19,10 +19,12 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
+import org.phenotips.data.events.PatientCreatingEvent;
 import org.phenotips.data.permissions.Owner;
 
-import org.xwiki.bridge.event.DocumentCreatingEvent;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
@@ -32,6 +34,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -43,7 +46,6 @@ import com.xpn.xwiki.objects.BaseObject;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,30 +58,19 @@ public class OwnerUpdateEventListenerTest
 {
     @Rule
     public final MockitoComponentMockingRule<EventListener> mocker =
-        new MockitoComponentMockingRule<EventListener>(OwnerUpdateEventListener.class);
+    new MockitoComponentMockingRule<EventListener>(OwnerUpdateEventListener.class);
 
     private XWikiDocument doc = mock(XWikiDocument.class);
 
     private XWikiContext context = mock(XWikiContext.class);
 
-    /** Sending an event with a non-patient document doesn't alter the document. */
-    @Test
-    public void onEventWithNonPatient() throws Exception
+    @Before
+    public void setup() throws ComponentLookupException
     {
-        when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(null);
-        this.mocker.getComponentUnderTest().onEvent(new DocumentCreatingEvent(), this.doc, this.context);
-        verify(this.doc, never()).newXObject(Owner.CLASS_REFERENCE, this.context);
-    }
-
-    /** Sending an event with the template patient document doesn't alter the document. */
-    @Test
-    public void onEventWithTemplatePatient() throws Exception
-    {
-        when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(mock(BaseObject.class));
-        when(this.doc.getDocumentReference())
-            .thenReturn(new DocumentReference("xwiki", "PhenoTips", "PatientTemplate"));
-        this.mocker.getComponentUnderTest().onEvent(new DocumentCreatingEvent(), this.doc, this.context);
-        verify(this.doc, never()).newXObject(Owner.CLASS_REFERENCE, this.context);
+        Execution e = this.mocker.getInstance(Execution.class);
+        ExecutionContext ec = mock(ExecutionContext.class);
+        when(e.getContext()).thenReturn(ec);
+        when(ec.getProperty("xwikicontext")).thenReturn(this.context);
     }
 
     /**
@@ -87,15 +78,12 @@ public class OwnerUpdateEventListenerTest
      * creator as the owner.
      */
     @Test
-    public void onEventWithNormalPatient() throws Exception
+    public void onEventAddsOwnerObject() throws Exception
     {
-        BaseObject patientObject = mock(BaseObject.class);
         BaseObject ownerObject = mock(BaseObject.class);
-        when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(patientObject);
         when(this.doc.newXObject(Owner.CLASS_REFERENCE, this.context)).thenReturn(ownerObject);
-        when(this.doc.getDocumentReference()).thenReturn(new DocumentReference("xwiki", "data", "P0000001"));
         when(this.doc.getCreatorReference()).thenReturn(new DocumentReference("xwiki", "XWiki", "jdoe"));
-        this.mocker.getComponentUnderTest().onEvent(new DocumentCreatingEvent(), this.doc, this.context);
+        this.mocker.getComponentUnderTest().onEvent(new PatientCreatingEvent(), this.doc, null);
         verify(this.doc).newXObject(Owner.CLASS_REFERENCE, this.context);
         verify(ownerObject).setStringValue("owner", "xwiki:XWiki.jdoe");
     }
@@ -105,15 +93,13 @@ public class OwnerUpdateEventListenerTest
      * an empty owner.
      */
     @Test
-    public void onEventWithNormalPatientAndGuestCreator() throws Exception
+    public void onEventWithGuestCreatorAddsEmptyOwnerObject() throws Exception
     {
-        BaseObject patientObject = mock(BaseObject.class);
         BaseObject ownerObject = mock(BaseObject.class);
-        when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(patientObject);
         when(this.doc.newXObject(Owner.CLASS_REFERENCE, this.context)).thenReturn(ownerObject);
         when(this.doc.getDocumentReference()).thenReturn(new DocumentReference("xwiki", "data", "P0000001"));
         when(this.doc.getCreatorReference()).thenReturn(null);
-        this.mocker.getComponentUnderTest().onEvent(new DocumentCreatingEvent(), this.doc, this.context);
+        this.mocker.getComponentUnderTest().onEvent(new PatientCreatingEvent(), this.doc, this.context);
         verify(this.doc).newXObject(Owner.CLASS_REFERENCE, this.context);
         verify(ownerObject).setStringValue("owner", "");
     }
@@ -125,32 +111,30 @@ public class OwnerUpdateEventListenerTest
     @Test
     public void onEventWithException() throws Exception
     {
-        BaseObject patientObject = mock(BaseObject.class);
-        when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(patientObject);
         when(this.doc.newXObject(Owner.CLASS_REFERENCE, this.context)).thenThrow(
             new XWikiException(XWikiException.MODULE_XWIKI_STORE,
                 XWikiException.ERROR_XWIKI_STORE_HIBERNATE_READING_DOC,
                 "Exception while reading document [xwiki:PhenoTips.OwnerClass]"));
         when(this.doc.getDocumentReference()).thenReturn(new DocumentReference("xwiki", "data", "P0000001"));
         when(this.doc.getCreatorReference()).thenReturn(null);
-        this.mocker.getComponentUnderTest().onEvent(new DocumentCreatingEvent(), this.doc, this.context);
+        this.mocker.getComponentUnderTest().onEvent(new PatientCreatingEvent(), this.doc, this.context);
         verify(this.mocker.getMockedLogger()).error(anyString(), anyString(), anyString(),
             Matchers.any(XWikiException.class));
     }
 
     /** Non empty name. */
     @Test
-    public void getName() throws Exception
+    public void hasName() throws Exception
     {
         Assert.assertTrue(StringUtils.isNotBlank(this.mocker.getComponentUnderTest().getName()));
     }
 
-    /** Only listes to new documents. */
+    /** Only listens to new patients. */
     @Test
-    public void getEvents() throws Exception
+    public void listensForPatientCreation() throws Exception
     {
         List<Event> events = this.mocker.getComponentUnderTest().getEvents();
         Assert.assertEquals(1, events.size());
-        Assert.assertTrue(events.get(0) instanceof DocumentCreatingEvent);
+        Assert.assertTrue(events.get(0) instanceof PatientCreatingEvent);
     }
 }

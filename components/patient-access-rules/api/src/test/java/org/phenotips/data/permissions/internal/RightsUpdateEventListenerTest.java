@@ -19,16 +19,14 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
+import org.phenotips.data.events.PatientChangingEvent;
 
-import org.xwiki.bridge.event.DocumentCreatingEvent;
-import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.EntityReference;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -39,14 +37,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for the {@link RightsUpdateEventListener}
@@ -57,7 +49,7 @@ public class RightsUpdateEventListenerTest
 {
     @Rule
     public final MockitoComponentMockingRule<EventListener> mocker =
-        new MockitoComponentMockingRule<EventListener>(RightsUpdateEventListener.class);
+    new MockitoComponentMockingRule<EventListener>(RightsUpdateEventListener.class);
 
     @Mock
     private Event event;
@@ -87,29 +79,11 @@ public class RightsUpdateEventListenerTest
     }
 
     @Test
-    public void listensToDocumentCreation() throws ComponentLookupException
+    public void listensForPatientChanges() throws ComponentLookupException
     {
-        boolean found = false;
-        for (Event e : this.mocker.getComponentUnderTest().getEvents()) {
-            if (e instanceof DocumentCreatingEvent) {
-                found = true;
-                break;
-            }
-        }
-        Assert.assertTrue(found);
-    }
-
-    @Test
-    public void listensToDocumentUpdates() throws ComponentLookupException
-    {
-        boolean found = false;
-        for (Event e : this.mocker.getComponentUnderTest().getEvents()) {
-            if (e instanceof DocumentUpdatingEvent) {
-                found = true;
-                break;
-            }
-        }
-        Assert.assertTrue(found);
+        List<Event> events = this.mocker.getComponentUnderTest().getEvents();
+        Assert.assertEquals(1, events.size());
+        Assert.assertTrue(events.get(0) instanceof PatientChangingEvent);
     }
 
     @Test
@@ -118,24 +92,5 @@ public class RightsUpdateEventListenerTest
         String name = this.mocker.getComponentUnderTest().getName();
         Assert.assertTrue(StringUtils.isNotBlank(name));
         Assert.assertFalse("default".equals(name));
-    }
-
-    @Test
-    public void ignoresNonPatients() throws ComponentLookupException, XWikiException
-    {
-        when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(null);
-        this.mocker.getComponentUnderTest().onEvent(this.event, this.doc, this.context);
-        verify(this.doc, never()).getXObjects(any(EntityReference.class));
-        verify(this.doc, never()).newXObject(any(EntityReference.class), any(XWikiContext.class));
-    }
-
-    @Test
-    public void ignoresTemplatePatient() throws ComponentLookupException, XWikiException
-    {
-        when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(this.patientObject);
-        when(this.doc.getDocumentReference()).thenReturn(new DocumentReference("x", "PhenoTips", "PatientTemplate"));
-        this.mocker.getComponentUnderTest().onEvent(this.event, this.doc, this.context);
-        verify(this.doc, never()).getXObjects(any(EntityReference.class));
-        verify(this.doc, never()).newXObject(any(EntityReference.class), any(XWikiContext.class));
     }
 }

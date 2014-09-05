@@ -27,6 +27,8 @@ import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.cache.config.CacheConfiguration;
+import org.xwiki.cache.eviction.EntryEvictionConfiguration;
+import org.xwiki.cache.eviction.LRUEvictionConfiguration;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -112,6 +114,9 @@ public class GeneNomenclature implements OntologyService, Initializable
      */
     private Cache<OntologyTerm> cache;
 
+    /** Cache for ontology metadata. */
+    private Cache<JSONObject> infoCache;
+
     /** Cache factory needed for creating the term cache. */
     @Inject
     private CacheManager cacheFactory;
@@ -121,6 +126,9 @@ public class GeneNomenclature implements OntologyService, Initializable
     {
         try {
             this.cache = this.cacheFactory.createNewLocalCache(new CacheConfiguration());
+            EntryEvictionConfiguration infoConfig = new LRUEvictionConfiguration(1);
+            infoConfig.setTimeToLive(300);
+            this.infoCache = this.cacheFactory.createNewLocalCache(new CacheConfiguration(infoConfig));
         } catch (final CacheException ex) {
             throw new InitializationException("Cannot create cache: " + ex.getMessage());
         }
@@ -288,11 +296,16 @@ public class GeneNomenclature implements OntologyService, Initializable
 
     private JSONObject getInfo()
     {
+        JSONObject info = this.infoCache.get("");
+        if (info != null) {
+            return info;
+        }
         HttpGet method = new HttpGet(INFO_SERVICE_URL);
         method.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
         try (CloseableHttpResponse httpResponse = this.client.execute(method)) {
             String response = IOUtils.toString(httpResponse.getEntity().getContent(), Consts.UTF_8);
             JSONObject responseJSON = (JSONObject) JSONSerializer.toJSON(response);
+            this.infoCache.set("", responseJSON);
             return responseJSON;
         } catch (IOException ex) {
             this.logger.warn("Failed to get HGNC information: {}", ex.getMessage());
