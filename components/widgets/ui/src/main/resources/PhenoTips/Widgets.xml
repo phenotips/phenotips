@@ -3899,10 +3899,15 @@ document.observe("xwiki:dom:loaded", function() {
             browseButton._id = json.id;
             browseButton.observe('click', function(event){
               event.stop();
-              browseButton._obrowser = new PhenoTips.widgets.OntologyBrowser($('quick-phenotype-search')._suggest, null, {
-                                                                   isTermSelected : isPhenotypeSelected,
-                                                                   unselectTerm : unselectPhenotype
-              });
+              var suggest = ($('quick-phenotype-search') || $$('input.suggestHpo')[0])._suggest;
+              var params = {};
+              if (typeof isPhenotypeSelected !== 'undefined') {
+                params = {
+                  isTermSelected : isPhenotypeSelected,
+                  unselectTerm : unselectPhenotype
+                };
+              }
+              browseButton._obrowser = new PhenoTips.widgets.OntologyBrowser(suggest, null, params);
               browseButton._obrowser.show(browseButton._id);
             });
             c.insert(elt('div', 'term-tools').insert(browseButton.wrap('span', {'class' : 'buttonwrapper'})));
