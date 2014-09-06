@@ -144,12 +144,12 @@ var Workspace = Class.create({
 
         if (editor.isUnsupportedBrowser()) {
             submenus = [{
-                name : 'internal',
+                name : 'input',
                 items: [
-                    { key : 'readonlymessage', label : 'Unsuported browser mode'},
+                    { key : 'readonlymessage', label : 'Unsuported browser mode'}
                 ]
-            }, {
-                name : 'external',
+              }, {
+                name : 'output',
                 items: [
                     { key : 'export',    label : 'Export'},
                     { key : 'reload',    label : 'Reload'},
@@ -158,23 +158,31 @@ var Workspace = Class.create({
             }];
         } else {
             submenus = [{
-                name : 'internal',
+                name : 'input',
+                items: [
+                    { key : 'templates', label : 'Templates'},
+                    { key : 'import',    label : 'Import'}
+                ]
+              }, {
+                name : 'edit',
                 items: [
                     { key : 'undo',   label : 'Undo'},
                     { key : 'redo',   label : 'Redo'},
                     { key : 'layout', label : 'Automatic layout'},
-                    { key : 'clear',  label : 'Clear all'},
                     { key : 'number', label : 'Renumber'}
                 ]
-            }, {
-                name : 'external',
+              }, {
+                name : 'reset',
+                items: [
+                    { key : 'clear',  label : 'Clear all'},
+                    { key : 'reload',    label : 'Reload'}
+                ]
+              }, {
+                name : 'output',
                 items: [
                     { key : 'save',      label : 'Save'},
                     { key : 'export',    label : 'Export'},
                     //{ key : 'print',     label : 'Print'},
-                    { key : 'reload',    label : 'Reload'},
-                    { key : 'import',    label : 'Import'},
-                    { key : 'templates', label : 'Templates'},
                     { key : 'close',     label : 'Close'}
                 ]
             }];
