@@ -622,6 +622,11 @@
 .no-mouse-interaction {
     pointer-events: none;
 }
+/* Make sure the tooltips fit nicely in the suggest box in the pedigree editor: */
+.suggestItem .xTooltip {
+  left: 4px;
+  margin: 1.4em 0 0;
+}
 
 /* TODO: add icons to each option type:
 .node-type-options .node-type-M {

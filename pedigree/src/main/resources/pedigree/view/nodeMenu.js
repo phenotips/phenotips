@@ -85,6 +85,7 @@ NodeMenu = Class.create({
                     enableHierarchy: false,
                     fadeOnClear : false,
                     timeout : 30000,
+                    tooltip: 'omim-disease-info',
                     parentContainer : $('body')
                 });
                 if (item.hasClassName('multi') && typeof(PhenoTips.widgets.SuggestPicker) != "undefined") {
