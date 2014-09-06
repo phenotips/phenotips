@@ -167,7 +167,7 @@ var Workspace = Class.create({
                 name : 'edit',
                 items: [
                     { key : 'undo',   label : 'Undo', icon : 'undo'},
-                    { key : 'redo',   label : 'Redo', icon : 'redo'},
+                    { key : 'redo',   label : 'Redo', icon : 'repeat'},
                     { key : 'layout', label : 'Automatic layout', icon : 'sitemap'},
                     { key : 'number', label : 'Renumber', icon : 'sort-numeric-asc'}
                 ]
