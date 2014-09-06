@@ -65,58 +65,12 @@
 }
 #editor-menu .menu-item {
   border-radius: 4px;
-  background: #444 none .2em center no-repeat;
   color: #fff;
-  padding: .2em .2em .2em 22px;
+  padding: .4em;
   margin: 0 .7em 0 0;
   cursor: pointer;
   display: inline-block;
   white-space: nowrap;
-}
-#editor-menu .new {
-  background-image: url("$xwiki.getSkinFile('icons/silk/add.png')");
-}
-#editor-menu .undo {
-  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_undo.png')");
-}
-#editor-menu .redo {
-  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_redo.png')");
-}
-#editor-menu .layout {
-  background-image: url("$xwiki.getSkinFile('icons/silk/chart_organisation.png')");
-}
-#editor-menu .clear {
-  background-image: url("$xwiki.getSkinFile('icons/silk/cancel.png')");
-}
-#editor-menu .print {
-  background-image: url("$xwiki.getSkinFile('icons/silk/printer.png')");
-}
-#editor-menu .save {
-  background-image: url("$xwiki.getSkinFile('icons/silk/disk.png')"); /* bullet_disk.png */
-}
-#editor-menu .export {
-  background-image: url("$xwiki.getSkinFile('icons/silk/drive_link.png')"); /* package.png computer_go.png drive_go.png */
-}
-#editor-menu .close {
-  background-image: url("$xwiki.getSkinFile('icons/silk/bullet_go.png')");
-}
-#editor-menu .readonlymessage {
-  background-image: url("$xwiki.getSkinFile('icons/silk/bullet_error.png')");
-}
-#editor-menu .reload {
-  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_refresh_small.png')");
-}
-#editor-menu .templates {
-  background-image: url("$xwiki.getSkinFile('icons/silk/bullet_star.png')"); /* star.png */
-}
-#editor-menu .import {
-  background-image: url("$xwiki.getSkinFile('icons/silk/shape_square_go.png')"); /* bullet_go.png, folder_go.png, page_white_go.png */
-}
-#editor-menu .options {
-  background-image: url("$xwiki.getSkinFile('icons/silk/control_equalizer.png')");
-}
-#editor-menu .number {
-  background-image: url("$xwiki.getSkinFile('icons/silk/text_list_numbers.png')");
 }
 #editor-menu .menu-item:last-of-type {
   margin: 0;
@@ -162,29 +116,28 @@
 .view-controls-pan * {
   width: 16px;
   height: 16px;
-  background: transparent none center center no-repeat;
   position: absolute;
   cursor: pointer;
+  line-height: 16px;
+}
+.view-control-pan:hover, .view-controls-zoom .zoom-button:hover {
+  color: $theme.linkColor;
 }
 .view-controls-pan .pan-up {
   top: 4px;
   left: 22px;
-  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_up.png')");
 }
 .view-controls-pan .pan-right {
   top: 22px;
   right: 4px;
-  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_right.png')");
 }
 .view-controls-pan .pan-down {
   bottom: 4px;
   left: 22px;
-  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_down.png')");
 }
 .view-controls-pan .pan-left {
   top: 22px;
   left: 4px;
-  background-image: url("$xwiki.getSkinFile('icons/silk/arrow_left.png')");
 }
 /* ----------------------------------------
  * Zoom
@@ -197,7 +150,7 @@
   text-align: center;
 }
 .view-controls-zoom * {
-  background: #FFF none center center no-repeat;
+  background: #FFF;
   border: 1px solid #aaa;
   border-radius: 4px;
   box-shadow: 0 0 6px #AAAAAA;
@@ -209,16 +162,13 @@
   position: relative;
 }
 .view-controls-zoom .zoom-button {
+  cursor: pointer;
+  line-height: 20px;
   width: 20px;
   height: 20px;
 }
-.view-controls-zoom .zoom-out {
-  background-image: url("$xwiki.getSkinFile('icons/silk/zoom_out.png')");
-}
-.view-controls-zoom .zoom-in {
-  background-image: url("$xwiki.getSkinFile('icons/silk/zoom_in.png')");
-}
 .view-controls-zoom .zoom-handle {
+  cursor: pointer;
   position: absolute;
   top: 0;
   left: 0;
