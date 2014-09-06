@@ -951,12 +951,12 @@
          value: this.fld.value,
          category: customItemCategoriesElt,
          info: new Element('div', {'class' : 'hint'}).update('(your text, not a standard term)')
-       }, 'custom-value'));
+       }, 'custom-value', true));
     }
     return list.getElement();
   },
 
-  generateListItem : function(data, cssClass) {
+  generateListItem : function(data, cssClass, disableTooltip) {
     var displayNode = new Element("div");
     // If the search result contains an icon information, we insert this icon in the result entry.
     if (data.icon) {
@@ -967,7 +967,7 @@
     }
     displayNode.insert(new Element('span', {'class':'suggestValue'}).update(data.value));
 
-    if (this.options.tooltip) {
+    if (this.options.tooltip &amp;&amp; !disableTooltip) {
       var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton ' + this.options.tooltip, 'title' : data.id});
       infoTool.observe('click', function(event) {event.stop()});
       displayNode.insert(' ').insert(infoTool);
