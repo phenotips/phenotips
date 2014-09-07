@@ -69,7 +69,7 @@
       </engine>
     </class>
     <property>
-      <engine>lucene</engine>
+      <engine>database</engine>
     </property>
   </object>
 </xwikidoc>
