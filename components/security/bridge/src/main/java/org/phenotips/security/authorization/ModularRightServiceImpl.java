@@ -22,6 +22,7 @@ package org.phenotips.security.authorization;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.WikiReference;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.security.authorization.internal.XWikiCachingRightService;
 import org.xwiki.security.internal.XWikiConstants;
 import org.xwiki.users.User;
@@ -90,7 +91,7 @@ public class ModularRightServiceImpl extends XWikiCachingRightService implements
         User user = this.userManager.getUser(StringUtils.endsWith(username, "XWikiGuest") ? null : username, true);
         WikiReference wikiReference = new WikiReference(context.getDatabase());
         DocumentReference document = resolveDocumentName(docname, wikiReference);
-        return this.service.hasAccess(user, actionToRight(right), document);
+        return this.service.hasAccess(user, Right.toRight(right), document);
     }
 
     /**
