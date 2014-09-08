@@ -42,6 +42,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -131,6 +132,8 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
             HttpGet method =
                 new HttpGet(new URIBuilder("http://monarchinitiative.org/score").addParameter("annotation_profile",
                     data.toString()).build());
+            RequestConfig config = RequestConfig.custom().setSocketTimeout(2000).build();
+            method.setConfig(config);
             response = this.client.execute(method);
             JSONObject score = (JSONObject) JSONSerializer.toJSON(IOUtils.toString(response.getEntity().getContent()));
             specificity = new PatientSpecificity(score.getDouble("scaled_score"), new Date(), SCORER_NAME);
