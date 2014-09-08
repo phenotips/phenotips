@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -147,6 +148,8 @@ public class PatientSpecificityScriptService implements ScriptService
 
     private static final class FakePatient implements Patient
     {
+        private static final Pattern TERM_FORMAT = Pattern.compile("^[A-Z]++:[0-9]++$");
+
         private final Set<Feature> features;
 
         private FakePatient(final String[] symptoms, final String[] negativeSymptoms)
@@ -154,12 +157,16 @@ public class PatientSpecificityScriptService implements ScriptService
             Set<Feature> result = new HashSet<Feature>();
             if (symptoms != null && symptoms.length > 0) {
                 for (String symptom : symptoms) {
-                    result.add(new FakeFeature(symptom, true));
+                    if (TERM_FORMAT.matcher(symptom).matches()) {
+                        result.add(new FakeFeature(symptom, true));
+                    }
                 }
             }
             if (negativeSymptoms != null && negativeSymptoms.length > 0) {
                 for (String symptom : negativeSymptoms) {
-                    result.add(new FakeFeature(symptom, false));
+                    if (TERM_FORMAT.matcher(symptom).matches()) {
+                        result.add(new FakeFeature(symptom, false));
+                    }
                 }
             }
             this.features = Collections.unmodifiableSet(result);

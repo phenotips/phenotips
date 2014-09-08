@@ -88,7 +88,7 @@ public class OmimInformationContentPatientScorer implements PatientScorer, Initi
     {
         Pair<Double, Integer> symptomsScore = process(patient, true);
         Pair<Double, Integer> negativeSymptomsScore = process(patient, false);
-        double score = -1;
+        double score = 0;
 
         if (symptomsScore.getRight() + negativeSymptomsScore.getRight() > 0) {
             score = 2 * Math.atan(symptomsScore.getLeft() / 10 + negativeSymptomsScore.getLeft() / 20) / Math.PI;
