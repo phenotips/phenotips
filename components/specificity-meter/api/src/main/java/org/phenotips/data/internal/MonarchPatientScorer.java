@@ -24,11 +24,18 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientScorer;
 import org.phenotips.data.PatientSpecificity;
 
+import org.xwiki.cache.Cache;
+import org.xwiki.cache.CacheException;
+import org.xwiki.cache.CacheManager;
+import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 
 import java.io.IOException;
 import java.util.Date;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -54,26 +61,54 @@ import net.sf.json.JSONSerializer;
 @Component
 @Named("monarch")
 @Singleton
-public class MonarchPatientScorer implements PatientScorer
+public class MonarchPatientScorer implements PatientScorer, Initializable
 {
+    private static final String SCORER_NAME = "monarchinitiative.org";
+
     /** The HTTP client used for contacting the MONARCH server. */
-    private CloseableHttpClient client = HttpClients.createDefault();
+    private CloseableHttpClient client = HttpClients.createSystem();
+
+    @Inject
+    private CacheManager cacheManager;
+
+    private Cache<PatientSpecificity> cache;
+
+    @Override
+    public void initialize() throws InitializationException
+    {
+        try {
+            this.cache = this.cacheManager.createNewCache(new CacheConfiguration());
+        } catch (CacheException ex) {
+            throw new InitializationException("Failed to create cache", ex);
+        }
+    }
 
     @Override
     public PatientSpecificity getSpecificity(Patient patient)
     {
-        double score = getScore(patient);
-        if (score != -1) {
-            return new PatientSpecificity(score, new Date(), "monarchinitiative.org");
+        String key = getCacheKey(patient);
+        PatientSpecificity result = this.cache.get(key);
+        if (result == null) {
+            double score = getScore(patient);
+            if (score != -1.0) {
+                // getScore populates the cache
+                result = this.cache.get(key);
+            }
         }
-        return null;
+        return result;
     }
 
     @Override
     public double getScore(Patient patient)
     {
+        String key = getCacheKey(patient);
+        PatientSpecificity specificity = this.cache.get(key);
+        if (specificity != null) {
+            return specificity.getScore();
+        }
         if (patient.getFeatures().isEmpty()) {
-            return 0.0;
+            this.cache.set(key, new PatientSpecificity(0, new Date(), SCORER_NAME));
+            return 0;
         }
         CloseableHttpResponse response = null;
         try {
@@ -96,9 +131,9 @@ public class MonarchPatientScorer implements PatientScorer
                     data.toString()).build());
             response = this.client.execute(method);
             JSONObject score = (JSONObject) JSONSerializer.toJSON(IOUtils.toString(response.getEntity().getContent()));
-            if (!score.isNullObject()) {
-                return score.getDouble("scaled_score");
-            }
+            specificity = new PatientSpecificity(score.getDouble("scaled_score"), new Date(), SCORER_NAME);
+            this.cache.set(key, specificity);
+            return specificity.getScore();
         } catch (Exception ex) {
             // Just return failure below
         } finally {
@@ -112,5 +147,19 @@ public class MonarchPatientScorer implements PatientScorer
             }
         }
         return -1;
+    }
+
+    private String getCacheKey(Patient patient)
+    {
+        StringBuilder result = new StringBuilder();
+        for (Feature f : patient.getFeatures()) {
+            if (StringUtils.isNotEmpty(f.getId())) {
+                if (!f.isPresent()) {
+                    result.append('-');
+                }
+                result.append(f.getId());
+            }
+        }
+        return result.toString();
     }
 }
