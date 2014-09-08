@@ -29,6 +29,7 @@ import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -160,15 +161,29 @@ public class MonarchPatientScorerTest
     }
 
     @Test
+    public void getScoreWithExceptionReturnsNegative1() throws Exception
+    {
+        Mockito.doReturn(this.features).when(this.patient).getFeatures();
+        when(this.client.execute(any(HttpUriRequest.class))).thenThrow(new IOException());
+        double score = this.mocker.getComponentUnderTest().getScore(this.patient);
+        Assert.assertEquals(-1.0, score, 0.0);
+        Mockito.verify(this.cache, Mockito.never()).set(any(String.class), any(PatientSpecificity.class));
+    }
+
+    @Test
     public void getSpecificityWithNoFeaturesReturns0() throws ComponentLookupException
     {
         Mockito.doReturn(Collections.emptySet()).when(this.patient).getFeatures();
         CapturingMatcher<PatientSpecificity> specCapture = new CapturingMatcher<>();
         Mockito.doNothing().when(this.cache).set(Matchers.eq(""), Matchers.argThat(specCapture));
+        Date d1 = new Date();
         this.mocker.getComponentUnderTest().getSpecificity(this.patient);
+        Date d2 = new Date();
         PatientSpecificity spec = specCapture.getLastValue();
         Assert.assertEquals(0.0, spec.getScore(), 0.0);
         Assert.assertEquals("monarchinitiative.org", spec.getComputingMethod());
+        Assert.assertFalse(d1.after(spec.getComputationDate()));
+        Assert.assertFalse(d2.before(spec.getComputationDate()));
     }
 
     @Test
@@ -190,8 +205,8 @@ public class MonarchPatientScorerTest
         Assert.assertEquals(expectedURI, reqCapture.getLastValue().getURI());
         Assert.assertEquals(2.0, spec.getScore(), 0.0);
         Assert.assertEquals("monarchinitiative.org", spec.getComputingMethod());
-        Assert.assertTrue(d1.before(spec.getComputationDate()));
-        Assert.assertTrue(d2.after(spec.getComputationDate()));
+        Assert.assertFalse(d1.after(spec.getComputationDate()));
+        Assert.assertFalse(d2.before(spec.getComputationDate()));
     }
 
     @Test
@@ -212,5 +227,15 @@ public class MonarchPatientScorerTest
         when(this.response.getEntity()).thenReturn(this.responseEntity);
         when(this.responseEntity.getContent()).thenReturn(IOUtils.toInputStream(""));
         Assert.assertNull(this.mocker.getComponentUnderTest().getSpecificity(this.patient));
+    }
+
+    @Test(expected = InitializationException.class)
+    public void initializationFailsWhenCreatingCacheFails() throws ComponentLookupException, CacheException,
+        InitializationException
+    {
+        CacheManager cm = this.mocker.getInstance(CacheManager.class);
+        when(cm.<PatientSpecificity>createNewCache(any(CacheConfiguration.class))).thenThrow(
+            new CacheException("failed"));
+        ((org.xwiki.component.phase.Initializable) this.mocker.getComponentUnderTest()).initialize();
     }
 }

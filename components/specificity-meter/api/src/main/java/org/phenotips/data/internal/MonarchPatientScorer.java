@@ -28,6 +28,7 @@ import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.cache.config.CacheConfiguration;
+import org.xwiki.cache.config.LRUCacheConfiguration;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -77,7 +78,8 @@ public class MonarchPatientScorer implements PatientScorer, Initializable
     public void initialize() throws InitializationException
     {
         try {
-            this.cache = this.cacheManager.createNewCache(new CacheConfiguration());
+            CacheConfiguration config = new LRUCacheConfiguration("monarchSpecificityScore", 2048, 3600);
+            this.cache = this.cacheManager.createNewCache(config);
         } catch (CacheException ex) {
             throw new InitializationException("Failed to create cache", ex);
         }

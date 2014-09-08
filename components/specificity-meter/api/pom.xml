@@ -31,7 +31,7 @@
   <name>PhenoTips - Specificity Meter - Java APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.71</coverage.instructionRatio>
+    <coverage.instructionRatio>0.98</coverage.instructionRatio>
   </properties>
 
   <dependencies>

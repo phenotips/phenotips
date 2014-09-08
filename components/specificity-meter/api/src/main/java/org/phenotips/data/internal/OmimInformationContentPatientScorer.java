@@ -77,10 +77,7 @@ public class OmimInformationContentPatientScorer implements PatientScorer, Initi
     public PatientSpecificity getSpecificity(Patient patient)
     {
         double score = getScore(patient);
-        if (score != -1) {
-            return new PatientSpecificity(score, new Date(), "local-omim");
-        }
-        return null;
+        return new PatientSpecificity(score, new Date(), "local-omim");
     }
 
     @Override
