@@ -60,7 +60,7 @@ public class PropertyDisplayer
 
     private static final String ITEM_TYPE_FIELD = "field";
 
-    private static final String INDEXED_CATEGORY_KEY = "term_category";
+    public static final String INDEXED_CATEGORY_KEY = "term_category";
 
     private static final String INDEXED_PARENT_KEY = "is_a";
 
