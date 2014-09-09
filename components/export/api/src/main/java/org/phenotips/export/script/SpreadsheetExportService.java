@@ -23,33 +23,23 @@ import org.phenotips.data.Patient;
 import org.phenotips.export.internal.SpreadsheetExporter;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.model.reference.EntityReference;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
 
 import java.io.OutputStream;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.classes.BaseClass;
-import com.xpn.xwiki.objects.classes.PropertyClass;
 
 /**
- * FIXME
+ * Service for exporting a list of patients into an {@code .xlsx} Excel file.
  *
  * @version $Id$
  * @since 1.0RC1
@@ -61,68 +51,28 @@ import com.xpn.xwiki.objects.classes.PropertyClass;
 public class SpreadsheetExportService implements ScriptService
 {
     @Inject
-    private Execution execution;
+    private Logger logger;
 
     @Inject
     @Named("current")
-    DocumentReferenceResolver<EntityReference> referenceResolver;
-
-    @Inject
-    @Named("current")
-    DocumentReferenceResolver<String> stringReferenceResolver;
-
-    @Inject
-    Logger logger;
-
-    XWikiContext context;
-
-    XWiki wiki;
+    private DocumentReferenceResolver<String> referenceResolver;
 
     /**
-     * This export assumes that the fields passed in are not 'pretty', and converts them to be human readable.
+     * Export the provided list of patients into an Excel file, containing the specified columns. The resulting binary
+     * filled will be sent through the provided output stream, usually the {@code $response}'s output stream.
      *
-     * @param enabledFields string array of 'non-pretty' names
+     * @param patients the patients to export
+     * @param enabledFields a list of field names to export; these are internal names, which will be turned into human
+     *            readable labels
+     * @param outputStream the output stream where the resulting binary {@code .xlsx} file will be sent
      */
-    public void export(String[] enabledFields, List<String> patients, OutputStream outputStream) throws XWikiException
+    public void export(List<Patient> patients, String[] enabledFields, OutputStream outputStream) throws XWikiException
     {
-        this.context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-        this.wiki = this.context.getWiki();
-
         SpreadsheetExporter exporter = new SpreadsheetExporter();
         try {
-            exporter.export(enabledFields, patientListToXWikiDocument(patients), outputStream);
+            exporter.export(enabledFields, patients, outputStream);
         } catch (Exception ex) {
             this.logger.error("Error caught while generating an export spreadsheet", ex);
         }
-    }
-
-    private List<XWikiDocument> patientListToXWikiDocument(List<String> patients) throws XWikiException
-    {
-        List<XWikiDocument> docList = new LinkedList<XWikiDocument>();
-        for (String id : patients) {
-            docList.add(this.wiki.getDocument(this.stringReferenceResolver.resolve(id), this.context));
-        }
-        return docList;
-    }
-
-    private String[] substitutePretty(String[] fields) throws XWikiException
-    {
-        DocumentReference classDoc = this.referenceResolver.resolve(Patient.CLASS_REFERENCE);
-        BaseClass patientClassObj = this.wiki.getXClass(classDoc, this.context);
-        String[] prettyFields = new String[fields.length];
-        Integer counter = 0;
-        for (String field : fields) {
-            if (StringUtils.isBlank(field)) {
-                continue;
-            }
-            try {
-                PropertyClass baseField = (PropertyClass) patientClassObj.get(field);
-                prettyFields[counter] = baseField.getPrettyName();
-            } catch (Exception ex) {
-                prettyFields[counter] = field;
-            }
-            counter += 1;
-        }
-        return prettyFields;
     }
 }

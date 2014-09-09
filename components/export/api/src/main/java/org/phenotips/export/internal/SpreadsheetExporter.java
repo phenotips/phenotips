@@ -20,7 +20,6 @@
 package org.phenotips.export.internal;
 
 import org.phenotips.data.Patient;
-import org.phenotips.data.internal.PhenoTipsPatient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,7 +27,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,8 +37,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * FIXME
@@ -56,7 +52,7 @@ public class SpreadsheetExporter
 
     protected Map<String, Sheet> sheets = new HashMap<String, Sheet>();
 
-    public void export(String[] _enabledFields, List<XWikiDocument> patients, OutputStream outputStream)
+    public void export(String[] _enabledFields, List<Patient> patients, OutputStream outputStream)
         throws Exception
     {
         if (_enabledFields == null) {
@@ -83,7 +79,7 @@ public class SpreadsheetExporter
         }
     }
 
-    protected void processMainSheet(Set<String> enabledFields, List<XWikiDocument> patients) throws Exception
+    protected void processMainSheet(Set<String> enabledFields, List<Patient> patients) throws Exception
     {
         String sheetName = "main";
         Sheet sheet = this.wBook.createSheet("Patient Sheet");
@@ -111,17 +107,10 @@ public class SpreadsheetExporter
         sheet.createFreezePane(0, height);
     }
 
-    protected SheetAssembler runAssembler(Set<String> enabledFields, List<XWikiDocument> _patients)
+    protected SheetAssembler runAssembler(Set<String> enabledFields, List<Patient> patients)
         throws Exception
     {
-        List<Patient> patients = new LinkedList<Patient>();
-        Map<Patient, XWikiDocument> patientXWikiDocumentMap = new HashMap<>();
-        for (XWikiDocument patientDoc : _patients) {
-            Patient patientInstance = new PhenoTipsPatient(patientDoc);
-            patients.add(patientInstance);
-            patientXWikiDocumentMap.put(patientInstance, patientDoc);
-        }
-        return new SheetAssembler(enabledFields, patients, patientXWikiDocumentMap);
+        return new SheetAssembler(enabledFields, patients);
     }
 
     protected void write(DataSection section, Sheet sheet)

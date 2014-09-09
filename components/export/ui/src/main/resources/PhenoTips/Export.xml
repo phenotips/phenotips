@@ -195,9 +195,9 @@
   #end
   #set ($discard = $parameters.add($date.toDate()))
 #end
-#set ($patients = $xwiki.searchDocuments($query, $parameters))
+#set ($patientIds = $xwiki.searchDocuments($query, $parameters))
 #if ($request.count)
-  $patients.size()
+  $patientIds.size()
   #break
 #end
 
@@ -214,7 +214,11 @@
 
 $response.addHeader("content-disposition", "attachment; filename=phenotips_${xwiki.formatDate($services.jodatime.getDateTime().toDate(), 'yyyy-MM-dd_HH-mm')}.xlsx")##
 $response.setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')##
-$services.spreadsheetexport.export($enabledFields, $patients, $response.getOutputStream())
+#set ($patients = [])
+#foreach ($patientId in $patientIds)
+  #set ($discard = $patients.add($services.patients.getPatientById($patientId)))
+#end
+$services.spreadsheetexport.export($patients, $enabledFields, $response.getOutputStream())
 
 }}}
 {{/velocity}}</content>

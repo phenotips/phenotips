@@ -25,10 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
-import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Assembles the various DataSections.
@@ -42,8 +39,7 @@ public class SheetAssembler
 
     Integer headerHeight = 0;
 
-    public SheetAssembler(Set<String> enabledFields, List<Patient> patients,
-        Map<Patient, XWikiDocument> patientToDocMap) throws Exception
+    public SheetAssembler(Set<String> enabledFields, List<Patient> patients) throws Exception
     {
         DataToCellConverter converter = new DataToCellConverter();
 
@@ -53,7 +49,7 @@ public class SheetAssembler
 
         /* Important. Headers MUST be generated first. Some of them contain setup code for the body */
         List<DataSection> headers = generateHeader(converter, enabledFields);
-        List<List<DataSection>> bodySections = generateBody(converter, patients, patientToDocMap);
+        List<List<DataSection>> bodySections = generateBody(converter, patients);
 
         List<DataSection> patientsCombined = new LinkedList<DataSection>();
         for (List<DataSection> patientSections : bodySections) {
@@ -89,8 +85,8 @@ public class SheetAssembler
             .extendStyleVertically(this.oneSection, StyleOption.SECTION_BORDER_LEFT, StyleOption.SECTION_BORDER_RIGHT);
     }
 
-    private List<List<DataSection>> generateBody(DataToCellConverter converter, List<Patient> patients,
-        Map<Patient, XWikiDocument> patientToDocMap) throws Exception
+    private List<List<DataSection>> generateBody(DataToCellConverter converter, List<Patient> patients)
+        throws Exception
     {
         List<List<DataSection>> allSections = new LinkedList<List<DataSection>>();
         for (Patient patient : patients) {
@@ -99,7 +95,7 @@ public class SheetAssembler
             List<DataSection> patientSections = new LinkedList<DataSection>();
             _patientSections.add(converter.idBody(patient));
             /* An unfortunate need for the XWiki patient doc. This should be fixed in PhenoTipsPatient */
-            _patientSections.add(converter.documentInfoBody(patientToDocMap.get(patient)));
+            _patientSections.add(converter.documentInfoBody(patient));
             _patientSections.add(converter.patientInfoBody(patient));
             _patientSections.add(converter.familyHistoryBody(patient));
             _patientSections.add(converter.prenatalPerinatalHistoryBody(patient));

@@ -26,6 +26,8 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.ontology.internal.solr.SolrOntologyTerm;
 
+import org.xwiki.bridge.DocumentAccessBridge;
+
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,6 +44,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.web.Utils;
 
 /**
  * Each of functions need to be written with certain specification. Body producing functions must return null if they
@@ -68,7 +71,7 @@ public class DataToCellConverter
         String[] fieldIds =
             { "phenotype", "phenotype_code", "phenotype_combined", "phenotype_code_meta", "phenotype_meta",
                 "negative_phenotype", "phenotype_by_section"};
-        /* FIXME These will not work properly in different configurations */
+        // FIXME These will not work properly in different configurations
         String[][] headerIds =
             { { "phenotype" }, { "code" }, { "phenotype", "code" }, { "meta_code" }, { "meta" }, { "negative" },
                 { "category" } };
@@ -333,8 +336,11 @@ public class DataToCellConverter
         return headerSection;
     }
 
-    public DataSection documentInfoBody(XWikiDocument patientDoc)
+    public DataSection documentInfoBody(Patient patient) throws Exception
     {
+        @SuppressWarnings("deprecation")
+        DocumentAccessBridge dab = Utils.getComponent(DocumentAccessBridge.class);
+        XWikiDocument patientDoc = (XWikiDocument) dab.getDocument(patient.getDocument());
         String sectionName = "documentInfo";
         Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
