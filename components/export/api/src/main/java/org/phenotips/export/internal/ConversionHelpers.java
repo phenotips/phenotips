@@ -29,7 +29,6 @@ import org.phenotips.tools.PropertyDisplayer;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.script.service.ScriptService;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,7 +54,7 @@ public class ConversionHelpers
 
     private OntologyService ontologyService;
 
-    private Map<String, ArrayList<String>> categoryMapping;
+    private Map<String, List<String>> categoryMapping;
 
     /** Feature to Section */
     private Map<String, String> sectionFeatureTree;
@@ -78,12 +77,12 @@ public class ConversionHelpers
         this.ontologyService = cm.getInstance(OntologyService.class, "hpo");
         PhenotypeMappingService mappingService = cm.getInstance(ScriptService.class, "phenotypeMapping");
         Object _mapping = mappingService.get("phenotype");
-        if (_mapping instanceof ArrayList) {
-            List<Map<String, Object>> fullMapping = (List<Map<String, Object>>) _mapping;
+        if (_mapping instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, List<String>>> fullMapping = (List<Map<String, List<String>>>) _mapping;
             this.categoryMapping = new LinkedHashMap<>();
-            for (Map<String, Object> categoryEntry : fullMapping) {
-                this.categoryMapping
-                    .put(categoryEntry.get("title").toString(), (ArrayList<String>) categoryEntry.get("categories"));
+            for (Map<String, List<String>> categoryEntry : fullMapping) {
+                this.categoryMapping.put(categoryEntry.get("title").toString(), categoryEntry.get("categories"));
             }
         } else {
             throw new Exception("The phenotype category list is not available");
@@ -123,7 +122,7 @@ public class ConversionHelpers
     {
         List<Feature> sortedFeatures = new LinkedList<Feature>();
 
-        Map<String, ArrayList<String>> mapping = getCategoryMapping();
+        Map<String, List<String>> mapping = getCategoryMapping();
         for (String section : mapping.keySet()) {
             if (features.isEmpty()) {
                 break;
@@ -180,7 +179,7 @@ public class ConversionHelpers
         return new LinkedList<String>();
     }
 
-    public Map<String, ArrayList<String>> getCategoryMapping()
+    public Map<String, List<String>> getCategoryMapping()
     {
         return this.categoryMapping;
     }
