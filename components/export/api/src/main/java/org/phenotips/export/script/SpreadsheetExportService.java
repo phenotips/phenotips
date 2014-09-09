@@ -19,12 +19,11 @@
  */
 package org.phenotips.export.script;
 
-import org.phenotips.Constants;
+import org.phenotips.data.Patient;
 import org.phenotips.export.internal.SpreadsheetExporter;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
-import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
@@ -61,11 +60,6 @@ import com.xpn.xwiki.objects.classes.PropertyClass;
 @Singleton
 public class SpreadsheetExportService implements ScriptService
 {
-    private final static String patientClassName = "PatientClass";
-
-    private final static EntityReference patientClass =
-        new EntityReference(patientClassName, EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
     @Inject
     private Execution execution;
 
@@ -102,7 +96,7 @@ public class SpreadsheetExportService implements ScriptService
         }
     }
 
-    protected List<XWikiDocument> patientListToXWikiDocument(List<String> patients) throws XWikiException
+    private List<XWikiDocument> patientListToXWikiDocument(List<String> patients) throws XWikiException
     {
         List<XWikiDocument> docList = new LinkedList<XWikiDocument>();
         for (String id : patients) {
@@ -111,9 +105,9 @@ public class SpreadsheetExportService implements ScriptService
         return docList;
     }
 
-    protected String[] substitutePretty(String[] fields) throws XWikiException
+    private String[] substitutePretty(String[] fields) throws XWikiException
     {
-        DocumentReference classDoc = this.referenceResolver.resolve(patientClass);
+        DocumentReference classDoc = this.referenceResolver.resolve(Patient.CLASS_REFERENCE);
         BaseClass patientClassObj = this.wiki.getXClass(classDoc, this.context);
         String[] prettyFields = new String[fields.length];
         Integer counter = 0;
