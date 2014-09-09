@@ -70,9 +70,11 @@ public class SpreadsheetExportService implements ScriptService
     private Execution execution;
 
     @Inject
+    @Named("current")
     DocumentReferenceResolver<EntityReference> referenceResolver;
 
     @Inject
+    @Named("current")
     DocumentReferenceResolver<String> stringReferenceResolver;
 
     @Inject
