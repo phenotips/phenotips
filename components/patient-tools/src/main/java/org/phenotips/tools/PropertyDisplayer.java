@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -165,10 +165,15 @@ public class PropertyDisplayer
         Map<String, String> m = new HashMap<String, String>();
         m.put("is_a", "HP:0000118");
         Set<OntologyTerm> topSections = this.ontologyService.search(m);
-        Set<String> topSectionsId = new HashSet<String>();
+        Set<String> topSectionsId = new LinkedHashSet<String>();
         for (OntologyTerm section : topSections) {
             topSectionsId.add(section.getId());
         }
+        // Explicitly add Death, since it's not part of the "Phenotypic abnormality" branch of HPO, but still makes
+        // sense as a patient feature
+        topSectionsId.add("HP:0011420");
+        // Catch-all, in case someone wants to add a qualifier
+        topSectionsId.add("HP:0000001");
 
         for (Map<String, ?> sectionTemplate : template) {
             try {
@@ -200,6 +205,9 @@ public class PropertyDisplayer
         }
         for (String sectionId : topSectionsId) {
             OntologyTerm term = this.ontologyService.getTerm(sectionId);
+            if (term == null) {
+                continue;
+            }
             Map<String, Object> templateSection = new HashMap<String, Object>();
 
             String title = term.getName();
