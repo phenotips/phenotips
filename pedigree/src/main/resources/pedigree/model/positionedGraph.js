@@ -7,7 +7,8 @@ PositionedGraph = function( baseG,                          // mandatory, BaseGr
                             maxInitOrderingBuckets,         // optional,  int
                             maxOrderingIterations,          // optional,  int
                             maxXcoordIterations,            // optional,  int
-                            performVerticalPositioning )    // optional,  bool  (DynamicGraph does its own vertical positioning, so can save some time)
+                            performVerticalPositioning,     // optional,  bool  (DynamicGraph does its own vertical positioning, so can save some time)
+                            suggestedRanks )                // optional,  array[int] - ranks suggested for all nodes
 {
     this.GG = undefined;         // graph without any positioning info (of type BaseGraph);
                                  // same as baseG, but with multi-rank edges replaced by virtual vertices/edges
@@ -27,7 +28,8 @@ PositionedGraph = function( baseG,                          // mandatory, BaseGr
 
     this.initialize( baseG,
                      horizontalPersonSeparationDist, horizontalRelSeparationDist,
-                     maxInitOrderingBuckets, maxOrderingIterations, maxXcoordIterations, performVerticalPositioning );
+                     maxInitOrderingBuckets, maxOrderingIterations, maxXcoordIterations,
+                     performVerticalPositioning, suggestedRanks );
 };
 
 PositionedGraph.prototype = {
@@ -51,7 +53,8 @@ PositionedGraph.prototype = {
                           maxInitOrderingBuckets,
                           maxOrderingIterations,
                           maxXcoordIterations,
-                          performVerticalPositioning )
+                          performVerticalPositioning,
+                          suggestedRanks )
     {
         if (horizontalPersonSeparationDist) this.horizontalPersonSeparationDist = horizontalPersonSeparationDist;
         if (horizontalRelSeparationDist)    this.horizontalRelSeparationDist    = horizontalRelSeparationDist;
@@ -65,7 +68,7 @@ PositionedGraph.prototype = {
         var timer = new Timer();
 
         // 1)
-        this.ranks = this.rank(baseG);
+        this.ranks = this.rank(baseG, suggestedRanks);
 
         this.maxRank = Math.max.apply(null, this.ranks);
 
@@ -124,8 +127,18 @@ PositionedGraph.prototype = {
     },
 
     //=[rank]============================================================================
-    rank: function (baseG)
+    rank: function (baseG, suggestedRanks)
     {
+        // use the suggested ranks, if available.
+        // Note: even if present, using suggested ranks may fail if inconsistencies are found
+        //       e.g. if a user drew a new "child" edge from a node to a node with a higher or equal rank
+        if (suggestedRanks) {
+            var ranks = this.init_rank(baseG, suggestedRanks);
+            if (ranks) {
+                return ranks;   // if suggested ranks are valid. if not ranks would be null
+            }
+        }
+
         // initial ranking via a spanning tree. Minimum rank == 1.
         var ranks = this.init_rank(baseG);
 
@@ -138,7 +151,7 @@ PositionedGraph.prototype = {
     },
 
     // init ranks by computing a spanning tree over the directed graph, starting from the nodes with no parents
-    init_rank: function (baseG)
+    init_rank: function (baseG, suggestedRanks)
     {
         //   Algorithm: nodes are placed in the queue when they have no unscanned in-edges.
         //   As nodes are taken off the queue, they are assigned the least rank
@@ -159,10 +172,29 @@ PositionedGraph.prototype = {
             numRankedParents.push(0);
         }
 
-        var parentlessNodes = baseG.getLeafAndParentlessNodes().parentlessNodes;
+        var queue = new Queue();         // holds non-ranked nodes which have all their parents already ranked
+        
+        if (suggestedRanks) {
+            for (var i = 0; i < suggestedRanks.length; i++) {
+                var nodesAtRank = suggestedRanks[i];
+                for (var j = 0; j < nodesAtRank.length; j++) {
+                    ranks[nodesAtRank[j]] = (i*3) + 1;
+                }
+            }
 
-        var queue = new Queue();
-        queue.setTo(parentlessNodes);
+            for (var v = 0; v < baseG.getNumVertices(); v++) {
+                if (baseG.isPerson(v) && ranks[v] == -1) {
+                    // a person node is without a rank => suggestedRanksa re bad
+                    return null;
+                }
+                if (baseG.isRelationship(v)) {
+                    queue.push(v);
+                }
+            }
+        } else {
+            var parentlessNodes = baseG.getLeafAndParentlessNodes().parentlessNodes;
+            queue.setTo(parentlessNodes);
+        }
 
         while ( queue.size() > 0 ) {
             var nextNode = queue.pop();
@@ -189,6 +221,13 @@ PositionedGraph.prototype = {
 
             for (var u = 0; u < outEdges.length; u++) {
                 var vertex = outEdges[u];
+
+                if (suggestedRanks && ranks[vertex] != -1) {
+                    if (ranks[vertex] <= ranks[nextNode]) {
+                        // suggested ranks are inconsistent
+                        return null;
+                    }
+                }
 
                 numRankedParents[vertex]++;
 

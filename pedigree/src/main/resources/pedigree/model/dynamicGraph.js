@@ -1071,9 +1071,15 @@ DynamicPositionedGraph.prototype = {
 
         var baseGraph = this.DG.GG.makeGWithCollapsedMultiRankEdges();
 
-        //var byRankAndOrder =
+        // collect current node ranks so that the new layout can be made more similar to the current one
+        var oldRanks = clone2DArray(this.DG.order.order);
+        for (var i = oldRanks.length - 1; i >=0; i--) {
+            oldRanks[i] = oldRanks[i].filter(this.DG.GG.isPerson.bind(this.DG.GG));
+            if (oldRanks[i].length == 0)
+                oldRanks.splice(i, 1);
+        }
 
-        if (!this._recreateUsingBaseGraph(baseGraph)) return {};  // no changes
+        if (!this._recreateUsingBaseGraph(baseGraph, oldRanks)) return {};  // no changes
 
         var movedNodes = this._getAllNodes();
 
@@ -1213,7 +1219,9 @@ DynamicPositionedGraph.prototype = {
 
     //=============================================================
 
-    _recreateUsingBaseGraph: function (baseGraph)
+    // suggestedRanks: when provided, attempt to use the suggested rank for all nodes,
+    //                 in order to keep the new layout as close as possible to the previous layout
+    _recreateUsingBaseGraph: function (baseGraph, suggestedRanks)
     {
         try {
             var newDG = new PositionedGraph( baseGraph,
@@ -1221,7 +1229,9 @@ DynamicPositionedGraph.prototype = {
                                              this.DG.horizontalRelSeparationDist,
                                              this.DG.maxInitOrderingBuckets,
                                              this.DG.maxOrderingIterations,
-                                             this.DG.maxXcoordIterations );
+                                             this.DG.maxXcoordIterations,
+                                             false,
+                                             suggestedRanks );
         } catch (e) {
             return false;
         }
