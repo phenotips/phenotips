@@ -19,7 +19,7 @@
  */
 package org.phenotips.data.permissions.internal;
 
-import org.phenotips.data.Patient;
+import org.phenotips.data.events.PatientChangingEvent;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.Owner;
@@ -27,14 +27,13 @@ import org.phenotips.data.permissions.PermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 
 import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.bridge.event.DocumentCreatingEvent;
-import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
-import org.xwiki.observation.EventListener;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
 import java.util.Arrays;
@@ -68,7 +67,7 @@ import com.xpn.xwiki.objects.BaseObject;
 @Component
 @Named("phenotips-patient-rights-updater")
 @Singleton
-public class RightsUpdateEventListener implements EventListener
+public class RightsUpdateEventListener extends AbstractEventListener
 {
     private static final EntityReference USER_CLASS = new EntityReference("XWikiUsers", EntityType.DOCUMENT,
         new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
@@ -99,41 +98,30 @@ public class RightsUpdateEventListener implements EventListener
     @Named("current")
     private DocumentReferenceResolver<String> stringEntityResolver;
 
-    @Override
-    public String getName()
-    {
-        return "phenotips-patient-rights-updater";
-    }
+    @Inject
+    private Execution execution;
 
-    @Override
-    public List<Event> getEvents()
+    /** Default constructor, sets up the listener name and the list of events to subscribe to. */
+    public RightsUpdateEventListener()
     {
-        return Arrays.<Event>asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
+        super("phenotips-patient-rights-updater", new PatientChangingEvent());
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
         XWikiDocument doc = (XWikiDocument) source;
-        XWikiContext context = (XWikiContext) data;
-        if (isPatient(doc)) {
-            // Map of permissions to users/groups
-            Map<String, Map<String, String>> oldRights = new HashMap<String, Map<String, String>>();
-            Map<String, BaseObject> rightsObjects = findRights(doc);
-            List<String> missingRights = findMissingRights(rightsObjects);
-            clearRights(rightsObjects, oldRights);
-            // Create rights after clearRights, because it saves unnecessary resetting of groups and users
-            createRights(missingRights, rightsObjects, doc, context);
-            updateDefaultRights(rightsObjects, doc);
-            updateOwnerRights(rightsObjects, oldRights, doc);
-            updateCollaboratorsRights(rightsObjects, doc);
-        }
-    }
-
-    private boolean isPatient(XWikiDocument doc)
-    {
-        return (doc.getXObject(Patient.CLASS_REFERENCE) != null)
-            && !"PatientTemplate".equals(doc.getDocumentReference().getName());
+        XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
+        // Map of permissions to users/groups
+        Map<String, Map<String, String>> oldRights = new HashMap<String, Map<String, String>>();
+        Map<String, BaseObject> rightsObjects = findRights(doc);
+        List<String> missingRights = findMissingRights(rightsObjects);
+        clearRights(rightsObjects, oldRights);
+        // Create rights after clearRights, because it saves unnecessary resetting of groups and users
+        createRights(missingRights, rightsObjects, doc, context);
+        updateDefaultRights(rightsObjects, doc);
+        updateOwnerRights(rightsObjects, oldRights, doc);
+        updateCollaboratorsRights(rightsObjects, doc);
     }
 
     /**

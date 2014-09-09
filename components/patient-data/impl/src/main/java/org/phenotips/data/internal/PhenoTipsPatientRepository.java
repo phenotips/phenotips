@@ -25,6 +25,7 @@ import org.phenotips.data.PatientRecordInitializer;
 import org.phenotips.data.PatientRepository;
 
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
@@ -119,6 +120,17 @@ public class PhenoTipsPatientRepository implements PatientRepository
             this.logger.warn("Failed to access patient with external id [{}]: {}", externalId, ex.getMessage(), ex);
         }
         return null;
+    }
+
+    @Override
+    public Patient loadPatientFromDocument(DocumentModelBridge document)
+    {
+        XWikiDocument xdocument = (XWikiDocument) document;
+        if (xdocument.getXObject(Patient.CLASS_REFERENCE) == null) {
+            throw new IllegalArgumentException("No patient stored in the provided document ["
+                + document.getDocumentReference() + "]");
+        }
+        return new PhenoTipsPatient(xdocument);
     }
 
     @Override

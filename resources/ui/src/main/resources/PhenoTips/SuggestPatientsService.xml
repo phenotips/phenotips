@@ -59,6 +59,7 @@
     #set ($query = $query.concat(' or lower(patient.first_name) like :input or lower(patient.last_name) like :input'))
   #end
   #set ($query = $services.query.xwql($query))
+  #set ($discard = $query.setLimit($nb))
   #set ($discard = $query.bindValue('input', "%${input}%"))
   #set ($discard = $response.setContentType("text/xml"))
   &lt;?xml version="1.0" encoding="UTF-8"?&gt;

@@ -20,21 +20,21 @@
 package org.phenotips.ontology.listeners;
 
 import org.phenotips.Constants;
+import org.phenotips.data.Patient;
+import org.phenotips.data.events.PatientChangingEvent;
 import org.phenotips.ontology.OntologyService;
 
-import org.xwiki.bridge.event.DocumentCreatingEvent;
-import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
 import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
-import org.xwiki.observation.EventListener;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -53,9 +53,9 @@ import com.xpn.xwiki.objects.BaseObject;
  * @version $Id$
  */
 @Component
-@Named("patient-version-recorder")
+@Named("ontology-version-recorder")
 @Singleton
-public class PatientOntologyVersionRecorder implements EventListener
+public class PatientOntologyVersionRecorder extends AbstractEventListener
 {
     /** The name of the class where version info (name, version) is stored. */
     private static final EntityReference VERSION_RECORDER_REFERENCE = new EntityReference("OntologyVersionClass",
@@ -67,31 +67,24 @@ public class PatientOntologyVersionRecorder implements EventListener
 
     /** Access to services that are needed to get the ontology version. */
     @Inject
-    @Named("hpo")
-    private OntologyService humanPhenotypeOntology;
+    private Map<String, OntologyService> ontologies;
 
-    @Override
-    public String getName()
-    {
-        return "patient-version-recorder";
-    }
+    @Inject
+    private Execution execution;
 
-    @Override
-    public List<Event> getEvents()
+    /** Default constructor, sets up the listener name and the list of events to subscribe to. */
+    public PatientOntologyVersionRecorder()
     {
-        // The list of events this listener listens to
-        return Arrays.<Event>asList(new DocumentCreatingEvent(), new DocumentUpdatingEvent());
+        super("ontology-version-recorder", new PatientChangingEvent());
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        XWikiContext context = (XWikiContext) data;
+        XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
         XWikiDocument doc = (XWikiDocument) source;
 
-        BaseObject patientRecordObj =
-            doc.getXObject(new DocumentReference(doc.getDocumentReference().getWikiReference().getName(),
-                Constants.CODE_SPACE, "PatientClass"));
+        BaseObject patientRecordObj = doc.getXObject(Patient.CLASS_REFERENCE);
         if (patientRecordObj == null) {
             return;
         }
@@ -131,9 +124,11 @@ public class PatientOntologyVersionRecorder implements EventListener
     {
         Map<String, String> result = new HashMap<>();
 
-        String hpoVersion = this.humanPhenotypeOntology.getVersion();
-        if (StringUtils.isNotBlank(hpoVersion)) {
-            result.put("hpo", hpoVersion);
+        for (Entry<String, OntologyService> ontology : this.ontologies.entrySet()) {
+            String version = ontology.getValue().getVersion();
+            if (StringUtils.isNotBlank(version)) {
+                result.put(ontology.getKey(), version);
+            }
         }
         return result;
     }

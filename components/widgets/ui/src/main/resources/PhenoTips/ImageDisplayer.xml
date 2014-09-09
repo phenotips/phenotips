@@ -1115,6 +1115,14 @@ $content
 }
 .image-gallery .xGallery {
 }
+.attachment-item {
+  position: relative;
+  width: 31%;
+  float: left;
+  margin: .5em 2% .5em 0;
+  overflow: hidden;
+  padding: .25em;
+}
 .attachment-item.image {
   position: relative;
   width: 110px;
@@ -1123,13 +1131,6 @@ $content
   overflow: hidden;
   border-radius: 4px;
   box-shadow: 0 0 4px #aaa;
-}
-.attachment-item.pdf {
-  position: relative;
-  width: 31%;
-  float: left;
-  margin: .5em 2% .5em 0;
-  overflow: hidden;
 }
 .attachment-item:hover {
   background-color: $theme.pageContentBackgroundColor;

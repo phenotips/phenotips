@@ -20,18 +20,15 @@
 package org.phenotips.integration.lims247.internal;
 
 import org.phenotips.Constants;
-import org.phenotips.data.Patient;
+import org.phenotips.data.events.PatientChangedEvent;
+import org.phenotips.data.events.PatientDeletedEvent;
 
-import org.xwiki.bridge.event.DocumentCreatedEvent;
-import org.xwiki.bridge.event.DocumentDeletedEvent;
-import org.xwiki.bridge.event.DocumentUpdatedEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.observation.EventListener;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -65,7 +62,7 @@ import com.xpn.xwiki.objects.BaseObject;
 @Component
 @Named("pushDataToPublicClone")
 @Singleton
-public class RemoteSynchronizationEventListener implements EventListener
+public class RemoteSynchronizationEventListener extends AbstractEventListener
 {
     /** The content type of the data sent in a request. */
     private static final ContentType REQUEST_CONTENT_TYPE = ContentType.create(
@@ -82,22 +79,16 @@ public class RemoteSynchronizationEventListener implements EventListener
     /** HTTP client used for communicating with the remote server. */
     private final CloseableHttpClient client = HttpClients.createSystem();
 
-    @Override
-    public String getName()
+    /** Default constructor, sets up the listener name and the list of events to subscribe to. */
+    public RemoteSynchronizationEventListener()
     {
-        return "pushDataToPublicClone";
-    }
-
-    @Override
-    public List<Event> getEvents()
-    {
-        return Arrays.<Event>asList(new DocumentCreatedEvent(), new DocumentUpdatedEvent(), new DocumentDeletedEvent());
+        super("pushDataToPublicClone", new PatientChangedEvent(), new PatientDeletedEvent());
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        if (event instanceof DocumentDeletedEvent) {
+        if (event instanceof PatientDeletedEvent) {
             handleDelete((XWikiDocument) source);
         } else {
             handleUpdate((XWikiDocument) source);
@@ -107,9 +98,6 @@ public class RemoteSynchronizationEventListener implements EventListener
     private void handleUpdate(XWikiDocument doc)
     {
         try {
-            if (!isPatient(doc)) {
-                return;
-            }
             this.logger.debug("Pushing updated document [{}]", doc.getDocumentReference());
             XWikiContext context = getXContext();
             String payload = doc.toXML(true, false, true, false, context);
@@ -126,9 +114,6 @@ public class RemoteSynchronizationEventListener implements EventListener
 
     private void handleDelete(XWikiDocument doc)
     {
-        if (!isPatient(doc.getOriginalDocument())) {
-            return;
-        }
         this.logger.debug("Pushing deleted document [{}]", doc.getDocumentReference());
         XWikiContext context = getXContext();
         List<BaseObject> servers = getRegisteredServers(context);
@@ -137,19 +122,6 @@ public class RemoteSynchronizationEventListener implements EventListener
                 deleteData(doc.getDocumentReference().toString(), serverConfiguration);
             }
         }
-    }
-
-    /**
-     * Check if the modified document is a patient record.
-     *
-     * @param doc the modified document
-     * @return {@code true} if the document contains a PatientClass object and a non-empty external identifier,
-     *         {@code false} otherwise
-     */
-    private boolean isPatient(XWikiDocument doc)
-    {
-        BaseObject o = doc.getXObject(Patient.CLASS_REFERENCE);
-        return (o != null && !StringUtils.equals("PatientTemplate", doc.getDocumentReference().getName()));
     }
 
     /**

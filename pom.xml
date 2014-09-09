@@ -185,13 +185,17 @@
         <artifactId>log4j-over-slf4j</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
+      <!-- Logging framework -->
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.1.2</version>
+      </dependency>
       <!-- Most plugins depend on the servlet API -->
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
-        <!-- Note: The 2.4 version is not technically correct as 2.4 corresponds to a specification
-             # and is not an implementation version. The central repo would need to be fixed... -->
-        <version>2.4</version>
+        <version>2.5</version>
         <!-- It should always be provided, otherwise containers will complain about it. -->
         <scope>provided</scope>
       </dependency>
@@ -201,6 +205,12 @@
         <artifactId>json-lib</artifactId>
         <classifier>jdk15</classifier>
         <version>2.4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- Force a specific version since older incompatible versions are pulled otherwise -->
       <dependency>
@@ -222,6 +232,12 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>4.3.5</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -232,6 +248,12 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpasyncclient</artifactId>
         <version>4.0.2</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
@@ -354,6 +376,11 @@
               <className>**/data/shareprotocol/ShareProtocol</className>
               <field>SERVER_JSON_KEY_NAME_ERROR_UNTRUSTEDSERVER</field>
             </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>**/data/PatientRepository</className>
+              <method>org.phenotips.data.Patient loadPatientFromDocument(org.xwiki.bridge.DocumentModelBridge)</method>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
@@ -384,7 +411,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.0.201403182114</version>
+        <version>0.7.1.201405082137</version>
         <executions>
           <execution>
             <id>jacoco-prepare</id>
@@ -497,7 +524,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.12</version>
+          <version>2.12.1</version>
           <dependencies>
             <dependency>
               <groupId>org.phenotips</groupId>
@@ -621,19 +648,19 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.2.1</version>
+          <version>2.3</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-plugin-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.2</version>
+          <version>3.3</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.5.1</version>
+          <version>2.5.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -714,7 +741,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.4</version>
+          <version>2.5</version>
           <configuration>
             <!-- Add some useful information about the extension in the manifest file. -->
             <archive>
@@ -728,7 +755,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.4</version>
+          <version>2.4.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -754,7 +781,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.8.1</version>
+          <version>2.8.2</version>
           <!-- We're deploying to Nexus using the WebDAV protocol -->
           <dependencies>
             <dependency>
@@ -816,7 +843,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.3</version>
+          <version>3.4</version>
           <!-- Site Plugin doesn’t automatically pull the Apache Wagon implementation -->
           <dependencies>
             <dependency>

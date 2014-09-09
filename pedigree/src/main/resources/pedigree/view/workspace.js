@@ -144,38 +144,46 @@ var Workspace = Class.create({
 
         if (editor.isUnsupportedBrowser()) {
             submenus = [{
-                name : 'internal',
+                name : 'input',
                 items: [
-                    { key : 'readonlymessage', label : 'Unsuported browser mode'},
+                    { key : 'readonlymessage', label : 'Unsuported browser mode', icon : 'exclamation-triangle'}
                 ]
-            }, {
-                name : 'external',
+              }, {
+                name : 'output',
                 items: [
-                    { key : 'export',    label : 'Export'},
-                    { key : 'reload',    label : 'Reload'},
-                    { key : 'close',     label : 'Close'}
+                    { key : 'export',    label : 'Export', icon : 'download'},
+                    { key : 'reload',    label : 'Reload', icon : 'refresh'},
+                    { key : 'close',     label : 'Close', icon : 'sign-out'}
                 ]
             }];
         } else {
             submenus = [{
-                name : 'internal',
+                name : 'input',
                 items: [
-                    { key : 'undo',   label : 'Undo'},
-                    { key : 'redo',   label : 'Redo'},
-                    { key : 'layout', label : 'Automatic layout'},
-                    { key : 'clear',  label : 'Clear all'},
-                    { key : 'number', label : 'Renumber'}
+                    { key : 'templates', label : 'Templates', icon : 'copy'},
+                    { key : 'import',    label : 'Import', icon : 'upload'}
                 ]
-            }, {
-                name : 'external',
+              }, {
+                name : 'edit',
                 items: [
-                    { key : 'save',      label : 'Save'},
-                    { key : 'export',    label : 'Export'},
-                    //{ key : 'print',     label : 'Print'},
-                    { key : 'reload',    label : 'Reload'},
-                    { key : 'import',    label : 'Import'},
-                    { key : 'templates', label : 'Templates'},
-                    { key : 'close',     label : 'Close'}
+                    { key : 'undo',   label : 'Undo', icon : 'undo'},
+                    { key : 'redo',   label : 'Redo', icon : 'repeat'},
+                    { key : 'layout', label : 'Automatic layout', icon : 'sitemap'},
+                    { key : 'number', label : 'Renumber', icon : 'sort-numeric-asc'}
+                ]
+              }, {
+                name : 'reset',
+                items: [
+                    { key : 'clear',  label : 'Clear all', icon : 'times-circle'},
+                    { key : 'reload',    label : 'Reload', icon : 'refresh'}
+                ]
+              }, {
+                name : 'output',
+                items: [
+                    { key : 'save',      label : 'Save', icon : 'check'},
+                    { key : 'export',    label : 'Export', icon : 'download'},
+                    //{ key : 'print',     label : 'Print', icon : 'print'},
+                    { key : 'close',     label : 'Close', icon : 'sign-out'}
                 ]
             }];
         }
@@ -187,7 +195,7 @@ var Workspace = Class.create({
             });
         };
         var _createMenuItem = function(data) {
-            var mi = new Element('span', {'id' : 'action-' + data.key, 'class' : 'menu-item ' + data.key}).update(data.label);
+            var mi = new Element('span', {'id' : 'action-' + data.key, 'class' : 'menu-item ' + data.key}).insert(new Element('span', {'class' : 'fa fa-' + data.icon})).insert(' ').insert(data.label);
             if (data.callback && typeof(this[data.callback]) == 'function') {
                 mi.observe('click', function() {
                     this[data.callback]();
@@ -230,7 +238,7 @@ var Workspace = Class.create({
         this.__pan = new Element('div', {'class' : 'view-controls-pan', title : 'Pan'});
         this.__controls.insert(this.__pan);
         ['up', 'right', 'down', 'left'].each(function (direction) {
-            _this.__pan[direction] = new Element('span', {'class' : 'view-control-pan pan-' + direction, 'title' : 'Pan ' + direction});
+            _this.__pan[direction] = new Element('span', {'class' : 'view-control-pan pan-' + direction + ' fa fa-fw fa-arrow-' + direction, 'title' : 'Pan ' + direction});
             _this.__pan.insert(_this.__pan[direction]);
             _this.__pan[direction].observe('click', function(event) {
                 if(direction == 'up') {
@@ -253,8 +261,8 @@ var Workspace = Class.create({
         this.__controls.insert(this.__zoom);
         this.__zoom.track  = new Element('div', {'class' : 'zoom-track'});
         this.__zoom.handle = new Element('div', {'class' : 'zoom-handle', title : 'Drag to zoom'});
-        this.__zoom['in']  = new Element('div', {'class' : 'zoom-button zoom-in', title : 'Zoom in'});
-        this.__zoom['out'] = new Element('div', {'class' : 'zoom-button zoom-out', title : 'Zoom out'});
+        this.__zoom['in']  = new Element('div', {'class' : 'zoom-button zoom-in fa fa-fw fa-search-plus', title : 'Zoom in'});
+        this.__zoom['out'] = new Element('div', {'class' : 'zoom-button zoom-out fa fa-fw fa-search-minus', title : 'Zoom out'});
         this.__zoom.label  = new Element('div', {'class' : 'zoom-crt-value'});
         this.__zoom.insert(this.__zoom['in']);
         this.__zoom.insert(this.__zoom.track);

@@ -1,3 +1,9 @@
+org.phenotips.data.events.internal.PatientChangedEventSource
+org.phenotips.data.events.internal.PatientChangingEventSource
+org.phenotips.data.events.internal.PatientCreatedEventSource
+org.phenotips.data.events.internal.PatientCreatingEventSource
+org.phenotips.data.events.internal.PatientDeletedEventSource
+org.phenotips.data.events.internal.PatientDeletingEventSource
 org.phenotips.data.internal.PhenoTipsPatientRepository
 org.phenotips.data.internal.controller.VersionsController
 org.phenotips.data.internal.controller.IdentifiersController
@@ -13,3 +19,7 @@ org.phenotips.data.internal.controller.FamilyHistoryController
 org.phenotips.data.internal.controller.EthnicityController
 org.phenotips.data.internal.controller.GeneListController
 org.phenotips.data.internal.controller.ClinicalStatusController
+org.phenotips.data.internal.DeprecatedPhenotypeUpdaterEventListener
+org.phenotips.data.internal.NonStandardFeatureCategoryUpdater
+org.phenotips.data.internal.PatientBirthdateUpdater
+org.phenotips.data.internal.PatientExtendedPhenotypeUpdater

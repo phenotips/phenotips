@@ -20,13 +20,14 @@
 package org.phenotips.integration.lims247.internal;
 
 import org.phenotips.Constants;
+import org.phenotips.data.Patient;
+import org.phenotips.data.events.PatientChangedEvent;
+import org.phenotips.data.events.PatientDeletedEvent;
+import org.phenotips.data.events.PatientEvent;
 import org.phenotips.integration.lims247.Lims247AuthServiceImpl;
 import org.phenotips.integration.lims247.LimsAuthentication;
 import org.phenotips.integration.lims247.LimsServer;
 
-import org.xwiki.bridge.event.DocumentCreatedEvent;
-import org.xwiki.bridge.event.DocumentDeletedEvent;
-import org.xwiki.bridge.event.DocumentUpdatedEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.csrf.CSRFToken;
@@ -34,10 +35,9 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceResolver;
-import org.xwiki.observation.EventListener;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -64,7 +64,7 @@ import net.sf.json.JSONObject;
 @Component
 @Named("lims247sync")
 @Singleton
-public class LimsSynchronizationEventListener implements EventListener
+public class LimsSynchronizationEventListener extends AbstractEventListener
 {
     /** The XClass used for storing patient data. */
     private static final EntityReference PATIENT_CLASS = new EntityReference("PatientClass", EntityType.DOCUMENT,
@@ -94,50 +94,33 @@ public class LimsSynchronizationEventListener implements EventListener
     @Inject
     private EntityReferenceResolver<String> referenceResolver;
 
-    @Override
-    public String getName()
+    /** Default constructor, sets up the listener name and the list of events to subscribe to. */
+    public LimsSynchronizationEventListener()
     {
-        return "lims247sync";
-    }
-
-    @Override
-    public List<Event> getEvents()
-    {
-        return Arrays.<Event>asList(new DocumentCreatedEvent(), new DocumentUpdatedEvent(), new DocumentDeletedEvent());
+        super("lims247sync", new PatientChangedEvent(), new PatientDeletedEvent());
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        if (!isExternalPatient((XWikiDocument) source)) {
+        Patient patient = ((PatientEvent) event).getPatient();
+        if (StringUtils.isBlank(patient.getExternalId())) {
             return;
         }
+        String eventType = "update";
+        if (event instanceof PatientDeletedEvent) {
+            eventType = "delete";
+        } else if (((XWikiDocument) source).getOriginalDocument().isNew()) {
+            eventType = "create";
+        }
         XWikiContext context = (XWikiContext) this.execution.getContext().getProperty("xwikicontext");
-        XWikiDocument doc = (XWikiDocument) source;
-        JSONObject payload = getPayload(event, doc, context);
+        JSONObject payload = getPayload(eventType, patient.getExternalId(), context);
         List<BaseObject> servers = getRegisteredServers(context);
         if (servers != null && !servers.isEmpty()) {
             for (BaseObject serverConfiguration : servers) {
                 notifyServer(payload, serverConfiguration, context);
             }
         }
-    }
-
-    /**
-     * Check if the modified document is a patient record, with an external identifier.
-     *
-     * @param doc the modified document
-     * @return {@code true} if the document contains a PatientClass object and a non-empty external identifier,
-     *         {@code false} otherwise
-     */
-    private boolean isExternalPatient(XWikiDocument doc)
-    {
-        BaseObject o = doc.getXObject(PATIENT_CLASS);
-        if (o == null) {
-            return false;
-        }
-        String eid = o.getStringValue(EXTERNAL_ID_PROPERTY_NAME);
-        return StringUtils.isNotBlank(eid);
     }
 
     /**
@@ -161,19 +144,12 @@ public class LimsSynchronizationEventListener implements EventListener
      * @param context the current request context
      * @return a JSON object
      */
-    private JSONObject getPayload(Event event, XWikiDocument doc, XWikiContext context)
+    private JSONObject getPayload(String eventType, String eid, XWikiContext context)
     {
         JSONObject result = new JSONObject();
-
-        String eid = doc.getXObject(PATIENT_CLASS).getStringValue(EXTERNAL_ID_PROPERTY_NAME);
         result.put(IDENTIFIER_KEY, eid);
-        if (event instanceof DocumentCreatedEvent) {
-            result.put(EVENT_KEY, "create");
-        } else if (event instanceof DocumentUpdatedEvent) {
-            result.put(EVENT_KEY, "update");
-        } else if (event instanceof DocumentDeletedEvent) {
-            result.put(EVENT_KEY, "delete");
-        }
+        result.put(EVENT_KEY, eventType);
+
         LimsAuthentication auth =
             (LimsAuthentication) context.getRequest().getSession().getAttribute(Lims247AuthServiceImpl.SESSION_KEY);
         if (auth != null) {

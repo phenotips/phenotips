@@ -29,6 +29,11 @@
   </parent>
   <artifactId>patient-data-api</artifactId>
   <name>PhenoTips - Patient data - Java APIs</name>
+
+  <properties>
+    <coverage.instructionRatio>0.37</coverage.instructionRatio>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -61,9 +66,21 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-platform-users-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
+    </dependency>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-test-component</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

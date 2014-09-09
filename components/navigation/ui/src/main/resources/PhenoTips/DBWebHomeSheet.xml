@@ -341,21 +341,10 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
             resultsParameter : "rows",
             resultId : "id",
             resultValue : "name",
-            resultSynonym: "synonym",
+            resultAltName: "synonym",
             resultCategory : "term_category",
-            resultInfo : {
-                 "Browse related terms..." : {"extern" : true,
-                                              "processor" : function(trigger) {
-                                                              trigger._obrowser = new PhenoTips.widgets.OntologyBrowser(this, null, {});
-                                                              trigger.observe('click', function(event){
-                                                                event.stop();
-                                                                event.element()._obrowser.show(
-                                                                  event.element().up('.suggestItem').down('.suggestId').firstChild.nodeValue
-                                                                );
-                                                              }.bindAsEventListener(this));
-                                                            }
-                                              }
-                         },
+            resultInfo : {},
+            tooltip: 'phenotype-info',
             enableHierarchy: true,
             resultParent : "is_a",
             fadeOnClear : false,
@@ -378,9 +367,8 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
             resultsParameter : "rows",
             resultId : "id",
             resultValue : "name",
-            resultInfo : {
-                           "Locus"      : {"selector"  : "Locus"}
-                         },
+            resultInfo : {},
+            tooltip: 'omim-disease-info',
             enableHierarchy: false,
             fadeOnClear : false,
             timeout : 30000
@@ -977,6 +965,9 @@ document.observe('xwiki:livetable:newrow', function(tableEvent){
 }
 .calendar_date_select, .suggestItems {
   z-index : 300000 !important;
+}
+.msdialog-modal-container {
+  z-index : 300001 !important;
 }
 
 .export-dialog .section {

@@ -170,8 +170,8 @@
     resultInfo : "info",
     // The name of the JSON parameter or XML attribute holding the result category.
     resultCategory : "category",
-    // The name of the JSON parameter or XML attribute holding the result synonym.
-    resultSynonym : "synonym",
+    // The name of the JSON parameter or XML attribute holding the result alternative name.
+    resultAltName : "",
     // The name of the JSON parameter or XML attribute holding the result icon.
     resultIcon: "icon",
     // The name of the JSON parameter or XML attribute holding a potential result hint (displayed next to the value).
@@ -599,27 +599,24 @@
         category = '';
       }
 
-      var suggestValue = _getResultFieldValue(results[i], source.resultValue || this.options.resultValue);
-      var currFieldValue = this.sInput;
-      var curSimilarity = this.computeSimilarity(suggestValue,currFieldValue);
-      var synonym = _getResultFieldValueAsArray(results[i], source.resultSynonym || this.options.resultSynonym);
-      var synSimilarity = this.computeSimilarity(synonym[0], currFieldValue);
-      var matchSynonym = synonym[0];
-      for (var k = 1; k &lt; synonym.length; ++k) {
-        var tempSimilarity = this.computeSimilarity(synonym[k], currFieldValue);
-        if (tempSimilarity &gt; synSimilarity) {
-          synSimilarity = tempSimilarity;
-          matchSynonym = synonym[k];
+      if (this.options.resultAltName) {
+        var bestNameMatch = '';
+        var name =  _getResultFieldValue(results[i], source.resultValue || this.options.resultValue);
+        var altNames = _getResultFieldValueAsArray(results[i], source.resultAltName || this.options.resultAltName);
+        var nameMatchScore = this.computeSimilarity(name, this.sInput);
+        for (var k = 0; k &lt; altNames.length; ++k) {
+           var altNameMatchScore = this.computeSimilarity(altNames[k], this.sInput);
+           if (altNameMatchScore &gt; nameMatchScore) {
+             bestNameMatch = altNames[k];
+             nameMatchScore = altNameMatchScore;
+           }
         }
-      }
-      if (curSimilarity &gt;= synSimilarity) {
-        matchSynonym = "";
       }
 
       aSuggestions.push({
         'id': _getResultFieldValue(results[i], source.resultId || this.options.resultId),
         'value': _getResultFieldValue(results[i], source.resultValue || this.options.resultValue),
-        'synonym': matchSynonym,
+        'altName': bestNameMatch,
         'info'    : info,
         'category': category
       });
@@ -954,12 +951,12 @@
          value: this.fld.value,
          category: customItemCategoriesElt,
          info: new Element('div', {'class' : 'hint'}).update('(your text, not a standard term)')
-       }, 'custom-value'));
+       }, 'custom-value', true));
     }
     return list.getElement();
   },
 
-  generateListItem : function(data, cssClass) {
+  generateListItem : function(data, cssClass, disableTooltip) {
     var displayNode = new Element("div");
     // If the search result contains an icon information, we insert this icon in the result entry.
     if (data.icon) {
@@ -970,15 +967,15 @@
     }
     displayNode.insert(new Element('span', {'class':'suggestValue'}).update(data.value));
 
-    if (this.options.tooltip) {
+    if (this.options.tooltip &amp;&amp; !disableTooltip) {
       var infoTool = new Element('span', {'class' : 'fa fa-info-circle xHelpButton ' + this.options.tooltip, 'title' : data.id});
       infoTool.observe('click', function(event) {event.stop()});
       displayNode.insert(' ').insert(infoTool);
     }
     var displayInfo = new Element('div', {'class':'suggestInfo'}).update(data.info);
     displayNode.insert(displayInfo);
-    if(data.synonym){
-        displayInfo.insert({'top' : new Element('span', {'class':'suggestSynonym'}).update(data.synonym)});
+    if(data.altName){
+        displayInfo.insert({'top' : new Element('span', {'class':'matching-alternative-name'}).update(data.altName)});
     }
 
     var valueNode = new Element('div')
@@ -3868,7 +3865,7 @@ document.observe("xwiki:dom:loaded", function() {
          }
        },
       'phenotype-info' : {
-        'hint'     : 'About this term',
+        'hint'     : 'About this phenotype',
         'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
@@ -3902,10 +3899,15 @@ document.observe("xwiki:dom:loaded", function() {
             browseButton._id = json.id;
             browseButton.observe('click', function(event){
               event.stop();
-              browseButton._obrowser = new PhenoTips.widgets.OntologyBrowser($('quick-phenotype-search')._suggest, null, {
-                                                                   isTermSelected : isPhenotypeSelected,
-                                                                   unselectTerm : unselectPhenotype
-              });
+              var suggest = ($('quick-phenotype-search') || $$('input.suggestHpo')[0])._suggest;
+              var params = {};
+              if (typeof isPhenotypeSelected !== 'undefined') {
+                params = {
+                  isTermSelected : isPhenotypeSelected,
+                  unselectTerm : unselectPhenotype
+                };
+              }
+              browseButton._obrowser = new PhenoTips.widgets.OntologyBrowser(suggest, null, params);
               browseButton._obrowser.show(browseButton._id);
             });
             c.insert(elt('div', 'term-tools').insert(browseButton.wrap('span', {'class' : 'buttonwrapper'})));
@@ -3913,7 +3915,7 @@ document.observe("xwiki:dom:loaded", function() {
         }
       },
       'phenotype-qualifier-info' : {
-        'hint'     : 'About this term',
+        'hint'     : 'About this phenotype qualifier',
         'service'  : "$xwiki.getURL('PhenoTips.PhenotypeInfoService', 'get')",
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
@@ -3926,6 +3928,105 @@ document.observe("xwiki:dom:loaded", function() {
                                        .insert(elt('span', 'value').update(json.label))
                   );
           json.def &amp;&amp; c.insert(elt('p').update(json.def.replace(/\s*\n\s*/, ' ').replace(/`([^`]+)`\s+\(([A-Z]+:[0-9]+)`?\)/g, '&lt;em title="$2"&gt;$1&lt;/em&gt;')));
+        }
+      },
+      'omim-disease-info' : {
+        'hint' : 'About this disease',
+        'service'  : "$xwiki.getURL('PhenoTips.OmimInfoService', 'get')",
+        'callback' : function (helpButton, json) {
+          var c = helpButton.helpBox.content;
+          var elt = function(type, cssClass, content) {
+            return new Element(type, cssClass &amp;&amp; {'class' : cssClass} || {}).update(content || '');
+          };
+
+          c.update(
+                    elt('span', 'info').insert(elt('span', 'key').update(json.id))
+                                       .insert(' ')
+                                       .insert(elt('span', 'value').update(json.label.splice(0, 1)[0]))
+                  );
+
+          var labels = {'label' : '', 'symptoms' : 'This disorder is typically characterized by', 'not_symptoms' : 'This disorder does not typically cause'};
+          var advancedInfo = elt('dl');
+          for (var l in labels) {
+            if (json[l] &amp;&amp; json[l].length &gt; 0) {
+              advancedInfo.insert(elt('dt', '', labels[l]));
+              json[l].each(function (item) {
+                advancedInfo.insert(elt('dd', '', item.label || item));
+              })
+            }
+          }
+          if (advancedInfo.firstDescendant()) {
+            c.insert(advancedInfo);
+          }
+          var viewButton = new Element('a', {'class' : 'button', href : 'http://www.omim.org/entry/' + json.id, 'target' : '_blank'}).update('Read about it on OMIM.org...');
+          c.insert(elt('div', 'term-tools').insert(viewButton.wrap('span', {'class' : 'buttonwrapper'})));
+          viewButton.observe('click', function(event) {
+            event.stop();
+            window.open(viewButton.href);
+          });
+        }
+      },
+      'gene-info' : {
+        'hint' : 'About this gene',
+        'service'  : "$xwiki.getURL('PhenoTips.GeneInfoService', 'get')",
+        'callback' : function (helpButton, json) {
+          var c = helpButton.helpBox.content;
+          var elt = function(type, cssClass, content) {
+            return new Element(type, cssClass &amp;&amp; {'class' : cssClass} || {}).update(content || '');
+          };
+
+          c.update(
+                    elt('span', 'info').insert(elt('span', 'key').update(json.symbol))
+                                       .insert(' ')
+                                       .insert(elt('span', 'value').update(json.name))
+                  );
+
+          var labels = {'alias_symbol' : 'Aliases', 'gene_family' : 'Gene family'};
+          var advancedInfo = elt('dl');
+          for (var l in labels) {
+            if (json[l] &amp;&amp; json[l].length &gt; 0) {
+              advancedInfo.insert(elt('dt', '', labels[l]));
+              json[l].each(function (item) {
+                advancedInfo.insert(elt('dd', '', item.label || item));
+              })
+            }
+          }
+          if (advancedInfo.firstDescendant()) {
+            c.insert(advancedInfo);
+          }
+
+          if (json.external_ids) {
+            var tools = elt('div', 'term-tools');
+            var externalDBs = [
+                          { name : 'GENECARDS', url : 'http://www.genecards.org/cgi-bin/carddisp.pl?gene=',          field : 'genecards_id'},
+                          { name : 'OMIM',      url : 'http://www.omim.org/entry/',                                  field : 'omim_id'},
+                          { name : 'Entrez',    url : 'http://www.ncbi.nlm.nih.gov/gene/?term=',                     field : 'entrez_id'},
+                          { name : 'RefSeq',    url : 'http://www.ncbi.nlm.nih.gov/nuccore/',                        field : 'refseq_accession'},
+                          { name : 'Ensembl',   url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_gene_id'}
+            ];
+            externalDBs.each(function (item) {
+                         var value = json.external_ids[item.field];
+                         if (value) {
+                           if (!value.each) {
+                             value = [value];
+                           }
+                           value.each (function (id) {
+                             tools.insert(new Element('a', {
+                               'href'   : item.url + id,
+                               'class'  : 'button'
+                             }).update(item.name + ': ' + id).wrap('span', {'class' : 'buttonwrapper'}));
+                           });
+                         }
+            });
+            // We must stop the event, otherwise this item will be selected; as a consequence, we must also manually open the link
+            tools.select('a').each(function(item) {
+                         item.observe('click', function(event) {
+                            event.stop();
+                            window.open(item.href);
+                         })
+            });
+            c.insert(tools);
+          }
         }
       }
     },
@@ -4380,18 +4481,18 @@ div.suggestItems span.info span.hint {
   margin-left:5px;
 }
 
-div.suggestItems span.suggestSynonym{
+div.suggestItems span.matching-alternative-name {
   display: inline-block;
   padding-left: 55px;
 }
 
-div.suggestItems span.suggestSynonym:before {
+div.suggestItems span.matching-alternative-name:before {
   content: "(also known as: ";
   font-size: 0.8em;
   opacity: .4;
 }
 
-div.suggestItems span.suggestSynonym:after {
+div.suggestItems span.matching-alternative-name:after {
   content: ")";
   font-size: 0.8em;
   opacity: .4;
@@ -5334,7 +5435,7 @@ input.xwiki-free-multiselect-value {
   max-width: 80%;
   padding: 0.75em 1em;
   position: absolute;
-  z-index: 2;
+  z-index: 25;
 }
 .xTooltip.error {
   color: $theme.notificationErrorColor;

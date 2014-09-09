@@ -31,6 +31,7 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.stability.Unstable;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -39,6 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -75,6 +77,13 @@ public class SpecificityController implements PatientDataController<Object>, Ini
     {
         this.jsonConfig.registerJsonValueProcessor(Date.class, new JsonValueProcessor()
         {
+            private DateFormat format;
+
+            {
+                this.format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT);
+                this.format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            }
+
             @Override
             public Object processObjectValue(String key, Object value, JsonConfig jsonConfig)
             {
@@ -84,10 +93,9 @@ public class SpecificityController implements PatientDataController<Object>, Ini
             @Override
             public Object processArrayValue(Object value, JsonConfig jsonConfig)
             {
-                return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT).format(value);
+                return this.format.format(value);
             }
         });
-
     }
 
     @Override
@@ -122,7 +130,10 @@ public class SpecificityController implements PatientDataController<Object>, Ini
         if (selectedFieldNames == null || selectedFieldNames.contains(NAME)) {
             PatientData<Object> specificity = patient.getData(NAME);
             if (specificity != null && specificity.isNamed()) {
-                JSONObject result = new JSONObject();
+                JSONObject result = json.optJSONObject(NAME);
+                if (result == null) {
+                    result = new JSONObject();
+                }
 
                 Iterator<Entry<String, Object>> data = specificity.dictionaryIterator();
                 while (data.hasNext()) {
